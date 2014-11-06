@@ -104,7 +104,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 			if (building != null)
 			{
 				// Check that location doesn't already have that building
-				if (getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, buildingID))
+				if (getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, buildingID) != null)
 					msg = "The city already has the type of building you're trying to build - change ignored.";
 				else
 				{

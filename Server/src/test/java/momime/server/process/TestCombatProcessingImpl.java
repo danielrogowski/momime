@@ -1201,19 +1201,19 @@ public final class TestCombatProcessingImpl
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
 		assertEquals (2, attackingPlayerConnection.getMessages ().size ());
 		final KillUnitMessage tellAttackerToRemoveAttackersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (0);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getKillUnitActionID ());
+		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getUnitURN ());
 		final KillUnitMessage tellAttackerToRemoveDefendersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (1);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (8, tellAttackerToRemoveDefendersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersDeadUnit.getKillUnitActionID ());
+		assertEquals (8, tellAttackerToRemoveDefendersDeadUnit.getUnitURN ());
 
 		assertEquals (2, defendingPlayerConnection.getMessages ().size ());
 		final KillUnitMessage tellDefenderToRemoveAttackersDeadUnit = (KillUnitMessage) defendingPlayerConnection.getMessages ().get (0);
-		assertEquals (KillUnitActionID.FREE, tellDefenderToRemoveAttackersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (3, tellDefenderToRemoveAttackersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellDefenderToRemoveAttackersDeadUnit.getKillUnitActionID ());
+		assertEquals (3, tellDefenderToRemoveAttackersDeadUnit.getUnitURN ());
 		final KillUnitMessage tellDefenderToRemoveDefendersDeadUnit = (KillUnitMessage) defendingPlayerConnection.getMessages ().get (1);
-		assertEquals (KillUnitActionID.FREE, tellDefenderToRemoveDefendersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (8, tellDefenderToRemoveDefendersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellDefenderToRemoveDefendersDeadUnit.getKillUnitActionID ());
+		assertEquals (8, tellDefenderToRemoveDefendersDeadUnit.getUnitURN ());
 		
 		// Same units must also get removed from players' memory on the server
 		verify (unitUtils, times (1)).removeUnitURN (3, attackingPriv.getFogOfWarMemory ().getUnit ());
@@ -1400,11 +1400,11 @@ public final class TestCombatProcessingImpl
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
 		assertEquals (2, attackingPlayerConnection.getMessages ().size ());
 		final KillUnitMessage tellAttackerToRemoveAttackersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (0);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getKillUnitActionID ());
+		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getUnitURN ());
 		final KillUnitMessage tellAttackerToRemoveDefendersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (1);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (8, tellAttackerToRemoveDefendersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersDeadUnit.getKillUnitActionID ());
+		assertEquals (8, tellAttackerToRemoveDefendersDeadUnit.getUnitURN ());
 
 		// Defender is now a computer player so gets no messages
 
@@ -1595,11 +1595,11 @@ public final class TestCombatProcessingImpl
 		// Alive defender gets removed too since its a monster in a node
 		assertEquals (2, attackingPlayerConnection.getMessages ().size ());
 		final KillUnitMessage tellAttackerToRemoveAttackersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (0);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getKillUnitActionID ());
+		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getUnitURN ());
 		final KillUnitMessage tellAttackerToRemoveDefendersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (1);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (8, tellAttackerToRemoveDefendersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersDeadUnit.getKillUnitActionID ());
+		assertEquals (8, tellAttackerToRemoveDefendersDeadUnit.getUnitURN ());
 
 		// Defender is now a computer player so gets no messages
 
@@ -1751,8 +1751,8 @@ public final class TestCombatProcessingImpl
 		// Alive defender gets removed too since its a monster in a node
 		assertEquals (1, attackingPlayerConnection.getMessages ().size ());
 		final KillUnitMessage tellAttackerToRemoveAttackersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (0);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getKillUnitActionID ());
+		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getUnitURN ());
 
 		// Defender doesn't even exist, so gets no messages
 
@@ -1902,8 +1902,8 @@ public final class TestCombatProcessingImpl
 		// Alive defender gets removed too since its a monster in a node
 		assertEquals (1, attackingPlayerConnection.getMessages ().size ());
 		final KillUnitMessage tellAttackerToRemoveAttackersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (0);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getData ().getKillUnitActionID ());
-		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getData ().getUnitURN ());
+		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getKillUnitActionID ());
+		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getUnitURN ());
 
 		// Defender doesn't even exist, so gets no messages
 

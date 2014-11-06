@@ -368,7 +368,7 @@ public final class CityAIImpl implements CityAI
 			// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
 			final List<Building> buildingOptions = new ArrayList<Building> ();
 			for (final Building building : db.getBuilding ())
-				if ((building.getAiBuildingTypeID () == buildingType) && (!getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, building.getBuildingID ())) &&
+				if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, building.getBuildingID ()) == null) &&
 					(getServerCityCalculations ().canEventuallyConstructBuilding (trueTerrain, trueBuildings, cityLocation, building, sd.getMapSize (), db)))
 
 					buildingOptions.add (building);
@@ -398,7 +398,7 @@ public final class CityAIImpl implements CityAI
 					for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
 					{
 						final Building buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
-						if ((!buildingOptions.contains (buildingPrereq)) && (!getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, buildingPrereq.getBuildingID ())))
+						if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
 							buildingOptions.add (buildingPrereq);
 					}
 

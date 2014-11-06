@@ -265,6 +265,7 @@ public final class TestFogOfWarDuplicationImpl
 			final MapCoordinates3DEx buildingCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
 
 			final MemoryBuilding building = new MemoryBuilding ();
+			building.setBuildingURN (n);
 			building.setBuildingID ("BL0" + n);
 			building.setCityLocation (buildingCoords);
 
@@ -275,6 +276,7 @@ public final class TestFogOfWarDuplicationImpl
 		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryBuilding existingBuilding = new MemoryBuilding ();
+		existingBuilding.setBuildingURN (2);
 		existingBuilding.setBuildingID ("BL02");
 		existingBuilding.setCityLocation (existingCoords);
 
@@ -284,6 +286,7 @@ public final class TestFogOfWarDuplicationImpl
 
 		// Test a building already in the list (location same but different building ID)
 		final MemoryBuilding newBuilding = new MemoryBuilding ();
+		newBuilding.setBuildingURN (4);
 		newBuilding.setBuildingID ("BL03");
 		newBuilding.setCityLocation (existingCoords);
 
@@ -374,6 +377,7 @@ public final class TestFogOfWarDuplicationImpl
 			final MapCoordinates3DEx spellCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
 
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setSpellURN (n);
 			spell.setSpellID ("SP00" + n);
 			spell.setCityLocation (spellCoords);
 			spell.setCastingPlayerID (n);
@@ -385,6 +389,7 @@ public final class TestFogOfWarDuplicationImpl
 		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryMaintainedSpell existingSpell = new MemoryMaintainedSpell ();
+		existingSpell.setSpellURN (2);
 		existingSpell.setSpellID ("SP002");
 		existingSpell.setCityLocation (existingCoords);
 		existingSpell.setCastingPlayerID (2);
@@ -395,6 +400,7 @@ public final class TestFogOfWarDuplicationImpl
 
 		// Test a spell already in the list (location same but different spell ID)
 		final MemoryMaintainedSpell newSpell = new MemoryMaintainedSpell ();
+		newSpell.setSpellURN (4);
 		newSpell.setSpellID ("SP003");
 		newSpell.setCityLocation (existingCoords);
 		newSpell.setCastingPlayerID (3);
@@ -427,6 +433,7 @@ public final class TestFogOfWarDuplicationImpl
 			final MapCoordinates3DEx combatAreaEffectCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
 
 			final MemoryCombatAreaEffect combatAreaEffect = new MemoryCombatAreaEffect ();
+			combatAreaEffect.setCombatAreaEffectURN (n);
 			combatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
 			combatAreaEffect.setMapLocation (combatAreaEffectCoords);
 			combatAreaEffect.setCastingPlayerID (n);
@@ -438,6 +445,7 @@ public final class TestFogOfWarDuplicationImpl
 		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryCombatAreaEffect existingCombatAreaEffect = new MemoryCombatAreaEffect ();
+		existingCombatAreaEffect.setCombatAreaEffectURN (2);
 		existingCombatAreaEffect.setCombatAreaEffectID ("CAE02");
 		existingCombatAreaEffect.setMapLocation (existingCoords);
 		existingCombatAreaEffect.setCastingPlayerID (2);
@@ -448,6 +456,7 @@ public final class TestFogOfWarDuplicationImpl
 
 		// Test a combatAreaEffect already in the list (location same but different combatAreaEffect ID)
 		final MemoryCombatAreaEffect newCombatAreaEffect = new MemoryCombatAreaEffect ();
+		newCombatAreaEffect.setCombatAreaEffectURN (4);
 		newCombatAreaEffect.setCombatAreaEffectID ("CAE03");
 		newCombatAreaEffect.setMapLocation (existingCoords);
 		newCombatAreaEffect.setCastingPlayerID (3);

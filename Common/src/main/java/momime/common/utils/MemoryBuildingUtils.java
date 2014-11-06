@@ -3,9 +3,9 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Building;
 import momime.common.database.Unit;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -18,24 +18,39 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public interface MemoryBuildingUtils
 {
 	/**
-	 * Checks to see if the specified building exists
-	 * @param buildingsList List of buildings to search through
+	 * Searches for a building by its details
+	 * 
+	 * @param buildings List of buildings to search through
 	 * @param cityLocation Location of the city to look for
 	 * @param buildingID Building to look for
-	 * @return Whether or not the specified building exists
+	 * @return Building with requested details, or null if not found
 	 */
-	public boolean findBuilding (final List<MemoryBuilding> buildingsList,
+	public MemoryBuilding findBuilding (final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String buildingID);
 
 	/**
-	 * Removes a building from a list
-	 * @param buildingsList List of buildings to remove building from
-	 * @param cityLocation Location of the city
-	 * @param buildingID Building to remove
-	 * @throws RecordNotFoundException If we can't find the requested building
+	 * @param buildingURN Building URN to search for
+	 * @param buildings List of buildings to search through
+	 * @return Building with requested URN, or null if not found
 	 */
-	public void destroyBuilding (final List<MemoryBuilding> buildingsList,
-		final MapCoordinates3DEx cityLocation, final String buildingID)
+	public MemoryBuilding findBuildingURN (final int buildingURN, final List<MemoryBuilding> buildings);
+	
+	/**
+	 * @param buildingURN Building URN to search for
+	 * @param buildings List of buildings to search through
+	 * @param caller The routine that was looking for the value
+	 * @return Building with requested URN, or null if not found
+	 * @throws RecordNotFoundException If building with requested URN is not found
+	 */
+	public MemoryBuilding findBuildingURN (final int buildingURN, final List<MemoryBuilding> buildings, final String caller)
+		throws RecordNotFoundException;
+	
+	/**
+	 * @param buildingURN Building URN to remove
+	 * @param buildings List of buildings to search through
+	 * @throws RecordNotFoundException If building with requested URN is not found
+	 */
+	public void removeBuildingURN (final int buildingURN, final List<MemoryBuilding> buildings)
 		throws RecordNotFoundException;
 
 	/**
@@ -43,9 +58,9 @@ public interface MemoryBuildingUtils
 	 * @param buildingID Which building we are looking for
 	 * @param map Known terrain
 	 * @param buildings Known buildings
-	 * @return Location of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
+	 * @return Details of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
 	 */
-	public MapCoordinates3DEx findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
+	public MemoryBuilding findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
 		final List<MemoryBuilding> buildings);
 
 	/**

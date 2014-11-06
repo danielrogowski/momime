@@ -126,7 +126,7 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 		log.trace ("Entering kill: " + getBuilding ().getCityLocation () + ", " + getBuilding ().getBuildingID ());
 
 		getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-			(MapCoordinates3DEx) getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, mom.getSessionDescription (), mom.getServerDB ());
+			(MapCoordinates3DEx) getBuilding ().getCityLocation (), getBuilding ().getBuildingURN (), false, false, mom.getSessionDescription (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{

@@ -317,112 +317,84 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 
 	/**
-	 * Tests the switchOffMaintainedSpell method looking for an overland enchantment
-	 * @throws RecordNotFoundException If we can't find the requested spell
+	 * Tests the findSpellURN method on a spell that does exist
+	 * @throws RecordNotFoundException If spell with requested URN is not found
 	 */
 	@Test
-	public final void testSwitchOffMaintainedSpell_OverlandEnchantment () throws RecordNotFoundException
+	public final void testFindSpellURN_Exists () throws RecordNotFoundException
 	{
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
-		for (int n = 1; n <= 5; n++)
+		for (int n = 1; n <= 3; n++)
 		{
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
-			spell.setSpellID ("SP00" + n);
-			spell.setCastingPlayerID (10 + n);
-
+			spell.setSpellURN (n);
 			spells.add (spell);
 		}
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, null, null);
-		assertEquals (4, spells.size ());
-		assertEquals ("SP001", spells.get (0).getSpellID ());
-		assertEquals ("SP002", spells.get (1).getSpellID ());
-		assertEquals ("SP003", spells.get (2).getSpellID ());
-		assertEquals ("SP005", spells.get (3).getSpellID ());
+		assertEquals (2, utils.findSpellURN (2, spells).getSpellURN ());
+		assertEquals (2, utils.findSpellURN (2, spells, "testFindSpellURN_Exists").getSpellURN ());
 	}
 
 	/**
-	 * Tests the switchOffMaintainedSpell method looking for a city spell
-	 * @throws RecordNotFoundException If we can't find the requested spell
-	 */
-	@Test
-	public final void testSwitchOffMaintainedSpell_CitySpell () throws RecordNotFoundException
-	{
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
-		for (int n = 1; n <= 5; n++)
-		{
-			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
-			spell.setSpellID ("SP00" + n);
-			spell.setCastingPlayerID (10 + n);
-			spell.setCitySpellEffectID ("CSE00" + n);
-			spell.setCityLocation (new MapCoordinates3DEx (20 + n, 10 + n, n));
-
-			spells.add (spell);
-		}
-
-		final MapCoordinates3DEx switchOffLocation = new MapCoordinates3DEx (24, 14, 4);
-
-		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, switchOffLocation, "CSE004");
-		assertEquals (4, spells.size ());
-		assertEquals ("SP001", spells.get (0).getSpellID ());
-		assertEquals ("SP002", spells.get (1).getSpellID ());
-		assertEquals ("SP003", spells.get (2).getSpellID ());
-		assertEquals ("SP005", spells.get (3).getSpellID ());
-	}
-
-	/**
-	 * Tests the switchOffMaintainedSpell method looking for a unit spell
-	 * @throws RecordNotFoundException If we can't find the requested spell
-	 */
-	@Test
-	public final void testSwitchOffMaintainedSpell_UnitSpell () throws RecordNotFoundException
-	{
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
-		for (int n = 1; n <= 5; n++)
-		{
-			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
-			spell.setSpellID ("SP00" + n);
-			spell.setCastingPlayerID (10 + n);
-			spell.setUnitSkillID ("US00" + n);
-			spell.setUnitURN (100 + n);
-
-			spells.add (spell);
-		}
-
-		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.switchOffMaintainedSpell (spells, 14, "SP004", 104, "US004", null, null);
-		assertEquals (4, spells.size ());
-		assertEquals ("SP001", spells.get (0).getSpellID ());
-		assertEquals ("SP002", spells.get (1).getSpellID ());
-		assertEquals ("SP003", spells.get (2).getSpellID ());
-		assertEquals ("SP005", spells.get (3).getSpellID ());
-	}
-
-	/**
-	 * Tests the switchOffMaintainedSpell method looking for spell that doesn't exist
-	 * @throws RecordNotFoundException If we can't find the requested spell
+	 * Tests the findSpellURN method on a spell that doesn't exist
+	 * @throws RecordNotFoundException If spell with requested URN is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testSwitchOffMaintainedSpell_NotExists () throws RecordNotFoundException
+	public final void testFindSpellURN_NotExists () throws RecordNotFoundException
 	{
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
-		for (int n = 1; n <= 5; n++)
+		for (int n = 1; n <= 3; n++)
 		{
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
-			spell.setSpellID ("SP00" + n);
-			spell.setCastingPlayerID (10 + n);
-
+			spell.setSpellURN (n);
 			spells.add (spell);
 		}
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.switchOffMaintainedSpell (spells, 15, "SP004", null, null, null, null);
+		assertNull (utils.findSpellURN (4, spells));
+		utils.findSpellURN (4, spells, "testFindSpellURN_NotExists");
+	}
+
+	/**
+	 * Tests the removeSpellURN method on a spell that does exist
+	 * @throws RecordNotFoundException If spell with requested URN is not found
+	 */
+	@Test
+	public final void testRemoveSpellURN_Exists () throws RecordNotFoundException
+	{
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setSpellURN (n);
+			spells.add (spell);
+		}
+
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.removeSpellURN (2, spells);
+		assertEquals (2, spells.size ());
+		assertEquals (1, spells.get (0).getSpellURN ());
+		assertEquals (3, spells.get (1).getSpellURN ());
+	}
+
+	/**
+	 * Tests the removeSpellURN method on a spell that doesn't exist
+	 * @throws RecordNotFoundException If spell with requested URN is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testRemoveSpellURN_NotExists () throws RecordNotFoundException
+	{
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setSpellURN (n);
+			spells.add (spell);
+		}
+
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.removeSpellURN (4, spells);
 	}
 
 	/**
@@ -755,7 +727,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		enchantment.setBuildingID ("BL01");
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
 		
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (23, 20, 0), "BL01")).thenReturn (true);
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (23, 20, 0), "BL01")).thenReturn (new MemoryBuilding ());
 		assertEquals (TargetSpellResult.CITY_ALREADY_HAS_BUILDING, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
 		
 		// Spell that creates one of two spell effects

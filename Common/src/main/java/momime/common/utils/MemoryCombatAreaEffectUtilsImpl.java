@@ -28,14 +28,15 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 	 * @return Whether or not the specified combat area effect exists
 	 */
 	@Override
-	public final boolean findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
+	public final MemoryCombatAreaEffect findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
 		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID)
 	{
 		log.trace ("Entering findCombatAreaEffect: " + mapLocation + ", " + combatAreaEffectID + ", " + castingPlayerID); 
 
-		boolean found = false;
+		MemoryCombatAreaEffect found = null;
+		
 		final Iterator<MemoryCombatAreaEffect> iter = CAEs.iterator ();
-		while ((!found) && (iter.hasNext ()))
+		while ((found == null) && (iter.hasNext ()))
 		{
 			final MemoryCombatAreaEffect thisCAE = iter.next ();
 
@@ -43,7 +44,7 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 				(combatAreaEffectID.equals (thisCAE.getCombatAreaEffectID ())) &&
 				(CompareUtils.safeIntegerCompare (castingPlayerID, thisCAE.getCastingPlayerID ())))
 
-				found = true;
+				found = thisCAE;
 		}
 
 		log.trace ("Exiting findCombatAreaEffect = " + found);
@@ -51,27 +52,68 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 	}
 
 	/**
-	 * Removes a CAE
-	 * @param CAEs List of CAEs to remove from
-	 * @param mapLocation Location of the effect to look for; null for global enchantments
-	 * @param combatAreaEffectID Effect to look for
-	 * @param castingPlayerID Player to look for; null for natural CAEs like node auras
-	 * @throws RecordNotFoundException If the CAE doesn't exist
+	 * @param combatAreaEffectURN CAE URN to search for
+	 * @param CAEs List of CAEs to search through
+	 * @return CAE with requested URN, or null if not found
 	 */
 	@Override
-	public final void cancelCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
-		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException
+	public final MemoryCombatAreaEffect findCombatAreaEffectURN (final int combatAreaEffectURN, final List<MemoryCombatAreaEffect> CAEs)
 	{
-		log.trace ("Entering cancelCombatAreaEffect: " + mapLocation + ", " + combatAreaEffectID + ", " + castingPlayerID); 
+		log.trace ("Entering findCombatAreaEffectURN: " + combatAreaEffectURN); 
+
+		MemoryCombatAreaEffect found = null;
+		
+		final Iterator<MemoryCombatAreaEffect> iter = CAEs.iterator ();
+		while ((found == null) && (iter.hasNext ()))
+		{
+			final MemoryCombatAreaEffect thisCAE = iter.next ();
+			if (thisCAE.getCombatAreaEffectURN () == combatAreaEffectURN)
+				found = thisCAE;
+		}
+
+		log.trace ("Exiting findCombatAreaEffectURN = " + found);
+		return found;
+	}
+
+	/**
+	 * @param combatAreaEffectURN CAE URN to search for
+	 * @param CAEs List of CAEs to search through
+	 * @param caller The routine that was looking for the value
+	 * @return CAE with requested URN
+	 * @throws RecordNotFoundException If CAE with requested URN is not found
+	 */
+	@Override
+	public final MemoryCombatAreaEffect findCombatAreaEffectURN (final int combatAreaEffectURN, final List<MemoryCombatAreaEffect> CAEs, final String caller)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering findCombatAreaEffectURN: " + combatAreaEffectURN + ", " + caller); 
+
+		final MemoryCombatAreaEffect result = findCombatAreaEffectURN (combatAreaEffectURN, CAEs);
+
+		if (result == null)
+			throw new RecordNotFoundException (MemoryCombatAreaEffect.class, combatAreaEffectURN, caller);
+		
+		log.trace ("Exiting findCombatAreaEffectURN = " + result);
+		return result;
+	}
+
+	/**
+	 * @param combatAreaEffectURN CAE URN to remove
+	 * @param CAEs List of CAEs to search through
+	 * @throws RecordNotFoundException If CAE with requested URN is not found
+	 */
+	@Override
+	public final void removeCombatAreaEffectURN (final int combatAreaEffectURN, final List<MemoryCombatAreaEffect> CAEs)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering removeCombatAreaEffectURN: " + combatAreaEffectURN); 
 
 		boolean found = false;
 		final Iterator<MemoryCombatAreaEffect> iter = CAEs.iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
 			final MemoryCombatAreaEffect thisCAE = iter.next ();
-
-			if ((CompareUtils.safeOverlandMapCoordinatesCompare (mapLocation, (MapCoordinates3DEx) thisCAE.getMapLocation ())) &&
-				(combatAreaEffectID.equals (thisCAE.getCombatAreaEffectID ())) && (castingPlayerID == thisCAE.getCastingPlayerID ()))
+			if (thisCAE.getCombatAreaEffectURN () == combatAreaEffectURN)
 			{
 				iter.remove ();
 				found = true;
@@ -79,8 +121,8 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 		}
 
 		if (!found)
-			throw new RecordNotFoundException (MemoryCombatAreaEffect.class, combatAreaEffectID + " - " + castingPlayerID, "cancelCombatAreaEffect");
+			throw new RecordNotFoundException (MemoryCombatAreaEffect.class, combatAreaEffectURN, "removeCombatAreaEffectURN");
 
-		log.trace ("Exiting cancelCombatAreaEffect");
+		log.trace ("Exiting removeCombatAreaEffectURN");
 	}
 }

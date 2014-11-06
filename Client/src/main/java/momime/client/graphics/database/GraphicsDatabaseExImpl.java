@@ -612,7 +612,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 				while ((buildingsMatch) && (iter.hasNext ()))
 				{
 					final String buildingID = iter.next ().getPrerequisiteID ();
-					if (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, buildingID))
+					if (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, buildingID) != null)
 						buildingCount++;
 					else
 						buildingsMatch = false;

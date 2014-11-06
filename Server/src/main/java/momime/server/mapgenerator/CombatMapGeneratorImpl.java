@@ -284,7 +284,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				((element.getMapFeatureID () == null) || (element.getMapFeatureID ().equals (mapFeatureID))) &&
 				((element.getMinimumPopulation () == null) || (cityPopulation >= element.getMinimumPopulation ())) &&
 				((element.getMaximumPopulation () == null) || (cityPopulation <= element.getMaximumPopulation ())) &&
-				((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding (trueTerrain.getBuilding (), combatMapLocation, element.getBuildingID ()))) &&
+				((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding (trueTerrain.getBuilding (), combatMapLocation, element.getBuildingID ()) != null)) &&
 				((element.getSpellID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
 					(trueTerrain.getMaintainedSpell (), null, element.getSpellID (), null, null, combatMapLocation, null) != null)))
 			{

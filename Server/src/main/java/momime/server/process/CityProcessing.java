@@ -74,7 +74,7 @@ public interface CityProcessing
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param cityLocation Location of the city to remove the building from
-	 * @param buildingID Which building to remove; this can be null to cancel a pending sale
+	 * @param buildingURN Which building to remove; this can be null to cancel a pending sale
 	 * @param pendingSale If true, building is not sold immediately but merely marked that it will be sold at the end of the turn; used for simultaneous turns games
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
 	 * @param db Lookup lists built over the XML database
@@ -86,7 +86,7 @@ public interface CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void sellBuilding (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final String buildingID,
+		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final Integer buildingURN,
 		final boolean pendingSale, final boolean voluntarySale,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;

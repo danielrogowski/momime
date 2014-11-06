@@ -13,6 +13,8 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SummonedUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -147,7 +149,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if (sectionID == SpellBookSectionID.SUMMONING)
 		{
 			// Find the location of the wizards' summoning circle 'building'
-			final MapCoordinates3DEx summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
+			final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
 				CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding ());
 
 			if (summoningCircleLocation != null)
@@ -185,8 +187,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 						spell.getSpellID () + ", randomly picked unit ID " + summonedUnitID);
 
 					// Check if the city with the summoning circle has space for the unit
+					final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) summoningCircleLocation.getCityLocation ();
 					final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						(summoningCircleLocation, summonedUnitID, player.getPlayerDescription ().getPlayerID (), gsk.getTrueMap (), sd, db);
+						(cityLocation, summonedUnitID, player.getPlayerDescription ().getPlayerID (), gsk.getTrueMap (), sd, db);
 
 					final MemoryUnit newUnit;
 					if (addLocation.getUnitLocation () == null)
@@ -206,7 +209,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						else
 							// For non-heroes, create a new unit
-							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, summonedUnitID, addLocation.getUnitLocation (), summoningCircleLocation,
+							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, summonedUnitID, addLocation.getUnitLocation (), cityLocation,
 								null, player, UnitStatusID.ALIVE, players, sd, db);
 					}
 
@@ -233,19 +236,16 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 			(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES))
 		{
-			// Add it on server - note we add it without a target chosen
-			final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
-			trueSpell.setCastingPlayerID (player.getPlayerDescription ().getPlayerID ());
-			trueSpell.setSpellID (spell.getSpellID ());
-			gsk.getTrueMap ().getMaintainedSpell ().add (trueSpell);
+			// Add it on server - note we add it without a target chosen and without adding it on any
+			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
+			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+				null, null, false, null, null, null, db, sd);
 
 			// Tell client to pick a target for this spell
 			final NewTurnMessageSpell targetSpell = new NewTurnMessageSpell ();
 			targetSpell.setMsgType (NewTurnMessageTypeID.TARGET_SPELL);
 			targetSpell.setSpellID (spell.getSpellID ());
 			((MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (targetSpell);
-
-			// We don't tell clients about this new maintained spell until the player confirms a target for it, since they might just hit cancel
 		}
 
 		else
@@ -406,13 +406,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * NB. Delphi method was called OkToSwitchOffMaintainedSpell
 	 *
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param castingPlayerID Player who cast the spell
-	 * @param spellID Which spell it is
-	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
-	 * @param unitSkillID If a spell cast on a unit, indicates the specific skill that this spell grants the unit
-	 * @param castInCombat Whether this spell was cast in combat or not
-	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
-	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
+	 * @param spellURN Which spell it is
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -423,19 +417,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void switchOffSpell (final FogOfWarMemory trueMap,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final MomSessionDescription sd)
+	public final void switchOffSpell (final FogOfWarMemory trueMap, final int spellURN,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering switchOffSpell: Player ID " + castingPlayerID + ", " + spellID);
+		log.trace ("Entering switchOffSpell: Spell URN " + spellURN);
 
+		// First find the spell
+		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (spellURN, trueMap.getMaintainedSpell (), "switchOffSpell");
+		
 		// Any secondary effects we also need to switch off?
-		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, castingPlayerID, "switchOffSpell");
-		final Spell spell = db.findSpell (spellID, "switchOffSpell");
+		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffSpell");
+		final Spell spell = db.findSpell (trueSpell.getSpellID (), "switchOffSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
+		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), trueSpell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
 
 		// Overland enchantments
@@ -443,13 +438,17 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
 			for (final SpellHasCombatEffect effect : spell.getSpellHasCombatEffect ())
-				if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, effect.getCombatAreaEffectID (), castingPlayerID))
-					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, effect.getCombatAreaEffectID (), castingPlayerID, null, players, db, sd);
+			{
+				final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+					(trueMap.getCombatAreaEffect (), null, effect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
+				
+				if (cae != null)
+					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, db, sd);
+			}
 		}
 
 		// Remove spell itself
-		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, castingPlayerID, spellID, unitURN, unitSkillID, castInCombat,
-			cityLocation, citySpellEffectID, players, db, sd);
+		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
 
 		log.trace ("Exiting switchOffSpell");
 	}

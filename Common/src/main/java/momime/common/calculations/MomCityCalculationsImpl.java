@@ -535,13 +535,14 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 
 		// Add on racial unrest percentage
 		// To do this, need to find the player's capital race, i.e. the race inhabiting the city where their fortress is
-		final MapCoordinates3DEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
 			(cityData.getCityOwnerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
 
 		if (fortressLocation != null)
 		{
 			// Find the capital race's unrest value listed under this city's race
-			final OverlandMapCityData fortressCityData = map.getPlane ().get (fortressLocation.getZ ()).getRow ().get (fortressLocation.getY ()).getCell ().get (fortressLocation.getX ()).getCityData ();
+			final OverlandMapCityData fortressCityData = map.getPlane ().get (fortressLocation.getCityLocation ().getZ ()).getRow ().get
+				(fortressLocation.getCityLocation ().getY ()).getCell ().get (fortressLocation.getCityLocation ().getX ()).getCityData ();
 
 			RaceUnrest raceUnrest = null;
 			final Iterator<RaceUnrest> iter = db.findRace (cityData.getCityRaceID (), "calculateCityRebels").getRaceUnrest ().iterator ();
@@ -1041,7 +1042,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			// If calculatePotential is true, assume we've built everything
 			// We only really need to count the granary and farmers' market, but easier just to include everything than to specifically discount these
 			if (((calculatePotential) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))) ||
-				((!calculatePotential) && (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, thisBuilding.getBuildingID ()))))
+				((!calculatePotential) && (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, thisBuilding.getBuildingID ()) != null)))
 			{
 				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 				{

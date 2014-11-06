@@ -9,13 +9,13 @@ import momime.client.MomClient;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.utils.MemoryBuildingUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
@@ -43,7 +43,7 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getData ().getCityLocation () + ", " + getData ().getBuildingID () + ", " + getData ().isUpdateBuildingSoldThisTurn ());
+		log.trace ("Entering start: Building URN " + getBuildingURN () + ", " + isUpdateBuildingSoldThisTurn ());
 		
 		processOneUpdate ();
 		
@@ -59,20 +59,23 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	 */
 	public final void processOneUpdate () throws RecordNotFoundException
 	{
-		log.trace ("Entering processOneUpdate: " + getData ().getCityLocation () + ", " + getData ().getBuildingID () + ", " + getData ().isUpdateBuildingSoldThisTurn ());
+		log.trace ("Entering processOneUpdate: Building URN " + getBuildingURN () + ", " + isUpdateBuildingSoldThisTurn ());
+		
+		// Grab details about the building before we remove it
+		final MemoryBuilding building = getMemoryBuildingUtils ().findBuildingURN
+			(getBuildingURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "DestroyBuildingMessageImpl");
 		
 		// Remove building
-		getMemoryBuildingUtils ().destroyBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-			(MapCoordinates3DEx) getData ().getCityLocation (), getData ().getBuildingID ());
+		getMemoryBuildingUtils ().removeBuildingURN (getBuildingURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
 		
 		// If we sold this building, then record that we're not allowed to sell another one this turn
-		if (getData ().isUpdateBuildingSoldThisTurn ())
+		if (isUpdateBuildingSoldThisTurn ())
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-				(getData ().getCityLocation ().getZ ()).getRow ().get (getData ().getCityLocation ().getY ()).getCell ().get
-				(getData ().getCityLocation ().getX ()).setBuildingIdSoldThisTurn (getData ().getBuildingID ());
+				(building.getCityLocation ().getZ ()).getRow ().get (building.getCityLocation ().getY ()).getCell ().get
+				(building.getCityLocation ().getX ()).setBuildingIdSoldThisTurn (building.getBuildingID ());
 		
 		// Removal of a building will alter what we can construct in that city, if we've got the change construction screen open
-		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getData ().getCityLocation ().toString ());
+		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (building.getCityLocation ().toString ());
 		if (changeConstruction != null)
 			try
 			{

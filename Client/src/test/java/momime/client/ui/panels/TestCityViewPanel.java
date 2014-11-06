@@ -19,6 +19,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -145,8 +146,8 @@ public final class TestCityViewPanel
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		final MemoryBuildingUtils buildings = mock (MemoryBuildingUtils.class);
-		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (false);
-		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (true);
+		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (null);
+		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
 
 		final MemoryMaintainedSpellUtils spells = mock (MemoryMaintainedSpellUtils.class);
 		when (spells.findMaintainedSpell (fow.getMaintainedSpell (), null, null, null, null, new MapCoordinates3DEx (20, 10, 0), "SE146")).thenReturn (null);

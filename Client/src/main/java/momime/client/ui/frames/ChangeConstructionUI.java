@@ -381,8 +381,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		for (final Building thisBuilding : getClient ().getClientDB ().getBuilding ())
 			
 			// If we don't have this building already
-			if ((!getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-				getCityLocation (), thisBuilding.getBuildingID ())) &&
+			if ((getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+				getCityLocation (), thisBuilding.getBuildingID ()) == null) &&
 				
 				// and we have necessary prerequisite buildings (e.g. Farmers' Market requires a Granary)
 				(getMemoryBuildingUtils ().meetsBuildingRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),

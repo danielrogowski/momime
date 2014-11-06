@@ -11,6 +11,7 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.TurnSystem;
@@ -382,13 +383,16 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (captureCityDecision == CaptureCityDecisionID.CAPTURE)
 				{
 					// Destroy enemy wizards' fortress and/or summoning circle
-					if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
-						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
-							CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, false, mom.getSessionDescription (), mom.getServerDB ());
+					final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+					final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE);
+					
+					if (wizardsFortress != null)
+						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+							wizardsFortress.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
 
-					if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE))
-						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
-							CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, false, mom.getSessionDescription (), mom.getServerDB ());
+					if (summoningCircle != null)
+						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+							summoningCircle.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
 					
 					// Deal with spells cast on the city:
 					// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these

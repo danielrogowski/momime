@@ -772,9 +772,9 @@ public final class TestGraphicsDatabaseExImpl
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		
-		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL01")).thenReturn (true);
-		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL02")).thenReturn (false);
-		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL03")).thenReturn (true);
+		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL01")).thenReturn (new MemoryBuilding ());
+		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL02")).thenReturn (null);
+		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL03")).thenReturn (new MemoryBuilding ());
 		
 		// Set up object to test
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();

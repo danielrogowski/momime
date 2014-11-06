@@ -5,7 +5,6 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -26,17 +25,20 @@ public interface OverlandMapGenerator
 	
 	/**
 	 * Creates the initial combat area effects from the map scenery i.e. node auras
-	 * This is an entirely separate process from the terrain generation, and runs separately after the terrain generation has finished (but before locks are released on e.g. the terrain & permanent map)
+	 * This is an entirely separate process from the terrain generation, and runs separately after the terrain generation has finished
+	 * 
 	 * @throws RecordNotFoundException If we encounter a combat area effect that we can't find in the cache
+	 * @throws JAXBException This only gets generated if addCombatAreaEffectOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws XMLStreamException This only gets generated if addCombatAreaEffectOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	public void generateInitialCombatAreaEffects () throws RecordNotFoundException;
+	public void generateInitialCombatAreaEffects ()
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
 
 	/**
 	 * Fills all nodes, lairs and towers of wizardry on the map with random monsters
 	 * This is really separate from the rest of the methods in this class which are to do with generating the terrain
 	 * However its still to do with generating the map so this class is still the most sensible place for it
 	 *
-	 * @param gsk Server knowledge structure to add the unit to
 	 * @param monsterPlayer Player who owns the monsters we add
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
@@ -44,6 +46,6 @@ public interface OverlandMapGenerator
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	public void fillNodesLairsAndTowersWithMonsters (final MomGeneralServerKnowledge gsk, final PlayerServerDetails monsterPlayer)
+	public void fillNodesLairsAndTowersWithMonsters (final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

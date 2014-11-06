@@ -27,7 +27,6 @@ import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.KillUnitMessage;
-import momime.common.messages.servertoclient.KillUnitMessageData;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
@@ -766,12 +765,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 				// Special case where we have to tell the client to kill off the unit outside of the FOW routines?
 				if ((manuallyTellAttackerClientToKill) || (manuallyTellDefenderClientToKill))
 				{
-					final KillUnitMessageData manualKillMessageData = new KillUnitMessageData ();
-					manualKillMessageData.setUnitURN (trueUnit.getUnitURN ());
-					manualKillMessageData.setKillUnitActionID (KillUnitActionID.FREE);
-				
 					final KillUnitMessage manualKillMessage = new KillUnitMessage ();
-					manualKillMessage.setData (manualKillMessageData);
+					manualKillMessage.setUnitURN (trueUnit.getUnitURN ());
+					manualKillMessage.setKillUnitActionID (KillUnitActionID.FREE);
 
 					// Defender
 					if (manuallyTellDefenderClientToKill)

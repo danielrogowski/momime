@@ -58,6 +58,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 	{
+		log.trace ("Entering findMaintainedSpell: " + castingPlayerID + ", " + spellID);
+
 		MemoryMaintainedSpell match = null;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
 
@@ -75,41 +77,73 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				match = thisSpell;
 		}
 
+		log.trace ("Entering findMaintainedSpell = " + match);
 		return match;
 	}
 
 	/**
-	 * Removes a maintained spell from the list
-	 *
+	 * @param spellURN Spell URN to search for
 	 * @param spells List of spells to search through
-	 * @param castingPlayerID Player who cast the spell to search for
-	 * @param spellID Unique identifier for the spell to search for
-	 * @param unitURN Which unit the spell is cast on
-	 * @param unitSkillID Which actual unit spell effect was granted
-	 * @param cityLocation Which city the spell is cast on
-	 * @param citySpellEffectID Which actual city spell effect was granted
-	 * @throws RecordNotFoundException If we can't find the requested spell
+	 * @return Spell with requested URN, or null if not found
 	 */
 	@Override
-	public final void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
+	public final MemoryMaintainedSpell findSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells)
+	{
+		log.trace ("Entering findSpellURN: " + spellURN);
+
+		MemoryMaintainedSpell match = null;
+		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
+
+		while ((match == null) && (iter.hasNext ()))
+		{
+			final MemoryMaintainedSpell thisSpell = iter.next ();
+			if (thisSpell.getSpellURN () == spellURN)
+				match = thisSpell;
+		}
+
+		log.trace ("Entering findSpellURN = " + match);
+		return match;
+	}
+
+	/**
+	 * @param spellURN Spell URN to search for
+	 * @param spells List of spells to search through
+	 * @param caller The routine that was looking for the value
+	 * @return Spell with requested URN
+	 * @throws RecordNotFoundException If spell with requested URN is not found
+	 */
+	@Override
+	public final MemoryMaintainedSpell findSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells, final String caller)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering switchOffMaintainedSpell: Player ID " + castingPlayerID + ", " + spellID + ", Unit URN " + unitURN + ", " + unitSkillID + ", " + cityLocation + ", " + citySpellEffectID);
+			log.trace ("Entering findSpellURN: " + spellURN + ", " + caller);
+
+			final MemoryMaintainedSpell match = findSpellURN (spellURN, spells);
+
+			if (match == null)
+				throw new RecordNotFoundException (MemoryMaintainedSpell.class, spellURN, caller);
+			
+			log.trace ("Entering findSpellURN = " + match);
+			return match;
+	}
+
+	/**
+	 * @param spellURN Spell URN to remove
+	 * @param spells List of spells to search through
+	 * @throws RecordNotFoundException If spell with requested URN is not found
+	 */
+	@Override
+	public final void removeSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering removeSpellURN: " + spellURN);
 
 		boolean found = false;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
 			final MemoryMaintainedSpell thisSpell = iter.next ();
-
-			if ((castingPlayerID == thisSpell.getCastingPlayerID ()) &&
-				(spellID.equals (thisSpell.getSpellID ())) &&
-				(CompareUtils.safeIntegerCompare (unitURN,  thisSpell.getUnitURN ())) &&
-				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
-				(CompareUtils.safeOverlandMapCoordinatesCompare (cityLocation, (MapCoordinates3DEx) thisSpell.getCityLocation ())) &&
-				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
+			if (thisSpell.getSpellURN () == spellURN)
 			{
 				iter.remove ();
 				found = true;
@@ -117,9 +151,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		}
 
 		if (!found)
-			throw new RecordNotFoundException (MemoryMaintainedSpell.class, spellID + " - " + castingPlayerID, "switchOffMaintainedSpell");
+			throw new RecordNotFoundException (MemoryMaintainedSpell.class, spellURN, "removeSpellURN");
 
-		log.trace ("Exiting switchOffMaintainedSpell");
+		log.trace ("Exiting removeSpellURN");
 	}
 
 	/**
@@ -306,7 +340,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	// Is it a spell that creates a building?
     	else if (spell.getBuildingID () != null)
     	{
-    		if (getMemoryBuildingUtils ().findBuilding (buildingsList, cityLocation, spell.getBuildingID ()))
+    		if (getMemoryBuildingUtils ().findBuilding (buildingsList, cityLocation, spell.getBuildingID ()) != null)
     			result = TargetSpellResult.CITY_ALREADY_HAS_BUILDING;
     		else
     			result = TargetSpellResult.VALID_TARGET;

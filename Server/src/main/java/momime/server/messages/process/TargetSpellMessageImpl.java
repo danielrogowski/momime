@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.SpellBookSectionID;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -216,26 +217,26 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					(spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)))
 				{
 					// Find & remove the main building for this spell
-					final MapCoordinates3DEx destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
+					final MemoryBuilding destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
 						(sender.getPlayerDescription ().getPlayerID (), spell.getBuildingID (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 					
 					if (destroyBuildingLocation != null)
 					{
 						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), destroyBuildingLocation, spell.getBuildingID (), false, mom.getSessionDescription (), mom.getServerDB ());
+							mom.getPlayers (), destroyBuildingLocation.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
 						
 						// Move summoning circle as well if its in the same place as the wizard's fortress
 						if (spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 						{
-							final MapCoordinates3DEx summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
+							final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
 								(sender.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
 									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 							
 							if (summoningCircleLocation != null)
 							{
 								getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-									mom.getPlayers (), summoningCircleLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
+									mom.getPlayers (), summoningCircleLocation.getBuildingURN (),
 									false, mom.getSessionDescription (), mom.getServerDB ());
 								
 								secondBuildingID = CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE;

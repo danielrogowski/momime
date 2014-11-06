@@ -15,6 +15,7 @@ import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
@@ -23,6 +24,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
@@ -150,9 +152,15 @@ public final class TestSimultaneousTurnsProcessingImpl
 		cityData.setCityPopulation (1);
 		tc.setBuildingIdSoldThisTurn ("BL01");
 		tc.setCityData (cityData);
-		
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (25, 15, 1);
 
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (25, 15, 1);
+		
+		final MemoryBuilding trueBuilding = new MemoryBuilding ();
+		trueBuilding.setBuildingURN (6);
+		
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, tc.getBuildingIdSoldThisTurn ())).thenReturn (trueBuilding);
+		
 		// Two settlers trying to build cities right next to each other - so only one can "win"
 		final List<MemoryUnit> settlers = new ArrayList<MemoryUnit> ();
 
@@ -227,6 +235,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 		proc.setCityCalculations (cityCalc);
 		proc.setCityServerUtils (cityServerUtils);
 		proc.setOverlandMapServerUtils (overlandMapServerUtils);
+		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		proc.setRandomUtils (randomUtils);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
@@ -238,7 +247,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, KillUnitActionID.HERO_DIMISSED_VOLUNTARILY, null, trueMap, players, fogOfWarSettings, db);
 		
 		// Check buildings were sold
-		verify (cityProc, times (1)).sellBuilding (trueMap, players, cityLocation, "BL01", false, true, sd, db);
+		verify (cityProc, times (1)).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);
 		
 		// Check only 1 settler was allowed to build
 		verify (cityServerUtils, times (0)).buildCityFromSettler (gsk, player1, settler1, players, sd, db);

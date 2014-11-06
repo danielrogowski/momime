@@ -28,7 +28,7 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getData ().getCombatAreaEffectID ());
+		log.trace ("Entering start: CAE URN " + getCombatAreaEffectURN ());
 		
 		log.trace ("Exiting start");
 

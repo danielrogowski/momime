@@ -444,7 +444,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuilding ())
 			
 				// Don't list buildings we already have
-				if (!getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()))
+				if (getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()) == null)
 				{
 					// Check if its actually a prerequsite
 					boolean prereq = false;

@@ -505,7 +505,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Add monsters in nodes/lairs/towers - can only do this after we've added the players
 			mom.getSessionLogger ().info ("Filling nodes, lairs & towers with monsters...");
-			mom.getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (mom.getGeneralServerKnowledge (), monstersPlayer);
+			mom.getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (monstersPlayer);
 
 			// Sort out heroes
 			mom.getSessionLogger ().info ("Loading list of heroes for each player...");

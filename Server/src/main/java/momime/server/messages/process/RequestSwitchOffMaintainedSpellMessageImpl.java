@@ -16,7 +16,6 @@ import momime.server.process.SpellProcessing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -58,16 +57,15 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Look for the spell
-		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), getCastingPlayerID (), getSpellID (),
-			getUnitURN (), getUnitSkillID (), (MapCoordinates3DEx) getCityLocation (), getCitySpellEffectID ());
+		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (getSpellURN (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 		
 		// Do some checks
 		final String error;
-		if (!sender.getPlayerDescription ().getPlayerID ().equals (getCastingPlayerID ()))
-			error = "You cannot switch off another wizard's spells!";
-		else if (trueSpell == null)
+		if (trueSpell == null)
 			error = "Couldn't find the spell you wanted to switch off";
+		else if (!sender.getPlayerDescription ().getPlayerID ().equals (trueSpell.getCastingPlayerID ()))
+			error = "You cannot switch off another wizard's spells!";
 		else
 			error = null;
 		
@@ -84,9 +82,8 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		else
 		{
 			// Switch off spell + associated CAEs
-			getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), trueSpell.getCastingPlayerID (), trueSpell.getSpellID (),
-				trueSpell.getUnitURN (), trueSpell.getUnitSkillID (), trueSpell.isCastInCombat (), (MapCoordinates3DEx) trueSpell.getCityLocation (),
-				trueSpell.getCitySpellEffectID (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), getSpellURN (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Spell no longer using mana
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);

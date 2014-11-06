@@ -16,11 +16,9 @@ import momime.common.database.newgame.DifficultyLevelPlane;
 import momime.common.database.newgame.LandProportionPlane;
 import momime.common.database.newgame.LandProportionTileType;
 import momime.common.database.newgame.NodeStrengthPlane;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -62,7 +60,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private final Log log = LogFactory.getLog (OverlandMapGeneratorImpl.class);
 	
 	/** Where to write the generated map to */
-	private FogOfWarMemory trueTerrain;
+	private MomGeneralServerKnowledge gsk;
 
 	/** Session description containing the parameters used to generate the map */
 	private MomSessionDescription sd;
@@ -523,7 +521,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		log.trace ("Entering setAllToWater");
 
 		// Delete anything there currently
-		trueTerrain.setMap (new MapVolumeOfMemoryGridCells ());
+		gsk.getTrueMap ().setMap (new MapVolumeOfMemoryGridCells ());
 
 		// Create all the map cells
 		for (int plane = 0; plane < sd.getMapSize ().getDepth (); plane++)
@@ -545,7 +543,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				area.getRow ().add (row);
 			}
 
-			trueTerrain.getMap ().getPlane ().add (area);
+			gsk.getTrueMap ().getMap ().getPlane ().add (area);
 		}
 
 		log.trace ("Exiting setAllToWater");
@@ -571,7 +569,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			@Override
 			public final void process (final int x, final int y)
 			{
-				trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (tileTypeID);
+				gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (tileTypeID);
 			}
 		});
 
@@ -592,7 +590,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					{
-						final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
 						// What's the nearest distance to a non-wrapping edge from this square
 						int d = Integer.MAX_VALUE;
@@ -634,7 +632,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		final List<MapCoordinates2DEx> startingPositions = new ArrayList<MapCoordinates2DEx> ();
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				if (trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (changeFromTileTypeID))
+				if (gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (changeFromTileTypeID))
 					startingPositions.add (new MapCoordinates2DEx (x, y));
 
 		// Pick a random start location
@@ -653,7 +651,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			do
 			{
 				// Set this tile
-				trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID (changeToTileTypeID);
+				gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID (changeToTileTypeID);
 				thisBlob.set (coords, true);
 				tilesPlaced++;
 				blobSize--;
@@ -675,7 +673,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					// Deselect any that are not grass
 					for (int grassX = 0; grassX < sd.getMapSize ().getWidth (); grassX++)
 						for (int grassY = 0; grassY < sd.getMapSize ().getHeight (); grassY++)
-							if (!trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (grassY).getCell ().get (grassX).getTerrainData ().getTileTypeID ().equals (changeFromTileTypeID))
+							if (!gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (grassY).getCell ().get (grassX).getTerrainData ().getTileTypeID ().equals (changeFromTileTypeID))
 								possibleNextCells.set (grassX, grassY, false);
 
 					// Pick a cell to expand into
@@ -744,7 +742,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					{
 						boolean possibleLocation = true;
 						for (int plane = 0; plane < sd.getMapSize ().getDepth (); plane++)
-							if (trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA))
+							if (gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA))
 								possibleLocation = false;
 
 						if (possibleLocation)
@@ -754,7 +752,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				// Deselect any tiles close to towers already placed
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueTerrain.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ()))
+						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gsk.getTrueMap ().getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ()))
 							getBooleanMapAreaOperations2D ().deselectRadius (possibleLocations, x, y, towersOfWizardrySeparation);
 
 				// Pick a location to put the wizardry tile at
@@ -775,13 +773,13 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					placedOk = true;
 					for (int plane = 0; plane < sd.getMapSize ().getDepth (); plane++)
 					{
-						final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+						final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 						terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 						terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
 					}
 					
 					// Set value of monsters + treasure in this tower, but only on Arcanus
-					final ServerGridCell thisCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (0).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+					final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (0).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 					thisCell.setNodeLairTowerPowerProportion (getRandomUtils ().nextInt (10001) / 10000d);
 				}
 			}
@@ -833,7 +831,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 			{
-				final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
+				final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 				if (terrainData.getTileTypeID ().equals (tileTypeIdToSmooth))
 				{
 					// Found an ocean tile - check neighbouring tiles
@@ -843,7 +841,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						final MapCoordinates2DEx coords = new MapCoordinates2DEx (x, y);
 						if (getCoordinateSystemUtils ().move2DCoordinates (sd.getMapSize (), coords, d + 1))
 						{
-							final String thisTileTypeID = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().getTileTypeID ();
+							final String thisTileTypeID = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().getTileTypeID ();
 
 							// Careful, adjacent sea tiles might have already been converted to shoreline
 							directions [d] = ((!thisTileTypeID.equals (tileTypeIdToSmooth)) && (!thisTileTypeID.equals (tileTypeIdToSetTo)));
@@ -932,7 +930,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			final MapCoordinates2DEx coords = new MapCoordinates2DEx (x, y);
 			if (getCoordinateSystemUtils ().move2DCoordinates (sd.getMapSize (), coords, d))
 			{
-				final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 
 				final boolean riverPendingValue = riverPending [coords.getY ()] [coords.getX ()];
 
@@ -1059,7 +1057,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			// Update this tile
 			riverPending [coords.getY ()] [coords.getX ()] = false;
 
-			final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+			final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 			if (isRiverMouth)
 				terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH);
 			else
@@ -1108,7 +1106,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			final List<MapCoordinates2D> startingPositions = new ArrayList<MapCoordinates2D> ();
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-					if (trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE))
+					if (gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE))
 					{
 						// Found a shore tile, now check
 						// a) that the shore tile has possibilities for a river leading from it (e.g. a shore tile with only shore in the corner(s) can never have a river leading from it)
@@ -1148,7 +1146,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				final MapCoordinates2D coords = startingPositions.get (getRandomUtils ().nextInt (startingPositions.size ()));
 
 				// Convert river mouth tile
-				final OverlandMapTerrainData riverMouth = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				final OverlandMapTerrainData riverMouth = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				riverMouth.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEANSIDE_RIVER_MOUTH);
 
 				// Pick the directions to extend this river in
@@ -1207,7 +1205,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
-					final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
+					final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
 					// The cache lists the chances of getting each type of feature on this tile type.
 					// Tiles that can never get any features, like ocean, have nothing listed.
@@ -1293,7 +1291,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			{
 				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (sd.getMapSize (), coords))
 				{
-					final ServerGridCell thisCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+					final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 					if (thisCell.getAuraFromNode () == null)
 					{
 						final MapCoordinates2D possibleCoords = new MapCoordinates2D ();
@@ -1317,7 +1315,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						// Move in direction d
 						if (getCoordinateSystemUtils ().move2DCoordinates (sd.getMapSize (), coords, d))
 						{
-							final ServerGridCell thisCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+							final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 							if (thisCell.getAuraFromNode () == null)
 							{
 								final MapCoordinates2D possibleCoords = new MapCoordinates2D ();
@@ -1344,7 +1342,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					final int listIndex = getRandomUtils ().nextInt (possibleLocations.size ());
 					final MapCoordinates2D auraCoords = possibleLocations.get (listIndex);
 
-					final ServerGridCell auraCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (auraCoords.getY ()).getCell ().get (auraCoords.getX ());
+					final ServerGridCell auraCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (auraCoords.getY ()).getCell ().get (auraCoords.getX ());
 					auraCell.setAuraFromNode (new MapCoordinates3DEx (setAuraFromNode));
 
 					possibleLocations.remove (listIndex);
@@ -1402,7 +1400,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					{
-						final ServerGridCell thisCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
+						final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 
 						if ((thisCell.getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS)) &&
 							(thisCell.getTerrainData ().getMapFeatureID () == null) &&
@@ -1426,7 +1424,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				else
 				{
 					final MapCoordinates2D coords = possibleLocations.get (getRandomUtils ().nextInt (possibleLocations.size ()));
-					final ServerGridCell thisCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+					final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 					thisCell.getTerrainData ().setTileTypeID (chooseRandomNodeTileTypeID ());
 					thisCell.setNodeLairTowerPowerProportion (nodePowerProportion);
@@ -1509,7 +1507,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
-					final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
+					final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 					if ((terrainData.getMapFeatureID () == null) &&
 						(db.findTileType (terrainData.getTileTypeID (), "placeLairs").isCanPlaceLair ()))
 						
@@ -1523,7 +1521,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			final int listIndex = getRandomUtils ().nextInt (possibleLocations.size ());
 			final MapCoordinates3DEx coords = possibleLocations.get (listIndex);
 
-			final ServerGridCell lairCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+			final ServerGridCell lairCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 			lairCell.getTerrainData ().setMapFeatureID (chooseRandomLairFeatureID ());
 			lairCell.setLairWeak (isWeak);
@@ -1541,12 +1539,15 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 	/**
 	 * Creates the initial combat area effects from the map scenery i.e. node auras
-	 * This is an entirely separate process from the terrain generation, and runs separately after the terrain generation has finished (but before locks are released on e.g. the terrain & permanent map)
+	 * This is an entirely separate process from the terrain generation, and runs separately after the terrain generation has finished
+	 * 
 	 * @throws RecordNotFoundException If we encounter a combat area effect that we can't find in the cache
+	 * @throws JAXBException This only gets generated if addCombatAreaEffectOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws XMLStreamException This only gets generated if addCombatAreaEffectOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	@Override
 	public final void generateInitialCombatAreaEffects ()
-		throws RecordNotFoundException
+		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering generateInitialCombatAreaEffects");
 
@@ -1554,39 +1555,29 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
-					final ServerGridCell thisCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
+					final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
 					final TileType thisTileType = db.findTileType (thisCell.getTerrainData ().getTileTypeID (), "generateInitialCombatAreaEffects");
 
 					// Check for area effects from the terrain, e.g. node dispelling effect
 					if (thisTileType.getTileTypeAreaEffect ().size () > 0)
 					{
 						for (final TileTypeAreaEffect thisEffect : thisTileType.getTileTypeAreaEffect ())
-						{
-							final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
-							cae.setMapLocation (new MapCoordinates3DEx (x, y, plane));
-							cae.setCombatAreaEffectID (thisEffect.getCombatAreaEffectID ());
-	
-							trueTerrain.getCombatAreaEffect ().add (cae);
-						}
+							getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients
+								(gsk, thisEffect.getCombatAreaEffectID (), null, new MapCoordinates3DEx (x, y, plane), null, db, sd);
 					}
 					
 					// If this tile is an aura from another square, then we need to add the node aura here too
 					else if (thisCell.getAuraFromNode () != null)
 					{
-						final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (thisCell.getAuraFromNode ().getZ ()).getRow ().get (thisCell.getAuraFromNode ().getY ()).getCell ().get (thisCell.getAuraFromNode ().getX ());
+						final ServerGridCell nodeCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (thisCell.getAuraFromNode ().getZ ()).getRow ().get (thisCell.getAuraFromNode ().getY ()).getCell ().get (thisCell.getAuraFromNode ().getX ());
 						final TileType nodeTileType = db.findTileType (nodeCell.getTerrainData ().getTileTypeID (), "generateInitialCombatAreaEffects");
 
 						for (final TileTypeAreaEffect thisEffect : nodeTileType.getTileTypeAreaEffect ())
 
 							// It must specify that this effect extends out across the node aura
 							if ((thisEffect.isExtendAcrossNodeAura () != null) && (thisEffect.isExtendAcrossNodeAura ()))
-							{
-								final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
-								cae.setMapLocation (new MapCoordinates3DEx (x, y, plane));
-								cae.setCombatAreaEffectID (thisEffect.getCombatAreaEffectID ());
-
-								trueTerrain.getCombatAreaEffect ().add (cae);
-							}
+								getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients
+									(gsk, thisEffect.getCombatAreaEffectID (), null, new MapCoordinates3DEx (x, y, plane), null, db, sd);
 					}
 				}
 
@@ -1621,7 +1612,6 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * @param monsterStrengthMin Minimum strength of monsters to add
 	 * @param monsterStrengthMax Maximum strength of monsters to add
 	 * @param powerProportion Proportion between min and max of monster strengths, so 0 = use minimum, 1 = use maximum
-	 * @param gsk Server knowledge structure to add the unit to
 	 * @param monsterPlayer Player who owns the monsters we add
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
@@ -1630,7 +1620,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	final void fillSingleLairOrTowerWithMonsters (final MapCoordinates3DEx lairLocation, final String magicRealmLifeformTypeID,
-		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion, final MomGeneralServerKnowledge gsk,
+		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion,
 		final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -1679,7 +1669,6 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * This is really separate from the rest of the methods in this class which are to do with generating the terrain
 	 * However its still to do with generating the map so this class is still the most sensible place for it
 	 *
-	 * @param gsk Server knowledge structure to add the unit to
 	 * @param monsterPlayer Player who owns the monsters we add
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
@@ -1688,7 +1677,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	@Override
-	public final void fillNodesLairsAndTowersWithMonsters (final MomGeneralServerKnowledge gsk, final PlayerServerDetails monsterPlayer)
+	public final void fillNodesLairsAndTowersWithMonsters (final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering fillNodesLairsAndTowersWithMonsters: Player ID " + monsterPlayer.getPlayerDescription ().getPlayerID ());
@@ -1784,17 +1773,17 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 								if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (thisCell.getTerrainData ()))
 									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										sd.getDifficultyLevel ().getTowerMonstersMinimum (), sd.getDifficultyLevel ().getTowerMonstersMaximum (),
-										thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
+										thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
 
 								else if (thisCell.isLairWeak ())
 									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										plane.getWeakLairMonstersMinimum (), plane.getWeakLairMonstersMaximum (),
-										thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
+										thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
 
 								else
 									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										plane.getNormalLairMonstersMinimum (), plane.getNormalLairMonstersMaximum (),
-										thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
+										thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
 							}
 						}
 					}
@@ -1806,7 +1795,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						if (tileType.getMagicRealmID () != null)
 							fillSingleLairOrTowerWithMonsters (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()), tileType.getMagicRealmID (),
 								nodeStrength.getMonstersMinimum (), nodeStrength.getMonstersMaximum (),
-								thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
+								thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
 					}
 				}
 		}
@@ -1817,17 +1806,17 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	/**
 	 * @return Where to write the generated map to
 	 */
-	public final FogOfWarMemory getTrueTerrain ()
+	public final MomGeneralServerKnowledge getGsk ()
 	{
-		return trueTerrain;
+		return gsk;
 	}
 
 	/**
 	 * @param terr Where to write the generated map to
 	 */
-	public final void setTrueTerrain (final FogOfWarMemory terr)
+	public final void setGsk (final MomGeneralServerKnowledge terr)
 	{
-		trueTerrain = terr;
+		gsk = terr;
 	}
 	
 	/**

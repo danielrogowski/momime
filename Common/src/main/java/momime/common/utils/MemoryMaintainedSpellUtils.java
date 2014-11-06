@@ -18,7 +18,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public interface MemoryMaintainedSpellUtils
 {
 	/**
-	 * Searches for a maintained spell in a list
+	 * Searches for a maintained spell by its details
 	 *
 	 * The majority of the search fields are optional, since this allows us to do searches like
 	 * looking for a maintained spell that grants unit skill SSxxx, even though we don't know what spell(s) might grant that skill
@@ -37,20 +37,28 @@ public interface MemoryMaintainedSpellUtils
 		final MapCoordinates3DEx cityLocation, final String citySpellEffectID);
 
 	/**
-	 * Removes a maintained spell from the list
-	 *
+	 * @param spellURN Spell URN to search for
 	 * @param spells List of spells to search through
-	 * @param castingPlayerID Player who cast the spell to search for
-	 * @param spellID Unique identifier for the spell to search for
-	 * @param unitURN Which unit the spell is cast on
-	 * @param unitSkillID Which actual unit spell effect was granted
-	 * @param cityLocation Which city the spell is cast on
-	 * @param citySpellEffectID Which actual city spell effect was granted
-	 * @throws RecordNotFoundException If we can't find the requested spell
+	 * @return Spell with requested URN, or null if not found
 	 */
-	public void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
+	public MemoryMaintainedSpell findSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells);
+
+	/**
+	 * @param spellURN Spell URN to search for
+	 * @param spells List of spells to search through
+	 * @param caller The routine that was looking for the value
+	 * @return Spell with requested URN
+	 * @throws RecordNotFoundException If spell with requested URN is not found
+	 */
+	public MemoryMaintainedSpell findSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells, final String caller)
+		throws RecordNotFoundException;
+
+	/**
+	 * @param spellURN Spell URN to remove
+	 * @param spells List of spells to search through
+	 * @throws RecordNotFoundException If spell with requested URN is not found
+	 */
+	public void removeSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells)
 		throws RecordNotFoundException;
 
 	/**

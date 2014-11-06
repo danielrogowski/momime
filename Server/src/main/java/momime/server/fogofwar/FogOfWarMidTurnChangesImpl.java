@@ -39,17 +39,13 @@ import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddUnitMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
-import momime.common.messages.servertoclient.CancelCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
-import momime.common.messages.servertoclient.DestroyBuildingMessageData;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.KillUnitMessage;
-import momime.common.messages.servertoclient.KillUnitMessageData;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
-import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateDamageTakenAndExperienceMessage;
@@ -538,11 +534,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Build the message ready to send it to whoever could see the unit
 		// Action has to be set per player depending on who can see it
-		final KillUnitMessageData msgData = new KillUnitMessageData ();
-		msgData.setUnitURN (trueUnit.getUnitURN ());
-
 		final KillUnitMessage msg = new KillUnitMessage ();
-		msg.setData (msgData);
+		msg.setUnitURN (trueUnit.getUnitURN ());
 
 		// Check which players could see the unit
 		for (final PlayerServerDetails player : players)
@@ -570,11 +563,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				
 					// For other players and statuses, they are just killed outright
 					if ((trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ().intValue ()) &&
-							((transmittedAction == KillUnitActionID.HERO_LACK_OF_PRODUCTION) || (transmittedAction == KillUnitActionID.UNIT_LACK_OF_PRODUCTION)))
+						((transmittedAction == KillUnitActionID.HERO_LACK_OF_PRODUCTION) || (transmittedAction == KillUnitActionID.UNIT_LACK_OF_PRODUCTION)))
 
-						msgData.setKillUnitActionID (transmittedAction);
+						msg.setKillUnitActionID (transmittedAction);
 					else
-						msgData.setKillUnitActionID (KillUnitActionID.FREE);
+						msg.setKillUnitActionID (KillUnitActionID.FREE);
 				
 					player.getConnection ().sendMessageToClient (msg);
 				}
@@ -691,7 +684,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param castInCombat Whether this spell was cast in combat or not
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
-	 * @param players List of players in the session
+	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -724,24 +717,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		trueSpell.setCastInCombat (castInCombat);
 		trueSpell.setCityLocation (spellLocation);
 		trueSpell.setCitySpellEffectID (citySpellEffectID);
+		trueSpell.setSpellURN (gsk.getNextFreeSpellURN ());
 
+		gsk.setNextFreeSpellURN (gsk.getNextFreeSpellURN () + 1);
 		gsk.getTrueMap ().getMaintainedSpell ().add (trueSpell);
 
 		// Then let the other routine deal with updating player memory and the clients
-		addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap (), db, sd);
+		if (players != null)
+			addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap (), db, sd);
 
 		log.trace ("Exiting addMaintainedSpellOnServerAndClients");
 	}
 
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param castingPlayerID Player who cast the spell
-	 * @param spellID Which spell it is
-	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
-	 * @param unitSkillID If a spell cast on a unit, indicates the specific skill that this spell grants the unit
-	 * @param castInCombat Whether this spell was cast in combat or not
-	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
-	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
+	 * @param spellURN Which spell it is
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -752,39 +742,31 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final MomSessionDescription sd)
+	public final void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap, final int spellURN,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering switchOffMaintainedSpellOnServerAndClients: Player ID " + castingPlayerID + ", " + spellID);
+		log.trace ("Entering switchOffMaintainedSpellOnServerAndClients: Spell URN " + spellURN);
 
-		// First switch off on server
-		getMemoryMaintainedSpellUtils ().switchOffMaintainedSpell (trueMap.getMaintainedSpell (), castingPlayerID, spellID, unitURN, unitSkillID, cityLocation, citySpellEffectID);
+		// Get the spell details before we remove it
+		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (spellURN, trueMap.getMaintainedSpell (), "switchOffMaintainedSpellOnServerAndClients");
+		
+		// Switch off on server
+		getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, trueMap.getMaintainedSpell ());
 
 		// Build the message ready to send it to whoever could see the spell
-		final SwitchOffMaintainedSpellMessageData msgData = new SwitchOffMaintainedSpellMessageData ();
-		msgData.setCastingPlayerID (castingPlayerID);
-		msgData.setSpellID (spellID);
-		msgData.setUnitURN (unitURN);
-		msgData.setUnitSkillID (unitSkillID);
-		msgData.setCastInCombat (castInCombat);
-		msgData.setCityLocation (cityLocation);
-		msgData.setCitySpellEffectID (citySpellEffectID);
-
 		final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
-		msg.setData (msgData);
+		msg.setSpellURN (spellURN);
 
 		// Check which players could see the spell
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeSpellMidTurn (msgData, trueMap.getMap (), trueMap.getUnit (), player,
+			if (canSeeSpellMidTurn (trueSpell, trueMap.getMap (), trueMap.getUnit (), player,
 				db, sd.getFogOfWarSetting ()))		// Cheating a little passing msgData as the spell details, but we know they're correct
 			{
 				// Update player's memory on server
-				getMemoryMaintainedSpellUtils ().switchOffMaintainedSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), castingPlayerID, spellID, unitURN, unitSkillID, cityLocation, citySpellEffectID);
+				getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, priv.getFogOfWarMemory ().getMaintainedSpell ());
 
 				// Update on client
 				if (player.getPlayerDescription ().isHuman ())
@@ -793,7 +775,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 
 		// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
-		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, castingPlayerID, "switchOffMaintainedSpellOnServerAndClients");
+		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffMaintainedSpellOnServerAndClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, false, "switchOffMaintainedSpellOnServerAndClients", sd, db);
 
 		log.trace ("Exiting switchOffMaintainedSpellOnServerAndClients");
@@ -828,11 +810,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// Find the unit that the spell is cast on, to see whether they're in this particular combat
 				final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients");
 				if (combatLocation.equals (thisUnit.getCombatLocation ()))
-					
-					switchOffMaintainedSpellOnServerAndClients (trueMap,
-						trueSpell.getCastingPlayerID (), trueSpell.getSpellID (), trueSpell.getUnitURN (), trueSpell.getUnitSkillID (),
-						trueSpell.isCastInCombat (), (MapCoordinates3DEx) trueSpell.getCityLocation (), trueSpell.getCitySpellEffectID (),
-						players, db, sd);
+					switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
 			}
 		
 		log.trace ("Exiting switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients");
@@ -867,10 +845,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if ((cityLocation.equals (trueSpell.getCityLocation ())) &&
 				(castingPlayerID == 0) || (trueSpell.getCastingPlayerID () == castingPlayerID))
 
-				switchOffMaintainedSpellOnServerAndClients (trueMap,
-					trueSpell.getCastingPlayerID (), trueSpell.getSpellID (), trueSpell.getUnitURN (), trueSpell.getUnitSkillID (),
-					trueSpell.isCastInCombat (), (MapCoordinates3DEx) trueSpell.getCityLocation (), trueSpell.getCitySpellEffectID (),
-					players, db, sd);
+				switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
 		
 		log.trace ("Exiting switchOffMaintainedSpellsInLocationOnServerAndClients");
 	}
@@ -880,20 +855,17 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
 	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
-	 * @param players List of players in the session
+	 * @param players List of players in the session, this can be passed in null for when CAEs are being added to the map pre-game
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
 	public final void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String combatAreaEffectID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+		throws JAXBException, XMLStreamException
 	{
 		log.trace ("Entering addCombatAreaEffectOnServerAndClients: " + combatAreaEffectID);
 
@@ -908,7 +880,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		trueCAE.setCombatAreaEffectID (combatAreaEffectID);
 		trueCAE.setCastingPlayerID (castingPlayerID);
 		trueCAE.setMapLocation (caeLocation);
+		trueCAE.setCombatAreaEffectURN (gsk.getNextFreeCombatAreaEffectURN ());
 
+		gsk.setNextFreeCombatAreaEffectURN (gsk.getNextFreeCombatAreaEffectURN () + 1);
 		gsk.getTrueMap ().getCombatAreaEffect ().add (trueCAE);
 
 		// Build the message ready to send it to whoever can see the CAE
@@ -916,28 +890,27 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		msg.setMemoryCombatAreaEffect (trueCAE);
 
 		// Check which players can see the CAE
-		for (final PlayerServerDetails player : players)
-		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeCombatAreaEffectMidTurn (trueCAE, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+		if (players != null)
+			for (final PlayerServerDetails player : players)
 			{
-				// Update player's memory on server
-				if (getFogOfWarDuplication ().copyCombatAreaEffect (trueCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
-
-					// Update on client
-					if (player.getPlayerDescription ().isHuman ())
-						player.getConnection ().sendMessageToClient (msg);
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				if (canSeeCombatAreaEffectMidTurn (trueCAE, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+				{
+					// Update player's memory on server
+					if (getFogOfWarDuplication ().copyCombatAreaEffect (trueCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
+	
+						// Update on client
+						if (player.getPlayerDescription ().isHuman ())
+							player.getConnection ().sendMessageToClient (msg);
+				}
 			}
-		}
 
 		log.trace ("Exiting addCombatAreaEffectOnServerAndClients");
 	}
 
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param combatAreaEffectID Which CAE is it
-	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
-	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
+	 * @param combatAreaEffectURN Which CAE is it
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -949,32 +922,29 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final String combatAreaEffectID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering removeCombatAreaEffectFromServerAndClients: " + combatAreaEffectID);
+		log.trace ("Entering removeCombatAreaEffectFromServerAndClients: CAE URN " + combatAreaEffectURN);
 
-		// First remove on server
-		getMemoryCombatAreaEffectUtils ().cancelCombatAreaEffect (trueMap.getCombatAreaEffect (), mapLocation, combatAreaEffectID, castingPlayerID);
+		// Get the CAE's details before we remove it
+		final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (combatAreaEffectURN, trueMap.getCombatAreaEffect (), "removeCombatAreaEffectFromServerAndClients");
+		
+		// Remove on server
+		getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (combatAreaEffectURN, trueMap.getCombatAreaEffect ());
 
 		// Build the message ready to send it to whoever can see the CAE
-		final CancelCombatAreaEffectMessageData msgData = new CancelCombatAreaEffectMessageData ();
-		msgData.setCastingPlayerID (castingPlayerID);
-		msgData.setCombatAreaEffectID (combatAreaEffectID);
-		msgData.setMapLocation (mapLocation);
-
 		final CancelCombatAreaEffectMessage msg = new CancelCombatAreaEffectMessage ();
-		msg.setData (msgData);
+		msg.setCombatAreaEffectURN (combatAreaEffectURN);
 
 		// Check which players can see the CAE
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeCombatAreaEffectMidTurn (msgData, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))		// Cheating a little passing msgData as the CAE details, but we know they're correct
+			if (canSeeCombatAreaEffectMidTurn (trueCAE, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))		// Cheating a little passing msgData as the CAE details, but we know they're correct
 			{
 				// Update player's memory on server
-				getMemoryCombatAreaEffectUtils ().cancelCombatAreaEffect (priv.getFogOfWarMemory ().getCombatAreaEffect (), mapLocation, combatAreaEffectID, castingPlayerID);
+				getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (combatAreaEffectURN, priv.getFogOfWarMemory ().getCombatAreaEffect ());
 
 				// Update on client
 				if (player.getPlayerDescription ().isHuman ())
@@ -1011,14 +981,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// CAE must be localised at this combat location (so we don't remove global enchantments like Crusade) and must be owned by a player (so we don't remove node auras)
 		for (final MemoryCombatAreaEffect trueCAE : copyOftrueCAEs)
 			if ((mapLocation.equals (trueCAE.getMapLocation ())) && (trueCAE.getCastingPlayerID () != null))
-				removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectID (), trueCAE.getCastingPlayerID (), mapLocation, players, db, sd);
+				removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, db, sd);
 		
 		log.trace ("Exiting removeCombatAreaEffectsFromLocalisedSpells");
 	}
 
 	/**
 	 * @param gsk Server knowledge structure to add the building(s) to
-	 * @param players List of players in the session
+	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
 	 * @param cityLocation Location of the city to add the building(s) to
 	 * @param firstBuildingID First building ID to create, mandatory
 	 * @param secondBuildingID Second building ID to create; this is usually null, it is mainly here for casting Move Fortress, which creates both a Fortress + Summoning circle at the same time
@@ -1050,6 +1020,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			firstTrueBuilding = new MemoryBuilding ();
 			firstTrueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
 			firstTrueBuilding.setBuildingID (firstBuildingID);
+			firstTrueBuilding.setBuildingURN (gsk.getNextFreeBuildingURN ());
+			
+			gsk.setNextFreeBuildingURN (gsk.getNextFreeBuildingURN () + 1);
 			gsk.getTrueMap ().getBuilding ().add (firstTrueBuilding);
 		}
 
@@ -1061,6 +1034,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			secondTrueBuilding = new MemoryBuilding ();
 			secondTrueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
 			secondTrueBuilding.setBuildingID (secondBuildingID);
+			secondTrueBuilding.setBuildingURN (gsk.getNextFreeBuildingURN ());
+
+			gsk.setNextFreeBuildingURN (gsk.getNextFreeBuildingURN () + 1);
 			gsk.getTrueMap ().getBuilding ().add (secondTrueBuilding);
 		}
 
@@ -1073,31 +1049,34 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		msg.setBuildingCreationSpellCastByPlayerID (buildingCreationSpellCastByPlayerID);
 
 		// Check which players can see the building
-		for (final PlayerServerDetails player : players)
+		if (players != null)
 		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-			if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+			for (final PlayerServerDetails player : players)
 			{
-				// Add into player's memory on server
-				if (firstTrueBuilding != null)
-					getFogOfWarDuplication ().copyBuilding (firstTrueBuilding, priv.getFogOfWarMemory ().getBuilding ());
-
-				if (secondTrueBuilding != null)
-					getFogOfWarDuplication ().copyBuilding (secondTrueBuilding, priv.getFogOfWarMemory ().getBuilding ());
-
-				// Send to client
-				if (player.getPlayerDescription ().isHuman ())
-					player.getConnection ().sendMessageToClient (msg);
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+				if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+				{
+					// Add into player's memory on server
+					if (firstTrueBuilding != null)
+						getFogOfWarDuplication ().copyBuilding (firstTrueBuilding, priv.getFogOfWarMemory ().getBuilding ());
+	
+					if (secondTrueBuilding != null)
+						getFogOfWarDuplication ().copyBuilding (secondTrueBuilding, priv.getFogOfWarMemory ().getBuilding ());
+	
+					// Send to client
+					if (player.getPlayerDescription ().isHuman ())
+						player.getConnection ().sendMessageToClient (msg);
+				}
 			}
-		}
 
-		// The new building might be an Oracle, so recalculate fog of war
-		// Buildings added at the start of the game are added straight to the TrueMap without using this
-		// routine, so this doesn't cause a bunch of FOW recalculations before the game starts
-		final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, false, "addBuildingOnServerAndClients", sd, db);
+			// The new building might be an Oracle, so recalculate fog of war
+			// Buildings added at the start of the game are added straight to the TrueMap without using this
+			// routine, so this doesn't cause a bunch of FOW recalculations before the game starts
+			final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
+			getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, false, "addBuildingOnServerAndClients", sd, db);
+		}
 
 		log.trace ("Exiting addBuildingOnServerAndClients");
 	}
@@ -1105,8 +1084,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
-	 * @param cityLocation Location of the city to remove the building from
-	 * @param buildingID Which building to remove
+	 * @param buildingURN Which building to remove
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -1118,23 +1096,23 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
+		final List<PlayerServerDetails> players, final int buildingURN, final boolean updateBuildingSoldThisTurn,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering destroyBuildingOnServerAndClients: " + cityLocation + ", " + buildingID);
+		log.trace ("Entering destroyBuildingOnServerAndClients: Building URN " + buildingURN);
 
-		// First destroy on server
-		getMemoryBuildingUtils ().destroyBuilding (trueMap.getBuilding (), cityLocation, buildingID);
+		// Get the building details before we remove it
+		final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (buildingURN, trueMap.getBuilding (), "destroyBuildingOnServerAndClients");
+		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) trueBuilding.getCityLocation ();
+		
+		// Destroy on server
+		getMemoryBuildingUtils ().removeBuildingURN (buildingURN, trueMap.getBuilding ());
 
 		// Build the message ready to send it to whoever can see the building
-		final DestroyBuildingMessageData msgData = new DestroyBuildingMessageData ();
-		msgData.setBuildingID (buildingID);
-		msgData.setCityLocation (cityLocation);
-		msgData.setUpdateBuildingSoldThisTurn (updateBuildingSoldThisTurn);
-
 		final DestroyBuildingMessage msg = new DestroyBuildingMessage ();
-		msg.setData (msgData);
+		msg.setBuildingURN (buildingURN);
+		msg.setUpdateBuildingSoldThisTurn (updateBuildingSoldThisTurn);
 
 		// Check which players could see the building
 		for (final PlayerServerDetails player : players)
@@ -1144,7 +1122,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
 			{
 				// Remove from player's memory on server
-				getMemoryBuildingUtils ().destroyBuilding (priv.getFogOfWarMemory ().getBuilding (), cityLocation, buildingID);
+				getMemoryBuildingUtils ().removeBuildingURN (buildingURN, priv.getFogOfWarMemory ().getBuilding ());
 
 				// Send to client
 				if (player.getPlayerDescription ().isHuman ())
@@ -1185,7 +1163,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		copyOfBuildingsList.addAll (trueMap.getBuilding ());
 		for (final MemoryBuilding trueBuilding : copyOfBuildingsList)
 			if (cityLocation.equals (trueBuilding.getCityLocation ()))
-				destroyBuildingOnServerAndClients (trueMap, players, cityLocation, trueBuilding.getBuildingID (), false, sd, db);
+				destroyBuildingOnServerAndClients (trueMap, players, trueBuilding.getBuildingURN (), false, sd, db);
 		
 		log.trace ("Exiting destroyBuildingOnServerAndClients");
 	}

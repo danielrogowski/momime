@@ -305,14 +305,14 @@ Only the owner of the city gets this - so you cannot tell how much production ha
 	<xsd:element name="pendingSaleMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this in a simultaneous turns game to inform the city owner *only* that a building will be sold at the end of the turn.
-It can also be sent with buildingID omitted, to cancel selling anything at the end of the turn.</xsd:documentation>
+It can also be sent with buildingURN omitted, to cancel selling anything at the end of the turn.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingURN" type="momimemsgs:buildingURN" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -906,27 +906,20 @@ come into view (i.e. sent as part of 'visible area changed').</xsd:documentation
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:complexType name="destroyBuildingMessageData">
+	<xsd:element name="destroyBuildingMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to clients to tell them about a building destroyed (or sold) from a city.</xsd:documentation>
 		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="updateBuildingSoldThisTurn" type="xsd:boolean">
-			    <xsd:annotation>
-    				<xsd:documentation>This will be true for buildings that are sold (rather than destroyed), so the client knows to not allow another sale this turn</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	<xsd:element name="destroyBuildingMessage">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="data" type="momimestoc:destroyBuildingMessageData" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="buildingURN" type="momimemsgs:buildingURN" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="updateBuildingSoldThisTurn" type="xsd:boolean">
+						    <xsd:annotation>
+			    				<xsd:documentation>This will be true for buildings that are sold (rather than destroyed), so the client knows to not allow another sale this turn</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -949,23 +942,17 @@ Sends the complete unit object so the client can just add it as-is.</xsd:documen
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:complexType name="killUnitMessageData">
+	<xsd:element name="killUnitMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to everyone to notify of dead units, except where it is already obvious from an
 Apply Damage message that a unit is dead.</xsd:documentation>
 		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="killUnitActionID" type="momimestoc:killUnitActionID" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	<xsd:element name="killUnitMessage">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="data" type="momimestoc:killUnitMessageData" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="killUnitActionID" type="momimestoc:killUnitActionID" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -988,21 +975,15 @@ Sends the complete spell object so the client can just add it as-is.</xsd:docume
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:complexType name="switchOffMaintainedSpellMessageData">
+	<xsd:element name="switchOffMaintainedSpellMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to notify clients of cancelled maintained spells, or those that have gone out of view.</xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimemsgs:memoryMaintainedSpell" />
-		</xsd:complexContent>
-	</xsd:complexType>
-	
-	<xsd:element name="switchOffMaintainedSpellMessage">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="data" type="momimestoc:switchOffMaintainedSpellMessageData" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellURN" type="momimemsgs:spellURN" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1025,22 +1006,16 @@ Besides the info we remember, the client also needs the spell ID for animation p
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
-	
-	<xsd:complexType name="cancelCombatAreaEffectMessageData">
+
+	<xsd:element name="cancelCombatAreaEffectMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to notify clients of cancelled CAEs, or those that have gone out of view.</xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimemsgs:memoryCombatAreaEffect" />
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:element name="cancelCombatAreaEffectMessage">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="data" type="momimestoc:cancelCombatAreaEffectMessageData" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatAreaEffectURN" type="momimemsgs:combatAreaEffectURN" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1075,13 +1050,13 @@ It basically comprises 0..n of most of the other types of message defined above,
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="terrainUpdate" type="momimestoc:updateTerrainMessageData" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityUpdate" type="momimestoc:updateCityMessageData" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="addBuilding" type="momimemsgs:memoryBuilding" />
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="destroyBuilding" type="momimestoc:destroyBuildingMessageData" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="destroyBuilding" type="momimemsgs:buildingURN" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="addUnit" type="momimemsgs:memoryUnit" />
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="killUnit" type="momimestoc:killUnitMessageData" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="killUnit" type="momimemsgs:unitURN" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="addMaintainedSpell" type="momimemsgs:memoryMaintainedSpell" />
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="switchOffMaintainedSpell" type="momimestoc:switchOffMaintainedSpellMessageData" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="switchOffMaintainedSpell" type="momimemsgs:spellURN" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="addCombatAreaEffect" type="momimemsgs:memoryCombatAreaEffect" />
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="cancelCombaAreaEffect" type="momimestoc:cancelCombatAreaEffectMessageData" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="cancelCombaAreaEffect" type="momimemsgs:combatAreaEffectURN" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarUpdate" type="momimestoc:fogOfWarStateMessageData" />
 					</xsd:sequence>
 				</xsd:extension>

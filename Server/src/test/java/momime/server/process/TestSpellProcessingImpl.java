@@ -17,6 +17,8 @@ import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SummonedUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -319,9 +321,12 @@ public final class TestSpellProcessingImpl
 		// Summoning circle location
 		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx (15, 25, 0);
 		
+		final MemoryBuilding summoningCircle = new MemoryBuilding ();
+		summoningCircle.setCityLocation (summoningCircleLocation);
+		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
-			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircleLocation);
+			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -408,9 +413,12 @@ public final class TestSpellProcessingImpl
 		// Summoning circle location
 		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx (15, 25, 0);
 		
+		final MemoryBuilding summoningCircle = new MemoryBuilding ();
+		summoningCircle.setCityLocation (summoningCircleLocation);
+		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
-			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircleLocation);
+			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -604,8 +612,11 @@ public final class TestSpellProcessingImpl
 		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		// Set up test object
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class); 
+		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setSpellUtils (utils);
+		proc.setFogOfWarMidTurnChanges (midTurn);
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -616,10 +627,9 @@ public final class TestSpellProcessingImpl
 		final NewTurnMessageSpell ntm = (NewTurnMessageSpell) trans3.getNewTurnMessage ().get (0);
 		assertEquals ("SP001", ntm.getSpellID ());
 
-		// Check that we recorded targetless spell on server
-		assertEquals (1, trueMap.getMaintainedSpell ().size ());
-		assertEquals (pd3.getPlayerID ().intValue (), trueMap.getMaintainedSpell ().get (0).getCastingPlayerID ());
-		assertEquals ("SP001", trueMap.getMaintainedSpell ().get (0).getSpellID ());
+		// Check that we recorded targetless spell on server.
+		// NB. players (arg just before 'db') intentionally null so that spell only added on server.
+		verify (midTurn).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID ().intValue (), "SP001", null, null, false, null, null, null, db, sd);
 	}
 	
 	/**
@@ -1016,19 +1026,28 @@ public final class TestSpellProcessingImpl
 		when (spellUtils.findSpellResearchStatus (castingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
+		// The spell being switched off
+		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
+		trueSpell.setSpellURN (3);
+		trueSpell.setCastingPlayerID (castingPd.getPlayerID ());
+		
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "switchOffSpell")).thenReturn (trueSpell);
+		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		proc.switchOffSpell (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
+		proc.switchOffSpell (trueMap, trueSpell.getSpellURN (), players, db, sd);
 		
 		// Check spell was switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
 	}
 
 	/**
@@ -1076,23 +1095,35 @@ public final class TestSpellProcessingImpl
 		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		
 		// One of the effects is actually cast
+		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
+		cae.setCombatAreaEffectURN (4);
+		
 		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
-		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE04", 7)).thenReturn (true);
+		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE04", 7)).thenReturn (cae);
+
+		// The spell being switched off
+		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
+		trueSpell.setSpellURN (3);
+		trueSpell.setCastingPlayerID (castingPd.getPlayerID ());
+		
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "switchOffSpell")).thenReturn (trueSpell);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setMemoryCombatAreaEffectUtils (caeUtils);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		proc.switchOffSpell (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
+		proc.switchOffSpell (trueMap, trueSpell.getSpellURN (), players, db, sd);
 		
 		// Check spell was switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
-		verify (midTurn, times (0)).removeCombatAreaEffectFromServerAndClients (trueMap, "USX01", 7, null, players, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
+		verify (midTurn, times (0)).removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, db, sd);
 	}
 }

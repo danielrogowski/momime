@@ -63,7 +63,7 @@ public final class TestCityServerUtilsImpl
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (false);
+		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
 		
@@ -114,7 +114,7 @@ public final class TestCityServerUtilsImpl
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (false);
+		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
@@ -174,7 +174,7 @@ public final class TestCityServerUtilsImpl
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (true);		// <---
+		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (new MemoryBuilding ());		// <---
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
@@ -231,7 +231,7 @@ public final class TestCityServerUtilsImpl
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (false);
+		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
@@ -284,7 +284,7 @@ public final class TestCityServerUtilsImpl
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (false);
+		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (false);
 
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
@@ -337,7 +337,7 @@ public final class TestCityServerUtilsImpl
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (false);
+		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);

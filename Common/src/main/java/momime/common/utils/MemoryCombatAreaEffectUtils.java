@@ -13,24 +13,39 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public interface MemoryCombatAreaEffectUtils
 {
 	/**
-	 * Checks to see if the specified CAE exists
+	 * Searches for a CAE by its details
+	 * 
 	 * @param CAEs List of CAEs to search through
 	 * @param mapLocation Location of the effect to look for; null for global enchantments
 	 * @param combatAreaEffectID Effect to look for
 	 * @param castingPlayerID Player to look for; null for natural CAEs like node auras
-	 * @return Whether or not the specified combat area effect exists
+	 * @return CAE with requested details, or null if not found
 	 */
-	public boolean findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
+	public MemoryCombatAreaEffect findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
 		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID);
 
 	/**
-	 * Removes a CAE
-	 * @param CAEs List of CAEs to remove from
-	 * @param mapLocation Location of the effect to look for; null for global enchantments
-	 * @param combatAreaEffectID Effect to look for
-	 * @param castingPlayerID Player to look for; null for natural CAEs like node auras
-	 * @throws RecordNotFoundException If the CAE doesn't exist
+	 * @param combatAreaEffectURN CAE URN to search for
+	 * @param CAEs List of CAEs to search through
+	 * @return CAE with requested URN, or null if not found
 	 */
-	public void cancelCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
-		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException;
+	public MemoryCombatAreaEffect findCombatAreaEffectURN (final int combatAreaEffectURN, final List<MemoryCombatAreaEffect> CAEs);
+
+	/**
+	 * @param combatAreaEffectURN CAE URN to search for
+	 * @param CAEs List of CAEs to search through
+	 * @param caller The routine that was looking for the value
+	 * @return CAE with requested URN
+	 * @throws RecordNotFoundException If CAE with requested URN is not found
+	 */
+	public MemoryCombatAreaEffect findCombatAreaEffectURN (final int combatAreaEffectURN, final List<MemoryCombatAreaEffect> CAEs, final String caller)
+		throws RecordNotFoundException;
+
+	/**
+	 * @param combatAreaEffectURN CAE URN to remove
+	 * @param CAEs List of CAEs to search through
+	 * @throws RecordNotFoundException If CAE with requested URN is not found
+	 */
+	public void removeCombatAreaEffectURN (final int combatAreaEffectURN, final List<MemoryCombatAreaEffect> CAEs)
+		throws RecordNotFoundException;
 }

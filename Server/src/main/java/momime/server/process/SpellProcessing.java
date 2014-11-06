@@ -81,13 +81,7 @@ public interface SpellProcessing
 	 * NB. Delphi method was called OkToSwitchOffMaintainedSpell
 	 *
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param castingPlayerID Player who cast the spell
-	 * @param spellID Which spell it is
-	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
-	 * @param unitSkillID If a spell cast on a unit, indicates the specific skill that this spell grants the unit
-	 * @param castInCombat Whether this spell was cast in combat or not
-	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
-	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
+	 * @param spellURN Which spell it is
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -97,9 +91,7 @@ public interface SpellProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void switchOffSpell (final FogOfWarMemory trueMap,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final MomSessionDescription sd)
+	public void switchOffSpell (final FogOfWarMemory trueMap, final int spellURN,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 }

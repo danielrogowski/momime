@@ -31,15 +31,16 @@ import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.MomCityCalculations;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.Unit;
+import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -203,7 +204,7 @@ public final class TestChangeConstructionUI
 		for (int n = 0; n < buildings.size () - 1; n++)
 			when (memoryBuildingUtils.meetsBuildingRequirements (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n))).thenReturn (true);
 		
-		when (memoryBuildingUtils.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "BL03")).thenReturn (true);
+		when (memoryBuildingUtils.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "BL03")).thenReturn (new MemoryBuilding ());
 		
 		for (int n = 0; n < units.size () - 1; n++)
 			when (memoryBuildingUtils.meetsUnitRequirements (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), units.get (n))).thenReturn (true);

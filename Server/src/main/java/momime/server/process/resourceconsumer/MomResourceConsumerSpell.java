@@ -15,7 +15,6 @@ import momime.server.process.SpellProcessing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -125,9 +124,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	{
 		log.trace ("Entering kill: " + getSpell ().getSpellID ());
 
-		getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (),
-			getSpell ().getCastingPlayerID (), getSpell ().getSpellID (), getSpell ().getUnitURN (), getSpell ().getUnitSkillID (),
-			getSpell ().isCastInCombat (), (MapCoordinates3DEx) getSpell ().getCityLocation (), getSpell ().getCitySpellEffectID (),
+		getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), getSpell ().getSpellURN (),
 			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())

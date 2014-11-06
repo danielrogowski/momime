@@ -519,6 +519,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
@@ -608,8 +609,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Beans created each time a new session is started
 	
 			Note have to be careful here that each bean is only referenced once - if, for example, we declare
-			"trueMap" as a prototype bean and then try to set it against both the gsk + map generator, they
-			will both get different copies of "trueMap" injected
+			"gsk" as a prototype bean and then try to set it against both the session thread + map generator, they
+			will both get different copies of "gsk" injected
 			
 			So if there are places that something is genuinely required twice, we have to declare it only
 			once here and then deal with copying the reference within the code -->
@@ -623,6 +624,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="gsk" class="momime.server.messages.v0_9_5.MomGeneralServerKnowledge" scope="prototype">
 		<property name="trueMap" ref="trueMap" />
 		<property name="nextFreeUnitURN" value="1" />
+		<property name="nextFreeBuildingURN" value="1" />
+		<property name="nextFreeSpellURN" value="1" />
+		<property name="nextFreeCombatAreaEffectURN" value="1" />
 		<property name="nextFreeScheduledCombatURN" value="1" />
 	</bean>
 
@@ -634,7 +638,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
-		<!-- <property name="trueTerrain" ref="trueMap" /> see comment above, this is done in the code instead -->
+		<!-- <property name="gsk" ref="gsk" /> see comment above, this is done in the code instead -->
 	</bean>
 
 	<bean id="sessionThread" class="momime.server.MomSessionThread" scope="prototype">

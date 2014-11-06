@@ -5,6 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
@@ -54,7 +55,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation () + ", " + getBuildingID ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation () + ", building URN " + getBuildingURN ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -65,17 +66,16 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
-		final Building building;
-		final int goldFromSellingBuilding;
-		if (getBuildingID () == null)
+		Building building = null;
+		int goldFromSellingBuilding = 0;
+		if (getBuildingURN () != null)
 		{
-			building = null;
-			goldFromSellingBuilding = 0;
-		}
-		else
-		{
-			building = mom.getServerDB ().findBuilding (getBuildingID (), "SellBuildingMessageImpl");
-			goldFromSellingBuilding = getMemoryBuildingUtils ().goldFromSellingBuilding (building);
+			final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (getBuildingURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+			if (trueBuilding != null)
+			{
+				building = mom.getServerDB ().findBuilding (trueBuilding.getBuildingID (), "SellBuildingMessageImpl");
+				goldFromSellingBuilding = getMemoryBuildingUtils ().goldFromSellingBuilding (building);
+			}
 		}
 		
 		// Check the owner is who we're expecting & other validation
@@ -88,25 +88,24 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 		
 		else if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ()))
 		{
-			if (getBuildingID () != null)
+			if (getBuildingURN () != null)
 				msg = "You tried to sell a building in a city that you don't own.";
 			else
 				msg = "You tried to cancel selling a building in a city that you don't own.";
 		}
 		
-		else if ((getBuildingID () != null) && (!getMemoryBuildingUtils ().findBuilding
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (MapCoordinates3DEx) getCityLocation (), getBuildingID ())))
-			msg = "This city doesn't have one of those buildings to sell.";
+		else if ((getBuildingURN () != null) && (building == null))
+			msg = "Cannot find the building that you're trying to sell.";
 		
-		else if ((getBuildingID () != null) && (goldFromSellingBuilding <= 0))
+		else if ((getBuildingURN () != null) && (goldFromSellingBuilding <= 0))
 			msg = "You tried to sell a building that has no value.";
 		
-		else if ((getBuildingID () != null) && (tc.getBuildingIdSoldThisTurn () != null) &&
+		else if ((getBuildingURN () != null) && (tc.getBuildingIdSoldThisTurn () != null) &&
 			(mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME))
 			msg = "You can only sell back one building each turn.";
 		
-		else if ((getBuildingID () != null) && (getMemoryBuildingUtils ().doAnyBuildingsDependOn
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (MapCoordinates3DEx) getCityLocation (), getBuildingID (), mom.getServerDB ()) != null))
+		else if ((building != null) && (getMemoryBuildingUtils ().doAnyBuildingsDependOn
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (MapCoordinates3DEx) getCityLocation (), building.getBuildingID (), mom.getServerDB ()) != null))
 			msg = "You cannot sell back this building because it is required by other buildings that you must sell first.";
 		
 		else
@@ -125,7 +124,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 		{
 			// All ok - use second routine now all validation is done
 			getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (),
-				getBuildingID (), (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), true, mom.getSessionDescription (), mom.getServerDB ());
+				getBuildingURN (), (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), true, mom.getSessionDescription (), mom.getServerDB ());
 			
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}

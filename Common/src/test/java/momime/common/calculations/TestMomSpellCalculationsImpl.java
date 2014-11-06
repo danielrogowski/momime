@@ -363,7 +363,8 @@ public final class TestMomSpellCalculationsImpl
 		assertNull (calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem));
 		
 		// Combat at wizard's fortress
-		final MapCoordinates3DEx fortressLocation = new MapCoordinates3DEx (3, 7, 0);
+		final MemoryBuilding fortressLocation = new MemoryBuilding ();
+		fortressLocation.setCityLocation (new MapCoordinates3DEx (3, 7, 0));
 		when (utils.findCityWithBuilding (pd.getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings)).thenReturn (fortressLocation);
 
 		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());

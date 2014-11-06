@@ -27,6 +27,7 @@ import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -1373,9 +1374,15 @@ public final class TestCombatStartAndEndImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
 		
 		// Defender's summoning circle was here (but not their fortress)
+		final MemoryBuilding fortress = new MemoryBuilding ();
+		fortress.setBuildingURN (3);
+		
+		final MemoryBuilding summoningCircle = new MemoryBuilding ();
+		summoningCircle.setBuildingURN (4);
+		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (false);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (true);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (null);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
 		
 		// How many rebels the city will have after the attacker captures it
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
@@ -1468,8 +1475,8 @@ public final class TestCombatStartAndEndImpl
 		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
 		// Check the summoning circle was removed (but not their fortress)
-		verify (midTurn, times (0)).destroyBuildingOnServerAndClients (trueMap, players, combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, false, sd, db);
-		verify (midTurn, times (1)).destroyBuildingOnServerAndClients (trueMap, players, combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, false, sd, db);
+		verify (midTurn, times (0)).destroyBuildingOnServerAndClients (trueMap, players, fortress.getBuildingURN (), false, sd, db);
+		verify (midTurn, times (1)).destroyBuildingOnServerAndClients (trueMap, players, summoningCircle.getBuildingURN (), false, sd, db);
 		
 		// Check any old enchantments/curses cast by the old/new owner get switched off
 		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, attackingPd.getPlayerID (), db, sd);
@@ -1572,9 +1579,15 @@ public final class TestCombatStartAndEndImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
 		
 		// Defender's summoning circle was here (but not their fortress)
+		final MemoryBuilding fortress = new MemoryBuilding ();
+		fortress.setBuildingURN (3);
+		
+		final MemoryBuilding summoningCircle = new MemoryBuilding ();
+		summoningCircle.setBuildingURN (4);
+		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (false);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (true);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (null);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
 		
 		// How many rebels the city will have after the attacker captures it
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();

@@ -296,20 +296,22 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 			
 		// First need to find where the wizard's fortress is
 		Integer penalty;
-		final MapCoordinates3DEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
 			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
 		if (fortressLocation == null)
 			penalty = null;
 		else
 		{
 			// Different planes always = max penalty
-			if ((!allowEitherPlane) && (combatLocation.getZ () != fortressLocation.getZ ()))
+			if ((!allowEitherPlane) && (combatLocation.getZ () != fortressLocation.getCityLocation ().getZ ()))
 				penalty = 6;
 			else
 			{
 				// This gives a real distance, e.g. 1.4 for a 1x1 diagonal
 				// Remember we need to return double the value in the table
-				final double distance = getCoordinateSystemUtils ().determineReal2DDistanceBetween (overlandMapCoordinateSystem, combatLocation, fortressLocation);
+				final double distance = getCoordinateSystemUtils ().determineReal2DDistanceBetween
+					(overlandMapCoordinateSystem, combatLocation, (MapCoordinates3DEx) fortressLocation.getCityLocation ());
+				
 				penalty = (((int) distance) + 9) / 5;
 				if (penalty > 6)
 					penalty = 6;

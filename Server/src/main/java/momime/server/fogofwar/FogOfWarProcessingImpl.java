@@ -24,13 +24,8 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.CancelCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.DestroyBuildingMessageData;
 import momime.common.messages.servertoclient.FogOfWarStateMessageData;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
-import momime.common.messages.servertoclient.KillUnitActionID;
-import momime.common.messages.servertoclient.KillUnitMessageData;
-import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
 import momime.common.utils.MemoryBuildingUtils;
@@ -510,15 +505,10 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 			if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-				(!getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), (MapCoordinates3DEx) thisBuilding.getCityLocation (), thisBuilding.getBuildingID ()))))
+				(getMemoryBuildingUtils ().findBuildingURN (thisBuilding.getBuildingURN (), trueMap.getBuilding ()) == null)))
 			{
 				if (msg != null)
-				{
-					final DestroyBuildingMessageData buildingMsg = new DestroyBuildingMessageData ();
-					buildingMsg.setBuildingID (thisBuilding.getBuildingID ());
-					buildingMsg.setCityLocation (thisBuilding.getCityLocation ());
-					msg.getDestroyBuilding ().add (buildingMsg);
-				}
+					msg.getDestroyBuilding ().add (thisBuilding.getBuildingURN ());
 
 				buildingsIter.remove ();
 			}
@@ -644,12 +634,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					removedUnitURNs.add (thisUnit.getUnitURN ());
 
 					if (msg != null)
-					{
-						final KillUnitMessageData killMsg = new KillUnitMessageData ();
-						killMsg.setUnitURN (thisUnit.getUnitURN ());
-						killMsg.setKillUnitActionID (KillUnitActionID.VISIBLE_AREA_CHANGED);
-						msg.getKillUnit ().add (killMsg);
-					}
+						msg.getKillUnit ().add (thisUnit.getUnitURN ());
 
 					unitsIter.remove ();
 				}
@@ -715,24 +700,13 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 					needToRemoveSpell = ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-						(getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), thisSpell.getCastingPlayerID (), thisSpell.getSpellID (),
-							thisSpell.getUnitURN (), thisSpell.getUnitSkillID (), (MapCoordinates3DEx) thisSpell.getCityLocation (), thisSpell.getCitySpellEffectID ()) == null)));
+						(getMemoryMaintainedSpellUtils ().findSpellURN (thisSpell.getSpellURN (), trueMap.getMaintainedSpell ()) == null)));
 				}
 
 				if (needToRemoveSpell)
 				{
 					if (msg != null)
-					{
-						final SwitchOffMaintainedSpellMessageData spellMsg = new SwitchOffMaintainedSpellMessageData ();
-						spellMsg.setCastingPlayerID (thisSpell.getCastingPlayerID ());
-						spellMsg.setSpellID (thisSpell.getSpellID ());
-						spellMsg.setUnitURN (thisSpell.getUnitURN ());
-						spellMsg.setUnitSkillID (thisSpell.getUnitSkillID ());
-						spellMsg.setCastInCombat (thisSpell.isCastInCombat ());
-						spellMsg.setCityLocation (thisSpell.getCityLocation ());
-						spellMsg.setCitySpellEffectID (thisSpell.getCitySpellEffectID ());
-						msg.getSwitchOffMaintainedSpell ().add (spellMsg);
-					}
+						msg.getSwitchOffMaintainedSpell ().add (thisSpell.getSpellURN ());
 
 					spellsIter.remove ();
 				}
@@ -779,17 +753,10 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 				if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-					(!getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (trueMap.getCombatAreaEffect (),
-						(MapCoordinates3DEx) thisCAE.getMapLocation (), thisCAE.getCombatAreaEffectID (), thisCAE.getCastingPlayerID ()))))
+					(getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (thisCAE.getCombatAreaEffectURN (), trueMap.getCombatAreaEffect ()) == null)))
 				{
 					if (msg != null)
-					{
-						final CancelCombatAreaEffectMessageData caeMsg = new CancelCombatAreaEffectMessageData ();
-						caeMsg.setCombatAreaEffectID (thisCAE.getCombatAreaEffectID ());
-						caeMsg.setMapLocation (thisCAE.getMapLocation ());
-						caeMsg.setCastingPlayerID (thisCAE.getCastingPlayerID ());
-						msg.getCancelCombaAreaEffect ().add (caeMsg);
-					}
+						msg.getCancelCombaAreaEffect ().add (thisCAE.getCombatAreaEffectURN ());
 
 					caeIter.remove ();
 				}

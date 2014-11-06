@@ -237,7 +237,7 @@ public final class CityViewPanel extends JPanel
 			
 			// Building matches?
 			((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), element.getBuildingID ()))) &&
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), element.getBuildingID ()) != null)) &&
 				
 			// Spell matches?
 			((element.getCitySpellEffectID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell

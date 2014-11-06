@@ -198,11 +198,12 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	{
 		// Since buildings can't change, only be added or destroyed, we don't need to worry about whether the
 		// building in the list but somehow changed, that's can't happen
-		final boolean needToAdd = !getMemoryBuildingUtils ().findBuilding (destination, (MapCoordinates3DEx) source.getCityLocation (), source.getBuildingID ());
+		final boolean needToAdd = (getMemoryBuildingUtils ().findBuildingURN (source.getBuildingURN (), destination) == null);
 
 		if (needToAdd)
 		{
 			final MemoryBuilding destinationBuilding = new MemoryBuilding ();
+			destinationBuilding.setBuildingURN (source.getBuildingURN ());
 			destinationBuilding.setBuildingID (source.getBuildingID ());
 			destinationBuilding.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCityLocation ()));
 
@@ -332,13 +333,12 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	{
 		// Since spells can't change, only be cast or cancelled, we don't need to worry about whether the
 		// spell in the list but somehow changed, that's can't happen
-		final boolean needToAdd = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (destination, source.getCastingPlayerID (), source.getSpellID (),
-			source.getUnitURN (), source.getUnitSkillID (), (MapCoordinates3DEx) source.getCityLocation (), source.getCitySpellEffectID ()) == null);
+		final boolean needToAdd = (getMemoryMaintainedSpellUtils ().findSpellURN (source.getSpellURN (), destination) == null);
 
 		if (needToAdd)
 		{
 			final MemoryMaintainedSpell destinationSpell = new MemoryMaintainedSpell ();
-
+			destinationSpell.setSpellURN (source.getSpellURN ());
 			destinationSpell.setCastingPlayerID (source.getCastingPlayerID ());
 			destinationSpell.setSpellID (source.getSpellID ());
 			destinationSpell.setUnitURN (source.getUnitURN ());
@@ -368,13 +368,12 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	{
 		// Since CAEs can't change, only be added or destroyed, we don't need to worry about whether the
 		// CAE in the list but somehow changed, that's can't happen
-		final boolean needToAdd = !getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-			(destination, (MapCoordinates3DEx) source.getMapLocation (), source.getCombatAreaEffectID (), source.getCastingPlayerID ());
+		final boolean needToAdd = (getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (source.getCombatAreaEffectURN (), destination) == null);
 
 		if (needToAdd)
 		{
 			final MemoryCombatAreaEffect destinationCAE = new MemoryCombatAreaEffect ();
-
+			destinationCAE.setCombatAreaEffectURN (source.getCombatAreaEffectURN ());
 			destinationCAE.setCombatAreaEffectID (source.getCombatAreaEffectID ());
 			destinationCAE.setCastingPlayerID (source.getCastingPlayerID ());
 

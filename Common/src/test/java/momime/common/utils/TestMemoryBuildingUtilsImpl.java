@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -14,13 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.database.Building;
+import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Building;
-import momime.common.database.BuildingPopulationProductionModifier;
-import momime.common.database.BuildingPrerequisite;
 import momime.common.database.Unit;
 import momime.common.database.UnitPrerequisite;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -46,7 +47,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertFalse (utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL01"));
+		assertNull (utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL01"));
 	}
 
 	/**
@@ -62,7 +63,7 @@ public final class TestMemoryBuildingUtilsImpl
 		buildingsList.add (building);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertFalse (utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL02"));
+		assertNull (utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL02"));
 	}
 
 	/**
@@ -78,7 +79,7 @@ public final class TestMemoryBuildingUtilsImpl
 		buildingsList.add (building);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertFalse (utils.findBuilding (buildingsList, new MapCoordinates3DEx (16, 10, 1), "BL01"));
+		assertNull (utils.findBuilding (buildingsList, new MapCoordinates3DEx (16, 10, 1), "BL01"));
 	}
 
 	/**
@@ -94,7 +95,7 @@ public final class TestMemoryBuildingUtilsImpl
 		buildingsList.add (building);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertTrue (utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL01"));
+		assertSame (building, utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL01"));
 	}
 
 	/**
@@ -107,98 +108,95 @@ public final class TestMemoryBuildingUtilsImpl
 		for (int n = 1; n <= 2; n++)
 		{
 			final MemoryBuilding building = new MemoryBuilding ();
+			building.setBuildingURN (n);
 			building.setBuildingID ("BL0" + n);
 			building.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
 			buildingsList.add (building);
 		}
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertTrue (utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL02"));
+		assertEquals (2, utils.findBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL02").getBuildingURN ());
 	}
 
 	/**
-	 * Tests the destroyBuilding method with an empty list
-	 * @throws RecordNotFoundException If we can't find the requested building
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testDestroyBuilding_EmptyList () throws RecordNotFoundException
-	{
-		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
-
-		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		utils.destroyBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL01");
-	}
-
-	/**
-	 * Tests the destroyBuilding method with the wrong building ID
-	 * @throws RecordNotFoundException If we can't find the requested building
-	 */
-	public final void testDestroyBuilding_WrongBuildingID () throws RecordNotFoundException
-	{
-		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
-		final MemoryBuilding building = new MemoryBuilding ();
-		building.setBuildingID ("BL01");
-		building.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
-		buildingsList.add (building);
-
-		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		utils.destroyBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL02");
-	}
-
-	/**
-	 * Tests the destroyBuilding method with the wrong location
-	 * @throws RecordNotFoundException If we can't find the requested building
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testDestroyBuilding_WrongLocation () throws RecordNotFoundException
-	{
-		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
-		final MemoryBuilding building = new MemoryBuilding ();
-		building.setBuildingID ("BL01");
-		building.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
-		buildingsList.add (building);
-
-		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		utils.destroyBuilding (buildingsList, new MapCoordinates3DEx (16, 10, 1), "BL01");
-	}
-
-	/**
-	 * Tests the destroyBuilding method with only one entry in the list
-	 * @throws RecordNotFoundException If we can't find the requested building
+	 * Tests the findBuildingURN method on a building that does exist
+	 * @throws RecordNotFoundException If building with requested URN is not found
 	 */
 	@Test
-	public final void testDestroyBuilding_SingleEntry () throws RecordNotFoundException
+	public final void testFindBuildingURN_Exists () throws RecordNotFoundException
 	{
-		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
-		final MemoryBuilding building = new MemoryBuilding ();
-		building.setBuildingID ("BL01");
-		building.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
-		buildingsList.add (building);
-
-		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		utils.destroyBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL01");
-	}
-
-	/**
-	 * Tests the destroyBuilding method with two entries in the list
-	 * @throws RecordNotFoundException If we can't find the requested building
-	 */
-	@Test
-	public final void testDestroyBuilding_TwoEntries () throws RecordNotFoundException
-	{
-		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
-		for (int n = 1; n <= 2; n++)
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		for (int n = 1; n <= 3; n++)
 		{
 			final MemoryBuilding building = new MemoryBuilding ();
-			building.setBuildingID ("BL0" + n);
-			building.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
-			buildingsList.add (building);
+			building.setBuildingURN (n);
+			buildings.add (building);
 		}
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		utils.destroyBuilding (buildingsList, new MapCoordinates3DEx (15, 10, 1), "BL02");
-		assertEquals (1, buildingsList.size ());
-		assertEquals ("BL01", buildingsList.get (0).getBuildingID ());
+		assertEquals (2, utils.findBuildingURN (2, buildings).getBuildingURN ());
+		assertEquals (2, utils.findBuildingURN (2, buildings, "testFindBuildingURN_Exists").getBuildingURN ());
+	}
+
+	/**
+	 * Tests the findBuildingURN method on a building that doesn't exist
+	 * @throws RecordNotFoundException If building with requested URN is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindBuildingURN_NotExists () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryBuilding building = new MemoryBuilding ();
+			building.setBuildingURN (n);
+			buildings.add (building);
+		}
+
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
+		assertNull (utils.findBuildingURN (4, buildings));
+		utils.findBuildingURN (4, buildings, "testFindBuildingURN_NotExists");
+	}
+
+	/**
+	 * Tests the removeBuildingURN method on a building that does exist
+	 * @throws RecordNotFoundException If building with requested URN is not found
+	 */
+	@Test
+	public final void testRemoveBuildingURN_Exists () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryBuilding building = new MemoryBuilding ();
+			building.setBuildingURN (n);
+			buildings.add (building);
+		}
+
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
+		utils.removeBuildingURN (2, buildings);
+		assertEquals (2, buildings.size ());
+		assertEquals (1, buildings.get (0).getBuildingURN ());
+		assertEquals (3, buildings.get (1).getBuildingURN ());
+	}
+
+	/**
+	 * Tests the removeBuildingURN method on a building that doesn't exist
+	 * @throws RecordNotFoundException If building with requested URN is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testRemoveBuildingURN_NotExists () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryBuilding building = new MemoryBuilding ();
+			building.setBuildingURN (n);
+			buildings.add (building);
+		}
+
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
+		utils.removeBuildingURN (4, buildings);
 	}
 
 	/**
@@ -207,11 +205,9 @@ public final class TestMemoryBuildingUtilsImpl
 	@Test
 	public final void testFindCityWithBuilding ()
 	{
-		final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx (2, 2, 0);
-
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		final MemoryBuilding building = new MemoryBuilding ();
-		building.setCityLocation (buildingLocation);
+		building.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		building.setBuildingID ("BL01");
 		buildings.add (building);
 
@@ -232,7 +228,7 @@ public final class TestMemoryBuildingUtilsImpl
 
 		// Right owner
 		cityData.setCityOwnerID (1);
-		assertEquals (buildingLocation, utils.findCityWithBuilding (1, "BL01", map, buildings));
+		assertSame (building, utils.findCityWithBuilding (1, "BL01", map, buildings));
 	}
 
 	/**

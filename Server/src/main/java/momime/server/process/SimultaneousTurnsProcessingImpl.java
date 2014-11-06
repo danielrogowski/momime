@@ -9,11 +9,13 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_5.MapFeature;
 import momime.server.database.v0_9_5.Plane;
@@ -42,6 +44,9 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
@@ -108,7 +113,10 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 						
-						getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), cityLocation, tc.getBuildingIdSoldThisTurn (),
+						final MemoryBuilding buildingToSell = getMemoryBuildingUtils ().findBuilding
+							(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), cityLocation, tc.getBuildingIdSoldThisTurn ());
+						
+						getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), cityLocation, buildingToSell.getBuildingURN (),
 							false, true, mom.getSessionDescription (), mom.getServerDB ());
 					}
 				}
@@ -229,6 +237,22 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		fogOfWarMidTurnChanges = obj;
 	}
 
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+	
 	/**
 	 * @return City processing methods
 	 */

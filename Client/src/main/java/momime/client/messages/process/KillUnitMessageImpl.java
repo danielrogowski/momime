@@ -32,9 +32,9 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Unit URN " + getData ().getUnitURN () + ", " + getData ().getKillUnitActionID ());
+		log.trace ("Entering start: Unit URN " + getUnitURN () + ", " + getKillUnitActionID ());
 
-		getUnitClientUtils ().killUnit (getData ().getUnitURN (), getData ().getKillUnitActionID (), null);
+		getUnitClientUtils ().killUnit (getUnitURN (), getKillUnitActionID (), null);
 		
 		log.trace ("Exiting start");
 	}

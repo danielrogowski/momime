@@ -172,7 +172,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param castInCombat Whether this spell was cast in combat or not
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
-	 * @param players List of players in the session
+	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -189,13 +189,7 @@ public interface FogOfWarMidTurnChanges
 
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param castingPlayerID Player who cast the spell
-	 * @param spellID Which spell it is
-	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
-	 * @param unitSkillID If a spell cast on a unit, indicates the specific skill that this spell grants the unit
-	 * @param castInCombat Whether this spell was cast in combat or not
-	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
-	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
+	 * @param spellURN Which spell it is
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -205,10 +199,8 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final MomSessionDescription sd)
+	public void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap, final int spellURN,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -250,25 +242,20 @@ public interface FogOfWarMidTurnChanges
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
 	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
-	 * @param players List of players in the session
+	 * @param players List of players in the session, this can be passed in null for when CAEs are being added to the map pre-game
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String combatAreaEffectID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+		throws JAXBException, XMLStreamException;
 
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param combatAreaEffectID Which CAE is it
-	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
-	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
+	 * @param combatAreaEffectURN Which CAE is it
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -279,8 +266,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final String combatAreaEffectID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -301,7 +287,7 @@ public interface FogOfWarMidTurnChanges
 	
 	/**
 	 * @param gsk Server knowledge structure to add the building(s) to
-	 * @param players List of players in the session
+	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
 	 * @param cityLocation Location of the city to add the building(s) to
 	 * @param firstBuildingID First building ID to create, mandatory
 	 * @param secondBuildingID Second building ID to create; this is usually null, it is mainly here for casting Move Fortress, which creates both a Fortress + Summoning circle at the same time
@@ -324,8 +310,7 @@ public interface FogOfWarMidTurnChanges
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
-	 * @param cityLocation Location of the city to remove the building from
-	 * @param buildingID Which building to remove
+	 * @param buildingURN Which building to remove
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -336,7 +321,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
+		final List<PlayerServerDetails> players, final int buildingURN, final boolean updateBuildingSoldThisTurn,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 

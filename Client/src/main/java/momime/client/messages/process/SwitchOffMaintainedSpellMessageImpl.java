@@ -9,13 +9,13 @@ import momime.client.MomClient;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
@@ -43,7 +43,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getData ().getSpellID ());
+		log.trace ("Entering start: Spell URN " + getSpellURN ());
 		
 		processOneUpdate ();
 		
@@ -56,16 +56,19 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	 */
 	public final void processOneUpdate () throws RecordNotFoundException
 	{
-		log.trace ("Entering processOneUpdate: " + getData ().getSpellID ());
+		log.trace ("Entering processOneUpdate: Spell URN " + getSpellURN ());
 		
-		getMemoryMaintainedSpellUtils ().switchOffMaintainedSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-			getData ().getCastingPlayerID (), getData ().getSpellID (), getData ().getUnitURN (), getData ().getUnitSkillID (),
-			(MapCoordinates3DEx) getData ().getCityLocation (), getData ().getCitySpellEffectID ());
+		// Find the spell details before we remove it
+		final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findSpellURN
+			(getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), "SwitchOffMaintainedSpellMessageImpl");
+		
+		// Remove it
+		getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
 		
 		// If we've got a city screen open showing where the spell was cancelled from, then remove it from the enchantments list
-		if (getData ().getCityLocation () != null)
+		if (spell.getCityLocation () != null)
 		{
-			final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getCityLocation ().toString ());
+			final CityViewUI cityView = getClient ().getCityViews ().get (spell.getCityLocation ().toString ());
 			if (cityView != null)
 				try
 				{
@@ -79,7 +82,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 		}
 		
 		// If we've got the magic screen loaded up, update overland enchantments
-		else if (getData ().getUnitURN () == null)
+		else if (spell.getUnitURN () == null)
 			getMagicSlidersUI ().spellsChanged ();
 		
 		log.trace ("Exiting processOneUpdate");

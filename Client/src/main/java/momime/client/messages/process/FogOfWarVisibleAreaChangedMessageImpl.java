@@ -11,12 +11,9 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.CancelCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.DestroyBuildingMessageData;
 import momime.common.messages.servertoclient.FogOfWarStateMessageData;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
-import momime.common.messages.servertoclient.KillUnitMessageData;
-import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessageData;
+import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
 
@@ -100,9 +97,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getDestroyBuilding ().size () > 0)
 		{
 			final DestroyBuildingMessageImpl proc = getFactory ().createDestroyBuildingMessage ();
-			for (final DestroyBuildingMessageData data : getDestroyBuilding ())
+			for (final Integer thisBuildingURN : getDestroyBuilding ())
 			{
-				proc.setData (data);
+				proc.setBuildingURN (thisBuildingURN);
 				proc.processOneUpdate ();
 			}
 		}
@@ -122,9 +119,11 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getKillUnit ().size () > 0)
 		{
 			final KillUnitMessageImpl proc = getFactory ().createKillUnitMessage ();
-			for (final KillUnitMessageData data : getKillUnit ())
+			proc.setKillUnitActionID (KillUnitActionID.VISIBLE_AREA_CHANGED);
+			
+			for (final Integer thisUnitURN : getKillUnit ())
 			{
-				proc.setData (data);
+				proc.setUnitURN (thisUnitURN);
 				proc.start ();
 			}
 		}
@@ -144,9 +143,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getSwitchOffMaintainedSpell ().size () > 0)
 		{
 			final SwitchOffMaintainedSpellMessageImpl proc = getFactory ().createSwitchOffMaintainedSpellMessage ();
-			for (final SwitchOffMaintainedSpellMessageData data : getSwitchOffMaintainedSpell ())
+			for (final Integer thisSpellURN : getSwitchOffMaintainedSpell ())
 			{
-				proc.setData (data);
+				proc.setSpellURN (thisSpellURN);
 				proc.processOneUpdate ();
 			}
 		}
@@ -163,11 +162,14 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		}
 		
 		// CAEs cancelled or gone out of view
-		for (final CancelCombatAreaEffectMessageData data : getCancelCombaAreaEffect ())
+		if (getCancelCombaAreaEffect ().size () > 0)
 		{
-			final CancelCombatAreaEffectMessageImpl proc = new CancelCombatAreaEffectMessageImpl ();
-			proc.setData (data);
-			proc.start ();
+			final CancelCombatAreaEffectMessageImpl proc = getFactory ().createCancelCombatAreaEffectMessage ();
+			for (final Integer thisCombatAreaEffectURN : getCancelCombaAreaEffect ())
+			{
+				proc.setCombatAreaEffectURN (thisCombatAreaEffectURN);
+				proc.start ();
+			}
 		}
 		
 		// Changes in Fog of War area

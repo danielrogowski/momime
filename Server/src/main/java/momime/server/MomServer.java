@@ -116,7 +116,9 @@ public final class MomServer extends MultiplayerSessionServer
 		final MomSessionDescription sd = (MomSessionDescription) sessionDescription;
 		
 		// Start logger for this sesssion.  These are much the same as the class loggers, except named MoMIMESession.1, MoMIMESession.2 and so on.
-		getUI ().createWindowForNewSession (sd);
+		if (getUI () != null)
+			getUI ().createWindowForNewSession (sd);
+		
 		thread.setSessionLogger (LogFactory.getLog (MOM_SESSION_LOGGER_PREFIX + sd.getSessionID ()));
 
 		// Load server XML
@@ -139,9 +141,19 @@ public final class MomServer extends MultiplayerSessionServer
 		final OverlandMapGeneratorImpl mapGen = (OverlandMapGeneratorImpl) thread.getOverlandMapGenerator ();
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (thread.getServerDB ());
-		mapGen.setTrueTerrain (thread.getGeneralServerKnowledge ().getTrueMap ());		// See comment in spring XML for why this isn't just injected
+		mapGen.setGsk (thread.getGeneralServerKnowledge ());		// See comment in spring XML for why this isn't just injected
 		mapGen.generateOverlandTerrain ();
-		mapGen.generateInitialCombatAreaEffects ();
+		
+		try
+		{
+			mapGen.generateInitialCombatAreaEffects ();
+			
+			// Take this catch out after switching to the latest multiplayer layer version which includes XMLStreamException in the throws clause
+		}
+		catch (final XMLStreamException e)
+		{
+			throw new IOException (e);
+		}
 
 		thread.getSessionLogger ().info ("Session startup completed");
 		log.trace ("Exiting createSessionThread = " + thread);

@@ -220,12 +220,7 @@ public final class CityProcessingImpl implements CityProcessing
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
 					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
-						{
-							final MemoryBuilding wizardBuilding = new MemoryBuilding ();
-							wizardBuilding.setBuildingID (thisBuilding.getBuildingID ());
-							wizardBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
-							gsk.getTrueMap ().getBuilding ().add (wizardBuilding);
-						}
+							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
 				}
 				else
 				{
@@ -233,12 +228,8 @@ public final class CityProcessingImpl implements CityProcessing
 					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
-						{
-							final MemoryBuilding raiderBuilding = new MemoryBuilding ();
-							raiderBuilding.setBuildingID (thisBuilding.getBuildingID ());
-							raiderBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
-							gsk.getTrueMap ().getBuilding ().add (raiderBuilding);
-						}
+							
+							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
 				}
 
 				// Add starting units
@@ -458,7 +449,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param cityLocation Location of the city to remove the building from
-	 * @param buildingID Which building to remove; this can be null to cancel a pending sale
+	 * @param buildingURN Which building to remove; this can be null to cancel a pending sale
 	 * @param pendingSale If true, building is not sold immediately but merely marked that it will be sold at the end of the turn; used for simultaneous turns games
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
 	 * @param db Lookup lists built over the XML database
@@ -471,13 +462,18 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void sellBuilding (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final String buildingID,
+		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final Integer buildingURN,
 		final boolean pendingSale, final boolean voluntarySale,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering sellBuilding: " + cityLocation + ", " + buildingID);
+		log.trace ("Entering sellBuilding: " + cityLocation + ", building URN " + buildingURN);
 
+		// Building details
+		final MemoryBuilding trueBuilding = (buildingURN == null) ? null : getMemoryBuildingUtils ().findBuildingURN (buildingURN, trueMap.getBuilding (), "sellBuilding");
+		final String buildingID = (trueBuilding == null) ? null : trueBuilding.getBuildingID ();
+		
+		// City and player details
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "sellBuilding");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
@@ -490,7 +486,7 @@ public final class CityProcessingImpl implements CityProcessing
 			{
 				final PendingSaleMessage msg = new PendingSaleMessage ();
 				msg.setCityLocation (cityLocation);
-				msg.setBuildingID (buildingID);
+				msg.setBuildingURN (buildingURN);
 				cityOwner.getConnection ().sendMessageToClient (msg);
 			}
 
@@ -516,7 +512,7 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 
 			// Actually remove the building, both on the server and on any clients who can see the city
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, cityLocation, buildingID, voluntarySale, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURN, voluntarySale, sd, db);
 
 			// Give gold from selling it
 			final Building building = db.findBuilding (buildingID, "sellBuilding");

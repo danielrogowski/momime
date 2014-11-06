@@ -6,13 +6,13 @@
 	xmlns:momimesvrmsgs="http://momime/server/messages/v0_9_5" targetNamespace="http://momime/server/messages/v0_9_5"
 	jaxb:version="2.0">
 
-	<xsd:import namespace="http://www.ndg.com/map"/>
-	<xsd:import namespace="http://www.ndg.com/multiplayer/base"/>
-	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
-	<xsd:import namespace="http://momime/common/database"/>
-	<xsd:import namespace="http://momime/common/database/newgame"/>
-	<xsd:import namespace="http://momime/server/database/v0_9_5"/>
-	<xsd:import namespace="http://momime/common/messages"/>
+	<xsd:import namespace="http://www.ndg.com/map" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/base" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
+	<xsd:import namespace="http://momime/common/database" />
+	<xsd:import namespace="http://momime/common/database/newgame" />
+	<xsd:import namespace="http://momime/server/database/v0_9_5" />
+	<xsd:import namespace="http://momime/common/messages" />
     
 	<xsd:complexType name="momGeneralServerKnowledge">
 	    <xsd:annotation>
@@ -23,17 +23,20 @@
 		<xsd:complexContent>
 			<xsd:extension base="mps:generalServerKnowledge">
 		        <xsd:sequence>
-					<xsd:element ref="momimesvr:serverDatabase"/>
+					<xsd:element ref="momimesvr:serverDatabase" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="trueMap" type="momimemsgs:fogOfWarMemory">
 					    <xsd:annotation>
     						<xsd:documentation>Server's copy of the true values of all map, unit, building and spell data.  Note the grid cells stored at each location are
     														of server-specific type serverGridCell.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeUnitURN" type="momimemsgs:unitURN"/>
-					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeScheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="usedCityName" type="xsd:normalizedString"/>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="scheduledCombat" type="momimemsgs:momScheduledCombat"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeBuildingURN" type="momimemsgs:buildingURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeSpellURN" type="momimemsgs:spellURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeCombatAreaEffectURN" type="momimemsgs:combatAreaEffectURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeScheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="usedCityName" type="xsd:normalizedString" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="scheduledCombat" type="momimemsgs:momScheduledCombat" />
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -52,7 +55,7 @@
     														the client only sees who owns each square of node aura but cannot tell which node it comes from.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="lairWeak" type="xsd:boolean"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="lairWeak" type="xsd:boolean" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="nodeLairTowerPowerProportion" type="xsd:double">
 						<xsd:annotation>
 							<xsd:documentation>Stores the random roll between 0..1 for where between min and max the various stats of a node/lair/tower are.
@@ -71,8 +74,8 @@
     						<xsd:documentation>Raiders have a special population cap that prevents cities expanding by more than a certain value, see strategy guide p426.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
-					<xsd:element minOccurs="0" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatCurrentPlayer" type="mps:playerID">
 					    <xsd:annotation>
     						<xsd:documentation>Who's turn it is in the combat currently taking place at this location.</xsd:documentation>

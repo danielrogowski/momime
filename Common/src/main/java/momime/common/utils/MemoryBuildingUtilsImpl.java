@@ -4,11 +4,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.BuildingPrerequisite;
+import momime.common.database.CommonDatabase;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitPrerequisite;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -30,47 +30,94 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	
 	/**
 	 * Checks to see if the specified building exists
-	 * @param buildingsList List of buildings to search through
+	 * @param buildings List of buildings to search through
 	 * @param cityLocation Location of the city to look for
 	 * @param buildingID Building to look for
 	 * @return Whether or not the specified building exists
 	 */
 	@Override
-	public final boolean findBuilding (final List<MemoryBuilding> buildingsList,
+	public final MemoryBuilding findBuilding (final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String buildingID)
 	{
-		boolean found = false;
-		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
-		while ((!found) && (iter.hasNext ()))
+		log.trace ("Entering findBuilding: " + cityLocation + ", " + cityLocation);
+
+		MemoryBuilding found = null;
+		
+		final Iterator<MemoryBuilding> iter = buildings.iterator ();
+		while ((found == null) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
 			if ((thisBuilding.getCityLocation ().equals (cityLocation)) && (thisBuilding.getBuildingID ().equals (buildingID)))
-				found = true;
+				found = thisBuilding;
 		}
 
+		log.trace ("Exiting findBuilding = " + found);
 		return found;
 	}
 
 	/**
-	 * Removes a building from a list
-	 * @param buildingsList List of buildings to remove building from
-	 * @param cityLocation Location of the city
-	 * @param buildingID Building to remove
-	 * @throws RecordNotFoundException If we can't find the requested building
+	 * @param buildingURN Building URN to search for
+	 * @param buildings List of buildings to search through
+	 * @return Building with requested URN, or null if not found
 	 */
 	@Override
-	public final void destroyBuilding (final List<MemoryBuilding> buildingsList,
-		final MapCoordinates3DEx cityLocation, final String buildingID)
+	public final MemoryBuilding findBuildingURN (final int buildingURN, final List<MemoryBuilding> buildings)
+	{
+		log.trace ("Entering findBuildingURN: Building URN " + buildingURN);
+
+		MemoryBuilding found = null;
+		
+		final Iterator<MemoryBuilding> iter = buildings.iterator ();
+		while ((found == null) && (iter.hasNext ()))
+		{
+			final MemoryBuilding thisBuilding = iter.next ();
+			if (thisBuilding.getBuildingURN () == buildingURN)
+				found = thisBuilding;
+		}
+
+		log.trace ("Exiting findBuildingURN = " + found);
+		return found;
+	}
+	
+	/**
+	 * @param buildingURN Building URN to search for
+	 * @param buildings List of buildings to search through
+	 * @param caller The routine that was looking for the value
+	 * @return Building with requested URN, or null if not found
+	 * @throws RecordNotFoundException If building with requested URN is not found
+	 */
+	@Override
+	public final MemoryBuilding findBuildingURN (final int buildingURN, final List<MemoryBuilding> buildings, final String caller)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering destroyBuilding: " + cityLocation + ", " + buildingID);
+		log.trace ("Entering findBuildingURN: Building URN " + buildingURN + ", " + caller);
+
+		final MemoryBuilding result = findBuildingURN (buildingURN, buildings);
+					
+		if (result == null)
+			throw new RecordNotFoundException (MemoryBuilding.class, buildingURN, caller);
+
+		log.trace ("Exiting findBuildingURN = " + result);
+		return result;
+	}
+	
+	/**
+	 * @param buildingURN Building URN to remove
+	 * @param buildings List of buildings to search through
+	 * @throws RecordNotFoundException If building with requested URN is not found
+	 */
+	@Override
+	public final void removeBuildingURN (final int buildingURN, final List<MemoryBuilding> buildings)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering removeBuildingURN: " + buildingURN);
 
 		boolean found = false;
-		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
+		final Iterator<MemoryBuilding> iter = buildings.iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			if ((thisBuilding.getCityLocation ().equals (cityLocation)) && (thisBuilding.getBuildingID ().equals (buildingID)))
+			if (thisBuilding.getBuildingURN () == buildingURN)
 			{
 				iter.remove ();
 				found = true;
@@ -78,9 +125,9 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		}
 
 		if (!found)
-			throw new RecordNotFoundException (MemoryBuilding.class, cityLocation + " - " + buildingID, "destroyBuilding");
+			throw new RecordNotFoundException (MemoryBuilding.class, buildingURN, "removeBuildingURN");
 
-		log.trace ("Exiting destroyBuilding");
+		log.trace ("Exiting removeBuildingURN");
 	}
 
 	/**
@@ -88,15 +135,15 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 * @param buildingID Which building we are looking for
 	 * @param map Known terrain
 	 * @param buildings Known buildings
-	 * @return Location of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
+	 * @return Details of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
 	 */
 	@Override
-	public final MapCoordinates3DEx findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
+	public final MemoryBuilding findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
 		final List<MemoryBuilding> buildings)
 	{
 		log.trace ("Entering findCityWithBuilding: Player ID " + playerID + ", " + buildingID);
 
-		MapCoordinates3DEx found = null;
+		MemoryBuilding found = null;
 		final Iterator<MemoryBuilding> iter = buildings.iterator ();
 		while ((found == null) && (iter.hasNext ()))
 		{
@@ -107,7 +154,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 			if ((thisBuilding.getBuildingID ().equals (buildingID)) && (cityData != null) && (cityData.getCityOwnerID () == playerID) &&
 				(cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
 
-				found = coords;
+				found = thisBuilding;
 		}
 
 		log.trace ("Exiting findCityWithBuilding = " + found);
@@ -130,7 +177,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		boolean result = true;
 		final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()))
+			if (findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()) == null)
 				result = false;
 
 		log.trace ("Exiting meetsBuildingRequirements = " + result);
@@ -152,7 +199,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		boolean result = true;
 		final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()))
+			if (findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()) == null)
 				result = false;
 
 		log.trace ("Exiting meetsUnitRequirements = " + result);

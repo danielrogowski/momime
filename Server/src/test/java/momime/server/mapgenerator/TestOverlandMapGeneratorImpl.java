@@ -85,10 +85,13 @@ public final class TestOverlandMapGeneratorImpl
 		
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
 		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 
 		// Run method
@@ -129,13 +132,16 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Mock random number generator
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (4)).thenReturn (3, 2,1, 2,2,2, 1,1,1);		// Compare to - 1, 1,2, 1,2,3, 1,2,3 - 5 of the values are >=
 		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 		mapGen.setRandomUtils (random);
 
@@ -178,6 +184,9 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Use real random number generator
 		final RandomUtilsImpl random = new RandomUtilsImpl ();
 		
@@ -187,7 +196,7 @@ public final class TestOverlandMapGeneratorImpl
 		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 		mapGen.setBooleanMapAreaOperations2D (ops);
 		mapGen.setRandomUtils (random);
@@ -254,6 +263,9 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Use real random number generator
 		final RandomUtilsImpl random = new RandomUtilsImpl ();
 		
@@ -263,7 +275,7 @@ public final class TestOverlandMapGeneratorImpl
 		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 		mapGen.setBooleanMapAreaOperations2D (ops);
 		mapGen.setRandomUtils (random);
@@ -338,6 +350,9 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Use real random number generator
 		final RandomUtilsImpl random = new RandomUtilsImpl ();
 		
@@ -347,7 +362,7 @@ public final class TestOverlandMapGeneratorImpl
 		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 		mapGen.setBooleanMapAreaOperations2D (ops);
 		mapGen.setRandomUtils (random);
@@ -423,10 +438,13 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 
 		// Grass to the east and west (via wrapping), ocean to the south because we didn't overwrite it
@@ -514,6 +532,9 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Mock random number generator
 		final RandomUtils random = mock (RandomUtils.class);
 		
@@ -523,7 +544,7 @@ public final class TestOverlandMapGeneratorImpl
 		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
 		mapGen.setRandomUtils (random);
@@ -601,10 +622,13 @@ public final class TestOverlandMapGeneratorImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setSessionDescription (sd);
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Nothing in the way yet, so will definitely fit
@@ -644,10 +668,13 @@ public final class TestOverlandMapGeneratorImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setSessionDescription (sd);
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		mapGen.setRandomUtils (new RandomUtilsImpl ());
 
@@ -721,11 +748,14 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		mapGen.setRandomUtils (new RandomUtilsImpl ());
 		
@@ -897,11 +927,14 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setRandomUtils (new RandomUtilsImpl ());
 
 		// Set up some tiles which can accept lairs, leave rest as ocean which can't.
@@ -1089,9 +1122,15 @@ public final class TestOverlandMapGeneratorImpl
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
+		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+
+		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
 		
@@ -1149,10 +1188,10 @@ public final class TestOverlandMapGeneratorImpl
 
 	/**
 	 * Tests the generateInitialCombatAreaEffects method
-	 * @throws RecordNotFoundException If we encounter a combat area effect that we can't find in the cache
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGenerateInitialCombatAreaEffects () throws RecordNotFoundException
+	public final void testGenerateInitialCombatAreaEffects () throws Exception
 	{
 		// Session description
 		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
@@ -1188,11 +1227,17 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
 		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
+		mapGen.setGsk (gsk);
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
+		mapGen.setFogOfWarMidTurnChanges (midTurn);
 
 		// Set 2 special tile types, one which generates some CAEs and one which doesn't
 		// and a couple of auras which point back at those tile types, again one which generates some CAEs and one which doesn't
@@ -1209,19 +1254,10 @@ public final class TestOverlandMapGeneratorImpl
 		mapGen.generateInitialCombatAreaEffects ();
 		
 		// Check results
-		assertEquals (4, fow.getCombatAreaEffect ().size ());
-		
-		assertEquals ("CAE02", fow.getCombatAreaEffect ().get (0).getCombatAreaEffectID ());
-		assertEquals (new MapCoordinates3DEx (39, 10, 0), fow.getCombatAreaEffect ().get (0).getMapLocation ());
-		
-		assertEquals ("CAE01", fow.getCombatAreaEffect ().get (1).getCombatAreaEffectID ());
-		assertEquals (new MapCoordinates3DEx (40, 10, 0), fow.getCombatAreaEffect ().get (1).getMapLocation ());
-		
-		assertEquals ("CAE02", fow.getCombatAreaEffect ().get (2).getCombatAreaEffectID ());
-		assertEquals (new MapCoordinates3DEx (40, 10, 0), fow.getCombatAreaEffect ().get (2).getMapLocation ());
-		
-		assertEquals ("CAE02", fow.getCombatAreaEffect ().get (3).getCombatAreaEffectID ());
-		assertEquals (new MapCoordinates3DEx (41, 10, 0), fow.getCombatAreaEffect ().get (3).getMapLocation ());
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, new MapCoordinates3DEx (39, 10, 0), null, db, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE01", null, new MapCoordinates3DEx (40, 10, 0), null, db, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, new MapCoordinates3DEx (40, 10, 0), null, db, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, new MapCoordinates3DEx (41, 10, 0), null, db, sd);
 	}
 
 	/**
@@ -1318,10 +1354,11 @@ public final class TestOverlandMapGeneratorImpl
 		mapGen.setServerDB (db);
 		mapGen.setRandomUtils (random);
 		mapGen.setFogOfWarMidTurnChanges (midTurn);
+		mapGen.setGsk (gsk);
 		
 		// Run method
 		final MapCoordinates3DEx coords = new MapCoordinates3DEx (20, 10, 0);
-		mapGen.fillSingleLairOrTowerWithMonsters (coords, "MB01", 3000, 6000, 0.8, gsk, monsterPlayer);		// 0.8 thru 3000-6000 is 5400
+		mapGen.fillSingleLairOrTowerWithMonsters (coords, "MB01", 3000, 6000, 0.8, monsterPlayer);		// 0.8 thru 3000-6000 is 5400
 		
 		// Check results
 		verify (midTurn, times (5)).addUnitOnServerAndClients (gsk, "UN009", coords, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);

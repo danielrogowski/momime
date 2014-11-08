@@ -21,6 +21,7 @@ import momime.client.graphics.database.v0_9_5.UnitCombatImage;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
@@ -82,6 +83,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
+
+	/** Combat map processing */
+	private CombatMapProcessing combatMapProcessing;
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
@@ -179,6 +183,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unitURN);
 		if (unitInfo != null)
 			unitInfo.close ();
+
+		// Find the unit being removed
+		final MemoryUnit unit = getUnitUtils ().findUnitURN (unitURN,
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "killUnit");
+
+		getOverlandMapProcessing ().removeUnitFromLeftToMoveOverland (unit);
+		getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit);
 		
 		// Select unit buttons on the Map
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
@@ -197,10 +208,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					getOverlandMapProcessing ().updateMovementRemaining ();
 				}
 			}
-		
-		// Find the unit being removed
-		final MemoryUnit unit = getUnitUtils ().findUnitURN (unitURN,
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "killUnit");
 		
 		// The server works out what action we need to take
 		if (transmittedAction != null)
@@ -791,6 +798,22 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		overlandMapProcessing = proc;
 	}
 
+	/**
+	 * @return Combat map processing
+	 */
+	public final CombatMapProcessing getCombatMapProcessing ()
+	{
+		return combatMapProcessing;
+	}
+
+	/**
+	 * @param proc Combat map processing
+	 */
+	public final void setCombatMapProcessing (final CombatMapProcessing proc)
+	{
+		combatMapProcessing = proc;
+	}
+	
 	/**
 	 * @return Pending movement utils
 	 */

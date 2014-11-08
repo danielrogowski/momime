@@ -65,13 +65,14 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
-import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -791,8 +792,15 @@ public final class CityViewUI extends MomClientFrameUI
 					
 					if (ok)
 					{
-						msg.setCityLocation (getCityLocation ());
-						msg.setBuildingID (buildingID);
+						final MemoryBuilding sellBuilding = getMemoryBuildingUtils ().findBuilding
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), buildingID);
+						if (sellBuilding == null)
+							log.error ("Can't find building with ID " + buildingID + " in city " + getCityLocation () + " to sell even though it was clicked on");
+						else
+						{						
+							msg.setCityLocation (getCityLocation ());
+							msg.setBuildingURN (sellBuilding.getBuildingURN ());
+						}
 					}
 					
 					msg.setVisible (true);

@@ -23,6 +23,7 @@ import momime.common.database.TileType;
 import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
+import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.TurnSystem;
@@ -489,6 +490,37 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		}
 		
 		log.trace ("Exiting moveUnitStackTo");
+	}
+	
+	/**
+	 * Tells the server that we want to have the currently selected unit(s) perform some special action,
+	 * such as settlers building an outpost, engineers building a road, or magic spirits capturing a node. 
+	 * 
+	 * @param specialOrder Special order to perform
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering specialOrderButton: " + specialOrder);
+
+		final List<Integer> movingUnitURNs = new ArrayList<Integer> ();
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((!button.isHidden ()) && (button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+				movingUnitURNs.add (button.getComponent ().getUnit ().getUnitURN ());
+		
+		if (movingUnitURNs.size () > 0)
+		{
+			final SpecialOrderButtonMessage msg = new SpecialOrderButtonMessage ();
+			msg.setMapLocation (unitMoveFrom);
+			msg.setSpecialOrder (specialOrder);
+			msg.getUnitURN ().addAll (movingUnitURNs);
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		}
+
+		log.trace ("Exiting specialOrderButton");
 	}
 	
 	/**

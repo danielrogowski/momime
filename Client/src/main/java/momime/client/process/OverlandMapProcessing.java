@@ -6,6 +6,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitSpecialOrder;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -137,6 +138,16 @@ public interface OverlandMapProcessing
 	 */
 	public void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException;
 
+	/**
+	 * Tells the server that we want to have the currently selected unit(s) perform some special action,
+	 * such as settlers building an outpost, engineers building a road, or magic spirits capturing a node. 
+	 * 
+	 * @param specialOrder Special order to perform
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException;
+	
 	/**
 	 * @param unit Unit to remove from the unitsLeftToMoveOverland list
 	 */

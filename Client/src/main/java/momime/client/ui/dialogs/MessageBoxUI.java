@@ -96,7 +96,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 	private MapCoordinates3DEx cityLocation;
 	
 	/** The building being sold; null if the message box isn't about selling a building */
-	private String buildingID;
+	private Integer buildingURN;
 	
 	/** The spell we're trying to research; null if the message box isn't about researching a spell */
 	private String researchSpellID;
@@ -173,7 +173,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 					// Rush buy current construction project or sell a building
 					else if (getCityLocation () != null)
 					{
-						if (getBuildingID () == null)
+						if (getBuildingURN () == null)
 						{
 							final RushBuyMessage msg = new RushBuyMessage ();
 							msg.setCityLocation (getCityLocation ());
@@ -183,7 +183,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 						{
 							final SellBuildingMessage msg = new SellBuildingMessage ();
 							msg.setCityLocation (getCityLocation ());
-							msg.setBuildingID (getBuildingID ());
+							msg.setBuildingURN (getBuildingURN ());
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 						}
 					}
@@ -226,12 +226,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 					else if (getSwitchOffSpell () != null)
 					{
 						final RequestSwitchOffMaintainedSpellMessage msg = new RequestSwitchOffMaintainedSpellMessage ();
-					    msg.setSpellID (getSwitchOffSpell ().getSpellID ());
-					    msg.setUnitURN (getSwitchOffSpell ().getUnitURN ());
-					    msg.setCityLocation (getSwitchOffSpell ().getCityLocation ());
-					    msg.setCastingPlayerID (getSwitchOffSpell ().getCastingPlayerID ());
-					    msg.setUnitSkillID (getSwitchOffSpell ().getUnitSkillID ());
-					    msg.setCitySpellEffectID (getSwitchOffSpell ().getCitySpellEffectID ());
+					    msg.setSpellURN (getSwitchOffSpell ().getSpellURN ());
 					    getClient ().getServerConnection ().sendMessageToServer (msg);
 					}
 					
@@ -528,17 +523,17 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/**
 	 * @return The building being sold; null if the message box isn't about selling a building
 	 */
-	public final String getBuildingID ()
+	public final Integer getBuildingURN ()
 	{
-		return buildingID;
+		return buildingURN;
 	}
 
 	/**
 	 * @param building The building being sold; null if the message box isn't about selling a building
 	 */
-	public final void setBuildingID (final String building)
+	public final void setBuildingURN (final Integer building)
 	{
-		buildingID = building;
+		buildingURN = building;
 	}
 
 	/**

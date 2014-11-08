@@ -40,11 +40,11 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitSpecialOrder;
+import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.ResourceValueUtils;
 
@@ -234,7 +234,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		final Action nextTurnAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -250,7 +250,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		doneAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -266,7 +266,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		patrolAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -282,7 +282,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		waitAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -298,32 +298,64 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		createOutpostAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_CITY);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
 		buildRoadAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_ROAD);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
 		meldWithNodeAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.MELD_WITH_NODE);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
 		purifyAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.PURIFY);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		

@@ -641,6 +641,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="soundPlayer" ref="soundPlayer" />

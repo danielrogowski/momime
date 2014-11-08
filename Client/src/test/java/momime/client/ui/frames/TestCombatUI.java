@@ -15,7 +15,9 @@ import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.MapFeature;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
 import momime.client.language.LanguageChangeMaster;
@@ -90,6 +92,11 @@ public final class TestCombatUI
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "initNewCombat")).thenReturn (monsterWizardGfx);
+		
+		final TileSetEx combatMapTileSet = new TileSetEx ();
+		combatMapTileSet.setAnimationSpeed (2.0);
+		combatMapTileSet.setAnimationFrameCount (3);
+		when (gfx.findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "CombatUI")).thenReturn (combatMapTileSet);
 		
 		// Mock entries from the client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
@@ -175,22 +182,41 @@ public final class TestCombatUI
 		// Player name generator
 		final WizardClientUtilsImpl wizardClientUtils = new WizardClientUtilsImpl ();
 		wizardClientUtils.setLanguageHolder (langHolder);
-		
-		// Mock terrain generator
-		final BufferedImage combatMapBitmap = new BufferedImage (640, 362, BufferedImage.TYPE_INT_ARGB);
-		final Graphics2D g = combatMapBitmap.createGraphics ();
-		try
+
+		// Give it some dummy images for the terrain
+		final BufferedImage [] combatMapBitmaps = new BufferedImage [combatMapTileSet.getAnimationFrameCount ()];
+		for (int n = 0; n < combatMapBitmaps.length; n++)
 		{
-			g.setColor (new Color (0x400000));
-			g.fillRect (0, 0, 640, 362);
-		}
-		finally
-		{
-			g.dispose ();
+			final BufferedImage bitmap = new BufferedImage (640, 362, BufferedImage.TYPE_INT_ARGB);
+			final Graphics2D g = bitmap.createGraphics ();
+			try
+			{
+				switch (n)
+				{
+					case 0:
+						g.setColor (new Color (0x200000));
+						break;
+						
+					case 1:
+						g.setColor (new Color (0x002000));
+						break;
+						
+					case 2:
+						g.setColor (new Color (0x000020));
+						break;
+				}
+				
+				g.fillRect (0, 0, 640, 362);
+			}
+			finally
+			{
+				g.dispose ();
+			}
+			combatMapBitmaps [n] = bitmap;
 		}
 		
 		final CombatMapBitmapGenerator gen = mock (CombatMapBitmapGenerator.class);
-		when (gen.generateCombatMapBitmap ()).thenReturn (combatMapBitmap);
+		when (gen.generateCombatMapBitmaps ()).thenReturn (combatMapBitmaps);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CombatUI.xml"));

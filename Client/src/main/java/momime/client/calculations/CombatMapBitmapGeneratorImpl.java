@@ -8,6 +8,7 @@ import java.util.Map;
 
 import momime.client.MomClient;
 import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.SmoothedTileTypeEx;
@@ -181,73 +182,96 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	}
 
 	/**
-	 * Generates big bitmaps of the entire overland map in each frame of animation.
+	 * Generates big bitmaps of the entire combat map in each frame of animation.
 	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView.
 	 * 
-	 * Generated bitmaps will all be 20x countX by 18x countY pixels in size.
+	 * Generated bitmaps will all be the exact size of the terrain portion of the combat UI.
 	 * 
-	 * @return Combat map bitmap
+	 * @return Array of combat map bitmaps
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	@Override
-	public final BufferedImage generateCombatMapBitmap () throws IOException
+	public final BufferedImage [] generateCombatMapBitmaps () throws IOException
 	{
-		log.trace ("Entering generateCombatMapBitmap");
+		log.trace ("Entering generateCombatMapBitmaps");
 
 		final CombatMapSizeData mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		
 		// We need the tile set so we know how many animation frames there are
 		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "generateCombatMapBitmap");
-		
-		// Create the empty bitmap
-		final BufferedImage combatMapBitmap = new BufferedImage (640, 362, BufferedImage.TYPE_INT_ARGB);
-		final Graphics2D g = combatMapBitmap.createGraphics ();
-		try
+
+		// Create the set of empty bitmaps
+		final BufferedImage [] combatMapBitmaps = new BufferedImage [combatMapTileSet.getAnimationFrameCount ()];
+		final Graphics2D [] g = new Graphics2D [combatMapTileSet.getAnimationFrameCount ()];
+		for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 		{
-			for (final CombatMapLayerID layer : CombatMapLayerID.values ())
-			{
-				final SmoothedTileTypeEx [] [] smoothedTileTypesLayer = smoothedTileTypes.get (layer);
-				final SmoothedTile [] [] smoothedTilesLayer = smoothedTiles.get (layer);
-				
-				// Run through each tile
-				for (int x = 0; x < mapSize.getWidth (); x++)
-					for (int y = 0; y < mapSize.getHeight (); y++)
+			combatMapBitmaps [frameNo] = new BufferedImage (640, 362, BufferedImage.TYPE_INT_ARGB);
+			g [frameNo] = combatMapBitmaps [frameNo].createGraphics ();
+		}
+		
+		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		{
+			final SmoothedTileTypeEx [] [] smoothedTileTypesLayer = smoothedTileTypes.get (layer);
+			final SmoothedTile [] [] smoothedTilesLayer = smoothedTiles.get (layer);
+			
+			// Run through each tile
+			for (int x = 0; x < mapSize.getWidth (); x++)
+				for (int y = 0; y < mapSize.getHeight (); y++)
+				{
+					// Terrain
+					final SmoothedTile tile = smoothedTilesLayer [y] [x];
+					if (tile != null)
 					{
-						// Terrain
-						final SmoothedTile tile = smoothedTilesLayer [y] [x];
-						if (tile != null)
+						if (tile.getTileFile () != null)
 						{
-							if (tile.getTileFile () != null)
+							// Use same image for all frames
+							final BufferedImage image = getUtils ().loadImage (tile.getTileFile ());
+							
+							// Offset image - this is to offset things like the nature node tree and the wizard's fortress so the base sits in the middle of the tile
+							int xpos = combatCoordinatesX (x, y, combatMapTileSet);
+							int ypos = combatCoordinatesY (x, y, combatMapTileSet);
+							
+							if (smoothedTileTypesLayer [y] [x].getTileOffsetX () != null)
+								xpos = xpos + (smoothedTileTypesLayer [y] [x].getTileOffsetX () * 2);
+							
+							if (smoothedTileTypesLayer [y] [x].getTileOffsetY () != null)
+								ypos = ypos + (smoothedTileTypesLayer [y] [x].getTileOffsetY () * 2);
+							
+							// Draw images
+							for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
+								g [frameNo].drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, null);
+						}
+						else if (tile.getTileAnimation () != null)
+						{
+							// Animated tile
+							// Offset image - this is to offset things like the nature node tree and the wizard's fortress so the base sits in the middle of the tile
+							int xpos = combatCoordinatesX (x, y, combatMapTileSet);
+							int ypos = combatCoordinatesY (x, y, combatMapTileSet);
+							
+							if (smoothedTileTypesLayer [y] [x].getTileOffsetX () != null)
+								xpos = xpos + (smoothedTileTypesLayer [y] [x].getTileOffsetX () * 2);
+							
+							if (smoothedTileTypesLayer [y] [x].getTileOffsetY () != null)
+								ypos = ypos + (smoothedTileTypesLayer [y] [x].getTileOffsetY () * 2);
+							
+							// Copy each animation frame over to each bitmap
+							final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateCombatMapBitmaps");
+							for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
-								// Use image
-								final BufferedImage image = getUtils ().loadImage (tile.getTileFile ());
-								
-								// Offset image - this is to offset things like the nature node tree and the wizard's fortress so the base sits in the middle of the tile
-								int xpos = combatCoordinatesX (x, y, combatMapTileSet);
-								int ypos = combatCoordinatesY (x, y, combatMapTileSet);
-								
-								if (smoothedTileTypesLayer [y] [x].getTileOffsetX () != null)
-									xpos = xpos + (smoothedTileTypesLayer [y] [x].getTileOffsetX () * 2);
-								
-								if (smoothedTileTypesLayer [y] [x].getTileOffsetY () != null)
-									ypos = ypos + (smoothedTileTypesLayer [y] [x].getTileOffsetY () * 2);
-								
-								// Draw image
-								g.drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, null);
+								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getFrameImageFile ());
+								g [frameNo].drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, null);
 							}
-							else if (tile.getTileAnimation () != null)
-								throw new UnsupportedOperationException ("generateCombatMapBitmap: Doesn't support animated combat tiles (" + tile.getTileAnimation () + ")");
 						}
 					}
-			}
+				}
 		}
-		finally
-		{
-			g.dispose ();
-		}
+
+		// Clean up the drawing contexts 
+		for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
+			g [frameNo].dispose ();
 		
-		log.trace ("Exiting generateCombatMapBitmap");
-		return combatMapBitmap;
+		log.trace ("Exiting generateCombatMapBitmaps");
+		return combatMapBitmaps;
 	}
 	
 	/**

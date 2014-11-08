@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -135,8 +137,11 @@ public final class CombatUI extends MomClientFrameUI
 	/** Name of attacking player */
 	private JLabel attackingPlayerName;
 	
-	/** Image of static portion of the combat terrain */
-	private BufferedImage staticTerrainImage;
+	/** Bitmaps for each animation frame of the combat map */
+	private BufferedImage [] combatMapBitmaps;
+	
+	/** Frame number being displayed */
+	private int terrainAnimFrame;
 	
 	/** Units occupying each cell of the combat map */
 	private MemoryUnit [] [] unitToDrawAtEachLocation;
@@ -249,7 +254,7 @@ public final class CombatUI extends MomClientFrameUI
 				super.paintComponent (g);
 				
 				// Draw the static portion of the terrain
-				g.drawImage (staticTerrainImage, 0, 0, null);
+				g.drawImage (combatMapBitmaps [terrainAnimFrame], 0, 0, null);
 				
 				// Draw units at the top first and work downwards
 				for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
@@ -335,6 +340,18 @@ public final class CombatUI extends MomClientFrameUI
 			}
 		};
 		
+		// Animate the terrain tiles
+		new Timer ((int) (1000 / combatMapTileSet.getAnimationSpeed ()), new ActionListener ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent e)
+			{
+				final int newFrame = terrainAnimFrame + 1;
+				terrainAnimFrame = (newFrame >= combatMapTileSet.getAnimationFrameCount ()) ? 0 : newFrame;
+				contentPane.repaint ();
+			}
+		}).start ();
+		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getCombatLayout ()));
 		
@@ -383,7 +400,7 @@ public final class CombatUI extends MomClientFrameUI
 			
 			// Generates the bitmap for the static portion of the terrain
 			getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
-			staticTerrainImage = getCombatMapBitmapGenerator ().generateCombatMapBitmap ();
+			combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps ();
 			
 			// Work out who the two players involved are.
 			// There must always be at least one unit on each side.  The only situation where we can get a combat with zero defenders is attacking an empty city,

@@ -29,15 +29,15 @@ public interface CombatMapBitmapGenerator
 	public void smoothMapTerrain (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatTerrain) throws RecordNotFoundException;
 
 	/**
-	 * Generates big bitmaps of the entire overland map in each frame of animation.
+	 * Generates big bitmaps of the entire combat map in each frame of animation.
 	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView.
 	 * 
-	 * Generated bitmaps will all be 20x countX by 18x countY pixels in size.
+	 * Generated bitmaps will all be the exact size of the terrain portion of the combat UI.
 	 * 
-	 * @return Combat map bitmap
+	 * @return Array of combat map bitmaps
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	public BufferedImage generateCombatMapBitmap () throws IOException;
+	public BufferedImage [] generateCombatMapBitmaps () throws IOException;
 	
 	/**
 	 * @param x Coordinates of a particular combat tile

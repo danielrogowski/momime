@@ -123,7 +123,7 @@ public final class TestCombatMapBitmapGeneratorImpl
 		gen.smoothMapTerrain (new MapCoordinates3DEx (20, 10, 0), container.getCombatMap ());
 		
 		// Display each plane
-		final BufferedImage bitmap = gen.generateCombatMapBitmap ();
+		final BufferedImage bitmap = gen.generateCombatMapBitmaps () [0];
 		
 		// Set up a dummy frame to display the first of the bitmaps
 		final JPanel contentPane = utils.createPanelWithBackgroundImage (bitmap);

@@ -5522,26 +5522,6 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Simultaneous turns</languageEntryText>
 		</languageEntry>
 	</languageCategory>
-	<languageCategory languageCategoryID="StartGameProgress">
-		<languageEntry languageEntryID="AddingAI">
-			<languageEntryText>Adding AI players...</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="AddingMonsters">
-			<languageEntryText>Filling nodes, lairs and towers with monsters...</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="AddingHeroes">
-			<languageEntryText>Adding heroes...</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="AddingCities">
-			<languageEntryText>Adding cities...</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="FogOfWar">
-			<languageEntryText>Generating initial fog of war areas...</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="CachingGraphicsXML">
-			<languageEntryText>Caching map terrain tiles...</languageEntryText>
-		</languageEntry>
-	</languageCategory>
 	<languageCategory languageCategoryID="Months">
 		<languageEntry languageEntryID="MNTH01">
 			<languageEntryText>January</languageEntryText>
@@ -5942,6 +5922,24 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NodesCategory">
 			<languageEntryText>Nodes</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="EmptyNodeCaptured">
+			<languageEntryText>Your UNIT_NAME successfully captured a node</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OwnedNodeCaptured">
+			<languageEntryText>Your UNIT_NAME successfully took over a node from OTHER_PLAYER_NAME's OTHER_UNIT_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="EmptyNodeCapturedLastTurn">
+			<languageEntryText>Last turn your UNIT_NAME successfully captured a node</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OwnedNodeCapturedLastTurn">
+			<languageEntryText>Last turn your UNIT_NAME successfully took over a node from OTHER_PLAYER_NAME's OTHER_UNIT_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NodeLost">
+			<languageEntryText>Your UNIT_NAME lost a node to OTHER_PLAYER_NAME's OTHER_UNIT_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NodeLostLastTurn">
+			<languageEntryText>Your UNIT_NAME lost a node to OTHER_PLAYER_NAME's OTHER_UNIT_NAME</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">

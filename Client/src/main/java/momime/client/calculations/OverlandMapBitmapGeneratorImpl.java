@@ -283,7 +283,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
 		}
 		
-		// Cities have to be done in a 2nd pass, since they're larger than the terrain tiles
+		// Cities have to be drawn in a 2nd pass, since they're larger than the terrain tiles
 		mapCoords.setX (startX);
 		for (int x = 0; x < countX; x++)
 		{
@@ -314,6 +314,34 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							g [frameNo].drawImage (cityFlagImage, xpos + cityImage.getFlagOffsetX (), ypos + cityImage.getFlagOffsetY (), null);
 						}
 					}
+				}
+				
+				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
+			}
+			getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+		}
+		
+		// Node auras have to be drawn in a 3rd pass, so they appear over the top of cities
+		mapCoords.setX (startX);
+		for (int x = 0; x < countX; x++)
+		{
+			mapCoords.setY (startY);
+			for (int y = 0; y < countY; y++)
+			{
+				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
+				{
+					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
+					
+					if ((mc.getTerrainData () != null) && (mc.getTerrainData ().getNodeOwnerID () != null))
+						
+						// Copy each animation frame over to each bitmap
+						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+						{
+							final BufferedImage nodeAuraImage = getPlayerColourImageGenerator ().getNodeAuraImage (frameNo, mc.getTerrainData ().getNodeOwnerID ());
+	
+							g [frameNo].drawImage (nodeAuraImage, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+						}
 				}
 				
 				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());

@@ -19494,14 +19494,6 @@
 		<languageEntry languageEntryID="ONE_PLAYER_AT_A_TIME" />
 		<languageEntry languageEntryID="SIMULTANEOUS" />
 	</languageCategory>
-	<languageCategory languageCategoryID="StartGameProgress">
-		<languageEntry languageEntryID="AddingAI" />
-		<languageEntry languageEntryID="AddingMonsters" />
-		<languageEntry languageEntryID="AddingHeroes" />
-		<languageEntry languageEntryID="AddingCities" />
-		<languageEntry languageEntryID="FogOfWar" />
-		<languageEntry languageEntryID="CachingGraphicsXML" />
-	</languageCategory>
 	<languageCategory languageCategoryID="Months">
 		<languageEntry languageEntryID="MNTH01" />
 		<languageEntry languageEntryID="MNTH02" />
@@ -19647,5 +19639,11 @@
 		<languageEntry languageEntryID="TargetSpellChosenLastTurn" />
 		<languageEntry languageEntryID="TargetSpellCancelledLastTurn" />
 		<languageEntry languageEntryID="NodesCategory" />
+		<languageEntry languageEntryID="EmptyNodeCaptured" />
+		<languageEntry languageEntryID="OwnedNodeCaptured" />
+		<languageEntry languageEntryID="EmptyNodeCapturedLastTurn" />
+		<languageEntry languageEntryID="OwnedNodeCapturedLastTurn" />
+		<languageEntry languageEntryID="NodeLost" />
+		<languageEntry languageEntryID="NodeLostLastTurn" />
 	</languageCategory>
 </momimesvr:serverDatabase>

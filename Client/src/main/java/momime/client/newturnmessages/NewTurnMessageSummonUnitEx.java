@@ -24,7 +24,7 @@ import com.ndg.swing.NdgUIUtils;
  * NTM describing a unit that was added from a summoning spell
  */
 public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
-	implements NewTurnMessageUI, NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewTurnMessageSummonUnitEx.class);

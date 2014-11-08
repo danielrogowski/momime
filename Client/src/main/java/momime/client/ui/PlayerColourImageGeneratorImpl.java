@@ -2,10 +2,14 @@ package momime.client.ui;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -27,6 +31,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	/** Colour multiplied flags for each player's cities */
 	private final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
 
+	/** Colour multiplied node animations for each player */
+	private final Map<Integer, List<BufferedImage>> nodeAuraMap = new HashMap<Integer, List<BufferedImage>> ();
+	
 	/** Colour multiplied flags for each player's mirrors */
 	private final Map<Integer, BufferedImage> mirrorImages = new HashMap<Integer, BufferedImage> ();
 	
@@ -35,6 +42,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/** Uncoloured city flag image */
 	private BufferedImage cityFlagImage;
+	
+	/** Uncoloured node aura images */
+	private List<BufferedImage> nodeAuraImages;
 	
 	/** Uncoloured mirror image */
 	private BufferedImage mirrorImage;
@@ -47,6 +57,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
 	
 	/**
 	 * @param playerID Unit owner player ID
@@ -64,7 +77,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 
 	/**
 	 * @param playerID City owner player ID
-	 * @return City flag image in their correct colour; null for the monsters player who has no colour
+	 * @return City flag image in their correct colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	@Override
@@ -77,8 +90,56 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	}
 	
 	/**
+	 * @param frameNumber Frame number of the node aura animation
+	 * @param playerID Node owner player ID
+	 * @return Node aura image in their correct colour
+	 * @throws IOException If there is a problem loading the flag image
+	 */
+	@Override
+	public final BufferedImage getNodeAuraImage (final int frameNumber, final int playerID) throws IOException
+	{
+		if (nodeAuraImages == null)
+		{
+			nodeAuraImages = new ArrayList<BufferedImage> ();
+			for (final AnimationFrame frame : getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ())
+				nodeAuraImages.add (getUtils ().loadImage (frame.getFrameImageFile ()));
+		}
+		
+		// This is copied from getImage and adapted to work with a list
+		final List<BufferedImage> images;
+		
+		// Use containsKey, because for the monsters player we'll put a null into the map (actually a list of nulls, so this isn't really true here)
+		if (nodeAuraMap.containsKey (playerID))
+			images = nodeAuraMap.get (playerID);
+		else
+		{
+			// Generate a new list
+			images = new ArrayList<BufferedImage> ();
+
+			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "PlayerColourImageGeneratorImpl");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+			
+			for (final BufferedImage uncolouredImage : nodeAuraImages)
+			{
+				final BufferedImage image;
+				if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+					image = null;
+				else
+					image = getUtils ().multiplyImageByColour (uncolouredImage, Integer.parseInt (trans.getFlagColour (), 16));
+				
+				images.add (image);
+			}
+			
+			nodeAuraMap.put (playerID, images);
+		}
+		
+		return images.get (frameNumber);
+	}
+	
+	/**
 	 * @param playerID Spell owner player ID
-	 * @return Mirror image in their correct colour; null for the monsters player who has no colour
+	 * @return Mirror image in their correct colour
 	 * @throws IOException If there is a problem loading the mirror image
 	 */
 	@Override
@@ -171,5 +232,21 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
 	}
 }

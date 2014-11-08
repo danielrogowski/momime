@@ -18,14 +18,22 @@ public interface PlayerColourImageGenerator
 
 	/**
 	 * @param playerID City owner player ID
-	 * @return City flag image in their correct colour; null for the monsters player who has no colour
+	 * @return City flag image in their correct colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	public BufferedImage getCityFlagImage (final int playerID) throws IOException;
+
+	/**
+	 * @param frameNumber Frame number of the node aura animation
+	 * @param playerID Node owner player ID
+	 * @return Node aura image in their correct colour
+	 * @throws IOException If there is a problem loading the flag image
+	 */
+	public BufferedImage getNodeAuraImage (final int frameNumber, final int playerID) throws IOException;
 	
 	/**
 	 * @param playerID Spell owner player ID
-	 * @return Mirror image in their correct colour; null for the monsters player who has no colour
+	 * @return Mirror image in their correct colour
 	 * @throws IOException If there is a problem loading the mirror image
 	 */
 	public BufferedImage getOverlandEnchantmentMirror (final int playerID) throws IOException;

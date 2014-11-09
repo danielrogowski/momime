@@ -401,6 +401,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
+	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype">
+		<property name="razeCityUI" ref="razeCityUI" />
+	</bean>
+	
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
@@ -417,7 +421,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype" />
-	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
 	
 	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype">
@@ -946,6 +949,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="anim" ref="anim" />
+	</bean>
+
+	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/RazeCityUI.xml" />
+	</bean>
+
+	<bean id="razeCityUI" class="momime.client.ui.dialogs.RazeCityUI">
+		<property name="razeCityLayout" ref="razeCityLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="client" />
+		<property name="smallFont" ref="smallFont" />
 	</bean>
 
 	<!-- Prototype UI components -->

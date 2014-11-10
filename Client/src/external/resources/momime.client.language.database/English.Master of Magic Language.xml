@@ -5942,6 +5942,46 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>Your UNIT_NAME lost a node to OTHER_PLAYER_NAME's OTHER_UNIT_NAME</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmSelectAdvisor">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Select an Advisor</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Surveyor">
+			<languageEntryText>F1 - Surveyor</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Cartographer">
+			<languageEntryText>F2 - Cartographer</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Apprentice">
+			<languageEntryText>F3 - Apprentice</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Historian">
+			<languageEntryText>F4 - Historian</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Astrologer">
+			<languageEntryText>F5 - Astrologer</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Chancellor">
+			<languageEntryText>F6 - Chancellor</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TaxCollector">
+			<languageEntryText>F7 - Tax Collector</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="GrandVizier">
+			<languageEntryText>F8 - Grand Vizier</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Wizards">
+			<languageEntryText>F9 - Wizards</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="frmSetTaxRate">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Set Tax Rate per Population</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Entry">
+			<languageEntryText>GOLD_PER_POPULATION gold, UNREST_PERCENTAGE% unrest</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<shift>false</shift>
 		<alt>false</alt>

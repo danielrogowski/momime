@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>266</formWidth>
+	<formHeight>158</formHeight>
+	<component name="frmSelectAdvisorTitle">
+		<left>133</left>
+		<top>5</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	
+	<!-- NB. This layout is also used by the tax rate form, so that's why the positions are labelled 1, 2, 3 rather than Surveyor, Cartographer, Apprentice, etc -->
+	
+	<component name="frmSelectAdvisor1">
+		<left>16</left>
+		<top>18</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor2">
+		<left>16</left>
+		<top>32</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor3">
+		<left>16</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor4">
+		<left>16</left>
+		<top>60</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor5">
+		<left>16</left>
+		<top>74</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor6">
+		<left>16</left>
+		<top>88</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor7">
+		<left>16</left>
+		<top>102</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor8">
+		<left>16</left>
+		<top>116</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSelectAdvisor9">
+		<left>16</left>
+		<top>130</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

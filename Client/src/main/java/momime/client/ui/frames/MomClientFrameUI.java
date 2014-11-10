@@ -7,6 +7,9 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.language.LanguageVariableUIImpl;
 
 /**
@@ -22,9 +25,15 @@ import momime.client.language.LanguageVariableUIImpl;
  */
 public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (MomClientFrameUI.class);
+	
 	/** The actual frame */
 	private JFrame frame;
 
+	/** Whether clicks close the form (can't use this on prototype forms, since they'll only close with setVisible (false) and won't be tidied up properly) */
+	private boolean closeOnClick = false;
+	
 	/**
 	 * This is package-private so it can be accessed for setLocationRelativeTo () methods
 	 * @return The actual frame
@@ -90,6 +99,23 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 						final Point frameNow = new Point (frameStart.x + mouseNow.x - mouseStart.x, frameStart.y + mouseNow.y - mouseStart.y);
 						frame.setLocation (frameNow);
 					}
+					
+					/**
+					 * Maybe close the form with a mouse click
+					 */
+					@Override
+					public final void mouseClicked (final MouseEvent ev)
+					{
+						if (isCloseOnClick ())
+							try
+							{
+								setVisible (false);
+							}
+							catch (final IOException e)
+							{
+								log.error (e, e);
+							}
+					}
 				};
 				
 				frame.addMouseListener (undecoratedFrameMover);
@@ -102,5 +128,21 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 			getFrame ().setLocationRelativeTo (null);
 		}
 		frame.setVisible (v);
+	}
+
+	/**
+	 * @return Whether clicks close the form
+	 */
+	final boolean isCloseOnClick ()
+	{
+		return closeOnClick;
+	}
+
+	/**
+	 * @param close Whether clicks close the form
+	 */
+	final void setCloseOnClick (final boolean close)
+	{
+		closeOnClick = close;
 	}
 }

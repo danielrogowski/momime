@@ -21,6 +21,7 @@ import momime.client.ui.frames.ConnectToServerUI;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.TaxRateUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -60,6 +61,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** New Game UI */
 	private NewGameUI newGameUI;
+
+	/** Tax rate UI */
+	private TaxRateUI taxRateUI;
 	
 	/** Overland map bitmap generator */
 	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
@@ -194,6 +198,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				getNewGameUI ().afterJoinedSession ();
 				getOverlandMapBitmapGenerator ().afterJoinedSession ();
 				getCombatMapBitmapGenerator ().afterJoinedSession ();
+				getTaxRateUI ().updateTaxRateButtons ();
 			}
 
 			/**
@@ -449,6 +454,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setNewGameUI (final NewGameUI ui)
 	{
 		newGameUI = ui;
+	}
+
+	/**
+	 * @return Tax rate UI
+	 */
+	public final TaxRateUI getTaxRateUI ()
+	{
+		return taxRateUI;
+	}
+
+	/**
+	 * @param ui Tax rate UI
+	 */
+	public final void setTaxRateUI (final TaxRateUI ui)
+	{
+		taxRateUI = ui;
 	}
 	
 	/**

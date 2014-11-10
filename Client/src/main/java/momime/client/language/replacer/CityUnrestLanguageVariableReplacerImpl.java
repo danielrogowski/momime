@@ -89,7 +89,7 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				break;
 
 			case "BUILDING_REDUCTION":
-				text = new Integer (getCurrentBuilding ().getUnrestReduction ()).toString ();
+				text = "-" + getCurrentBuilding ().getUnrestReduction ();
 				break;
 				
 			default:

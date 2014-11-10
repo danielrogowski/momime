@@ -19646,4 +19646,20 @@
 		<languageEntry languageEntryID="NodeLost" />
 		<languageEntry languageEntryID="NodeLostLastTurn" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmSelectAdvisor">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Surveyor" />
+		<languageEntry languageEntryID="Cartographer" />
+		<languageEntry languageEntryID="Apprentice" />
+		<languageEntry languageEntryID="Historian" />
+		<languageEntry languageEntryID="Astrologer" />
+		<languageEntry languageEntryID="Chancellor" />
+		<languageEntry languageEntryID="TaxCollector" />
+		<languageEntry languageEntryID="GrandVizier" />
+		<languageEntry languageEntryID="Wizards" />
+	</languageCategory>
+	<languageCategory languageCategoryID="frmSetTaxRate">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Entry" />
+	</languageCategory>
 </momimesvr:serverDatabase>

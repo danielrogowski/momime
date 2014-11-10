@@ -404,12 +404,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype">
 		<property name="razeCityUI" ref="razeCityUI" />
 	</bean>
+
+	<bean id="taxRateChangedMessage" class="momime.client.messages.process.TaxRateChangedMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="taxRateUI" ref="taxRateUI" />
+	</bean>
 	
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
 	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype" />
-	<bean id="taxRateChangedMessage" class="momime.client.messages.process.TaxRateChangedMessageImpl" scope="prototype" />
 	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
@@ -598,6 +602,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="taxRateUI" ref="taxRateUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -863,6 +868,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="selectAdvisorUI" ref="selectAdvisorUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="clientConfig" ref="clientConfig" />
@@ -962,6 +968,29 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="smallFont" ref="smallFont" />
+	</bean>
+
+	<bean id="selectAdvisorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/SelectAdvisorUI.xml" />
+	</bean>
+
+	<bean id="selectAdvisorUI" class="momime.client.ui.frames.SelectAdvisorUI">
+		<property name="selectAdvisorLayout" ref="selectAdvisorLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="taxRateUI" ref="taxRateUI" />
+	</bean>
+
+	<bean id="taxRateUI" class="momime.client.ui.frames.TaxRateUI">
+		<property name="selectAdvisorLayout" ref="selectAdvisorLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->

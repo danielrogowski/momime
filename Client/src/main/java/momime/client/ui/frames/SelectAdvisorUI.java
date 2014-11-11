@@ -13,6 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
+import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +48,9 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	
 	/** Tax rate UI */
 	private TaxRateUI taxRateUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** Title */
 	private JLabel title;
@@ -96,6 +102,18 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				getOverlandMapRightHandPanel ().setTop (OverlandMapRightHandPanelTop.SURVEYOR);
+				getOverlandMapRightHandPanel ().setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+				
+				try
+				{
+					getOverlandMapRightHandPanel ().setSurveyorLocation (null);
+					setVisible (false);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -215,6 +233,7 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		log.trace ("Entering languageChanged");
 
 		title.setText (getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Title"));
+		getFrame ().setTitle (title.getText ());
 		
 		surveyorAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Surveyor"));
 		cartographerAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Cartographer"));
@@ -275,5 +294,21 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	public final void setTaxRateUI (final TaxRateUI ui)
 	{
 		taxRateUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

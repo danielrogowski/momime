@@ -745,9 +745,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		// Capture mouse clicks on the scenery panel
 		sceneryPanel.addMouseListener (new MouseAdapter ()
 		{
-			/**
-			 * @param ev Click event
-			 */
 			@Override
 			public final void mouseClicked (final MouseEvent ev)
 			{
@@ -767,7 +764,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 					while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
 					while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
 
-					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
+					final MapCoordinates3DEx mapLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
 					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX);
 					
@@ -780,12 +777,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 							if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
 							{
 								// Right clicking on a city to get the city screen up - is there a city view already open for this city?
-								CityViewUI cityView = getClient ().getCityViews ().get (cityLocation.toString ());
+								CityViewUI cityView = getClient ().getCityViews ().get (mapLocation.toString ());
 								if (cityView == null)
 								{
 									cityView = getPrototypeFrameCreator ().createCityView ();
 									cityView.setCityLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
-									getClient ().getCityViews ().put (cityLocation.toString (), cityView);
+									getClient ().getCityViews ().put (mapLocation.toString (), cityView);
 								}
 							
 								cityView.setVisible (true);
@@ -813,14 +810,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 									// Use common routine to do all the validation
 									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
 										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
-										getClient ().getOurPlayerID (), cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+										getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{
 										final TargetSpellMessage msg = new TargetSpellMessage ();
 										msg.setSpellID (spell.getSpellID ());
-										msg.setCityLocation (cityLocation);
+										msg.setCityLocation (mapLocation);
 										getClient ().getServerConnection ().sendMessageToServer (msg);
 										
 										// Close out the "Target Spell" right hand panel
@@ -862,7 +859,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 						}
 						
 						// Left clicking on a space to move a stack of units to - can only do this if its our turn
-						else if (((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
+						else if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
+							((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 							(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
 							(getMovementTypes () != null) &&
 							(getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX) != OverlandMoveTypeID.CANNOT_MOVE_HERE))
@@ -875,6 +873,43 @@ public final class OverlandMapUI extends MomClientFrameUI
 						log.error (e, e);
 					}
 				}
+			}
+		});
+
+		sceneryPanel.addMouseMotionListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseMoved (final MouseEvent ev)
+			{
+				// We only care about mouse movement when displaying the surveyor
+				if (getOverlandMapRightHandPanel ().getTop () == OverlandMapRightHandPanelTop.SURVEYOR)
+					try
+					{				
+						// Ignore movement in the black area if the window is too large for the map
+						final int mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+						final int mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+						if ((ev.getX () < mapZoomedWidth) && (ev.getY () < mapZoomedHeight))
+						{
+							// Convert pixel coordinates back into a map cell
+							int mapCellX = (((ev.getX () + mapViewX) * 10) / mapViewZoom) / overlandMapTileSet.getTileWidth ();
+							int mapCellY = (((ev.getY () + mapViewY) * 10) / mapViewZoom) / overlandMapTileSet.getTileHeight ();
+							
+							final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+							
+							while (mapCellX < 0) mapCellX = mapCellX + mapSize.getWidth ();
+							while (mapCellX >= mapSize.getWidth ()) mapCellX = mapCellX - mapSize.getWidth (); 
+							while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
+							while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
+		
+							getOverlandMapRightHandPanel ().setSurveyorLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+						}
+						else
+							getOverlandMapRightHandPanel ().setSurveyorLocation (null);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 		});
 		

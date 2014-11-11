@@ -8,6 +8,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.MapSizeData;
 import momime.common.database.Building;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -26,6 +27,36 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public interface MomCityCalculations
 {
 	/**
+	 * This used to be called calculateProductionBonus when it only returned an int.
+	 * 
+	 * @param map Known terrain
+	 * @param cityLocation Location of the city to calculate for
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param db Lookup lists built over the XML database
+	 * @return % production bonus for a city located at this grid cell
+	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
+	 */
+	public CityProductionBreakdown listCityProductionPercentageBonusesFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
+		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
+	/**
+	 * Strategy guide p210.  Note this must generate % values even if the city produces no gold, or if there is no city at all,
+	 * since the AI uses this to consider the potential value of sites it is considering building cities at. 
+	 * 
+	 * @param gold Gold production breakdown
+	 * @param map Known terrain
+	 * @param cityLocation Location of the city to calculate for
+	 * @param overridePopulation If null uses the actual city population for the gold trade % bonus cap; if filled in will override and use this value instead, in 1000s
+	 * @param sys Coordinate system for traversing overland map
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
+	 */
+	public void calculateGoldTradeBonus (final CityProductionBreakdown gold, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
+		final Integer overridePopulation, final CoordinateSystem sys, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
+	/**
 	 * @param map Known terrain; can use memory map, since we only ever call this for our own cities, and we can always see the terrain surrounding those
 	 * @param cityLocation Location of the city to check
 	 * @param building Cache for the building that we want to construct
@@ -35,6 +66,20 @@ public interface MomCityCalculations
 	public boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem);
 
+	/**
+	 * Strategy guide p194.  This used to be called calculateMaxCitySize when it only returned an int.
+	 * 
+	 * @param map Known terrain
+	 * @param cityLocation Location of the city to calculate for
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return Breakdown count of the food production from each of the surrounding tiles
+	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
+	 */
+	public CityProductionBreakdown listCityFoodProductionFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
+		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
 	/**
 	 * Strategy guide p196, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1
 	 * Death rate is on strategy guide p197

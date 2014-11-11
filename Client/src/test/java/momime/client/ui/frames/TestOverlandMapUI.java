@@ -32,6 +32,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.TurnSystem;
+import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
 
 import org.junit.Test;
@@ -43,6 +44,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the OverlandMapUI class
@@ -157,6 +159,10 @@ public final class TestOverlandMapUI
 			}
 		});
 		
+		// Layout
+		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
+		surveyorLayout.buildMaps ();
+		
 		// Set up right hand panel
 		final OverlandMapRightHandPanel rhp = new OverlandMapRightHandPanel ();
 		rhp.setUtils (utils);
@@ -167,9 +173,11 @@ public final class TestOverlandMapUI
 		rhp.setUiComponentFactory (uiComponentFactory);
 		rhp.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		rhp.setTextUtils (new TextUtilsImpl ());
+		rhp.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		rhp.setSmallFont (CreateFontsForTests.getSmallFont ());
 		rhp.setMediumFont (CreateFontsForTests.getMediumFont ());
 		rhp.setLargeFont (CreateFontsForTests.getLargeFont ());
+		rhp.setSurveyorLayout (surveyorLayout);
 
 		// Give it some dummy images for the terrain
 		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];

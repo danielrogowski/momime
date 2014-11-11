@@ -13,7 +13,7 @@ public interface TextUtils
 	
 	/**
 	 * @param n Number to convert
-	 * @return Number which always includes a plus sign (unless 0), e.g. -15 or 0 or +12
+	 * @return Number which always includes a plus or minus sign (unless 0), e.g. -15 or 0 or +12
 	 */
 	public String intToStrPlusMinus (final int n);
 
@@ -22,4 +22,10 @@ public interface TextUtils
 	 * @return String representation of number
 	 */
 	public String halfIntToStr (final int n);
+
+	/**
+	 * @param n Double the number to convert
+	 * @return String representation of number which always includes a plus or minus sign
+	 */
+	public String halfIntToStrPlusMinus (final int n);
 }

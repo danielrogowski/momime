@@ -9,8 +9,10 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.database.MapFeature;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -21,25 +23,35 @@ import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.TileType;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.TurnSystem;
+import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the OverlandMapRightHandPanel class
@@ -71,6 +83,11 @@ public final class TestOverlandMapRightHandPanel
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurnMagicPower")).thenReturn ("Power Base AMOUNT_PER_TURN");
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "TargetSpell")).thenReturn ("Target Spell");
 		
+		when (lang.findCategoryEntry ("frmSurveyor", "Title")).thenReturn ("Surveyor");
+		when (lang.findCategoryEntry ("frmSurveyor", "CityResources")).thenReturn ("City Resources");
+		when (lang.findCategoryEntry ("frmSurveyor", "FeatureProvidesSpellProtection")).thenReturn ("Protects against spells");
+		when (lang.findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity")).thenReturn ("Cities cannot be built" + System.lineSeparator () + "within CITY_SEPARATION squares" + System.lineSeparator () + "of another city");
+		
 		final ProductionType goldProduction = new ProductionType ();
 		goldProduction.setProductionTypeDescription ("Gold");
 		goldProduction.setProductionTypeSuffix ("GP");
@@ -79,6 +96,14 @@ public final class TestOverlandMapRightHandPanel
 		final ProductionType rationsProduction = new ProductionType ();
 		rationsProduction.setProductionTypeDescription ("Rations");
 		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS)).thenReturn (rationsProduction);
+		
+		final ProductionType foodProduction = new ProductionType ();
+		foodProduction.setProductionTypeDescription ("Food");
+		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD)).thenReturn (foodProduction);
+		
+		final ProductionType productionProduction = new ProductionType ();
+		productionProduction.setProductionTypeDescription ("Production");
+		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (productionProduction);
 		
 		final ProductionType manaProduction = new ProductionType ();
 		manaProduction.setProductionTypeDescription ("Mana");
@@ -93,6 +118,16 @@ public final class TestOverlandMapRightHandPanel
 		spellLang.setSpellName ("Heavenly Light");
 		when (lang.findSpell ("SP001")).thenReturn (spellLang);
 		
+		final momime.client.language.database.v0_9_5.TileType tileTypeLang = new momime.client.language.database.v0_9_5.TileType ();
+		tileTypeLang.setTileTypeDescription ("The tile type");
+		tileTypeLang.setTileTypeCannotBuildCityDescription ("Can't build city (tile)");
+		when (lang.findTileType ("TT01")).thenReturn (tileTypeLang);
+		
+		final momime.client.language.database.v0_9_5.MapFeature mapFeatureLang = new momime.client.language.database.v0_9_5.MapFeature ();
+		mapFeatureLang.setMapFeatureDescription ("The map feature");
+		mapFeatureLang.setMapFeatureMagicWeaponsDescription ("Builds +1 Magic Weapons");
+		when (lang.findMapFeature ("MF01")).thenReturn (mapFeatureLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
 		
@@ -105,9 +140,36 @@ public final class TestOverlandMapRightHandPanel
 		
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		when (db.findSpell ("SP001", "OverlandMapRightHandPanel")).thenReturn (spell);
+
+		final TileType tileType = new TileType ();
+		tileType.setCanBuildCity (true);
+		tileType.setDoubleFood (3);
+		tileType.setProductionBonus (4);
+		tileType.setGoldBonus (10);		
+		when (db.findTileType ("TT01", "surveyorLocationOrLanguageChanged")).thenReturn (tileType);
+		
+		final MapFeature mapFeature = new MapFeature ();
+		mapFeature.setCanBuildCity (true);
+		mapFeature.setFeatureMagicWeapons (3);
+		mapFeature.setFeatureSpellProtection (true);
+		when (db.findMapFeature ("MF01", "surveyorLocationOrLanguageChanged")).thenReturn (mapFeature);
+		
+		// Overland map
+		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
+		
+		final MapVolumeOfMemoryGridCells map = ClientTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (map);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+		terrainData.setMapFeatureID ("MF01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		// Player private knowledge
 		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
+		ppk.setFogOfWarMemory (fow);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
@@ -123,6 +185,7 @@ public final class TestOverlandMapRightHandPanel
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
+		sd.setMapSize (mapSize);
 		
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
@@ -150,6 +213,18 @@ public final class TestOverlandMapRightHandPanel
 		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (99999);
 		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (99999);
 		
+		// City info
+		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+
+		final MapArea2DArrayListImpl<Boolean> invalidCityLocations = new MapArea2DArrayListImpl<Boolean> ();
+		invalidCityLocations.setCoordinateSystem (mapSize);
+		
+		for (int x = 0; x < mapSize.getWidth (); x++)
+			for (int y = 0; y < mapSize.getHeight (); y++)
+				invalidCityLocations.set (x, y, true);
+		
+		when (cityCalc.markWithinExistingCityRadius (map, 1, mapSize)).thenReturn (invalidCityLocations);
+		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
 		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer (new Answer<SelectUnitButton> ()
@@ -163,6 +238,10 @@ public final class TestOverlandMapRightHandPanel
 			}
 		});
 		
+		// Layout
+		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
+		surveyorLayout.buildMaps ();
+		
 		// Set up panel
 		final OverlandMapRightHandPanel panel = new OverlandMapRightHandPanel ();
 		panel.setUtils (utils);
@@ -170,12 +249,15 @@ public final class TestOverlandMapRightHandPanel
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setResourceValueUtils (resources);
+		panel.setCityCalculations (cityCalc);
 		panel.setTextUtils (new TextUtilsImpl ());
+		panel.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		panel.setUiComponentFactory (uiComponentFactory);
 		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setLargeFont (CreateFontsForTests.getLargeFont ());
+		panel.setSurveyorLayout (surveyorLayout);
 		
 		// Set up a dummy frame to display the panel
 		final JFrame frame = new JFrame ("testOverlandMapRightHandPanel");
@@ -184,6 +266,9 @@ public final class TestOverlandMapRightHandPanel
 		frame.pack ();
 		frame.setLocationRelativeTo (null);
 		frame.setVisible (true);
+
+		// Have to do this after the frame is displayed
+		panel.setSurveyorLocation (new MapCoordinates3DEx (20, 10, 1));
 		
 		return panel;
 	}

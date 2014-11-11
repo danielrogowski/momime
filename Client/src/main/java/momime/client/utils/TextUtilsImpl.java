@@ -25,7 +25,7 @@ public final class TextUtilsImpl implements TextUtils
 	
 	/**
 	 * @param n Number to convert
-	 * @return Number which always includes a plus sign (unless 0), e.g. -15 or 0 or +12
+	 * @return Number which always includes a plus or minus sign (unless 0), e.g. -15 or 0 or +12
 	 */
 	@Override
 	public final String intToStrPlusMinus (final int n)
@@ -54,5 +54,15 @@ public final class TextUtilsImpl implements TextUtils
 			s = s + HALF;
 		
 		return s;
+	}
+
+	/**
+	 * @param n Double the number to convert
+	 * @return String representation of number which always includes a plus or minus sign
+	 */
+	@Override
+	public final String halfIntToStrPlusMinus (final int n)
+	{
+		return ((n > 0) ? "+" : "") + halfIntToStr (n);
 	}
 }

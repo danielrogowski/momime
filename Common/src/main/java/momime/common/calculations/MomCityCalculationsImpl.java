@@ -115,7 +115,8 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @return % production bonus for a city located at this grid cell
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
-	final CityProductionBreakdown listCityProductionPercentageBonusesFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
+	@Override
+	public final CityProductionBreakdown listCityProductionPercentageBonusesFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
 		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -182,7 +183,8 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
 	 */
-	final void calculateGoldTradeBonus (final CityProductionBreakdown gold, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
+	@Override
+	public final void calculateGoldTradeBonus (final CityProductionBreakdown gold, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final Integer overridePopulation, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -346,7 +348,8 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @return Breakdown count of the food production from each of the surrounding tiles
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
-	final CityProductionBreakdown listCityFoodProductionFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
+	@Override
+	public final CityProductionBreakdown listCityFoodProductionFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
 		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{

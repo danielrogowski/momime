@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import momime.client.MomClient;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.database.MapFeature;
 import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
@@ -37,24 +37,35 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeatureProduction;
+import momime.common.database.ProductionType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.TileType;
+import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.ResourceValueUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * The right hand panel has a switchable top section and switchable bottom section (see the two enums),
@@ -65,6 +76,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (OverlandMapRightHandPanel.class);
+	
+	/** XML layout for the surveyor subpanel */
+	private XmlLayoutContainerEx surveyorLayout;
 	
 	/** Select unit buttons */
 	private List<HideableComponent<SelectUnitButton>> selectUnitButtons = new ArrayList<HideableComponent<SelectUnitButton>> ();
@@ -107,6 +121,12 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+
+	/** City calculations */
+	private MomCityCalculations cityCalculations;
 	
 	/** What is displayed in the variable top section */
 	private OverlandMapRightHandPanelTop top;
@@ -153,15 +173,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Card layout for bottom section */
 	private CardLayout bottomCardLayout;
 	
-	/** Title for targetting spells */
-	private JLabel targetSpellTitle;
-	
-	/** Text saying what's being targetted */
-	private JTextArea targetSpellText;
-	
-	/** NTM about the spell being targetted */
-	private NewTurnMessageSpellEx targetSpell;
-	
 	/** Cancel action */
 	private Action cancelAction;
 	
@@ -185,6 +196,54 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Priests purifying corrupted lands */
 	private Action purifyAction;
+
+	/** Title for targetting spells */
+	private JLabel targetSpellTitle;
+	
+	/** Text saying what's being targetted */
+	private JTextArea targetSpellText;
+	
+	/** NTM about the spell being targetted */
+	private NewTurnMessageSpellEx targetSpell;
+	
+	/** Title for surveyor */
+	private JLabel surveyorTitle;
+	
+	/** Title for city resources section */
+	private JLabel surveyorCityTitle;
+	
+	/** Tile type here */
+	private JLabel surveyorTileType;
+	
+	/** Food harvested from this tile type */
+	private JLabel surveyorTileTypeFood;
+	
+	/** % production bonus from this tile type */
+	private JLabel surveyorTileTypeProduction;
+	
+	/** % trade bonus from this tile type */
+	private JLabel surveyorTileTypeGold;
+
+	/** Map feature here */
+	private JLabel surveyorMapFeature;
+
+	/** First effect of this map feature */
+	private JLabel surveyorMapFeatureFirst;
+	
+	/** Second effect of this map feature */
+	private JLabel surveyorMapFeatureSecond;
+
+	/** First line of surveyor info about a potential city */
+	private JLabel surveyorCityFirst;
+
+	/** Second line of surveyor info about a potential city */
+	private JLabel surveyorCitySecond;
+
+	/** Third line of surveyor info about a potential city */
+	private JLabel surveyorCityThird;
+	
+	/** Map location currently being surveyed; can be null to blank out all the surveyor labels */
+	private MapCoordinates3DEx surveyorLocation;
 	
 	/**
 	 * Sets up the panel once all values have been injected
@@ -364,15 +423,28 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
-				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setTitleLanguageCategoryID ("SpellTargetting");
-				msg.setTitleLanguageEntryID ("CancelTitle");
-				msg.setTextLanguageCategoryID ("SpellTargetting");
-				msg.setTextLanguageEntryID ("CancelText");
-				msg.setCancelTargettingSpell (getTargetSpell ());
 				try
 				{
-					msg.setVisible (true);
+					// What are we cancelling - check the top part of the panel
+					switch (getTop ())
+					{
+						case SURVEYOR:
+							getOverlandMapProcessing ().updateMovementRemaining ();
+							break;
+							
+						case TARGET_SPELL:
+							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+							msg.setTitleLanguageCategoryID ("SpellTargetting");
+							msg.setTitleLanguageEntryID ("CancelTitle");
+							msg.setTextLanguageCategoryID ("SpellTargetting");
+							msg.setTextLanguageEntryID ("CancelText");
+							msg.setCancelTargettingSpell (getTargetSpell ());
+							msg.setVisible (true);
+							break;
+							
+						default:
+							log.warn ("Cancel button clicked in overland map RHP but don't know what we're cancelling, top = " + getTop ());
+					}
 				}
 				catch (final Exception e)
 				{
@@ -454,55 +526,43 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		final JPanel surveyorPanel = getUtils ().createPanelWithBackgroundImage (surveyorBackground);		
 		topCards.add (surveyorPanel, OverlandMapRightHandPanelTop.SURVEYOR.name ());
 		
-		surveyorPanel.setLayout (new GridBagLayout ());
+		surveyorPanel.setLayout (new XmlLayoutManager (getSurveyorLayout ()));
 
-		final JLabel surveyorTitle = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getLargeFont ());
-		surveyorTitle.setText ("Surveyor");
-		surveyorPanel.add (surveyorTitle, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorTitle = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getLargeFont ());
+		surveyorPanel.add (surveyorTitle, "frmSurveyorTitle");
 		
-		final JLabel surveyorTileType = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		surveyorTileType.setText ("Forest");
-		surveyorPanel.add (surveyorTileType, getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorTileType = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		surveyorPanel.add (surveyorTileType, "frmSurveyorTileType");
 		
-		final JLabel surveyorTileTypeFood = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorTileTypeFood.setText ("Unknown food");
-		surveyorPanel.add (surveyorTileTypeFood, getUtils ().createConstraintsNoFill (0, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorTileTypeFood = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorTileTypeFood, "frmSurveyorFood");
 		
-		final JLabel surveyorTileTypeProduction = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorTileTypeProduction.setText ("Unknown production");
-		surveyorPanel.add (surveyorTileTypeProduction, getUtils ().createConstraintsNoFill (0, 3, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorTileTypeProduction = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorTileTypeProduction, "frmSurveyorProduction");
 		
-		final JLabel surveyorTileTypeGold = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorTileTypeGold.setText ("Unknown gold");
-		surveyorPanel.add (surveyorTileTypeGold, getUtils ().createConstraintsNoFill (0, 4, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorTileTypeGold = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorTileTypeGold, "frmSurveyorGold");
 
-		final JLabel surveyorMapFeature = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		surveyorMapFeature.setText ("Adamantium");
-		surveyorPanel.add (surveyorMapFeature, getUtils ().createConstraintsNoFill (0, 5, 1, 1, new Insets (22, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
+		surveyorMapFeature = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		surveyorPanel.add (surveyorMapFeature, "frmSurveyorFeature");
 
-		final JLabel surveyorMapFeatureFirst = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorMapFeatureFirst.setText ("First effect");
-		surveyorPanel.add (surveyorMapFeatureFirst, getUtils ().createConstraintsNoFill (0, 6, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorMapFeatureFirst = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorMapFeatureFirst, "frmSurveyorFeatureEffect1");
 		
-		final JLabel surveyorMapFeatureSecond = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorMapFeatureSecond.setText ("Second effect");
-		surveyorPanel.add (surveyorMapFeatureSecond, getUtils ().createConstraintsNoFill (0, 7, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorMapFeatureSecond = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorMapFeatureSecond, "frmSurveyorFeatureEffect2");
 
-		final JLabel surveyorCityTitle = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		surveyorCityTitle.setText ("City Resources");
-		surveyorPanel.add (surveyorCityTitle, getUtils ().createConstraintsNoFill (0, 8, 1, 1, new Insets (22, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
+		surveyorCityTitle = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		surveyorPanel.add (surveyorCityTitle, "frmSurveyorCityResources");
 
-		final JLabel surveyorCityFood = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorCityFood.setText ("Max population 25,000");
-		surveyorPanel.add (surveyorCityFood, getUtils ().createConstraintsNoFill (0, 9, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorCityFirst = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorCityFirst, "frmSurveyorCityDetails1");
 
-		final JLabel surveyorCityProduction = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorCityProduction.setText ("Production bonus +50%");
-		surveyorPanel.add (surveyorCityProduction, getUtils ().createConstraintsNoFill (0, 10, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		surveyorCitySecond = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorCitySecond, "frmSurveyorCityDetails2");
 
-		final JLabel surveyorCityGold = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		surveyorCityGold.setText ("Gold trade bonus +30%");
-		surveyorPanel.add (surveyorCityGold, getUtils ().createConstraintsNoFill (0, 11, 1, 1, new Insets (0, 0, 5, 0), GridBagConstraintsNoFill.CENTRE));
+		surveyorCityThird = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		surveyorPanel.add (surveyorCityThird, "frmSurveyorCityDetails3");
 
 		// Top card - target spell
 		final JPanel targetSpellPanel = getUtils ().createPanelWithBackgroundImage (targetSpellBackground);
@@ -711,6 +771,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		patrolAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Patrol"));
 		waitAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Wait"));
 
+		surveyorTitle.setText (getLanguage ().findCategoryEntry ("frmSurveyor", "Title"));
+		surveyorCityTitle.setText (getLanguage ().findCategoryEntry ("frmSurveyor", "CityResources"));
+		
 		targetSpellTitle.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "TargetSpell"));
 		
 		// A bit more involved to set the spell targetting text correctly
@@ -730,17 +793,18 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			catch (final Exception e)
 			{
 				log.error (e, e);
-			}
-		
+			}		
 		
 		try
 		{
 			updateGlobalEconomyValues ();
+			surveyorLocationOrLanguageChanged ();
 		}
 		catch (final Exception e)
 		{
 			log.error (e, e);
 		}
+		
 		turnSystemOrCurrentPlayerChanged ();
 		
 		log.trace ("Exiting languageChanged");
@@ -760,7 +824,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID));
 		
-			final ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
+			final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
 			if ((productionType != null) && (productionType.getProductionTypeSuffix () != null))
 				amountStored = amountStored + " " + productionType.getProductionTypeSuffix ();
 			
@@ -788,7 +852,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
-			final ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
+			final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
 			final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
 				pub.getPick (), productionTypeID, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
@@ -855,6 +919,193 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		}
 		
 		log.trace ("Exiting turnSystemOrCurrentPlayerChanged");
+	}
+	
+	/**
+	 * Update labels that depend both on the language and on the location being surveyed
+	 * @throws RecordNotFoundException If we encounter a map element that can't be found in the DB
+	 * @throws MomException If we encounter data that there isn't appropriate fields to display 
+	 */
+	private final void surveyorLocationOrLanguageChanged () throws RecordNotFoundException, MomException
+	{
+		log.trace ("Entering surveyorLocationOrLanguageChanged: " + getSurveyorLocation ());
+
+		final MemoryGridCell mc = (getSurveyorLocation () == null) ? null :
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getSurveyorLocation ().getZ ()).getRow ().get (getSurveyorLocation ().getY ()).getCell ().get (getSurveyorLocation ().getX ());
+
+		// Note terrainData can be null here if surveying an area that we've never seen or that is totally off the map
+		final OverlandMapTerrainData terrainData = (mc == null) ? null : mc.getTerrainData ();
+		final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData);
+		final momime.client.language.database.v0_9_5.TileType tileTypeLang = getLanguage ().findTileType (tileTypeID);
+
+		// Text about building a city can be set in a bunch of places
+		String cityInfo = null;
+		
+		// Tile type - when looking at an area completely off the map, don't even display "unknown"
+		surveyorMapFeature.setText (null);
+		
+		if (mc == null)
+		{
+			surveyorTileType.setText (null);
+			cityInfo = "";
+		}
+		else
+		{
+			// Tile type, note this also outputs a description of Unknown for terrain that we haven't scouted
+			final String tileTypeDescription = (tileTypeLang == null) ? null : tileTypeLang.getTileTypeDescription ();
+
+			surveyorTileType.setText ((tileTypeDescription != null) ? tileTypeDescription : tileTypeID);
+			
+			// Show nodes in the map feature slot, since that's really what they look like
+			if ((tileTypeLang != null) && (tileTypeLang.getTileTypeShowAsFeature () != null))
+				surveyorMapFeature.setText (tileTypeLang.getTileTypeShowAsFeature ());
+		}
+			
+		// When looking at areas of the map we haven't seen, that "unknown" is all that is displayed, so blank everything else
+		if (terrainData == null)
+		{			
+			surveyorTileTypeFood.setText			(null);
+			surveyorTileTypeProduction.setText	(null);
+			surveyorTileTypeGold.setText			(null);
+			surveyorMapFeatureFirst.setText		(null);
+			surveyorMapFeatureSecond.setText	(null);
+
+			if (cityInfo == null)
+				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityBecauseUnscouted");
+		}
+		else
+		{
+			// Details about the tile type
+			final TileType tileType = getClient ().getClientDB ().findTileType (tileTypeID, "surveyorLocationOrLanguageChanged");
+			
+			if ((tileType.getDoubleFood () == null) || (tileType.getDoubleFood () <= 0))
+				surveyorTileTypeFood.setText (null);
+			else
+			{
+				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
+				
+				surveyorTileTypeFood.setText (getTextUtils ().halfIntToStr (tileType.getDoubleFood ()) + " " +
+					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD));
+			}
+
+			if ((tileType.getProductionBonus () == null) || (tileType.getProductionBonus () <= 0))
+				surveyorTileTypeProduction.setText (null);
+			else
+			{
+				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
+				
+				surveyorTileTypeProduction.setText ("+" + tileType.getProductionBonus ().toString () + "% " +
+					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION));
+			}
+
+			if ((tileType.getGoldBonus () == null) || (tileType.getGoldBonus () <= 0))
+				surveyorTileTypeGold.setText (null);
+			else
+			{
+				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
+				
+				surveyorTileTypeGold.setText ("+" + tileType.getGoldBonus ().toString () + "% " +
+					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD));
+			}
+			
+			// Does the tile type stop us from building a city?
+			if ((tileType.isCanBuildCity () == null) || (!tileType.isCanBuildCity ()))
+			{
+				final String tileTypeDescription = (tileTypeLang == null) ? null : tileTypeLang.getTileTypeCannotBuildCityDescription ();
+				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityBecauseOfTerrain").replaceAll
+					("TILE_TYPE", (tileTypeDescription != null) ? tileTypeDescription : tileTypeID);
+			}
+			
+			// Effects of the map feature
+			final List<String> effects = new ArrayList<String> ();
+			
+			if (terrainData.getMapFeatureID () != null)
+			{
+				final momime.client.language.database.v0_9_5.MapFeature mapFeatureLang = getLanguage ().findMapFeature (terrainData.getMapFeatureID ());
+				final String mapFeatureDescription = (mapFeatureLang != null) ? mapFeatureLang.getMapFeatureDescription () : null;
+				surveyorMapFeature.setText ((mapFeatureDescription != null) ? mapFeatureDescription : terrainData.getMapFeatureID ());
+				
+				// Production bonuses from feature (e.g. +5 gold, +2 mana)
+				final MapFeature mapFeature = getClient ().getClientDB ().findMapFeature (terrainData.getMapFeatureID (), "surveyorLocationOrLanguageChanged");
+				for (final MapFeatureProduction mapFeatureProduction : mapFeature.getMapFeatureProduction ())
+					if (mapFeatureProduction.getDoubleAmount () != 0)
+					{
+						final ProductionType productionType = getClient ().getClientDB ().findProductionType (mapFeatureProduction.getProductionTypeID (), "surveyorLocationOrLanguageChanged");
+						
+						final momime.client.language.database.v0_9_5.ProductionType productionTypeLang = getLanguage ().findProductionType (mapFeatureProduction.getProductionTypeID ());
+						final String productionTypeDescription = (productionTypeLang != null) ? productionTypeLang.getProductionTypeDescription () : null;
+						
+						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubleAmount ()) +
+							(productionType.isIsPercentage () ? "% " : " ") +
+							((productionTypeDescription != null) ? productionTypeDescription : mapFeatureProduction.getProductionTypeID ()));
+					}
+				
+				// Fixed effects of feature
+				if ((mapFeature.isFeatureSpellProtection () != null) && (mapFeature.isFeatureSpellProtection ()))
+					effects.add (getLanguage ().findCategoryEntry ("frmSurveyor", "FeatureProvidesSpellProtection"));
+				
+				if ((mapFeatureLang != null) && (mapFeatureLang.getMapFeatureMagicWeaponsDescription () != null))
+					effects.add (mapFeatureLang.getMapFeatureMagicWeaponsDescription ());
+				
+				// Does the tile type stop us from building a city?
+				if ((cityInfo == null) && (!mapFeature.isCanBuildCity ()))
+				{
+					final String mapFeatureCityDescription = (mapFeatureLang != null) ? mapFeatureLang.getMapFeatureCannotBuildCityDescription () : null;
+					cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityBecauseOfFeature").replaceAll
+						("MAP_FEATURE", (mapFeatureCityDescription != null) ? mapFeatureCityDescription : terrainData.getMapFeatureID ());
+				}
+			}
+
+			surveyorMapFeatureFirst.setText		((effects.size () < 1) ? null : effects.get (0));
+			surveyorMapFeatureSecond.setText	((effects.size () < 2) ? null : effects.get (1));
+
+			if (effects.size () > 2)
+				log.warn ("Map feature ID \"" + terrainData.getMapFeatureID () + "\" has more than 2 effects, so can't display them on the surveyor");
+		}
+		
+		// Check distance to other cities
+		if (cityInfo == null)
+		{
+			if (getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+				getSurveyorLocation ().getZ (), getClient ().getSessionDescription ().getMapSize ()).get (getSurveyorLocation ().getX (), getSurveyorLocation ().getY ()))
+			{
+				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity").replaceAll
+					("CITY_SEPARATION", new Integer (getClient ().getSessionDescription ().getMapSize ().getCitySeparation ()).toString ());
+			}
+			else
+			{
+				final CityProductionBreakdown gold = new CityProductionBreakdown ();
+				getCityCalculations ().calculateGoldTradeBonus (gold,
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (), null,
+					getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ());
+				
+				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CanBuildCity").replaceAll
+					("MAXIMUM_POPULATION", new Integer (getCityCalculations ().listCityFoodProductionFromTerrainTiles
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
+						getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()).getDoubleProductionAmount ()).toString () + ",000").replaceAll
+					("PRODUCTION_BONUS", new Integer (getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
+						getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()).getPercentageBonus ()).toString ()).replaceAll
+					("GOLD_BONUS", new Integer (gold.getTradePercentageBonusFromTileType ()).toString ());
+			}
+		}
+		
+		// Output the 3 lines of city info
+		// These seem to be read from the XML with only newline chars, and no carriage returns
+		final String [] lines = cityInfo.replaceAll ("\r", "").split ("\n");
+		
+		surveyorCityFirst.setText		((lines.length < 1) ? null : lines [0]);
+		surveyorCitySecond.setText	((lines.length < 2) ? null : lines [1]);
+		surveyorCityThird.setText	((lines.length < 3) ? null : lines [2]);
+
+		if (lines.length > 3)
+			log.warn ("Surveyor city info generated more than 3 lines");
+
+		log.trace ("Exiting surveyorLocationOrLanguageChanged");
 	}
 	
 	/**
@@ -970,6 +1221,25 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	{
 		targetSpell = msg;
 		languageChanged ();
+	}
+
+	/**
+	 * @return Map location currently being surveyed; can be null to blank out all the surveyor labels
+	 */
+	public final MapCoordinates3DEx getSurveyorLocation ()
+	{
+		return surveyorLocation;
+	}
+
+	/**
+	 * @param loc Map location currently being surveyed; can be null to blank out all the surveyor labels
+	 * @throws RecordNotFoundException If we encounter a map element that can't be found in the DB 
+	 * @throws MomException If we encounter data that there isn't appropriate fields to display 
+	 */
+	public final void setSurveyorLocation (final MapCoordinates3DEx loc) throws RecordNotFoundException, MomException
+	{
+		surveyorLocation = loc;
+		surveyorLocationOrLanguageChanged ();
 	}
 	
 	/**
@@ -1146,5 +1416,53 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final MomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final MomCityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+
+	/**
+	 * @return XML layout for the surveyor subpanel
+	 */
+	public final XmlLayoutContainerEx getSurveyorLayout ()
+	{
+		return surveyorLayout;
+	}
+
+	/**
+	 * @param layout XML layout for the surveyor subpanel
+	 */
+	public final void setSurveyorLayout (final XmlLayoutContainerEx layout)
+	{
+		surveyorLayout = layout;
 	}
 }

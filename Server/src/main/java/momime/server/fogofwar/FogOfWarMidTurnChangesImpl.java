@@ -1875,9 +1875,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// Make our 1 movement?
 				if (!combatInitiated)
 				{
-					// Adjust move to plane if moving onto a tower
+					// Adjust move to plane if moving onto or off of a tower
 					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
 						oneStep.setZ (0);
+					else
+						oneStep.setZ (moveTo.getZ ());
 
 					// Actually move the units
 					moveUnitStackOneCellOnServerAndClients (unitStack, unitStackOwner, moveFrom, oneStep, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());

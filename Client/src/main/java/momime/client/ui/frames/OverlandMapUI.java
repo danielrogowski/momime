@@ -296,6 +296,20 @@ public final class OverlandMapUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				mapViewPlane = 1 - mapViewPlane;
+				
+				try
+				{
+					regenerateOverlandMapBitmaps ();
+					regenerateFogOfWarBitmap ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+
+				// Keep the same movement types array, but regenerate the bitmap from it to show movement available on the new plane
+				setMovementTypes (movementTypes);
 			}
 		};
 

@@ -16,15 +16,19 @@ import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.RangedAttackTypeActionID;
 import momime.client.graphics.database.v0_9_5.RangedAttackTypeCombatImage;
 import momime.client.process.CombatMapProcessing;
+import momime.client.ui.components.HideableComponent;
+import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.UnitInfoUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.Unit;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.KillUnitActionID;
-import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -85,6 +89,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** Animation controller */
 	private AnimationController anim;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** The attacking unit; null if we can't see it */
 	private MemoryUnit attackerUnit;
@@ -295,6 +302,28 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			final double ratio = (double) tickNumber / tickCount;
 			attackerUnit.setDamageTaken (attackerDamageTakenStart + (int) ((getAttackerDamageTaken () - attackerDamageTakenStart) * ratio));
 			defenderUnit.setDamageTaken (defenderDamageTakenStart + (int) ((getDefenderDamageTaken () - defenderDamageTakenStart) * ratio));
+			
+			// Either unit have unit info screens open that need to update?
+			try
+			{
+				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
+				if (attackerUI != null)
+					attackerUI.getUnitInfoPanel ().getPanel ().repaint ();
+	
+				final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (getDefenderUnitURN ());
+				if (defenderUI != null)
+					defenderUI.getUnitInfoPanel ().getPanel ().repaint ();
+			}
+			catch (final IOException e)
+			{
+				log.error (e, e);
+			}
+			
+			// Either unit have a select unit button that needs to update?
+			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+				if ((!button.isHidden ()) &&
+					((button.getComponent ().getUnit () == attackerUnit) || (button.getComponent ().getUnit () == defenderUnit)))
+					button.repaint ();
 		}
 	}
 
@@ -333,6 +362,16 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				log.debug ("ApplyDamage is killing off dead attacker Unit URN " + getAttackerUnitURN ());
 				getUnitClientUtils ().killUnit (getAttackerUnitURN (), transmittedAction, untransmittedAction);
 			}
+			else
+			{
+				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
+				if (attackerUI != null)
+					attackerUI.getUnitInfoPanel ().getPanel ().repaint ();
+				
+				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == attackerUnit))
+						button.repaint ();
+			}
 		}
 		
 		// Damage to defender
@@ -346,6 +385,16 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				// Defender is dead
 				log.debug ("ApplyDamage is killing off dead defender Unit URN " + getDefenderUnitURN ());
 				getUnitClientUtils ().killUnit (getDefenderUnitURN (), transmittedAction, untransmittedAction);
+			}
+			else
+			{
+				final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (getDefenderUnitURN ());
+				if (defenderUI != null)
+					defenderUI.getUnitInfoPanel ().getPanel ().repaint ();
+
+				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == defenderUnit))
+						button.repaint ();
 			}
 		}
 		
@@ -561,6 +610,22 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final void setAnim (final AnimationController controller)
 	{
 		anim = controller;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 	
 	/**

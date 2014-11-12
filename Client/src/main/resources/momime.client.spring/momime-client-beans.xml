@@ -386,6 +386,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="anim" ref="anim" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype">

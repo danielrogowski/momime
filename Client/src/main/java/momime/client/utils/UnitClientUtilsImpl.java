@@ -193,7 +193,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		
 		// Select unit buttons on the Map
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((button.getComponent ().getUnit () != null) && (button.getComponent ().getUnit ().getUnitURN () == unitURN))
+			if ((!button.isHidden ()) && (button.getComponent ().getUnit () != null) && (button.getComponent ().getUnit ().getUnitURN () == unitURN))
 			{
 				button.getComponent ().setUnit (null);
 				

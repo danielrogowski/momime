@@ -26469,7 +26469,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN184_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27011,7 +27011,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN188_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>

@@ -21,17 +21,22 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.components.UnitRowDisplayButton;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -72,6 +77,15 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** Units to display in the list */
 	private List<MemoryUnit> units;
@@ -160,13 +174,60 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			buttonNormal, buttonPressed, buttonNormal), "frmUnitRowDisplayCancel");
 		
 		// Create controls for each unit
+		final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpell ().getSpellID (), "UnitRowDisplayUI");
+		
 		int row = 0;
 		for (final MemoryUnit unit : getUnits ())
 		{
 			row++;
 			
 			// Unit image/button
+			final Action selectAction = new AbstractAction ()
+			{
+				@Override
+				public final void actionPerformed (final ActionEvent ev)
+				{
+					try
+					{
+						// Use common routine to do all the validation
+						final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell, getClient ().getOurPlayerID (), unit, getClient ().getClientDB ());
+						
+						if (validTarget == TargetSpellResult.VALID_TARGET)
+						{
+							final TargetSpellMessage msg = new TargetSpellMessage ();
+							msg.setSpellID (getTargetSpell ().getSpellID ());
+							msg.setUnitURN (unit.getUnitURN ());
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+							
+							// Close out this window and the "Target Spell" right hand panel
+							getOverlandMapProcessing ().updateMovementRemaining ();
+							getDialog ().dispose ();
+						}
+						else if (validTarget.getUnitLanguageEntryID () != null)
+						{
+							final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
+							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+							
+							final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : getTargetSpell ().getSpellID ());
+							
+							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+							msg.setTitleLanguageCategoryID ("SpellTargetting");
+							msg.setTitleLanguageEntryID ("Title");
+							msg.setText (text);
+							msg.setVisible (true);												
+						}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			};
+
 			final UnitRowDisplayButton button = getUiComponentFactory ().createUnitRowDisplayButton ();
+			button.setAction (selectAction);
 			button.setUnit (unit);
 			button.init ();
 			contentPane.add (button, "frmUnitRowUnit" + row + "Button");
@@ -384,6 +445,54 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
+	}
+	
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 	
 	/**

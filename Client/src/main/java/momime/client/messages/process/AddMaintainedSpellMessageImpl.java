@@ -11,11 +11,12 @@ import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,6 +96,19 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			}
 		}
 		
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
+		{
+			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
+				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
+			{
+				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedUnitURN (getMaintainedSpell ().getUnitURN ());
+				
+				// Redraw the NTMs
+				getNewTurnMessagesUI ().languageChanged ();
+			}
+		}
+		
 		// If no spell animation, then just add it right away
 		if (!animated)
 		{
@@ -116,20 +130,30 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 		
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getMaintainedSpell ());
 		
-		// If we've got a city screen open showing where the spell was cast, may need to set up animation to display it
-		if (getMaintainedSpell ().getCityLocation () != null)
+		try
 		{
-			final CityViewUI cityView = getClient ().getCityViews ().get (getMaintainedSpell ().getCityLocation ().toString ());
-			if (cityView != null)
-				try
+			// If we've got a city screen open showing where the spell was cast, may need to set up animation to display it
+			if (getMaintainedSpell ().getCityLocation () != null)
+			{
+				final CityViewUI cityView = getClient ().getCityViews ().get (getMaintainedSpell ().getCityLocation ().toString ());
+				if (cityView != null)
 				{
 					cityView.cityDataChanged ();
 					cityView.spellsChanged ();
 				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
+			}
+	
+			// If we've got a unit info display showing for this unit, then show the new spell effect on it
+			else if (getMaintainedSpell ().getUnitURN () != null)
+			{
+				final UnitInfoUI ui = getClient ().getUnitInfos ().get (getMaintainedSpell ().getUnitURN ());
+				if (ui != null)
+					ui.getUnitInfoPanel ().showUnit (ui.getUnit ());
+			}
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
 		}
 		
 		log.trace ("Exiting processOneUpdate");

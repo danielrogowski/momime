@@ -1260,6 +1260,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
 </beans>

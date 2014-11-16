@@ -211,9 +211,12 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 		
 			// Cast a city/unit enchantment/curse, so need to pick a target for it
 			case TARGET_SPELL:
-				getOverlandMapRightHandPanel ().setTargetSpell (this);
-				getOverlandMapRightHandPanel ().setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
-				getOverlandMapRightHandPanel ().setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+				if ((!isTargettingCancelled ()) && (getTargettedCity () == null) && (getTargettedUnitURN () == null))
+				{
+					getOverlandMapRightHandPanel ().setTargetSpell (this);
+					getOverlandMapRightHandPanel ().setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
+					getOverlandMapRightHandPanel ().setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+				}
 				break;
 				
 			default:

@@ -1,0 +1,3137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>498</formWidth>
+	<formHeight>409</formHeight>		<!-- =29 + (19*unitCount) -->
+	<component name="frmUnitRowDisplayTitle">
+		<left>224</left>
+		<top>3</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowDisplayCancel">
+		<left>443</left>
+		<top>7</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Button">
+		<left>9</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Name">
+		<left>30</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute1Value">
+		<left>132</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute1Icon">
+		<left>143</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute2Value">
+		<left>158</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute2Icon">
+		<left>169</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute3Value">
+		<left>184</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute3Icon">
+		<left>195</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute4Value">
+		<left>210</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute4Icon">
+		<left>221</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute5Value">
+		<left>236</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute5Icon">
+		<left>247</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute6Value">
+		<left>262</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Attribute6Icon">
+		<left>273</left>
+		<top>27</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill1">
+		<left>287</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill2">
+		<left>304</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill3">
+		<left>321</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill4">
+		<left>338</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill5">
+		<left>355</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill6">
+		<left>372</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill7">
+		<left>389</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill8">
+		<left>406</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill9">
+		<left>423</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill10">
+		<left>440</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill11">
+		<left>457</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit1Skill12">
+		<left>474</left>
+		<top>25</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Button">
+		<left>9</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Name">
+		<left>30</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute1Value">
+		<left>132</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute1Icon">
+		<left>143</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute2Value">
+		<left>158</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute2Icon">
+		<left>169</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute3Value">
+		<left>184</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute3Icon">
+		<left>195</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute4Value">
+		<left>210</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute4Icon">
+		<left>221</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute5Value">
+		<left>236</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute5Icon">
+		<left>247</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute6Value">
+		<left>262</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Attribute6Icon">
+		<left>273</left>
+		<top>46</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill1">
+		<left>287</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill2">
+		<left>304</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill3">
+		<left>321</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill4">
+		<left>338</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill5">
+		<left>355</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill6">
+		<left>372</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill7">
+		<left>389</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill8">
+		<left>406</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill9">
+		<left>423</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill10">
+		<left>440</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill11">
+		<left>457</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit2Skill12">
+		<left>474</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Button">
+		<left>9</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Name">
+		<left>30</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute1Value">
+		<left>132</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute1Icon">
+		<left>143</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute2Value">
+		<left>158</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute2Icon">
+		<left>169</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute3Value">
+		<left>184</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute3Icon">
+		<left>195</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute4Value">
+		<left>210</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute4Icon">
+		<left>221</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute5Value">
+		<left>236</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute5Icon">
+		<left>247</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute6Value">
+		<left>262</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Attribute6Icon">
+		<left>273</left>
+		<top>65</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill1">
+		<left>287</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill2">
+		<left>304</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill3">
+		<left>321</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill4">
+		<left>338</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill5">
+		<left>355</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill6">
+		<left>372</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill7">
+		<left>389</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill8">
+		<left>406</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill9">
+		<left>423</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill10">
+		<left>440</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill11">
+		<left>457</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit3Skill12">
+		<left>474</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Button">
+		<left>9</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Name">
+		<left>30</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute1Value">
+		<left>132</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute1Icon">
+		<left>143</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute2Value">
+		<left>158</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute2Icon">
+		<left>169</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute3Value">
+		<left>184</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute3Icon">
+		<left>195</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute4Value">
+		<left>210</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute4Icon">
+		<left>221</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute5Value">
+		<left>236</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute5Icon">
+		<left>247</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute6Value">
+		<left>262</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Attribute6Icon">
+		<left>273</left>
+		<top>84</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill1">
+		<left>287</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill2">
+		<left>304</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill3">
+		<left>321</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill4">
+		<left>338</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill5">
+		<left>355</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill6">
+		<left>372</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill7">
+		<left>389</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill8">
+		<left>406</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill9">
+		<left>423</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill10">
+		<left>440</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill11">
+		<left>457</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit4Skill12">
+		<left>474</left>
+		<top>82</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Button">
+		<left>9</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Name">
+		<left>30</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute1Value">
+		<left>132</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute1Icon">
+		<left>143</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute2Value">
+		<left>158</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute2Icon">
+		<left>169</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute3Value">
+		<left>184</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute3Icon">
+		<left>195</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute4Value">
+		<left>210</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute4Icon">
+		<left>221</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute5Value">
+		<left>236</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute5Icon">
+		<left>247</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute6Value">
+		<left>262</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Attribute6Icon">
+		<left>273</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill1">
+		<left>287</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill2">
+		<left>304</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill3">
+		<left>321</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill4">
+		<left>338</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill5">
+		<left>355</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill6">
+		<left>372</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill7">
+		<left>389</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill8">
+		<left>406</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill9">
+		<left>423</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill10">
+		<left>440</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill11">
+		<left>457</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit5Skill12">
+		<left>474</left>
+		<top>101</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Button">
+		<left>9</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Name">
+		<left>30</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute1Value">
+		<left>132</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute1Icon">
+		<left>143</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute2Value">
+		<left>158</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute2Icon">
+		<left>169</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute3Value">
+		<left>184</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute3Icon">
+		<left>195</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute4Value">
+		<left>210</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute4Icon">
+		<left>221</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute5Value">
+		<left>236</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute5Icon">
+		<left>247</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute6Value">
+		<left>262</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Attribute6Icon">
+		<left>273</left>
+		<top>122</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill1">
+		<left>287</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill2">
+		<left>304</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill3">
+		<left>321</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill4">
+		<left>338</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill5">
+		<left>355</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill6">
+		<left>372</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill7">
+		<left>389</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill8">
+		<left>406</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill9">
+		<left>423</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill10">
+		<left>440</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill11">
+		<left>457</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit6Skill12">
+		<left>474</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Button">
+		<left>9</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Name">
+		<left>30</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute1Value">
+		<left>132</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute1Icon">
+		<left>143</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute2Value">
+		<left>158</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute2Icon">
+		<left>169</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute3Value">
+		<left>184</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute3Icon">
+		<left>195</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute4Value">
+		<left>210</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute4Icon">
+		<left>221</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute5Value">
+		<left>236</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute5Icon">
+		<left>247</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute6Value">
+		<left>262</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Attribute6Icon">
+		<left>273</left>
+		<top>141</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill1">
+		<left>287</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill2">
+		<left>304</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill3">
+		<left>321</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill4">
+		<left>338</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill5">
+		<left>355</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill6">
+		<left>372</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill7">
+		<left>389</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill8">
+		<left>406</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill9">
+		<left>423</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill10">
+		<left>440</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill11">
+		<left>457</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit7Skill12">
+		<left>474</left>
+		<top>139</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Button">
+		<left>9</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Name">
+		<left>30</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute1Value">
+		<left>132</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute1Icon">
+		<left>143</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute2Value">
+		<left>158</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute2Icon">
+		<left>169</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute3Value">
+		<left>184</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute3Icon">
+		<left>195</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute4Value">
+		<left>210</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute4Icon">
+		<left>221</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute5Value">
+		<left>236</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute5Icon">
+		<left>247</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute6Value">
+		<left>262</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Attribute6Icon">
+		<left>273</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill1">
+		<left>287</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill2">
+		<left>304</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill3">
+		<left>321</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill4">
+		<left>338</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill5">
+		<left>355</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill6">
+		<left>372</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill7">
+		<left>389</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill8">
+		<left>406</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill9">
+		<left>423</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill10">
+		<left>440</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill11">
+		<left>457</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit8Skill12">
+		<left>474</left>
+		<top>158</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Button">
+		<left>9</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Name">
+		<left>30</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute1Value">
+		<left>132</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute1Icon">
+		<left>143</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute2Value">
+		<left>158</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute2Icon">
+		<left>169</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute3Value">
+		<left>184</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute3Icon">
+		<left>195</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute4Value">
+		<left>210</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute4Icon">
+		<left>221</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute5Value">
+		<left>236</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute5Icon">
+		<left>247</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute6Value">
+		<left>262</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Attribute6Icon">
+		<left>273</left>
+		<top>179</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill1">
+		<left>287</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill2">
+		<left>304</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill3">
+		<left>321</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill4">
+		<left>338</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill5">
+		<left>355</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill6">
+		<left>372</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill7">
+		<left>389</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill8">
+		<left>406</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill9">
+		<left>423</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill10">
+		<left>440</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill11">
+		<left>457</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit9Skill12">
+		<left>474</left>
+		<top>177</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Button">
+		<left>9</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Name">
+		<left>30</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute1Value">
+		<left>132</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute1Icon">
+		<left>143</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute2Value">
+		<left>158</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute2Icon">
+		<left>169</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute3Value">
+		<left>184</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute3Icon">
+		<left>195</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute4Value">
+		<left>210</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute4Icon">
+		<left>221</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute5Value">
+		<left>236</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute5Icon">
+		<left>247</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute6Value">
+		<left>262</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Attribute6Icon">
+		<left>273</left>
+		<top>198</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill1">
+		<left>287</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill2">
+		<left>304</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill3">
+		<left>321</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill4">
+		<left>338</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill5">
+		<left>355</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill6">
+		<left>372</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill7">
+		<left>389</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill8">
+		<left>406</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill9">
+		<left>423</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill10">
+		<left>440</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill11">
+		<left>457</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit10Skill12">
+		<left>474</left>
+		<top>196</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Button">
+		<left>9</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Name">
+		<left>30</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute1Value">
+		<left>132</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute1Icon">
+		<left>143</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute2Value">
+		<left>158</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute2Icon">
+		<left>169</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute3Value">
+		<left>184</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute3Icon">
+		<left>195</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute4Value">
+		<left>210</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute4Icon">
+		<left>221</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute5Value">
+		<left>236</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute5Icon">
+		<left>247</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute6Value">
+		<left>262</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Attribute6Icon">
+		<left>273</left>
+		<top>217</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill1">
+		<left>287</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill2">
+		<left>304</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill3">
+		<left>321</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill4">
+		<left>338</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill5">
+		<left>355</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill6">
+		<left>372</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill7">
+		<left>389</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill8">
+		<left>406</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill9">
+		<left>423</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill10">
+		<left>440</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill11">
+		<left>457</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit11Skill12">
+		<left>474</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Button">
+		<left>9</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Name">
+		<left>30</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute1Value">
+		<left>132</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute1Icon">
+		<left>143</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute2Value">
+		<left>158</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute2Icon">
+		<left>169</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute3Value">
+		<left>184</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute3Icon">
+		<left>195</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute4Value">
+		<left>210</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute4Icon">
+		<left>221</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute5Value">
+		<left>236</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute5Icon">
+		<left>247</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute6Value">
+		<left>262</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Attribute6Icon">
+		<left>273</left>
+		<top>236</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill1">
+		<left>287</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill2">
+		<left>304</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill3">
+		<left>321</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill4">
+		<left>338</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill5">
+		<left>355</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill6">
+		<left>372</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill7">
+		<left>389</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill8">
+		<left>406</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill9">
+		<left>423</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill10">
+		<left>440</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill11">
+		<left>457</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit12Skill12">
+		<left>474</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Button">
+		<left>9</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Name">
+		<left>30</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute1Value">
+		<left>132</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute1Icon">
+		<left>143</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute2Value">
+		<left>158</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute2Icon">
+		<left>169</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute3Value">
+		<left>184</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute3Icon">
+		<left>195</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute4Value">
+		<left>210</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute4Icon">
+		<left>221</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute5Value">
+		<left>236</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute5Icon">
+		<left>247</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute6Value">
+		<left>262</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Attribute6Icon">
+		<left>273</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill1">
+		<left>287</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill2">
+		<left>304</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill3">
+		<left>321</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill4">
+		<left>338</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill5">
+		<left>355</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill6">
+		<left>372</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill7">
+		<left>389</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill8">
+		<left>406</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill9">
+		<left>423</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill10">
+		<left>440</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill11">
+		<left>457</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit13Skill12">
+		<left>474</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Button">
+		<left>9</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Name">
+		<left>30</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute1Value">
+		<left>132</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute1Icon">
+		<left>143</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute2Value">
+		<left>158</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute2Icon">
+		<left>169</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute3Value">
+		<left>184</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute3Icon">
+		<left>195</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute4Value">
+		<left>210</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute4Icon">
+		<left>221</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute5Value">
+		<left>236</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute5Icon">
+		<left>247</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute6Value">
+		<left>262</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Attribute6Icon">
+		<left>273</left>
+		<top>274</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill1">
+		<left>287</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill2">
+		<left>304</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill3">
+		<left>321</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill4">
+		<left>338</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill5">
+		<left>355</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill6">
+		<left>372</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill7">
+		<left>389</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill8">
+		<left>406</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill9">
+		<left>423</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill10">
+		<left>440</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill11">
+		<left>457</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit14Skill12">
+		<left>474</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Button">
+		<left>9</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Name">
+		<left>30</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute1Value">
+		<left>132</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute1Icon">
+		<left>143</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute2Value">
+		<left>158</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute2Icon">
+		<left>169</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute3Value">
+		<left>184</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute3Icon">
+		<left>195</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute4Value">
+		<left>210</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute4Icon">
+		<left>221</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute5Value">
+		<left>236</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute5Icon">
+		<left>247</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute6Value">
+		<left>262</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Attribute6Icon">
+		<left>273</left>
+		<top>293</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill1">
+		<left>287</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill2">
+		<left>304</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill3">
+		<left>321</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill4">
+		<left>338</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill5">
+		<left>355</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill6">
+		<left>372</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill7">
+		<left>389</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill8">
+		<left>406</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill9">
+		<left>423</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill10">
+		<left>440</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill11">
+		<left>457</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit15Skill12">
+		<left>474</left>
+		<top>291</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Button">
+		<left>9</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Name">
+		<left>30</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute1Value">
+		<left>132</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute1Icon">
+		<left>143</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute2Value">
+		<left>158</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute2Icon">
+		<left>169</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute3Value">
+		<left>184</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute3Icon">
+		<left>195</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute4Value">
+		<left>210</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute4Icon">
+		<left>221</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute5Value">
+		<left>236</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute5Icon">
+		<left>247</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute6Value">
+		<left>262</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Attribute6Icon">
+		<left>273</left>
+		<top>312</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill1">
+		<left>287</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill2">
+		<left>304</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill3">
+		<left>321</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill4">
+		<left>338</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill5">
+		<left>355</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill6">
+		<left>372</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill7">
+		<left>389</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill8">
+		<left>406</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill9">
+		<left>423</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill10">
+		<left>440</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill11">
+		<left>457</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit16Skill12">
+		<left>474</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Button">
+		<left>9</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Name">
+		<left>30</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute1Value">
+		<left>132</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute1Icon">
+		<left>143</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute2Value">
+		<left>158</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute2Icon">
+		<left>169</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute3Value">
+		<left>184</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute3Icon">
+		<left>195</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute4Value">
+		<left>210</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute4Icon">
+		<left>221</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute5Value">
+		<left>236</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute5Icon">
+		<left>247</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute6Value">
+		<left>262</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Attribute6Icon">
+		<left>273</left>
+		<top>331</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill1">
+		<left>287</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill2">
+		<left>304</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill3">
+		<left>321</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill4">
+		<left>338</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill5">
+		<left>355</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill6">
+		<left>372</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill7">
+		<left>389</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill8">
+		<left>406</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill9">
+		<left>423</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill10">
+		<left>440</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill11">
+		<left>457</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit17Skill12">
+		<left>474</left>
+		<top>329</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Button">
+		<left>9</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Name">
+		<left>30</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute1Value">
+		<left>132</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute1Icon">
+		<left>143</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute2Value">
+		<left>158</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute2Icon">
+		<left>169</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute3Value">
+		<left>184</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute3Icon">
+		<left>195</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute4Value">
+		<left>210</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute4Icon">
+		<left>221</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute5Value">
+		<left>236</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute5Icon">
+		<left>247</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute6Value">
+		<left>262</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Attribute6Icon">
+		<left>273</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill1">
+		<left>287</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill2">
+		<left>304</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill3">
+		<left>321</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill4">
+		<left>338</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill5">
+		<left>355</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill6">
+		<left>372</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill7">
+		<left>389</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill8">
+		<left>406</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill9">
+		<left>423</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill10">
+		<left>440</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill11">
+		<left>457</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit18Skill12">
+		<left>474</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Button">
+		<left>9</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Name">
+		<left>30</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute1Value">
+		<left>132</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute1Icon">
+		<left>143</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute2Value">
+		<left>158</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute2Icon">
+		<left>169</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute3Value">
+		<left>184</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute3Icon">
+		<left>195</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute4Value">
+		<left>210</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute4Icon">
+		<left>221</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute5Value">
+		<left>236</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute5Icon">
+		<left>247</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute6Value">
+		<left>262</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Attribute6Icon">
+		<left>273</left>
+		<top>369</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill1">
+		<left>287</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill2">
+		<left>304</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill3">
+		<left>321</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill4">
+		<left>338</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill5">
+		<left>355</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill6">
+		<left>372</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill7">
+		<left>389</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill8">
+		<left>406</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill9">
+		<left>423</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill10">
+		<left>440</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill11">
+		<left>457</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit19Skill12">
+		<left>474</left>
+		<top>367</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Button">
+		<left>9</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Name">
+		<left>30</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute1Value">
+		<left>132</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute1Icon">
+		<left>143</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute2Value">
+		<left>158</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute2Icon">
+		<left>169</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute3Value">
+		<left>184</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute3Icon">
+		<left>195</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute4Value">
+		<left>210</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute4Icon">
+		<left>221</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute5Value">
+		<left>236</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute5Icon">
+		<left>247</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute6Value">
+		<left>262</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Attribute6Icon">
+		<left>273</left>
+		<top>388</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill1">
+		<left>287</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill2">
+		<left>304</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill3">
+		<left>321</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill4">
+		<left>338</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill5">
+		<left>355</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill6">
+		<left>372</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill7">
+		<left>389</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill8">
+		<left>406</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill9">
+		<left>423</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill10">
+		<left>440</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill11">
+		<left>457</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitRowUnit20Skill12">
+		<left>474</left>
+		<top>386</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

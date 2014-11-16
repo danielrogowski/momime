@@ -1,13 +1,17 @@
 package momime.client.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,24 +25,34 @@ import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.RangedAttackTypeEx;
+import momime.client.graphics.database.UnitAttributeEx;
 import momime.client.graphics.database.UnitCombatActionEx;
 import momime.client.graphics.database.UnitEx;
+import momime.client.graphics.database.UnitTypeEx;
 import momime.client.graphics.database.v0_9_5.CombatAction;
+import momime.client.graphics.database.v0_9_5.RangedAttackTypeWeaponGrade;
+import momime.client.graphics.database.v0_9_5.UnitAttributeWeaponGrade;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitMagicRealm;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
@@ -167,6 +181,217 @@ public final class TestUnitClientUtilsImpl
 		assertEquals ("the Magic Spirit",					utils.getUnitName (summonedSingular,		UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of Hell Hounds",		utils.getUnitName (summonedPlural,		UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of RC02 UN007",		utils.getUnitName (unknown,					UnitNameType.THE_UNIT_OF_NAME));
+	}
+	
+	/**
+	 * Tests the getUnitAttributeIcon method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetUnitAttributeIcon () throws Exception
+	{
+		// Unit def
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "getUnitAttributeIcon")).thenReturn (unitDef);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock some images
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
+		
+		final BufferedImage plusToHitImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("plusToHit.png")).thenReturn (plusToHitImage);
+
+		final BufferedImage meleeWepGrade1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("melee1.png")).thenReturn (meleeWepGrade1Image);
+		
+		final BufferedImage meleeWepGrade2Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("melee2.png")).thenReturn (meleeWepGrade2Image);
+		
+		final BufferedImage meleeWepGrade3Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("melee3.png")).thenReturn (meleeWepGrade3Image);
+
+		final BufferedImage rat1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("rat1.png")).thenReturn (rat1Image);
+
+		final BufferedImage rat2wepGrade1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("rat2-1.png")).thenReturn (rat2wepGrade1Image);
+		
+		final BufferedImage rat2wepGrade2Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("rat2-2.png")).thenReturn (rat2wepGrade2Image);
+		
+		final BufferedImage rat2wepGrade3Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("rat2-3.png")).thenReturn (rat2wepGrade3Image);
+		
+		// Mock entries from graphics DB
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		// + to hit doesn't vary by weapon grade
+		final UnitAttributeEx plusToHit = new UnitAttributeEx ();
+
+		final UnitAttributeWeaponGrade plusToHitIcon = new UnitAttributeWeaponGrade ();
+		plusToHitIcon.setAttributeImageFile ("plusToHit.png");
+		plusToHit.getUnitAttributeWeaponGrade ().add (plusToHitIcon);
+		
+		plusToHit.buildMap ();;
+		when (gfx.findUnitAttribute (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitAttributeIcon")).thenReturn (plusToHit);
+		
+		// melee varies by weapon grade
+		final UnitAttributeEx melee = new UnitAttributeEx ();
+
+		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
+		{
+			final UnitAttributeWeaponGrade meleeIcon = new UnitAttributeWeaponGrade ();
+			meleeIcon.setAttributeImageFile ("melee" + wepGrade + ".png");
+			meleeIcon.setWeaponGradeNumber (wepGrade);
+			melee.getUnitAttributeWeaponGrade ().add (meleeIcon);
+		}
+		
+		melee.buildMap ();
+		when (gfx.findUnitAttribute (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitAttributeIcon")).thenReturn (melee);
+		
+		// RAT that doesn't vary by weapon grade
+		final RangedAttackTypeEx rat1 = new RangedAttackTypeEx ();
+		when (gfx.findRangedAttackType ("RAT01", "getUnitAttributeIcon")).thenReturn (rat1);
+
+		final RangedAttackTypeWeaponGrade rat1Icon = new RangedAttackTypeWeaponGrade ();
+		rat1Icon.setUnitDisplayRangedImageFile ("rat1.png");
+		rat1.getRangedAttackTypeWeaponGrade ().add (rat1Icon);
+		
+		rat1.buildMap ();
+		
+		// Dummy unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		unit.setWeaponGrade (2);
+		
+		// Set up object to test
+		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
+		unitUtils.setUtils (utils);
+		unitUtils.setGraphicsDB (gfx);
+		unitUtils.setClient (client);
+		
+		// Run tests
+		assertSame (plusToHitImage, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertSame (meleeWepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK));
+		assertSame (rat1Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+
+		// RAT that does vary by weapon grade
+		unitDef.setRangedAttackType ("RAT02");
+
+		final RangedAttackTypeEx rat2 = new RangedAttackTypeEx ();
+		when (gfx.findRangedAttackType ("RAT02", "getUnitAttributeIcon")).thenReturn (rat2);
+
+		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
+		{
+			final RangedAttackTypeWeaponGrade rat2Icon = new RangedAttackTypeWeaponGrade ();
+			rat2Icon.setUnitDisplayRangedImageFile ("rat2-" + wepGrade + ".png");
+			rat2Icon.setWeaponGradeNumber (wepGrade);
+			rat2.getRangedAttackTypeWeaponGrade ().add (rat2Icon);
+		}
+		
+		rat2.buildMap ();
+
+		assertSame (rat2wepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+	}
+	
+	/**
+	 * Tests the getUnitSkillIcon method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetUnitSkillIcon () throws Exception
+	{
+		// Unit def
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		when (db.findUnit ("UN001", "getUnitSkillIcon")).thenReturn (unitDef);
+		
+		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillIcon")).thenReturn (unitMagicRealm);
+
+		// Mock some images
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
+		
+		final BufferedImage skillImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("skill.png")).thenReturn (skillImage);
+
+		final BufferedImage exp0Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("exp0.png")).thenReturn (exp0Image);
+		
+		final BufferedImage exp1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("exp1.png")).thenReturn (exp1Image);
+		
+		final BufferedImage exp2Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("exp2.png")).thenReturn (exp2Image);
+		
+		final BufferedImage exp3Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		when (utils.loadImage ("exp3.png")).thenReturn (exp3Image);
+		
+		// Mock entries from graphics DB
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		final UnitSkill skillGfx = new UnitSkill ();
+		skillGfx.setUnitSkillImageFile ("skill.png");
+		when (gfx.findUnitSkill ("US001", "getUnitSkillIcon")).thenReturn (skillGfx);
+
+		final UnitTypeEx unitType = new UnitTypeEx ();
+		
+		for (int n = 0; n < 4; n++)
+		{
+			final momime.client.graphics.database.v0_9_5.ExperienceLevel expLvl = new momime.client.graphics.database.v0_9_5.ExperienceLevel ();
+			expLvl.setLevelNumber (n);
+			expLvl.setExperienceLevelImageFile ("exp" + n + ".png");
+			unitType.getExperienceLevel ().add (expLvl);
+		}
+		
+		unitType.buildMap ();
+		
+		when (gfx.findUnitType ("N", "getUnitSkillIcon")).thenReturn (unitType);
+		
+		// Player list
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// FOW memory
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
+		
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		// Dummy unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Experience
+		final ExperienceLevel expLvl = new ExperienceLevel ();
+		expLvl.setLevelNumber (2);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getExperienceLevel (unit, true, players, fow.getCombatAreaEffect (), db)).thenReturn (expLvl);
+		
+		// Set up object to test
+		final UnitClientUtilsImpl unitClientUtils = new UnitClientUtilsImpl ();
+		unitClientUtils.setGraphicsDB (gfx);
+		unitClientUtils.setUnitUtils (unitUtils);
+		unitClientUtils.setUtils (utils);
+		unitClientUtils.setClient (client);
+
+		// Run tests
+		assertSame (skillImage, unitClientUtils.getUnitSkillIcon (unit, "US001"));
+		assertSame (exp2Image, unitClientUtils.getUnitSkillIcon (unit, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE));
 	}
 	
 	/**

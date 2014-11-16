@@ -5982,6 +5982,11 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>GOLD_PER_POPULATION gold, UNREST_PERCENTAGE% unrest</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmUnitRowDisplay">
+		<languageEntry languageEntryID="Cancel">
+			<languageEntryText>Cancel</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<shift>false</shift>
 		<alt>false</alt>

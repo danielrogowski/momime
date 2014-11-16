@@ -19662,4 +19662,7 @@
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Entry" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmUnitRowDisplay">
+		<languageEntry languageEntryID="Cancel" />
+	</languageCategory>
 </momimesvr:serverDatabase>

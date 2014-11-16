@@ -11,6 +11,11 @@ public interface UIComponentFactory
 	public SelectUnitButton createSelectUnitButton ();
 	
 	/**
+	 * @return Button for the unit row display
+	 */
+	public UnitRowDisplayButton createUnitRowDisplayButton ();
+	
+	/**
 	 * @return Mana/Research/Skill slider for the magic screen that allows sliding the value up and down and clicking the head of the staff to lock it
 	 */
 	public MagicSlider createMagicSlider ();

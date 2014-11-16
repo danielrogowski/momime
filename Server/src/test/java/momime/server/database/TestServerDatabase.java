@@ -64,7 +64,7 @@ public final class TestServerDatabase
 		assertEquals ("Failed to load correct number of spell ranks",								5,					serverDB.getSpellRank ().size ());
 		assertEquals ("Failed to load correct number of city spell effects",						24,				serverDB.getCitySpellEffect ().size ());
 		assertEquals ("Failed to load correct number of known servers",							2,					serverDB.getKnownServer ().size ());
-		assertEquals ("Failed to load correct number of language text categories",			60,				serverDB.getLanguageCategory ().size ());
+		assertEquals ("Failed to load correct number of language text categories",			61,				serverDB.getLanguageCategory ().size ());
 
 		// Second level entities
 		assertEquals ("Failed to load correct number of fortress plane productions",		1,					serverDB.getPlane ().get (1).getFortressPlaneProduction ().size ());

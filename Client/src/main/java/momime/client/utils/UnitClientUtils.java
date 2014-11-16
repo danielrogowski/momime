@@ -1,6 +1,7 @@
 package momime.client.utils;
 
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.JComponent;
@@ -30,6 +31,28 @@ public interface UnitClientUtils
 	 */
 	public String getUnitName (final AvailableUnit unit, final UnitNameType unitNameType) throws RecordNotFoundException;
 
+	/**
+	 * Rules for finding the right icon for a unit attribute aren't totally straightforward; ranged attacks have their own images and some
+	 * unit attributes (and some RATs) have different icons for different weapon types and some do not.  So this method deals with all that.
+	 * 
+	 * @param unit Unit whose attributes we're drawing
+	 * @param unitAttributeID Which attribute to draw
+	 * @return Icon for this unit attribute, or null if there isn't one
+	 * @throws IOException If there's a problem finding the unit attribute icon
+	 */
+	public BufferedImage getUnitAttributeIcon (final AvailableUnit unit, final String unitAttributeID) throws IOException;
+	
+	/**
+	 * Rules for finding the right icon for a unit skills aren't totally straightforward; experience icon changes as units
+	 * gain level, and some skills (particularly movement type skills like walking/flying) have no icon at all.  So this method deals with all that.
+	 * 
+	 * @param unit Unit whose skills we're drawing
+	 * @param unitSkillID Which attribute to draw
+	 * @return Icon for this unit skill, or null if there isn't one
+	 * @throws IOException If there's a problem finding the unit skill icon
+	 */
+	public BufferedImage getUnitSkillIcon (final AvailableUnit unit, final String unitSkillID) throws IOException;
+	
 	/**
 	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later
 	 * 

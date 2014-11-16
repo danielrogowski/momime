@@ -17,7 +17,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the RazeCityUI class
  */
-public class TestRazeCityUI
+public final class TestRazeCityUI
 {
 	/**
 	 * Tests the RazeCityUI form

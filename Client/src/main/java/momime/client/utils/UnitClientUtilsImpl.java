@@ -14,10 +14,14 @@ import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.CombatTileFigurePositionsEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.RangedAttackTypeEx;
+import momime.client.graphics.database.UnitAttributeEx;
 import momime.client.graphics.database.UnitCombatActionEx;
 import momime.client.graphics.database.UnitEx;
+import momime.client.graphics.database.UnitTypeEx;
 import momime.client.graphics.database.v0_9_5.FigurePositionsForFigureCount;
 import momime.client.graphics.database.v0_9_5.UnitCombatImage;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
@@ -32,12 +36,13 @@ import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 
@@ -109,6 +114,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final String getUnitName (final AvailableUnit unit, final UnitNameType unitNameType) throws RecordNotFoundException
 	{
+		log.trace ("Entering getUnitName: " + unit.getUnitID () + ", " + unitNameType);
+		
 		// Heroes just output their name for all unitNameTypes, so in that case we don't need to look up anything at all
 		String unitName = null;
 		if (unit instanceof MemoryUnit)
@@ -156,7 +163,99 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}
 		}
 		
+		log.trace ("Exiting getUnitName = " + unitName);
 		return unitName;
+	}
+	
+	/**
+	 * Rules for finding the right icon for a unit attribute aren't totally straightforward; ranged attacks have their own images and some
+	 * unit attributes (and some RATs) have different icons for different weapon types and some do not.  So this method deals with all that.
+	 * 
+	 * @param unit Unit whose attributes we're drawing
+	 * @param unitAttributeID Which attribute to draw
+	 * @return Icon for this unit attribute, or null if there isn't one
+	 * @throws IOException If there's a problem finding the unit attribute icon
+	 */
+	@Override
+	public final BufferedImage getUnitAttributeIcon (final AvailableUnit unit, final String unitAttributeID) throws IOException
+	{
+		log.trace ("Entering getUnitAttributeIcon: " + unit.getUnitID () + ", " + unitAttributeID);
+		
+		final String attributeImageName;
+		if (unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+		{
+			// Ranged attacks have their own special rules, so we select the appropriate
+			// type of range attack icon, e.g. bow, rock, blue blast.
+			final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitAttributeIcon");
+			if (unitInfo.getRangedAttackType () == null)
+				attributeImageName = null;
+			else
+			{
+				// If there is only a single image then just use it; if there are multiple, then select the right one by weapon grade
+				final RangedAttackTypeEx rat = getGraphicsDB ().findRangedAttackType (unitInfo.getRangedAttackType (), "getUnitAttributeIcon");
+				if ((unit.getWeaponGrade () == null) || (rat.getRangedAttackTypeWeaponGrade ().size () == 1))
+					attributeImageName = rat.getRangedAttackTypeWeaponGrade ().get (0).getUnitDisplayRangedImageFile ();
+				else
+					attributeImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade (), "getUnitAttributeIcon");
+			}
+		}
+		else
+		{
+			// Some attribute other than ranged attack; same behaviour as above with weapon grades
+			final UnitAttributeEx attrGfx = getGraphicsDB ().findUnitAttribute (unitAttributeID, "getUnitAttributeIcon");
+			if ((unit.getWeaponGrade () == null) || (attrGfx.getUnitAttributeWeaponGrade ().size () == 1))
+				attributeImageName = attrGfx.getUnitAttributeWeaponGrade ().get (0).getAttributeImageFile ();
+			else
+				attributeImageName = attrGfx.findWeaponGradeImageFile (unit.getWeaponGrade (), "getUnitAttributeIcon");
+		}
+		
+		final BufferedImage attributeImage = (attributeImageName == null) ? null : getUtils ().loadImage (attributeImageName);
+		
+		log.trace ("Exiting getUnitAttributeIcon = " + attributeImage);
+		return attributeImage;
+	}
+	
+	/**
+	 * Rules for finding the right icon for a unit skills aren't totally straightforward; experience icon changes as units
+	 * gain level, and some skills (particularly movement type skills like walking/flying) have no icon at all.  So this method deals with all that.
+	 * 
+	 * @param unit Unit whose skills we're drawing
+	 * @param unitSkillID Which attribute to draw
+	 * @return Icon for this unit skill, or null if there isn't one
+	 * @throws IOException If there's a problem finding the unit skill icon
+	 */
+	@Override
+	public final BufferedImage getUnitSkillIcon (final AvailableUnit unit, final String unitSkillID) throws IOException
+	{
+		log.trace ("Entering getUnitSkillIcon: " + unit.getUnitID () + ", " + unitSkillID);
+		
+		final String image;
+		if (unitSkillID.equals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE))
+		{
+			// Experience skill icon changes as the unit gains experience levels
+			final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (unit, true, getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			if (expLvl == null)
+				image = null;
+			else
+			{
+				final String unitMagicRealmID = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitSkillIcon").getUnitMagicRealm ();
+				final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "getUnitSkillIcon").getUnitTypeID ();
+				final UnitTypeEx unitType = getGraphicsDB ().findUnitType (unitTypeID, "getUnitSkillIcon");
+				image = unitType.findExperienceLevelImageFile (expLvl.getLevelNumber (), "getUnitSkillIcon");
+			}
+		}
+		else
+		{
+			// Regular skill
+			final UnitSkill skillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "getUnitSkillIcon");
+			image = skillGfx.getUnitSkillImageFile ();
+		}
+
+		final BufferedImage skillImage = (image == null) ? null : getUtils ().loadImage (image);
+		
+		log.trace ("Exiting getUnitSkillIcon = " + skillImage);
+		return skillImage;
 	}
 
 	/**

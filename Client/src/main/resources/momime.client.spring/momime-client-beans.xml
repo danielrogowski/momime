@@ -1025,6 +1025,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="client" ref="client" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 	</bean>
 
 	<bean id="memoryMaintainedSpellListCellRenderer" class="momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer" scope="prototype">
@@ -1049,6 +1050,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="unitUtils" ref="unitUtils" />
+	</bean>
+
+	<bean id="unitRowDisplayButton" class="momime.client.ui.components.UnitRowDisplayButton" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="magicSlider" class="momime.client.ui.components.MagicSlider" scope="prototype">
@@ -1235,6 +1242,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="textUtils" ref="textUtils" />
+	</bean>
+
+	<bean id="unitRowDisplayLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/UnitRowDisplayUI.xml" />
+	</bean>
+	
+	<bean id="unitRowDisplayUI" class="momime.client.ui.dialogs.UnitRowDisplayUI" scope="prototype">
+		<property name="unitRowDisplayLayout" ref="unitRowDisplayLayout" />
+		<property name="client" ref="client" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="uiComponentFactory" ref="uiComponentFactory" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
 </beans>

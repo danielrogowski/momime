@@ -4,6 +4,7 @@ import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
+import momime.client.ui.dialogs.UnitRowDisplayUI;
 
 /**
  * Allows spring to create instances of frames that we allow multiple copies of, like message boxes and the city screen, and perform all necessary injections
@@ -54,4 +55,9 @@ public interface PrototypeFrameCreator
 	 * @return New combat ended popup
 	 */
 	public CombatEndedUI createCombatEnded ();
+	
+	/**
+	 * @return New unit row display
+	 */
+	public UnitRowDisplayUI createUnitRowDisplay ();
 }

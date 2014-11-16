@@ -1,6 +1,7 @@
 package momime.client.ui.renderer;
 
 import java.awt.Component;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -10,13 +11,10 @@ import javax.swing.ListCellRenderer;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitTypeEx;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ExperienceLevel;
+import momime.client.utils.UnitClientUtils;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.AvailableUnit;
 import momime.common.utils.UnitUtils;
@@ -52,6 +50,9 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 	
+	/** Client-side unit utils */
+	private UnitClientUtils unitClientUtils;
+	
 	/** The unit whose skills we're drawing */
 	private AvailableUnit unit;
 	
@@ -84,31 +85,8 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 		try
 		{
 			// Look up the image for the skill
-			final String image;
-			if (value.getUnitSkillID ().equals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE))
-			{
-				// Experience skill icon changes as the unit gains experience levels
-				final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (getUnit (), true, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
-				if (expLvl == null)
-					image = null;
-				else
-				{
-					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitSkillListCellRenderer").getUnitMagicRealm ();
-					final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "UnitSkillListCellRenderer").getUnitTypeID ();
-					final UnitTypeEx unitType = getGraphicsDB ().findUnitType (unitTypeID, "UnitSkillListCellRenderer");
-					image = unitType.findExperienceLevelImageFile (expLvl.getLevelNumber (), "UnitSkillListCellRenderer");
-				}
-			}
-			else
-			{
-				// Regular skill
-				final UnitSkill skillGfx = getGraphicsDB ().findUnitSkill (value.getUnitSkillID (), "UnitSkillListCellRenderer");
-				image = skillGfx.getUnitSkillImageFile ();
-			}
-			
-			if (image != null)
-				setIcon (new ImageIcon (getUtils ().loadImage (image)));
+			final BufferedImage image = getUnitClientUtils ().getUnitSkillIcon (unit, value.getUnitSkillID ());
+				setIcon (new ImageIcon (image));
 		}
 		catch (final Exception e)
 		{
@@ -223,6 +201,22 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 		unitStatsReplacer = replacer;
 	}
 
+	/**
+	 * @return Client-side unit utils
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Client-side unit utils
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
+	}
+	
 	/**
 	 * @return The unit whose skills we're drawing
 	 */

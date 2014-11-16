@@ -22,11 +22,9 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
 import momime.client.graphics.database.RangedAttackTypeEx;
-import momime.client.graphics.database.UnitAttributeEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
 import momime.client.graphics.database.v0_9_5.RangedAttackTypeWeaponGrade;
-import momime.client.graphics.database.v0_9_5.UnitAttributeWeaponGrade;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -40,9 +38,9 @@ import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.calculations.MomUnitCalculations;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Unit;
 import momime.common.database.UnitAttribute;
 import momime.common.database.UnitHasSkill;
@@ -258,39 +256,6 @@ public final class TestUnitInfoPanel
 		rationsImages.buildMap ();
 		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (rationsImages);
 		
-		unitAttrNo = 0;
-		for (final String unitAttributeImage : new String [] {"melee", null, "plusToHit", "defence", "resist", "hitPoints", "plusToBlock"})
-		{
-			final UnitAttributeEx unitAttrGfx = new UnitAttributeEx ();
-			unitAttrNo++;
-			
-			if (unitAttributeImage != null)
-			{
-				if ((unitAttrNo == 1) || (unitAttrNo == 4))
-				{
-					int wepGradeNbr = 0;
-					for (final String weaponGrade : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
-					{
-						final UnitAttributeWeaponGrade attrWeaponGrade = new UnitAttributeWeaponGrade ();
-						attrWeaponGrade.setWeaponGradeNumber (wepGradeNbr);
-						attrWeaponGrade.setAttributeImageFile ("/momime.client.graphics/unitAttributes/" + unitAttributeImage + weaponGrade + ".png");					
-						unitAttrGfx.getUnitAttributeWeaponGrade ().add (attrWeaponGrade);
-						
-						wepGradeNbr++;
-					}
-				}
-				else
-				{
-					final UnitAttributeWeaponGrade attrWeaponGrade = new UnitAttributeWeaponGrade ();
-					attrWeaponGrade.setAttributeImageFile ("/momime.client.graphics/unitAttributes/" + unitAttributeImage + ".png");					
-					unitAttrGfx.getUnitAttributeWeaponGrade ().add (attrWeaponGrade);
-				}
-			}
-
-			unitAttrGfx.buildMap ();
-			when (gfx.findUnitAttribute ("UA0" + unitAttrNo, "unitInfoPanel.paintComponent")).thenReturn (unitAttrGfx);
-		}
-		
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		int wepGradeNbr = 0;
 		for (final String weaponGrade : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
@@ -306,6 +271,7 @@ public final class TestUnitInfoPanel
 		rat.buildMap ();
 		when (gfx.findRangedAttackType ("RAT01", "unitInfoPanel.paintComponent")).thenReturn (rat);
 
+		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		for (int n = 1; n <= 5; n++)
 		{
 			final UnitSkill skill = new UnitSkill ();
@@ -377,6 +343,8 @@ public final class TestUnitInfoPanel
 			final UnitHasSkill skill = new UnitHasSkill ();
 			skill.setUnitSkillID ("US0" + n);
 			unit.getUnitHasSkill ().add (skill);
+
+			when (unitClientUtils.getUnitSkillIcon (unit, "US0" + n)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
 		}
 		
 		// Upkeep
@@ -424,8 +392,18 @@ public final class TestUnitInfoPanel
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 		
 		// Unit name
-		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
+		
+		// Attribute icons
+		unitAttrNo = 0;
+		for (final String unitAttributeImage : new String [] {"meleeNormal", null, "plusToHit", "defenceNormal", "resist", "hitPoints", "plusToBlock"})
+		{
+			unitAttrNo++;
+			final String useAttributeImage = (unitAttributeImage != null) ? "/momime.client.graphics/unitAttributes/" + unitAttributeImage + ".png" :
+				"/momime.client.graphics/rangedAttacks/rock/iconNormal.png";
+			
+			when (unitClientUtils.getUnitAttributeIcon (unit, "UA0" + unitAttrNo)).thenReturn (utils.loadImage (useAttributeImage));
+		}
 		
 		// Cell renderer
 		final UnitStatsLanguageVariableReplacer replacer = mock (UnitStatsLanguageVariableReplacer.class);
@@ -437,6 +415,7 @@ public final class TestUnitInfoPanel
 		renderer.setLanguageHolder (langHolder);
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
+		renderer.setUnitClientUtils (unitClientUtils);
 
 		// Create some dummy actions for buttons
 		final Action blahAction = new AbstractAction ("Blah")

@@ -15,6 +15,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -36,14 +38,12 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.messages.clienttoserver.TargetSpellMessage;
-import momime.common.messages.servertoclient.MapVolumeOfOverlandMoveType;
-import momime.common.messages.servertoclient.OverlandMoveTypeID;
+import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
@@ -51,6 +51,9 @@ import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.messages.servertoclient.MapVolumeOfOverlandMoveType;
+import momime.common.messages.servertoclient.OverlandMoveTypeID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -869,6 +872,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 							// NB. There are no overland unit curses
 							else if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 							{
+								// Find our units at this map location
+								final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+								for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+									if ((mapLocation.equals (unit.getUnitLocation ())) && (unit.getStatus () == UnitStatusID.ALIVE) &&
+										(unit.getOwningPlayerID () == getClient ().getOurPlayerID ()))
+										
+										units.add (unit);
+								
+								if (units.size () > 0)
+								{
+									final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
+									unitRowDisplay.setUnits (units);
+									unitRowDisplay.setTargetSpell (getOverlandMapRightHandPanel ().getTargetSpell ());
+									unitRowDisplay.setVisible (true);
+								}
 							}
 						}
 						

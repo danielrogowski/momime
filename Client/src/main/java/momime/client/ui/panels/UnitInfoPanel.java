@@ -32,8 +32,6 @@ import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.RangedAttackTypeEx;
-import momime.client.graphics.database.UnitAttributeEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
@@ -406,35 +404,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					try
 					{
 						// Work out the icon to use to display this type of unit attribute
-						final String attributeImageName;
-						if (attr.getUnitAttributeID ().equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-						{
-							// Ranged attacks have their own special rules, so we select the appropriate
-							// type of range attack icon, e.g. bow, rock, blue blast.
-							final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "unitInfoPanel.paintComponent");
-							if (unitInfo.getRangedAttackType () == null)
-								attributeImageName = null;
-							else
-							{
-								// If there is only a single image then just use it; if there are multiple, then select the right one by weapon grade
-								final RangedAttackTypeEx rat = getGraphicsDB ().findRangedAttackType (unitInfo.getRangedAttackType (), "unitInfoPanel.paintComponent");
-								if ((unit.getWeaponGrade () == null) || (rat.getRangedAttackTypeWeaponGrade ().size () == 1))
-									attributeImageName = rat.getRangedAttackTypeWeaponGrade ().get (0).getUnitDisplayRangedImageFile ();
-								else
-									attributeImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade (), "unitInfoPanel.paintComponent");
-							}
-						}
-						else
-						{
-							// Some attribute other than ranged attack; same behaviour as above with weapon grades
-							final UnitAttributeEx attrGfx = getGraphicsDB ().findUnitAttribute (attr.getUnitAttributeID (), "unitInfoPanel.paintComponent");
-							if ((unit.getWeaponGrade () == null) || (attrGfx.getUnitAttributeWeaponGrade ().size () == 1))
-								attributeImageName = attrGfx.getUnitAttributeWeaponGrade ().get (0).getAttributeImageFile ();
-							else
-								attributeImageName = attrGfx.findWeaponGradeImageFile (unit.getWeaponGrade (), "unitInfoPanel.paintComponent");
-						}
-						
-						final BufferedImage attributeImage = (attributeImageName == null) ? null : getUtils ().loadImage (attributeImageName);
+						final BufferedImage attributeImage = getUnitClientUtils ().getUnitAttributeIcon (unit, attr.getUnitAttributeID ());
 
 						// Do we need to draw any icons faded, due to negative spells (e.g. Black Prayer) or losing hitpoints?
 						final int attributeValueIncludingNegatives;

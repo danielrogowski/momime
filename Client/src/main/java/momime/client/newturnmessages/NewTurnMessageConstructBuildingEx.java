@@ -181,7 +181,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 			final CityViewElement buildingImage = getGraphicsDB ().findBuilding (getBuildingID (), "getComponent-Old");
 			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-				buildingImage.getCityViewAnimation ());
+				buildingImage.getCityViewAnimation (), true);
 
 			constructionCompletedImage.setIcon (new ImageIcon (image));
 		}
@@ -200,7 +200,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 				final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
 				final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 					((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-					buildingImage.getCityViewAnimation ());
+					buildingImage.getCityViewAnimation (), true);
 
 				nextConstructionImage.setIcon (new ImageIcon (image));
 			}

@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.Unmarshaller;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -26,8 +28,8 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.database.TileType;
+import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -218,9 +220,12 @@ public final class TestCombatUI
 		final CombatMapBitmapGenerator gen = mock (CombatMapBitmapGenerator.class);
 		when (gen.generateCombatMapBitmaps ()).thenReturn (combatMapBitmaps);
 		
-		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CombatUI.xml"));
-		layout.buildMaps ();
+		// Layouts
+		final Unmarshaller unmarshaller = ClientTestData.createXmlLayoutUnmarshaller ();
+		final XmlLayoutContainerEx mainLayout = (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/CombatUI-Main.xml"));
+		final XmlLayoutContainerEx bottomLayout = (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/CombatUI-Bottom.xml"));
+		mainLayout.buildMaps ();
+		bottomLayout.buildMaps ();
 		
 		// Set up form
 		final CombatUI combat = new CombatUI ();
@@ -237,7 +242,8 @@ public final class TestCombatUI
 		combat.setMusicPlayer (mock (AudioPlayer.class));
 		combat.setSmallFont (CreateFontsForTests.getSmallFont ());
 		combat.setLargeFont (CreateFontsForTests.getLargeFont ());
-		combat.setCombatLayout (layout);
+		combat.setCombatLayoutMain (mainLayout);
+		combat.setCombatLayoutBottom (bottomLayout);
 
 		// Display form
 		combat.initNewCombat ();

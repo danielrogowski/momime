@@ -36,7 +36,7 @@ public final class TestAnimationControllerImpl
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame (null, null);
+		controller.loadImageOrAnimationFrame (null, null, true);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public final class TestAnimationControllerImpl
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame ("a", "b");
+		controller.loadImageOrAnimationFrame ("a", "b", true);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public final class TestAnimationControllerImpl
 		controller.setUtils (utils);
 		
 		// Run method
-		final BufferedImage imageResult = controller.loadImageOrAnimationFrame ("blah.png", null);
+		final BufferedImage imageResult = controller.loadImageOrAnimationFrame ("blah.png", null, true);
 	
 		// Check results
 		assertSame (image, imageResult);
@@ -88,7 +88,7 @@ public final class TestAnimationControllerImpl
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame (null, "ANIM");
+		controller.loadImageOrAnimationFrame (null, "ANIM", true);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public final class TestAnimationControllerImpl
 			{
 				try
 				{
-					triggeredFrames.append (images.indexOf (controller.loadImageOrAnimationFrame (null, "ANIM")));
+					triggeredFrames.append (images.indexOf (controller.loadImageOrAnimationFrame (null, "ANIM", true)));
 				}
 				catch (final Exception e)
 				{

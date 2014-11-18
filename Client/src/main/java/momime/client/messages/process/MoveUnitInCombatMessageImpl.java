@@ -103,7 +103,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		getCombatUI ().getUnitToDrawAtEachLocation () [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = null;
 		unit.setCombatPosition (null);
 		getCombatUI ().setUnitMoving (this);
-		getCombatUI ().getContentPane ().repaint ();
 
 		// We need this repeatedly so just work it out once
 		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "MoveUnitInCombatMessageImpl.start");
@@ -113,7 +112,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		currentY = getCombatMapBitmapGenerator ().combatCoordinatesY (getMoveFrom ().getX (), getMoveFrom ().getY (), combatMapTileSet);
 		
 		// Work the duration out once only
-		duration = getUnitClientUtils ().calculateWalkTiming (unit) * 0.5d;
+		duration = getUnitClientUtils ().calculateWalkTiming (unit) * 0.8d;
 
 		// Work out new position
 		moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) getMoveFrom ());
@@ -121,9 +120,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		// Kick off animation
 		unit.setCombatHeading (getDirection ());
-		
 		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-		getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), movingActionID, getDirection (), getCombatUI ().getContentPane ());
 		
 		// Play walking sound effect
 		getUnitClientUtils ().playCombatActionSound (unit, movingActionID);
@@ -167,8 +164,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		// Work out current position
 		currentX = moveFromX + (int) ((moveToX - moveFromX) * ratio);
 		currentY = moveFromY + (int) ((moveToY - moveFromY) * ratio);
-		
-		getCombatUI ().getContentPane ().repaint ();
 	}
 	
 	/**
@@ -194,11 +189,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		unit.setCombatPosition (moveTo);
 		getCombatUI ().getUnitToDrawAtEachLocation () [moveTo.getY ()] [moveTo.getX ()] = unit;
 		getCombatUI ().setUnitMoving (null);
-		getCombatUI ().getContentPane ().repaint ();
-		
-		// If the unit is facing a different direction than before and has a different 'stand still' animation than moving animation, then we might have a new anim to kick off
-		final String standingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
-		getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), standingActionID, unit.getCombatHeading (), getCombatUI ().getContentPane ());
 		
 		// Update remaining movement
 		unit.setDoubleCombatMovesLeft (getDoubleCombatMovesLeft ());

@@ -123,10 +123,11 @@ public interface UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile) throws IOException;
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation) throws IOException;
 
 	/**
 	 * Version which derives most of the values from an existing unit object.
@@ -138,10 +139,11 @@ public interface UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final AvailableUnit unit, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile) throws IOException;
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation) throws IOException;
 
 	/**
 	 * When we 4x the number of units in a tile, if they still take the same amount of time to walk from tile to tile, it looks

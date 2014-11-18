@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +12,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -34,13 +32,13 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 
@@ -50,6 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.random.RandomUtils;
+import com.ndg.swing.JPanelWithConstantRepaints;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -66,7 +65,10 @@ public final class CombatUI extends MomClientFrameUI
 	private final Log log = LogFactory.getLog (CombatUI.class);
 
 	/** XML layout */
-	private XmlLayoutContainerEx combatLayout;
+	private XmlLayoutContainerEx combatLayoutMain;
+
+	/** XML layout */
+	private XmlLayoutContainerEx combatLayoutBottom;
 	
 	/** Small font */
 	private Font smallFont;
@@ -125,9 +127,6 @@ public final class CombatUI extends MomClientFrameUI
 	/** Auto action */
 	private Action autoAction;
 
-	/** Content pane */
-	private JPanel contentPane;
-	
 	/** Attacking and defending players */
 	private CombatPlayers players;
 	
@@ -139,9 +138,6 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Bitmaps for each animation frame of the combat map */
 	private BufferedImage [] combatMapBitmaps;
-	
-	/** Frame number being displayed */
-	private int terrainAnimFrame;
 	
 	/** Units occupying each cell of the combat map */
 	private MemoryUnit [] [] unitToDrawAtEachLocation;
@@ -177,7 +173,7 @@ public final class CombatUI extends MomClientFrameUI
 		final BufferedImage calculatorButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/combat/calculatorButtonNormal.png");
 		final BufferedImage calculatorButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/combat/calculatorButtonPressed.png");
 		
-		// We need the tile set to know how big combat tiles are
+		// We need the tile set to know the frame rate and number of frames
 		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "CombatUI");
 		
 		// Actions
@@ -246,12 +242,22 @@ public final class CombatUI extends MomClientFrameUI
 		};
 		
 		// Initialize the content pane
-		contentPane = new JPanel ()
+		
+		// This is split into a top and bottom half.  The top half shows the terrain and units and is all custom drawn.  This repaints
+		// itself as fast as it can, so its not necessary to fire repaint events at it every time an animation updates.
+		
+		// The bottom half contains all the standard Swing controls such as all the buttons.  So there's nothing special here.
+		final JPanel contentPane = new JPanel ();
+		contentPane.setLayout (new XmlLayoutManager (getCombatLayoutMain ()));
+		
+		final JPanelWithConstantRepaints topPanel = new JPanelWithConstantRepaints ()
 		{
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
-				super.paintComponent (g);
+				// Work out the frame number to display for the terrain
+				final double frameNumber = System.nanoTime () / (1000000000d / combatMapTileSet.getAnimationSpeed ());
+				final int terrainAnimFrame = ((int) frameNumber) % combatMapTileSet.getAnimationFrameCount ();
 				
 				// Draw the static portion of the terrain
 				g.drawImage (combatMapBitmaps [terrainAnimFrame], 0, 0, null);
@@ -288,7 +294,7 @@ public final class CombatUI extends MomClientFrameUI
 								// Draw unit
 								getUnitClientUtils ().drawUnitFigures (unit, combatActionID, unit.getCombatHeading (), g,
 									getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false);
+									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false);
 							}
 							catch (final Exception e)
 							{
@@ -303,7 +309,7 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), g,
-							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false);
+							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false);
 					}
 					catch (final Exception e)
 					{
@@ -316,7 +322,7 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						// Draw which missile image?
 						final BufferedImage ratImage = getAnim ().loadImageOrAnimationFrame (getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatImageFile (),
-							getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatAnimation ());
+							getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatAnimation (), false);
 						
 						// Draw each missile
 						for (final int [] position : getAttackAnim ().getCurrent ())
@@ -334,42 +340,38 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						log.error (e, e);
 					}
-				
-				// Draw the buttons panel background at the bottom of the window
-				g.drawImage (background, 0, getHeight () - (background.getHeight () * 2), background.getWidth () * 2, background.getHeight () * 2, null);
 			}
 		};
 		
-		// Animate the terrain tiles
-		new Timer ((int) (1000 / combatMapTileSet.getAnimationSpeed ()), new ActionListener ()
+		contentPane.add (topPanel, "frmCombatScenery");		
+		
+		// Bottom portion containing all the buttons
+		final JPanel bottomPanel = new JPanel ()
 		{
 			@Override
-			public final void actionPerformed (final ActionEvent e)
+			protected final void paintComponent (final Graphics g)
 			{
-				final int newFrame = terrainAnimFrame + 1;
-				terrainAnimFrame = (newFrame >= combatMapTileSet.getAnimationFrameCount ()) ? 0 : newFrame;
-				contentPane.repaint ();
+				g.drawImage (background, 0, getHeight () - (background.getHeight () * 2), background.getWidth () * 2, background.getHeight () * 2, null);
 			}
-		}).start ();
+		};
+
+		bottomPanel.setLayout (new XmlLayoutManager (getCombatLayoutBottom ()));
+		contentPane.add (bottomPanel, "frmCombatBottomPanel");		
 		
-		// Set up layout
-		contentPane.setLayout (new XmlLayoutManager (getCombatLayout ()));
+		bottomPanel.add (getUtils ().createImageButton (spellAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatSpell");
+		bottomPanel.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatWait");
+		bottomPanel.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatDone");
+		bottomPanel.add (getUtils ().createImageButton (fleeAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatFlee");
+		bottomPanel.add (getUtils ().createImageButton (autoAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatAuto");
 		
-		// Buttons
-		contentPane.add (getUtils ().createImageButton (spellAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatSpell");
-		contentPane.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatWait");
-		contentPane.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatDone");
-		contentPane.add (getUtils ().createImageButton (fleeAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatFlee");
-		contentPane.add (getUtils ().createImageButton (autoAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatAuto");
-		
-		contentPane.add (getUtils ().createImageButton (toggleDamageCalculationsAction, null, null, null, calculatorButtonNormal, calculatorButtonPressed, calculatorButtonNormal), "frmCombatToggleDamageCalculations");
+		bottomPanel.add (getUtils ().createImageButton (toggleDamageCalculationsAction, null, null, null, calculatorButtonNormal, calculatorButtonPressed, calculatorButtonNormal), "frmCombatToggleDamageCalculations");
 		
 		// Player names (colour gets set in initNewCombat once we know who the players actually are)
 		defendingPlayerName = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
-		contentPane.add (defendingPlayerName, "frmCombatDefendingPlayer");
+		bottomPanel.add (defendingPlayerName, "frmCombatDefendingPlayer");
 		
 		attackingPlayerName = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
-		contentPane.add (attackingPlayerName, "frmCombatAttackingPlayer");
+		bottomPanel.add (attackingPlayerName, "frmCombatAttackingPlayer");
 		
 		// The first time the CombatUI opens, we'll have skipped the call to initNewCombat () because it takes place before init (), so do it now
 		initNewCombat ();
@@ -377,6 +379,8 @@ public final class CombatUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
+		
+		topPanel.init ("CombatUI-repaintTimer");
 		
 		log.trace ("Exiting init");
 	}
@@ -392,7 +396,7 @@ public final class CombatUI extends MomClientFrameUI
 		log.trace ("Entering initNewCombat");
 
 		// Skip if the controls don't exist yet - there's a duplicate call to initNewCombat () at the end of init () for the case of the 1st combat that takes place
-		if (contentPane != null)
+		if (defendingPlayerName != null)
 		{
 			// Always turn auto back off again for new combats
 			autoControl = false;
@@ -439,21 +443,15 @@ public final class CombatUI extends MomClientFrameUI
 			if (defendingPlayerName != null)
 				languageChanged ();
 			
-			// Find all the units involved in this combat, kick off their animations (if they're flying), and make a
-			// grid showing which is in which cell, so when we draw them its easier to draw the back ones first.
+			// Find all the units involved in this combat and make a grid showing which is in
+			// which cell, so when we draw them its easier to draw the back ones first.
 			
 			// unitToDrawAtEachLocation is a lot simpler here than in OverlandMapUI since there can only ever be 1 unit at each location.
 			unitToDrawAtEachLocation = new MemoryUnit [getClient ().getSessionDescription ().getCombatMapSize ().getHeight ()] [getClient ().getSessionDescription ().getCombatMapSize ().getWidth ()];
 			                                                                  
 			for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())))
-				{
-					// False, because other than during a move anim, units are stood still
-					final String standingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
-					getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), standingActionID, unit.getCombatHeading (), contentPane);
-					
 					unitToDrawAtEachLocation [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = unit;
-				}
 		}
 
 		log.trace ("Exiting initNewCombat");
@@ -537,28 +535,35 @@ public final class CombatUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * Anim messages need access to this to trigger repaints
-	 * @return Content pane
-	 */
-	public final JPanel getContentPane ()
-	{
-		return contentPane;
-	}
-	
-	/**
 	 * @return XML layout
 	 */
-	public final XmlLayoutContainerEx getCombatLayout ()
+	public final XmlLayoutContainerEx getCombatLayoutMain ()
 	{
-		return combatLayout;
+		return combatLayoutMain;
 	}
 
 	/**
 	 * @param layout XML layout
 	 */
-	public final void setCombatLayout (final XmlLayoutContainerEx layout)
+	public final void setCombatLayoutMain (final XmlLayoutContainerEx layout)
 	{
-		combatLayout = layout;
+		combatLayoutMain = layout;
+	}
+
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getCombatLayoutBottom ()
+	{
+		return combatLayoutBottom;
+	}
+	
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setCombatLayoutBottom (final XmlLayoutContainerEx layout)
+	{
+		combatLayoutBottom = layout;
 	}
 
 	/**

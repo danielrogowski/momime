@@ -24,11 +24,41 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 /**
- * Common class that keeps track of which frame number animations are on, to save every screen that needs to
- * display animations repeating very similar code.  It also prevents ending up with old timers still running,
- * e.g. continually reclicking a different building on the change construction screen will reuse any existing
- * timers for the animations rather than keep creating new ones. 
- */
+* Common class to handle simple animations defined in the graphics XML file, i.e. cycle around a set of bitmap
+ * images at a particular frame rate.  Other kinds of animations, e.g. showing an object moving from one point to another,
+ * or bitmap cycles that must have a specific start or duration, e.g. spell book page turning, must be hand written. 
+ * 
+ * There are 3 types of frames in the MoM IME Java client:
+ * 
+ * 1) Those with no animations at all.  These are just made up of totally standard Swing components, possibly
+ *		with some custom paintComponent method(s), but no animated parts at all.  There may be repaints triggered,
+ *		but by game values changing, rather than by a scheduled timer.  Simple example would be MessageBoxUI,
+ *		more complex example would be MagicSlidersUI.
+ *
+ * 2) Those with simple/few animations.  These work via this AnimationController.  A paintComponent method
+ *		will draw the animation onto the frame, using the loadImageOrAnimationFrame with registeredAnimation = true
+ *		to ask the AnimationController which frame should be drawn.  If the animation (as defined in the Graphics XML)
+ *		runs at for example 6 FPS, then the AnimationController will then (by virtue of a call to registerRepaintTrigger)
+ *		fire repaint () events at the panel at 6 FPS.  This ensures that the frame is redrawn exactly when it needs to be - there
+ *		is no point redrawing a screen 60 times a second if the animation only updates 6 times a second.
+ *
+ *		Animations in this mode *must* be pre-registered by a call to registerRepaintTrigger prior to the paintComponent
+ *		method requesting which frame to draw by calling loadImageOrAnimationFrame.  They should also call
+ *		unregisterRepaintTrigger when completed so that leftover timers don't keep firing needless repaint events.
+ *		Simple example would be MainMenuUI (the animated "Master of Magic" fancy red text at the top).  More complex
+ *		example would be CityViewPanel, where various buildings and spell effects are all drawn via timers which are
+ *		potentially running at different frame rates (a sawmill might rotate at 6 FPS while the flag on a fighters' guild
+ *		might flutter in the wind at 5 FPS).
+ *
+ * 3) Those with complex/many animations.  These are panels where using the above system would flood the panel
+ *		with so many repaint events at differing intervals that it grinds to a halt.  In this case the paintComponent method
+ *		still calls loadImageOrAnimationFrame to obtain which animation frame to draw, but with registeredAnimation = false.
+ *		No call to registerRepaintTrigger is necessary, but this means the AnimationController doesn't fire any repaint () events
+ *		at the panel, so forcing continual repaints must be handled by some other means.  Typically by making the panel inherit from
+ *		JPanelWithConstantRepaints so it redraws itself as fast as it possibly can, with any luck at 60 FPS.  The primary example
+ *		is CombatUI, where there are multiple kinds of units facing multiple directions all possibly displaying flying animations,
+ *		in addition to spell animations, the animated red/blue outlines on selected tiles, and units moving and shooting.
+  */
 public final class AnimationControllerImpl implements AnimationController
 {
 	/** Class logger */
@@ -51,12 +81,13 @@ public final class AnimationControllerImpl implements AnimationController
 	 * 
 	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
 	 * @param animationID AnimationID from the graphics XML file
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @return Appropriate image to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
 	@Override
-	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID)
+	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation)
 		throws MomException, IOException
 	{
 		if ((imageResourceName == null) && (animationID == null))
@@ -69,7 +100,8 @@ public final class AnimationControllerImpl implements AnimationController
 		final String imageName;
 		if (imageResourceName != null)
 			imageName = imageResourceName;
-		else
+		
+		else if (registeredAnimation)
 		{
 			// Anim must already exist in the frames map
 			final AnimationFrameCounter counter = animationFrames.get (animationID);
@@ -78,6 +110,19 @@ public final class AnimationControllerImpl implements AnimationController
 			
 			// Now can grab the correct frame
 			imageName = counter.anim.getFrame ().get (counter.animationFrame).getFrameImageFile ();
+		}
+		
+		else
+		{
+			// Find the animation in the graphics XML
+			final AnimationEx anim = getGraphicsDB ().findAnimation (animationID, "loadImageOrAnimationFrame");
+			
+			// Adjust system timer for the frame rate of this animation
+			final double frameNumber = System.nanoTime () / (1000000000d / anim.getAnimationSpeed ());
+			final int frameLoop = ((int) frameNumber) % anim.getFrame ().size ();
+			
+			// Now can grab the correct frame
+			imageName = anim.getFrame ().get (frameLoop).getFrameImageFile ();
 		}
 
 		// Now can load the image

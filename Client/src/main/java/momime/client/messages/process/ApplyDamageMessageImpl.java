@@ -182,10 +182,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			if (isRangedAttack ())
 			{
 				// Start a ranged attack animation - firstly, after a brief frame of showing the unit firing, it'll be back to standing still
-				// It might however because of the attack now be facing a different direction than before, so possibly a new anim needs to be registered
-				final String attackerStandingActionID = getClientUnitCalculations ().determineCombatActionID (attackerUnit, false);
-				getUnitClientUtils ().registerUnitFiguresAnimation (attackerUnit.getUnitID (), attackerStandingActionID, attackerUnit.getCombatHeading (), getCombatUI ().getContentPane ());
-				
 				// To animate the missiles, first we need the locations (in pixels) of the two units involved
 				final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
 				
@@ -219,7 +215,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				final String rangedAttackTypeID = attackerUnitDef.getRangedAttackType ();
 				final RangedAttackTypeEx rat = getGraphicsDB ().findRangedAttackType (rangedAttackTypeID, "ApplyDamageMessageImpl");
 				ratFlyImage = rat.findCombatImage (RangedAttackTypeActionID.FLY, getAttackerDirection (), "ApplyDamageMessageImpl");
-				getAnim ().registerRepaintTrigger (ratFlyImage.getRangedAttackTypeCombatAnimation (), getCombatUI ().getContentPane ());
 				
 				ratStrikeImage = rat.findCombatImage (RangedAttackTypeActionID.STRIKE, getAttackerDirection (), "ApplyDamageMessageImpl");
 				
@@ -239,12 +234,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			else
 			{
 				// Start a close combat attack animation
-				getUnitClientUtils ().registerUnitFiguresAnimation (attackerUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK, getAttackerDirection (), getCombatUI ().getContentPane ());
 				getUnitClientUtils ().playCombatActionSound (attackerUnit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK);
 				
-				// For close combat attacks, animate the defender as well as the attacker, to show that they are counter-attacking
-				getUnitClientUtils ().registerUnitFiguresAnimation (defenderUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK, getDefenderDirection (), getCombatUI ().getContentPane ());
-
 				// For melee attacks is set to 1 second, and melee animations in the graphics XML are set at 6 FPS, so there'll be 6 frames to show
 				duration = 1;
 				tickCount = 6;
@@ -401,25 +392,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		// Jump to the next unit to move
 		if (animated)
 		{
-			if (isRangedAttack ())
-			{
-				// Stop missile animation
-				getAnim ().unregisterRepaintTrigger (ratFlyImage.getRangedAttackTypeCombatAnimation (), getCombatUI ().getContentPane ());
-			}
-			else
-			{
-				// End the melee attack animation
-				getUnitClientUtils ().unregisterUnitFiguresAnimation (attackerUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK, getAttackerDirection (), getCombatUI ().getContentPane ());				
-				getUnitClientUtils ().unregisterUnitFiguresAnimation (defenderUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK, getDefenderDirection (), getCombatUI ().getContentPane ());
-				
-				// If the units are facing a different direction than before then we might have a new anim to kick off
-				final String attackerStandingActionID = getClientUnitCalculations ().determineCombatActionID (attackerUnit, false);
-				getUnitClientUtils ().registerUnitFiguresAnimation (attackerUnit.getUnitID (), attackerStandingActionID, attackerUnit.getCombatHeading (), getCombatUI ().getContentPane ());
-	
-				final String defenderStandingActionID = getClientUnitCalculations ().determineCombatActionID (defenderUnit, false);
-				getUnitClientUtils ().registerUnitFiguresAnimation (defenderUnit.getUnitID (), defenderStandingActionID, defenderUnit.getCombatHeading (), getCombatUI ().getContentPane ());
-			}
-			
 			// Update remaining movement
 			attackerUnit.setDoubleCombatMovesLeft (getAttackerDoubleCombatMovesLeft ());
 

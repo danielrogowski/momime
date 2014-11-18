@@ -82,7 +82,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 					try
 					{
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, g, 0, PANEL_SIZE.height - 32, true);
+						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, g, 0, PANEL_SIZE.height - 32, true, true);
 					}
 					catch (final Exception e)
 					{

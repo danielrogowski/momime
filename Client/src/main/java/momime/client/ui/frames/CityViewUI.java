@@ -688,7 +688,7 @@ public final class CityViewUI extends MomClientFrameUI
 						final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-							buildingImage.getCityViewAnimation ());
+							buildingImage.getCityViewAnimation (), true);
 					
 						g.drawImage (image, (getSize ().width - image.getWidth ()) / 2, (getSize ().height - image.getHeight ()) / 2, null);
 					}
@@ -697,7 +697,7 @@ public final class CityViewUI extends MomClientFrameUI
 					if (sampleUnit != null)
 					{
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
-						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, g, (constructionPanel.getWidth () - 60) / 2, 28, true);
+						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, g, (constructionPanel.getWidth () - 60) / 2, 28, true, true);
 					}
 				}
 				catch (final Exception e)

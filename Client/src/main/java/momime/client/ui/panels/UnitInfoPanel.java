@@ -250,7 +250,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						final CityViewElement buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "currentlyConstructingBuilding");
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-							buildingImage.getCityViewAnimation ());
+							buildingImage.getCityViewAnimation (), true);
 					
 						g.drawImage (image, (getSize ().width - image.getWidth ()) / 2, (getSize ().height - image.getHeight ()) / 2, null);
 					}
@@ -259,7 +259,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					if (unit != null)
 					{
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, g, 1, 26, true);
+						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, g, 1, 26, true, true);
 					}
 				}
 				catch (final Exception e)

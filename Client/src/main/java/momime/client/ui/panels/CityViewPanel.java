@@ -129,7 +129,7 @@ public final class CityViewPanel extends JPanel
 										// How big is the image for this building?
 										// Just let the anim routines grab the image for us - we've registered for the anim anyway, and this means
 										// we'll correctly handle exactly the pixels that are transparent in the current frame
-										final BufferedImage image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation ());
+										final BufferedImage image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation (), true);
 							
 										// Is the click within this building image?
 										if ((ev.getPoint ().x >= element.getLocationX ()) && (ev.getPoint ().y >= element.getLocationY ()) &&
@@ -196,7 +196,7 @@ public final class CityViewPanel extends JPanel
 				// Draw it
 				try
 				{
-					final BufferedImage image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation ());
+					final BufferedImage image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation (), true);
 					g.drawImage (image, element.getLocationX (), element.getLocationY (),
 						image.getWidth () * element.getSizeMultiplier (), image.getHeight () * element.getSizeMultiplier (),
 						null);

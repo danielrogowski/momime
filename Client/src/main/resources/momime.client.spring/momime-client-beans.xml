@@ -942,12 +942,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
-	<bean id="combatLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/CombatUI.xml" />
+	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/CombatUI-Main.xml" />
+	</bean>
+
+	<bean id="combatLayoutBottom" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/CombatUI-Bottom.xml" />
 	</bean>
 
 	<bean id="combatUI" class="momime.client.ui.frames.CombatUI">
-		<property name="combatLayout" ref="combatLayout" />
+		<property name="combatLayoutMain" ref="combatLayoutMain" />
+		<property name="combatLayoutBottom" ref="combatLayoutBottom" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />

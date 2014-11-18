@@ -233,7 +233,7 @@ public final class MainMenuUI extends MomClientFrameUI
 				
 				try
 				{
-					g.drawImage (getAnim ().loadImageOrAnimationFrame (null, ANIM_MAIN_MENU_TITLE), leftBorder, topBorder, imgWidth, titleHeight, null);
+					g.drawImage (getAnim ().loadImageOrAnimationFrame (null, ANIM_MAIN_MENU_TITLE, true), leftBorder, topBorder, imgWidth, titleHeight, null);
 				}
 				catch (final Exception e)
 				{

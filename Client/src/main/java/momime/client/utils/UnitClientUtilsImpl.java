@@ -515,11 +515,12 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile) throws IOException
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
@@ -540,12 +541,14 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		{
 			final UnitEx secondaryUnit = getGraphicsDB ().findUnit (unit.getSecondaryUnitID (), "drawUnitFigures");
 			final UnitCombatImage secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
-			secondaryImage = getAnim ().loadImageOrAnimationFrame (secondaryUnitImage.getUnitCombatImageFile (), secondaryUnitImage.getUnitCombatAnimation ());
+			secondaryImage = getAnim ().loadImageOrAnimationFrame
+				(secondaryUnitImage.getUnitCombatImageFile (), secondaryUnitImage.getUnitCombatAnimation (), registeredAnimation);
 		}
 		
 		// Work out the image to draw n times
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
-		final BufferedImage image = getAnim ().loadImageOrAnimationFrame (unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation ());
+		final BufferedImage image = getAnim ().loadImageOrAnimationFrame
+			(unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation (), registeredAnimation);
 		
 		// Draw the figure in each position
 		int n = 1;
@@ -582,11 +585,12 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final AvailableUnit unit, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile) throws IOException
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation) throws IOException
 	{
 		// Get total figures
 		final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "drawUnitFigures");
@@ -618,7 +622,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			
 			// Call other version now that we have all the necessary values
 			drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
-				direction, g, offsetX, offsetY, sampleTileImageFile);
+				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation);
 		}
 	}
 	

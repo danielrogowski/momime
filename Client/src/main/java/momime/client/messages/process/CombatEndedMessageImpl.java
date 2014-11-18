@@ -71,7 +71,6 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 		
 		// Close down the UI
 		getCombatUI ().setVisible (false);
-		getAnim ().unregisterRepaintTrigger (null, getCombatUI ().getContentPane ());
 		
 		// Go back to the overland music
 		try

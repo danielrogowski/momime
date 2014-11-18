@@ -189,7 +189,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 				final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
 				final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 					((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-					buildingImage.getCityViewAnimation ());
+					buildingImage.getCityViewAnimation (), true);
 
 				nextConstructionImage.setIcon (new ImageIcon (image));
 			}

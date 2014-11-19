@@ -219,5 +219,6 @@ public final class TestUnitRowDisplayUI
 		display.setModal (false);
 		display.setVisible (true);
 		Thread.sleep (5000);
+		display.setVisible (false);
 	}
 }

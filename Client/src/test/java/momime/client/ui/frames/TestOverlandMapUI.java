@@ -236,5 +236,6 @@ public final class TestOverlandMapUI
 		map.setVisible (true);
 		map.updateTurnLabelText ();		// Must do this after .init (), or the label we're updating won't exist yet
 		Thread.sleep (5000);
+		map.setVisible (false);
 	}
 }

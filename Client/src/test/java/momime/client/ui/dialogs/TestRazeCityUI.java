@@ -58,5 +58,6 @@ public final class TestRazeCityUI
 		box.setModal (false);
 		box.setVisible (true);
 		Thread.sleep (5000);
+		box.setVisible (false);
 	}
 }

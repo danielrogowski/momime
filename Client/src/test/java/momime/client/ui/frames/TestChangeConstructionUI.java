@@ -279,5 +279,6 @@ public final class TestChangeConstructionUI
 		// Display form		
 		changeConstruction.setVisible (true);
 		Thread.sleep (5000);
+		changeConstruction.setVisible (false);
 	}
 }

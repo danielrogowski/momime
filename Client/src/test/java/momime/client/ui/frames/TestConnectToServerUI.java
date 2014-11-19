@@ -76,5 +76,6 @@ public final class TestConnectToServerUI
 		// Display form		
 		connect.setVisible (true);
 		Thread.sleep (5000);
+		connect.setVisible (false);
 	}
 }

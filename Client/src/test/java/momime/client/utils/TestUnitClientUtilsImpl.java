@@ -471,9 +471,10 @@ public final class TestUnitClientUtilsImpl
 		frame.pack ();
 		frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setLocationRelativeTo (null);
-		frame.setVisible (true);
 		
+		frame.setVisible (true);
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 	
 	/**

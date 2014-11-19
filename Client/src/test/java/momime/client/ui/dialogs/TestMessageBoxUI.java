@@ -59,6 +59,7 @@ public final class TestMessageBoxUI
 		box.setModal (false);
 		box.setVisible (true);
 		Thread.sleep (5000);
+		box.setVisible (false);
 	}
 
 	/**
@@ -104,6 +105,7 @@ public final class TestMessageBoxUI
 		box.setModal (false);
 		box.setVisible (true);
 		Thread.sleep (5000);
+		box.setVisible (false);
 	}
 
 	/**
@@ -150,6 +152,7 @@ public final class TestMessageBoxUI
 		box.setModal (false);
 		box.setVisible (true);
 		Thread.sleep (5000);
+		box.setVisible (false);
 	}
 
 	/**
@@ -197,5 +200,6 @@ public final class TestMessageBoxUI
 		box.setModal (false);
 		box.setVisible (true);
 		Thread.sleep (5000);
+		box.setVisible (false);
 	}
 }

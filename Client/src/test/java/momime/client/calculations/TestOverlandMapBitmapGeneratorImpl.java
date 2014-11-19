@@ -129,9 +129,10 @@ public final class TestOverlandMapBitmapGeneratorImpl
 			frame.setContentPane (contentPane);
 			frame.pack ();
 			frame.setLocationRelativeTo (null);
-			frame.setVisible (true);
 			
+			frame.setVisible (true);
 			Thread.sleep (5000);
+			frame.setVisible (false);
 		}
 	}
 }

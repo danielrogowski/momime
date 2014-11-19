@@ -92,5 +92,6 @@ public final class TestMainMenuUI
 		// Display form		
 		main.setVisible (true);
 		Thread.sleep (5000);
+		main.setVisible (false);
 	}
 }

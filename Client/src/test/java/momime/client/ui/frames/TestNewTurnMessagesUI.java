@@ -141,5 +141,6 @@ public final class TestNewTurnMessagesUI
 		// Display form		
 		scroll.setVisible (true);
 		Thread.sleep (5000);
+		scroll.setVisible (false);
 	}
 }

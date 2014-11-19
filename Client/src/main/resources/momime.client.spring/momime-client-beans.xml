@@ -968,6 +968,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="anim" ref="anim" />
+		<property name="combatMapProcessing" ref="combatMapProcessing" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

@@ -88570,6 +88570,62 @@
 			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame15.png</frameImageFile>
 		</frame>
 	</animation>
+	<animation animationID="COMBAT_SELECTED_UNIT">
+		<animationDescription>Red flashing diamond underneath the unit that we're currently controlling</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame1.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame2.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame3.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame4.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame5.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame6.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame7.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/selectedUnit-frame8.png</frameImageFile>
+		</frame>
+	</animation>
+	<animation animationID="COMBAT_MOVE_TO">
+		<animationDescription>Blue flashing diamond underneath the tile we're currently pointing at</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame1.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame2.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame3.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame4.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame5.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame6.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame7.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/combat/moveTo-frame8.png</frameImageFile>
+		</frame>
+	</animation>
 	<playList playListID="OVERLAND">
 		<audioFile>/momime.client.music/MUSIC_099 - BGM.mp3</audioFile>
 		<audioFile>/momime.client.music/MUSIC_100 - BGM.mp3</audioFile>

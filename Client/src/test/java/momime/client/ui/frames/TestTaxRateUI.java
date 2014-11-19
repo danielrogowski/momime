@@ -91,5 +91,6 @@ public final class TestTaxRateUI
 		// Display form		
 		tax.setVisible (true);
 		Thread.sleep (5000);
+		tax.setVisible (false);
 	}
 }

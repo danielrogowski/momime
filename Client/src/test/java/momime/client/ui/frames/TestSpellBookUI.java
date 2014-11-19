@@ -218,5 +218,6 @@ public final class TestSpellBookUI
 		// Display form		
 		book.setVisible (true);
 		Thread.sleep (5000);
+		book.setVisible (false);
 	}	
 }

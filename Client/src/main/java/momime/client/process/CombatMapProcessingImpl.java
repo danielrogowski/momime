@@ -8,9 +8,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
-import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +32,9 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** Currently selected unit */
+	private MemoryUnit selectedUnitInCombat;
 	
 	/**
 	 * At the start of our combat turn, once all our movement has been reset, this gets called.
@@ -75,6 +78,8 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 		{
 			if (unitsLeftToMoveCombat.size () == 0)
 			{
+				setSelectedUnitInCombat (null);
+				
 				// In combat, turns are auto-ended when we have no units to move
 				final EndCombatTurnMessage msg = new EndCombatTurnMessage ();
 				msg.setCombatLocation (getCombatUI ().getCombatLocation ());
@@ -88,11 +93,33 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	}
 
 	/**
+	 * @return Currently selected unit
+	 */
+	@Override
+	public final MemoryUnit getSelectedUnitInCombat ()
+	{
+		return selectedUnitInCombat;
+	}	
+	
+	/**
 	 * Updates various controls, e.g. melee/ranged attack strength displayed in the panel at the bottom, when a different unit is selected in combat
-	 * @param unit Unit to select
+	 * @param unit Unit to select; this may be null if we've got no further units to move and our turn is ending
 	 */
 	public final void setSelectedUnitInCombat (final MemoryUnit unit)
 	{
+		log.trace ("Entering setSelectedUnitInCombat: " + ((unit == null) ? "null" : "Unit URN " + unit.getUnitURN ()));
+		
+		selectedUnitInCombat = unit;
+		if (unit == null)
+		{
+			getCombatUI ().setSelectedUnitTileLocation (null, null);
+		}
+		else
+		{
+			getCombatUI ().setSelectedUnitTileLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY ());
+		}
+		
+		log.trace ("Entering setSelectedUnitInCombat");
 	}
 	
 	/**
@@ -101,7 +128,67 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	@Override
 	public final void removeUnitFromLeftToMoveCombat (final MemoryUnit unit)
 	{
+		log.trace ("Entering removeUnitFromLeftToMoveCombat");
+
 		unitsLeftToMoveCombat.remove (unit);
+
+		log.trace ("Exiting removeUnitFromLeftToMoveCombat");
+	}
+	
+	/**
+	 * Indicates that we don't want the current unit to take any action this turn
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void selectedUnitDone () throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering selectedUnitsDone");
+		
+		removeUnitFromLeftToMoveCombat (selectedUnitInCombat);	
+		selectNextUnitToMoveCombat ();
+		
+		log.trace ("Exiting selectedUnitsDone");
+	}
+	
+	/**
+	 * Indicates that we want to move a different unit before this one
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void selectedUnitWait () throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering selectedUnitsWait");
+
+		// Only put units back in the 'left to move' list if they already were in it - otherwise this can result in units who've already used
+		// up all their movement being put back in the 'left to move' list which really screws things up.
+		if (unitsLeftToMoveCombat.remove (selectedUnitInCombat))
+			unitsLeftToMoveCombat.add (selectedUnitInCombat);
+			
+		selectNextUnitToMoveCombat ();
+		
+		log.trace ("Exiting selectedUnitsWait");
+	}
+
+	/**
+	 * This is used when right clicking on a specific unit to select it
+	 * 
+	 * @param unit Unit to manually select
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void moveToFrontOfList (final MemoryUnit unit) throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering moveToFrontOfList: Unit URN " + unit.getUnitURN ());
+
+		unitsLeftToMoveCombat.remove (unit);
+		unitsLeftToMoveCombat.add (0, unit);
+			
+		selectNextUnitToMoveCombat ();
+		
+		log.trace ("Exiting moveToFrontOfList");
 	}
 	
 	/**

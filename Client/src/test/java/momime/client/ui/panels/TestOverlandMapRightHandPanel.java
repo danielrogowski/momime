@@ -64,7 +64,7 @@ public final class TestOverlandMapRightHandPanel
 	 * @return Panel to test with
 	 * @throws Exception If there is a problem
 	 */
-	private final OverlandMapRightHandPanel createPanel () throws Exception
+	private final PanelAndFrame createPanel () throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -270,7 +270,10 @@ public final class TestOverlandMapRightHandPanel
 		// Have to do this after the frame is displayed
 		panel.setSurveyorLocation (new MapCoordinates3DEx (20, 10, 1));
 		
-		return panel;
+		final PanelAndFrame result = new PanelAndFrame ();
+		result.panel = panel;
+		result.frame = frame;
+		return result;
 	}
 	
 	/**
@@ -280,10 +283,12 @@ public final class TestOverlandMapRightHandPanel
 	@Test
 	public final void testUnitsPanel () throws Exception
 	{
-		final OverlandMapRightHandPanel panel = createPanel ();
-		panel.setTop (OverlandMapRightHandPanelTop.UNITS);
-		panel.setBottom (OverlandMapRightHandPanelBottom.SPECIAL_ORDERS);
+		final PanelAndFrame panel = createPanel ();
+		panel.panel.setTop (OverlandMapRightHandPanelTop.UNITS);
+		panel.panel.setBottom (OverlandMapRightHandPanelBottom.SPECIAL_ORDERS);
+		
 		Thread.sleep (5000);
+		panel.frame.setVisible (false);
 	}
 
 	/**
@@ -293,10 +298,12 @@ public final class TestOverlandMapRightHandPanel
 	@Test
 	public final void testSurveyorPanel () throws Exception
 	{
-		final OverlandMapRightHandPanel panel = createPanel ();
-		panel.setTop (OverlandMapRightHandPanelTop.SURVEYOR);
-		panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+		final PanelAndFrame panel = createPanel ();
+		panel.panel.setTop (OverlandMapRightHandPanelTop.SURVEYOR);
+		panel.panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+		
 		Thread.sleep (5000);
+		panel.frame.setVisible (false);
 	}
 
 	/**
@@ -306,15 +313,17 @@ public final class TestOverlandMapRightHandPanel
 	@Test
 	public final void testTargetSpellPanel () throws Exception
 	{
-		final OverlandMapRightHandPanel panel = createPanel ();
-		panel.setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
-		panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+		final PanelAndFrame panel = createPanel ();
+		panel.panel.setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
+		panel.panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
 		
 		final NewTurnMessageSpellEx ntm = new NewTurnMessageSpellEx ();
 		ntm.setSpellID ("SP001");
 		
-		panel.setTargetSpell (ntm);
+		panel.panel.setTargetSpell (ntm);
+
 		Thread.sleep (5000);
+		panel.frame.setVisible (false);
 	}
 
 	/**
@@ -324,10 +333,12 @@ public final class TestOverlandMapRightHandPanel
 	@Test
 	public final void testEconomyPanel_OurTurn () throws Exception
 	{
-		final OverlandMapRightHandPanel panel = createPanel ();
-		panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
-		panel.setBottom (OverlandMapRightHandPanelBottom.NEXT_TURN_BUTTON);
+		final PanelAndFrame panel = createPanel ();
+		panel.panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
+		panel.panel.setBottom (OverlandMapRightHandPanelBottom.NEXT_TURN_BUTTON);
+		
 		Thread.sleep (5000);
+		panel.frame.setVisible (false);
 	}
 
 	/**
@@ -337,10 +348,12 @@ public final class TestOverlandMapRightHandPanel
 	@Test
 	public final void testEconomyPanel_OtherPlayersTurn_OnePlayerAtATime () throws Exception
 	{
-		final OverlandMapRightHandPanel panel = createPanel ();
-		panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
-		panel.setBottom (OverlandMapRightHandPanelBottom.PLAYER);
+		final PanelAndFrame panel = createPanel ();
+		panel.panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
+		panel.panel.setBottom (OverlandMapRightHandPanelBottom.PLAYER);
+
 		Thread.sleep (5000);
+		panel.frame.setVisible (false);
 	}
 
 	/**
@@ -350,12 +363,24 @@ public final class TestOverlandMapRightHandPanel
 	@Test
 	public final void testEconomyPanel_OtherPlayersTurn_Simultaneous () throws Exception
 	{
-		final OverlandMapRightHandPanel panel = createPanel ();
-		panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
-		panel.setBottom (OverlandMapRightHandPanelBottom.PLAYER);
+		final PanelAndFrame panel = createPanel ();
+		panel.panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
+		panel.panel.setBottom (OverlandMapRightHandPanelBottom.PLAYER);
 		
-		panel.getClient ().getSessionDescription ().setTurnSystem (TurnSystem.SIMULTANEOUS);
-		panel.turnSystemOrCurrentPlayerChanged ();
+		panel.panel.getClient ().getSessionDescription ().setTurnSystem (TurnSystem.SIMULTANEOUS);
+		panel.panel.turnSystemOrCurrentPlayerChanged ();
+
 		Thread.sleep (5000);
+		panel.frame.setVisible (false);
+	}
+
+	/** Common setup method needs to return both a panel and frame, so need small class to hold them both */
+	private class PanelAndFrame
+	{
+		/** Panel created by createPanel method */ 
+		private OverlandMapRightHandPanel panel;
+
+		/** Frame created by createPanel method */ 
+		private JFrame frame;
 	}
 }

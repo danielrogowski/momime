@@ -177,5 +177,6 @@ public final class TestMiniCityViewUI
 		cityView.setModal (false);
 		cityView.setVisible (true);
 		Thread.sleep (5000);
+		cityView.setVisible (false);
 	}
 }

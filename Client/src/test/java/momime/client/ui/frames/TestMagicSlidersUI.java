@@ -235,5 +235,6 @@ public final class TestMagicSlidersUI
 		// Display form		
 		sliders.setVisible (true);
 		Thread.sleep (5000);
+		sliders.setVisible (false);
 	}
 }

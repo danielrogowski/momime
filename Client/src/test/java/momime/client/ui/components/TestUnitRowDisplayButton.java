@@ -104,8 +104,9 @@ public final class TestUnitRowDisplayButton
 		frame.setResizable (false);		// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		frame.pack ();
 		frame.setPreferredSize (frame.getSize ());
-		frame.setVisible (true);
 		
+		frame.setVisible (true);
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 }

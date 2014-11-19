@@ -277,6 +277,7 @@ public final class TestCityViewUI
 		// Display form		
 		cityView.setVisible (true);
 		Thread.sleep (5000);
+		cityView.setVisible (false);
 	}
 
 	/**

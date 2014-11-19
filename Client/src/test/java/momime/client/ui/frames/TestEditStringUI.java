@@ -50,6 +50,7 @@ public final class TestEditStringUI
 		// Display form		
 		box.setVisible (true);
 		Thread.sleep (5000);
+		box.setVisible (false);
 	}
 
 	/**
@@ -89,5 +90,6 @@ public final class TestEditStringUI
 		// Display form		
 		box.setVisible (true);
 		Thread.sleep (5000);
+		box.setVisible (false);
 	}
 }

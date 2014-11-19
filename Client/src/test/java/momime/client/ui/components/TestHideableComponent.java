@@ -61,5 +61,6 @@ public final class TestHideableComponent
 		timer.start ();
 		Thread.sleep (5000);
 		timer.stop ();
+		frame.setVisible (false);
 	}
 }

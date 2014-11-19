@@ -88,6 +88,7 @@ public final class TestCombatEndedUI
 		combatEnded.setModal (false);
 		combatEnded.setVisible (true);
 		Thread.sleep (5000);
+		combatEnded.setVisible (false);
 	}
 
 	/**

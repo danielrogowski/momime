@@ -188,9 +188,10 @@ public final class TestUnitInfoPanel
 		frame.setContentPane (panel.getPanel ());
 		frame.pack ();
 		frame.setLocationRelativeTo (null);
+
 		frame.setVisible (true);
-		
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 
 	/**
@@ -458,8 +459,9 @@ public final class TestUnitInfoPanel
 		frame.setContentPane (panel.getPanel ());
 		frame.pack ();
 		frame.setLocationRelativeTo (null);
+
 		frame.setVisible (true);
-		
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 }

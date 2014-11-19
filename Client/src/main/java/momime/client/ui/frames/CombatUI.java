@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +27,7 @@ import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
+import momime.client.process.CombatMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
@@ -41,10 +44,12 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.random.RandomUtils;
@@ -112,6 +117,15 @@ public final class CombatUI extends MomClientFrameUI
 	/** Animation controller */
 	private AnimationController anim;
 	
+	/** Combat map processing */
+	private CombatMapProcessing combatMapProcessing;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
 	/** Spell book action */
 	private Action spellAction;
 	
@@ -154,6 +168,15 @@ public final class CombatUI extends MomClientFrameUI
 	/** Attack that's in the middle of taking place */
 	private ApplyDamageMessageImpl attackAnim;
 	
+	/** X coordinate, in pixels, of the tile underneath the currently selected unit */
+	private Integer selectedUnitTileX;
+
+	/** Y coordinate, in pixels, of the tile underneath the currently selected unit */
+	private Integer selectedUnitTileY;
+	
+	/** Combat tile set */
+	private TileSetEx combatMapTileSet;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -174,7 +197,7 @@ public final class CombatUI extends MomClientFrameUI
 		final BufferedImage calculatorButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/combat/calculatorButtonPressed.png");
 		
 		// We need the tile set to know the frame rate and number of frames
-		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "CombatUI");
+		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "CombatUI");
 		
 		// Actions
 		spellAction = new AbstractAction ()
@@ -190,6 +213,14 @@ public final class CombatUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getCombatMapProcessing ().selectedUnitWait ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -198,6 +229,14 @@ public final class CombatUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getCombatMapProcessing ().selectedUnitDone ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -261,6 +300,18 @@ public final class CombatUI extends MomClientFrameUI
 				
 				// Draw the static portion of the terrain
 				g.drawImage (combatMapBitmaps [terrainAnimFrame], 0, 0, null);
+				
+				// Draw the red outline marking the unit who we're currently moving
+				if ((selectedUnitTileX != null) && (selectedUnitTileY != null))
+					try
+					{
+						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_SELECTED_UNIT", false);
+						g.drawImage (image, selectedUnitTileX, selectedUnitTileY, image.getWidth () * 2, image.getHeight () * 2, null);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 				
 				// Draw units at the top first and work downwards
 				for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
@@ -375,6 +426,52 @@ public final class CombatUI extends MomClientFrameUI
 		
 		// The first time the CombatUI opens, we'll have skipped the call to initNewCombat () because it takes place before init (), so do it now
 		initNewCombat ();
+		
+		// Capture mouse clicks on the scenery panel
+		topPanel.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				final MapCoordinates2DEx combatCoords = convertMouseCoordsToCombatCoords (ev);
+
+				// Right clicking, if we're right clicking on the selected unit or on a unit which has no movement left or is not ours, shows the unit info.
+				// If it is our unit, not the currently selected unit, and it has movement left, then right clicking selects it.
+				if (ev.getButton () != MouseEvent.BUTTON1)
+					try
+					{
+						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
+							getCombatLocation (), combatCoords);
+						if (unit != null)
+						{
+							if ((unit == getCombatMapProcessing ().getSelectedUnitInCombat ()) || (unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
+								(unit.getDoubleCombatMovesLeft () == null) || (unit.getDoubleCombatMovesLeft () <= 0))
+							{
+								// Is there a unit info screen already open for this unit?
+								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());
+								if (unitInfo == null)
+								{
+									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
+									unitInfo.setUnit (unit);
+									getClient ().getUnitInfos ().put (unit.getUnitURN (), unitInfo);
+								}
+							
+								unitInfo.setVisible (true);
+							}
+							else
+							{
+								// Move it to the first unit in the list.
+								// We could just select it - but this mucks up if the unit then has two moves - half way through we'd end up jumping to a different unit.
+								getCombatMapProcessing ().moveToFrontOfList (unit);
+							}
+						}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+			}
+		});
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -524,7 +621,56 @@ public final class CombatUI extends MomClientFrameUI
 		
 		log.trace ("Exiting languageChanged");
 	}
+	
+	/**
+	 * Converts from pixel coordinates back to combat map coordinates
+	 * 
+	 * @param ev Mouse click event
+	 * @return Combat map coordinates
+	 */
+	private MapCoordinates2DEx convertMouseCoordsToCombatCoords (final MouseEvent ev)
+	{
+		// Work out y first
+		final int separationY = combatMapTileSet.getTileHeight () / 2;
+		int y = ev.getY () / 2;
+		y = (y / separationY) + 1;
+		
+		// Now work out x
+		final int separationX = combatMapTileSet.getTileWidth () + 2;		// Because of the way the tiles slot together
+		int x = ev.getX () / 2;
 
+		if (y % 2 == 1)
+			x = x - (separationX/2);
+
+		x = (x / separationX) + 1;
+		
+		return new MapCoordinates2DEx (x, y);
+	}
+	
+	/**
+	 * Updates the flashing red outline that marks the tile occupied by the unit that's currently moving
+	 * 
+	 * @param x X coordinate, in diamond map coordinates, or null if there is no currently selected unit
+	 * @param y Y coordinate, in diamond map coordinates, or null if there is no currently selected unit
+	 */
+	public final void setSelectedUnitTileLocation (final Integer x, final Integer y)
+	{
+		log.trace ("Entering setSelectedUnitTileLocation: " + x + ", " + y);
+
+		if ((x == null) || (y == null))
+		{
+			selectedUnitTileX = null;
+			selectedUnitTileY = null;
+		}
+		else
+		{
+			selectedUnitTileX = getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet);
+			selectedUnitTileY = getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet);
+		}
+
+		log.trace ("Exiting setSelectedUnitTileLocation = " + selectedUnitTileX + ", " + selectedUnitTileY);
+	}
+	
 	/**
 	 * Careful with making updates to this since all the drawing is based on it.  Updates must be consistent with the current location of units, i.e. unit.setCombatPosition () 
 	 * @return Units occupying each cell of the combat map
@@ -852,5 +998,53 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setAttackAnim (final ApplyDamageMessageImpl aa)
 	{
 		attackAnim = aa;
+	}
+
+	/**
+	 * @return Combat map processing
+	 */
+	public final CombatMapProcessing getCombatMapProcessing ()
+	{
+		return combatMapProcessing;
+	}
+
+	/**
+	 * @param proc Combat map processing
+	 */
+	public final void setCombatMapProcessing (final CombatMapProcessing proc)
+	{
+		combatMapProcessing = proc;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+	
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

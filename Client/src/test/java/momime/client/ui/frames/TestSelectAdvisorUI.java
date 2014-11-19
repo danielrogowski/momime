@@ -65,5 +65,6 @@ public final class TestSelectAdvisorUI
 		// Display form		
 		advisors.setVisible (true);
 		Thread.sleep (5000);
+		advisors.setVisible (false);
 	}
 }

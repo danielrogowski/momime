@@ -162,6 +162,7 @@ public final class TestOverlandEnchantmentsUI
 		ench.setModal (false);
 		ench.setVisible (true);
 		Thread.sleep (10000);
+		ench.setVisible (false);
 	}
 
 	/**

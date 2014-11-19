@@ -163,6 +163,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Border around the top row of gold buttons */
 	private BufferedImage topBarBackground;
+	
+	/** Overland map tileset */
+	private TileSetEx overlandMapTileSet;
 
 	// UI Components
 
@@ -365,7 +368,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		};
 
 		// Need the tile set in a few places
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
+		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
 		
 		// Initialize the frame
 		getFrame ().setTitle ("Overland Map");
@@ -765,22 +768,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 			@Override
 			public final void mouseClicked (final MouseEvent ev)
 			{
-				// Ignore clicks in the black area if the window is too large for the map
-				final int mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-				final int mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-				if ((ev.getX () < mapZoomedWidth) && (ev.getY () < mapZoomedHeight))
+				final MapCoordinates2DEx mapCoords = convertMouseCoordsToMapGridCell (ev);
+				if (mapCoords != null)
 				{
-					// Convert pixel coordinates back into a map cell
-					int mapCellX = (((ev.getX () + mapViewX) * 10) / mapViewZoom) / overlandMapTileSet.getTileWidth ();
-					int mapCellY = (((ev.getY () + mapViewY) * 10) / mapViewZoom) / overlandMapTileSet.getTileHeight ();
+					final int mapCellX = mapCoords.getX ();
+					final int mapCellY = mapCoords.getY ();
 					
-					final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-					
-					while (mapCellX < 0) mapCellX = mapCellX + mapSize.getWidth ();
-					while (mapCellX >= mapSize.getWidth ()) mapCellX = mapCellX - mapSize.getWidth (); 
-					while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
-					while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
-
 					final MapCoordinates3DEx mapLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
 					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX);
@@ -917,21 +910,11 @@ public final class OverlandMapUI extends MomClientFrameUI
 				if (getOverlandMapRightHandPanel ().getTop () == OverlandMapRightHandPanelTop.SURVEYOR)
 					try
 					{				
-						// Ignore movement in the black area if the window is too large for the map
-						final int mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-						final int mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-						if ((ev.getX () < mapZoomedWidth) && (ev.getY () < mapZoomedHeight))
+						final MapCoordinates2DEx mapCoords = convertMouseCoordsToMapGridCell (ev);
+						if (mapCoords != null)
 						{
-							// Convert pixel coordinates back into a map cell
-							int mapCellX = (((ev.getX () + mapViewX) * 10) / mapViewZoom) / overlandMapTileSet.getTileWidth ();
-							int mapCellY = (((ev.getY () + mapViewY) * 10) / mapViewZoom) / overlandMapTileSet.getTileHeight ();
-							
-							final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-							
-							while (mapCellX < 0) mapCellX = mapCellX + mapSize.getWidth ();
-							while (mapCellX >= mapSize.getWidth ()) mapCellX = mapCellX - mapSize.getWidth (); 
-							while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
-							while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
+							final int mapCellX = mapCoords.getX ();
+							final int mapCellY = mapCoords.getY ();
 		
 							getOverlandMapRightHandPanel ().setSurveyorLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
 						}
@@ -1026,6 +1009,40 @@ public final class OverlandMapUI extends MomClientFrameUI
 		chatAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Chat"));
 
 		log.trace ("Exiting languageChanged");
+	}
+	
+	/**
+	 * Converts from pixel coordinates back to overland map coordinates
+	 * 
+	 * @param ev Mouse click event
+	 * @return Overland map coordinates, or null if the mouse coordinates are off the map
+	 */
+	private MapCoordinates2DEx convertMouseCoordsToMapGridCell (final MouseEvent ev)
+	{
+		final MapCoordinates2DEx result;
+		
+		// Ignore clicks in the black area if the window is too large for the map
+		final int mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+		final int mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+		if ((ev.getX () < mapZoomedWidth) && (ev.getY () < mapZoomedHeight))
+		{
+			// Convert pixel coordinates back into a map cell
+			int mapCellX = (((ev.getX () + mapViewX) * 10) / mapViewZoom) / overlandMapTileSet.getTileWidth ();
+			int mapCellY = (((ev.getY () + mapViewY) * 10) / mapViewZoom) / overlandMapTileSet.getTileHeight ();
+			
+			final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+			
+			while (mapCellX < 0) mapCellX = mapCellX + mapSize.getWidth ();
+			while (mapCellX >= mapSize.getWidth ()) mapCellX = mapCellX - mapSize.getWidth (); 
+			while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
+			while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
+			
+			result = new MapCoordinates2DEx (mapCellX, mapCellY);
+		}
+		else
+			result = null;
+		
+		return result;
 	}
 
 	/**

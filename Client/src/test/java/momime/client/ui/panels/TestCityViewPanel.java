@@ -189,7 +189,9 @@ public final class TestCityViewPanel
 		frame.setContentPane (panel);
 		frame.pack ();
 		frame.setLocationRelativeTo (null);
+
 		frame.setVisible (true);
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 }

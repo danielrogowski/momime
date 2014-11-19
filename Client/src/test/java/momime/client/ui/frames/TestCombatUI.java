@@ -249,5 +249,6 @@ public final class TestCombatUI
 		combat.initNewCombat ();
 		combat.setVisible (true);
 		Thread.sleep (5000);
+		combat.setVisible (false);
 	}
 }

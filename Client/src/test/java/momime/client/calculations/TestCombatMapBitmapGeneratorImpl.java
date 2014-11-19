@@ -133,8 +133,9 @@ public final class TestCombatMapBitmapGeneratorImpl
 		frame.setContentPane (contentPane);
 		frame.pack ();
 		frame.setLocationRelativeTo (null);
+
 		frame.setVisible (true);
-		
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 }

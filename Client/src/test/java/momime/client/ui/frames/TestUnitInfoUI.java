@@ -133,6 +133,7 @@ public final class TestUnitInfoUI
 		// Display form		
 		frame.setVisible (true);
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 
 	/**
@@ -232,5 +233,6 @@ public final class TestUnitInfoUI
 		// Display form		
 		frame.setVisible (true);
 		Thread.sleep (5000);
+		frame.setVisible (false);
 	}
 }

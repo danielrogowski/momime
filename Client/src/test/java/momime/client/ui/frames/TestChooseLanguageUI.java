@@ -59,5 +59,6 @@ public final class TestChooseLanguageUI
 		// Display form		
 		choose.setVisible (true);
 		Thread.sleep (5000);
+		choose.setVisible (false);
 	}
 }

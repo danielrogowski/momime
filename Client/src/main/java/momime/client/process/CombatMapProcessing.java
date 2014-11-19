@@ -30,7 +30,35 @@ public interface CombatMapProcessing
 		throws JAXBException, XMLStreamException;
 	
 	/**
+	 * @return Currently selected unit; null if it isn't our turn
+	 */
+	public MemoryUnit getSelectedUnitInCombat ();
+	
+	/**
 	 * @param unit Unit to remove from the unitsLeftToMoveCombat list
 	 */
 	public void removeUnitFromLeftToMoveCombat (final MemoryUnit unit);
+
+	/**
+	 * Indicates that we don't want the current unit to take any action this turn
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void selectedUnitDone () throws JAXBException, XMLStreamException;
+	
+	/**
+	 * Indicates that we want to move a different unit before this one
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void selectedUnitWait () throws JAXBException, XMLStreamException;
+
+	/**
+	 * This is used when right clicking on a specific unit to select it
+	 * 
+	 * @param unit Unit to manually select
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void moveToFrontOfList (final MemoryUnit unit) throws JAXBException, XMLStreamException;
 }

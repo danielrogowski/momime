@@ -134,5 +134,6 @@ public final class TestAlchemyUI
 		// Display form		
 		alchemy.setVisible (true);
 		Thread.sleep (5000);
+		alchemy.setVisible (false);
 	}
 }

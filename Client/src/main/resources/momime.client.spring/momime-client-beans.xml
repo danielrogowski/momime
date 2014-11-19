@@ -352,6 +352,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatUI" ref="combatUI" />
 	</bean>
 
@@ -712,6 +713,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatMapProcessing" class="momime.client.process.CombatMapProcessingImpl">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="unitCalculations" ref="unitCalculations" />
 	</bean>
 	
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">

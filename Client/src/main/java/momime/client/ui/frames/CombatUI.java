@@ -33,6 +33,7 @@ import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
+import momime.common.calculations.CombatMoveType;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -42,6 +43,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.CombatAutoControlMessage;
+import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.UnitUtils;
@@ -168,14 +170,14 @@ public final class CombatUI extends MomClientFrameUI
 	/** Attack that's in the middle of taking place */
 	private ApplyDamageMessageImpl attackAnim;
 	
-	/** X coordinate, in pixels, of the tile underneath the currently selected unit */
-	private Integer selectedUnitTileX;
-
-	/** Y coordinate, in pixels, of the tile underneath the currently selected unit */
-	private Integer selectedUnitTileY;
-	
 	/** Combat tile set */
 	private TileSetEx combatMapTileSet;
+	
+	/** Combat tile that the mouse is currently over */
+	private MapCoordinates2DEx moveToLocation;
+	
+	/** Details of what action (if any) will take place if we click on each tile; this can be null when it isn't our turn */
+	private CombatMoveType [] [] movementTypes;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -301,12 +303,42 @@ public final class CombatUI extends MomClientFrameUI
 				// Draw the static portion of the terrain
 				g.drawImage (combatMapBitmaps [terrainAnimFrame], 0, 0, null);
 				
-				// Draw the red outline marking the unit who we're currently moving
-				if ((selectedUnitTileX != null) && (selectedUnitTileY != null))
+				// Draw the blue outline marking the tile the mouse is currently over
+				if (moveToLocation != null)
 					try
 					{
+						final int x = getCombatMapBitmapGenerator ().combatCoordinatesX (moveToLocation.getX (), moveToLocation.getY (), combatMapTileSet);
+						final int y = getCombatMapBitmapGenerator ().combatCoordinatesY (moveToLocation.getX (), moveToLocation.getY (), combatMapTileSet);
+						
+						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_MOVE_TO", false);
+						g.drawImage (image, x, y, image.getWidth () * 2, image.getHeight () * 2, null);
+						
+						// Can we move here?
+						final CombatMoveType moveType = (getMovementTypes () == null) ? CombatMoveType.CANNOT_MOVE :
+							getMovementTypes () [moveToLocation.getY ()] [moveToLocation.getX ()];
+						if (moveType.getImageFilename () != null)
+						{
+							final BufferedImage moveTypeImage = getUtils ().loadImage (moveType.getImageFilename ());
+							g.drawImage (moveTypeImage, x, y, moveTypeImage.getWidth () * 2, moveTypeImage.getHeight () * 2, null);
+						}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				
+				// Draw the red outline marking the unit who we're currently moving
+				// NB. combatPosition gets nulled out when units are halfway walking between cells
+				if ((getCombatMapProcessing ().getSelectedUnitInCombat () != null) && (getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition () != null))
+					try
+					{
+						final int x = getCombatMapBitmapGenerator ().combatCoordinatesX (getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getX (),
+							getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getY (), combatMapTileSet);
+						final int y = getCombatMapBitmapGenerator ().combatCoordinatesY (getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getX (),
+							getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getY (), combatMapTileSet);
+						
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_SELECTED_UNIT", false);
-						g.drawImage (image, selectedUnitTileX, selectedUnitTileY, image.getWidth () * 2, image.getHeight () * 2, null);
+						g.drawImage (image, x, y, image.getWidth () * 2, image.getHeight () * 2, null);
 					}
 					catch (final Exception e)
 					{
@@ -437,8 +469,9 @@ public final class CombatUI extends MomClientFrameUI
 
 				// Right clicking, if we're right clicking on the selected unit or on a unit which has no movement left or is not ours, shows the unit info.
 				// If it is our unit, not the currently selected unit, and it has movement left, then right clicking selects it.
-				if (ev.getButton () != MouseEvent.BUTTON1)
-					try
+				try
+				{
+					if (ev.getButton () != MouseEvent.BUTTON1)
 					{
 						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
 							getCombatLocation (), combatCoords);
@@ -466,10 +499,39 @@ public final class CombatUI extends MomClientFrameUI
 							}
 						}
 					}
-					catch (final Exception e)
+					else
 					{
-						log.error (e, e);
+						// Left clicking to move to, or shoot at, this location (the server figures out which)
+						if ((getMovementTypes () != null) && (getCombatMapProcessing ().getSelectedUnitInCombat () != null))
+						{
+							final CombatMoveType moveType = getMovementTypes () [combatCoords.getY ()] [combatCoords.getX ()];
+							if ((moveType != null) && (moveType != CombatMoveType.CANNOT_MOVE))
+							{
+								final RequestMoveCombatUnitMessage msg = new RequestMoveCombatUnitMessage ();
+								msg.setUnitURN (getCombatMapProcessing ().getSelectedUnitInCombat ().getUnitURN ());
+								msg.setMoveTo (combatCoords);
+								
+								getClient ().getServerConnection ().sendMessageToServer (msg);
+								
+								// Blank out the movement types array, so its impossible for further clicks to send spurious additional moves to the server
+								setMovementTypes (null);
+							}
+						}
 					}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			}
+		});
+		
+		topPanel.addMouseMotionListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseMoved (final MouseEvent ev)
+			{
+				moveToLocation = convertMouseCoordsToCombatCoords (ev);
 			}
 		});
 		
@@ -645,30 +707,6 @@ public final class CombatUI extends MomClientFrameUI
 		x = (x / separationX) + 1;
 		
 		return new MapCoordinates2DEx (x, y);
-	}
-	
-	/**
-	 * Updates the flashing red outline that marks the tile occupied by the unit that's currently moving
-	 * 
-	 * @param x X coordinate, in diamond map coordinates, or null if there is no currently selected unit
-	 * @param y Y coordinate, in diamond map coordinates, or null if there is no currently selected unit
-	 */
-	public final void setSelectedUnitTileLocation (final Integer x, final Integer y)
-	{
-		log.trace ("Entering setSelectedUnitTileLocation: " + x + ", " + y);
-
-		if ((x == null) || (y == null))
-		{
-			selectedUnitTileX = null;
-			selectedUnitTileY = null;
-		}
-		else
-		{
-			selectedUnitTileX = getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet);
-			selectedUnitTileY = getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet);
-		}
-
-		log.trace ("Exiting setSelectedUnitTileLocation = " + selectedUnitTileX + ", " + selectedUnitTileY);
 	}
 	
 	/**
@@ -1046,5 +1084,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Details of what action (if any) will take place if we click on each tile; this can be null when it isn't our turn
+	 */
+	public final CombatMoveType [] [] getMovementTypes ()
+	{
+		return movementTypes;
+	}
+
+	/**
+	 * @param moves Details of what action (if any) will take place if we click on each tile; this can be null when it isn't our turn
+	 */
+	public final void setMovementTypes (final CombatMoveType [] [] moves)
+	{
+		movementTypes = moves;
 	}
 }

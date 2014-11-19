@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
+import momime.common.calculations.MomUnitCalculations;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
@@ -33,6 +34,9 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
+	/** Unit calculations */
+	private MomUnitCalculations unitCalculations;
+	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -56,6 +60,10 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 			unit.setCombatPosition (unitLoc.getCombatPosition ());
 			unit.setCombatHeading (unitLoc.getCombatHeading ());
 			unit.setCombatSide (unitLoc.getCombatSide ());
+			
+			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (unit, getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 		}
 		
 		// Start up the UI
@@ -99,6 +107,22 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit calculations
+	 */
+	public final MomUnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final MomUnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */

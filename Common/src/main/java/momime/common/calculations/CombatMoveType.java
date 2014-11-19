@@ -6,14 +6,34 @@ package momime.common.calculations;
 public enum CombatMoveType
 {
 	/** Can't move here, reach here, its too far away, unpassable terrain, or so on */
-	CANNOT_MOVE,
+	CANNOT_MOVE ("cannot"),
 	
 	/** Can walk here in one turn */
-	MOVE,
+	MOVE (null),
 	
 	/** Adjacent enemy unit we can hit */
-	MELEE,
+	MELEE ("melee"),
 	
 	/** Enemy unit and we have a ranged attack we can fire at it */
-	RANGED;
+	RANGED ("ranged");
+	
+	/** Name of the image that the client displays for this move type */
+	private final String imageFilename;
+	
+	/**
+	 * @param anImageFilename Name of the image that the client displays for this move type
+	 */
+	private CombatMoveType (final String anImageFilename)
+	{
+		imageFilename = (anImageFilename == null) ? null :
+			"/momime.client.graphics/ui/combat/moveType-" + anImageFilename + ".png";
+	}
+
+	/**
+	 * @return Name of the image that the client displays for this move type
+	 */
+	public final String getImageFilename ()
+	{
+		return imageFilename;
+	}
 }

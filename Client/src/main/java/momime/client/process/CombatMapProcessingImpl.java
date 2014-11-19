@@ -8,12 +8,19 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
+import momime.common.MomException;
+import momime.common.calculations.CombatMoveType;
+import momime.common.calculations.MomUnitCalculations;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Methods dealing with combat movement and unit lists, to keep this from making CombatUI too large and complicated.
@@ -33,6 +40,9 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Unit calculations */
+	private MomUnitCalculations unitCalculations;
+	
 	/** Currently selected unit */
 	private MemoryUnit selectedUnitInCombat;
 	
@@ -42,10 +52,13 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	 * 
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
 	public final void buildUnitsLeftToMoveList ()
-		throws JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering buildUnitsLeftToMoveList");
 		
@@ -67,10 +80,13 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	 * Selects the next unit we need to move in combat
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
 	public final void selectNextUnitToMoveCombat ()
-		throws JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering selectNextUnitToMoveCombat");
 		
@@ -103,20 +119,36 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	
 	/**
 	 * Updates various controls, e.g. melee/ranged attack strength displayed in the panel at the bottom, when a different unit is selected in combat
+	 * 
 	 * @param unit Unit to select; this may be null if we've got no further units to move and our turn is ending
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
-	public final void setSelectedUnitInCombat (final MemoryUnit unit)
+	public final void setSelectedUnitInCombat (final MemoryUnit unit) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering setSelectedUnitInCombat: " + ((unit == null) ? "null" : "Unit URN " + unit.getUnitURN ()));
 		
+		// Record the selected unit
 		selectedUnitInCombat = unit;
+		
+		// Work out where this unit can and cannot move
 		if (unit == null)
-		{
-			getCombatUI ().setSelectedUnitTileLocation (null, null);
-		}
+			getCombatUI ().setMovementTypes (null);
 		else
 		{
-			getCombatUI ().setSelectedUnitTileLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY ());
+			final CombatMapSizeData combatMapSize = getClient ().getSessionDescription ().getCombatMapSize ();
+			
+			final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+			final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+	
+			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, unit,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatUI ().getCombatTerrain (),
+				combatMapSize, getClient ().getPlayers (), getClient ().getClientDB ());
+			
+			// The only array we actually need to keep is the movementTypes, to show the correct icons as the mouse moves over different tiles
+			getCombatUI ().setMovementTypes (movementTypes);
 		}
 		
 		log.trace ("Entering setSelectedUnitInCombat");
@@ -139,9 +171,12 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	 * Indicates that we don't want the current unit to take any action this turn
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final void selectedUnitDone () throws JAXBException, XMLStreamException
+	public final void selectedUnitDone () throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering selectedUnitsDone");
 		
@@ -155,9 +190,12 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	 * Indicates that we want to move a different unit before this one
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final void selectedUnitWait () throws JAXBException, XMLStreamException
+	public final void selectedUnitWait () throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering selectedUnitsWait");
 
@@ -177,9 +215,12 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	 * @param unit Unit to manually select
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final void moveToFrontOfList (final MemoryUnit unit) throws JAXBException, XMLStreamException
+	public final void moveToFrontOfList (final MemoryUnit unit) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering moveToFrontOfList: Unit URN " + unit.getUnitURN ());
 
@@ -221,5 +262,21 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final MomUnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final MomUnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 }

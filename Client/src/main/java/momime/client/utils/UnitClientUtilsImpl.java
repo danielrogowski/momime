@@ -351,7 +351,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}
 
 		// Select unit buttons on the City screen
-		if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null))
+		if (unit.getUnitLocation () != null)
 		{
 			final CityViewUI cityView = getClient ().getCityViews ().get (unit.getUnitLocation ().toString ());
 			if (cityView != null)

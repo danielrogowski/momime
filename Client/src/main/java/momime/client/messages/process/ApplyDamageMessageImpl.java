@@ -18,6 +18,7 @@ import momime.client.graphics.database.v0_9_5.RangedAttackTypeCombatImage;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -315,6 +316,13 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				if ((!button.isHidden ()) &&
 					((button.getComponent ().getUnit () == attackerUnit) || (button.getComponent ().getUnit () == defenderUnit)))
 					button.repaint ();
+
+			// Looking for the city screen at attackerUnit.getUnitLocation () & defenderUnit.getUnitLocation () doesn't seem to work
+			// so just check them all.  There shouldn't be too many city screens open anyway.
+			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+				for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
+					if ((button.getUnit () == attackerUnit) || (button.getUnit () == defenderUnit))
+						button.repaint ();
 		}
 	}
 
@@ -362,6 +370,11 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == attackerUnit))
 						button.repaint ();
+
+				for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+					for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
+						if (button.getUnit () == attackerUnit)
+							button.repaint ();
 			}
 		}
 		
@@ -386,6 +399,11 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == defenderUnit))
 						button.repaint ();
+
+				for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+					for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
+						if (button.getUnit () == defenderUnit)
+							button.repaint ();
 			}
 		}
 		

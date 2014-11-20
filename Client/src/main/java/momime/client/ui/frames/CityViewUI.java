@@ -1719,4 +1719,12 @@ public final class CityViewUI extends MomClientFrameUI
 	{
 		clientUnitCalculations = calc;
 	}
+
+	/**
+	 * @return Dynamically created select unit buttons
+	 */
+	public final List<SelectUnitButton> getSelectUnitButtons ()
+	{
+		return selectUnitButtons;
+	}
 }

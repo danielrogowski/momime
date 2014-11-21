@@ -86,4 +86,21 @@ public final class TestTextUtilsImpl
 		assertEquals ("-2123", utils.halfIntToStrPlusMinus (-4246));
 		assertEquals ("-2123" + TextUtilsImpl.HALF, utils.halfIntToStrPlusMinus (-4247));
 	}
+	
+	/**
+	 * Tests the insertDecimalPoint method
+	 */
+	@Test
+	public final void testInsertDecimalPoint ()
+	{
+		final TextUtilsImpl utils = new TextUtilsImpl ();
+		
+		assertEquals ("0.005", utils.insertDecimalPoint (5, 3));
+		assertEquals ("0.045", utils.insertDecimalPoint (45, 3));
+		assertEquals ("0.345", utils.insertDecimalPoint (345, 3));
+		assertEquals ("2.345", utils.insertDecimalPoint (2345, 3));
+		assertEquals ("12.345", utils.insertDecimalPoint (12345, 3));
+		assertEquals ("123.45", utils.insertDecimalPoint (12345, 2));
+		assertEquals ("1234.5", utils.insertDecimalPoint (12345, 1));
+	}
 }

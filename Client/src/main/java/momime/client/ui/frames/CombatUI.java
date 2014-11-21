@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -30,12 +31,17 @@ import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
+import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
+import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
@@ -46,6 +52,10 @@ import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MomUnitAttributeComponent;
+import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -53,6 +63,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.JPanelWithConstantRepaints;
@@ -79,6 +90,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Small font */
 	private Font smallFont;
+
+	/** Medium font */
+	private Font mediumFont;
 	
 	/** Large font */
 	private Font largeFont;
@@ -128,6 +142,24 @@ public final class CombatUI extends MomClientFrameUI
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** Text utils */
+	private TextUtils textUtils;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Spell calculations */
+	private MomSpellCalculations spellCalculations;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+
+	/** Unit calculations */
+	private MomUnitCalculations unitCalculations;
+	
 	/** Spell book action */
 	private Action spellAction;
 	
@@ -151,6 +183,66 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Name of attacking player */
 	private JLabel attackingPlayerName;
+	
+	/** Casting skill label */
+	private JLabel skillLabel;
+	
+	/** Mana label */
+	private JLabel manaLabel;
+	
+	/** Range label */
+	private JLabel rangeLabel;
+	
+	/** Max castable label */
+	private JLabel castableLabel;
+	
+	/** Casting skill value */
+	private JLabel skillValue;
+	
+	/** Mana value */
+	private JLabel manaValue;
+	
+	/** Range value */
+	private JLabel rangeValue;
+	
+	/** Max castable value */
+	private JLabel castableValue;
+	
+	/** Unit name label */
+	private JLabel selectedUnitName;
+	
+	/** Unit's melee attack value */
+	private JLabel selectedUnitMeleeValue;
+
+	/** Unit's ranged attack value */
+	private JLabel selectedUnitRangedValue;
+
+	/** Average number of hits this unit's melee attack will score */
+	private String selectedUnitMeleeAverage;
+	
+	/** Average number of hits this unit's melee attack will score */
+	private JLabel selectedUnitMeleeAverageLabel;
+
+	/** Average number of hits this unit's ranged attack will score */
+	private String selectedUnitRangedAverage;
+	
+	/** Average number of hits this unit's ranged attack will score */
+	private JLabel selectedUnitRangedAverageLabel;
+	
+	/** Movement remaining */
+	private JLabel selectedUnitMovement;
+	
+	/** Image of unit's melee attack */
+	private JLabel selectedUnitMeleeImage;
+
+	/** Image of unit's ranged attack */
+	private JLabel selectedUnitRangedImage;
+
+	/** Image of unit's movement */
+	private JLabel selectedUnitMovementImage;
+	
+	/** Image of selected unit */
+	private JLabel selectedUnitImage;
 	
 	/** Bitmaps for each animation frame of the combat map */
 	private BufferedImage [] combatMapBitmaps;
@@ -178,6 +270,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Details of what action (if any) will take place if we click on each tile; this can be null when it isn't our turn */
 	private CombatMoveType [] [] movementTypes;
+	
+	/** Currently selected unit */
+	private MemoryUnit selectedUnitInCombat;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -314,8 +409,8 @@ public final class CombatUI extends MomClientFrameUI
 						g.drawImage (image, x, y, image.getWidth () * 2, image.getHeight () * 2, null);
 						
 						// Can we move here?
-						final CombatMoveType moveType = (getMovementTypes () == null) ? CombatMoveType.CANNOT_MOVE :
-							getMovementTypes () [moveToLocation.getY ()] [moveToLocation.getX ()];
+						final CombatMoveType moveType = (movementTypes == null) ? CombatMoveType.CANNOT_MOVE :
+							movementTypes [moveToLocation.getY ()] [moveToLocation.getX ()];
 						if (moveType.getImageFilename () != null)
 						{
 							final BufferedImage moveTypeImage = getUtils ().loadImage (moveType.getImageFilename ());
@@ -329,13 +424,13 @@ public final class CombatUI extends MomClientFrameUI
 				
 				// Draw the red outline marking the unit who we're currently moving
 				// NB. combatPosition gets nulled out when units are halfway walking between cells
-				if ((getCombatMapProcessing ().getSelectedUnitInCombat () != null) && (getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition () != null))
+				if ((getSelectedUnitInCombat () != null) && (getSelectedUnitInCombat ().getCombatPosition () != null))
 					try
 					{
-						final int x = getCombatMapBitmapGenerator ().combatCoordinatesX (getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getX (),
-							getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getY (), combatMapTileSet);
-						final int y = getCombatMapBitmapGenerator ().combatCoordinatesY (getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getX (),
-							getCombatMapProcessing ().getSelectedUnitInCombat ().getCombatPosition ().getY (), combatMapTileSet);
+						final int x = getCombatMapBitmapGenerator ().combatCoordinatesX (getSelectedUnitInCombat ().getCombatPosition ().getX (),
+							getSelectedUnitInCombat ().getCombatPosition ().getY (), combatMapTileSet);
+						final int y = getCombatMapBitmapGenerator ().combatCoordinatesY (getSelectedUnitInCombat ().getCombatPosition ().getX (),
+							getSelectedUnitInCombat ().getCombatPosition ().getY (), combatMapTileSet);
 						
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_SELECTED_UNIT", false);
 						g.drawImage (image, x, y, image.getWidth () * 2, image.getHeight () * 2, null);
@@ -455,6 +550,62 @@ public final class CombatUI extends MomClientFrameUI
 		
 		attackingPlayerName = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
 		bottomPanel.add (attackingPlayerName, "frmCombatAttackingPlayer");
+
+		// Casting status labels
+		skillLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (skillLabel, "frmCombatSkillLabel");
+		
+		manaLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (manaLabel, "frmCombatManaLabel");
+		
+		rangeLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (rangeLabel, "frmCombatRangeLabel");
+		
+		castableLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (castableLabel, "frmCombatCastableLabel");
+		
+		skillValue = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (skillValue, "frmCombatSkill");
+		
+		manaValue = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (manaValue, "frmCombatMana");
+		
+		rangeValue = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (rangeValue, "frmCombatRange");
+		
+		castableValue = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (castableValue, "frmCombatCastable");
+		
+		// Selected unit labels
+		selectedUnitName = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		bottomPanel.add (selectedUnitName, "frmCombatCurrentUnitName");
+
+		selectedUnitMeleeValue = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (selectedUnitMeleeValue, "frmCombatCurrentUnitMelee");
+		
+		selectedUnitRangedValue = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (selectedUnitRangedValue, "frmCombatCurrentUnitRanged");
+		
+		selectedUnitMeleeAverageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (selectedUnitMeleeAverageLabel, "frmCombatCurrentUnitMeleeAverageHits");
+		
+		selectedUnitRangedAverageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (selectedUnitRangedAverageLabel, "frmCombatCurrentUnitRangedAverageHits");
+		
+		selectedUnitMovement = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		bottomPanel.add (selectedUnitMovement, "frmCombatCurrentUnitMovement");
+
+		selectedUnitMeleeImage = new JLabel ();
+		bottomPanel.add (selectedUnitMeleeImage, "frmCombatCurrentUnitMeleeImage");
+
+		selectedUnitRangedImage = new JLabel ();
+		bottomPanel.add (selectedUnitRangedImage, "frmCombatCurrentUnitRangedImage");
+
+		selectedUnitMovementImage = new JLabel ();
+		bottomPanel.add (selectedUnitMovementImage, "frmCombatCurrentUnitMovementImage");
+		
+		selectedUnitImage = new JLabel ();
+		bottomPanel.add (selectedUnitImage, "frmCombatCurrentUnitImage");
 		
 		// The first time the CombatUI opens, we'll have skipped the call to initNewCombat () because it takes place before init (), so do it now
 		initNewCombat ();
@@ -477,7 +628,7 @@ public final class CombatUI extends MomClientFrameUI
 							getCombatLocation (), combatCoords);
 						if (unit != null)
 						{
-							if ((unit == getCombatMapProcessing ().getSelectedUnitInCombat ()) || (unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
+							if ((unit == getSelectedUnitInCombat ()) || (unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
 								(unit.getDoubleCombatMovesLeft () == null) || (unit.getDoubleCombatMovesLeft () <= 0))
 							{
 								// Is there a unit info screen already open for this unit?
@@ -502,19 +653,19 @@ public final class CombatUI extends MomClientFrameUI
 					else
 					{
 						// Left clicking to move to, or shoot at, this location (the server figures out which)
-						if ((getMovementTypes () != null) && (getCombatMapProcessing ().getSelectedUnitInCombat () != null))
+						if ((movementTypes != null) && (getSelectedUnitInCombat () != null))
 						{
-							final CombatMoveType moveType = getMovementTypes () [combatCoords.getY ()] [combatCoords.getX ()];
+							final CombatMoveType moveType = movementTypes [combatCoords.getY ()] [combatCoords.getX ()];
 							if ((moveType != null) && (moveType != CombatMoveType.CANNOT_MOVE))
 							{
 								final RequestMoveCombatUnitMessage msg = new RequestMoveCombatUnitMessage ();
-								msg.setUnitURN (getCombatMapProcessing ().getSelectedUnitInCombat ().getUnitURN ());
+								msg.setUnitURN (getSelectedUnitInCombat ().getUnitURN ());
 								msg.setMoveTo (combatCoords);
 								
 								getClient ().getServerConnection ().sendMessageToServer (msg);
 								
 								// Blank out the movement types array, so its impossible for further clicks to send spurious additional moves to the server
-								setMovementTypes (null);
+								movementTypes = null;
 							}
 						}
 					}
@@ -560,6 +711,52 @@ public final class CombatUI extends MomClientFrameUI
 			// Always turn auto back off again for new combats
 			autoControl = false;
 			currentPlayerID = null;
+
+			// If we're banished, then hide all casting-related info
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initNewCombat");
+
+			final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
+			
+			final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty
+				(ourPlayer, getCombatLocation (), getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getSessionDescription ().getMapSize ());
+
+			if (doubleRangePenalty == null)
+			{
+				skillLabel.setVisible (false);
+				manaLabel.setVisible (false);
+				rangeLabel.setVisible (false);
+				castableLabel.setVisible (false);
+
+				skillValue.setText (null);
+				manaValue.setText (null);
+				rangeValue.setText (null);
+				castableValue.setText (null);
+			}
+			else
+			{
+				skillLabel.setVisible (true);
+				manaLabel.setVisible (true);
+				rangeLabel.setVisible (true);
+				castableLabel.setVisible (true);
+
+				// Calculate casting values
+				final int currentSkill = getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
+				skillValue.setText (getTextUtils ().intToStrCommas (currentSkill));
+				
+				final int manaStored = getResourceValueUtils ().findAmountStoredForProductionType
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+				manaValue.setText (getTextUtils ().intToStrCommas (manaStored));
+			
+				rangeValue.setText ("x " + getTextUtils ().halfIntToStr (doubleRangePenalty));
+				
+				// How much mana can we put into a spell, given the range?
+				final int manaAvailable = (manaStored * 2) / doubleRangePenalty;
+				final int maxCastable = Math.min (manaAvailable, currentSkill);
+				castableValue.setText (getTextUtils ().intToStrCommas (maxCastable));
+			}
 			
 			// Generates the bitmap for the static portion of the terrain
 			getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
@@ -631,6 +828,11 @@ public final class CombatUI extends MomClientFrameUI
 		doneAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Done"));
 		fleeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Flee"));
 		autoAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Auto"));
+		
+		skillLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Skill") + ":");
+		manaLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Mana") + ":");
+		rangeLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Range") + ":");
+		castableLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Castable") + ":");
 
 		// Set the player name labels to the correct colours.
 		// Prefer this was done in initNewCombat, but there's no guarantee that the labels exist yet at that point.
@@ -680,6 +882,7 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		
 		defendingPlayerName.setText (defPlayerName);
+		languageOrSelectedUnitChanged ();
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -690,7 +893,7 @@ public final class CombatUI extends MomClientFrameUI
 	 * @param ev Mouse click event
 	 * @return Combat map coordinates
 	 */
-	private MapCoordinates2DEx convertMouseCoordsToCombatCoords (final MouseEvent ev)
+	private final MapCoordinates2DEx convertMouseCoordsToCombatCoords (final MouseEvent ev)
 	{
 		// Work out y first
 		final int separationY = combatMapTileSet.getTileHeight () / 2;
@@ -707,6 +910,154 @@ public final class CombatUI extends MomClientFrameUI
 		x = (x / separationX) + 1;
 		
 		return new MapCoordinates2DEx (x, y);
+	}
+	
+	/**
+	 * @return Currently selected unit
+	 */
+	public final MemoryUnit getSelectedUnitInCombat ()
+	{
+		return selectedUnitInCombat;
+	}	
+	
+	/**
+	 * Updates various controls, e.g. melee/ranged attack strength displayed in the panel at the bottom, when a different unit is selected in combat
+	 * 
+	 * @param unit Unit to select; this may be null if we've got no further units to move and our turn is ending
+	 * @throws IOException If there is a problem
+	 */
+	public final void setSelectedUnitInCombat (final MemoryUnit unit) throws IOException
+	{
+		log.trace ("Entering setSelectedUnitInCombat: " + ((unit == null) ? "null" : "Unit URN " + unit.getUnitURN ()));
+		
+		// Record the selected unit
+		selectedUnitInCombat = unit;
+		
+		// Work out where this unit can and cannot move
+		if (unit == null)
+		{
+			movementTypes = null;
+			selectedUnitMeleeValue.setText (null);
+			selectedUnitRangedValue.setText (null);
+			selectedUnitMovement.setText (null);
+			selectedUnitMeleeImage.setIcon (null);
+			selectedUnitRangedImage.setIcon (null);
+			selectedUnitMovementImage.setIcon (null);
+			selectedUnitImage.setIcon (null);
+		}
+		else
+		{
+			final CombatMapSizeData combatMapSize = getClient ().getSessionDescription ().getCombatMapSize ();
+			
+			final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+
+			// The only array we actually need to keep is the movementTypes, to show the correct icons as the mouse moves over different tiles
+			movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+			
+			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, unit,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatTerrain (),
+				combatMapSize, getClient ().getPlayers (), getClient ().getClientDB ());
+			
+			// Calculate unit stats
+			final int chanceToHit = Math.min (10, 3 +
+				getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+					MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()));
+			
+			final int chanceToHitTimesFigures = chanceToHit * getUnitCalculations ().calculateAliveFigureCount (unit, getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+						
+				getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+					MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			
+			// Melee attack / average hits / image
+			final int meleeAttack = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+				MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			
+			if (meleeAttack <= 0)
+			{
+				selectedUnitMeleeValue.setText (null);
+				selectedUnitMeleeImage.setIcon (null);
+				selectedUnitMeleeAverage = null;
+			}
+			else
+			{
+				selectedUnitMeleeValue.setText (new Integer (meleeAttack).toString ());
+				selectedUnitMeleeAverage = getTextUtils ().insertDecimalPoint (meleeAttack * chanceToHitTimesFigures, 1);
+				selectedUnitMeleeImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK)));
+			}
+			
+			// Ranged attack / average hits / image
+			final int rangedAttack = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+				MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			
+			if (rangedAttack <= 0)
+			{
+				selectedUnitRangedValue.setText (null);
+				selectedUnitRangedImage.setIcon (null);
+				selectedUnitRangedAverage = null;
+			}
+			else
+			{
+				selectedUnitRangedValue.setText (new Integer (rangedAttack).toString ());
+				selectedUnitRangedAverage = getTextUtils ().insertDecimalPoint (rangedAttack * chanceToHitTimesFigures, 1);
+				selectedUnitRangedImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)));
+			}
+			
+			// Movement
+			selectedUnitMovement.setText (getTextUtils ().halfIntToStr (unit.getDoubleCombatMovesLeft ()));
+			selectedUnitMovementImage.setIcon (new ImageIcon (getUtils ().loadImage
+				(getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ())));
+			
+			// Unit image
+			selectedUnitImage.setIcon (new ImageIcon (getUtils ().loadImage
+				(getGraphicsDB ().findUnit (unit.getUnitID (), "setSelectedUnitInCombat").getUnitOverlandImageFile ())));
+		}
+		
+		languageOrSelectedUnitChanged ();
+		
+		log.trace ("Exiting setSelectedUnitInCombat");
+	}
+	
+	/**
+	 * Called when either the language or the currently selected unit changes, so we can show various stats about the current unit
+	 */
+	private final void languageOrSelectedUnitChanged ()
+	{
+		log.trace ("Entering languageOrSelectedUnitChanged");
+		
+		selectedUnitName.setText (null);
+		selectedUnitMeleeAverageLabel.setText (null);
+		selectedUnitRangedAverageLabel.setText (null);
+
+		if (getSelectedUnitInCombat () != null)
+			try
+			{
+				final String avg = getLanguage ().findCategoryEntry ("frmCombat", "AveragePrefix");
+				
+				if (selectedUnitMeleeAverage != null)
+					selectedUnitMeleeAverageLabel.setText (avg + " " + selectedUnitMeleeAverage);
+				
+				if (selectedUnitRangedAverage != null)
+					selectedUnitRangedAverageLabel.setText (avg + " " + selectedUnitRangedAverage);
+				
+				selectedUnitName.setText (getUnitClientUtils ().getUnitName (getSelectedUnitInCombat (), UnitNameType.RACE_UNIT_NAME));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+				
+		log.trace ("Exiting languageOrSelectedUnitChanged");
 	}
 	
 	/**
@@ -766,6 +1117,22 @@ public final class CombatUI extends MomClientFrameUI
 		smallFont = font;
 	}
 
+	/**
+	 * @return Medium font
+	 */
+	public final Font getMediumFont ()
+	{
+		return mediumFont;
+	}
+
+	/**
+	 * @param font Medium font
+	 */
+	public final void setMediumFont (final Font font)
+	{
+		mediumFont = font;
+	}
+	
 	/**
 	 * @return Large font
 	 */
@@ -1087,18 +1454,98 @@ public final class CombatUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Details of what action (if any) will take place if we click on each tile; this can be null when it isn't our turn
+	 * @return Text utils
 	 */
-	public final CombatMoveType [] [] getMovementTypes ()
+	public final TextUtils getTextUtils ()
 	{
-		return movementTypes;
+		return textUtils;
 	}
 
 	/**
-	 * @param moves Details of what action (if any) will take place if we click on each tile; this can be null when it isn't our turn
+	 * @param tu Text utils
 	 */
-	public final void setMovementTypes (final CombatMoveType [] [] moves)
+	public final void setTextUtils (final TextUtils tu)
 	{
-		movementTypes = moves;
+		textUtils = tu;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return Spell calculations
+	 */
+	public final MomSpellCalculations getSpellCalculations ()
+	{
+		return spellCalculations;
+	}
+
+	/**
+	 * @param calc Spell calculations
+	 */
+	public final void setSpellCalculations (final MomSpellCalculations calc)
+	{
+		spellCalculations = calc;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final MomUnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final MomUnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 }

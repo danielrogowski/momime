@@ -65,4 +65,20 @@ public final class TextUtilsImpl implements TextUtils
 	{
 		return ((n > 0) ? "+" : "") + halfIntToStr (n);
 	}
+
+	/**
+	 * @param n Number to convert
+	 * @param dp Decimal places
+	 * @return Number right-shifted dp times, so e.g. insertDecimalPoint (45, 3) = "0.045"
+	 */
+	@Override
+	public final String insertDecimalPoint (final int n, final int dp)
+	{
+		String s = new Integer (n).toString ();
+		while (s.length () < dp+1)
+			s = "0" + s;
+		
+		final int l = s.length () - dp;
+		return s.substring (0, l) + "." + s.substring (l);
+	}
 }

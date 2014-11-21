@@ -19442,6 +19442,11 @@
 		<languageEntry languageEntryID="Done" />
 		<languageEntry languageEntryID="Flee" />
 		<languageEntry languageEntryID="Auto" />
+		<languageEntry languageEntryID="Skill" />
+		<languageEntry languageEntryID="Mana" />
+		<languageEntry languageEntryID="Range" />
+		<languageEntry languageEntryID="Castable" />
+		<languageEntry languageEntryID="AveragePrefix" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmCombatEnded">
 		<languageEntry languageEntryID="Defeat" />

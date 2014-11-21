@@ -28,4 +28,11 @@ public interface TextUtils
 	 * @return String representation of number which always includes a plus or minus sign
 	 */
 	public String halfIntToStrPlusMinus (final int n);
+	
+	/**
+	 * @param n Number to convert
+	 * @param dp Decimal places
+	 * @return Number right-shifted dp times, so e.g. insertDecimalPoint (45, 3) = "0.045"
+	 */
+	public String insertDecimalPoint (final int n, final int dp);
 }

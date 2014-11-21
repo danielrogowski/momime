@@ -5392,6 +5392,21 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="Auto">
 			<languageEntryText>Auto</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Skill">
+			<languageEntryText>Skill</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Mana">
+			<languageEntryText>Mana</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Range">
+			<languageEntryText>Range</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Castable">
+			<languageEntryText>Max</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AveragePrefix">
+			<languageEntryText>avg</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmCombatEnded">
 		<languageEntry languageEntryID="Defeat">

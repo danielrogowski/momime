@@ -713,7 +713,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatMapProcessing" class="momime.client.process.CombatMapProcessingImpl">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
-		<property name="unitCalculations" ref="unitCalculations" />
 	</bean>
 	
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
@@ -962,6 +961,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="smallFont" ref="smallFont" />
+		<property name="mediumFont" ref="mediumFont" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
@@ -973,6 +973,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="spellCalculations" ref="spellCalculations" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

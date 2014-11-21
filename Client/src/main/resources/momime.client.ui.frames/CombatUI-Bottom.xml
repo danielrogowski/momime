@@ -124,7 +124,7 @@
 	</component>
 	<component name="frmCombatCurrentUnitName">
 		<left>225</left>
-		<top>8</top>
+		<top>4</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -148,25 +148,25 @@
 	</component>
 	<component name="frmCombatCurrentUnitMeleeImage">
 		<left>218</left>
-		<top>24</top>
+		<top>26</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCombatCurrentUnitRangedImage">
 		<left>218</left>
-		<top>38</top>
+		<top>40</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCombatCurrentUnitMovementImage">
 		<left>218</left>
-		<top>54</top>
+		<top>56</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCombatCurrentUnitImage">
-		<left>168</left>
-		<top>28</top>
+		<left>178</left>
+		<top>34</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

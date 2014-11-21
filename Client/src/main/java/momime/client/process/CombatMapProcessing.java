@@ -1,12 +1,10 @@
 package momime.client.process;
 
+import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
 
 /**
@@ -21,28 +19,18 @@ public interface CombatMapProcessing
 	 * 
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws IOException If there is a problem
 	 */
-	public void buildUnitsLeftToMoveList ()
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	public void buildUnitsLeftToMoveList () throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Selects the next unit we need to move in combat
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws IOException If there is a problem
 	 */
 	public void selectNextUnitToMoveCombat ()
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
-	
-	/**
-	 * @return Currently selected unit; null if it isn't our turn
-	 */
-	public MemoryUnit getSelectedUnitInCombat ();
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * @param unit Unit to remove from the unitsLeftToMoveCombat list
@@ -53,21 +41,17 @@ public interface CombatMapProcessing
 	 * Indicates that we don't want the current unit to take any action this turn
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws IOException If there is a problem
 	 */
-	public void selectedUnitDone () throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	public void selectedUnitDone () throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * Indicates that we want to move a different unit before this one
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws IOException If there is a problem
 	 */
-	public void selectedUnitWait () throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	public void selectedUnitWait () throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * This is used when right clicking on a specific unit to select it
@@ -75,9 +59,7 @@ public interface CombatMapProcessing
 	 * @param unit Unit to manually select
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws IOException If there is a problem
 	 */
-	public void moveToFrontOfList (final MemoryUnit unit) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	public void moveToFrontOfList (final MemoryUnit unit) throws JAXBException, XMLStreamException, IOException;
 }

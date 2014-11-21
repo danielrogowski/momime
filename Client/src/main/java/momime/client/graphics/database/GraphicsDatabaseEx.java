@@ -6,6 +6,7 @@ import java.util.List;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.CombatAction;
+import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.Spell;
@@ -154,6 +155,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the mapFeatureID doesn't exist
 	 */
 	public MapFeatureEx findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @param combatAreaEffectID Combat area effect ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Combat area effect object
+	 * @throws RecordNotFoundException If the combatAreaEffectID doesn't exist
+	 */
+	public CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * Note this isn't straightforward like the other lookups, since one citySizeID can have multiple entries in the graphics XML,

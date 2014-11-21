@@ -182,4 +182,22 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmCombatDefenderCombatAreaEffects">
+		<left>13</left>
+		<top>76</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatAttackerCombatAreaEffects">
+		<left>631</left>
+		<top>76</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatCommonCombatAreaEffects">
+		<left>322</left>
+		<top>76</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 </ns2:xmlLayoutContainer>

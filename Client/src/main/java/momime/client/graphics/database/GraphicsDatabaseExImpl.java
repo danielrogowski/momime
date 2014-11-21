@@ -13,6 +13,7 @@ import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.CombatAction;
+import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
 import momime.client.graphics.database.v0_9_5.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
@@ -95,6 +96,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of map feature IDs to map feature XML objects */
 	private Map<String, MapFeatureEx> mapFeaturesMap;
+	
+	/** Map of combat area effect IDs to combat area effect XML objects */
+	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
 	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
@@ -234,6 +238,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		for (final MapFeature mf : getMapFeature ())
 			mapFeaturesMap.put (mf.getMapFeatureID (), (MapFeatureEx) mf);
 
+		// Create combat area effects map
+		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
+		for (final CombatAreaEffect cae : getCombatAreaEffect ())
+			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), cae);
+		
 		// Create play lists map
 		playListsMap = new HashMap<String, PlayList> ();
 		for (final PlayList pl : getPlayList ())
@@ -580,6 +589,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final MapFeatureEx found = mapFeaturesMap.get (mapFeatureID);
 		if (found == null)
 			throw new RecordNotFoundException (MapFeature.class, mapFeatureID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param combatAreaEffectID Combat area effect ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Combat area effect object
+	 * @throws RecordNotFoundException If the combatAreaEffectID doesn't exist
+	 */
+	@Override
+	public final CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID, final String caller) throws RecordNotFoundException
+	{
+		final CombatAreaEffect found = combatAreaEffectsMap.get (combatAreaEffectID);
+		if (found == null)
+			throw new RecordNotFoundException (CombatAreaEffect.class, combatAreaEffectID, caller);
 
 		return found;
 	}

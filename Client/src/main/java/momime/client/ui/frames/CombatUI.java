@@ -3,11 +3,15 @@ package momime.client.ui.frames;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -43,6 +47,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -66,6 +71,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.random.RandomUtils;
+import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.JPanelWithConstantRepaints;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -243,6 +249,24 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Image of selected unit */
 	private JLabel selectedUnitImage;
+	
+	/** Subpanel showing icons for CAEs cast by the defender */
+	private JPanel defenderCAEs;
+	
+	/** Subpanel showing icons for CAEs cast by the attacker */
+	private JPanel attackerCAEs;
+	
+	/** Subpanel showing icons for CAEs cast by neither player (e.g. node auras) */
+	private JPanel commonCAEs;
+	
+	/** Images added to display CAEs */
+	private List<JLabel> defenderCAEImages = new ArrayList<JLabel> ();
+	
+	/** Images added to display CAEs */
+	private List<JLabel> attackerCAEImages = new ArrayList<JLabel> ();
+	
+	/** Images added to display CAEs */
+	private List<JLabel> commonCAEImages = new ArrayList<JLabel> ();
 	
 	/** Bitmaps for each animation frame of the combat map */
 	private BufferedImage [] combatMapBitmaps;
@@ -607,6 +631,22 @@ public final class CombatUI extends MomClientFrameUI
 		selectedUnitImage = new JLabel ();
 		bottomPanel.add (selectedUnitImage, "frmCombatCurrentUnitImage");
 		
+		// CAEs
+		defenderCAEs = new JPanel ();
+		defenderCAEs.setOpaque (false);
+		defenderCAEs.setLayout (new GridBagLayout ());
+		bottomPanel.add (defenderCAEs, "frmCombatDefenderCombatAreaEffects");
+
+		attackerCAEs = new JPanel ();
+		attackerCAEs.setOpaque (false);
+		attackerCAEs.setLayout (new GridBagLayout ());
+		bottomPanel.add (attackerCAEs, "frmCombatAttackerCombatAreaEffects");
+		
+		commonCAEs = new JPanel ();
+		commonCAEs.setOpaque (false);
+		commonCAEs.setLayout (new GridBagLayout ());
+		bottomPanel.add (commonCAEs, "frmCombatCommonCombatAreaEffects");
+		
 		// The first time the CombatUI opens, we'll have skipped the call to initNewCombat () because it takes place before init (), so do it now
 		initNewCombat ();
 		
@@ -808,9 +848,72 @@ public final class CombatUI extends MomClientFrameUI
 			for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())))
 					unitToDrawAtEachLocation [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = unit;
+			
+			generateCombatAreaEffectIcons ();
 		}
 
 		log.trace ("Exiting initNewCombat");
+	}
+	
+	/**
+	 * Adds icons to the CombatUI showing all the CAEs applicable to this combat
+	 * @throws IOException If there icon for any CAEs can't be found
+	 */
+	public final void generateCombatAreaEffectIcons () throws IOException
+	{
+		log.trace ("Entering generateCombatAreaEffectIcons");
+
+		// Don't do anything if the combatUI has never been displayed (possible we're casting a spell like Heavenly Light that adds a CAE prior to any combat being played)
+		if (defendingPlayerName != null)
+		{
+			// First remove all the old icons
+			for (final JLabel image : defenderCAEImages)
+				defenderCAEs.remove (image);
+
+			for (final JLabel image : attackerCAEImages)
+				attackerCAEs.remove (image);
+
+			for (final JLabel image : commonCAEImages)
+				commonCAEs.remove (image);
+			
+			defenderCAEImages.clear ();
+			attackerCAEImages.clear ();
+			commonCAEImages.clear ();
+			
+			// Then check all CAEs to see which ones are applicable to this combat
+			for (final MemoryCombatAreaEffect cae : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ())
+				if ((cae.getMapLocation () == null) || (cae.getMapLocation ().equals (getCombatLocation ())))
+				{
+					// Which list should we add it to
+					final JPanel caePanel;
+					final List<JLabel> caeList;
+					if (players.getAttackingPlayer ().getPlayerDescription ().getPlayerID ().equals (cae.getCastingPlayerID ()))
+					{
+						caePanel = attackerCAEs;
+						caeList = attackerCAEImages;
+					}
+					else if (players.getDefendingPlayer ().getPlayerDescription ().getPlayerID ().equals (cae.getCastingPlayerID ()))
+					{
+						caePanel = defenderCAEs;
+						caeList = defenderCAEImages;
+					}
+					else
+					{
+						caePanel = commonCAEs;
+						caeList = commonCAEImages;
+					}
+					
+					// Add the image - caeList.size () is a sneaky way of generating the 'x' values for the GridBagLayout
+					final BufferedImage image = getUtils ().loadImage (getGraphicsDB ().findCombatAreaEffect
+						(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ());
+					final JLabel label = getUtils ().createImage (doubleSize (image));
+					
+					caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
+					caeList.add (label);
+				}
+		}		
+		
+		log.trace ("Exiting generateCombatAreaEffectIcons");
 	}
 	
 	/**
@@ -1058,6 +1161,15 @@ public final class CombatUI extends MomClientFrameUI
 			}
 				
 		log.trace ("Exiting languageOrSelectedUnitChanged");
+	}
+	
+	/**
+	 * @param source Source image
+	 * @return Double sized image
+	 */
+	private final Image doubleSize (final BufferedImage source)
+	{
+		return source.getScaledInstance (source.getWidth () * 2, source.getHeight () * 2, Image.SCALE_FAST);
 	}
 	
 	/**

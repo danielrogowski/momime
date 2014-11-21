@@ -22,6 +22,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.UnitEx;
+import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
@@ -42,6 +43,7 @@ import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -125,6 +127,13 @@ public final class TestCombatUI
 		final UnitEx unitGfx = new UnitEx ();
 		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN197/overland.png");
 		when (gfx.findUnit ("UN197", "setSelectedUnitInCombat")).thenReturn (unitGfx);
+		
+		for (int n = 1; n <= 6; n++)
+		{
+			final CombatAreaEffect cae = new CombatAreaEffect ();
+			cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CAE0" + n + ".png");
+			when (gfx.findCombatAreaEffect ("CAE0" + n, "generateCombatAreaEffectIcons")).thenReturn (cae);
+		}
 		
 		// Mock entries from the client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
@@ -228,6 +237,31 @@ public final class TestCombatUI
 		// Player name generator
 		final WizardClientUtilsImpl wizardClientUtils = new WizardClientUtilsImpl ();
 		wizardClientUtils.setLanguageHolder (langHolder);
+		
+		// CAEs
+		final MemoryCombatAreaEffect cae1 = new MemoryCombatAreaEffect ();
+		cae1.setCombatAreaEffectID ("CAE01");
+		fow.getCombatAreaEffect ().add (cae1);
+
+		final MemoryCombatAreaEffect cae2 = new MemoryCombatAreaEffect ();
+		cae2.setCombatAreaEffectID ("CAE02");
+		cae2.setMapLocation (new MapCoordinates3DEx (20, 10, 0));
+		fow.getCombatAreaEffect ().add (cae2);
+
+		final MemoryCombatAreaEffect cae3 = new MemoryCombatAreaEffect ();
+		cae3.setCombatAreaEffectID ("CAE03");
+		cae3.setMapLocation (new MapCoordinates3DEx (21, 10, 0));		// <-- wrong location
+		fow.getCombatAreaEffect ().add (cae3);
+		
+		final MemoryCombatAreaEffect cae4 = new MemoryCombatAreaEffect ();
+		cae4.setCombatAreaEffectID ("CAE04");
+		cae4.setCastingPlayerID (atkPd.getPlayerID ());
+		fow.getCombatAreaEffect ().add (cae4);
+
+		final MemoryCombatAreaEffect cae5 = new MemoryCombatAreaEffect ();
+		cae5.setCombatAreaEffectID ("CAE05");
+		cae5.setCastingPlayerID (defPd.getPlayerID ());
+		fow.getCombatAreaEffect ().add (cae5);
 
 		// Give it some dummy images for the terrain
 		final BufferedImage [] combatMapBitmaps = new BufferedImage [combatMapTileSet.getAnimationFrameCount ()];

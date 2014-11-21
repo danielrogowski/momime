@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.CombatUI;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
 
 import org.apache.commons.logging.Log;
@@ -25,6 +26,9 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -34,8 +38,13 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		log.trace ("Entering start: " + getMemoryCombatAreaEffect ().getMapLocation () + ", " + getMemoryCombatAreaEffect ().getCombatAreaEffectID ());
-		
+
+		// Add it
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getMemoryCombatAreaEffect ());
+		
+		// If there's a combat in progress, the icon for this CAE might need to be added to it
+		if (getCombatUI ().isVisible ())
+			getCombatUI ().generateCombatAreaEffectIcons ();
 		
 		log.trace ("Exiting start");
 	}
@@ -54,5 +63,21 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

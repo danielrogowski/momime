@@ -16,6 +16,7 @@ import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.CombatAction;
+import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.Spell;
@@ -756,6 +757,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
+	}
+
+	/**
+	 * Tests the findCombatAreaEffectID method to find a combatAreaEffect ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindCombatAreaEffectID_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
+			db.getCombatAreaEffect ().add (newCombatAreaEffect);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("CAE02", db.findCombatAreaEffect ("CAE02", "testFindCombatAreaEffectID_Exists").getCombatAreaEffectID ());
+	}
+
+	/**
+	 * Tests the findCombatAreaEffectID method to find a combatAreaEffect ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCombatAreaEffectID_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
+			db.getCombatAreaEffect ().add (newCombatAreaEffect);
+		}
+
+		db.buildMaps ();
+
+		db.findCombatAreaEffect ("CAE04", "testFindCombatAreaEffectID_NotExists");
 	}
 	
 	/**

@@ -165,6 +165,9 @@ public final class CombatUI extends MomClientFrameUI
 
 	/** Unit calculations */
 	private MomUnitCalculations unitCalculations;
+
+	/** Spell book */
+	private SpellBookUI spellBookUI;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -213,6 +216,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Max castable value */
 	private JLabel castableValue;
+	
+	/** Max castable spell cost */
+	private int maxCastable;
 	
 	/** Unit name label */
 	private JLabel selectedUnitName;
@@ -326,6 +332,14 @@ public final class CombatUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getSpellBookUI ().setVisible (true);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -774,6 +788,8 @@ public final class CombatUI extends MomClientFrameUI
 				manaValue.setText (null);
 				rangeValue.setText (null);
 				castableValue.setText (null);
+				
+				maxCastable = 0;
 			}
 			else
 			{
@@ -794,7 +810,7 @@ public final class CombatUI extends MomClientFrameUI
 				
 				// How much mana can we put into a spell, given the range?
 				final int manaAvailable = (manaStored * 2) / doubleRangePenalty;
-				final int maxCastable = Math.min (manaAvailable, currentSkill);
+				maxCastable = Math.min (manaAvailable, currentSkill);
 				castableValue.setText (getTextUtils ().intToStrCommas (maxCastable));
 			}
 			
@@ -911,6 +927,10 @@ public final class CombatUI extends MomClientFrameUI
 					caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
 					caeList.add (label);
 				}
+			
+			defenderCAEs.revalidate ();
+			attackerCAEs.revalidate ();
+			commonCAEs.revalidate ();
 		}		
 		
 		log.trace ("Exiting generateCombatAreaEffectIcons");
@@ -1179,6 +1199,14 @@ public final class CombatUI extends MomClientFrameUI
 	public final MemoryUnit [] [] getUnitToDrawAtEachLocation ()
 	{
 		return unitToDrawAtEachLocation;
+	}
+
+	/**
+	 * @return Max castable spell cost
+	 */
+	public final int getMaxCastable ()
+	{
+		return maxCastable;
 	}
 	
 	/**
@@ -1659,5 +1687,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitCalculations (final MomUnitCalculations calc)
 	{
 		unitCalculations = calc;
+	}
+
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
 	}
 }

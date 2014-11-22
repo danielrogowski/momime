@@ -354,6 +354,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="spellBookUI" ref="spellBookUI" />
 	</bean>
 
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype">
@@ -396,6 +397,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="anim" ref="anim" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="spellBookUI" ref="spellBookUI" />
 	</bean>
 	
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype">
@@ -947,6 +949,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -985,6 +988,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="spellBookUI" ref="spellBookUI" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

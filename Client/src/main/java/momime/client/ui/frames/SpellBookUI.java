@@ -103,6 +103,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
 	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
 	private final static int SPELLS_PER_PAGE = 4;
 	
@@ -168,9 +171,6 @@ public final class SpellBookUI extends MomClientFrameUI
 
 	/** Spell combat costs */
 	private JLabel [] [] spellCombatCosts = new JLabel [2] [SPELLS_PER_PAGE];
-	
-	/** Overland or combat casting (this will probably change to something like getClient ().getCurrentCombatLocation () == null or not null) */
-	private MomSpellCastType castType = MomSpellCastType.OVERLAND;
 	
 	/** Turn page left action */
 	private Action turnPageLeftAction;
@@ -526,8 +526,22 @@ public final class SpellBookUI extends MomClientFrameUI
 										// Clicking on a spell to cast it
 										final boolean proceed;
 										
+										// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
+										final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
+										final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+
+										final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
+											getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+										
+										if ((getCastType () == MomSpellCastType.OVERLAND) && (spell.getOverlandCastingCost () == null))
+											proceed = false;
+
+										else if ((getCastType () == MomSpellCastType.COMBAT) &&
+											((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ())))
+											proceed = false;
+										
 										// Check if it is an overland enchantment that we already have
-										if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+										else if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 										{
 											proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
 												(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
@@ -544,10 +558,6 @@ public final class SpellBookUI extends MomClientFrameUI
 												msg.setVisible (true);
 											}
 										}
-										else if (castType == MomSpellCastType.COMBAT)
-										{
-											throw new UnsupportedOperationException ("Casting combat spells hasn't been written yet");
-										}
 										else
 											proceed = true;
 										
@@ -556,6 +566,9 @@ public final class SpellBookUI extends MomClientFrameUI
 											// Tell server to cast it
 											final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
 											msg.setSpellID (spell.getSpellID ());
+											
+											if (getCastType () == MomSpellCastType.COMBAT)
+												msg.setCombatLocation (getCombatUI ().getCombatLocation ());
 											
 											getClient ().getServerConnection ().sendMessageToServer (msg);
 											
@@ -711,9 +724,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			}
 		}
 		
-		// This can be called before we've ever opened the spell book, so none of the components exist
-		if (contentPane != null)
-			languageOrPageChanged ();
+		languageOrPageChanged ();
 		
 		log.trace ("Exiting updateSpellBook");
 	}
@@ -725,175 +736,178 @@ public final class SpellBookUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageOrPageChanged");
 
-		final ProductionType manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
-		String manaSuffix = (manaProductionType == null) ? null : manaProductionType.getProductionTypeSuffix ();
-		if (manaSuffix == null)
-			manaSuffix = "";
-		
-		final ProductionType researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
-		String researchSuffix = (researchProductionType == null) ? null : researchProductionType.getProductionTypeSuffix ();
-		if (researchSuffix == null)
-			researchSuffix = "";
-		
-		try
+		// This can be called before we've ever opened the spell book, so none of the components exist
+		if (contentPane != null)
 		{
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageOrPageChanged");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			final ProductionType manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+			String manaSuffix = (manaProductionType == null) ? null : manaProductionType.getProductionTypeSuffix ();
+			if (manaSuffix == null)
+				manaSuffix = "";
 			
-			// Do the left+right pages in turn
-			for (int x = 0; x < 2; x++)
+			final ProductionType researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+			String researchSuffix = (researchProductionType == null) ? null : researchProductionType.getProductionTypeSuffix ();
+			if (researchSuffix == null)
+				researchSuffix = "";
+			
+			try
 			{
-				final int pageNumber = (x == 0) ? leftPageNumber : rightPageNumber;
-				if ((pageNumber >= 0) && (pageNumber < pages.size ()))
+				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageOrPageChanged");
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+				
+				// Do the left+right pages in turn
+				for (int x = 0; x < 2; x++)
 				{
-					final SpellBookPage page = pages.get (pageNumber);
-					
-					// Write section heading?
-					if (page.isFirstPageOfSection ())
+					final int pageNumber = (x == 0) ? leftPageNumber : rightPageNumber;
+					if ((pageNumber >= 0) && (pageNumber < pages.size ()))
 					{
-						final SpellBookSection spellBookSection = getLanguage ().findSpellBookSection (page.getSectionID ());
-						final String sectionHeading = (spellBookSection == null) ? null : spellBookSection.getSpellBookSectionName ();
-						sectionHeadings [x].setText ((sectionHeading == null) ? page.getSectionID ().toString () : sectionHeading);
-					}
-					else
-						sectionHeadings [x].setText (null);
-					
-					// Spell names
-					for (int y = 0; y < SPELLS_PER_PAGE; y++)
-						if (y < page.getSpells ().size ())
+						final SpellBookPage page = pages.get (pageNumber);
+						
+						// Write section heading?
+						if (page.isFirstPageOfSection ())
 						{
-							final Spell spell = page.getSpells ().get (y);
-							
-							// Draw the spell being researched with a different colour shadow
-							final Color shadowColor = spell.getSpellID ().equals (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ()) ?
-								RESEARCHED_SPELL_COLOUR : Color.BLACK;
-							
-							spellNames [x] [y].setBackground (shadowColor);
-							spellOverlandCosts [x] [y].setBackground (shadowColor);
-
-							// Let unknown spells be magic realm coloured too, as a hint
-							spellNames [x] [y].setForeground (ARCANE_SPELL_COLOUR);
-							spellCombatCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
-							spellOverlandCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
-							spellDescriptions [x] [y].setForeground (MomUIConstants.DARK_BROWN);
-							if (spell.getSpellRealm () != null)
-								try
-								{
-									final Pick magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
-									if (magicRealm.getPickBookshelfTitleColour () != null)
+							final SpellBookSection spellBookSection = getLanguage ().findSpellBookSection (page.getSectionID ());
+							final String sectionHeading = (spellBookSection == null) ? null : spellBookSection.getSpellBookSectionName ();
+							sectionHeadings [x].setText ((sectionHeading == null) ? page.getSectionID ().toString () : sectionHeading);
+						}
+						else
+							sectionHeadings [x].setText (null);
+						
+						// Spell names
+						for (int y = 0; y < SPELLS_PER_PAGE; y++)
+							if (y < page.getSpells ().size ())
+							{
+								final Spell spell = page.getSpells ().get (y);
+								
+								// Draw the spell being researched with a different colour shadow
+								final Color shadowColor = spell.getSpellID ().equals (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ()) ?
+									RESEARCHED_SPELL_COLOUR : Color.BLACK;
+								
+								spellNames [x] [y].setBackground (shadowColor);
+								spellOverlandCosts [x] [y].setBackground (shadowColor);
+	
+								// Let unknown spells be magic realm coloured too, as a hint
+								spellNames [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+								spellCombatCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+								spellOverlandCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+								spellDescriptions [x] [y].setForeground (MomUIConstants.DARK_BROWN);
+								if (spell.getSpellRealm () != null)
+									try
 									{
-										final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
-										spellNames [x] [y].setForeground (spellColour);
-										spellCombatCosts [x] [y].setForeground (spellColour);
-										spellOverlandCosts [x] [y].setForeground (spellColour);
+										final Pick magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
+										if (magicRealm.getPickBookshelfTitleColour () != null)
+										{
+											final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
+											spellNames [x] [y].setForeground (spellColour);
+											spellCombatCosts [x] [y].setForeground (spellColour);
+											spellOverlandCosts [x] [y].setForeground (spellColour);
+										}
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}
+								
+								// Set text for this spell
+								if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE)
+								{
+									spellNames [x] [y].setText ("??????????");
+									spellDescriptions [x] [y].setText ("?????????????????????????????????????????");
+									spellCombatCosts [x] [y].setText (null);
+									spellOverlandCosts [x] [y].setText ("??? " + researchSuffix);
+								}
+								else
+								{
+									final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+									final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
+									final String spellDescription = (spellLang == null) ? null : spellLang.getSpellDescription ();
+									
+									spellNames [x] [y].setText ((spellName == null) ? spell.getSpellID () : spellName);
+									spellDescriptions [x] [y].setText ((spellDescription == null) ? spell.getSpellID () : spellDescription);
+	
+									spellCombatCosts [x] [y].setText (null);
+									spellOverlandCosts [x] [y].setText (null);
+									
+									// Show cost in MP for known spells, and RP for researchable spells
+									try
+									{
+										if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE_NOW)
+										{
+											if (spell.getResearchCost () != null)
+											{
+												final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ());
+												spellOverlandCosts [x] [y].setText (getTextUtils ().intToStrCommas (researchStatus.getRemainingResearchCost ()) + " " + researchSuffix);
+											}
+										}
+										else
+										{
+											// Show combat and overland casting cost separately
+											final Integer overlandCost = (spell.getOverlandCastingCost () == null) ? null :
+												getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+		
+											if (overlandCost != null)
+												spellOverlandCosts [x] [y].setText (getTextUtils ().intToStrCommas (overlandCost) + " " + manaSuffix);
+											
+											final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
+												getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+											
+											if (combatCost != null)
+												spellCombatCosts [x] [y].setText (getTextUtils ().intToStrCommas (combatCost) + " " + manaSuffix);
+											
+											// Grey out (ok, light brown out...) casting cost that's inappropriate for our current cast type.
+											// If we're in a combat, this also greys out spells that we don't have enough remaining skill/MP to cast in the combat.
+											if (getCastType () == MomSpellCastType.COMBAT)
+											{
+												spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+												if ((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ()))
+												{
+													spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+												}
+											}
+											else
+											{
+												spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+												if (spell.getOverlandCastingCost () == null)
+												{
+													spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+												}
+											}
+										}
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
 									}
 								}
-								catch (final Exception e)
-								{
-									log.error (e, e);
-								}
-							
-							// Set text for this spell
-							if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE)
-							{
-								spellNames [x] [y].setText ("??????????");
-								spellDescriptions [x] [y].setText ("?????????????????????????????????????????");
-								spellCombatCosts [x] [y].setText (null);
-								spellOverlandCosts [x] [y].setText ("??? " + researchSuffix);
 							}
 							else
 							{
-								final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
-								final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
-								final String spellDescription = (spellLang == null) ? null : spellLang.getSpellDescription ();
-								
-								spellNames [x] [y].setText ((spellName == null) ? spell.getSpellID () : spellName);
-								spellDescriptions [x] [y].setText ((spellDescription == null) ? spell.getSpellID () : spellDescription);
-
+								// Blank spell
+								spellNames [x] [y].setText (null);
+								spellDescriptions [x] [y].setText (null);
 								spellCombatCosts [x] [y].setText (null);
 								spellOverlandCosts [x] [y].setText (null);
-								
-								// Show cost in MP for known spells, and RP for researchable spells
-								try
-								{
-									if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE_NOW)
-									{
-										if (spell.getResearchCost () != null)
-										{
-											final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ());
-											spellOverlandCosts [x] [y].setText (getTextUtils ().intToStrCommas (researchStatus.getRemainingResearchCost ()) + " " + researchSuffix);
-										}
-									}
-									else
-									{
-										// Show combat and overland casting cost separately
-										final Integer overlandCost = (spell.getOverlandCastingCost () == null) ? null :
-											getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
-	
-										if (overlandCost != null)
-											spellOverlandCosts [x] [y].setText (getTextUtils ().intToStrCommas (overlandCost) + " " + manaSuffix);
-										
-										final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
-											getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
-										
-										if (combatCost != null)
-											spellCombatCosts [x] [y].setText (getTextUtils ().intToStrCommas (combatCost) + " " + manaSuffix);
-										
-										// Grey out casting cost that's inappropriate for our current cast type
-										// Once combat is done, this needs improving to also grey out spells that we don't have enough mana to cast in combat
-										if (getCastType () == MomSpellCastType.COMBAT)
-										{
-											spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-											if (spell.getCombatCastingCost () == null)
-											{
-												spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-											}
-										}
-	
-										if (getCastType () == MomSpellCastType.OVERLAND)
-										{
-											spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-											if (spell.getOverlandCastingCost () == null)
-											{
-												spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-											}
-										}
-									}
-								}
-								catch (final Exception e)
-								{
-									log.error (e, e);
-								}
 							}
-						}
-						else
+					}
+					else
+					{
+						// Blank page
+						sectionHeadings [x].setText (null);
+						for (int y = 0; y < SPELLS_PER_PAGE; y++)
 						{
-							// Blank spell
 							spellNames [x] [y].setText (null);
 							spellDescriptions [x] [y].setText (null);
 							spellCombatCosts [x] [y].setText (null);
 							spellOverlandCosts [x] [y].setText (null);
 						}
-				}
-				else
-				{
-					// Blank page
-					sectionHeadings [x].setText (null);
-					for (int y = 0; y < SPELLS_PER_PAGE; y++)
-					{
-						spellNames [x] [y].setText (null);
-						spellDescriptions [x] [y].setText (null);
-						spellCombatCosts [x] [y].setText (null);
-						spellOverlandCosts [x] [y].setText (null);
 					}
 				}
 			}
-		}
-		catch (final PlayerNotFoundException e)
-		{
-			log.error (e, e);
+			catch (final PlayerNotFoundException e)
+			{
+				log.error (e, e);
+			}
 		}
 		
 		log.trace ("Exiting languageOrPageChanged");
@@ -902,23 +916,11 @@ public final class SpellBookUI extends MomClientFrameUI
 	/**
 	 * @return Overland or combat casting
 	 */
-	public final MomSpellCastType getCastType ()
+	private final MomSpellCastType getCastType ()
 	{
-		return castType;
+		return getCombatUI ().isVisible () ? MomSpellCastType.COMBAT : MomSpellCastType.OVERLAND;
 	}
 	
-	/**
-	 * @param ct Overland or combat casting
-	 */
-	public final void setCastType (final MomSpellCastType ct)
-	{
-		if (castType != ct)
-		{
-			castType = ct;
-			languageOrPageChanged ();
-		}
-	}
-
 	/**
 	 * @return Large font
 	 */
@@ -1077,6 +1079,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+	
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 	
 	/**

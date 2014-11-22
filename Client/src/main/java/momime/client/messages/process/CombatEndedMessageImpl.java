@@ -11,6 +11,7 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.SpellBookUI;
 import momime.client.utils.AnimationController;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 
@@ -42,6 +43,9 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
+	/** Spell book */
+	private SpellBookUI spellBookUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -71,6 +75,9 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 		
 		// Close down the UI
 		getCombatUI ().setVisible (false);
+		
+		// Switch spell book to showing overland spells
+		getSpellBookUI ().languageOrPageChanged ();
 		
 		// Go back to the overland music
 		try
@@ -167,5 +174,21 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
 	}
 }

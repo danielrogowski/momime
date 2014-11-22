@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.SpellBookUI;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
@@ -40,6 +41,9 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Spell book */
+	private SpellBookUI spellBookUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -71,6 +75,9 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 		getCombatUI ().setCombatTerrain (getCombatTerrain ());
 		getCombatUI ().initNewCombat ();
 		getCombatUI ().setVisible (true);
+		
+		// Switch spell book to showing combat spells
+		getSpellBookUI ().languageOrPageChanged ();
 		
 		log.trace ("Exiting start");
 	}
@@ -137,5 +144,21 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
 	}
 }

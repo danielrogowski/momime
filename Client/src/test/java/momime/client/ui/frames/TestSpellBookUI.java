@@ -214,6 +214,7 @@ public final class TestSpellBookUI
 		book.setSmallFont (CreateFontsForTests.getSmallFont ());
 		book.setMediumFont (CreateFontsForTests.getMediumFont ());
 		book.setLargeFont (CreateFontsForTests.getLargeFont ());
+		book.setCombatUI (new CombatUI ());
 
 		// Display form		
 		book.setVisible (true);

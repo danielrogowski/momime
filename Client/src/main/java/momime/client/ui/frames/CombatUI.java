@@ -85,6 +85,9 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
  */
 public final class CombatUI extends MomClientFrameUI
 {
+	/** Invisible colour for when there's no CAE being cast */
+	public final static Color NO_FLASH_COLOUR = new Color (0, 0, 0, 0);
+	
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CombatUI.class);
 
@@ -303,6 +306,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Currently selected unit */
 	private MemoryUnit selectedUnitInCombat;
+	
+	/** Colour to flash the combat screen when a CAE is being cast */
+	private Color flashColour = NO_FLASH_COLOUR;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -557,6 +563,19 @@ public final class CombatUI extends MomClientFrameUI
 						log.error (e, e);
 					}
 			}
+			
+			@Override
+			protected final void paintChildren (final Graphics g)
+			{
+				super.paintChildren (g);
+				
+				// Flash the colour of the screen for CAEs
+				if (getFlashColour () != NO_FLASH_COLOUR)
+				{
+					g.setColor (getFlashColour ());
+					g.fillRect (0, 0, getWidth (), getHeight ());
+				}
+			}
 		};
 		
 		contentPane.add (topPanel, "frmCombatScenery");		
@@ -567,7 +586,7 @@ public final class CombatUI extends MomClientFrameUI
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
-				g.drawImage (background, 0, getHeight () - (background.getHeight () * 2), background.getWidth () * 2, background.getHeight () * 2, null);
+				g.drawImage (background, 0, 0, background.getWidth () * 2, background.getHeight () * 2, null);
 			}
 		};
 
@@ -765,6 +784,7 @@ public final class CombatUI extends MomClientFrameUI
 			// Always turn auto back off again for new combats
 			autoControl = false;
 			currentPlayerID = null;
+			flashColour = NO_FLASH_COLOUR;
 
 			// If we're banished, then hide all casting-related info
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initNewCombat");
@@ -1703,5 +1723,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setSpellBookUI (final SpellBookUI ui)
 	{
 		spellBookUI = ui;
+	}
+
+	/**
+	 * @return Colour to flash the combat screen when a CAE is being cast
+	 */
+	public final Color getFlashColour ()
+	{
+		return flashColour;
+	}
+
+	/**
+	 * @param colour Colour to flash the combat screen when a CAE is being cast
+	 */
+	public final void setFlashColour (final Color colour)
+	{
+		flashColour = colour;
 	}
 }

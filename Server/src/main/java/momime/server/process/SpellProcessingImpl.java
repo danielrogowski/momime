@@ -140,7 +140,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					// Pick one at random
 					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
-					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, player.getPlayerDescription ().getPlayerID (), null, players, db, sd);
+					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, spell.getSpellID (),
+						player.getPlayerDescription ().getPlayerID (), null, players, db, sd);
 				}
 			}
 		}
@@ -302,8 +303,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
 				log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
 				
-				getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (),
-					combatAreaEffectID, player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
+					spell.getSpellID (), player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			}
 		}
 		

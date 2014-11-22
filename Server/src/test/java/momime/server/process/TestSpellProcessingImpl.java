@@ -188,7 +188,7 @@ public final class TestSpellProcessingImpl
 		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, players, db, sd);
 		
 		// CAE should get added also
-		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", pd3.getPlayerID (), null, players, db, sd);
+		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", pd3.getPlayerID (), null, players, db, sd);
 		
 		// Human players won't get any NTMs about it
 		assertEquals (0, trans1.getNewTurnMessage ().size ());
@@ -276,7 +276,7 @@ public final class TestSpellProcessingImpl
 		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
 		
 		// CAE shouldn't be added either
-		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd);
+		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", null, pd3.getPlayerID (), null, players, db, sd);
 		
 		// Human players won't get any NTMs about it
 		assertEquals (0, trans1.getNewTurnMessage ().size ());
@@ -747,7 +747,7 @@ public final class TestSpellProcessingImpl
 		proc.castCombatNow (castingPlayer, spell, 10, 20, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
 		
 		// Prove right effect was added
-		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", attackingPd.getPlayerID (), combatLocation, players, db, sd);
+		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), combatLocation, players, db, sd);
 		
 		// We were charged MP for it
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -20);

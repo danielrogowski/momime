@@ -483,6 +483,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
 	</bean>
 
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype">

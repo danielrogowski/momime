@@ -17,8 +17,10 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -29,11 +31,13 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
 import momime.client.language.database.v0_9_5.MapFeature;
+import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.utils.AnimationController;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
@@ -45,6 +49,8 @@ import momime.common.calculations.MomSpellCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -54,13 +60,16 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.CombatAutoControlMessage;
+import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -171,6 +180,9 @@ public final class CombatUI extends MomClientFrameUI
 
 	/** Spell book */
 	private SpellBookUI spellBookUI;
+
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -276,6 +288,21 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Images added to display CAEs */
 	private List<JLabel> commonCAEImages = new ArrayList<JLabel> ();
+
+	/** Cancel spell targetting */
+	private Action cancelTargetSpellAction;
+	
+	/** Spell targetting prompt if we're the defender */
+	private JTextArea targetSpellPromptDefender;
+
+	/** Cancel spell targetting if we're the defender */
+	private JButton cancelTargetSpellDefender;
+	
+	/** Spell targetting prompt if we're the attacker */
+	private JTextArea targetSpellPromptAttacker;
+
+	/** Cancel spell targetting if we're the defender */
+	private JButton cancelTargetSpellAttacker;
 	
 	/** Bitmaps for each animation frame of the combat map */
 	private BufferedImage [] combatMapBitmaps;
@@ -306,6 +333,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Currently selected unit */
 	private MemoryUnit selectedUnitInCombat;
+	
+	/** Spell chosen from spell book that we want to cast into this combat, and need to select a target for */
+	private Spell spellBeingTargetted;
 	
 	/** Colour to flash the combat screen when a CAE is being cast */
 	private Color flashColour = NO_FLASH_COLOUR;
@@ -348,7 +378,7 @@ public final class CombatUI extends MomClientFrameUI
 				}
 			}
 		};
-		
+
 		waitAction = new AbstractAction ()
 		{
 			@Override
@@ -421,6 +451,23 @@ public final class CombatUI extends MomClientFrameUI
 			}
 		};
 		
+		cancelTargetSpellAction = new AbstractAction ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				spellBeingTargetted = null;
+				
+				targetSpellPromptDefender.setText (null);
+				cancelTargetSpellDefender.setVisible (false);
+				targetSpellPromptAttacker.setText (null);
+				cancelTargetSpellAttacker.setVisible (false);
+				
+				defendingPlayerName.setVisible (true);
+				attackingPlayerName.setVisible (true);
+			}
+		};
+		
 		// Initialize the content pane
 		
 		// This is split into a top and bottom half.  The top half shows the terrain and units and is all custom drawn.  This repaints
@@ -452,12 +499,41 @@ public final class CombatUI extends MomClientFrameUI
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_MOVE_TO", false);
 						g.drawImage (image, x, y, image.getWidth () * 2, image.getHeight () * 2, null);
 						
-						// Can we move here?
-						final CombatMoveType moveType = (movementTypes == null) ? CombatMoveType.CANNOT_MOVE :
-							movementTypes [moveToLocation.getY ()] [moveToLocation.getX ()];
-						if (moveType.getImageFilename () != null)
+						// Show icon for whether we can move here, shoot here, target a spell here or so on
+						final String moveTypeFilename;
+						if (getSpellBeingTargetted () == null)
 						{
-							final BufferedImage moveTypeImage = getUtils ().loadImage (moveType.getImageFilename ());
+							// Trying to move here
+							final CombatMoveType moveType = (movementTypes == null) ? CombatMoveType.CANNOT_MOVE :
+								movementTypes [moveToLocation.getY ()] [moveToLocation.getX ()];
+							moveTypeFilename = moveType.getImageFilename ();
+						}
+						else
+						{
+							// Trying to target a spell here
+							final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
+								getCombatLocation (), moveToLocation);
+							
+							final boolean validTarget;
+							if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+							{
+								// Summoning spell - valid as long as there isn't a unit here
+								validTarget = (unit == null);
+							}
+							else
+							{
+								// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
+								validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+									(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getSpellBeingTargetted (),
+									getClient ().getOurPlayerID (), unit, getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+							}
+							
+							moveTypeFilename = "/momime.client.graphics/ui/combat/moveType-" + (validTarget ? "spell" : "cannot") + ".png";
+						}
+						
+						if (moveTypeFilename != null)
+						{
+							final BufferedImage moveTypeImage = getUtils ().loadImage (moveTypeFilename);
 							g.drawImage (moveTypeImage, x, y, moveTypeImage.getWidth () * 2, moveTypeImage.getHeight () * 2, null);
 						}
 					}
@@ -664,6 +740,19 @@ public final class CombatUI extends MomClientFrameUI
 		selectedUnitImage = new JLabel ();
 		bottomPanel.add (selectedUnitImage, "frmCombatCurrentUnitImage");
 		
+		// Spell targetting
+		targetSpellPromptDefender = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
+		bottomPanel.add (targetSpellPromptDefender, "frmCombatSelectSpellTargetDefender");
+		
+		cancelTargetSpellDefender = getUtils ().createImageButton (cancelTargetSpellAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled);
+		bottomPanel.add (cancelTargetSpellDefender, "frmCombatCancelSpellDefender");
+		
+		targetSpellPromptAttacker = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
+		bottomPanel.add (targetSpellPromptAttacker, "frmCombatSelectSpellTargetAttacker");
+		
+		cancelTargetSpellAttacker = getUtils ().createImageButton (cancelTargetSpellAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled);
+		bottomPanel.add (cancelTargetSpellAttacker, "frmCombatCancelSpellAttacker");
+		
 		// CAEs
 		defenderCAEs = new JPanel ();
 		defenderCAEs.setOpaque (false);
@@ -721,6 +810,67 @@ public final class CombatUI extends MomClientFrameUI
 								// We could just select it - but this mucks up if the unit then has two moves - half way through we'd end up jumping to a different unit.
 								getCombatMapProcessing ().moveToFrontOfList (unit);
 							}
+						}
+					}
+					else if (getSpellBeingTargetted () != null)
+					{
+						// Left clicking to target a spell
+						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
+							getCombatLocation (), moveToLocation);
+						
+						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+						msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
+						msg.setCombatLocation (getCombatLocation ());
+						
+						boolean isValidTarget = false;
+						if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+						{
+							// Summoning spell - valid as long as there isn't a unit here
+							if (unit == null)
+							{
+								isValidTarget = true;
+								msg.setCombatTargetLocation (combatCoords);
+							}
+						}
+						else
+						{
+							// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
+							if (unit != null)
+							{
+								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+									(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getSpellBeingTargetted (),
+									getClient ().getOurPlayerID (), unit, getClient ().getClientDB ());
+								
+								if (validTarget == TargetSpellResult.VALID_TARGET)
+								{
+									isValidTarget = true;
+									msg.setCombatTargetUnitURN (unit.getUnitURN ());
+								}
+
+								// If we can't target on this unit, tell the player why not
+								else if (validTarget.getUnitLanguageEntryID () != null)
+								{
+									final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
+									final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+									
+									final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+										("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ());
+									
+									final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
+									msgBox.setTitleLanguageCategoryID ("SpellTargetting");
+									msgBox.setTitleLanguageEntryID ("Title");
+									msgBox.setText (text);
+									msgBox.setVisible (true);
+								}
+							}
+						}
+
+						if (isValidTarget)
+						{
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+							
+							// Just use the common routine to close out the spell targetting prompt
+							cancelTargetSpellAction.actionPerformed (null);
 						}
 					}
 					else
@@ -786,6 +936,11 @@ public final class CombatUI extends MomClientFrameUI
 			currentPlayerID = null;
 			flashColour = NO_FLASH_COLOUR;
 
+			targetSpellPromptDefender.setText (null);
+			cancelTargetSpellDefender.setVisible (false);
+			targetSpellPromptAttacker.setText (null);
+			cancelTargetSpellAttacker.setVisible (false);
+			
 			// If we're banished, then hide all casting-related info
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initNewCombat");
 
@@ -971,6 +1126,7 @@ public final class CombatUI extends MomClientFrameUI
 		doneAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Done"));
 		fleeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Flee"));
 		autoAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Auto"));
+		cancelTargetSpellAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "CancelTargetSpell"));
 		
 		skillLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Skill") + ":");
 		manaLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Mana") + ":");
@@ -1201,6 +1357,58 @@ public final class CombatUI extends MomClientFrameUI
 			}
 				
 		log.trace ("Exiting languageOrSelectedUnitChanged");
+	}
+
+	/**
+	 * @return spell Spell chosen from spell book that we want to cast into this combat, and need to select a target for
+	 */
+	public final Spell getSpellBeingTargetted ()
+	{
+		return spellBeingTargetted;
+	}
+	
+	/**
+	 * Sets up prompt and cancel button to target a spell
+	 * @param spell Spell chosen from spell book that we want to cast into this combat, and need to select a target for
+	 */
+	public final void setSpellBeingTargetted (final Spell spell)
+	{
+		log.trace ("Entering setSpellBeingTargetted: " + spell.getSpellID ());
+		
+		spellBeingTargetted = spell;
+		
+		// Find all the controls to use, depending on whether we're the attacker or defender
+		final JLabel playerName;
+		final JTextArea spellPrompt;
+		final JButton spellCancel;
+		
+		if (getClient ().getOurPlayerID ().equals (players.getAttackingPlayer ().getPlayerDescription ().getPlayerID ()))
+		{
+			playerName = attackingPlayerName;
+			spellPrompt = targetSpellPromptAttacker;
+			spellCancel = cancelTargetSpellAttacker;
+		}
+		else
+		{
+			playerName = defendingPlayerName;
+			spellPrompt = targetSpellPromptDefender;
+			spellCancel = cancelTargetSpellDefender;
+		}
+		
+		// Set up prompt
+		final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
+		final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+		
+		final SpellBookSection section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
+		final String target = (section != null) ? section.getSpellTargetPrompt () : null;
+		
+		spellPrompt.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
+			(target.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ())));
+		
+		playerName.setVisible (false);
+		spellCancel.setVisible (true);
+		
+		log.trace ("Exiting setSpellBeingTargetted");
 	}
 	
 	/**
@@ -1725,6 +1933,22 @@ public final class CombatUI extends MomClientFrameUI
 		spellBookUI = ui;
 	}
 
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
+	}
+	
 	/**
 	 * @return Colour to flash the combat screen when a CAE is being cast
 	 */

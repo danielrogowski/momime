@@ -990,6 +990,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

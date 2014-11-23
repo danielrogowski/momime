@@ -563,14 +563,23 @@ public final class SpellBookUI extends MomClientFrameUI
 										
 										if (proceed)
 										{
-											// Tell server to cast it
-											final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-											msg.setSpellID (spell.getSpellID ());
-											
-											if (getCastType () == MomSpellCastType.COMBAT)
-												msg.setCombatLocation (getCombatUI ().getCombatLocation ());
-											
-											getClient ().getServerConnection ().sendMessageToServer (msg);
+											// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
+											if ((getCastType () == MomSpellCastType.COMBAT) &&
+												((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
+												(sectionID == SpellBookSectionID.SUMMONING)))
+												
+												getCombatUI ().setSpellBeingTargetted (spell);
+											else
+											{
+												// Tell server to cast it
+												final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+												msg.setSpellID (spell.getSpellID ());
+												
+												if (getCastType () == MomSpellCastType.COMBAT)
+													msg.setCombatLocation (getCombatUI ().getCombatLocation ());
+												
+												getClient ().getServerConnection ().sendMessageToServer (msg);
+											}
 											
 											// Close the spell book
 											setVisible (false);

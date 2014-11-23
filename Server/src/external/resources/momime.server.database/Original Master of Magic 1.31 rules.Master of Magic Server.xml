@@ -19447,6 +19447,7 @@
 		<languageEntry languageEntryID="Range" />
 		<languageEntry languageEntryID="Castable" />
 		<languageEntry languageEntryID="AveragePrefix" />
+		<languageEntry languageEntryID="CancelTargetSpell" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmCombatEnded">
 		<languageEntry languageEntryID="Defeat" />

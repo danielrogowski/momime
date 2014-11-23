@@ -5407,6 +5407,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="AveragePrefix">
 			<languageEntryText>avg</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CancelTargetSpell">
+			<languageEntryText>Cancel</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmCombatEnded">
 		<languageEntry languageEntryID="Defeat">

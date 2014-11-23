@@ -110,18 +110,6 @@
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmCombatSelectSpellTarget">
-		<left>486</left>
-		<top>6</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmCombatCancelSpell">
-		<left>530</left>
-		<top>50</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
 	<component name="frmCombatCurrentUnitName">
 		<left>225</left>
 		<top>4</top>
@@ -197,6 +185,34 @@
 	<component name="frmCombatCommonCombatAreaEffects">
 		<left>322</left>
 		<top>76</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatSelectSpellTargetDefender">
+		<left>6</left>
+		<top>6</top>
+		<width>154</width>
+		<height>42</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatCancelSpellDefender">
+		<left>83</left>
+		<top>52</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatSelectSpellTargetAttacker">
+		<left>486</left>
+		<top>6</top>
+		<width>148</width>
+		<height>42</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatCancelSpellAttacker">
+		<left>560</left>
+		<top>52</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

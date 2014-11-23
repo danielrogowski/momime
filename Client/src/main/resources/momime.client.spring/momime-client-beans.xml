@@ -254,6 +254,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="alchemyUI" ref="alchemyUI" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype">
@@ -354,7 +355,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatUI" ref="combatUI" />
-		<property name="spellBookUI" ref="spellBookUI" />
 	</bean>
 
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype">

@@ -289,6 +289,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Images added to display CAEs */
 	private List<JLabel> commonCAEImages = new ArrayList<JLabel> ();
 
+	/** MP penalty multiplier for how far this combat is from our wizard's fortress; null if we're banished and can't cast anything at all */
+	private Integer doubleRangePenalty;
+	
 	/** Cancel spell targetting */
 	private Action cancelTargetSpellAction;
 	
@@ -947,7 +950,7 @@ public final class CombatUI extends MomClientFrameUI
 			final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
 			
-			final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty
+			doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty
 				(ourPlayer, getCombatLocation (), getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getSessionDescription ().getMapSize ());
@@ -973,20 +976,8 @@ public final class CombatUI extends MomClientFrameUI
 				rangeLabel.setVisible (true);
 				castableLabel.setVisible (true);
 
-				// Calculate casting values
-				final int currentSkill = getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
-				skillValue.setText (getTextUtils ().intToStrCommas (currentSkill));
-				
-				final int manaStored = getResourceValueUtils ().findAmountStoredForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
-				manaValue.setText (getTextUtils ().intToStrCommas (manaStored));
-			
-				rangeValue.setText ("x " + getTextUtils ().halfIntToStr (doubleRangePenalty));
-				
-				// How much mana can we put into a spell, given the range?
-				final int manaAvailable = (manaStored * 2) / doubleRangePenalty;
-				maxCastable = Math.min (manaAvailable, currentSkill);
-				castableValue.setText (getTextUtils ().intToStrCommas (maxCastable));
+				// Set up initial casting values
+				updateRemainingCastingSkill (getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ()), true);
 			}
 			
 			// Generates the bitmap for the static portion of the terrain
@@ -1044,6 +1035,50 @@ public final class CombatUI extends MomClientFrameUI
 		}
 
 		log.trace ("Exiting initNewCombat");
+	}
+
+	/**
+	 * @param currentSkill How much skill and MP we have remaining to use in this combat
+	 * @param enableCasting Whether to enable the spell button; i.e. set to false if we've already cast a spell this combat turn
+	 */
+	public final void updateRemainingCastingSkill (final int currentSkill, final boolean enableCasting)
+	{
+		log.trace ("Entering updateRemainingCastingSkill: " + currentSkill);
+
+		skillValue.setText (getTextUtils ().intToStrCommas (currentSkill));
+		
+		final int manaStored = getResourceValueUtils ().findAmountStoredForProductionType
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		manaValue.setText (getTextUtils ().intToStrCommas (manaStored));
+	
+		rangeValue.setText ("x " + getTextUtils ().halfIntToStr (doubleRangePenalty));
+		
+		// How much mana can we put into a spell, given the range?
+		final int manaAvailable = (manaStored * 2) / doubleRangePenalty;
+		maxCastable = Math.min (manaAvailable, currentSkill);
+		castableValue.setText (getTextUtils ().intToStrCommas (maxCastable));
+		
+		// Additional spells may need to be greyed out in the spell book now we have less casting skill/MP
+		getSpellBookUI ().languageOrPageChanged ();
+		spellAction.setEnabled (enableCasting);
+
+		log.trace ("Exiting updateRemainingCastingSkill");
+	}
+
+	/**
+	 * @return Whether to enable the spells button
+	 */
+	public final boolean isSpellActionEnabled ()
+	{
+		return spellAction.isEnabled ();
+	}
+	
+	/**
+	 * @param b Whether to enable the spells button
+	 */
+	public final void setSpellActionEnabled (final boolean b)
+	{
+		spellAction.setEnabled (b);
 	}
 	
 	/**

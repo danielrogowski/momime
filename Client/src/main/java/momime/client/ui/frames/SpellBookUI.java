@@ -563,8 +563,19 @@ public final class SpellBookUI extends MomClientFrameUI
 										
 										if (proceed)
 										{
+											// Prevent casting more than one combat spell each turn
+											if (!getCombatUI ().isSpellActionEnabled ())
+											{
+												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+												msg.setTitleLanguageCategoryID ("frmSpellBook");
+												msg.setTitleLanguageEntryID ("CastSpellTitle");
+												msg.setTextLanguageCategoryID ("frmCombat");
+												msg.setTextLanguageEntryID ("OneSpellPerTurn");
+												msg.setVisible (true);
+											}
+											
 											// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
-											if ((getCastType () == MomSpellCastType.COMBAT) &&
+											else if ((getCastType () == MomSpellCastType.COMBAT) &&
 												((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 												(sectionID == SpellBookSectionID.SUMMONING)))
 												

@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.ui.frames.AlchemyUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
@@ -48,6 +49,9 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	/** Alchemy UI */
 	private AlchemyUI alchemyUI;
 	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -72,6 +76,11 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		// We may now have more gold to rush buy construction projects
 		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
 			cityView.recheckRushBuyEnabled ();
+		
+		// Update remaining casting skill and MP in the combat we're in.
+		// Also the only reason we'll get this message during combat is if we cast a combat spell, so stop us from casting another one this turn (2nd param)
+		if (getCombatUI ().isVisible ())
+			getCombatUI ().updateRemainingCastingSkill (getCastingSkillRemainingThisCombat (), false);
 		
 		log.trace ("Exiting start");
 	}
@@ -138,5 +147,21 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	public final void setAlchemyUI (final AlchemyUI ui)
 	{
 		alchemyUI = ui;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

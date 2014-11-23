@@ -54,6 +54,9 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 		{
 			log.debug ("Its our combat turn, auto = " + getCombatUI ().isAutoControl ());
 			
+			// We can cast a spell again
+			getCombatUI ().setSpellActionEnabled (true);
+			
 			// Tell the server to auto control our units?
 			if (getCombatUI ().isAutoControl ())
 			{

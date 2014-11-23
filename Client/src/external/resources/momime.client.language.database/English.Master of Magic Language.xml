@@ -5410,6 +5410,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="CancelTargetSpell">
 			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="OneSpellPerTurn">
+			<languageEntryText>You have already cast a spell this combat turn.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmCombatEnded">
 		<languageEntry languageEntryID="Defeat">

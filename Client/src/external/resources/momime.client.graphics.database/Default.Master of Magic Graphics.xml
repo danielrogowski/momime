@@ -1212,8 +1212,7 @@
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
 		<combatCastOffsetY>-22</combatCastOffsetY>
-		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
-		<spellSoundNumber>40</spellSoundNumber>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP031">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
@@ -1272,8 +1271,7 @@
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
 		<combatCastOffsetY>-22</combatCastOffsetY>
-		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
-		<spellSoundNumber>40</spellSoundNumber>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP046">
 		<combatCastAnimation>CONFUSION</combatCastAnimation>
@@ -1325,8 +1323,7 @@
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
 		<combatCastOffsetY>-22</combatCastOffsetY>
-		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
-		<spellSoundNumber>40</spellSoundNumber>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP061" />
 	<spell spellID="SP062">
@@ -1351,8 +1348,7 @@
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
 		<combatCastOffsetY>-22</combatCastOffsetY>
-		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
-		<spellSoundNumber>40</spellSoundNumber>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP067">
 		<combatCastAnimation>MIND_STORM</combatCastAnimation>
@@ -1437,8 +1433,7 @@
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
 		<combatCastOffsetY>-22</combatCastOffsetY>
-		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
-		<spellSoundNumber>40</spellSoundNumber>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP091" />
 	<spell spellID="SP092">

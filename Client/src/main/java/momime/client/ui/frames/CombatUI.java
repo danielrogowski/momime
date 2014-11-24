@@ -26,6 +26,7 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
@@ -343,6 +344,18 @@ public final class CombatUI extends MomClientFrameUI
 	/** Colour to flash the combat screen when a CAE is being cast */
 	private Color flashColour = NO_FLASH_COLOUR;
 	
+	/** Animation to display for a spell being cast */
+	private AnimationEx combatCastAnimation;
+	
+	/** X coord to display combat cast animation at, in pixels */
+	private int combatCastAnimationX;
+
+	/** Y coord to display combat cast animation at, in pixels */
+	private int combatCastAnimationY;
+	
+	/** Frame number to display of combat cast animation */
+	private int combatCastAnimationFrame;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -636,6 +649,18 @@ public final class CombatUI extends MomClientFrameUI
 							
 							g.drawImage (ratImage, currentX, currentY, imageWidth, imageHeight, null);
 						}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				
+				// Draw casting animation?
+				if (getCombatCastAnimation () != null)
+					try
+					{
+						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()).getFrameImageFile ());
+						g.drawImage (image, getCombatCastAnimationX (), getCombatCastAnimationY (), image.getWidth () * 2, image.getHeight () * 2, null);
 					}
 					catch (final Exception e)
 					{
@@ -1998,5 +2023,69 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setFlashColour (final Color colour)
 	{
 		flashColour = colour;
+	}
+
+	/**
+	 * @return Animation to display for a spell being cast
+	 */
+	public final AnimationEx getCombatCastAnimation ()
+	{
+		return combatCastAnimation;
+	}
+
+	/**
+	 * @param an Animation to display for a spell being cast
+	 */
+	public final void setCombatCastAnimation (final AnimationEx an)
+	{
+		combatCastAnimation = an;
+	}
+	
+	/**
+	 * @return X coord to display combat cast animation at, in pixels
+	 */
+	public final int getCombatCastAnimationX ()
+	{
+		return combatCastAnimationX;
+	}
+
+	/**
+	 * @param x X coord to display combat cast animation at, in pixels
+	 */
+	public final void setCombatCastAnimationX (final int x)
+	{
+		combatCastAnimationX = x;
+	}
+
+	/**
+	 * @return Y coord to display combat cast animation at, in pixels
+	 */
+	public final int getCombatCastAnimationY ()
+	{
+		return combatCastAnimationY;
+	}
+	
+	/**
+	 * @param y Y coord to display combat cast animation at, in pixels
+	 */
+	public final void setCombatCastAnimationY (final int y)
+	{
+		combatCastAnimationY = y;
+	}
+
+	/**
+	 * @return Frame number to display of combat cast animation
+	 */
+	public final int getCombatCastAnimationFrame ()
+	{
+		return combatCastAnimationFrame;
+	}
+	
+	/**
+	 * @param frame Frame number to display of combat cast animation
+	 */
+	public final void setCombatCastAnimationFrame (final int frame)
+	{
+		combatCastAnimationFrame = frame;
 	}
 }

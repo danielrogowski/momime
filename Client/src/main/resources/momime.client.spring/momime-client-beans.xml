@@ -643,6 +643,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="advancedPlayerFactory" ref="advancedPlayerFactory" />
 		<property name="loop" value="true" />
 		<property name="shuffle" value="true" />
+		<property name="playerName" value="MusicPlayer" />
 	</bean>
 	
 	<bean id="soundPlayer" class="momime.client.audio.AudioPlayerImpl">
@@ -650,6 +651,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="advancedPlayerFactory" ref="advancedPlayerFactory" />
 		<property name="loop" value="false" />
+		<property name="playerName" value="SoundPlayer" />
 	</bean>
 	
 	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />

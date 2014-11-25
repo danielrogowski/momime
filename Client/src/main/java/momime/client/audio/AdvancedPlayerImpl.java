@@ -17,6 +17,9 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 	/** Underlying player, created once we set a stream */
 	private javazoom.jl.player.advanced.AdvancedPlayer player;
 	
+	/** True if we completely finished playing an audio track (and therefore can't call stop () on it) */
+	private boolean finished;
+	
 	/**
 	 * @param resourceName Names of single audio resource on classpath, e.g. /music/blah.mp3 
 	 * @throws JavaLayerException If there is a problem
@@ -39,6 +42,7 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 	{
 		log.trace ("Entering play");
 		player.play ();
+		finished = true;
 		log.trace ("Exiting play");
 	}
 	
@@ -62,5 +66,14 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 		log.trace ("Entering setPlayBackListener");
 		player.setPlayBackListener (listener);
 		log.trace ("Exiting setPlayBackListener");
+	}
+
+	/**
+	 * @return True if we completely finished playing an audio track (and therefore can't call stop () on it)
+	 */
+	@Override
+	public final boolean isFinished ()
+	{
+		return finished;
 	}
 }

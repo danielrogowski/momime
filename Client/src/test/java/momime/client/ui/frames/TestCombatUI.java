@@ -360,6 +360,7 @@ public final class TestCombatUI
 		combat.setCombatMapProcessing (mock (CombatMapProcessing.class));
 		combat.setUnitCalculations (unitCalc);
 		combat.setTextUtils (new TextUtilsImpl ());
+		combat.setSpellBookUI (new SpellBookUI ());
 		combat.setSmallFont (CreateFontsForTests.getSmallFont ());
 		combat.setMediumFont (CreateFontsForTests.getMediumFont ());
 		combat.setLargeFont (CreateFontsForTests.getLargeFont ());

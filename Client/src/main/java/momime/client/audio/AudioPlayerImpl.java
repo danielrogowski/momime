@@ -32,9 +32,6 @@ public final class AudioPlayerImpl implements AudioPlayer
 	/** Creates new player implementations as needed */
 	private AdvancedPlayerFactory advancedPlayerFactory;
 
-	/** True if we completely finished playing an audio track (and therefore can't call stop () on it) */
-	private boolean finished;
-	
 	/** True if the player thread is stopping because we've got a new playlist to switch to */
 	private boolean stopping;
 	
@@ -43,6 +40,12 @@ public final class AudioPlayerImpl implements AudioPlayer
 	
 	/** Names of audio resources on classpath, e.g. /music/blah.mp3 */
 	private List<String> resourceNames;
+	
+	/** Used to uniquely number player threads */
+	private int lastThreadNumber;
+	
+	/** Used to distinguish threads created by one AudioPlayer from another; provide a sensible default though */
+	private String playerName = "AudioPlayer";
 	
 	/**
 	 * True if the player should play another random file after completing each file; false means every 'play' kicks off a new thread and will play to completion.
@@ -131,11 +134,14 @@ public final class AudioPlayerImpl implements AudioPlayer
 		log.trace ("Entering playThenResume: " + resourceName);
 		
 		// Close out previous player if there was one
-		if ((player != null) && (!finished) && (isLoop ()))
+		if ((player != null) && (!player.isFinished ()) && (isLoop ()))
 		{
+			log.debug ("Telling existing player thread to stop (" + player + ", " + player.isFinished () + ", " + isLoop () + ")");
 			stopping = true;
 			player.stop ();
 		}
+		else
+			log.debug ("There was no existing player thread to stop (" + player + ", " + isLoop () + ")");
 		
 		// Set up new player
 		player = getAdvancedPlayerFactory ().createAdvancedPlayer ();
@@ -145,7 +151,8 @@ public final class AudioPlayerImpl implements AudioPlayer
 		player.setPlayBackListener (new PlaybackListener () {});
 		
 		// Need to run the player in its own thread
-		new Thread ("AudioPlayer")
+		lastThreadNumber++;
+		new Thread (getPlayerName () + "-" + lastThreadNumber)
 		{
 			@Override
 			public final void run ()
@@ -153,14 +160,14 @@ public final class AudioPlayerImpl implements AudioPlayer
 				try
 				{
 					log.debug ("Thread playing \"" + resourceName + "\" starting");
-					finished = false;
 					player.play ();
-					finished = true;
 					log.debug ("Thread playing \"" + resourceName + "\" stopping = " + stopping);
 					
 					// Play another random file
 					if ((!stopping) && (isLoop ()))
 					{
+						log.debug ("Selecting next file to play");
+
 						// If playing in sequence then remove the track we just played from the head of the list
 						if ((!isShuffle ()) && (resourceNames.size () > 1))
 							resourceNames.remove (0);
@@ -263,5 +270,21 @@ public final class AudioPlayerImpl implements AudioPlayer
 	public final void setShuffle (final boolean shuf)
 	{
 		shuffle = shuf;
+	}
+
+	/**
+	 * @return Used to distinguish threads created by one AudioPlayer from another
+	 */
+	public final String getPlayerName ()
+	{
+		return playerName;
+	}
+
+	/**
+	 * @param name Used to distinguish threads created by one AudioPlayer from another
+	 */
+	public final void setPlayerName (final String name)
+	{
+		playerName = name;
 	}
 }

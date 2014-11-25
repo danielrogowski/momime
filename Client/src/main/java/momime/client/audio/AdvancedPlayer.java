@@ -29,4 +29,9 @@ public interface AdvancedPlayer
 	 * @param listener Listener to inform of audio events (must set one even if we don't actually want to receive events)
 	 */
 	public void setPlayBackListener (final PlaybackListener listener);
+
+	/**
+	 * @return True if we completely finished playing an audio track (and therefore can't call stop () on it)
+	 */
+	public boolean isFinished ();
 }

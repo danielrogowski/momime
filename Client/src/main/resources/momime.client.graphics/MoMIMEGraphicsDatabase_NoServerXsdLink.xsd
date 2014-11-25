@@ -362,8 +362,6 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetX" type="momimegfx:pixelCoordinate" nxe:label="Combat cast offset X" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetY" type="momimegfx:pixelCoordinate" nxe:label="Combat cast offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandEnchantmentImageFile" type="momimegfx:imageFilename" nxe:label="Overland enchantment image file" nxe:gridwidth="330" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellMusicFile" type="momimegfx:imageFilename" nxe:label="Spell music file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellMusicNumber" type="momimecommon:imageNumber" nxe:label="Spell music number" nxe:gridwidth="150" />
@@ -626,6 +624,10 @@
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="animationDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="animationSpeed" type="momimegfx:frameRate" nxe:label="Speed / Frame Rate" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastOffsetX" type="momimegfx:pixelCoordinate" nxe:label="Overland cast offset X" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastOffsetY" type="momimegfx:pixelCoordinate" nxe:label="Overland cast offset Y" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetX" type="momimegfx:pixelCoordinate" nxe:label="Combat cast offset X" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetY" type="momimegfx:pixelCoordinate" nxe:label="Combat cast offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimegfx:animationFrame" />
 		</xsd:sequence>
 		<xsd:attribute name="animationID" type="momimegfx:animationID" use="required" nxe:label="Animation ID" nxe:gridwidth="150" />

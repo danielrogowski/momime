@@ -88,8 +88,8 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 				
 				final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 				
-				final int adjustX = (spell.getCombatCastOffsetX () == null) ? 0 : 2 * spell.getCombatCastOffsetX ();
-				final int adjustY = (spell.getCombatCastOffsetY () == null) ? 0 : 2 * spell.getCombatCastOffsetY ();
+				final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
+				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
 				
 				getCombatUI ().setCombatCastAnimationX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
 					(getCombatPosition ().getX (), getCombatPosition ().getY (), combatMapTileSet));

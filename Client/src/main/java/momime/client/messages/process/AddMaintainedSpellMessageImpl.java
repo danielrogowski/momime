@@ -17,6 +17,7 @@ import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -58,6 +59,9 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	
 	/** Combat UI */
 	private CombatUI combatUI;
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
 	
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
@@ -150,18 +154,36 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				
 				anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
 
-				final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
-				
-				final int adjustX = (spellGfx.getCombatCastOffsetX () == null) ? 0 : 2 * spellGfx.getCombatCastOffsetX ();
-				final int adjustY = (spellGfx.getCombatCastOffsetY () == null) ? 0 : 2 * spellGfx.getCombatCastOffsetY ();
-				
-				getCombatUI ().setCombatCastAnimationX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-					(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
-				getCombatUI ().setCombatCastAnimationY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-					(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+				if (getMaintainedSpell ().isCastInCombat ())
+				{
+					// Show anim on CombatUI
+					final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+					
+					final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
+					final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
+					
+					getCombatUI ().setCombatCastAnimationX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+					getCombatUI ().setCombatCastAnimationY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+	
+					getCombatUI ().setCombatCastAnimationFrame (0);
+					getCombatUI ().setCombatCastAnimation (anim);
+				}
+				else
+				{
+					// Show anim on OverlandMapUI
+					final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
 
-				getCombatUI ().setCombatCastAnimationFrame (0);
-				getCombatUI ().setCombatCastAnimation (anim);
+					final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
+					final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
+
+					getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * spellTargetUnit.getUnitLocation ().getX ()));
+					getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * spellTargetUnit.getUnitLocation ().getY ()));
+					
+					getOverlandMapUI ().setOverlandCastAnimationFrame (0);
+					getOverlandMapUI ().setOverlandCastAnimation (anim);
+				}
 			
 				// See if there's a sound effect defined in the graphics XML file
 				if (spellGfx.getSpellSoundFile () != null)
@@ -207,7 +229,13 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	@Override
 	public final void tick (final int tickNumber)
 	{
-		getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+		if (getMaintainedSpell ().isCastInCombat ())
+			getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+		else
+		{
+			getOverlandMapUI ().setOverlandCastAnimationFrame (tickNumber - 1);
+			getOverlandMapUI ().repaintSceneryPanel ();
+		}
 	}
 	
 	/**
@@ -265,7 +293,12 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	{
 		// Remove the anim
 		if (anim != null)
-			getCombatUI ().setCombatCastAnimation (null);
+		{
+			if (getMaintainedSpell ().isCastInCombat ())
+				getCombatUI ().setCombatCastAnimation (null);
+			else
+				getOverlandMapUI ().setOverlandCastAnimation (null);
+		}
 	}
 
 	/**
@@ -364,6 +397,22 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 		combatUI = ui;
 	}
 
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+	
 	/**
 	 * @return Bitmap generator includes routines for calculating pixel coords
 	 */

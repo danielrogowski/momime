@@ -1122,8 +1122,6 @@
 	<spell spellID="SP001" />
 	<spell spellID="SP002">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP003">
@@ -1133,8 +1131,6 @@
 	</spell>
 	<spell spellID="SP004">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP005" />
@@ -1143,11 +1139,12 @@
 	</spell>
 	<spell spellID="SP007">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP008" />
+	<spell spellID="SP008">
+		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP009">
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
@@ -1163,7 +1160,10 @@
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP015" />
-	<spell spellID="SP016" />
+	<spell spellID="SP016">
+		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP017">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
@@ -1174,8 +1174,6 @@
 	</spell>
 	<spell spellID="SP021">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP022" />
@@ -1184,8 +1182,6 @@
 	</spell>
 	<spell spellID="SP024">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP025" />
@@ -1205,14 +1201,10 @@
 	</spell>
 	<spell spellID="SP030">
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP031">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP032">
@@ -1245,8 +1237,6 @@
 	</spell>
 	<spell spellID="SP041">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP042" />
@@ -1255,20 +1245,14 @@
 	</spell>
 	<spell spellID="SP044">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP045">
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP046">
 		<combatCastAnimation>CONFUSION</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_011_000 - Confusion.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP047" />
@@ -1281,21 +1265,15 @@
 	<spell spellID="SP052" />
 	<spell spellID="SP053">
 		<combatCastAnimation>VERTIGO</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_009_000 - Vertigo.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP054">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP055" />
 	<spell spellID="SP056">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP057">
@@ -1309,21 +1287,15 @@
 	</spell>
 	<spell spellID="SP060">
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP061" />
 	<spell spellID="SP062">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP063">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP064" />
@@ -1332,27 +1304,19 @@
 	</spell>
 	<spell spellID="SP066">
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP067">
 		<combatCastAnimation>MIND_STORM</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_012_000 - MindStorm.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP068" />
 	<spell spellID="SP069">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP070">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP071">
@@ -1388,8 +1352,6 @@
 	<spell spellID="SP085" />
 	<spell spellID="SP086">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_030_000 - WallOfFire-ChaosRift.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP087">
@@ -1399,31 +1361,26 @@
 	</spell>
 	<spell spellID="SP088">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_039_000 - MoveFortress-DispelMagicTrue-CursedLands.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP089">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_014_000 - WarpCreature.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP090">
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
-		<combatCastOffsetX>1</combatCastOffsetX>
-		<combatCastOffsetY>-22</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP091" />
 	<spell spellID="SP092">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP093" />
+	<spell spellID="SP093">
+		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_030_000 - WallOfFire-ChaosRift.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP094">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_030_000 - WallOfFire-ChaosRift.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP095">
@@ -1436,8 +1393,6 @@
 	<spell spellID="SP098" />
 	<spell spellID="SP099">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_030_000 - WallOfFire-ChaosRift.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP100">
@@ -1492,23 +1447,20 @@
 	</spell>
 	<spell spellID="SP121">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP122" />
-	<spell spellID="SP123" />
+	<spell spellID="SP123">
+		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP124">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP125" />
 	<spell spellID="SP126">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP127">
@@ -1521,14 +1473,10 @@
 	</spell>
 	<spell spellID="SP130">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP131">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP132" />
@@ -1542,7 +1490,10 @@
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP137" />
-	<spell spellID="SP138" />
+	<spell spellID="SP138">
+		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP139">
 		<spellMusicFile>/momime.client.music/MUSIC_003 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellMusicFile>
 		<soundAndImageDelay>2</soundAndImageDelay>
@@ -1551,8 +1502,6 @@
 	<spell spellID="SP140" />
 	<spell spellID="SP141">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP142">
@@ -1560,14 +1509,10 @@
 	</spell>
 	<spell spellID="SP143">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP144">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP145">
@@ -1634,8 +1579,6 @@
 	</spell>
 	<spell spellID="SP162">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_032_000 - WallOfDarkness-CloudOfShadow-EvilPresence-Famine-Pestilence.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP163">
@@ -1645,14 +1588,10 @@
 	</spell>
 	<spell spellID="SP164">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_032_000 - WallOfDarkness-CloudOfShadow-EvilPresence-Famine-Pestilence.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP165">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_003_000 - BlackSleep.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP166">
@@ -1664,9 +1603,15 @@
 	<spell spellID="SP170" />
 	<spell spellID="SP171" />
 	<spell spellID="SP172" />
-	<spell spellID="SP173" />
+	<spell spellID="SP173">
+		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_032_000 - WallOfDarkness-CloudOfShadow-EvilPresence-Famine-Pestilence.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP174" />
-	<spell spellID="SP175" />
+	<spell spellID="SP175">
+		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_032_000 - WallOfDarkness-CloudOfShadow-EvilPresence-Famine-Pestilence.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP176">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
@@ -1678,8 +1623,6 @@
 	</spell>
 	<spell spellID="SP179">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_032_000 - WallOfDarkness-CloudOfShadow-EvilPresence-Famine-Pestilence.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP180">
@@ -1687,8 +1630,6 @@
 	</spell>
 	<spell spellID="SP181">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
-		<combatCastOffsetX>-15</combatCastOffsetX>
-		<combatCastOffsetY>-24</combatCastOffsetY>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_032_000 - WallOfDarkness-CloudOfShadow-EvilPresence-Famine-Pestilence.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP182" />
@@ -85353,6 +85294,10 @@
 	<animation animationID="LIFE_RAYS">
 		<animationDescription>'Rays' anim, like when casting Healing</animationDescription>
 		<animationSpeed>6</animationSpeed>
+		<overlandCastOffsetX>-20</overlandCastOffsetX>
+		<overlandCastOffsetY>-19</overlandCastOffsetY>
+		<combatCastOffsetX>-15</combatCastOffsetX>
+		<combatCastOffsetY>-24</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP121/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85393,6 +85338,10 @@
 	<animation animationID="NATURE_SPARKLY_RING">
 		<animationDescription>Green expanding ring with sparkly stars inside</animationDescription>
 		<animationSpeed>6</animationSpeed>
+		<overlandCastOffsetX>-20</overlandCastOffsetX>
+		<overlandCastOffsetY>-18</overlandCastOffsetY>
+		<combatCastOffsetX>-15</combatCastOffsetX>
+		<combatCastOffsetY>-24</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP002/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85433,6 +85382,10 @@
 	<animation animationID="DEATH_HAND">
 		<animationDescription>Ghostly hand that floats over death spell targets</animationDescription>
 		<animationSpeed>6</animationSpeed>
+		<overlandCastOffsetX>-18</overlandCastOffsetX>
+		<overlandCastOffsetY>-15</overlandCastOffsetY>
+		<combatCastOffsetX>-15</combatCastOffsetX>
+		<combatCastOffsetY>-24</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP162/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85473,6 +85426,10 @@
 	<animation animationID="SORCERY_SPARKLES">
 		<animationDescription>Raining blue sparkles</animationDescription>
 		<animationSpeed>6</animationSpeed>
+		<overlandCastOffsetX>-19</overlandCastOffsetX>
+		<overlandCastOffsetY>-19</overlandCastOffsetY>
+		<combatCastOffsetX>-15</combatCastOffsetX>
+		<combatCastOffsetY>-24</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP041/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85495,6 +85452,10 @@
 	<animation animationID="CHAOS_WHIRLWIND">
 		<animationDescription>Chaos twirly whirlwind</animationDescription>
 		<animationSpeed>8</animationSpeed>
+		<overlandCastOffsetX>-20</overlandCastOffsetX>
+		<overlandCastOffsetY>-17</overlandCastOffsetY>
+		<combatCastOffsetX>-15</combatCastOffsetX>
+		<combatCastOffsetY>-24</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP086/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85553,6 +85514,8 @@
 	<animation animationID="CONFUSION">
 		<animationDescription>Confusion twirly blue dots</animationDescription>
 		<animationSpeed>6</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP046/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85581,6 +85544,8 @@
 	<animation animationID="VERTIGO">
 		<animationDescription>Vertigo blue whirlwind</animationDescription>
 		<animationSpeed>6</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP053/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85609,6 +85574,8 @@
 	<animation animationID="MIND_STORM">
 		<animationDescription>Mind Storm rising single blue flame</animationDescription>
 		<animationSpeed>6</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP067/cast-frame1.png</frameImageFile>
 		</frame>
@@ -85643,6 +85610,8 @@
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>
 		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
 		<frame>
 			<frameImageFile>/momime.client.graphics/spells/SP030/cast-frame1.png</frameImageFile>
 		</frame>

@@ -29,6 +29,7 @@ import javax.swing.WindowConstants;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
@@ -167,6 +168,18 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Overland map tileset */
 	private TileSetEx overlandMapTileSet;
 
+	/** Animation to display for a spell being cast */
+	private AnimationEx overlandCastAnimation;
+	
+	/** X coord to display overland cast animation at, in pixels */
+	private int overlandCastAnimationX;
+
+	/** Y coord to display overland cast animation at, in pixels */
+	private int overlandCastAnimationY;
+	
+	/** Frame number to display of overland cast animation */
+	private int overlandCastAnimationFrame;
+	
 	// UI Components
 
 	/** Typical inset used on this screen layout */
@@ -618,6 +631,29 @@ public final class OverlandMapUI extends MomClientFrameUI
 						log.error (e, e);
 					}
 				}
+
+				// Draw casting animation?
+				if (getOverlandCastAnimation () != null)
+					try
+					{
+						final BufferedImage castImage = getUtils ().loadImage (getOverlandCastAnimation ().getFrame ().get (getOverlandCastAnimationFrame ()).getFrameImageFile ());
+
+						final int castZoomedWidth = (castImage.getWidth () * mapViewZoom) / 10;
+						final int castZoomedHeight = (castImage.getHeight () * mapViewZoom) / 10;
+					
+						final int xpos = (getOverlandCastAnimationX () * mapViewZoom) / 10;
+						final int ypos = (getOverlandCastAnimationY () * mapViewZoom) / 10;
+
+						for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+							for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+								g.drawImage (castImage,
+									(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+									castZoomedWidth, castZoomedHeight, null);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -1515,5 +1551,69 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setUnitStackMoving (final MoveUnitStackOverlandMessageImpl stack)
 	{
 		unitStackMoving = stack;
+	}
+
+	/**
+	 * @return Animation to display for a spell being cast
+	 */
+	public final AnimationEx getOverlandCastAnimation ()
+	{
+		return overlandCastAnimation;
+	}
+
+	/**
+	 * @param an Animation to display for a spell being cast
+	 */
+	public final void setOverlandCastAnimation (final AnimationEx an)
+	{
+		overlandCastAnimation = an;
+	}
+	
+	/**
+	 * @return X coord to display overland cast animation at, in pixels
+	 */
+	public final int getOverlandCastAnimationX ()
+	{
+		return overlandCastAnimationX;
+	}
+
+	/**
+	 * @param x X coord to display overland cast animation at, in pixels
+	 */
+	public final void setOverlandCastAnimationX (final int x)
+	{
+		overlandCastAnimationX = x;
+	}
+
+	/**
+	 * @return Y coord to display overland cast animation at, in pixels
+	 */
+	public final int getOverlandCastAnimationY ()
+	{
+		return overlandCastAnimationY;
+	}
+	
+	/**
+	 * @param y Y coord to display overland cast animation at, in pixels
+	 */
+	public final void setOverlandCastAnimationY (final int y)
+	{
+		overlandCastAnimationY = y;
+	}
+
+	/**
+	 * @return Frame number to display of overland cast animation
+	 */
+	public final int getOverlandCastAnimationFrame ()
+	{
+		return overlandCastAnimationFrame;
+	}
+	
+	/**
+	 * @param frame Frame number to display of overland cast animation
+	 */
+	public final void setOverlandCastAnimationFrame (final int frame)
+	{
+		overlandCastAnimationFrame = frame;
 	}
 }

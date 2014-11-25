@@ -6,28 +6,37 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
+import momime.client.calculations.CombatMapBitmapGenerator;
+import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.TileSetEx;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
+import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
+import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 /**
  * Server sends this to notify clients of new maintained spells cast, or those that have newly come into view
  */
-public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessage implements CustomDurationServerToClientMessage
+public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AddMaintainedSpellMessageImpl.class);
@@ -44,6 +53,27 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
 	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
+	/** Bitmap generator includes routines for calculating pixel coords */
+	private CombatMapBitmapGenerator combatMapBitmapGenerator;
+
+	/** Sound effects player */
+	private AudioPlayer soundPlayer;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** True for city enchantments/curses and overland enchantments */
+	private boolean animatedByOtherFrame;
+	
+	/** Animation to display; null to process message instantly, or if animation is being handled by another frame */
+	private AnimationEx anim;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -54,14 +84,15 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	{
 		log.trace ("Entering start: " + getMaintainedSpell ().getSpellID ());
 		
-		// Some types of important spells show their castings as animations; in that case we don't even add the spell yet - the animation handles that as well
+		// Some types of important spells show their castings as animations that are displayed in a different window;
+		// in that case the animations, and even adding the spell itself, are handled by those other windows instead.
 		final Spell spell = getClient ().getClientDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
-		boolean animated = false;
+		animatedByOtherFrame = false;
 
 		// Overland enchantments are always animated
 		if (spell.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 		{
-			animated = true;
+			animatedByOtherFrame = true;
 			
 			final OverlandEnchantmentsUI overlandEnchantmentsPopup = getPrototypeFrameCreator ().createOverlandEnchantments ();
 			overlandEnchantmentsPopup.setAddSpellMessage (this);
@@ -87,7 +118,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
 				((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID ().equals (getClient ().getOurPlayerID ()))))
 			{
-				animated = true;
+				animatedByOtherFrame = true;
 				
 				final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
 				miniCityView.setCityLocation ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
@@ -107,20 +138,87 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				// Redraw the NTMs
 				getNewTurnMessagesUI ().languageChanged ();
 			}
+			
+			// Is there an animation to display for it?
+			final momime.client.graphics.database.v0_9_5.Spell spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
+			
+			anim = null;
+			if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getUnitURN () != null))
+			{
+				final MemoryUnit spellTargetUnit = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");
+				
+				anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
+
+				final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+				
+				final int adjustX = (spellGfx.getCombatCastOffsetX () == null) ? 0 : 2 * spellGfx.getCombatCastOffsetX ();
+				final int adjustY = (spellGfx.getCombatCastOffsetY () == null) ? 0 : 2 * spellGfx.getCombatCastOffsetY ();
+				
+				getCombatUI ().setCombatCastAnimationX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+					(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+				getCombatUI ().setCombatCastAnimationY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+					(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+
+				getCombatUI ().setCombatCastAnimationFrame (0);
+				getCombatUI ().setCombatCastAnimation (anim);
+			
+				// See if there's a sound effect defined in the graphics XML file
+				if (spellGfx.getSpellSoundFile () != null)
+					try
+					{
+						getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+			}
 		}
 		
 		// If no spell animation, then just add it right away
-		if (!animated)
-		{
+		if (!animatedByOtherFrame)
 			processOneUpdate ();
-			
-			// Don't halt processing of messages
-			getClient ().finishCustomDurationMessage (this);
-		}
 		
 		log.trace ("Exiting start");
 	}
 
+	/**
+	 * @return Number of ticks that the duration is divided into
+	 */
+	@Override
+	public final int getTickCount ()
+	{
+		return (anim == null) ? 0 : anim.getFrame ().size ();
+	}
+	
+	/**
+	 * @return Number of seconds that the animation takes to display
+	 */
+	@Override
+	public final double getDuration ()
+	{
+		return (anim == null) ? 0 : (anim.getFrame ().size () / anim.getAnimationSpeed ());
+	}
+	
+	/**
+	 * @param tickNumber How many ticks have occurred, from 1..tickCount
+	 */
+	@Override
+	public final void tick (final int tickNumber)
+	{
+		getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+	}
+	
+	/**
+	 * @return False for city anims and overland enchantments which have to be clicked on to close their window 
+	 */
+	@Override
+	public final boolean isFinishAfterDuration ()
+	{
+		return !animatedByOtherFrame;
+	}
+	
 	/**
 	 * Method called for each individual update; so called once if message was sent in isolation, or multiple times if part of FogOfWarVisibleAreaChangedMessage
 	 */
@@ -165,6 +263,9 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	@Override
 	public final void finish ()
 	{
+		// Remove the anim
+		if (anim != null)
+			getCombatUI ().setCombatCastAnimation (null);
 	}
 
 	/**
@@ -229,5 +330,85 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
+	}
+
+	/**
+	 * @return Bitmap generator includes routines for calculating pixel coords
+	 */
+	public final CombatMapBitmapGenerator getCombatMapBitmapGenerator ()
+	{
+		return combatMapBitmapGenerator;
+	}
+
+	/**
+	 * @param gen Bitmap generator includes routines for calculating pixel coords
+	 */
+	public final void setCombatMapBitmapGenerator (final CombatMapBitmapGenerator gen)
+	{
+		combatMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Sound effects player
+	 */
+	public final AudioPlayer getSoundPlayer ()
+	{
+		return soundPlayer;
+	}
+
+	/**
+	 * @param player Sound effects player
+	 */
+	public final void setSoundPlayer (final AudioPlayer player)
+	{
+		soundPlayer = player;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

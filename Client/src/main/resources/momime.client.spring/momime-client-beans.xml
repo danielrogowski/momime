@@ -477,6 +477,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="combatUI" ref="combatUI" />
+		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
+		<property name="soundPlayer" ref="soundPlayer" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">

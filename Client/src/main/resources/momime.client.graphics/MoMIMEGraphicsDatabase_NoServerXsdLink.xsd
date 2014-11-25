@@ -369,7 +369,6 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellMusicNumber" type="momimecommon:imageNumber" nxe:label="Spell music number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="soundAndImageDelay" type="momimegfx:seconds" nxe:label="Sound &amp; image delay" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellSoundFile" type="momimegfx:imageFilename" nxe:label="Spell sound file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="spellSoundNumber" type="momimecommon:imageNumber" nxe:label="Spell sound number" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="spellID" type="momimecommon:spellID" use="required" nxe:label="Spell ID" nxe:gridwidth="60">
 			<xsd:annotation>

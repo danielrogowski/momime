@@ -564,7 +564,7 @@ public final class SpellBookUI extends MomClientFrameUI
 										if (proceed)
 										{
 											// Prevent casting more than one combat spell each turn
-											if (!getCombatUI ().isSpellActionEnabled ())
+											if ((getCastType () == MomSpellCastType.COMBAT) && (!getCombatUI ().isSpellActionEnabled ()))
 											{
 												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 												msg.setTitleLanguageCategoryID ("frmSpellBook");

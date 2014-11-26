@@ -27,13 +27,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.language.database.v0_9_5.Spell;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
@@ -52,7 +57,9 @@ import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
@@ -195,6 +202,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Cell renderer for drawing the unit skill icons and generating the correct descriptions (some, notably the experience 'skill', aren't straightforward static text) */
 	private UnitSkillListCellRenderer unitSkillListCellRenderer;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * Sets up the panel once all values have been injected
@@ -529,6 +542,53 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitSkillsScrollPane.setPreferredSize (bottomCardSize);
 
 		bottomCards.add (unitSkillsScrollPane, KEY_UNITS);
+		
+		// Clicking a unit skill from a spell asks about cancelling it
+		final ListSelectionListener spellSelectionListener = new ListSelectionListener ()
+		{
+			@Override
+			public final void valueChanged (final ListSelectionEvent ev)
+			{
+				if ((unit instanceof MemoryUnit) && (unitSkillsList.getSelectedIndex () >= 0))
+				{
+					final MemoryUnit memoryUnit = (MemoryUnit) unit;
+					final UnitHasSkill skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
+					
+					// We want to ignore clicks on regular skills, and only do something about clicks on skills granted by spells.
+					// So search through maintained spells looking for this unitSkillID on this unit and see if we find anything.
+					final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+						null, null, memoryUnit.getUnitURN (), skill.getUnitSkillID (), null, null);
+					
+					try
+					{
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("SpellCasting");
+						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+
+						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						
+						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+						else
+						{
+							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+							msg.setSwitchOffSpell (spell);
+						}
+
+						msg.setVisible (true);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		};
+		unitSkillsList.addListSelectionListener (spellSelectionListener);
 		
 		log.trace ("Exiting init");
 	}
@@ -1063,5 +1123,37 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setButtonsPositionRight (final boolean pos)
 	{
 		buttonsPositionRight = pos;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

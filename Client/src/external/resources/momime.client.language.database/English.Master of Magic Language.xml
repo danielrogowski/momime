@@ -5600,6 +5600,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="SwitchOffSpell">
 			<languageEntryText>Do you wish to cancel your SPELL_NAME spell?</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="SwitchOffSpellNotOurs">
+			<languageEntryText>You didn't cast the SPELL_NAME spell and so cannot switch it off.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
 		<languageEntry languageEntryID="Title">

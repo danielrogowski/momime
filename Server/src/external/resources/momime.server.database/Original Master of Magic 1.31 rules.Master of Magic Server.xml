@@ -19522,6 +19522,7 @@
 		<languageEntry languageEntryID="EnemyOverlandEnchantment" />
 		<languageEntry languageEntryID="SwitchOffSpellTitle" />
 		<languageEntry languageEntryID="SwitchOffSpell" />
+		<languageEntry languageEntryID="SwitchOffSpellNotOurs" />
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
 		<languageEntry languageEntryID="Title" />

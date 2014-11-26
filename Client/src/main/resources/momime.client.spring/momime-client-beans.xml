@@ -1218,6 +1218,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />		<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
 	</bean>	
 

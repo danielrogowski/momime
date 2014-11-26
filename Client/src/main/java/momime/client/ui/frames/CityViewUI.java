@@ -586,18 +586,25 @@ public final class CityViewUI extends MomClientFrameUI
 				if (spellsList.getSelectedIndex () >= 0)
 				{
 					final MemoryMaintainedSpell spell = spellsItems.get (spellsList.getSelectedIndex ());
-					if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 					try
 					{
-						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
-						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-						
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 						msg.setTitleLanguageCategoryID ("SpellCasting");
 						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
-						msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-							("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-						msg.setSwitchOffSpell (spell);
+
+						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						
+						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+						else
+						{
+							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+							msg.setSwitchOffSpell (spell);
+						}
+
 						msg.setVisible (true);
 					}
 					catch (final Exception e)

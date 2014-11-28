@@ -24,8 +24,8 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.utils.MomUnitAttributeComponent;
-import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
@@ -248,7 +248,7 @@ public final class TestSelectUnitButton
 		// Hit points
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (5);
 		when (unitUtils.getModifiedAttributeValue (u, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
 		
 		// Coloured image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();

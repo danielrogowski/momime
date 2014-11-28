@@ -14,8 +14,8 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
-import momime.common.utils.MomUnitAttributeComponent;
-import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 
@@ -101,12 +101,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// How many potential hits can we make - See page 285 in the strategy guide
 		damageCalculationMsg.setAttackerFigures (getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db));
 		damageCalculationMsg.setAttackStrength (getUnitUtils ().getModifiedAttributeValue (attacker, attackAttributeID,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		damageCalculationMsg.setPotentialDamage (damageCalculationMsg.getAttackerFigures () * damageCalculationMsg.getAttackStrength ());
 		
 		damageCalculationMsg.setChanceToHit (3 + getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		damageCalculationMsg.setTenTimesAverageDamage (damageCalculationMsg.getPotentialDamage () * damageCalculationMsg.getChanceToHit ());
 		
@@ -121,10 +121,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
 		damageCalculationMsg.setDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		damageCalculationMsg.setChanceToDefend (3 + getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 		
@@ -166,7 +166,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 				totalHits = totalHits + hitsOnThisFigure;
 				defendingFiguresRemaining--;
 				hitPointsRemainingOfFirstFigure = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 			}
 		}
 		

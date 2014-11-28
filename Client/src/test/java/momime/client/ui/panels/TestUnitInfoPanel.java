@@ -49,8 +49,8 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.utils.MomUnitAttributeComponent;
-import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
@@ -360,15 +360,15 @@ public final class TestUnitInfoPanel
 			final String attrID = "UA0" + n;
 			int attrNo = 0;
 			int total = 0;
-			for (final MomUnitAttributeComponent attrComponent : MomUnitAttributeComponent.values ())
-				if (attrComponent != MomUnitAttributeComponent.ALL)
+			for (final UnitAttributeComponent attrComponent : UnitAttributeComponent.values ())
+				if (attrComponent != UnitAttributeComponent.ALL)
 				{
 					attrNo++;
 					final int value = (n + attrNo) / 2;
 					total = total + value;
 				
 					when (unitUtils.getModifiedAttributeValue (unit, attrID, attrComponent,
-						attrID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS) ? MomUnitAttributePositiveNegative.BOTH : MomUnitAttributePositiveNegative.POSITIVE,
+						attrID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
 						players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (value);
 				}
 
@@ -382,7 +382,7 @@ public final class TestUnitInfoPanel
 				when (unitCalc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 			else
 				when (unitUtils.getModifiedAttributeValue (unit, attrID,
-					MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
+					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 		}
 		
 		// Movement

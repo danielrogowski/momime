@@ -52,7 +52,7 @@ import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.MomSpellCastType;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
 import org.apache.commons.logging.Log;
@@ -533,10 +533,10 @@ public final class SpellBookUI extends MomClientFrameUI
 										final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
 											getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 										
-										if ((getCastType () == MomSpellCastType.OVERLAND) && (spell.getOverlandCastingCost () == null))
+										if ((getCastType () == SpellCastType.OVERLAND) && (spell.getOverlandCastingCost () == null))
 											proceed = false;
 
-										else if ((getCastType () == MomSpellCastType.COMBAT) &&
+										else if ((getCastType () == SpellCastType.COMBAT) &&
 											((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ())))
 											proceed = false;
 										
@@ -564,7 +564,7 @@ public final class SpellBookUI extends MomClientFrameUI
 										if (proceed)
 										{
 											// Prevent casting more than one combat spell each turn
-											if ((getCastType () == MomSpellCastType.COMBAT) && (!getCombatUI ().isSpellActionEnabled ()))
+											if ((getCastType () == SpellCastType.COMBAT) && (!getCombatUI ().isSpellActionEnabled ()))
 											{
 												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 												msg.setTitleLanguageCategoryID ("frmSpellBook");
@@ -575,7 +575,7 @@ public final class SpellBookUI extends MomClientFrameUI
 											}
 											
 											// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
-											else if ((getCastType () == MomSpellCastType.COMBAT) &&
+											else if ((getCastType () == SpellCastType.COMBAT) &&
 												((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 												(sectionID == SpellBookSectionID.SUMMONING)))
 												
@@ -586,7 +586,7 @@ public final class SpellBookUI extends MomClientFrameUI
 												final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
 												msg.setSpellID (spell.getSpellID ());
 												
-												if (getCastType () == MomSpellCastType.COMBAT)
+												if (getCastType () == SpellCastType.COMBAT)
 													msg.setCombatLocation (getCombatUI ().getCombatLocation ());
 												
 												getClient ().getServerConnection ().sendMessageToServer (msg);
@@ -875,7 +875,7 @@ public final class SpellBookUI extends MomClientFrameUI
 											
 											// Grey out (ok, light brown out...) casting cost that's inappropriate for our current cast type.
 											// If we're in a combat, this also greys out spells that we don't have enough remaining skill/MP to cast in the combat.
-											if (getCastType () == MomSpellCastType.COMBAT)
+											if (getCastType () == SpellCastType.COMBAT)
 											{
 												spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
 												if ((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ()))
@@ -936,9 +936,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	/**
 	 * @return Overland or combat casting
 	 */
-	private final MomSpellCastType getCastType ()
+	private final SpellCastType getCastType ()
 	{
-		return getCombatUI ().isVisible () ? MomSpellCastType.COMBAT : MomSpellCastType.OVERLAND;
+		return getCombatUI ().isVisible () ? SpellCastType.COMBAT : SpellCastType.OVERLAND;
 	}
 	
 	/**

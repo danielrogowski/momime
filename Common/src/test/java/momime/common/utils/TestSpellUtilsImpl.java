@@ -118,8 +118,8 @@ public final class TestSpellUtilsImpl
 		spell.setOverlandCastingCost (1);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND));
-		assertFalse (utils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT));
+		assertTrue (utils.spellCanBeCastIn (spell, SpellCastType.OVERLAND));
+		assertFalse (utils.spellCanBeCastIn (spell, SpellCastType.COMBAT));
 	}
 
 	/**
@@ -133,8 +133,8 @@ public final class TestSpellUtilsImpl
 		spell.setCombatCastingCost (1);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertFalse (utils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND));
-		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT));
+		assertFalse (utils.spellCanBeCastIn (spell, SpellCastType.OVERLAND));
+		assertTrue (utils.spellCanBeCastIn (spell, SpellCastType.COMBAT));
 	}
 
 	/**
@@ -149,8 +149,8 @@ public final class TestSpellUtilsImpl
 		spell.setCombatCastingCost (1);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND));
-		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT));
+		assertTrue (utils.spellCanBeCastIn (spell, SpellCastType.OVERLAND));
+		assertTrue (utils.spellCanBeCastIn (spell, SpellCastType.COMBAT));
 	}
 
 	/**
@@ -622,7 +622,7 @@ public final class TestSpellUtilsImpl
 		// Sort on overland casting cost
 		// Test data contains 7 spells, but 2 are combat only
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		final List<Spell> overlandOrder = utils.getSortedSpellsInSection (statuses, null, MomSpellCastType.OVERLAND, db);
+		final List<Spell> overlandOrder = utils.getSortedSpellsInSection (statuses, null, SpellCastType.OVERLAND, db);
 		assertEquals (5, overlandOrder.size ());
 		assertEquals (GenerateTestData.GIANT_SPIDERS_SPELL, overlandOrder.get (0).getSpellID ());	// 3
 		assertEquals (GenerateTestData.WARP_WOOD, overlandOrder.get (1).getSpellID ());					// 5
@@ -632,7 +632,7 @@ public final class TestSpellUtilsImpl
 
 		// Sort on combat casting cost
 		// Test data contains 7 spells, but 4 are overland only
-		final List<Spell> combatOrder = utils.getSortedSpellsInSection (statuses, null, MomSpellCastType.COMBAT, db);
+		final List<Spell> combatOrder = utils.getSortedSpellsInSection (statuses, null, SpellCastType.COMBAT, db);
 		assertEquals (3, combatOrder.size ());
 		assertEquals (GenerateTestData.SUMMONING_CIRCLE, combatOrder.get (0).getSpellID ());			// 5
 		assertEquals (GenerateTestData.EARTH_TO_MUD, combatOrder.get (1).getSpellID ());				// 10
@@ -645,8 +645,8 @@ public final class TestSpellUtilsImpl
 			thisStatus.setRemainingResearchCost (db.findSpell (thisStatus.getSpellID (), "testGetSortedSpellsInSection").getResearchCost ());
 		}
 
-		assertEquals (0, utils.getSortedSpellsInSection (statuses, null, MomSpellCastType.OVERLAND, db).size ());
-		final List<Spell> researchOrder = utils.getSortedSpellsInSection (statuses, SpellBookSectionID.RESEARCHABLE_NOW, MomSpellCastType.OVERLAND, db);
+		assertEquals (0, utils.getSortedSpellsInSection (statuses, null, SpellCastType.OVERLAND, db).size ());
+		final List<Spell> researchOrder = utils.getSortedSpellsInSection (statuses, SpellBookSectionID.RESEARCHABLE_NOW, SpellCastType.OVERLAND, db);
 
 		assertEquals (7, researchOrder.size ());
 		assertEquals (GenerateTestData.DISPEL_MAGIC_SPELL, researchOrder.get (0).getSpellID ());		// 1

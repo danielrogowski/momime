@@ -1230,17 +1230,17 @@ public final class TestUnitUtilsImpl
 	{
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		
-		assertEquals (5, utils.addToAttributeValue (5, MomUnitAttributePositiveNegative.BOTH));
-		assertEquals (0, utils.addToAttributeValue (0, MomUnitAttributePositiveNegative.BOTH));
-		assertEquals (-5, utils.addToAttributeValue (-5, MomUnitAttributePositiveNegative.BOTH));
+		assertEquals (5, utils.addToAttributeValue (5, UnitAttributePositiveNegative.BOTH));
+		assertEquals (0, utils.addToAttributeValue (0, UnitAttributePositiveNegative.BOTH));
+		assertEquals (-5, utils.addToAttributeValue (-5, UnitAttributePositiveNegative.BOTH));
 		
-		assertEquals (5, utils.addToAttributeValue (5, MomUnitAttributePositiveNegative.POSITIVE));
-		assertEquals (0, utils.addToAttributeValue (0, MomUnitAttributePositiveNegative.POSITIVE));
-		assertEquals (0, utils.addToAttributeValue (-5, MomUnitAttributePositiveNegative.POSITIVE));
+		assertEquals (5, utils.addToAttributeValue (5, UnitAttributePositiveNegative.POSITIVE));
+		assertEquals (0, utils.addToAttributeValue (0, UnitAttributePositiveNegative.POSITIVE));
+		assertEquals (0, utils.addToAttributeValue (-5, UnitAttributePositiveNegative.POSITIVE));
 		
-		assertEquals (0, utils.addToAttributeValue (5, MomUnitAttributePositiveNegative.NEGATIVE));
-		assertEquals (0, utils.addToAttributeValue (0, MomUnitAttributePositiveNegative.NEGATIVE));
-		assertEquals (-5, utils.addToAttributeValue (-5, MomUnitAttributePositiveNegative.NEGATIVE));
+		assertEquals (0, utils.addToAttributeValue (5, UnitAttributePositiveNegative.NEGATIVE));
+		assertEquals (0, utils.addToAttributeValue (0, UnitAttributePositiveNegative.NEGATIVE));
+		assertEquals (-5, utils.addToAttributeValue (-5, UnitAttributePositiveNegative.NEGATIVE));
 	}
 	
 	/**
@@ -1286,27 +1286,27 @@ public final class TestUnitUtilsImpl
 		spearmen.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 
 		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.BASIC, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.WEAPON_GRADE, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Weapon grade 2 gives +1 defence and +1 ranged attack, but we don't get the ranged attack bonus since we don't have a ranged attack to begin with
 		spearmen.setWeaponGrade (2);
 
 		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 			
 		assertEquals (3, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.BASIC, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (1, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.WEAPON_GRADE, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Bowmen get the +1 ranged attack weapon grade bonus because they use phys ranged weps
 		final AvailableUnit bowmen = new AvailableUnit ();
@@ -1314,20 +1314,20 @@ public final class TestUnitUtilsImpl
 		bowmen.setUnitID (GenerateTestData.BARBARIAN_BOWMEN);
 
 		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.BASIC, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (0, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.WEAPON_GRADE, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		bowmen.setWeaponGrade (2);
 
 		assertEquals (2, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.BASIC, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.WEAPON_GRADE, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));		
+			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));		
 		
 		// Warlocks don't get the +1 ranged attack weapon grade bonus because they use mag ranged weps
 		final AvailableUnit warlocks = new AvailableUnit ();
@@ -1335,20 +1335,20 @@ public final class TestUnitUtilsImpl
 		warlocks.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
 
 		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.BASIC, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (0, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.WEAPON_GRADE, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		warlocks.setWeaponGrade (2);
 
 		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.BASIC, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (0, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.WEAPON_GRADE, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Bonus from experience - only add to range attack if unit had ranged attack to begin with
 		for (final AvailableUnit unit : units)
@@ -1362,16 +1362,16 @@ public final class TestUnitUtilsImpl
 		}
 
 		assertEquals (4, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		assertEquals (3, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (8, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (1, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.EXPERIENCE, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.EXPERIENCE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// CAE is set to give +1 defence only to normal units
 		// First prove stone giant's def without CAE bounus
@@ -1379,24 +1379,24 @@ public final class TestUnitUtilsImpl
 		stoneGiant.setUnitID (GenerateTestData.STONE_GIANT_UNIT);
 		
 		assertEquals (8, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (0, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.COMBAT_AREA_EFFECTS, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.COMBAT_AREA_EFFECTS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
 		cae.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
 		combatAreaEffects.add (cae);
 
 		assertEquals (5, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (1, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.COMBAT_AREA_EFFECTS, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.COMBAT_AREA_EFFECTS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Then prove stone giant doesn't get bonus because it isn't a normal unit
 		assertEquals (8, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (0, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.COMBAT_AREA_EFFECTS, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.COMBAT_AREA_EFFECTS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Hero skills - see the table on page 267 of the strategy guide
 		final AvailableUnit hero = new AvailableUnit ();
@@ -1404,7 +1404,7 @@ public final class TestUnitUtilsImpl
 		hero.setOwningPlayerID (1);
 
 		assertEquals (4, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		final UnitHasSkill experience = new UnitHasSkill ();
 		experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
@@ -1417,25 +1417,25 @@ public final class TestUnitUtilsImpl
 		hero.getUnitHasSkill ().add (agility);
 
 		assertEquals (5, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (1, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.HERO_SKILLS, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.HERO_SKILLS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Max experience
 		experience.setUnitSkillValue (1000);
 		
 		assertEquals (13, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (9, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.HERO_SKILLS, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.HERO_SKILLS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		// Super agility
 		agility.setUnitSkillValue (2);
 		
 		assertEquals (17, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		assertEquals (13, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.HERO_SKILLS, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.HERO_SKILLS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Blademaster has a divisor of 2
 		experience.setUnitSkillValue (0);
@@ -1446,22 +1446,22 @@ public final class TestUnitUtilsImpl
 		hero.getUnitHasSkill ().add (blademaster);
 		
 		assertEquals (0, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// so it has no effect until 2nd level
 		experience.setUnitSkillValue (10);
 		assertEquals (1, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		// +4 at max level
 		experience.setUnitSkillValue (1000);
 		assertEquals (4, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Super blademaster goes up to +6
 		blademaster.setUnitSkillValue (2);
 		assertEquals (6, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 	}
 
 	/**

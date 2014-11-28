@@ -591,7 +591,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
 	 * @return value, if positive/negative as desired, or 0 if not wanted
 	 */
-	final int addToAttributeValue (final int value, final MomUnitAttributePositiveNegative positiveNegative)
+	final int addToAttributeValue (final int value, final UnitAttributePositiveNegative positiveNegative)
 	{
 		final int result;
 		switch (positiveNegative)
@@ -615,7 +615,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 	
 	/**
-	 * NB. The reason there is no getBasicAttributeValue method is because this can be achieved by passing in MomUnitAttributeComponent.BASIC
+	 * NB. The reason there is no getBasicAttributeValue method is because this can be achieved by passing in UnitAttributeComponent.BASIC
 	 * 
 	 * @param unit Unit to calculate attribute value for
 	 * @param unitAttributeID Unique identifier for this attribute
@@ -631,8 +631,8 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final int getModifiedAttributeValue (final AvailableUnit unit, final String unitAttributeID, final MomUnitAttributeComponent component,
-		final MomUnitAttributePositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
+	public final int getModifiedAttributeValue (final AvailableUnit unit, final String unitAttributeID, final UnitAttributeComponent component,
+		final UnitAttributePositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -662,7 +662,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// Include basic value in total?
 		int total = 0;
-		if ((component == MomUnitAttributeComponent.BASIC) || (component == MomUnitAttributeComponent.ALL))
+		if ((component == UnitAttributeComponent.BASIC) || (component == UnitAttributeComponent.ALL))
 			total = total + addToAttributeValue (basicValue, positiveNegative);
 		
 		// Any bonuses due to weapon grades?
@@ -670,7 +670,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		// Otherwise, the weapon grade entries in the database have child nodes underneath them stating which attributes gain how much bonus -
 		// this is how we know that e.g. adamantium gives +2 defense but not +2 resistance.
 		if ((unit.getWeaponGrade () != null) &&
-			((component == MomUnitAttributeComponent.WEAPON_GRADE) || (component == MomUnitAttributeComponent.ALL)) &&
+			((component == UnitAttributeComponent.WEAPON_GRADE) || (component == UnitAttributeComponent.ALL)) &&
 			((!unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
 		{
 			// Only certain types of ranged attack get bonuses from Mithril and Adamantium weapons - e.g. bows do, magical blasts do not
@@ -695,7 +695,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		// If this is the Ranged Attack skill, only grant bonuses if the unit had a ranged attack to begin with
 		final ExperienceLevel expLevel = getExperienceLevel (unit, true, players, combatAreaEffects, db);
 		if ((expLevel != null) &&
-			((component == MomUnitAttributeComponent.EXPERIENCE) || (component == MomUnitAttributeComponent.ALL)) &&
+			((component == UnitAttributeComponent.EXPERIENCE) || (component == UnitAttributeComponent.ALL)) &&
 			((!unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
 		{
 			for (final ExperienceAttributeBonus bonus : expLevel.getExperienceAttributeBonus ())
@@ -705,7 +705,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// Any bonuses from hero skills? (Might gives +melee, Constitution gives +hit points, Agility gives +defence, and so on)
 		if ((expLevel != null) &&
-			((component == MomUnitAttributeComponent.HERO_SKILLS) || (component == MomUnitAttributeComponent.ALL)))
+			((component == UnitAttributeComponent.HERO_SKILLS) || (component == UnitAttributeComponent.ALL)))
 			
 			// Read down all the skills defined in the database looking for skills that grant a bonus to the attribute we're calculating
 			for (final UnitSkill skillDef : db.getUnitSkill ())
@@ -729,7 +729,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// Any bonuses due to spells/special effects in the location the unit is currently in?
 		// Ditto, ranged attack bonuses only apply if we had a ranged attack to begin with
-		if (((component == MomUnitAttributeComponent.COMBAT_AREA_EFFECTS) || (component == MomUnitAttributeComponent.ALL)) &&
+		if (((component == UnitAttributeComponent.COMBAT_AREA_EFFECTS) || (component == UnitAttributeComponent.ALL)) &&
 			((!unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
 		{
 			final String storeMagicRealmLifeformTypeID = getModifiedUnitMagicRealmLifeformTypeID (unit, mergedSkills, spells, db);

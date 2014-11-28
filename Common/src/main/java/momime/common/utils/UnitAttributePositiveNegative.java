@@ -5,7 +5,7 @@ package momime.common.utils;
  *
  * This is used on the unit info screen to show when stats have been reduced, e.g. by Black Prayer, Vertigo, Warp Reality
  */
-public enum MomUnitAttributePositiveNegative
+public enum UnitAttributePositiveNegative
 {
 	/** Include only positive bonuses, e.g. from Prayer */
 	POSITIVE,

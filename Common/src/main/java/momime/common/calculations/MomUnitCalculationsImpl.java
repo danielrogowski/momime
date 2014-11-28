@@ -27,8 +27,8 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
-import momime.common.utils.MomUnitAttributeComponent;
-import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 
@@ -285,7 +285,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
 			(unit.getDamageTaken () / getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-				MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Protect against weird results
 		if (figures < 0)
@@ -314,7 +314,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final int hitPointsPerFigure = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 		
 		// Work out how much damage the first figure has taken
 		final int damageTaken;
@@ -352,7 +352,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		
 		// First we have to actually have a ranged attack
 		if (getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) <= 0)
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) <= 0)
 			
 			result = false;
 		

@@ -50,7 +50,7 @@ public interface SpellUtils
 	 * @return Whether or not the spell can be cast in the specified context
 	 * @throws MomException If castType is an unexpected MomSpellCastType
 	 */
-	public boolean spellCanBeCastIn (final Spell spell, final MomSpellCastType castType)
+	public boolean spellCanBeCastIn (final Spell spell, final SpellCastType castType)
 		throws MomException;
 
 	/**
@@ -197,5 +197,5 @@ public interface SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final SpellBookSectionID desiredSectionID,
-		final MomSpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException;
+		final SpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException;
 }

@@ -32,8 +32,8 @@ import momime.common.messages.MomCombatTileLayer;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.CombatMapUtilsImpl;
-import momime.common.utils.MomUnitAttributeComponent;
-import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.PlayerPickUtilsImpl;
 import momime.common.utils.UnitUtils;
 
@@ -382,7 +382,7 @@ public final class TestMomUnitCalculationsImpl
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("A");
 		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		
 		assertEquals (6, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
@@ -400,7 +400,7 @@ public final class TestMomUnitCalculationsImpl
 		
 		// Now it has 4 HP per figure, so 6x4=24 total damage
 		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
 		// With 11 dmg taken, there's still only 2 figures dead, since it rounds down
@@ -438,7 +438,7 @@ public final class TestMomUnitCalculationsImpl
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
 		final MemoryUnit unit = new MemoryUnit ();
 		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 	
@@ -448,7 +448,7 @@ public final class TestMomUnitCalculationsImpl
 
 		// Now it has 4 HP per figure
 		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 		
 		// Take 2 more hits
@@ -490,20 +490,20 @@ public final class TestMomUnitCalculationsImpl
 		// Unit without even a ranged attack skill
 		final MemoryUnit noRangedAttack = new MemoryUnit ();
 		when (unitUtils.getModifiedAttributeValue (noRangedAttack, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 		assertFalse (calc.canMakeRangedAttack (noRangedAttack, players, spells, combatAreaEffects, db));
 		
 		// Bow with no remaining ammo
 		final MemoryUnit outOfAmmo = new MemoryUnit ();
 		when (unitUtils.getModifiedAttributeValue (outOfAmmo, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertFalse (calc.canMakeRangedAttack (outOfAmmo, players, spells, combatAreaEffects, db));
 
 		// Bow with remaining ammo
 		final MemoryUnit hasAmmo = new MemoryUnit ();
 		hasAmmo.setRangedAttackAmmo (1);
 		when (unitUtils.getModifiedAttributeValue (hasAmmo, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, spells, combatAreaEffects, db));
 		
 		// Ranged attack of unknown type with mana (maybe this should actually be an exception)
@@ -514,7 +514,7 @@ public final class TestMomUnitCalculationsImpl
 		unknownRAT.setUnitID (unknownRATUnitDef.getUnitID ());
 		unknownRAT.setManaRemaining (3);
 		when (unitUtils.getModifiedAttributeValue (unknownRAT, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (unknownRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (unknownRATUnitDef);
 		assertFalse (calc.canMakeRangedAttack (unknownRAT, players, spells, combatAreaEffects, db));
 
@@ -530,7 +530,7 @@ public final class TestMomUnitCalculationsImpl
 		physRATUnit.setUnitID (physRATUnitDef.getUnitID ());
 		physRATUnit.setManaRemaining (3);
 		when (unitUtils.getModifiedAttributeValue (physRATUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (physRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (physRATUnitDef);
 		when (db.findRangedAttackType (physRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (physRAT);
 		assertFalse (calc.canMakeRangedAttack (physRATUnit, players, spells, combatAreaEffects, db));
@@ -548,7 +548,7 @@ public final class TestMomUnitCalculationsImpl
 		magRATUnit.setUnitID (magRATUnitDef.getUnitID ());
 		magRATUnit.setManaRemaining (3);
 		when (unitUtils.getModifiedAttributeValue (magRATUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
 		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);
 		assertTrue (calc.canMakeRangedAttack (magRATUnit, players, spells, combatAreaEffects, db));

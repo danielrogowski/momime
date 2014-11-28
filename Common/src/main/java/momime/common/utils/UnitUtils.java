@@ -177,8 +177,8 @@ public interface UnitUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
-	public int getModifiedAttributeValue (final AvailableUnit unit, final String unitAttributeID, final MomUnitAttributeComponent component,
-		final MomUnitAttributePositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
+	public int getModifiedAttributeValue (final AvailableUnit unit, final String unitAttributeID, final UnitAttributeComponent component,
+		final UnitAttributePositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 	

@@ -35,7 +35,7 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.MomSpellCastType;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -148,7 +148,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can't be cast overland
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND)).thenReturn (false);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (false);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -200,7 +200,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can't be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (false);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (false);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -255,7 +255,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast overland
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
 		// Cell to target in combat
 		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (10, 5);
@@ -318,7 +318,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -374,7 +374,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -437,7 +437,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast overland
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
 		// We've got loads of MP, but not enough casting skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -515,7 +515,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast overland
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
 		// We've got enough MP and skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -606,7 +606,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -692,7 +692,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -790,7 +790,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -887,7 +887,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -996,7 +996,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1109,7 +1109,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1222,7 +1222,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1337,7 +1337,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1455,7 +1455,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1580,7 +1580,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1707,7 +1707,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1833,7 +1833,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -1962,7 +1962,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
@@ -2098,7 +2098,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
-		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
+		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);

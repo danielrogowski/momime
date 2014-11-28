@@ -5,7 +5,7 @@ package momime.common.utils;
  *
  * Defined so we can colour them separately on the Unit Info screen
  */
-public enum MomUnitAttributeComponent
+public enum UnitAttributeComponent
 {
 	/** Total of all the below (this is all the server ever uses) */
 	ALL,

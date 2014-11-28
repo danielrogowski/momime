@@ -60,8 +60,8 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.MomUnitAttributeComponent;
-import momime.common.utils.MomUnitAttributePositiveNegative;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -427,20 +427,20 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 						else
 							attributeValueIncludingNegatives = getUnitUtils ().getModifiedAttributeValue (unit, attr.getUnitAttributeID (),
-								MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+								UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 						
 						// Calculate and draw each component separately
 						int drawnAttributeCount = 0;
-						for (final MomUnitAttributeComponent attrComponent : MomUnitAttributeComponent.values ())
-							if (attrComponent != MomUnitAttributeComponent.ALL)
+						for (final UnitAttributeComponent attrComponent : UnitAttributeComponent.values ())
+							if (attrComponent != UnitAttributeComponent.ALL)
 							{
 								// Work out the total value (without negative effects), and our actual current value (after negative effects),
 								// so we can show stats knocked off by e.g. Black Prayer as faded.
 								// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
 								final int totalValue = getUnitUtils ().getModifiedAttributeValue (unit, attr.getUnitAttributeID (), attrComponent,
-									attr.getUnitAttributeID ().equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS) ? MomUnitAttributePositiveNegative.BOTH : MomUnitAttributePositiveNegative.POSITIVE,
+									attr.getUnitAttributeID ().equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
 									getClient ().getPlayers (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());

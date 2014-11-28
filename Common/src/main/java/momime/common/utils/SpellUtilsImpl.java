@@ -110,10 +110,10 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @param spell Spell we want to cast
 	 * @param castType Type of casting to check is possible for the spell
 	 * @return Whether or not the spell can be cast in the specified context
-	 * @throws MomException If castType is an unexpected MomSpellCastType
+	 * @throws MomException If castType is an unexpected SpellCastType
 	 */
 	@Override
-	public final boolean spellCanBeCastIn (final Spell spell, final MomSpellCastType castType)
+	public final boolean spellCanBeCastIn (final Spell spell, final SpellCastType castType)
 		throws MomException
 	{
 		log.trace ("Entering spellCanBeCastIn: " + spell.getSpellID () + ", " + castType);
@@ -142,14 +142,14 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Overland casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
-	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
+	 * @throws MomException If SpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
 	public final int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		return getReducedCastingCostForCastingType (spell, MomSpellCastType.COMBAT, picks, spellSettings, db);
+		return getReducedCastingCostForCastingType (spell, SpellCastType.COMBAT, picks, spellSettings, db);
 	}
 
 	/**
@@ -158,14 +158,14 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Overland casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
-	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
+	 * @throws MomException If SpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
 	public final int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		return getReducedCastingCostForCastingType (spell, MomSpellCastType.OVERLAND, picks, spellSettings, db);
+		return getReducedCastingCostForCastingType (spell, SpellCastType.OVERLAND, picks, spellSettings, db);
 	}
 
 	/**
@@ -178,7 +178,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	private final int getReducedCastingCostForCastingType (final Spell spell, final MomSpellCastType castType, final List<PlayerPick> picks,
+	private final int getReducedCastingCostForCastingType (final Spell spell, final SpellCastType castType, final List<PlayerPick> picks,
 		final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
@@ -195,7 +195,7 @@ public final class SpellUtilsImpl implements SpellUtils
 				baseCastingCost = spell.getCombatCastingCost ();
 				break;
 			default:
-				throw new MomException ("getReducedCastingCostForCastingType: Unexpected MomSpellCastType value for castType parameter.");
+				throw new MomException ("getReducedCastingCostForCastingType: Unexpected SpellCastType value for castType parameter.");
 		}
 
 		// What magic realm ID is this spell?
@@ -540,7 +540,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 *
 	 * @param spells Research status of every spell for this player
 	 * @param desiredSectionID Filters list to items with this section ID
-	 * @param castType Filters list to items that allow this MomSpellCastType (this filter does not apply if sectionID requested is SPELL_BOOK_SECTION_RESEARCH_SPELLS or SPELL_BOOK_SECTION_UNKNOWN_SPELLS)
+	 * @param castType Filters list to items that allow this SpellCastType (this filter does not apply if sectionID requested is SPELL_BOOK_SECTION_RESEARCH_SPELLS or SPELL_BOOK_SECTION_UNKNOWN_SPELLS)
 	 * @param db Lookup lists built over the XML database
 	 * @return List of string IDs for all the spells in the specified spell book section, sorted by casting cost (or remaining research cost if spell is not yet researched)
 	 * @throws MomException If we encounter an unkown research status or castType
@@ -548,7 +548,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 */
 	@Override
 	public final List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final SpellBookSectionID desiredSectionID,
-		final MomSpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException
+		final SpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering getSortedSpellsInSection: " + desiredSectionID + ", " + castType);
 

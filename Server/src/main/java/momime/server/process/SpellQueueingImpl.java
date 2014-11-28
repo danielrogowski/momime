@@ -26,7 +26,7 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.MomSpellCastType;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -127,10 +127,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 		if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
 			msg = "You don't have that spell researched and/or available so can't cast it.";
 		
-		else if ((combatLocation == null) && (!getSpellUtils ().spellCanBeCastIn (spell, MomSpellCastType.OVERLAND)))
+		else if ((combatLocation == null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 			msg = "That spell cannot be cast overland.";
 		
-		else if ((combatLocation != null) && (!getSpellUtils ().spellCanBeCastIn (spell, MomSpellCastType.COMBAT)))
+		else if ((combatLocation != null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
 			msg = "That spell cannot be cast in combat.";
 
 		else if ((combatLocation == null) && ((combatTargetLocation != null) || (combatTargetUnitURN != null)))

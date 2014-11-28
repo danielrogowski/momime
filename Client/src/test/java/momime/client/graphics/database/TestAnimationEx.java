@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.common.MomException;
 
 import org.junit.Test;
@@ -42,10 +41,7 @@ public final class TestAnimationEx
 	{
 		// Set up animation and some test frames
 		final AnimationEx anim = new AnimationEx ();
-		
-		final AnimationFrame frame = new AnimationFrame ();
-		frame.setFrameImageFile ("ImageFile1");
-		anim.getFrame ().add (frame);
+		anim.getFrame ().add ("ImageFile1");
 		
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
@@ -72,11 +68,7 @@ public final class TestAnimationEx
 		// Set up animation and some test frames
 		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
-		{
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile ("ImageFile" + n);
-			anim.getFrame ().add (frame);
-		}
+			anim.getFrame ().add ("ImageFile" + n);
 		
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
@@ -109,11 +101,7 @@ public final class TestAnimationEx
 		// Set up animation and some test frames
 		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
-		{
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile ("ImageFile" + n);
-			anim.getFrame ().add (frame);
-		}
+			anim.getFrame ().add ("ImageFile" + n);
 		
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);

@@ -256,7 +256,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
 							for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
-								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getFrameImageFile ());
+								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
 								g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 							}
 						}

@@ -109,7 +109,7 @@ public final class AnimationControllerImpl implements AnimationController
 				throw new MomException ("Requested loadImageOrAnimationFrame on animationID \"" + animationID + "\" without making a prior call to registerRepaintTrigger");
 			
 			// Now can grab the correct frame
-			imageName = counter.anim.getFrame ().get (counter.animationFrame).getFrameImageFile ();
+			imageName = counter.anim.getFrame ().get (counter.animationFrame);
 		}
 		
 		else
@@ -122,7 +122,7 @@ public final class AnimationControllerImpl implements AnimationController
 			final int frameLoop = ((int) frameNumber) % anim.getFrame ().size ();
 			
 			// Now can grab the correct frame
-			imageName = anim.getFrame ().get (frameLoop).getFrameImageFile ();
+			imageName = anim.getFrame ().get (frameLoop);
 		}
 
 		// Now can load the image

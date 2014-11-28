@@ -14,7 +14,6 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -60,12 +59,7 @@ public final class TestOverlandEnchantmentsUI
 		final AnimationEx fade = new AnimationEx ();
 		fade.setAnimationSpeed (8);
 		for (int n = 1; n <= 15; n++)
-		{
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile ("/momime.client.graphics/ui/mirror/mirror-fade-frame" + ((n < 10) ? "0" : "") + n + ".png");
-			
-			fade.getFrame ().add (frame);
-		}
+			fade.getFrame ().add ("/momime.client.graphics/ui/mirror/mirror-fade-frame" + ((n < 10) ? "0" : "") + n + ".png");
 		
 		final Wizard wizard = new Wizard ();
 		wizard.setPortraitFile ("/momime.client.graphics/wizards/WZ12.png");

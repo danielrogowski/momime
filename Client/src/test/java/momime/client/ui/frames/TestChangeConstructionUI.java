@@ -16,7 +16,6 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
 import momime.client.language.LanguageChangeMaster;
@@ -104,11 +103,7 @@ public final class TestChangeConstructionUI
 		final AnimationEx fightersGuildAnim = new AnimationEx ();
 		fightersGuildAnim.setAnimationSpeed (4);
 		for (int n = 1; n <= 9; n++)
-		{
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile ("/momime.client.graphics/cityView/buildings/BL05-frame" + n + ".png");
-			fightersGuildAnim.getFrame ().add (frame);
-		}
+			fightersGuildAnim.getFrame ().add ("/momime.client.graphics/cityView/buildings/BL05-frame" + n + ".png");
 		
 		final CityViewElement fightersGuild = new CityViewElement ();
 		fightersGuild.setCityViewAnimation ("FIGHTERS_GUILD");

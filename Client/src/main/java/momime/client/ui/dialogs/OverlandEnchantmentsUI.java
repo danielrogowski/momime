@@ -136,7 +136,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		
 		// Cut the square corners off the wizard's photo
 		final BufferedImage portrait = mergeImages (unclippedPortrait, getUtils ().loadImage (fadeAnim.getFrame ().get
-			(fadeAnim.getFrame ().size () - 1).getFrameImageFile ()), 0, -5*2);
+			(fadeAnim.getFrame ().size () - 1)), 0, -5*2);
 		
 		// Get the pic of the spell
 		final momime.client.graphics.database.v0_9_5.Spell spellGfx = getGraphicsDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI");
@@ -186,7 +186,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 					{
 						g.drawImage (shiny, 12*2, 12*2, shiny.getWidth () * 2, shiny.getHeight () * 2, null);
 						final int useAnimationFrame = (animationFrame < fadeAnim.getFrame ().size ()) ? animationFrame : (fadeAnim.getFrame ().size () - 1);
-						final BufferedImage fadeImage = getUtils ().loadImage (fadeAnim.getFrame ().get (useAnimationFrame).getFrameImageFile ());
+						final BufferedImage fadeImage = getUtils ().loadImage (fadeAnim.getFrame ().get (useAnimationFrame));
 						
 						// Merge the animation image and the wizard's portrait
 						final BufferedImage mergedImage = mergeImages (portrait, fadeImage, 0, 0);						
@@ -203,7 +203,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 						g.drawImage (portrait, 11*2, 11*2, null);
 						final int useAnimationFrame = animationFrame - fadeAnim.getFrame ().size () - PAUSE_FRAMES;
 
-						final BufferedImage fadeImage = getUtils ().loadImage (fadeAnim.getFrame ().get (useAnimationFrame).getFrameImageFile ());
+						final BufferedImage fadeImage = getUtils ().loadImage (fadeAnim.getFrame ().get (useAnimationFrame));
 						
 						// Merge the animation image and the spell pic
 						final BufferedImage mergedImage = mergeImages (spellPic, fadeImage, -1*2, -3*2);						

@@ -228,7 +228,7 @@
 		<property name="rowHeight" value="40" />
 		<property name="filenameElements">
 			<list>
-				<value>frameImageFile</value>
+				<value>frame</value>
 			</list>
 		</property>
 	</bean>

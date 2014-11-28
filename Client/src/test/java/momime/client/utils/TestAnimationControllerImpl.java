@@ -13,7 +13,6 @@ import javax.swing.JComponent;
 
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.common.MomException;
 
 import org.junit.Test;
@@ -112,11 +111,7 @@ public final class TestAnimationControllerImpl
 		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationSpeed (2);
 		for (int n = 0; n < 4; n++)
-		{
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile (n + ".png");
-			anim.getFrame ().add (frame);
-		}
+			anim.getFrame ().add (n + ".png");
 
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation ("ANIM", "registerRepaintTrigger")).thenReturn (anim);

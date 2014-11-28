@@ -747,17 +747,11 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastOffsetY" type="momimegfx:pixelCoordinate" nxe:label="Overland cast offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetX" type="momimegfx:pixelCoordinate" nxe:label="Combat cast offset X" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetY" type="momimegfx:pixelCoordinate" nxe:label="Combat cast offset Y" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimegfx:animationFrame" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimegfx:imageFilename" nxe:label="Frame image file" nxe:gridwidth="350" />
 		</xsd:sequence>
 		<xsd:attribute name="animationID" type="momimegfx:animationID" use="required" nxe:label="Animation ID" nxe:gridwidth="150" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="animationFrame" nxe:singular="Frame" nxe:plural="Frames">
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="frameImageFile" type="momimegfx:imageFilename" nxe:label="Frame image file" nxe:gridwidth="350" />
-		</xsd:sequence>
-	</xsd:complexType>
-
 	<xsd:complexType name="cityViewElementSet" nxe:singular="City View Element Set" nxe:plural="City View Element Sets" nxe:submenu="City View">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="cityViewElementSetName" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="100" />

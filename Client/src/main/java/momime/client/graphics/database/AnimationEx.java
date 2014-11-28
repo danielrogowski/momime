@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import momime.client.graphics.database.v0_9_5.Animation;
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.common.MomException;
 
 import org.apache.commons.logging.Log;
@@ -43,9 +42,9 @@ public final class AnimationEx extends Animation
 		
 		// Check all the images
 		boolean first = true;
-		for (final AnimationFrame thisFrame : getFrame ())
+		for (final String thisFrame : getFrame ())
 		{
-			final BufferedImage image = getUtils ().loadImage (thisFrame.getFrameImageFile ());
+			final BufferedImage image = getUtils ().loadImage (thisFrame);
 			if (first)
 			{
 				animationWidth = image.getWidth ();

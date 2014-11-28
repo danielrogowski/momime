@@ -42,7 +42,8 @@ public final class XmlEditorGridWithImages extends XmlEditorGrid
 		final List<XmlGridColumn> columns = super.buildColumnsList ();
 
 		for (final String filenameElement : filenameElements)
-			columns.add (new ImageColumn (getTypeDefinition ().getComplexTypeDefinition (), getMdiEditor ().getXmlDocuments (), filenameElement));
+			columns.add (new ImageColumn ((getTypeDefinition () == null) ? null : getTypeDefinition ().getComplexTypeDefinition (),
+				getMdiEditor ().getXmlDocuments (), filenameElement));
 
 		return columns;
 	}

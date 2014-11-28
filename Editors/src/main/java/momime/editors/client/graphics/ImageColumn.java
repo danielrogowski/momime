@@ -83,7 +83,12 @@ public final class ImageColumn extends XmlGridColumn
 	@Override
 	public final Object getColumnValueObj (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
 	{
-		final String filename = record.getChildText (filenameElement);
+		final String filename;
+		if (getTypeDefinition () == null)
+			filename = record.getText ();
+		else
+			filename = record.getChildText (filenameElement);		
+		
 		ImageIcon icon = null;
 		if (filename != null)
 			try

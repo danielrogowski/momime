@@ -11,7 +11,6 @@ import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -105,12 +104,7 @@ public final class TestSpellBookUI
 		final AnimationEx pageTurn = new AnimationEx ();
 		pageTurn.setAnimationSpeed (5);
 		for (int n = 1; n <= 4; n++)
-		{
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile ("/momime.client.graphics/ui/spellBook/spellBookAnim-frame" + n + ".png");
-			
-			pageTurn.getFrame ().add (frame);
-		}
+			pageTurn.getFrame ().add ("/momime.client.graphics/ui/spellBook/spellBookAnim-frame" + n + ".png");
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (SpellBookUI.ANIM_PAGE_TURN, "SpellBookUI")).thenReturn (pageTurn);

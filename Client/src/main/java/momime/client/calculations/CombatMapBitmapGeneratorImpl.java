@@ -258,7 +258,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 							final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateCombatMapBitmaps");
 							for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
-								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getFrameImageFile ());
+								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
 								g [frameNo].drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, null);
 							}
 						}

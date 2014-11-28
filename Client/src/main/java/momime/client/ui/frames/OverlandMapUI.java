@@ -636,7 +636,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 				if (getOverlandCastAnimation () != null)
 					try
 					{
-						final BufferedImage castImage = getUtils ().loadImage (getOverlandCastAnimation ().getFrame ().get (getOverlandCastAnimationFrame ()).getFrameImageFile ());
+						final BufferedImage castImage = getUtils ().loadImage (getOverlandCastAnimation ().getFrame ().get (getOverlandCastAnimationFrame ()));
 
 						final int castZoomedWidth = (castImage.getWidth () * mapViewZoom) / 10;
 						final int castZoomedHeight = (castImage.getHeight () * mapViewZoom) / 10;

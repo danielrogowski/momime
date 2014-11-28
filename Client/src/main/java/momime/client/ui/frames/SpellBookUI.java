@@ -355,7 +355,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				if (pageTurnFrame != null)
 					try
 					{
-						final BufferedImage page = getUtils ().loadImage (pageTurnAnim.getFrame ().get (pageTurnFrame).getFrameImageFile ());
+						final BufferedImage page = getUtils ().loadImage (pageTurnAnim.getFrame ().get (pageTurnFrame));
 						g.drawImage (page, -17 * 2, 0, page.getWidth () * 2, page.getHeight () * 2, null);
 					}
 					catch (final Exception e)

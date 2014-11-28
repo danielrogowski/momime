@@ -9,7 +9,6 @@ import java.util.Map;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -101,8 +100,8 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		if (nodeAuraImages == null)
 		{
 			nodeAuraImages = new ArrayList<BufferedImage> ();
-			for (final AnimationFrame frame : getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ())
-				nodeAuraImages.add (getUtils ().loadImage (frame.getFrameImageFile ()));
+			for (final String frame : getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ())
+				nodeAuraImages.add (getUtils ().loadImage (frame));
 		}
 		
 		// This is copied from getImage and adapted to work with a list

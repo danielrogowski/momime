@@ -659,7 +659,7 @@ public final class CombatUI extends MomClientFrameUI
 				if (getCombatCastAnimation () != null)
 					try
 					{
-						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()).getFrameImageFile ());
+						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()));
 						g.drawImage (image, getCombatCastAnimationX (), getCombatCastAnimationY (), image.getWidth () * 2, image.getHeight () * 2, null);
 					}
 					catch (final Exception e)

@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
@@ -77,16 +76,10 @@ public final class TestGraphicsDatabaseExImpl
 		when (utils.loadImage ("frame1.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
 		when (utils.loadImage ("frame2.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
 		
-		final AnimationFrame frame1 = new AnimationFrame ();
-		frame1.setFrameImageFile ("frame1.png");
-
-		final AnimationFrame frame2 = new AnimationFrame ();
-		frame2.setFrameImageFile ("frame2.png");
-		
 		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationID ("building3");
-		anim.getFrame ().add (frame1);
-		anim.getFrame ().add (frame2);
+		anim.getFrame ().add ("frame1.png");
+		anim.getFrame ().add ("frame2.png");
 		anim.setUtils (utils);
 		db.getAnimation ().add (anim);
 

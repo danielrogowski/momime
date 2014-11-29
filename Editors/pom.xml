@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.9</version>
+		<version>0.1.0</version>
 	</parent>
 
 	<build>
@@ -93,17 +93,17 @@
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>xmleditor</artifactId>
-			<version>0.0.10-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-server</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
+			<version>0.9.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
+			<version>0.9.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -114,8 +114,6 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-utils</artifactId>
-			<version>0.0.5-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 	</dependencies>
-
-</project>

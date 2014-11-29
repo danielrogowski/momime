@@ -72,9 +72,9 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Tests the MomServerResourceCalculations class
+ * Tests the ServerResourceCalculations class
  */
-public final class TestMomServerResourceCalculationsImpl
+public final class TestServerResourceCalculationsImpl
 {
 	/**
 	 * Tests the recalculateAmountsPerTurn method
@@ -154,7 +154,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		final CityCalculations cityCalc = mock (CityCalculations.class);
 
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setCityCalculations (cityCalc);
@@ -359,7 +359,7 @@ public final class TestMomServerResourceCalculationsImpl
 		player.setConnection (msgs);
 
 		// Set up test object
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		
 		// Run test
 		calc.sendGlobalProductionValues (player, 17);
@@ -533,7 +533,7 @@ public final class TestMomServerResourceCalculationsImpl
 		};
 		
 		// Set up object to test
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setMemoryBuildingUtils (buildingUtils);
 		calc.setUnitUtils (unitUtils);
 		calc.setMomResourceConsumerFactory (factory);
@@ -585,7 +585,7 @@ public final class TestMomServerResourceCalculationsImpl
 		// Set up test object
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
 
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
 		// Research resource has no accumulation defined
@@ -650,7 +650,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class);
 		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
 		
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
 		// Call method
@@ -682,7 +682,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
 		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
 		
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
 		// Call method
@@ -715,11 +715,11 @@ public final class TestMomServerResourceCalculationsImpl
 		player.setConnection (msgs);
 		
 		// Set up test object
-		final MomServerSpellCalculations serverSpellCalculations = mock (MomServerSpellCalculations.class);
+		final ServerSpellCalculations serverSpellCalculations = mock (ServerSpellCalculations.class);
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (resourceValueUtils);
 		calc.setSpellUtils (spellUtils);
 		calc.setServerSpellCalculations (serverSpellCalculations);
@@ -864,7 +864,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
 		resourceValueUtils.setSkillCalculations (new SkillCalculationsImpl ());
 		
-		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (resourceValueUtils);
 		
 		// Run test

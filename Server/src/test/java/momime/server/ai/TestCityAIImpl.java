@@ -22,7 +22,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.PlayerPickUtils;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerCityCalculationsImpl;
+import momime.server.calculations.ServerCityCalculationsImpl;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 
@@ -190,7 +190,7 @@ public final class TestCityAIImpl
 		final RandomUtils random = mock (RandomUtils.class);
 		
 		// Set up test object
-		final MomServerCityCalculationsImpl serverCityCalculations = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl serverCityCalculations = new ServerCityCalculationsImpl ();
 		serverCityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		final CityAIImpl ai = new CityAIImpl ();
@@ -291,7 +291,7 @@ public final class TestCityAIImpl
 		final CityCalculationsImpl cityCalc = new CityCalculationsImpl ();
 		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
-		final MomServerCityCalculationsImpl serverCityCalculations = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl serverCityCalculations = new ServerCityCalculationsImpl ();
 		serverCityCalculations.setCityCalculations (cityCalc);
 		serverCityCalculations.setMemoryBuildingUtils (memoryBuildingUtils);
 		

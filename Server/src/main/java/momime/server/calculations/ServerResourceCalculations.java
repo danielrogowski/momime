@@ -14,7 +14,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * Server side methods for dealing with calculating and updating the global economy
  * e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
  */
-public interface MomServerResourceCalculations
+public interface ServerResourceCalculations
 {
 	/**
 	 * Sends one player's global production values to them

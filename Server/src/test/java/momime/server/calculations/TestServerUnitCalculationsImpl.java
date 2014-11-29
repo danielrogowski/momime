@@ -45,9 +45,9 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
- * Tests the MomServerUnitCalculations class
+ * Tests the ServerUnitCalculations class
  */
-public final class TestMomServerUnitCalculationsImpl
+public final class TestServerUnitCalculationsImpl
 {
 	/**
 	 * Tests the calculateUnitScoutingRange class
@@ -80,7 +80,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 
 		// Unit with no skills and no scouting range
@@ -168,7 +168,7 @@ public final class TestMomServerUnitCalculationsImpl
 		units.add (u4);
 
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		
 		// Run test
 		final int [] [] [] counts = calc.countOurAliveUnitsAtEveryLocation (2, units, sys);
@@ -203,7 +203,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		calc.setUnitUtils (new UnitUtilsImpl ());
 		
@@ -319,7 +319,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Null stack
@@ -481,7 +481,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 
 		// Regular walking unit can walk over the two types of land tiles, but not water
@@ -577,7 +577,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Regular walking unit can walk over the two types of land tiles, but not water
@@ -675,7 +675,7 @@ public final class TestMomServerUnitCalculationsImpl
 		map.getUnit ().addAll (unitStack);
 
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
@@ -857,7 +857,7 @@ public final class TestMomServerUnitCalculationsImpl
 		}
 
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());

@@ -25,10 +25,10 @@ import com.ndg.random.RandomUtils;
 /**
  * Calculations pertaining to spells that are only used on the server
  */
-public final class MomServerSpellCalculationsImpl implements MomServerSpellCalculations
+public final class ServerSpellCalculationsImpl implements ServerSpellCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomServerSpellCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (ServerSpellCalculationsImpl.class);
 	
 	/** The number of choices we're offered from which to pick a spell to research */
 	private static final int SPELL_COUNT_TO_PICK_RESEARCH_FROM = 8;

@@ -12,7 +12,7 @@ import momime.common.messages.clienttoserver.SellBuildingMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.v0_9_5.Building;
 import momime.server.process.CityProcessing;
 
@@ -37,7 +37,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 
 	/** City processing methods */
 	private CityProcessing cityProcessing;
@@ -151,7 +151,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -159,7 +159,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

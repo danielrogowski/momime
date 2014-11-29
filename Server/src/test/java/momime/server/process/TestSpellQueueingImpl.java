@@ -43,7 +43,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Spell;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
@@ -526,7 +526,7 @@ public final class TestSpellQueueingImpl
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
 		final PlayerMessageProcessing msgProc = mock (PlayerMessageProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);

@@ -20,9 +20,9 @@ import org.junit.Test;
 import com.ndg.random.RandomUtils;
 
 /**
- * Tests the MomServerSpellCalculations class
+ * Tests the ServerSpellCalculations class
  */
-public final class TestMomServerSpellCalculationsImpl
+public final class TestServerSpellCalculationsImpl
 {
 	/**
 	 * Tests the randomizeResearchableSpells method
@@ -47,7 +47,7 @@ public final class TestMomServerSpellCalculationsImpl
 		final RandomUtils random = mock (RandomUtils.class);
 		
 		// Set up object to test
-		final MomServerSpellCalculationsImpl calc = new MomServerSpellCalculationsImpl ();
+		final ServerSpellCalculationsImpl calc = new ServerSpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
 		calc.setRandomUtils (random);
 
@@ -176,7 +176,7 @@ public final class TestMomServerSpellCalculationsImpl
 		final RandomUtils random = mock (RandomUtils.class);
 		
 		// Set up object to test
-		final MomServerSpellCalculationsImpl calc = new MomServerSpellCalculationsImpl ();
+		final ServerSpellCalculationsImpl calc = new ServerSpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
 		calc.setRandomUtils (random);
 		

@@ -33,8 +33,8 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Plane;
@@ -83,10 +83,10 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** Server-only city calculations */
-	private MomServerCityCalculations serverCityCalculations;
+	private ServerCityCalculations serverCityCalculations;
 	
 	/** Server-only unit calculations */
-	private MomServerUnitCalculations serverUnitCalculations;
+	private ServerUnitCalculations serverUnitCalculations;
 
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
@@ -918,7 +918,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final MomServerCityCalculations getServerCityCalculations ()
+	public final ServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -926,7 +926,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final MomServerCityCalculations calc)
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -934,7 +934,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public final MomServerUnitCalculations getServerUnitCalculations ()
+	public final ServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -942,7 +942,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}

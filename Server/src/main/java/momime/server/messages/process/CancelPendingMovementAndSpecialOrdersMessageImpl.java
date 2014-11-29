@@ -13,7 +13,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.utils.UnitServerUtils;
 
 import org.apache.commons.logging.Log;
@@ -41,7 +41,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -146,7 +146,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -154,7 +154,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

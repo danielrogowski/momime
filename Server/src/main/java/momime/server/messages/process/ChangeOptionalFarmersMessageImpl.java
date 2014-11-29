@@ -9,7 +9,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 
@@ -34,7 +34,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 	private CityServerUtils cityServerUtils;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -105,7 +105,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -113,7 +113,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

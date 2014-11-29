@@ -34,8 +34,8 @@ import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Building;
@@ -77,7 +77,7 @@ public final class CityProcessingImpl implements CityProcessing
 	private CityCalculations cityCalculations;
 
 	/** Server-only city calculations */
-	private MomServerCityCalculations serverCityCalculations;
+	private ServerCityCalculations serverCityCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -95,7 +95,7 @@ public final class CityProcessingImpl implements CityProcessing
 	private CityAI cityAI;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -668,7 +668,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final MomServerCityCalculations getServerCityCalculations ()
+	public final ServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -676,7 +676,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final MomServerCityCalculations calc)
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -764,7 +764,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -772,7 +772,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

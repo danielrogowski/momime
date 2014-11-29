@@ -49,8 +49,8 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.ai.CityAI;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Building;
@@ -291,7 +291,7 @@ public final class TestCityProcessingImpl
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
-		final MomServerCityCalculations serverCityCalc = mock (MomServerCityCalculations.class);
+		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setServerCityCalculations (serverCityCalc);
@@ -596,7 +596,7 @@ public final class TestCityProcessingImpl
 		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (raidersLocation, "UN001", raidersPd.getPlayerID (), trueMap, sd, db)).thenReturn (unitAddLocation);
 		
 		// Set up object to test
-		final MomServerCityCalculations serverCityCalc = mock (MomServerCityCalculations.class);
+		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
@@ -719,7 +719,7 @@ public final class TestCityProcessingImpl
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
+		final ServerCityCalculations serverCityCalculations = mock (ServerCityCalculations.class);
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
@@ -815,7 +815,7 @@ public final class TestCityProcessingImpl
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
+		final ServerCityCalculations serverCityCalculations = mock (ServerCityCalculations.class);
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
@@ -911,7 +911,7 @@ public final class TestCityProcessingImpl
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
+		final ServerCityCalculations serverCityCalculations = mock (ServerCityCalculations.class);
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
@@ -1114,7 +1114,7 @@ public final class TestCityProcessingImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 
 		// Have to use anyObject () for location since .equals () doesn't give correct result
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
@@ -1122,7 +1122,7 @@ public final class TestCityProcessingImpl
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation2, "TR03", db)).thenReturn (breakdown2);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation3, "TR03", db)).thenReturn (breakdown3);
 		
-		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
+		final ServerCityCalculations serverCityCalculations = mock (ServerCityCalculations.class);
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();

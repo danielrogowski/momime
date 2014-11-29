@@ -10,7 +10,7 @@ import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +34,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	private ResourceValueUtils resourceValueUtils;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -136,7 +136,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -144,7 +144,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

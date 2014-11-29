@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public interface MomServerCityCalculations
+public interface ServerCityCalculations
 {
 	/**
 	 * @param map True terrain

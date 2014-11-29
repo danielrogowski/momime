@@ -20,7 +20,7 @@ import momime.common.messages.servertoclient.OverlandMovementTypesMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +41,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	private UnitUtils unitUtils;
 	
 	/** Server-only unit calculations */
-	private MomServerUnitCalculations serverUnitCalculations;
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -169,7 +169,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public final MomServerUnitCalculations getServerUnitCalculations ()
+	public final ServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -177,7 +177,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}

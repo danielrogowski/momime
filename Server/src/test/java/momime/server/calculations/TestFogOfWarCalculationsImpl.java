@@ -18,9 +18,9 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
- * Tests the MomFogOfWarCalculations class
+ * Tests the FogOfWarCalculations class
  */
-public final class TestMomFogOfWarCalculationsImpl
+public final class TestFogOfWarCalculationsImpl
 {
 	/**
 	 * Tests the canSeeMidTurn method
@@ -28,7 +28,7 @@ public final class TestMomFogOfWarCalculationsImpl
 	@Test
 	public final void testCanSeeMidTurn ()
 	{
-		final MomFogOfWarCalculationsImpl calc = new MomFogOfWarCalculationsImpl ();
+		final FogOfWarCalculationsImpl calc = new FogOfWarCalculationsImpl ();
 		
 		// If we can see it this turn, then we can see it regardless of FOW setting
 		for (final FogOfWarValue setting : FogOfWarValue.values ())
@@ -57,7 +57,7 @@ public final class TestMomFogOfWarCalculationsImpl
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
-		final MomFogOfWarCalculationsImpl calc = new MomFogOfWarCalculationsImpl ();
+		final FogOfWarCalculationsImpl calc = new FogOfWarCalculationsImpl ();
 		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		
 		// Test two locations, one with a tower and one without

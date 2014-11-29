@@ -20,7 +20,7 @@ import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.v0_9_5.MapFeature;
 import momime.server.database.v0_9_5.TileType;
 import momime.server.process.PlayerMessageProcessing;
@@ -60,7 +60,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	private CityServerUtils cityServerUtils;
 
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
@@ -300,7 +300,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -308,7 +308,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

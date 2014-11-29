@@ -42,10 +42,10 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
  */
-public final class MomServerUnitCalculationsImpl implements MomServerUnitCalculations
+public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomServerUnitCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (ServerUnitCalculationsImpl.class);
 	
 	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
 	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;

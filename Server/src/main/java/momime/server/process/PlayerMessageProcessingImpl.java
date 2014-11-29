@@ -47,8 +47,8 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
 import momime.server.ai.MomAI;
-import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.calculations.MomServerSpellCalculations;
+import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.PickFreeSpell;
 import momime.server.database.v0_9_5.Unit;
@@ -104,13 +104,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private FogOfWarProcessing fogOfWarProcessing;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;
 	
 	/** Server-only spell calculations */
-	private MomServerSpellCalculations serverSpellCalculations;
+	private ServerSpellCalculations serverSpellCalculations;
 
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -1126,7 +1126,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -1134,7 +1134,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}
@@ -1158,7 +1158,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/**
 	 * @return Server-only spell calculations
 	 */
-	public final MomServerSpellCalculations getServerSpellCalculations ()
+	public final ServerSpellCalculations getServerSpellCalculations ()
 	{
 		return serverSpellCalculations;
 	}
@@ -1166,7 +1166,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/**
 	 * @param calc Server-only spell calculations
 	 */
-	public final void setServerSpellCalculations (final MomServerSpellCalculations calc)
+	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
 	}

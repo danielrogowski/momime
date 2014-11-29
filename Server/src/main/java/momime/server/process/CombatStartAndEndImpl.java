@@ -27,8 +27,8 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -94,7 +94,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	private CityCalculations cityCalculations;
 	
 	/** Server-only city calculations */
-	private MomServerCityCalculations serverCityCalculations;
+	private ServerCityCalculations serverCityCalculations;
 	
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
@@ -109,7 +109,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	private FogOfWarProcessing fogOfWarProcessing;
 
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 
 	/** Scheduled combat utils */
 	private ScheduledCombatUtils scheduledCombatUtils; 
@@ -590,7 +590,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final MomServerCityCalculations getServerCityCalculations ()
+	public final ServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -598,7 +598,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final MomServerCityCalculations calc)
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -670,7 +670,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -678,7 +678,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

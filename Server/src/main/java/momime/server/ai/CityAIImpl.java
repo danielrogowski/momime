@@ -27,7 +27,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.AiBuildingTypeID;
 import momime.server.database.v0_9_5.Building;
@@ -67,7 +67,7 @@ public final class CityAIImpl implements CityAI
 	private CityCalculations cityCalculations;
 
 	/** Server-only city calculations */
-	private MomServerCityCalculations serverCityCalculations;
+	private ServerCityCalculations serverCityCalculations;
 
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -487,7 +487,7 @@ public final class CityAIImpl implements CityAI
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final MomServerCityCalculations getServerCityCalculations ()
+	public final ServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -495,7 +495,7 @@ public final class CityAIImpl implements CityAI
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final MomServerCityCalculations calc)
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}

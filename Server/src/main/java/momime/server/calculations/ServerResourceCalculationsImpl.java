@@ -65,10 +65,10 @@ import com.ndg.random.RandomUtils;
 /**
  * Server side methods for dealing with calculating and updating the global economy e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
  */
-public final class MomServerResourceCalculationsImpl implements MomServerResourceCalculations
+public final class ServerResourceCalculationsImpl implements ServerResourceCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomServerResourceCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (ServerResourceCalculationsImpl.class);
 
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;
@@ -95,7 +95,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	private UnitServerUtils unitServerUtils;
 
 	/** Server-only spell calculations */
-	private MomServerSpellCalculations serverSpellCalculations;
+	private ServerSpellCalculations serverSpellCalculations;
 	
 	/** Factory for creating resource consumers */
 	private MomResourceConsumerFactory momResourceConsumerFactory;
@@ -737,7 +737,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	/**
 	 * @return Server-only spell calculations
 	 */
-	public final MomServerSpellCalculations getServerSpellCalculations ()
+	public final ServerSpellCalculations getServerSpellCalculations ()
 	{
 		return serverSpellCalculations;
 	}
@@ -745,7 +745,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	/**
 	 * @param calc Server-only spell calculations
 	 */
-	public final void setServerSpellCalculations (final MomServerSpellCalculations calc)
+	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
 	}

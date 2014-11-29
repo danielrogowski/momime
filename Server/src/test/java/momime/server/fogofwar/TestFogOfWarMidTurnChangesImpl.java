@@ -44,7 +44,7 @@ import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomFogOfWarCalculations;
+import momime.server.calculations.FogOfWarCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.MapFeature;
 import momime.server.database.v0_9_5.MapFeatureMagicRealm;
@@ -186,7 +186,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		players.add (player5);
 		
 		// Set up object to test
-		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
 		
@@ -343,7 +343,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		players.add (player5);
 		
 		// Set up object to test
-		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
 		
@@ -430,7 +430,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd1.getPlayerID (), "canSeeUnitMidTurn")).thenReturn (player1);
 		
 		// Set up object to test
-		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
 		calc.setFogOfWarCalculations (single);
@@ -500,7 +500,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd1.getPlayerID (), "canSeeUnitMidTurn")).thenReturn (player1);
 		
 		// Set up object to test
-		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
@@ -562,7 +562,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		spell.setCityLocation (spellLocation);
 
 		// Set up object to test
-		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
 
@@ -622,7 +622,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
 		// Set up object to test
-		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fow = mock (FogOfWarCalculations.class);
 		
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
 		calc.setFogOfWarCalculations (fow);
@@ -734,7 +734,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
-		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fow = mock (FogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
 		
@@ -866,7 +866,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
-		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fow = mock (FogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
 		
@@ -1042,7 +1042,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd3.getPlayerID (), "destroyBuildingOnServerAndClients")).thenReturn (player3);
 
 		// Set up object to test
-		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fow = mock (FogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, fowSettings.getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, fowSettings.getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
 
@@ -1208,7 +1208,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		// Set up object to test
-		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fow = mock (FogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, fowSettings.getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, fowSettings.getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
 
@@ -1280,7 +1280,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
 
 		// Mock what each player can see
-		final MomFogOfWarCalculations fowCalc = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fowCalc = mock (FogOfWarCalculations.class);
 		
 		// Player owning the units
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -1492,7 +1492,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
 
 		// Mock what each player can see
-		final MomFogOfWarCalculations fowCalc = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fowCalc = mock (FogOfWarCalculations.class);
 		
 		// Player owning the units
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -1633,7 +1633,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
 
 		// Mock what each player can see
-		final MomFogOfWarCalculations fowCalc = mock (MomFogOfWarCalculations.class);
+		final FogOfWarCalculations fowCalc = mock (FogOfWarCalculations.class);
 		
 		// Player owning the units
 		final PlayerDescription pd1 = new PlayerDescription ();

@@ -32,7 +32,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Spell;
 import momime.server.database.v0_9_5.Unit;
@@ -86,7 +86,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	private CombatProcessing combatProcessing;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
@@ -585,7 +585,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -593,7 +593,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

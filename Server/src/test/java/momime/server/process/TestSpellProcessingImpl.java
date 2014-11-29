@@ -38,7 +38,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Spell;
 import momime.server.database.v0_9_5.Unit;
@@ -735,7 +735,7 @@ public final class TestSpellProcessingImpl
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final MomServerResourceCalculations serverResourceCalc = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalc = mock (ServerResourceCalculations.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setRandomUtils (randomUtils);
@@ -836,7 +836,7 @@ public final class TestSpellProcessingImpl
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final MomServerResourceCalculations serverResourceCalc = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalc = mock (ServerResourceCalculations.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setRandomUtils (randomUtils);
@@ -955,7 +955,7 @@ public final class TestSpellProcessingImpl
 		
 		// Set up test object
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final MomServerResourceCalculations serverResourceCalc = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalc = mock (ServerResourceCalculations.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();

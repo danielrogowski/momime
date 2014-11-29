@@ -62,9 +62,9 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomFogOfWarCalculations;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.FogOfWarCalculations;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Plane;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
@@ -92,7 +92,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	private final Log log = LogFactory.getLog (FogOfWarMidTurnChangesImpl.class);
 	
 	/** Single cell FOW calculations */
-	private MomFogOfWarCalculations fogOfWarCalculations;
+	private FogOfWarCalculations fogOfWarCalculations;
 
 	/** FOW duplication utils */
 	private FogOfWarDuplication fogOfWarDuplication;
@@ -125,10 +125,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	private CityCalculations cityCalculations;
 
 	/** Server-only city calculations */
-	private MomServerCityCalculations serverCityCalculations;
+	private ServerCityCalculations serverCityCalculations;
 	
 	/** Server-only unit calculations */
-	private MomServerUnitCalculations serverUnitCalculations;
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
@@ -2013,7 +2013,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @return Single cell FOW calculations
 	 */
-	public final MomFogOfWarCalculations getFogOfWarCalculations ()
+	public final FogOfWarCalculations getFogOfWarCalculations ()
 	{
 		return fogOfWarCalculations;
 	}
@@ -2021,7 +2021,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @param calc Single cell FOW calculations
 	 */
-	public final void setFogOfWarCalculations (final MomFogOfWarCalculations calc)
+	public final void setFogOfWarCalculations (final FogOfWarCalculations calc)
 	{
 		fogOfWarCalculations = calc;
 	}
@@ -2189,7 +2189,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final MomServerCityCalculations getServerCityCalculations ()
+	public final ServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -2197,7 +2197,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final MomServerCityCalculations calc)
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -2205,7 +2205,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public final MomServerUnitCalculations getServerUnitCalculations ()
+	public final ServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -2213,7 +2213,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}

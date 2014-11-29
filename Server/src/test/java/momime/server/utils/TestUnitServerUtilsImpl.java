@@ -36,7 +36,7 @@ import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.HeroName;
 import momime.server.database.v0_9_5.TileType;
@@ -680,7 +680,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -731,7 +731,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -786,7 +786,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -842,7 +842,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -899,7 +899,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -950,7 +950,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (null);		// <---
 		
 		// Other units
@@ -1007,7 +1007,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -1064,7 +1064,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -1115,7 +1115,7 @@ public final class TestUnitServerUtilsImpl
 			}
 		
 		// Unit can enter this type of tile
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
 			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
 		
@@ -1186,7 +1186,7 @@ public final class TestUnitServerUtilsImpl
 			}
 		
 		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
 			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT02"),
@@ -1265,7 +1265,7 @@ public final class TestUnitServerUtilsImpl
 			}
 		
 		// Easiest thing to do is make the tile type impassable, then we can't fit anywhere
-		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
 			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (null);
 

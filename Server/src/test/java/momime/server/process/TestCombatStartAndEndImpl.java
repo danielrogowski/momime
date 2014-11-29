@@ -49,8 +49,8 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.MapFeature;
 import momime.server.database.v0_9_5.Plane;
@@ -479,7 +479,7 @@ public final class TestCombatStartAndEndImpl
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setUnitUtils (unitUtils);
@@ -809,7 +809,7 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnChanges (midTurn);
@@ -947,7 +947,7 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnChanges (midTurn);
@@ -1084,7 +1084,7 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnChanges (midTurn);
@@ -1235,7 +1235,7 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnChanges (midTurn);
@@ -1414,8 +1414,8 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
-		final MomServerCityCalculations serverCityCalc = mock (MomServerCityCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
+		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnChanges (midTurn);
@@ -1619,8 +1619,8 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
-		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
-		final MomServerCityCalculations serverCityCalc = mock (MomServerCityCalculations.class);
+		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
+		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnChanges (midTurn);

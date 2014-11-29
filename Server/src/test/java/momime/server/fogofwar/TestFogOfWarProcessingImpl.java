@@ -26,8 +26,8 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Plane;
@@ -225,7 +225,7 @@ public final class TestFogOfWarProcessingImpl
 		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, null, null, null, new MapCoordinates3DEx (54, 32, 1), null)).thenReturn (new MemoryMaintainedSpell ());
 		
 		// City scouting ranges
-		final MomServerCityCalculations cityCalc = mock (MomServerCityCalculations.class);
+		final ServerCityCalculations cityCalc = mock (ServerCityCalculations.class);
 		when (cityCalc.calculateCityScoutingRange (trueMap.getBuilding (), new MapCoordinates3DEx (35, 25, 0), db)).thenReturn (-1);
 		when (cityCalc.calculateCityScoutingRange (trueMap.getBuilding (), new MapCoordinates3DEx (50, 12, 0), db)).thenReturn (3);		// City walls can see 3
 		when (cityCalc.calculateCityScoutingRange (trueMap.getBuilding (), new MapCoordinates3DEx (1, 1, 1), db)).thenReturn (4);			// Oracle can see 4
@@ -282,7 +282,7 @@ public final class TestFogOfWarProcessingImpl
 		trueMap.getUnit ().add (unitFive);
 		
 		// Unit scouting ranges
-		final MomServerUnitCalculations unitCalc = mock (MomServerUnitCalculations.class);
+		final ServerUnitCalculations unitCalc = mock (ServerUnitCalculations.class);
 		when (unitCalc.calculateUnitScoutingRange (unitOne, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1);
 		when (unitCalc.calculateUnitScoutingRange (unitTwo, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (2);
 		when (unitCalc.calculateUnitScoutingRange (unitThree, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);

@@ -42,9 +42,9 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Tests the MomServerCityCalculations class
+ * Tests the ServerCityCalculations class
  */
-public final class TestMomServerCityCalculationsImpl
+public final class TestServerCityCalculationsImpl
 {
 	/**
 	 * Tests the calculateDoubleFarmingRate method
@@ -68,7 +68,7 @@ public final class TestMomServerCityCalculationsImpl
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Set up object to test
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		// Halflings farmers produce 1 extra food
@@ -199,7 +199,7 @@ public final class TestMomServerCityCalculationsImpl
 		final CityCalculations cityCalc = mock (CityCalculations.class);
 
 		// Set up object to test
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
 		calc.setCityCalculations (cityCalc);
 		calc.setMemoryBuildingUtils (memoryBuildingUtils);
 		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
@@ -246,7 +246,7 @@ public final class TestMomServerCityCalculationsImpl
 		city.setNumberOfRebels (3);
 
 		// Set up object to test
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
 		
 		// Lower optional farmers
 		city.setOptionalFarmers (1);
@@ -283,7 +283,7 @@ public final class TestMomServerCityCalculationsImpl
 		city.setNumberOfRebels (6);
 		city.setOptionalFarmers (0);
 
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
 		calc.ensureNotTooManyOptionalFarmers (city);
 	}
 
@@ -302,7 +302,7 @@ public final class TestMomServerCityCalculationsImpl
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Set up object to test
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
 		
 		// No buildings
 		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
@@ -377,7 +377,7 @@ public final class TestMomServerCityCalculationsImpl
 		final CityCalculationsImpl cityCalc = new CityCalculationsImpl ();
 		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
+		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		calc.setCityCalculations (cityCalc);
 		

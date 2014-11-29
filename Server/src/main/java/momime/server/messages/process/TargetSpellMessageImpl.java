@@ -22,7 +22,7 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Spell;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -58,7 +58,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	private UnitUtils unitUtils;
 
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -340,7 +340,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -348,7 +348,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

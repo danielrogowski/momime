@@ -24,7 +24,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Unit;
 import momime.server.database.v0_9_5.UnitSkill;
@@ -53,7 +53,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	private PendingMovementUtils pendingMovementUtils;
 
 	/** Server-only unit calculations */
-	private MomServerUnitCalculations serverUnitCalculations;
+	private ServerUnitCalculations serverUnitCalculations;
 
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -409,7 +409,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public final MomServerUnitCalculations getServerUnitCalculations ()
+	public final ServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -417,7 +417,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}

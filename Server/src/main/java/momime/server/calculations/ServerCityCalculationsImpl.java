@@ -34,10 +34,10 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public final class MomServerCityCalculationsImpl implements MomServerCityCalculations
+public final class ServerCityCalculationsImpl implements ServerCityCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomServerCityCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (ServerCityCalculationsImpl.class);
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

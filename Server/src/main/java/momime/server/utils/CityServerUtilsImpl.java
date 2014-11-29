@@ -21,7 +21,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Building;
@@ -57,7 +57,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	private OverlandMapServerUtils overlandMapServerUtils;
 	
 	/** Server-only city calculations */
-	private MomServerCityCalculations serverCityCalculations;
+	private ServerCityCalculations serverCityCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -315,7 +315,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final MomServerCityCalculations getServerCityCalculations ()
+	public final ServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -323,7 +323,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final MomServerCityCalculations calc)
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}

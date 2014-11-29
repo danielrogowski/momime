@@ -340,24 +340,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Calculations -->
 	
-	<bean id="serverSpellCalculations" class="momime.server.calculations.MomServerSpellCalculationsImpl">
+	<bean id="serverSpellCalculations" class="momime.server.calculations.ServerSpellCalculationsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
-	<bean id="serverCityCalculations" class="momime.server.calculations.MomServerCityCalculationsImpl">
+	<bean id="serverCityCalculations" class="momime.server.calculations.ServerCityCalculationsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
-	<bean id="serverUnitCalculations" class="momime.server.calculations.MomServerUnitCalculationsImpl">
+	<bean id="serverUnitCalculations" class="momime.server.calculations.ServerUnitCalculationsImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
-	<bean id="serverResourceCalculations" class="momime.server.calculations.MomServerResourceCalculationsImpl">
+	<bean id="serverResourceCalculations" class="momime.server.calculations.ServerResourceCalculationsImpl">
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="spellUtils" ref="spellUtils" />
@@ -561,7 +561,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Fog of War -->
 
-	<bean id="fogOfWarCalculations" class="momime.server.calculations.MomFogOfWarCalculationsImpl">
+	<bean id="fogOfWarCalculations" class="momime.server.calculations.FogOfWarCalculationsImpl">
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 

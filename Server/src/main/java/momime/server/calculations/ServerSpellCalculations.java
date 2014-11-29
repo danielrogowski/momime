@@ -10,7 +10,7 @@ import momime.server.database.ServerDatabaseEx;
 /**
  * Calculations pertaining to spells that are only used on the server
  */
-public interface MomServerSpellCalculations
+public interface ServerSpellCalculations
 {
 	/**
 	 * For all the spells that we did NOT get for free at the start of the game, decides whether or not they are in our spell book to be available to be researched

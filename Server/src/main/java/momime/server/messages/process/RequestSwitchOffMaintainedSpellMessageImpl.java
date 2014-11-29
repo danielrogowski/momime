@@ -10,7 +10,7 @@ import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMess
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.process.SpellProcessing;
 
 import org.apache.commons.logging.Log;
@@ -34,7 +34,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Resource calculations */
-	private MomServerResourceCalculations serverResourceCalculations;
+	private ServerResourceCalculations serverResourceCalculations;
 
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
@@ -111,7 +111,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	/**
 	 * @return Resource calculations
 	 */
-	public final MomServerResourceCalculations getServerResourceCalculations ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -119,7 +119,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

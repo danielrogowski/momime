@@ -20,10 +20,10 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Client side only methods dealing with unit calculations
  */
-public final class MomClientUnitCalculationsImpl implements MomClientUnitCalculations
+public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomClientUnitCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (ClientUnitCalculationsImpl.class);
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;

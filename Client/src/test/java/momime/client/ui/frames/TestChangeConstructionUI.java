@@ -11,7 +11,7 @@ import java.util.List;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.calculations.MomClientCityCalculations;
+import momime.client.calculations.ClientCityCalculations;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -89,7 +89,7 @@ public final class TestChangeConstructionUI
 		langHolder.setLanguage (lang);
 		
 		// Client city calculations derive language strings
-		final MomClientCityCalculations clientCityCalc = mock (MomClientCityCalculations.class);
+		final ClientCityCalculations clientCityCalc = mock (ClientCityCalculations.class);
 		when (clientCityCalc.describeWhatBuildingAllows ("BL04", new MapCoordinates3DEx (20, 10, 0))).thenReturn ("This is what the Granary allows");
 		when (clientCityCalc.describeWhatBuildingAllows ("BL05", new MapCoordinates3DEx (20, 10, 0))).thenReturn ("This is what the Fighters' Guild allows");
 		

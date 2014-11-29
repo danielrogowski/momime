@@ -33,8 +33,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
-import momime.client.calculations.MomClientCityCalculations;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientCityCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
@@ -122,7 +122,7 @@ public final class CityViewUI extends MomClientFrameUI
 	private CityCalculations cityCalculations;
 
 	/** Client city calculations */
-	private MomClientCityCalculations clientCityCalculations;
+	private ClientCityCalculations clientCityCalculations;
 	
 	/** Text utils */
 	private TextUtils textUtils;
@@ -173,7 +173,7 @@ public final class CityViewUI extends MomClientFrameUI
 	private OverlandMapUI overlandMapUI;
 	
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -1442,7 +1442,7 @@ public final class CityViewUI extends MomClientFrameUI
 	/**
 	 * @return Client city calculations
 	 */
-	public final MomClientCityCalculations getClientCityCalculations ()
+	public final ClientCityCalculations getClientCityCalculations ()
 	{
 		return clientCityCalculations;
 	}
@@ -1450,7 +1450,7 @@ public final class CityViewUI extends MomClientFrameUI
 	/**
 	 * @param calc Client city calculations
 	 */
-	public final void setClientCityCalculations (final MomClientCityCalculations calc)
+	public final void setClientCityCalculations (final ClientCityCalculations calc)
 	{
 		clientCityCalculations = calc;
 	}
@@ -1714,7 +1714,7 @@ public final class CityViewUI extends MomClientFrameUI
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -1722,7 +1722,7 @@ public final class CityViewUI extends MomClientFrameUI
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

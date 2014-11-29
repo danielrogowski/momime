@@ -10,7 +10,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Client side only methods dealing with unit calculations
  */
-public interface MomClientUnitCalculations
+public interface ClientUnitCalculations
 {
 	/**
 	 * Chooses the preferred method of movement for this unit, i.e. the one with the lowest preference number (no. 1 is chosen first, then no. 2, etc.)

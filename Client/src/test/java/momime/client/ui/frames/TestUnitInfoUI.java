@@ -5,7 +5,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.MomClient;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.LanguageChangeMaster;
@@ -88,7 +88,7 @@ public final class TestUnitInfoUI
 		unit.setOwningPlayerID (3);
 		
 		// Movement
-		final MomClientUnitCalculations clientUnitCalc = mock (MomClientUnitCalculations.class);
+		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
 		final UnitSkill movementSkill = new UnitSkill ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
@@ -188,7 +188,7 @@ public final class TestUnitInfoUI
 		unit.setOwningPlayerID (4);
 		
 		// Movement
-		final MomClientUnitCalculations clientUnitCalc = mock (MomClientUnitCalculations.class);
+		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
 		final UnitSkill movementSkill = new UnitSkill ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");

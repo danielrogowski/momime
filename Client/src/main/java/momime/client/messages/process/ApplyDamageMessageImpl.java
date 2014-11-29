@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeEx;
@@ -77,7 +77,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	private CombatMapProcessing combatMapProcessing;
 	
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
@@ -525,7 +525,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -533,7 +533,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

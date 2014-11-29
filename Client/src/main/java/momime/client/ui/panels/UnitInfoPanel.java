@@ -31,8 +31,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
-import momime.client.calculations.MomClientCityCalculations;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientCityCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.Spell;
@@ -117,7 +117,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Client city calculations */
-	private MomClientCityCalculations clientCityCalculations;
+	private ClientCityCalculations clientCityCalculations;
 
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
@@ -132,7 +132,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private UnitCalculations unitCalculations;
 
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called */
 	private Action [] actions;
@@ -981,7 +981,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @return Client city calculations
 	 */
-	public final MomClientCityCalculations getClientCityCalculations ()
+	public final ClientCityCalculations getClientCityCalculations ()
 	{
 		return clientCityCalculations;
 	}
@@ -989,7 +989,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @param calc Client city calculations
 	 */
-	public final void setClientCityCalculations (final MomClientCityCalculations calc)
+	public final void setClientCityCalculations (final ClientCityCalculations calc)
 	{
 		clientCityCalculations = calc;
 	}
@@ -1045,7 +1045,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -1053,7 +1053,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

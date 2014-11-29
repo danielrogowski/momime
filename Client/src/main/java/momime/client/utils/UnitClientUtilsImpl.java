@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.CombatTileFigurePositionsEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -78,7 +78,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	private UnitCalculations unitCalculations;
 	
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -824,7 +824,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -832,7 +832,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

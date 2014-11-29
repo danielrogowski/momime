@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
 import momime.client.MomClient;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -48,7 +48,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 	private UnitClientUtils unitClientUtils;
 	
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Font to write the text in */
 	private Font font;
@@ -191,7 +191,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -199,7 +199,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

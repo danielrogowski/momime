@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
@@ -37,7 +37,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	private UnitClientUtils unitClientUtils;
 
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -222,7 +222,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -230,7 +230,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

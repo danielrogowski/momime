@@ -25,7 +25,7 @@ import javax.swing.JTextArea;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -147,7 +147,7 @@ public final class CombatUI extends MomClientFrameUI
 	private UnitClientUtils unitClientUtils;
 	
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Animation controller */
 	private AnimationController anim;
@@ -1740,7 +1740,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -1748,7 +1748,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

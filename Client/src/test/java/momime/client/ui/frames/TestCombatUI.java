@@ -15,7 +15,7 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.MapFeature;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -327,7 +327,7 @@ public final class TestCombatUI
 		final UnitSkill movementSkill = new UnitSkill ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		
-		final MomClientUnitCalculations clientUnitCalculations = mock (MomClientUnitCalculations.class);
+		final ClientUnitCalculations clientUnitCalculations = mock (ClientUnitCalculations.class);
 		when (clientUnitCalculations.findPreferredMovementSkillGraphics (selectedUnit)).thenReturn (movementSkill);
 		
 		// Layouts

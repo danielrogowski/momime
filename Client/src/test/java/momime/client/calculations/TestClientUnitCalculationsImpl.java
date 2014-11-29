@@ -22,9 +22,9 @@ import org.junit.Test;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
- * Tests the MomClientUnitCalculationsImpl class
+ * Tests the ClientUnitCalculationsImpl class
  */
-public final class TestMomClientUnitCalculationsImpl
+public final class TestClientUnitCalculationsImpl
 {
 	/**
 	 * Tests the findPreferredMovementSkillGraphics method when we find a match
@@ -76,7 +76,7 @@ public final class TestMomClientUnitCalculationsImpl
 		when (unitUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
 		
 		// Set up object to test
-		final MomClientUnitCalculationsImpl calc = new MomClientUnitCalculationsImpl ();
+		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
 		calc.setUnitUtils (unitUtils);
 		calc.setClient (client);
@@ -135,7 +135,7 @@ public final class TestMomClientUnitCalculationsImpl
 		when (unitUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
 		
 		// Set up object to test
-		final MomClientUnitCalculationsImpl calc = new MomClientUnitCalculationsImpl ();
+		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
 		calc.setUnitUtils (unitUtils);
 		calc.setClient (client);
@@ -186,7 +186,7 @@ public final class TestMomClientUnitCalculationsImpl
 		when (unitUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
 		
 		// Set up object to test
-		final MomClientUnitCalculationsImpl calc = new MomClientUnitCalculationsImpl ();
+		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
 		calc.setUnitUtils (unitUtils);
 		calc.setClient (client);
@@ -236,7 +236,7 @@ public final class TestMomClientUnitCalculationsImpl
 		when (unitUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
 		
 		// Set up object to test
-		final MomClientUnitCalculationsImpl calc = new MomClientUnitCalculationsImpl ();
+		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
 		calc.setUnitUtils (unitUtils);
 		calc.setClient (client);

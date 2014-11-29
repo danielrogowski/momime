@@ -10,7 +10,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 /**
  * Client side only methods dealing with city calculations
  */
-public interface MomClientCityCalculations
+public interface ClientCityCalculations
 {
 	/**
 	 * @param breakdown Results of unrest calculation

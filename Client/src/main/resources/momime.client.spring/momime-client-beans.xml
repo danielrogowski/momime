@@ -689,7 +689,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 	</bean>
 	
-	<bean id="clientCityCalculations" class="momime.client.calculations.MomClientCityCalculationsImpl">
+	<bean id="clientCityCalculations" class="momime.client.calculations.ClientCityCalculationsImpl">
 		<property name="client" ref="client" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="languageHolder" ref="languageHolder" />
@@ -699,7 +699,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="productionReplacer" ref="productionReplacer" />
 	</bean>
 
-	<bean id="clientUnitCalculations" class="momime.client.calculations.MomClientUnitCalculationsImpl">
+	<bean id="clientUnitCalculations" class="momime.client.calculations.ClientUnitCalculationsImpl">
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />

@@ -44,10 +44,10 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 /**
  * Client side only methods dealing with city calculations
  */
-public final class MomClientCityCalculationsImpl implements MomClientCityCalculations
+public final class ClientCityCalculationsImpl implements ClientCityCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomClientCityCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (ClientCityCalculationsImpl.class);
 	
 	/** Indentation used on calculation breakdowns that are additions to the previous line */
 	private static final String INDENT = "     ";

@@ -28,7 +28,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.CompositeShape;
 import momime.client.ui.MomUIConstants;
@@ -114,7 +114,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** Client unit calculations */
-	private MomClientUnitCalculations clientUnitCalculations;
+	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Unit/building info panel */
 	private UnitInfoPanel unitInfoPanel;
@@ -723,7 +723,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/**
 	 * @return Client unit calculations
 	 */
-	public final MomClientUnitCalculations getClientUnitCalculations ()
+	public final ClientUnitCalculations getClientUnitCalculations ()
 	{
 		return clientUnitCalculations;
 	}
@@ -731,7 +731,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/**
 	 * @param calc Client unit calculations
 	 */
-	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
 	}

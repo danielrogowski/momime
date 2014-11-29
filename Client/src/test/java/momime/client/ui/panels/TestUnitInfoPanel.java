@@ -16,8 +16,8 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
-import momime.client.calculations.MomClientCityCalculations;
-import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.calculations.ClientCityCalculations;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
@@ -92,7 +92,7 @@ public final class TestUnitInfoPanel
 		langHolder.setLanguage (lang);
 		
 		// Client city calculations derive language strings
-		final MomClientCityCalculations clientCityCalc = mock (MomClientCityCalculations.class);
+		final ClientCityCalculations clientCityCalc = mock (ClientCityCalculations.class);
 		when (clientCityCalc.describeWhatBuildingAllows ("BL01", new MapCoordinates3DEx (20, 10, 0))).thenReturn ("This is what the Granary allows");
 		
 		// Mock dummy language change master, since the language won't be changing
@@ -386,7 +386,7 @@ public final class TestUnitInfoPanel
 		}
 		
 		// Movement
-		final MomClientUnitCalculations clientUnitCalc = mock (MomClientUnitCalculations.class);
+		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
 		final UnitSkill movementSkill = new UnitSkill ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");

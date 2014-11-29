@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.9</version>
+		<version>0.1.0</version>
 	</parent>
 
 	<build>
@@ -439,32 +439,32 @@
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-base</artifactId>
-			<version>0.0.9</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionbase</artifactId>
-			<version>0.0.9</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionserver</artifactId>
-			<version>0.0.9</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.map</groupId>
 			<artifactId>ndgmap</artifactId>
-			<version>0.0.9</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
+			<version>0.9.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>ndgutils</artifactId>
-			<version>0.0.12-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -473,6 +473,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
+			<scope>compile</scope>		<!-- Have to override this, parent defaults scope to runtime -->
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -488,5 +489,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 </project>

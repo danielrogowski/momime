@@ -13,7 +13,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.messages.CombatMapSizeData;
@@ -187,7 +187,7 @@ public final class TestCombatProcessingImpl
 			combatMap.getRow ().get (coords [1]).getCell ().set (coords [0], impassable);
 		
 		// Set up test object
-		final MomUnitCalculations calc = mock (MomUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterCombatTile (impassable, db)).thenReturn (-1);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -567,7 +567,7 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Set up object to test
-		final MomUnitCalculations calc = mock (MomUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitCalculations (calc);
@@ -3556,7 +3556,7 @@ public final class TestCombatProcessingImpl
 		movementTypes [8] [3] = CombatMoveType.MOVE;
 		
 		// Movement points to enter each tile
-		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 
@@ -3716,7 +3716,7 @@ public final class TestCombatProcessingImpl
 		movementTypes [8] [3] = CombatMoveType.RANGED;		// <---
 		
 		// Movement points to enter each tile
-		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 		
@@ -3875,7 +3875,7 @@ public final class TestCombatProcessingImpl
 		movementTypes [8] [3] = CombatMoveType.MELEE;
 		
 		// Movement points to enter each tile
-		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 

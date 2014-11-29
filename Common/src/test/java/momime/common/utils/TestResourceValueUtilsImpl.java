@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSkillCalculationsImpl;
-import momime.common.calculations.MomSpellCalculationsImpl;
+import momime.common.calculations.SkillCalculationsImpl;
+import momime.common.calculations.SpellCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.CommonDatabase;
@@ -326,7 +326,7 @@ public final class TestResourceValueUtilsImpl
 		resourceValues.add (skillImprovement);
 
 		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
-		utils.setSkillCalculations (new MomSkillCalculationsImpl ());
+		utils.setSkillCalculations (new SkillCalculationsImpl ());
 		assertEquals (3, utils.calculateCastingSkillOfPlayer (resourceValues));
 	}
 
@@ -340,7 +340,7 @@ public final class TestResourceValueUtilsImpl
 	{
 		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
-		final MomSpellCalculationsImpl spellCalculations = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl spellCalculations = new SpellCalculationsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		utils.setSpellCalculations (spellCalculations);
 		spellCalculations.setSpellUtils (new SpellUtilsImpl ());

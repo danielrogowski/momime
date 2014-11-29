@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomSpellCalculations;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.SpellCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.newgame.MapSizeData;
@@ -908,7 +908,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (null);	// <--- banished
 		
 		// Set up test object
@@ -1020,7 +1020,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Set up test object
@@ -1133,7 +1133,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Set up test object
@@ -1246,7 +1246,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Set up test object
@@ -1361,7 +1361,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Unit doesn't exist
@@ -1479,7 +1479,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Target unit
@@ -1604,7 +1604,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Target unit
@@ -1731,7 +1731,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
@@ -1857,7 +1857,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
@@ -1988,7 +1988,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
@@ -2002,7 +2002,7 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (8);
 		
 		// Combat terrain cell
-		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (-1);
 		
 		// Set up test object
@@ -2124,7 +2124,7 @@ public final class TestSpellQueueingImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (gc.getTerrainData ())).thenReturn (false);
 		
 		// Range multiplier
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
@@ -2140,7 +2140,7 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (9);
 		
 		// Combat terrain cell
-		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (1);
 		
 		// Set up test object

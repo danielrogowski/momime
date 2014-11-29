@@ -25,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to units
  */
-public interface MomUnitCalculations
+public interface UnitCalculations
 {
 	/**
 	 * @param map Our knowledge of the surrounding terrain

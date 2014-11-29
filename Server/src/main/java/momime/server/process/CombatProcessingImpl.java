@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.FogOfWarSettingData;
@@ -71,7 +71,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	private UnitUtils unitUtils;
 	
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -1094,7 +1094,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -1102,7 +1102,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

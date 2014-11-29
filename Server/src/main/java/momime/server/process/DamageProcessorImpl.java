@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
@@ -36,7 +36,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	private final Log log = LogFactory.getLog (DamageProcessorImpl.class);
 
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -219,7 +219,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -227,7 +227,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

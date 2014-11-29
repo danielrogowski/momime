@@ -9,8 +9,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.MomCityCalculations;
-import momime.common.calculations.MomCityCalculationsImpl;
+import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
@@ -64,7 +64,7 @@ public final class CityAIImpl implements CityAI
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 
 	/** Server-only city calculations */
 	private MomServerCityCalculations serverCityCalculations;
@@ -136,7 +136,7 @@ public final class CityAIImpl implements CityAI
 						// Improve the estimate according to nearby map features e.g. always stick cities next to adamantium!
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
 						
-						for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 							if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 							{
 								final OverlandMapTerrainData checkFeatureData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
@@ -471,7 +471,7 @@ public final class CityAIImpl implements CityAI
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -479,7 +479,7 @@ public final class CityAIImpl implements CityAI
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

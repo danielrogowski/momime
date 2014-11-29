@@ -46,8 +46,8 @@ import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
-import momime.common.calculations.MomSpellCalculations;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.SpellCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -168,7 +168,7 @@ public final class CombatUI extends MomClientFrameUI
 	private ResourceValueUtils resourceValueUtils;
 	
 	/** Spell calculations */
-	private MomSpellCalculations spellCalculations;
+	private SpellCalculations spellCalculations;
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
@@ -177,7 +177,7 @@ public final class CombatUI extends MomClientFrameUI
 	private MemoryGridCellUtils memoryGridCellUtils;
 
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 
 	/** Spell book */
 	private SpellBookUI spellBookUI;
@@ -1916,7 +1916,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Spell calculations
 	 */
-	public final MomSpellCalculations getSpellCalculations ()
+	public final SpellCalculations getSpellCalculations ()
 	{
 		return spellCalculations;
 	}
@@ -1924,7 +1924,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param calc Spell calculations
 	 */
-	public final void setSpellCalculations (final MomSpellCalculations calc)
+	public final void setSpellCalculations (final SpellCalculations calc)
 	{
 		spellCalculations = calc;
 	}
@@ -1964,7 +1964,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -1972,7 +1972,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

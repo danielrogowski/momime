@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
@@ -49,7 +49,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 	
 	/** City processing methods */
 	private CityProcessing cityProcessing;
@@ -272,7 +272,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -280,7 +280,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

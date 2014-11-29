@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -106,7 +106,7 @@ public final class TestCombatAIImpl
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 		
 		// Set up object to test
-		final MomUnitCalculations unitCalculations = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		
 		final CombatAIImpl ai = new CombatAIImpl ();
 		ai.setUnitUtils (new UnitUtilsImpl ());
@@ -155,7 +155,7 @@ public final class TestCombatAIImpl
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 		
 		// Set up object to test
-		final MomUnitCalculations unitCalculations = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		
 		final CombatAIImpl ai = new CombatAIImpl ();
 		ai.setUnitUtils (new UnitUtilsImpl ());

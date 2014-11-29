@@ -29,10 +29,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
  */
-public final class MomSpellCalculationsImpl implements MomSpellCalculations
+public final class SpellCalculationsImpl implements SpellCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomSpellCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (SpellCalculationsImpl.class);
 	
 	/** Format used for doubles in debug messages */
 	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");

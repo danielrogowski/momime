@@ -156,23 +156,23 @@
 
 	<bean id="objectFactoryMap" class="com.ndg.map.coordinates.ObjectFactoryMap" />	<!-- Creates Ex versions of coordinates -->
 
-	<bean id="cityCalculations" class="momime.common.calculations.MomCityCalculationsImpl">
+	<bean id="cityCalculations" class="momime.common.calculations.CityCalculationsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
-	<bean id="skillCalculations" class="momime.common.calculations.MomSkillCalculationsImpl" />
+	<bean id="skillCalculations" class="momime.common.calculations.SkillCalculationsImpl" />
 	
-	<bean id="spellCalculations" class="momime.common.calculations.MomSpellCalculationsImpl">
+	<bean id="spellCalculations" class="momime.common.calculations.SpellCalculationsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
-	<bean id="unitCalculations" class="momime.common.calculations.MomUnitCalculationsImpl">
+	<bean id="unitCalculations" class="momime.common.calculations.UnitCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="unitUtils" ref="unitUtils" />

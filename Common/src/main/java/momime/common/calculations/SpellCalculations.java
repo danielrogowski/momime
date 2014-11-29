@@ -18,7 +18,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
  */
-public interface MomSpellCalculations
+public interface SpellCalculations
 {
 	/**
 	 * @param bookCount The number of books we have in the magic realm of the spell for which we want to calculate the reduction, e.g. to calculate reductions for life spells, pass in how many life books we have

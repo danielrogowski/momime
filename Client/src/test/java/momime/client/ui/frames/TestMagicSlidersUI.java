@@ -17,8 +17,8 @@ import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.MomSkillCalculationsImpl;
-import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.SkillCalculationsImpl;
+import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
@@ -203,9 +203,9 @@ public final class TestMagicSlidersUI
 		});
 		
 		// With the values moving, we need the real calc production values routine in order to demonstrate the UI working properly
-		final MomSpellCalculations spellCalc = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		
-		final MomSkillCalculationsImpl skillCalc = new MomSkillCalculationsImpl (); 
+		final SkillCalculationsImpl skillCalc = new SkillCalculationsImpl (); 
 		
 		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
 		resourceValueUtils.setPlayerPickUtils (pickUtils);

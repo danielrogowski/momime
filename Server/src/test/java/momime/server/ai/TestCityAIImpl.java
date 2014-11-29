@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomCityCalculationsImpl;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
@@ -68,7 +68,7 @@ public final class TestCityAIImpl
 		// Set up test object
 		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
 		
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (coordinateSystemUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		
@@ -288,7 +288,7 @@ public final class TestCityAIImpl
 		// Set up test object
 		final MemoryBuildingUtilsImpl memoryBuildingUtils = new MemoryBuildingUtilsImpl ();
 		
-		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl cityCalc = new CityCalculationsImpl ();
 		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		final MomServerCityCalculationsImpl serverCityCalculations = new MomServerCityCalculationsImpl ();

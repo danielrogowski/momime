@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
@@ -74,7 +74,7 @@ public final class CityProcessingImpl implements CityProcessing
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 
 	/** Server-only city calculations */
 	private MomServerCityCalculations serverCityCalculations;
@@ -652,7 +652,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -660,7 +660,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

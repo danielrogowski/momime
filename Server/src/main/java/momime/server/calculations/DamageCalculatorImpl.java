@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -38,7 +38,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	private UnitUtils unitUtils;
 	
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -196,7 +196,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -204,7 +204,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

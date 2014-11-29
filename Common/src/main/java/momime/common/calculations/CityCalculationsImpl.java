@@ -71,10 +71,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public final class MomCityCalculationsImpl implements MomCityCalculations
+public final class CityCalculationsImpl implements CityCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomCityCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (CityCalculationsImpl.class);
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

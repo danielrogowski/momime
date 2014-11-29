@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSkillCalculations;
+import momime.common.calculations.SkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.WizardPick;
@@ -86,7 +86,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** Skill calculations */
-	private MomSkillCalculations skillCalculations;
+	private SkillCalculations skillCalculations;
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -1030,7 +1030,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/**
 	 * @return Skill calculations
 	 */
-	public final MomSkillCalculations getSkillCalculations ()
+	public final SkillCalculations getSkillCalculations ()
 	{
 		return skillCalculations;
 	}
@@ -1038,7 +1038,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/**
 	 * @param calc Skill calculations
 	 */
-	public final void setSkillCalculations (final MomSkillCalculations calc)
+	public final void setSkillCalculations (final SkillCalculations calc)
 	{
 		skillCalculations = calc;
 	}

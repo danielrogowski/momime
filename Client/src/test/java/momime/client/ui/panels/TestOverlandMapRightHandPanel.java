@@ -23,7 +23,7 @@ import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -214,7 +214,7 @@ public final class TestOverlandMapRightHandPanel
 		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (99999);
 		
 		// City info
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 
 		final MapArea2DArrayListImpl<Boolean> invalidCityLocations = new MapArea2DArrayListImpl<Boolean> ();
 		invalidCityLocations.setCoordinateSystem (mapSize);

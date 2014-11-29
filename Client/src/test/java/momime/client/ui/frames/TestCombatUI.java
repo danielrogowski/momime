@@ -35,8 +35,8 @@ import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtilsImpl;
-import momime.common.calculations.MomSpellCalculations;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.SpellCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.TileType;
 import momime.common.database.newgame.MapSizeData;
@@ -225,7 +225,7 @@ public final class TestCombatUI
 		
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (97);
 		
-		final MomSpellCalculations spellCalculations = mock (MomSpellCalculations.class);
+		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
 		when (spellCalculations.calculateDoubleCombatCastingRangePenalty
 			(attackingPlayer, new MapCoordinates3DEx (20, 10, 0), false, fow.getMap (), fow.getBuilding (), mapSize)).thenReturn (3);
 		
@@ -314,7 +314,7 @@ public final class TestCombatUI
 		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (3);
 		
-		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateAliveFigureCount (selectedUnit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (6);
 		
 		// Unit icons

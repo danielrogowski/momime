@@ -47,10 +47,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to units
  */
-public final class MomUnitCalculationsImpl implements MomUnitCalculations
+public final class UnitCalculationsImpl implements UnitCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomUnitCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (UnitCalculationsImpl.class);
 	
 	/** Initial state where each combat map tile hasn't been checked yet */ 
 	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
@@ -102,7 +102,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		if (bestWeaponGrade > 0)
 		{
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
-			for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+			for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			{
 				if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 				{

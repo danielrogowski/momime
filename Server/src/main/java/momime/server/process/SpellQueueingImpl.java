@@ -6,8 +6,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSpellCalculations;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.SpellCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
@@ -72,7 +72,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	private UnitUtils unitUtils;
 	
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
@@ -84,7 +84,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	private CombatMapUtils combatMapUtils;
 	
 	/** Spell calculations */
-	private MomSpellCalculations spellCalculations;
+	private SpellCalculations spellCalculations;
 
 	/** Spell processing */
 	private SpellProcessing spellProcessing;
@@ -470,7 +470,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -478,7 +478,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}
@@ -534,7 +534,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/**
 	 * @return Spell calculations
 	 */
-	public final MomSpellCalculations getSpellCalculations ()
+	public final SpellCalculations getSpellCalculations ()
 	{
 		return spellCalculations;
 	}
@@ -542,7 +542,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/**
 	 * @param calc Spell calculations
 	 */
-	public final void setSpellCalculations (final MomSpellCalculations calc)
+	public final void setSpellCalculations (final SpellCalculations calc)
 	{
 		spellCalculations = calc;
 	}

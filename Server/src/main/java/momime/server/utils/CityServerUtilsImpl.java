@@ -7,7 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
@@ -51,7 +51,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 	
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
@@ -283,7 +283,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -291,7 +291,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
-import momime.common.calculations.MomCityCalculationsImpl;
+import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RacePopulationTaskProduction;
@@ -196,7 +196,7 @@ public final class TestMomServerCityCalculationsImpl
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 		
 		// Rations from city
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 
 		// Set up object to test
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
@@ -374,7 +374,7 @@ public final class TestMomServerCityCalculationsImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
 		// Set up object to test
-		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl cityCalc = new CityCalculationsImpl ();
 		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();

@@ -15,7 +15,7 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.MapFeature;
@@ -60,7 +60,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	private PendingMovementUtils pendingMovementUtils;
 
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
@@ -640,7 +640,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -648,7 +648,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

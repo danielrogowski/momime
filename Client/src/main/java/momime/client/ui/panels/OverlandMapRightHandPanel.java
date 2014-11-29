@@ -37,7 +37,7 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureProduction;
 import momime.common.database.ProductionType;
@@ -126,7 +126,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	private MemoryGridCellUtils memoryGridCellUtils;
 
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 	
 	/** What is displayed in the variable top section */
 	private OverlandMapRightHandPanelTop top;
@@ -1437,7 +1437,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -1445,7 +1445,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

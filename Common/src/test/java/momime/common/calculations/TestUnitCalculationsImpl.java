@@ -45,9 +45,9 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
- * Tests the MomUnitCalculationsImpl object
+ * Tests the UnitCalculationsImpl object
  */
-public final class TestMomUnitCalculationsImpl
+public final class TestUnitCalculationsImpl
 {
 	/**
 	 * Tests the calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort method
@@ -57,7 +57,7 @@ public final class TestMomUnitCalculationsImpl
 	public final void testCalculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
@@ -123,7 +123,7 @@ public final class TestMomUnitCalculationsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 		
 		// Set up object to test
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setCombatMapUtils (new CombatMapUtilsImpl ());		// Only search routine, easier to use the real one than mock it
 		
 		// Simplest test of a single grass layer
@@ -194,7 +194,7 @@ public final class TestMomUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Test a unit with ammo
@@ -227,7 +227,7 @@ public final class TestMomUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Test a non-casting unit
@@ -288,7 +288,7 @@ public final class TestMomUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Test a unit that has nothing
@@ -334,7 +334,7 @@ public final class TestMomUnitCalculationsImpl
 		final MemoryUnit unit = new MemoryUnit ();
 		
 		// Set up object to test
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		
 		// Unit has ranged ammo only, e.g. ammo
 		unit.setRangedAttackAmmo (8);
@@ -375,7 +375,7 @@ public final class TestMomUnitCalculationsImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (6);
 		
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 
 		// Unit with 1 HP per figure at full health of 6 figures
@@ -432,7 +432,7 @@ public final class TestMomUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
@@ -484,7 +484,7 @@ public final class TestMomUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Unit without even a ranged attack skill
@@ -581,7 +581,7 @@ public final class TestMomUnitCalculationsImpl
 		final MomCombatTile tile = combatMap.getRow ().get (5).getCell ().get (10);
 		
 		// Set up object to test
-		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// No border at all

@@ -29,7 +29,7 @@ import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
@@ -205,7 +205,7 @@ public final class TestChangeConstructionUI
 			when (memoryBuildingUtils.meetsUnitRequirements (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), units.get (n))).thenReturn (true);
 		
 		// Tile type reqs
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		for (int n = 1; n < buildings.size (); n++)
 			when (cityCalc.buildingPassesTileTypeRequirements (fow.getMap (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n), mapSize)).thenReturn (true);
 		

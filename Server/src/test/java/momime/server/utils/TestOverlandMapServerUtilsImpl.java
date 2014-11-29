@@ -16,7 +16,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculationsImpl;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.FogOfWarSettingData;
@@ -107,7 +107,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (20, 10);
 		map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 
-		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+		for (final SquareMapDirection d : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			if (coordinateSystemUtils.move2DCoordinates (sys, coords, d.getDirectionID ()))
 				map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 		
@@ -177,7 +177,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (20, 10);
 		map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 
-		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+		for (final SquareMapDirection d : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			if (coordinateSystemUtils.move2DCoordinates (sys, coords, d.getDirectionID ()))
 				map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 
@@ -185,7 +185,7 @@ public final class TestOverlandMapServerUtilsImpl
 		coords.setY (10);
 		map.getPlane ().get (0).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 
-		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+		for (final SquareMapDirection d : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			if (coordinateSystemUtils.move2DCoordinates (sys, coords, d.getDirectionID ()))
 				map.getPlane ().get (0).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 		

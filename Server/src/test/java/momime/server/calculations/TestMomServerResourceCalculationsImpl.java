@@ -16,8 +16,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.MomCityCalculations;
-import momime.common.calculations.MomSkillCalculationsImpl;
+import momime.common.calculations.CityCalculations;
+import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RoundingDirectionID;
 import momime.common.database.SpellUpkeep;
@@ -152,7 +152,7 @@ public final class TestMomServerResourceCalculationsImpl
 		// Set up test object
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 
 		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
@@ -862,7 +862,7 @@ public final class TestMomServerResourceCalculationsImpl
 		
 		// Set up test object
 		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
-		resourceValueUtils.setSkillCalculations (new MomSkillCalculationsImpl ());
+		resourceValueUtils.setSkillCalculations (new SkillCalculationsImpl ());
 		
 		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (resourceValueUtils);

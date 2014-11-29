@@ -11,7 +11,7 @@ import momime.client.newturnmessages.NewTurnMessageStatus;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.utils.UnitUtils;
 
@@ -35,7 +35,7 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	private OverlandMapUI overlandMapUI;
 	
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -138,7 +138,7 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -146,7 +146,7 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

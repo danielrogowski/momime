@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
@@ -43,7 +43,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -313,7 +313,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -321,7 +321,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

@@ -33,9 +33,9 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Tests the calculations in the MomSpellCalculations class
+ * Tests the calculations in the SpellCalculationsImpl class
  */
-public final class TestMomSpellCalculationsImpl
+public final class TestSpellCalculationsImpl
 {
 	/** How much we tolerate floating point results to be wrong by because of rounding errors */
 	private static final double DOUBLE_TOLERANCE = 0.0000000000001;
@@ -102,7 +102,7 @@ public final class TestMomSpellCalculationsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
@@ -163,7 +163,7 @@ public final class TestMomSpellCalculationsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
@@ -224,7 +224,7 @@ public final class TestMomSpellCalculationsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
@@ -285,7 +285,7 @@ public final class TestMomSpellCalculationsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
@@ -353,7 +353,7 @@ public final class TestMomSpellCalculationsImpl
 		// Set up object to test
 		final MemoryBuildingUtils utils = mock (MemoryBuildingUtils.class);
 		final PlayerPickUtils picks = mock (PlayerPickUtils.class);
-		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		calc.setMemoryBuildingUtils (utils);
 		calc.setPlayerPickUtils (picks);

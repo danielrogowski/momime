@@ -67,9 +67,9 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Tests the calculations in the MomCityCalculations class
+ * Tests the calculations in the CityCalculationsImpl class
  */
-public final class TestMomCityCalculationsImpl
+public final class TestCityCalculationsImpl
 {
 	/**
 	 * Tests the listCityProductionPercentageBonusesFromTerrainTiles method
@@ -93,7 +93,7 @@ public final class TestMomCityCalculationsImpl
 		when (db.findTileType ("TT03", "listCityProductionPercentageBonusesFromTerrainTiles")).thenReturn (riverTileType);
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Map
@@ -162,7 +162,7 @@ public final class TestMomCityCalculationsImpl
 		when (db.findRace ("RC02", "calculateGoldTradeBonus")).thenReturn (nomads);
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Map
@@ -278,7 +278,7 @@ public final class TestMomCityCalculationsImpl
 	public final void testBuildingPassesTileTypeRequirements_DistanceTwo () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
@@ -311,7 +311,7 @@ public final class TestMomCityCalculationsImpl
 	public final void testBuildingPassesTileTypeRequirements_DistanceOne () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
@@ -346,7 +346,7 @@ public final class TestMomCityCalculationsImpl
 	public final void testListCityFoodProductionFromTerrainTiles () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
@@ -405,7 +405,7 @@ public final class TestMomCityCalculationsImpl
 	public final void testCalculateCityGrowthRate () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
@@ -608,7 +608,7 @@ public final class TestMomCityCalculationsImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
@@ -1083,7 +1083,7 @@ public final class TestMomCityCalculationsImpl
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (buildingUtils);
 		
 		when (buildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, new MapCoordinates3DEx (20, 10, 1), "B", "RE02", db)).thenReturn (2);
@@ -1133,7 +1133,7 @@ public final class TestMomCityCalculationsImpl
 		pickType.getFortressPickTypeProduction ().add (prod2);
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Run method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
@@ -1180,7 +1180,7 @@ public final class TestMomCityCalculationsImpl
 		plane.getFortressPlaneProduction ().add (prod2);
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Run method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
@@ -1241,7 +1241,7 @@ public final class TestMomCityCalculationsImpl
 		when (pickUtils.pickIdsContributingToReligiousBuildingBonus (picks, db)).thenReturn (pickIDs);
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setPlayerPickUtils (pickUtils);
 		
 		// Run method
@@ -1319,7 +1319,7 @@ public final class TestMomCityCalculationsImpl
 		}
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
@@ -1448,7 +1448,7 @@ public final class TestMomCityCalculationsImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateAllCityProductions")).thenReturn (player);
 
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
@@ -1976,7 +1976,7 @@ public final class TestMomCityCalculationsImpl
 		}
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// At the moment there's space for 7,000 people, so the gold trade bonus from the tile type is 30 so this is less than the 36 cap
@@ -2022,7 +2022,7 @@ public final class TestMomCityCalculationsImpl
 		when (db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, "halveAddPercentageBonusAndCapProduction")).thenReturn (food);
 		
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Exact multiple
 		final CityProductionBreakdown prod1 = new CityProductionBreakdown ();
@@ -2175,7 +2175,7 @@ public final class TestMomCityCalculationsImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateAllCityProductions")).thenReturn (player);
 
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
@@ -2192,7 +2192,7 @@ public final class TestMomCityCalculationsImpl
 	public final void testBlankBuildingsSoldThisTurn_OnePlayer ()
 	{
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -2228,7 +2228,7 @@ public final class TestMomCityCalculationsImpl
 	public final void testBlankBuildingsSoldThisTurn_AllPlayers ()
 	{
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -2261,7 +2261,7 @@ public final class TestMomCityCalculationsImpl
 	public final void testMarkWithinExistingCityRadius ()
 	{
 		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Map
@@ -2326,7 +2326,7 @@ public final class TestMomCityCalculationsImpl
 	@Test
 	public final void testGoldToRushBuy ()
 	{
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		assertEquals (240, calc.goldToRushBuy (60, 0));
 		assertEquals (177, calc.goldToRushBuy (60, 1));		// The above 2 are the actual examples in the strategy guide
 		

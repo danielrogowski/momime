@@ -34,7 +34,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer;
 import momime.client.utils.TextUtils;
-import momime.common.calculations.MomSkillCalculations;
+import momime.common.calculations.SkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
@@ -80,7 +80,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	private ResourceValueUtils resourceValueUtils;
 	
 	/** Skill calculations */
-	private MomSkillCalculations skillCalculations;
+	private SkillCalculations skillCalculations;
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -792,7 +792,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/**
 	 * @return Skill calculations
 	 */
-	public final MomSkillCalculations getSkillCalculations ()
+	public final SkillCalculations getSkillCalculations ()
 	{
 		return skillCalculations;
 	}
@@ -800,7 +800,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/**
 	 * @param calc Skill calculations
 	 */
-	public final void setSkillCalculations (final MomSkillCalculations calc)
+	public final void setSkillCalculations (final SkillCalculations calc)
 	{
 		skillCalculations = calc;
 	}

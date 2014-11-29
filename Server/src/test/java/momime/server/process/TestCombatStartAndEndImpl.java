@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.database.newgame.MapSizeData;
@@ -1388,7 +1388,7 @@ public final class TestCombatStartAndEndImpl
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
 		attackerRebels.setFinalTotal (2);
 		
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), combatLocation, "TR01", db)).thenReturn (attackerRebels);
 		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
@@ -1593,7 +1593,7 @@ public final class TestCombatStartAndEndImpl
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
 		attackerRebels.setFinalTotal (2);
 		
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), combatLocation, "TR01", db)).thenReturn (attackerRebels);
 		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking

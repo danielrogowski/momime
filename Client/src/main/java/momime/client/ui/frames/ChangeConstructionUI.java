@@ -38,8 +38,8 @@ import momime.client.ui.renderer.UnitListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.CityCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Building;
 import momime.common.database.Race;
@@ -90,7 +90,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 	
 	/** Renderer for the buildings list */
 	private BuildingListCellRenderer buildingListCellRenderer;
@@ -105,7 +105,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	private UnitUtils unitUtils;
 	
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
@@ -579,7 +579,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -587,7 +587,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}
@@ -659,7 +659,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -667,7 +667,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

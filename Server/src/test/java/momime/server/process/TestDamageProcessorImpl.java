@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.UntransmittedKillUnitActionID;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.CombatMapSizeData;
@@ -127,7 +127,7 @@ public final class TestDamageProcessorImpl
 			eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2);		// Dmg to attacker
 
 		// Damage taken
-		final MomUnitCalculations unitCalculations = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
 		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (0);
 		
@@ -266,7 +266,7 @@ public final class TestDamageProcessorImpl
 			eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2);		// Dmg to attacker
 
 		// Damage taken
-		final MomUnitCalculations unitCalculations = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
 		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (0);
 		

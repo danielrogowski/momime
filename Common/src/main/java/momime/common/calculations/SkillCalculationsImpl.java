@@ -14,10 +14,10 @@ import org.apache.commons.logging.LogFactory;
  *    into skill in order to attain their casting skill, i.e.
  *    this is the amount of stored RE10 production the wizard has
  */
-public final class MomSkillCalculationsImpl implements MomSkillCalculations
+public final class SkillCalculationsImpl implements SkillCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomSkillCalculationsImpl.class);
+	private final Log log = LogFactory.getLog (SkillCalculationsImpl.class);
 	
 	/**
 	 * @param currentSkill Current casting skill of the wizard

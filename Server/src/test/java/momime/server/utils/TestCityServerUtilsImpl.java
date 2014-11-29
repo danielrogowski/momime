@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
 import momime.common.messages.FogOfWarMemory;
@@ -65,7 +65,7 @@ public final class TestCityServerUtilsImpl
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		
 		// Set up object
 		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
@@ -117,7 +117,7 @@ public final class TestCityServerUtilsImpl
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (true);
 		
 		// Set up object
@@ -177,7 +177,7 @@ public final class TestCityServerUtilsImpl
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (new MemoryBuilding ());		// <---
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (true);
 		
 		// Set up object
@@ -234,7 +234,7 @@ public final class TestCityServerUtilsImpl
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (true);
 		
 		// Set up object
@@ -287,7 +287,7 @@ public final class TestCityServerUtilsImpl
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (false);
 
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (true);
 		
 		// Set up object
@@ -340,7 +340,7 @@ public final class TestCityServerUtilsImpl
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (false);
 		
 		// Set up object

@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
@@ -35,7 +35,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	private UnitUtils unitUtils;
 
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -110,7 +110,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -118,7 +118,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

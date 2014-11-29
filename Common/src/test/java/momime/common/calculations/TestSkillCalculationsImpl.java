@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- * Tests the calculations in the MomSkillCalculations class
+ * Tests the calculations in the SkillCalculationsImpl class
  */
-public final class TestMomSkillCalculationsImpl
+public final class TestSkillCalculationsImpl
 {
 	/**
 	 * Tests the getSkillPointsRequiredToImproveSkillFrom method
@@ -15,7 +15,7 @@ public final class TestMomSkillCalculationsImpl
 	@Test
 	public final void testGetSkillPointsRequiredToImproveSkillFrom_Zero ()
 	{
-		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
+		final SkillCalculationsImpl calc = new SkillCalculationsImpl ();
 		assertEquals ("Special case for zero", 1, calc.getSkillPointsRequiredToImproveSkillFrom (0));
 	}
 
@@ -25,7 +25,7 @@ public final class TestMomSkillCalculationsImpl
 	@Test
 	public final void testGetSkillPointsRequiredToImproveSkillFrom_NonZero ()
 	{
-		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
+		final SkillCalculationsImpl calc = new SkillCalculationsImpl ();
 		assertEquals ("Should take 2x current skill level to progress to the next casting skill", 24, calc.getSkillPointsRequiredToImproveSkillFrom (12));
 	}
 
@@ -35,7 +35,7 @@ public final class TestMomSkillCalculationsImpl
 	@Test
 	public final void testGetSkillPointsRequiredForCastingSkill ()
 	{
-		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
+		final SkillCalculationsImpl calc = new SkillCalculationsImpl ();
 		
 		// This test assumes that getSkillPointsRequiredToImproveSkillFrom has tested OK
 		// Totals up how many skill points we need per level using this function, but then tests we can compute the same value in one hit rather than iteratively
@@ -54,7 +54,7 @@ public final class TestMomSkillCalculationsImpl
 	@Test
 	public final void testGetCastingSkillForSkillPoints ()
 	{
-		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
+		final SkillCalculationsImpl calc = new SkillCalculationsImpl ();
 		
 		// This test assumes that getSkillPointsRequiredToImproveSkillFrom has tested OK
 		// 10,000 tests up to about casting skill 100

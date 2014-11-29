@@ -24,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public interface MomCityCalculations
+public interface CityCalculations
 {
 	/**
 	 * This used to be called calculateProductionBonus when it only returned an int.

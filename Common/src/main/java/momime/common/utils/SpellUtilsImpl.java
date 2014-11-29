@@ -6,14 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
+import momime.common.database.newgame.SpellSettingData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -33,7 +33,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	private PlayerPickUtils playerPickUtils;
 	
 	/** Spell calculations */
-	private MomSpellCalculations spellCalculations;
+	private SpellCalculations spellCalculations;
 	
 	// Methods dealing with a single spell
 
@@ -631,7 +631,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	/**
 	 * @return Spell calculations
 	 */
-	public final MomSpellCalculations getSpellCalculations ()
+	public final SpellCalculations getSpellCalculations ()
 	{
 		return spellCalculations;
 	}
@@ -639,7 +639,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	/**
 	 * @param calc Spell calculations
 	 */
-	public final void setSpellCalculations (final MomSpellCalculations calc)
+	public final void setSpellCalculations (final SpellCalculations calc)
 	{
 		spellCalculations = calc;
 	}

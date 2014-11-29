@@ -37,7 +37,7 @@ import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
@@ -354,7 +354,7 @@ public final class TestUnitInfoPanel
 		when (unitUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
 		
 		// Attributes
-		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		for (int n = 1; n <= 7; n++)
 		{
 			final String attrID = "UA0" + n;

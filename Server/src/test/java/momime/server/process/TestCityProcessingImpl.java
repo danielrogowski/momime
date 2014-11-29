@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
@@ -277,7 +277,7 @@ public final class TestCityProcessingImpl
 		final CityUnrestBreakdown raidersMyrrorRebels = new CityUnrestBreakdown ();
 		raidersMyrrorRebels.setFinalTotal (4);
 		
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), humanLocation, "TR01", db)).thenReturn (humanRebels);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), aiLocation, "TR02", db)).thenReturn (aiRebels);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), raidersArcanusLocation, "TR03", db)).thenReturn (raidersArcanusRebels);
@@ -529,7 +529,7 @@ public final class TestCityProcessingImpl
 		raidersCell.setCityData (raidersCity);
 		
 		// City production
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		
 		final CityProductionBreakdown humanCityMaxSizeContainer = new CityProductionBreakdown ();
 		humanCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
@@ -720,7 +720,7 @@ public final class TestCityProcessingImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
-		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
@@ -816,7 +816,7 @@ public final class TestCityProcessingImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
-		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
@@ -912,7 +912,7 @@ public final class TestCityProcessingImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
-		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
@@ -1117,7 +1117,7 @@ public final class TestCityProcessingImpl
 		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
 
 		// Have to use anyObject () for location since .equals () doesn't give correct result
-		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation1, "TR03", db)).thenReturn (breakdown1);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation2, "TR03", db)).thenReturn (breakdown2);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation3, "TR03", db)).thenReturn (breakdown3);

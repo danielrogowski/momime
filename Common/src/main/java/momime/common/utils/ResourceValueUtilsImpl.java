@@ -4,13 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSkillCalculations;
-import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.SkillCalculations;
+import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
+import momime.common.database.newgame.SpellSettingData;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
@@ -27,10 +27,10 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	private final Log log = LogFactory.getLog (ResourceValueUtilsImpl.class);
 	
 	/** Skill calculations */
-	private MomSkillCalculations skillCalculations;
+	private SkillCalculations skillCalculations;
 
 	/** Spell calculations */
-	private MomSpellCalculations spellCalculations;
+	private SpellCalculations spellCalculations;
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -306,7 +306,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	/**
 	 * @return Skill calculations
 	 */
-	public final MomSkillCalculations getSkillCalculations ()
+	public final SkillCalculations getSkillCalculations ()
 	{
 		return skillCalculations;
 	}
@@ -314,7 +314,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	/**
 	 * @param calc Skill calculations
 	 */
-	public final void setSkillCalculations (final MomSkillCalculations calc)
+	public final void setSkillCalculations (final SkillCalculations calc)
 	{
 		skillCalculations = calc;
 	}
@@ -322,7 +322,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	/**
 	 * @return Spell calculations
 	 */
-	public final MomSpellCalculations getSpellCalculations ()
+	public final SpellCalculations getSpellCalculations ()
 	{
 		return spellCalculations;
 	}
@@ -330,7 +330,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	/**
 	 * @param calc Spell calculations
 	 */
-	public final void setSpellCalculations (final MomSpellCalculations calc)
+	public final void setSpellCalculations (final SpellCalculations calc)
 	{
 		spellCalculations = calc;
 	}

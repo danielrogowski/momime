@@ -32,7 +32,7 @@ import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.MapSizeData;
 import momime.common.database.Building;
@@ -182,7 +182,7 @@ public final class TestCityViewUI
 		when (client.getOurPlayerID ()).thenReturn (1);
 		
 		// City production
-		final MomCityCalculations calc = mock (MomCityCalculations.class);
+		final CityCalculations calc = mock (CityCalculations.class);
 		
 		final int maxCitySize = 20;
 		

@@ -25,7 +25,7 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.UntransmittedKillUnitActionID;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
@@ -65,7 +65,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	private UnitUtils unitUtils;
 
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
@@ -461,7 +461,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -469,7 +469,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

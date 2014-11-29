@@ -8,7 +8,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.UnitTypeEx;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.ExperienceLevel;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -29,7 +29,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	private UnitUtils unitUtils;
 	
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
@@ -200,7 +200,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -208,7 +208,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

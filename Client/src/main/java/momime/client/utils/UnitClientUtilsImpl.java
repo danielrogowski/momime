@@ -34,7 +34,7 @@ import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
@@ -75,7 +75,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	private UnitUtils unitUtils;
 	
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 	
 	/** Client unit calculations */
 	private MomClientUnitCalculations clientUnitCalculations;
@@ -808,7 +808,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -816,7 +816,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

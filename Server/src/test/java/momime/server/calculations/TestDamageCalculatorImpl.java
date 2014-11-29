@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -147,7 +147,7 @@ public final class TestDamageCalculatorImpl
 		defender.setUnitURN (33);
 		
 		// Set up attacker stats
-		final MomUnitCalculations unitCalculations = mock (MomUnitCalculations.class);
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has 6 figures...

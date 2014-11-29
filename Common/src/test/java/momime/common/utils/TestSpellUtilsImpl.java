@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSpellCalculationsImpl;
+import momime.common.calculations.SpellCalculationsImpl;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
@@ -163,7 +163,7 @@ public final class TestSpellUtilsImpl
 	{
 		final CommonDatabase db = GenerateTestData.createDB ();
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
 		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		utils.setSpellCalculations (calc);
@@ -200,7 +200,7 @@ public final class TestSpellUtilsImpl
 	{
 		final CommonDatabase db = GenerateTestData.createDB ();
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
 		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		utils.setSpellCalculations (calc);

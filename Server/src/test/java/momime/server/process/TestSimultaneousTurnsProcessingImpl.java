@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.database.newgame.MapSizeData;
@@ -203,7 +203,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 				trueArea.set (x, y, true);
 			}
 		
-		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+		final CityCalculations cityCalc = mock (CityCalculations.class);
 		when (cityCalc.markWithinExistingCityRadius (trueTerrain, 1, mapSize)).thenReturn (falseArea, trueArea);
 		
 		// Player2 has 2 spirits he's trying to take a node from Player1 with; first fails, second succeeds, so third doesn't need to try

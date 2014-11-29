@@ -5,7 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
-import momime.common.calculations.MomUnitCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MemoryUnit;
@@ -43,7 +43,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	private UnitUtils unitUtils;
 
 	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
+	private UnitCalculations unitCalculations;
 
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
@@ -139,7 +139,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	/**
 	 * @return Unit calculations
 	 */
-	public final MomUnitCalculations getUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -147,7 +147,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}

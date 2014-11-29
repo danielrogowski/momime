@@ -4,7 +4,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryGridCell;
@@ -32,7 +32,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	private final Log log = LogFactory.getLog (RushBuyMessageImpl.class);
 
 	/** City calculations */
-	private MomCityCalculations cityCalculations;
+	private CityCalculations cityCalculations;
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -134,7 +134,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	/**
 	 * @return City calculations
 	 */
-	public final MomCityCalculations getCityCalculations ()
+	public final CityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -142,7 +142,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final MomCityCalculations calc)
+	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

@@ -442,7 +442,7 @@ public final class TestSpellQueueingImpl
 		// We've got loads of MP, but not enough casting skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), settings, db)).thenReturn (20);
-		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
+		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		trans.setOverlandCastingSkillRemainingThisTurn (15);
 		
 		// Set up test object
@@ -520,7 +520,7 @@ public final class TestSpellQueueingImpl
 		// We've got enough MP and skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), settings, db)).thenReturn (20);
-		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
+		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		trans.setOverlandCastingSkillRemainingThisTurn (25);	// <---
 		
 		// Set up test object
@@ -544,7 +544,7 @@ public final class TestSpellQueueingImpl
 		
 		// Check we were charged skill and mana
 		assertEquals (5, trans.getOverlandCastingSkillRemainingThisTurn ());
-		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -20);
+		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (pd3.getPlayerID (), false, mom);
 		
 		// Check nothing was queued
@@ -1013,7 +1013,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (15);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1126,7 +1126,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (28);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (28);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1239,7 +1239,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1354,7 +1354,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1472,7 +1472,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1597,7 +1597,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1724,7 +1724,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1850,7 +1850,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1981,7 +1981,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -2117,7 +2117,7 @@ public final class TestSpellQueueingImpl
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
+		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -2196,7 +2196,7 @@ public final class TestSpellQueueingImpl
 		
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (30);
+		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (30);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -2245,7 +2245,7 @@ public final class TestSpellQueueingImpl
 		
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
+		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
 		final Spell spell = new Spell ();
@@ -2271,7 +2271,7 @@ public final class TestSpellQueueingImpl
 		assertEquals (15+12, priv.getManaSpentOnCastingCurrentSpell ());
 		assertEquals (1, priv.getQueuedSpellID ().size ());
 		
-		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -12);
+		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -12);
 		
 		// Messages sent to client
 		assertEquals (1, msgs.getMessages ().size ());
@@ -2316,7 +2316,7 @@ public final class TestSpellQueueingImpl
 		
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
+		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
 		final Spell spell = new Spell ();
@@ -2345,7 +2345,7 @@ public final class TestSpellQueueingImpl
 		assertEquals (0, priv.getManaSpentOnCastingCurrentSpell ());
 		assertEquals (0, priv.getQueuedSpellID ().size ());
 		
-		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -10);
+		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -10);
 		verify (spellProcessing, times (1)).castOverlandNow (gsk, player, spell, players, db, sd);
 		
 		// Messages sent to client
@@ -2395,7 +2395,7 @@ public final class TestSpellQueueingImpl
 		
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
+		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
 		final Spell spell = new Spell ();
@@ -2426,9 +2426,9 @@ public final class TestSpellQueueingImpl
 		assertEquals (1, priv.getManaSpentOnCastingCurrentSpell ());
 		assertEquals (1, priv.getQueuedSpellID ().size ());
 		
-		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -3);
-		verify (resourceValueUtils, times (2)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -5);
-		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -1);
+		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -3);
+		verify (resourceValueUtils, times (2)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -5);
+		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -1);
 		verify (spellProcessing, times (3)).castOverlandNow (gsk, player, spell, players, db, sd);
 		
 		// Messages sent to client

@@ -51,7 +51,7 @@ public final class TestServerMemoryGridCellUtils
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 
 		assertFalse (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -111,8 +111,8 @@ public final class TestServerMemoryGridCellUtils
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
-		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+		terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 
 		assertTrue (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}

@@ -154,10 +154,10 @@ public final class TestUnitRowDisplayUI
 		units.add (unit);
 		
 		// Attributes
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
 
-		when (unitClientUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
+		when (unitClientUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
 		
 		// Skills
 		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();

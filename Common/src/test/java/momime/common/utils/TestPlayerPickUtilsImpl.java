@@ -303,7 +303,7 @@ public final class TestPlayerPickUtilsImpl
 		final List<PlayerPick> picks = createAriel20PicksList ();
 		assertEquals ("Ariel has magic weapons", 0, utils.getHighestWeaponGradeGrantedByPicks (picks, db));
 
-		utils.updatePickQuantity (picks, CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY, 1);
+		utils.updatePickQuantity (picks, CommonDatabaseConstants.RETORT_ID_ALCHEMY, 1);
 		assertEquals ("Ariel still has no magic weapons even with Alchemy retort", 1, utils.getHighestWeaponGradeGrantedByPicks (picks, db));
 	}
 
@@ -342,14 +342,14 @@ public final class TestPlayerPickUtilsImpl
 
 		// Archmage gives +50% to magic power spent on improving skill; whatever unit type we pass in is irrelevant
 		utils.updatePickQuantity (picks, GenerateTestData.ARCHMAGE, 1);
-		assertEquals ("Archmage didn't give +50% to magic power spent on improving skill", 50, utils.totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, picks, db));
-		assertEquals ("Archmage didn't give +50% to magic power spent on improving skill with a unit type supplied", 50, utils.totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED, picks, db));
+		assertEquals ("Archmage didn't give +50% to magic power spent on improving skill", 50, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, picks, db));
+		assertEquals ("Archmage didn't give +50% to magic power spent on improving skill with a unit type supplied", 50, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED, picks, db));
 
 		// Summoner gives +25% to unit upkeep reduction but only on unit type = Summoned
 		utils.updatePickQuantity (picks, GenerateTestData.SUMMONER, 1);
-		assertEquals ("Summoner didn't give +25% to unit upkeep reduction on summoning spells", 25, utils.totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED, picks, db));
-		assertEquals ("Summoner still gave +25% to unit upkeep reduction on spells for the wrong unit type", 0, utils.totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "N", picks, db));
-		assertEquals ("Summoner still gave +25% to unit upkeep reduction with a null unit type", 0, utils.totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, null, picks, db));
+		assertEquals ("Summoner didn't give +25% to unit upkeep reduction on summoning spells", 25, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED, picks, db));
+		assertEquals ("Summoner still gave +25% to unit upkeep reduction on spells for the wrong unit type", 0, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "N", picks, db));
+		assertEquals ("Summoner still gave +25% to unit upkeep reduction with a null unit type", 0, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, null, picks, db));
 
 		// NB. Most of the other bonuses are to spell research and/or casting cost reduction, which can't be tested with this method since they
 		// take into account the session description settings for whether to add or multiply the bonuses together

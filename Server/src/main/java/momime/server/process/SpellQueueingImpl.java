@@ -206,7 +206,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				}
 				else if (reducedCombatCastingCost > ourSkill)
 					msg = "You don't have enough casting skill remaining to cast that spell in combat.";
-				else if (multipliedManaCost > getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA))
+				else if (multipliedManaCost > getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
 					msg = "You don't have enough mana remaining to cast that spell in combat at this range.";
 			}
 			
@@ -283,7 +283,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			
 			if ((priv.getQueuedSpellID ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
 				getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (),
-					CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)) >= reducedCastingCost))
+					CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) >= reducedCastingCost))
 			{
 				// Cast instantly, and show the casting message instantly too
 				getSpellProcessing ().castOverlandNow (mom.getGeneralServerKnowledge (), player, spell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
@@ -291,7 +291,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				
 				// Charge player the skill/mana
 				trans.setOverlandCastingSkillRemainingThisTurn (trans.getOverlandCastingSkillRemainingThisTurn () - reducedCastingCost);
-				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA,
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA,
 					-reducedCastingCost);
 				
 				// Recalc their production values, to send them their reduced skill/mana, but also the spell just cast might have had some maintenance
@@ -341,7 +341,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 		// Keep going while this player has spells queued, free mana and free skill
 		boolean anySpellsCast = false;
-		int manaRemaining = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		int manaRemaining = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		while ((priv.getQueuedSpellID ().size () > 0) && (trans.getOverlandCastingSkillRemainingThisTurn () > 0) && (manaRemaining > 0))
 		{
 			// How much to put towards this spell?
@@ -353,7 +353,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Put this amount towards the spell
 			trans.setOverlandCastingSkillRemainingThisTurn (trans.getOverlandCastingSkillRemainingThisTurn () - manaAmount);
 			priv.setManaSpentOnCastingCurrentSpell (priv.getManaSpentOnCastingCurrentSpell () + manaAmount);
-			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -manaAmount);
+			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -manaAmount);
 			manaRemaining = manaRemaining - manaAmount;
 
 			// Finished?

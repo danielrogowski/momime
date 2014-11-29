@@ -30,7 +30,7 @@ public final class TestResourceValueUtilsImpl
 	 * Tests the findResourceValue method where the resource value does exist
 	 */
 	@Test
-	public final void testFindResourceValue_Exists ()
+	public final void testFindResourceExists ()
 	{
 		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
 		for (int n = 1; n <= 3; n++)
@@ -48,7 +48,7 @@ public final class TestResourceValueUtilsImpl
 	 * Tests the findResourceValue method where the resource value doesn't exist
 	 */
 	@Test
-	public final void testFindResourceValue_NotExists ()
+	public final void testFindResourceNotExists ()
 	{
 		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
 		for (int n = 1; n <= 3; n++)
@@ -321,7 +321,7 @@ public final class TestResourceValueUtilsImpl
 		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
 
 		final MomResourceValue skillImprovement = new MomResourceValue ();
-		skillImprovement.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		skillImprovement.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		skillImprovement.setAmountStored (10);
 		resourceValues.add (skillImprovement);
 
@@ -350,9 +350,9 @@ public final class TestResourceValueUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Add some production
-		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 20);
-		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, 5);				// Library + Sages' Guild
-		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, 24);		// 12 book start
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 20);
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, 5);				// Library + Sages' Guild
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, 24);		// 12 book start
 
 		// Set our magic sliders
 		final MagicPowerDistribution powerDist = new MagicPowerDistribution ();
@@ -367,43 +367,43 @@ public final class TestResourceValueUtilsImpl
 		playerPickUtils.updatePickQuantity (picks, GenerateTestData.SUMMONER, 1);
 
 		// Simple read
-		assertEquals ("Simple gold read", 20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
+		assertEquals ("Simple gold read", 20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
 
 		// Would give us +5 gold, but that's dealt with elsewhere
-		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, 10);
-		assertEquals ("Prove don't get money from selling rations", 20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, 10);
+		assertEquals ("Prove don't get money from selling rations", 20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
 
 		// 20% of 24 = 4.8
-		assertEquals ("Unmodified skill calculation", 4, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
+		assertEquals ("Unmodified skill calculation", 4, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
 
 		// 5 + (40% of 24) = 5 + 9.6 = 14.6
-		assertEquals ("Unmodified research calculation", 14, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Unmodified research calculation", 14, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// 24 - 5 - 10 = 9
-		assertEquals ("Unmodified mana calculation", 9, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db));
+		assertEquals ("Unmodified mana calculation", 9, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db));
 
 		// Archmage gives +50%, so 4 * 1.5 = 6
 		playerPickUtils.updatePickQuantity (picks, GenerateTestData.ARCHMAGE, 1);
-		assertEquals ("Archmage", 6, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
+		assertEquals ("Archmage", 6, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
 
 		// Mana focusing gives +25%, so 9 * 1.25 = 11.25
 		playerPickUtils.updatePickQuantity (picks, GenerateTestData.MANA_FOCUSING, 1);
-		assertEquals ("Mana focusing", 11, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db));
+		assertEquals ("Mana focusing", 11, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db));
 
 		// Prove researching a non-chaos non-summoning spell gets no bonus
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.EARTH_TO_MUD);
-		assertEquals ("Research with no bonus", 14, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with no bonus", 14, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// Chaos books give +40%, so 14 * 1.4 = 19
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.WARP_WOOD);
-		assertEquals ("Research with book bonus", 19, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with book bonus", 19, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// Summoner gives +25%, so 14 * 1.25 = 17.5
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.GIANT_SPIDERS_SPELL);
-		assertEquals ("Research with Summoner bonus", 17, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with Summoner bonus", 17, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// Both combined gives +65%, so 14 * 1.65 = 23.1
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.HELL_HOUNDS_SPELL);
-		assertEquals ("Research with combined bonus", 23, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with combined bonus", 23, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 	}
 }

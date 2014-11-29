@@ -391,7 +391,7 @@ public final class CityViewUI extends MomClientFrameUI
 						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
-							(CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+							(CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 					
 					final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
 					final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
@@ -422,7 +422,7 @@ public final class CityViewUI extends MomClientFrameUI
 						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (),
-						CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+						CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 				
 					final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
@@ -959,18 +959,18 @@ public final class CityViewUI extends MomClientFrameUI
 		final RaceEx race = getGraphicsDB ().findRace (cityData.getCityRaceID (), "cityDataChanged");
 		
 		// Start with farmers
-		Image civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, "cityDataChanged")));
+		Image civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "cityDataChanged")));
 		final int civvyCount = cityData.getCityPopulation () / 1000;
 		int x = 0;
 		for (int civvyNo = 1; civvyNo <= civvyCount; civvyNo++)
 		{
 			// Is this the first rebel?
 			if (civvyNo == civvyCount - cityData.getNumberOfRebels () + 1)
-				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL, "cityDataChanged")));
+				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "cityDataChanged")));
 			
 			// Is this the first worker?
 			else if (civvyNo == cityData.getMinimumFarmers () + cityData.getOptionalFarmers () + 1)
-				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER, "cityDataChanged")));
+				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "cityDataChanged")));
 			
 			// Is this civilian changeable (between farmer and worker) - if so, create a button for them instead of a plain image
 			final Action action;
@@ -1180,7 +1180,7 @@ public final class CityViewUI extends MomClientFrameUI
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ());
 			
-				final CityProductionBreakdown maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+				final CityProductionBreakdown maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 				final int maxCitySize = (maxCitySizeProd == null) ? 0 : maxCitySizeProd.getCappedProductionAmount ();
 			
 				maximumPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "MaxCitySize").replaceAll ("MAX_CITY_SIZE",
@@ -1249,7 +1249,7 @@ public final class CityViewUI extends MomClientFrameUI
 			{
 				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (mc.getProductionSoFar () == null) ? 0 : mc.getProductionSoFar ());
 				rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD));
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD));
 			}
 		}		
 		rushBuyAction.setEnabled (rushBuyEnabled);

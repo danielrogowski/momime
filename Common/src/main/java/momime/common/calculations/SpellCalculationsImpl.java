@@ -117,7 +117,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 			{
 				// Does this pick give any casting cost reduction?
 				for (final PickProductionBonus pickProductionBonus : db.findPick (p.getPickID (), "calculateCastingCostReduction").getPickProductionBonus ())
-					if (pickProductionBonus.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION))
+					if (pickProductionBonus.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION))
 					{
 						// Do we have a reduction value, and do any magic realm requirements match what we're casting?
 						final boolean isMagicRealmIdBlank = (pickProductionBonus.isMagicRealmIdBlank () == null) ? false : pickProductionBonus.isMagicRealmIdBlank ();
@@ -230,7 +230,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 			{
 				// Does this pick give any research bonus?
 				for (final PickProductionBonus pickProductionBonus : db.findPick (p.getPickID (), "calculateResearchBonus").getPickProductionBonus ())
-					if (pickProductionBonus.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH))
+					if (pickProductionBonus.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH))
 					{
 						// Do we have a bonus value, and do any magic realm requirements match what we're casting?
 						final boolean isMagicRealmIdBlank = (pickProductionBonus.isMagicRealmIdBlank () == null) ? false : pickProductionBonus.isMagicRealmIdBlank ();
@@ -297,7 +297,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		// First need to find where the wizard's fortress is
 		Integer penalty;
 		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
-			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
+			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings);
 		if (fortressLocation == null)
 			penalty = null;
 		else
@@ -321,7 +321,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 			// Tested this in the original MoM to prove it really does cap it at 1x, because that's not really "as if at the wizard's fortress"
 			// like the description says, which would be capping it at ½x, so the description is a bit ambigious
 			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if ((penalty > 2) && (getPlayerPickUtils ().getQuantityOfPick (ppk.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER) > 0))
+			if ((penalty > 2) && (getPlayerPickUtils ().getQuantityOfPick (ppk.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
 				penalty = 2;
 		}
 

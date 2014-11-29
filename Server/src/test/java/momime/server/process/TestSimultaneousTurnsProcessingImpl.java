@@ -65,11 +65,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		final Unit normalUnitDef = new Unit ();
-		normalUnitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		normalUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "processSpecialOrders-d")).thenReturn (normalUnitDef);
 		
 		final Unit heroUnitDef = new Unit ();
-		heroUnitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		heroUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN002", "processSpecialOrders-d")).thenReturn (heroUnitDef);
 
 		final Plane arcanus = new Plane ();

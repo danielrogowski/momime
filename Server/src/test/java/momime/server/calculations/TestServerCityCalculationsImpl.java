@@ -134,24 +134,24 @@ public final class TestServerCityCalculationsImpl
 		when (db.getCitySize ()).thenReturn (citySizes);
 		
 		final RacePopulationTaskProduction highMenRations = new RacePopulationTaskProduction ();
-		highMenRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		highMenRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		highMenRations.setDoubleAmount (4);
 		
 		final RacePopulationTask highMenFarmers = new RacePopulationTask ();
 		highMenFarmers.getRacePopulationTaskProduction ().add (highMenRations);
-		highMenFarmers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER);
+		highMenFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
 		final Race highMen = new Race ();
 		highMen.getRacePopulationTask ().add (highMenFarmers);
 		when (db.findRace ("RC05", "calculateDoubleFarmingRate")).thenReturn (highMen);
 
 		final RacePopulationTaskProduction halflingRations = new RacePopulationTaskProduction ();
-		halflingRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		halflingRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		halflingRations.setDoubleAmount (6);
 		
 		final RacePopulationTask halflingFarmers = new RacePopulationTask ();
 		halflingFarmers.getRacePopulationTaskProduction ().add (halflingRations);
-		halflingFarmers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER);
+		halflingFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
 		final Race halfling = new Race ();
 		halfling.getRacePopulationTask ().add (halflingFarmers);
@@ -212,7 +212,7 @@ public final class TestServerCityCalculationsImpl
 
 		// If we add a granary, that feeds 2 of the population so we need 1 less farmer
 		when (cityCalc.calculateSingleCityProduction (players, map, buildings, new MapCoordinates3DEx (2, 2, 0),
-			"TR04", sd, false, db, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS)).thenReturn (2);
+			"TR04", sd, false, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (2);
 
 		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());
@@ -356,15 +356,15 @@ public final class TestServerCityCalculationsImpl
 
 		// Need certain types of terrain in order to be able to construct all building types
 		final OverlandMapTerrainData forest = new OverlandMapTerrainData ();
-		forest.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
+		forest.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_FOREST);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (19).setTerrainData (forest);
 
 		final OverlandMapTerrainData mountain = new OverlandMapTerrainData ();
-		mountain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		mountain.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (20).setTerrainData (mountain);
 
 		final OverlandMapTerrainData ocean = new OverlandMapTerrainData ();
-		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city
@@ -384,8 +384,8 @@ public final class TestServerCityCalculationsImpl
 		// Orcs can build absolutely everything
 		cityData.setCityRaceID ("RC09");
 		for (final Building building : db.getBuilding ())
-			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)) &&
-				(!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)))
+			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
+				(!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)))
 
 				assertTrue (building.getBuildingID (), calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getMapSize (), db));
 
@@ -404,7 +404,7 @@ public final class TestServerCityCalculationsImpl
 
 		// Orcs can't build Ship Wrights' Guilds if there's no water
 		cityData.setCityRaceID ("RC09");
-		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
 			db.findBuilding ("BL12", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 

@@ -368,17 +368,17 @@ public final class TestUnitInfoPanel
 					total = total + value;
 				
 					when (unitUtils.getModifiedAttributeValue (unit, attrID, attrComponent,
-						attrID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
+						attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
 						players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (value);
 				}
 
 			// Lets say we're losing -5 defence from some curse like Black Prayer, and taken -7 damage from HP
-			if (attrID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE))
+			if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE))
 				total = total - 5;
-			else if (attrID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS))
+			else if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
 				total = total - 7;
 			
-			if (attrID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS))
+			if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
 				when (unitCalc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 			else
 				when (unitUtils.getModifiedAttributeValue (unit, attrID,

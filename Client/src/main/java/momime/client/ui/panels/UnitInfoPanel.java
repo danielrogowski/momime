@@ -421,7 +421,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 						// Do we need to draw any icons faded, due to negative spells (e.g. Black Prayer) or losing hitpoints?
 						final int attributeValueIncludingNegatives;
-						if (attr.getUnitAttributeID ().equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS))
+						if (attr.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
 							attributeValueIncludingNegatives = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure
 								(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
@@ -440,7 +440,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								// so we can show stats knocked off by e.g. Black Prayer as faded.
 								// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
 								final int totalValue = getUnitUtils ().getModifiedAttributeValue (unit, attr.getUnitAttributeID (), attrComponent,
-									attr.getUnitAttributeID ().equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
+									attr.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
 									getClient ().getPlayers (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
@@ -751,7 +751,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		{
 			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
 			// Experience is an exception since its images are derived differently.
-			if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE)) ||
+			if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
 				(getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit").getUnitSkillImageFile () != null))
 			{
 				final UnitHasSkill listSkill = new UnitHasSkill ();

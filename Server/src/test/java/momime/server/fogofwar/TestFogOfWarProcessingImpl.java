@@ -259,7 +259,7 @@ public final class TestFogOfWarProcessingImpl
 		for (final Plane plane : db.getPlane ())
 		{
 			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-			terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
+			terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 
 			trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (22).getCell ().get (22).setTerrainData (terrainData);
 		}
@@ -325,7 +325,7 @@ public final class TestFogOfWarProcessingImpl
 				}
 
 		// Awareness
-		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.VALUE_SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
@@ -342,7 +342,7 @@ public final class TestFogOfWarProcessingImpl
 				}
 
 		// Nature Awareness
-		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);

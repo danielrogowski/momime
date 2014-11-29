@@ -81,11 +81,11 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		heightMap.generateHeightMap ();
 		
 		// Set troughs and hills
-		setLowestTiles (heightMap, map, ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_DARK, tileType.getCombatDarkTiles ());
-		setHighestTiles (heightMap, map, ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_RIDGE, tileType.getCombatRidgeTiles ());
+		setLowestTiles (heightMap, map, ServerDatabaseValues.COMBAT_TILE_TYPE_DARK, tileType.getCombatDarkTiles ());
+		setHighestTiles (heightMap, map, ServerDatabaseValues.COMBAT_TILE_TYPE_RIDGE, tileType.getCombatRidgeTiles ());
 		
 		// Place trees/rocks randomly
-		setTerrainFeaturesRandomly (map, combatMapCoordinateSystem, ServerDatabaseValues.VALUE_COMBAT_TILE_TERRAIN_FEATURE, tileType.getCombatTerrainFeatures ());
+		setTerrainFeaturesRandomly (map, combatMapCoordinateSystem, ServerDatabaseValues.COMBAT_TILE_TERRAIN_FEATURE, tileType.getCombatTerrainFeatures ());
 		
 		// Place walls, buildings, houses, nodes, towers and anything else defined in the combat map elements in the server XML
 		// Purposefully do this 2nd, so if there happens to be a tree right where we need to put the Wizards' Fortress, the tree will be overwritten
@@ -118,7 +118,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				// Create grass tile
 				final MomCombatTileLayer layer = new MomCombatTileLayer ();
 				layer.setLayer (CombatMapLayerID.TERRAIN);
-				layer.setCombatTileTypeID (ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_GRASS);
+				layer.setCombatTileTypeID (ServerDatabaseValues.COMBAT_TILE_TYPE_GRASS);
 				
 				final MomCombatTile cell = new MomCombatTile ();
 				cell.getTileLayer ().add (layer);

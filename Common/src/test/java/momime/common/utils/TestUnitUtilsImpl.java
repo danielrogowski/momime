@@ -176,7 +176,7 @@ public final class TestUnitUtilsImpl
 			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
 
 		assertEquals (1, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
 		assertEquals (100, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
 	}
 
@@ -218,7 +218,7 @@ public final class TestUnitUtilsImpl
 			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
 
 		assertEquals (3, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
 		assertEquals (100, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
 		assertEquals (GenerateTestData.WALKING, unit.getUnitHasSkill ().get (1).getUnitSkillID ());
 		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
@@ -276,7 +276,7 @@ public final class TestUnitUtilsImpl
 	 * @throws MomException If this unit didn't previously have the specified skill
 	 */
 	@Test
-	public final void testSetBasicSkillValue_Exists () throws MomException
+	public final void testSetBasicSkillExists () throws MomException
 	{
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -309,7 +309,7 @@ public final class TestUnitUtilsImpl
 	 * @throws MomException If this unit didn't previously have the specified skill
 	 */
 	@Test(expected=MomException.class)
-	public final void testSetBasicSkillValue_NotExists () throws MomException
+	public final void testSetBasicSkillNotExists () throws MomException
 	{
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -438,7 +438,7 @@ public final class TestUnitUtilsImpl
 		unit.setOwningPlayerID (1);
 
 		final UnitHasSkill unitExperience = new UnitHasSkill ();
-		unitExperience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+		unitExperience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		unitExperience.setUnitSkillValue (20);
 		unit.getUnitHasSkill ().add (unitExperience);
 
@@ -447,7 +447,7 @@ public final class TestUnitUtilsImpl
 
 		// Give player warlord
 		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD);
+		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
 		warlord.setQuantity (1);
 		pk.getPick ().add (warlord);
 
@@ -508,7 +508,7 @@ public final class TestUnitUtilsImpl
 		unit.setOwningPlayerID (1);
 
 		final UnitHasSkill unitExperience = new UnitHasSkill ();
-		unitExperience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+		unitExperience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		unitExperience.setUnitSkillValue (20);
 		unit.getUnitHasSkill ().add (unitExperience);
 
@@ -517,7 +517,7 @@ public final class TestUnitUtilsImpl
 
 		// Give player warlord
 		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD);
+		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
 		warlord.setQuantity (1);
 		pk.getPick ().add (warlord);
 
@@ -575,7 +575,7 @@ public final class TestUnitUtilsImpl
 
 		// Give player warlord, to prove that this doesn't raise the -1 to 0
 		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD);
+		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
 		warlord.setQuantity (1);
 		pk.getPick ().add (warlord);
 
@@ -990,7 +990,7 @@ public final class TestUnitUtilsImpl
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, utils.getModifiedUnitMagicRealmLifeformTypeID
+		assertEquals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, utils.getModifiedUnitMagicRealmLifeformTypeID
 			(unit, unit.getUnitHasSkill (), spells, GenerateTestData.createDB ()));
 	}
 
@@ -1043,7 +1043,7 @@ public final class TestUnitUtilsImpl
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Test
-	public final void testGetModifiedSkillValue_Available () throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final void testGetModifiedSkillAvailable () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Create unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -1052,7 +1052,7 @@ public final class TestUnitUtilsImpl
 		unit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 
 		final UnitHasSkill experience = new UnitHasSkill ();
-		experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+		experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		experience.setUnitSkillValue (0);
 		unit.getUnitHasSkill ().add (experience);
 
@@ -1103,7 +1103,7 @@ public final class TestUnitUtilsImpl
 
 		// Make player warlord, should up exp level and hence grant another +1
 		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD);
+		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
 		warlord.setQuantity (1);
 		ppk.getPick ().add (warlord);
 		assertEquals (6, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
@@ -1133,7 +1133,7 @@ public final class TestUnitUtilsImpl
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Test
-	public final void testGetModifiedSkillValue_Real () throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final void testGetModifiedSkillReal () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Create unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -1143,7 +1143,7 @@ public final class TestUnitUtilsImpl
 		unit.setUnitURN (1);
 
 		final UnitHasSkill experience = new UnitHasSkill ();
-		experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+		experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		experience.setUnitSkillValue (0);
 		unit.getUnitHasSkill ().add (experience);
 
@@ -1190,7 +1190,7 @@ public final class TestUnitUtilsImpl
 
 		// Make player warlord, should up exp level and hence grant another +1
 		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD);
+		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
 		warlord.setQuantity (1);
 		ppk.getPick ().add (warlord);
 		assertEquals (6, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
@@ -1285,27 +1285,27 @@ public final class TestUnitUtilsImpl
 		units.add (spearmen);
 		spearmen.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 
-		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
-		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Weapon grade 2 gives +1 defence and +1 ranged attack, but we don't get the ranged attack bonus since we don't have a ranged attack to begin with
 		spearmen.setWeaponGrade (2);
 
-		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 			
-		assertEquals (3, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (3, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (2, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (1, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (1, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Bowmen get the +1 ranged attack weapon grade bonus because they use phys ranged weps
@@ -1313,20 +1313,20 @@ public final class TestUnitUtilsImpl
 		units.add (bowmen);
 		bowmen.setUnitID (GenerateTestData.BARBARIAN_BOWMEN);
 
-		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (0, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (0, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		bowmen.setWeaponGrade (2);
 
-		assertEquals (2, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (2, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (1, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));		
 		
 		// Warlocks don't get the +1 ranged attack weapon grade bonus because they use mag ranged weps
@@ -1334,20 +1334,20 @@ public final class TestUnitUtilsImpl
 		units.add (warlocks);
 		warlocks.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
 
-		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (0, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (0, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		warlocks.setWeaponGrade (2);
 
-		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (7, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.BASIC, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (0, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (0, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.WEAPON_GRADE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Bonus from experience - only add to range attack if unit had ranged attack to begin with
@@ -1356,21 +1356,21 @@ public final class TestUnitUtilsImpl
 			unit.setOwningPlayerID (1);
 			
 			final UnitHasSkill experience = new UnitHasSkill ();
-			experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+			experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 			experience.setUnitSkillValue (10);
 			unit.getUnitHasSkill ().add (experience);
 		}
 
-		assertEquals (4, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (4, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (0, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
-		assertEquals (3, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (3, utils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (8, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (8, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (1, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		assertEquals (1, utils.getModifiedAttributeValue (warlocks, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.EXPERIENCE, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// CAE is set to give +1 defence only to normal units
@@ -1378,24 +1378,24 @@ public final class TestUnitUtilsImpl
 		final AvailableUnit stoneGiant = new AvailableUnit ();
 		stoneGiant.setUnitID (GenerateTestData.STONE_GIANT_UNIT);
 		
-		assertEquals (8, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (8, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (0, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (0, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.COMBAT_AREA_EFFECTS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
 		cae.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
 		combatAreaEffects.add (cae);
 
-		assertEquals (5, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (5, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (1, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (1, utils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.COMBAT_AREA_EFFECTS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Then prove stone giant doesn't get bonus because it isn't a normal unit
-		assertEquals (8, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (8, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (0, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (0, utils.getModifiedAttributeValue (stoneGiant, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.COMBAT_AREA_EFFECTS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Hero skills - see the table on page 267 of the strategy guide
@@ -1403,11 +1403,11 @@ public final class TestUnitUtilsImpl
 		hero.setUnitID (GenerateTestData.DWARF_HERO);
 		hero.setOwningPlayerID (1);
 
-		assertEquals (4, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (4, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		final UnitHasSkill experience = new UnitHasSkill ();
-		experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+		experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		experience.setUnitSkillValue (0);
 		hero.getUnitHasSkill ().add (experience);
 		
@@ -1416,25 +1416,25 @@ public final class TestUnitUtilsImpl
 		agility.setUnitSkillValue (1);
 		hero.getUnitHasSkill ().add (agility);
 
-		assertEquals (5, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (5, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (1, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (1, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.HERO_SKILLS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Max experience
 		experience.setUnitSkillValue (1000);
 		
-		assertEquals (13, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (13, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (9, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (9, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.HERO_SKILLS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		// Super agility
 		agility.setUnitSkillValue (2);
 		
-		assertEquals (17, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (17, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		assertEquals (13, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+		assertEquals (13, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.HERO_SKILLS, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Blademaster has a divisor of 2
@@ -1445,22 +1445,22 @@ public final class TestUnitUtilsImpl
 		blademaster.setUnitSkillValue (1);
 		hero.getUnitHasSkill ().add (blademaster);
 		
-		assertEquals (0, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+		assertEquals (0, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// so it has no effect until 2nd level
 		experience.setUnitSkillValue (10);
-		assertEquals (1, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+		assertEquals (1, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		// +4 at max level
 		experience.setUnitSkillValue (1000);
-		assertEquals (4, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+		assertEquals (4, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Super blademaster goes up to +6
 		blademaster.setUnitSkillValue (2);
-		assertEquals (6, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+		assertEquals (6, utils.getModifiedAttributeValue (hero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 	}
 
@@ -1478,13 +1478,13 @@ public final class TestUnitUtilsImpl
 		stoneGiant.setUnitID (GenerateTestData.STONE_GIANT_UNIT);
 
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertEquals (1, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, GenerateTestData.createDB ()));
-		assertEquals (5, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, GenerateTestData.createDB ()));
+		assertEquals (1, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, GenerateTestData.createDB ()));
+		assertEquals (5, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, GenerateTestData.createDB ()));
 
-		assertEquals (0, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, GenerateTestData.createDB ()));
-		assertEquals (9, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, GenerateTestData.createDB ()));
+		assertEquals (9, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, GenerateTestData.createDB ()));
 	}
 
 	/**
@@ -1524,13 +1524,13 @@ public final class TestUnitUtilsImpl
 		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Before any reductions
-		assertEquals (1, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
-		assertEquals (5, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
+		assertEquals (1, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
+		assertEquals (5, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
 
-		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
-		assertEquals (9, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
+		assertEquals (9, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
 
 		// Add summoner retort - should reduce 9 to (9/4 = 2.25 rounded down to 2) = 7
 		final PlayerPick summoner = new PlayerPick ();
@@ -1538,13 +1538,13 @@ public final class TestUnitUtilsImpl
 		summoner.setQuantity (1);
 		ppk.getPick ().add (summoner);
 
-		assertEquals (1, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
-		assertEquals (5, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
+		assertEquals (1, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
+		assertEquals (5, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
 
-		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
-		assertEquals (7, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
+		assertEquals (0, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB ()));
+		assertEquals (7, utils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB ()));
 	}
 
 	/**

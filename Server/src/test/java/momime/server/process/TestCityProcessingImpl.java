@@ -532,10 +532,10 @@ public final class TestCityProcessingImpl
 		final CityCalculations cityCalc = mock (CityCalculations.class);
 		
 		final CityProductionBreakdown humanCityMaxSizeContainer = new CityProductionBreakdown ();
-		humanCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		humanCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		humanCityMaxSizeContainer.setCappedProductionAmount (humanCityMaxSize);
 		final CityProductionBreakdown humanProduction = new CityProductionBreakdown ();
-		humanProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		humanProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		humanProduction.setCappedProductionAmount (150);
 		final CityProductionBreakdownsEx humanCityProductions = new CityProductionBreakdownsEx ();
 		humanCityProductions.getProductionType ().add (humanCityMaxSizeContainer);
@@ -543,10 +543,10 @@ public final class TestCityProcessingImpl
 		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), humanLocation, "TR01", sd, true, false, db)).thenReturn (humanCityProductions);
 
 		final CityProductionBreakdown aiCityMaxSizeContainer = new CityProductionBreakdown ();
-		aiCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		aiCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		aiCityMaxSizeContainer.setCappedProductionAmount (aiCityMaxSize);
 		final CityProductionBreakdown aiProduction = new CityProductionBreakdown ();
-		aiProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		aiProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		aiProduction.setCappedProductionAmount (650);
 		final CityProductionBreakdownsEx aiCityProductions = new CityProductionBreakdownsEx ();
 		aiCityProductions.getProductionType ().add (aiCityMaxSizeContainer);
@@ -554,10 +554,10 @@ public final class TestCityProcessingImpl
 		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), aiLocation, "TR02", sd, true, false, db)).thenReturn (aiCityProductions);
 		
 		final CityProductionBreakdown raidersCityMaxSizeContainer = new CityProductionBreakdown ();
-		raidersCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		raidersCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		raidersCityMaxSizeContainer.setCappedProductionAmount (raidersCityMaxSize);
 		final CityProductionBreakdown raidersProduction = new CityProductionBreakdown ();
-		raidersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		raidersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		raidersProduction.setCappedProductionAmount (60);
 		final CityProductionBreakdownsEx raidersCityProductions = new CityProductionBreakdownsEx ();
 		raidersCityProductions.getProductionType ().add (raidersCityMaxSizeContainer);
@@ -747,7 +747,7 @@ public final class TestCityProcessingImpl
 		assertEquals (3, cityData.getNumberOfRebels ().intValue ());
 		
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), true, sd, db);
-		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 12);
+		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting (), false);
@@ -843,7 +843,7 @@ public final class TestCityProcessingImpl
 		assertEquals (3, cityData.getNumberOfRebels ().intValue ());
 		
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), false, sd, db);
-		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 12);
+		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting (), false);
@@ -939,7 +939,7 @@ public final class TestCityProcessingImpl
 		assertEquals (3, cityData.getNumberOfRebels ().intValue ());
 		
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), true, sd, db);
-		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 12);
+		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting (), false);

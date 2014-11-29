@@ -70,8 +70,8 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "FORTRESS_NAME":
-				final Building fortress = getLanguage ().findBuilding (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
-				text = (fortress == null) ? CommonDatabaseConstants.VALUE_BUILDING_FORTRESS : fortress.getBuildingName ();
+				final Building fortress = getLanguage ().findBuilding (CommonDatabaseConstants.BUILDING_FORTRESS);
+				text = (fortress == null) ? CommonDatabaseConstants.BUILDING_FORTRESS : fortress.getBuildingName ();
 				break;
 				
 			case "PLANE_NAME":

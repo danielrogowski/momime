@@ -91,24 +91,24 @@ public final class TestOverlandMapRightHandPanel
 		final ProductionType goldProduction = new ProductionType ();
 		goldProduction.setProductionTypeDescription ("Gold");
 		goldProduction.setProductionTypeSuffix ("GP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
 		
 		final ProductionType rationsProduction = new ProductionType ();
 		rationsProduction.setProductionTypeDescription ("Rations");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS)).thenReturn (rationsProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (rationsProduction);
 		
 		final ProductionType foodProduction = new ProductionType ();
 		foodProduction.setProductionTypeDescription ("Food");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD)).thenReturn (foodProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)).thenReturn (foodProduction);
 		
 		final ProductionType productionProduction = new ProductionType ();
 		productionProduction.setProductionTypeDescription ("Production");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (productionProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (productionProduction);
 		
 		final ProductionType manaProduction = new ProductionType ();
 		manaProduction.setProductionTypeDescription ("Mana");
 		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
 		
 		final SpellBookSection section = new SpellBookSection ();
 		section.setSpellTargetPrompt ("Select a friendly city to cast your SPELL_NAME spell on");
@@ -210,8 +210,8 @@ public final class TestOverlandMapRightHandPanel
 		
 		// Resource values
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
-		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (99999);
-		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (99999);
+		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (99999);
+		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (99999);
 		
 		// City info
 		final CityCalculations cityCalc = mock (CityCalculations.class);

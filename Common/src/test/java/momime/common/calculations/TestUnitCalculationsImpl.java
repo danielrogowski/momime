@@ -86,7 +86,7 @@ public final class TestUnitCalculationsImpl
 
 		// Alchemy retort grants us grade 1, but still can't use that adamantium
 		final PlayerPick alchemy = new PlayerPick ();
-		alchemy.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY);
+		alchemy.setPickID (CommonDatabaseConstants.RETORT_ID_ALCHEMY);
 		alchemy.setQuantity (1);
 		picks.add (alchemy);
 
@@ -199,13 +199,13 @@ public final class TestUnitCalculationsImpl
 		
 		// Test a unit with ammo
 		final AvailableUnit unitWithAmmo = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (8);
 		assertEquals (8, calc.calculateFullRangedAttackAmmo (unitWithAmmo, skills, players, spells, combatAreaEffects, db));
 		
 		// Test a unit without ammo
 		final AvailableUnit unitWithoutAmmo = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateFullRangedAttackAmmo (unitWithoutAmmo, skills, players, spells, combatAreaEffects, db));
 	}
@@ -232,17 +232,17 @@ public final class TestUnitCalculationsImpl
 		
 		// Test a non-casting unit
 		final AvailableUnit nonCaster = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateManaTotal (nonCaster, skills, players, spells, combatAreaEffects, db));
 
 		// Test an archangel
 		final AvailableUnit archangel = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (40);
-		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (40, calc.calculateManaTotal (archangel, skills, players, spells, combatAreaEffects, db));
 
@@ -251,9 +251,9 @@ public final class TestUnitCalculationsImpl
 		level2.setLevelNumber (2);
 		
 		final AvailableUnit lowHero = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (3);
 		when (unitUtils.getExperienceLevel (lowHero, true, players, combatAreaEffects, db)).thenReturn (level2);
 		assertEquals (22, calc.calculateManaTotal (lowHero, skills, players, spells, combatAreaEffects, db));
@@ -263,9 +263,9 @@ public final class TestUnitCalculationsImpl
 		level4.setLevelNumber (4);
 		
 		final AvailableUnit highHero = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (40);
-		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (highHero, true, players, combatAreaEffects, db)).thenReturn (level4);
 		assertEquals (102, calc.calculateManaTotal (highHero, skills, players, spells, combatAreaEffects, db));
@@ -294,11 +294,11 @@ public final class TestUnitCalculationsImpl
 		// Test a unit that has nothing
 		final MemoryUnit melee = new MemoryUnit ();
 		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, melee)).thenReturn (skills);
-		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		calc.giveUnitFullRangedAmmoAndMana (melee, players, spells, combatAreaEffects, db);
 		
@@ -311,11 +311,11 @@ public final class TestUnitCalculationsImpl
 
 		final MemoryUnit rangedCaster = new MemoryUnit ();
 		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, rangedCaster)).thenReturn (skills);
-		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (8);
-		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (40);
-		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (rangedCaster, true, players, combatAreaEffects, db)).thenReturn (level4);
 		calc.giveUnitFullRangedAmmoAndMana (rangedCaster, players, spells, combatAreaEffects, db);
@@ -381,7 +381,7 @@ public final class TestUnitCalculationsImpl
 		// Unit with 1 HP per figure at full health of 6 figures
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("A");
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		
 		assertEquals (6, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
@@ -399,7 +399,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (0, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
 		// Now it has 4 HP per figure, so 6x4=24 total damage
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
@@ -437,7 +437,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
 		final MemoryUnit unit = new MemoryUnit ();
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
@@ -447,7 +447,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 
 		// Now it has 4 HP per figure
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 		
@@ -489,20 +489,20 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit without even a ranged attack skill
 		final MemoryUnit noRangedAttack = new MemoryUnit ();
-		when (unitUtils.getModifiedAttributeValue (noRangedAttack, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (noRangedAttack, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 		assertFalse (calc.canMakeRangedAttack (noRangedAttack, players, spells, combatAreaEffects, db));
 		
 		// Bow with no remaining ammo
 		final MemoryUnit outOfAmmo = new MemoryUnit ();
-		when (unitUtils.getModifiedAttributeValue (outOfAmmo, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (outOfAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertFalse (calc.canMakeRangedAttack (outOfAmmo, players, spells, combatAreaEffects, db));
 
 		// Bow with remaining ammo
 		final MemoryUnit hasAmmo = new MemoryUnit ();
 		hasAmmo.setRangedAttackAmmo (1);
-		when (unitUtils.getModifiedAttributeValue (hasAmmo, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (hasAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, spells, combatAreaEffects, db));
 		
@@ -513,7 +513,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit unknownRAT = new MemoryUnit ();
 		unknownRAT.setUnitID (unknownRATUnitDef.getUnitID ());
 		unknownRAT.setManaRemaining (3);
-		when (unitUtils.getModifiedAttributeValue (unknownRAT, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (unknownRAT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (unknownRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (unknownRATUnitDef);
 		assertFalse (calc.canMakeRangedAttack (unknownRAT, players, spells, combatAreaEffects, db));
@@ -529,7 +529,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit physRATUnit = new MemoryUnit ();
 		physRATUnit.setUnitID (physRATUnitDef.getUnitID ());
 		physRATUnit.setManaRemaining (3);
-		when (unitUtils.getModifiedAttributeValue (physRATUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (physRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (physRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (physRATUnitDef);
 		when (db.findRangedAttackType (physRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (physRAT);
@@ -547,7 +547,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit magRATUnit = new MemoryUnit ();
 		magRATUnit.setUnitID (magRATUnitDef.getUnitID ());
 		magRATUnit.setManaRemaining (3);
-		when (unitUtils.getModifiedAttributeValue (magRATUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (magRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
 		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);

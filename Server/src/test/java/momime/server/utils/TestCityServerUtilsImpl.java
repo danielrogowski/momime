@@ -365,7 +365,7 @@ public final class TestCityServerUtilsImpl
 	{
 		// Mock details
 		final Unit unitDef = new Unit ();
-		unitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID ("RC09");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -459,7 +459,7 @@ public final class TestCityServerUtilsImpl
 	{
 		// Mock details
 		final Unit unitDef = new Unit ();
-		unitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID ("RC08");		// <---
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -506,7 +506,7 @@ public final class TestCityServerUtilsImpl
 	{
 		// Mock details
 		final Unit unitDef = new Unit ();
-		unitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID (null);		// <---
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -553,7 +553,7 @@ public final class TestCityServerUtilsImpl
 	{
 		// Mock details
 		final Unit unitDef = new Unit ();
-		unitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID ("RC09");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -657,7 +657,7 @@ public final class TestCityServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findBuilding ("BL32", "totalCostOfBuildingsAtLocation")).thenReturn (buildersHallDef);
 		when (db.findBuilding ("BL27", "totalCostOfBuildingsAtLocation")).thenReturn (bankDef);
-		when (db.findBuilding (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, "totalCostOfBuildingsAtLocation")).thenReturn (summoningCircleDef);
+		when (db.findBuilding (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, "totalCostOfBuildingsAtLocation")).thenReturn (summoningCircleDef);
 		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -676,7 +676,7 @@ public final class TestCityServerUtilsImpl
 		buildings.add (bank);
 
 		final MemoryBuilding summoningCircle = new MemoryBuilding ();
-		summoningCircle.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE);	// no cost defined
+		summoningCircle.setBuildingID (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);	// no cost defined
 		summoningCircle.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (summoningCircle);
 		

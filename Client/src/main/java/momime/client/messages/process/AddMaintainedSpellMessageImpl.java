@@ -157,7 +157,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				if (getMaintainedSpell ().isCastInCombat ())
 				{
 					// Show anim on CombatUI
-					final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+					final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
 					
 					final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 					final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
@@ -173,7 +173,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				else
 				{
 					// Show anim on OverlandMapUI
-					final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
+					final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
 
 					final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
 					final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();

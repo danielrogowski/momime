@@ -117,7 +117,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 				// Halve value or not?  This is so summoned units display half upkeep if we have the Channeler retort
 				int value = upkeep.getUpkeepValue ();
 				boolean showHalf = false;
-				if ((halveManaUpkeep) && (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA.equals (upkeep.getProductionTypeID ())))
+				if ((halveManaUpkeep) && (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA.equals (upkeep.getProductionTypeID ())))
 				{
 					showHalf = ((value % 2) != 0);
 					value = value / 2;

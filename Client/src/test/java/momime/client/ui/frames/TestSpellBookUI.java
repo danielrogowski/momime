@@ -59,11 +59,11 @@ public final class TestSpellBookUI
 		
 		final ProductionType research = new ProductionType ();
 		research.setProductionTypeSuffix ("RP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (research);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (research);
 		
 		final ProductionType mana = new ProductionType ();
 		mana.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
 		
 		for (int n = 1; n < 8; n++)
 		{

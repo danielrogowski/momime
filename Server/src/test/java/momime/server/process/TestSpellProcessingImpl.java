@@ -325,7 +325,7 @@ public final class TestSpellProcessingImpl
 		summoningCircle.setCityLocation (summoningCircleLocation);
 		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
+		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
 		// Spell to cast
@@ -417,7 +417,7 @@ public final class TestSpellProcessingImpl
 		summoningCircle.setCityLocation (summoningCircleLocation);
 		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
+		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
 		// Spell to cast
@@ -428,7 +428,7 @@ public final class TestSpellProcessingImpl
 		for (int n = 1; n <= 9; n++)
 		{
 			final Unit unitDef = new Unit ();
-			unitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+			unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 			when (db.findUnit ("UN00" + n, "castOverlandNow")).thenReturn (unitDef);
 			
 			final SummonedUnit summonedUnit = new SummonedUnit ();
@@ -536,7 +536,7 @@ public final class TestSpellProcessingImpl
 		
 		// Summoning circle location
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
+		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (null);		// <---
 
 		// Spell to cast
@@ -750,7 +750,7 @@ public final class TestSpellProcessingImpl
 		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), combatLocation, players, db, sd);
 		
 		// We were charged MP for it
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -20);
+		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
@@ -853,7 +853,7 @@ public final class TestSpellProcessingImpl
 			"CSE004", true, null, null, players, db, sd);
 		
 		// We were charged MP for it
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -20);
+		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
@@ -974,7 +974,7 @@ public final class TestSpellProcessingImpl
 			targetLocation, 8, UnitCombatSideID.ATTACKER, "SP001", db);
 		
 		// We were charged MP for it
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -20);
+		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());

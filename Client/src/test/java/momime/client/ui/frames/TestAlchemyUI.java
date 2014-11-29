@@ -75,12 +75,12 @@ public final class TestAlchemyUI
 		final ProductionType goldProduction = new ProductionType ();
 		goldProduction.setProductionTypeDescription ("Gold");
 		goldProduction.setProductionTypeSuffix ("GP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
 		
 		final ProductionType manaProduction = new ProductionType ();
 		manaProduction.setProductionTypeDescription ("Mana");
 		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -112,12 +112,12 @@ public final class TestAlchemyUI
 		
 		// Picks
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
-		when (pickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY)).thenReturn (retortValue);
+		when (pickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY)).thenReturn (retortValue);
 		
 		// Resources we have
 		final ResourceValueUtils resourceUtils = mock (ResourceValueUtils.class);
-		when (resourceUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (125);
-		when (resourceUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (75);
+		when (resourceUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (125);
+		when (resourceUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (75);
 		
 		// Set up form
 		final AlchemyUI alchemy = new AlchemyUI ();

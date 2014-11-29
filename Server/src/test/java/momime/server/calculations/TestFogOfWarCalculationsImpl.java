@@ -62,7 +62,7 @@ public final class TestFogOfWarCalculationsImpl
 		
 		// Test two locations, one with a tower and one without
 		final OverlandMapTerrainData towerData = new OverlandMapTerrainData ();
-		towerData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		towerData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (2).setTerrainData (towerData);
 
 		final MapCoordinates3DEx towerOnMyrror = new MapCoordinates3DEx (2, 2, 1);

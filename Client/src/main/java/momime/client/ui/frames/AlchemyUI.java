@@ -96,10 +96,10 @@ public final class AlchemyUI extends MomClientFrameUI
 	private JSlider slider;
 	
 	/** Default to converting gold > mana */
-	private String fromProductionTypeID = CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD;
+	private String fromProductionTypeID = CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD;
 
 	/** Default to converting gold > mana */
-	private String toProductionTypeID = CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA;
+	private String toProductionTypeID = CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -136,7 +136,7 @@ public final class AlchemyUI extends MomClientFrameUI
 				directionChanged ();
 				
 				// Update the button
-				if (fromProductionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD))
+				if (fromProductionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD))
 				{
 					changeDirectionButton.setIcon (new ImageIcon (goldToManaButtonNormal));
 					changeDirectionButton.setPressedIcon (new ImageIcon (goldToManaButtonPressed));
@@ -164,7 +164,7 @@ public final class AlchemyUI extends MomClientFrameUI
 					final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "okActionPerformed");
 					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
-					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY) == 0) 
+					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
 						fromValue = fromValue * 2;
 
 					// Send message to the server
@@ -237,7 +237,7 @@ public final class AlchemyUI extends MomClientFrameUI
 					// Flip the direction of the image if converting mana > gold
 					final int x1;
 					final int x2;
-					if (fromProductionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD))
+					if (fromProductionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD))
 					{
 						x1 = 0;
 						x2 = width;
@@ -366,7 +366,7 @@ public final class AlchemyUI extends MomClientFrameUI
 				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateSliderMaximum");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
-				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY) > 0)
+				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0)
 					fromValue = Math.min (fromValue, 999);
 				else
 					fromValue = Math.min (fromValue, 998) / 2;
@@ -405,13 +405,13 @@ public final class AlchemyUI extends MomClientFrameUI
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY) == 0) 
+			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
 				fromValue = fromValue * 2;
 		
 			// Then figure out which represents which resource
 			final int goldValue;
 			final int manaValue;
-			if (fromProductionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD))
+			if (fromProductionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD))
 			{
 				goldValue = fromValue;
 				manaValue = toValue;
@@ -426,11 +426,11 @@ public final class AlchemyUI extends MomClientFrameUI
 			String goldText = new Integer (goldValue).toString ();
 			String manaText = new Integer (manaValue).toString ();
 
-			final ProductionType goldProduction = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+			final ProductionType goldProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 			if ((goldProduction != null) && (goldProduction.getProductionTypeSuffix () != null))
 				goldText = goldText + " " + goldProduction.getProductionTypeSuffix ();
 
-			final ProductionType manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+			final ProductionType manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 			if ((manaProduction != null) && (manaProduction.getProductionTypeSuffix () != null))
 				manaText = manaText + " " + manaProduction.getProductionTypeSuffix ();
 		

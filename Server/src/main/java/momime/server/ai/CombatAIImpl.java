@@ -114,8 +114,8 @@ public final class CombatAIImpl implements CombatAI
 		{
 			final UnitHasSkillMergedList skills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit);
 			
-			if ((getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db) < 0) &&
-				(getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db) < 0))
+			if ((getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db) < 0) &&
+				(getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db) < 0))
 				
 				result = 3;
 			else

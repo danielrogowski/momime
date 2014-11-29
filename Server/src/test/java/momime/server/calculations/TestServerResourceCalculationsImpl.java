@@ -97,17 +97,17 @@ public final class TestServerResourceCalculationsImpl
 		when (db.getPlane ()).thenReturn (planes);
 		
 		final UnitUpkeep shadowDemonsUpkeep = new UnitUpkeep ();
-		shadowDemonsUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		shadowDemonsUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
 		final Unit shadowDemonsDef = new Unit ();
 		shadowDemonsDef.getUnitUpkeep ().add (shadowDemonsUpkeep);
 		when (db.findUnit ("UN172", "recalculateAmountsPerTurn")).thenReturn (shadowDemonsDef);
 
 		final UnitUpkeep warlocksRations = new UnitUpkeep ();
-		warlocksRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		warlocksRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
 		final UnitUpkeep warlocksGold = new UnitUpkeep ();
-		warlocksGold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		warlocksGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		
 		final Unit warlocksDef = new Unit ();
 		warlocksDef.getUnitUpkeep ().add (warlocksGold);
@@ -115,7 +115,7 @@ public final class TestServerResourceCalculationsImpl
 		when (db.findUnit ("UN065", "recalculateAmountsPerTurn")).thenReturn (warlocksDef);
 		
 		final SpellUpkeep crusadeUpkeep = new SpellUpkeep ();
-		crusadeUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		crusadeUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		crusadeUpkeep.setUpkeepValue (10);
 		
 		final Spell crusadeDef = new Spell ();
@@ -170,11 +170,11 @@ public final class TestServerResourceCalculationsImpl
 		shadowDemons.setOwningPlayerID (2);
 		trueMap.getUnit ().add (shadowDemons);
 
-		when (unitUtils.getModifiedUpkeepValue (shadowDemons, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (7);
+		when (unitUtils.getModifiedUpkeepValue (shadowDemons, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (7);
 		
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-7, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
@@ -186,16 +186,16 @@ public final class TestServerResourceCalculationsImpl
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-17, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
 		// Wizard has Channeler, halfing spell maintainence (half of 17 is 8.5, proves that maintainence is rounded up)
-		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER)).thenReturn (1);
+		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
@@ -206,18 +206,18 @@ public final class TestServerResourceCalculationsImpl
 		warlocks.setOwningPlayerID (2);
 		trueMap.getUnit ().add (warlocks);
 		
-		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, db)).thenReturn (1);
-		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, players, db)).thenReturn (5);
+		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db)).thenReturn (1);
+		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, db)).thenReturn (5);
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (3, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
 		assertEquals (-5, priv.getResourceValue ().get (1).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
 		assertEquals (-1, priv.getResourceValue ().get (2).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (2).getAmountStored ());
 
@@ -227,13 +227,13 @@ public final class TestServerResourceCalculationsImpl
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (3, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
 		assertEquals (-5, priv.getResourceValue ().get (1).getAmountPerTurn ());
 		assertEquals (10, priv.getResourceValue ().get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
 		assertEquals (-1, priv.getResourceValue ().get (2).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (2).getAmountStored ());
 
@@ -251,20 +251,20 @@ public final class TestServerResourceCalculationsImpl
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 		
 		final CityProductionBreakdown cityGold = new CityProductionBreakdown ();
-		cityGold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		cityGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		cityGold.setCappedProductionAmount (4);
 
 		final CityProductionBreakdown cityProduction = new CityProductionBreakdown ();
-		cityProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		cityProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		cityProduction.setCappedProductionAmount (3);
 
 		final CityProductionBreakdown cityRations = new CityProductionBreakdown ();
-		cityRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		cityRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		cityRations.setCappedProductionAmount (4);
 		cityRations.setConsumptionAmount (5);
 		
 		final CityProductionBreakdown cityMaxSize = new CityProductionBreakdown ();
-		cityMaxSize.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		cityMaxSize.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		
 		final CityProductionBreakdownsEx cityBreakdown = new CityProductionBreakdownsEx ();
 		cityBreakdown.getProductionType ().add (cityGold);
@@ -277,19 +277,19 @@ public final class TestServerResourceCalculationsImpl
 		// Population will eat 5 rations, but produce 2x2 = 4 rations, and generate 3 x 1.5 = 4.5 gold from taxes and 2x.5 + 1x2 production
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (5, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
 		assertEquals (-1, priv.getResourceValue ().get (1).getAmountPerTurn ());
 		assertEquals (10, priv.getResourceValue ().get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
 		assertEquals (-2, priv.getResourceValue ().get (2).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (2).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION, priv.getResourceValue ().get (3).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, priv.getResourceValue ().get (3).getProductionTypeID ());
 		assertEquals (3, priv.getResourceValue ().get (3).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (3).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, priv.getResourceValue ().get (4).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, priv.getResourceValue ().get (4).getProductionTypeID ());
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
@@ -303,22 +303,22 @@ public final class TestServerResourceCalculationsImpl
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (6, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
 		assertEquals (-1, priv.getResourceValue ().get (1).getAmountPerTurn ());
 		assertEquals (10, priv.getResourceValue ().get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
 		assertEquals (-2, priv.getResourceValue ().get (2).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (2).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION, priv.getResourceValue ().get (3).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, priv.getResourceValue ().get (3).getProductionTypeID ());
 		assertEquals (3, priv.getResourceValue ().get (3).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (3).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, priv.getResourceValue ().get (4).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, priv.getResourceValue ().get (4).getProductionTypeID ());
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, priv.getResourceValue ().get (5).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, priv.getResourceValue ().get (5).getProductionTypeID ());
 		assertEquals (4, priv.getResourceValue ().get (5).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (5).getAmountStored ());
 	}
@@ -340,13 +340,13 @@ public final class TestServerResourceCalculationsImpl
 		final MomResourceValue resource1 = new MomResourceValue ();
 		resource1.setAmountPerTurn (5);
 		resource1.setAmountStored (25);
-		resource1.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		resource1.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		priv.getResourceValue ().add (resource1);
 
 		final MomResourceValue resource2 = new MomResourceValue ();
 		resource2.setAmountPerTurn (7);
 		resource2.setAmountStored (16);
-		resource2.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		resource2.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		priv.getResourceValue ().add (resource2);
 		
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
@@ -372,11 +372,11 @@ public final class TestServerResourceCalculationsImpl
 		
 		assertEquals (5, msg.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (25, msg.getResourceValue ().get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, msg.getResourceValue ().get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, msg.getResourceValue ().get (0).getProductionTypeID ());
 
 		assertEquals (7, msg.getResourceValue ().get (1).getAmountPerTurn ());
 		assertEquals (16, msg.getResourceValue ().get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, msg.getResourceValue ().get (1).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, msg.getResourceValue ().get (1).getProductionTypeID ());
 	}
 
 	/**
@@ -390,7 +390,7 @@ public final class TestServerResourceCalculationsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		final UnitUpkeep gargoylesUpkeep = new UnitUpkeep ();
-		gargoylesUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		gargoylesUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
 		final Unit gargoylesDef = new Unit ();
 		gargoylesDef.getUnitUpkeep ().add (gargoylesUpkeep);
@@ -403,7 +403,7 @@ public final class TestServerResourceCalculationsImpl
 		when (db.findSpell ("SP033", "listConsumersOfProductionType")).thenReturn (entangleDef);
 		
 		final SpellUpkeep natureAwarenessUpkeep = new SpellUpkeep ();
-		natureAwarenessUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		natureAwarenessUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		natureAwarenessUpkeep.setUpkeepValue (7);
 		
 		final Spell natureAwarenessDef = new Spell ();
@@ -412,7 +412,7 @@ public final class TestServerResourceCalculationsImpl
 		
 		// Building consumption
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuildingConsumption (wizardsGuildDef, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (3);
+		when (buildingUtils.findBuildingConsumption (wizardsGuildDef, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (3);
 		
 		// Map
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -506,9 +506,9 @@ public final class TestServerResourceCalculationsImpl
 
 		// Unit upkeep
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUpkeepValue (gargoyles, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
-		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherStatus, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
-		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherPlayer, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitUtils.getModifiedUpkeepValue (gargoyles, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherStatus, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherPlayer, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
 		
 		// Create dummy implementation for the factory that is usually provided by spring
 		final MomResourceConsumerFactory factory = new MomResourceConsumerFactory ()
@@ -540,24 +540,24 @@ public final class TestServerResourceCalculationsImpl
 		
 		// Run test
 		final List<MomResourceConsumer> consumptions = calc.listConsumersOfProductionType
-			(player, players, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, trueMap, db);
+			(player, players, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, trueMap, db);
 
 		assertEquals (3, consumptions.size ());
 
 		assertEquals (MomResourceConsumerUnit.class, consumptions.get (0).getClass ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (0).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, consumptions.get (0).getProductionTypeID ());
 		assertEquals (5, consumptions.get (0).getConsumptionAmount ());
 		assertEquals (player, consumptions.get (0).getPlayer ());
 		assertSame (gargoyles, ((MomResourceConsumerUnit) consumptions.get (0)).getUnit ());
 
 		assertEquals (MomResourceConsumerBuilding.class, consumptions.get (1).getClass ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (1).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, consumptions.get (1).getProductionTypeID ());
 		assertEquals (3, consumptions.get (1).getConsumptionAmount ());
 		assertEquals (player, consumptions.get (1).getPlayer ());
 		assertSame (wizardsGuild, ((MomResourceConsumerBuilding) consumptions.get (1)).getBuilding ());
 
 		assertEquals (MomResourceConsumerSpell.class, consumptions.get (2).getClass ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (2).getProductionTypeID ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, consumptions.get (2).getProductionTypeID ());
 		assertEquals (7, consumptions.get (2).getConsumptionAmount ());
 		assertEquals (player, consumptions.get (2).getPlayer ());
 		assertSame (natureAwareness, ((MomResourceConsumerSpell) consumptions.get (2)).getSpell ());
@@ -589,40 +589,40 @@ public final class TestServerResourceCalculationsImpl
 		calc.setResourceValueUtils (utils);
 		
 		// Research resource has no accumulation defined
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (10);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (10);
 		
 		// Mana accumulates into itself
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (12);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (12);
 
 		// Gold accumulates into itself
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (7);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (7);
 
 		// Rations are accumulates into gold, halved + rounded down
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
 
 		// Call method
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
 		// Check results
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, 10);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, 12);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 7);
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, 9);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 4);		// from rations
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, 10);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, 12);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 7);
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, 9);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 4);		// from rations
 
 		// Negate all the per turn amounts and run it again (this is here to prove how the rounding down works on a negative value)
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (-10);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (-12);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (-7);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (-10);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (-12);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (-7);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
 
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, -10);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -12);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -7);
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, -9);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -4);		// from rations
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, -10);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -12);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -7);
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, -9);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -4);		// from rations
 	}
 
 	/**
@@ -635,7 +635,7 @@ public final class TestServerResourceCalculationsImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
 
-		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -648,7 +648,7 @@ public final class TestServerResourceCalculationsImpl
 
 		// Set up test object
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
 		
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
@@ -667,7 +667,7 @@ public final class TestServerResourceCalculationsImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
 
-		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -680,7 +680,7 @@ public final class TestServerResourceCalculationsImpl
 
 		// Set up test object
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
 		
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
@@ -738,7 +738,7 @@ public final class TestServerResourceCalculationsImpl
 		
 		// Generate 40 research each turn
 		when (resourceValueUtils.calculateAmountPerTurnForProductionType
-			(priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (40);
+			(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (40);
 		
 		// No spell being researched
 		calc.progressResearch (player, spellSettings, db);
@@ -856,7 +856,7 @@ public final class TestServerResourceCalculationsImpl
 		
 		// Set amount of casting skill
 		final MomResourceValue skillImprovement = new MomResourceValue ();
-		skillImprovement.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		skillImprovement.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		skillImprovement.setAmountStored (10);
 		priv.getResourceValue ().add (skillImprovement);
 		

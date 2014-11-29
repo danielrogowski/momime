@@ -226,7 +226,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 				mostExpensiveConstructionCost = Math.max (mostExpensiveConstructionCost, thisBuilding.getProductionCost ());
 
 		for (final Unit thisUnit : getUnit ())
-			if ((CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
+			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
 				(thisUnit.getProductionCost () != null))
 				
 				mostExpensiveConstructionCost = Math.max (mostExpensiveConstructionCost, thisUnit.getProductionCost ());

@@ -265,7 +265,7 @@ public final class TestResourceValueClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (productionTypeImages);
 		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (noProductionTypeImages);
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, "generateUpkeepImage")).thenReturn (manaImages);
+		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "generateUpkeepImage")).thenReturn (manaImages);
 		
 		// Set up object to test
 		final ResourceValueClientUtilsImpl obj = new ResourceValueClientUtilsImpl ();
@@ -307,7 +307,7 @@ public final class TestResourceValueClientUtilsImpl
 		
 		// Two productions
 		final UnitUpkeep list4mana = new UnitUpkeep ();
-		list4mana.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		list4mana.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		list4mana.setUpkeepValue (14);
 		
 		list4.add (list4mana);
@@ -403,7 +403,7 @@ public final class TestResourceValueClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (productionTypeImages);
 		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (noProductionTypeImages);
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, "generateUpkeepImage")).thenReturn (manaImages);
+		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "generateUpkeepImage")).thenReturn (manaImages);
 		
 		// Set up object to test
 		final ResourceValueClientUtilsImpl obj = new ResourceValueClientUtilsImpl ();
@@ -445,7 +445,7 @@ public final class TestResourceValueClientUtilsImpl
 		
 		// Two productions
 		final UnitUpkeep list4mana = new UnitUpkeep ();
-		list4mana.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		list4mana.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		list4mana.setUpkeepValue (14);
 		
 		list4.add (list4mana);

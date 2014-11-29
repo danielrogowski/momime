@@ -142,7 +142,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 			cityView.unitsChanged ();
 		
 		// We need this repeatedly so just work it out once
-		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "MoveUnitStackOverlandMessageImpl.start");
+		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "MoveUnitStackOverlandMessageImpl.start");
 		tickCount = Math.max (overlandMapTileSet.getTileWidth (), overlandMapTileSet.getTileHeight ());
 		
 		// Start at the starting cell - note it being at the start point means it looks no different, so is why we don't do a repaint yet

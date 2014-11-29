@@ -122,7 +122,7 @@ public final class TestCombatUI
 		final TileSetEx combatMapTileSet = new TileSetEx ();
 		combatMapTileSet.setAnimationSpeed (2.0);
 		combatMapTileSet.setAnimationFrameCount (3);
-		when (gfx.findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "CombatUI")).thenReturn (combatMapTileSet);
+		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI")).thenReturn (combatMapTileSet);
 		
 		final UnitEx unitGfx = new UnitEx ();
 		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN197/overland.png");
@@ -223,7 +223,7 @@ public final class TestCombatUI
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.calculateCastingSkillOfPlayer (priv.getResourceValue ())).thenReturn (22);
 		
-		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (97);
+		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (97);
 		
 		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
 		when (spellCalculations.calculateDoubleCombatCastingRangePenalty
@@ -307,21 +307,21 @@ public final class TestCombatUI
 		when (unitClientUtils.getUnitName (selectedUnit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("High Elf Swordsmen");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
-		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (3);
 		
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateAliveFigureCount (selectedUnit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (6);
 		
 		// Unit icons
-		when (unitClientUtils.getUnitAttributeIcon (selectedUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn
+		when (unitClientUtils.getUnitAttributeIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn
 			(utils.loadImage ("/momime.client.graphics/unitAttributes/meleeNormal.png"));
 
-		when (unitClientUtils.getUnitAttributeIcon (selectedUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
+		when (unitClientUtils.getUnitAttributeIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
 			(utils.loadImage ("/momime.client.graphics/rangedAttacks/rock/iconNormal.png"));
 		
 		final UnitSkill movementSkill = new UnitSkill ();

@@ -418,7 +418,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		for (final Unit thisUnit : getClient ().getClientDB ().getUnit ())
 			
 			// If its a regular unit
-			if ((CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
+			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
 				
 				// and unit either specifies no race (e.g. Trireme) or matches the race inhabiting this city
 				((thisUnit.getUnitRaceID () == null) || (thisUnit.getUnitRaceID ().equals (cityData.getCityRaceID ()))) &&

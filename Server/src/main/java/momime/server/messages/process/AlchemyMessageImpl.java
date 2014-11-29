@@ -55,11 +55,11 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 		if (getFromValue () <= 0)
 			error = "Must specify a value of at least 1 to use alchemy";
 
-		else if (getFromProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD))
-			toProductionTypeID = CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA;
+		else if (getFromProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD))
+			toProductionTypeID = CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA;
 
-		else if (getFromProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA))
-			toProductionTypeID = CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD;
+		else if (getFromProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
+			toProductionTypeID = CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD;
 
 		else
 			error = "Can only use Alchemy to convert from Gold or Mana";
@@ -85,7 +85,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
 
 			final int toValue;
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY) > 0)
+			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0)
 				toValue = getFromValue ();
 			else
 				toValue = getFromValue () / 2;

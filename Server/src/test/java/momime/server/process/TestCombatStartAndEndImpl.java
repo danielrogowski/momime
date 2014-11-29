@@ -1142,7 +1142,7 @@ public final class TestCombatStartAndEndImpl
 		
 		final MapFeature mf = new MapFeature ();
 		mf.getMapFeatureMagicRealm ().add (null);		// Doesn't matter what's here, just that its a non-empty list
-		when (db.findMapFeature (eq (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY), anyString ())).thenReturn (mf);
+		when (db.findMapFeature (eq (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY), anyString ())).thenReturn (mf);
 
 		final Plane arcanus = new Plane ();
 		final Plane myrror = new Plane ();
@@ -1203,7 +1203,7 @@ public final class TestCombatStartAndEndImpl
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
-		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		
 		final MemoryGridCell gc = trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
@@ -1360,7 +1360,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Defending player has 1200 coins in total
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (defendingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (1200);
+		when (resourceValueUtils.findAmountStoredForProductionType (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (1200);
 		
 		// Defending player has 50000 population in total across 10 or so cities
 		final OverlandMapServerUtils overlandMapServerUtils = mock (OverlandMapServerUtils.class);
@@ -1381,8 +1381,8 @@ public final class TestCombatStartAndEndImpl
 		summoningCircle.setBuildingURN (4);
 		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (null);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
 		
 		// How many rebels the city will have after the attacker captures it
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
@@ -1471,8 +1471,8 @@ public final class TestCombatStartAndEndImpl
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 		
 		// Check the attacker swiped gold from the defender
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, goldSwiped);
-		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
+		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
+		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
 		// Check the summoning circle was removed (but not their fortress)
 		verify (midTurn, times (0)).destroyBuildingOnServerAndClients (trueMap, players, fortress.getBuildingURN (), false, sd, db);
@@ -1561,7 +1561,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Defending player has 1200 coins in total
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (defendingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (1200);
+		when (resourceValueUtils.findAmountStoredForProductionType (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (1200);
 		
 		// Defending player has 50000 population in total across 10 or so cities
 		final OverlandMapServerUtils overlandMapServerUtils = mock (OverlandMapServerUtils.class);
@@ -1586,8 +1586,8 @@ public final class TestCombatStartAndEndImpl
 		summoningCircle.setBuildingURN (4);
 		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (null);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
+		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
 		
 		// How many rebels the city will have after the attacker captures it
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
@@ -1675,8 +1675,8 @@ public final class TestCombatStartAndEndImpl
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 		
 		// Check the attacker swiped gold from the defender
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
-		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
+		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
+		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
 		// Check all buildings were destroyed
 		verify (midTurn, times (1)).destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, combatLocation, sd, db);

@@ -120,9 +120,9 @@ public final class CityAIImpl implements CityAI
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
 						
 						final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, map, null, cityLocation, null, sd, false, true, db);
-						final CityProductionBreakdown productionProduction = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
-						final CityProductionBreakdown goldProduction = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
-						final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+						final CityProductionBreakdown productionProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+						final CityProductionBreakdown goldProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+						final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 						
 						final int productionPercentageBonus = (productionProduction != null) ? productionProduction.getPercentageBonus () : 0;
 						final int goldTradePercentageBonus = (goldProduction != null) ? goldProduction.getTradePercentageBonusCapped () : 0;
@@ -193,8 +193,8 @@ public final class CityAIImpl implements CityAI
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
 						(cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 
-						if (((tradeGoods) && (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
-							((!tradeGoods) && (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
+						if (((tradeGoods) && (CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
+							((!tradeGoods) && (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
@@ -253,7 +253,7 @@ public final class CityAIImpl implements CityAI
 		int rationsNeeded = 0;
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-				rationsNeeded = rationsNeeded + getUnitUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, db);
+				rationsNeeded = rationsNeeded + getUnitUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db);
 
 		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations");
 
@@ -274,7 +274,7 @@ public final class CityAIImpl implements CityAI
 
 						rationsNeeded = rationsNeeded - getCityCalculations ().calculateSingleCityProduction (players, trueMap.getMap (),
 							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db,
-							CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+							CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 					}
 				}
 
@@ -410,7 +410,7 @@ public final class CityAIImpl implements CityAI
 		// If no appropriate buildings at all then resort to Trade Gooods
 		if (!decided)
 		{
-			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
+			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
 			cityData.setCurrentlyConstructingUnitID (null);
 		}
 

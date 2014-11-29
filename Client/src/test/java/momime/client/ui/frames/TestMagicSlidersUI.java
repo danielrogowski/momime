@@ -79,15 +79,15 @@ public final class TestMagicSlidersUI
 		
 		final ProductionType manaProduction = new ProductionType ();
 		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
 		
 		final ProductionType researchProduction = new ProductionType ();
 		researchProduction.setProductionTypeSuffix ("RP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (researchProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (researchProduction);
 		
 		final ProductionType skillProduction = new ProductionType ();
 		skillProduction.setProductionTypeSuffix ("SP");
-		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)).thenReturn (skillProduction);
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)).thenReturn (skillProduction);
 		
 		final momime.client.language.database.v0_9_5.Spell spellLang1 = new momime.client.language.database.v0_9_5.Spell ();
 		spellLang1.setSpellName ("Great Unsummoning");		// This was the longest spell name I could find!
@@ -151,17 +151,17 @@ public final class TestMagicSlidersUI
 		// Give us 100 power base, and some mana and skill stored
 		final MomResourceValue powerBase = new MomResourceValue ();
 		powerBase.setAmountPerTurn (100);
-		powerBase.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		powerBase.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		priv.getResourceValue ().add (powerBase);
 
 		final MomResourceValue manaStored = new MomResourceValue ();
 		manaStored.setAmountStored (125);
-		manaStored.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		manaStored.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		priv.getResourceValue ().add (manaStored);
 
 		final MomResourceValue skill = new MomResourceValue ();
 		skill.setAmountStored (203);
-		skill.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		skill.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		priv.getResourceValue ().add (skill);
 		
 		// Spell settings
@@ -174,7 +174,7 @@ public final class TestMagicSlidersUI
 		
 		// Lets say we have Archmage, giving +50% bonus to magic power spent on skill improvement
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
-		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, pub.getPick (), db)).thenReturn (50);
+		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, pub.getPick (), db)).thenReturn (50);
 		
 		// Spell research
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();

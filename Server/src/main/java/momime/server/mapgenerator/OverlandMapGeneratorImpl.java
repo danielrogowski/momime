@@ -475,13 +475,13 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			heightMap.setRandomUtils (getRandomUtils ());
 			heightMap.generateHeightMap ();
 
-			setHighestTiles (heightMap, plane, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS,
+			setHighestTiles (heightMap, plane, ServerDatabaseValues.TILE_TYPE_GRASS,
 				(int) Math.round (landTileCountTimes100 / 100d));
 
-			setHighestTiles (heightMap, plane, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS,
+			setHighestTiles (heightMap, plane, ServerDatabaseValues.TILE_TYPE_HILLS,
 				(int) Math.round (landTileCountTimes100 * sd.getLandProportion ().getPercentageOfLandIsHills () / 10000d));
 
-			setHighestTiles (heightMap, plane, ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN,
+			setHighestTiles (heightMap, plane, ServerDatabaseValues.TILE_TYPE_MOUNTAIN,
 				(int) Math.round (landTileCountTimes100 * sd.getLandProportion ().getPercentageOfLandIsHills () * sd.getLandProportion ().getPercentageOfHillsAreMountains () / 1000000d));
 
 			// Special rules for Tundra
@@ -489,7 +489,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 			// Blob-based scenery
 			for (final LandProportionTileType blobTileType : sd.getLandProportion ().getLandProportionTileType ())
-				placeBlobs (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, blobTileType.getTileTypeID (),
+				placeBlobs (ServerDatabaseValues.TILE_TYPE_GRASS, blobTileType.getTileTypeID (),
 					(int) Math.round (landTileCountTimes100 * blobTileType.getPercentageOfLand () / 10000d), blobTileType.getEachAreaTileCount (), plane);
 		}
 
@@ -499,7 +499,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 		{
 			// Generate shore tiles and extend them into rivers
-			final int [] [] shoreTileNumbers = determineShoreTileNumbers (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, ServerDatabaseValues.VALUE_TILE_TYPE_SHORE, plane);
+			final int [] [] shoreTileNumbers = determineShoreTileNumbers (ServerDatabaseValues.TILE_TYPE_OCEAN, ServerDatabaseValues.TILE_TYPE_SHORE, plane);
 
 			makeRivers (shoreTileNumbers, plane);
 		}
@@ -533,7 +533,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
 					final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-					terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+					terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
 
 					final ServerGridCell cell = new ServerGridCell ();
 					cell.setTerrainData (terrainData);
@@ -601,14 +601,14 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 							d = Math.min (Math.min (d, y), sd.getMapSize ().getHeight () - 1 - y);
 
 						if (d == 0)
-							terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
-						else if ((d < sd.getLandProportion ().getTundraRowCount ()) && (terrainData.getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS)))
+							terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
+						else if ((d < sd.getLandProportion ().getTundraRowCount ()) && (terrainData.getTileTypeID ().equals (ServerDatabaseValues.TILE_TYPE_GRASS)))
 						{
 							log.debug ("makeTundra: Grass at " + x + ", " + y + ", " + plane + " is " + d + " away from the nearest non-wrapping edge, so has a " + d + "/" +
 								sd.getLandProportion ().getTundraRowCount () + " chance of being staying as grass");
 							
 							if (getRandomUtils ().nextInt (sd.getLandProportion ().getTundraRowCount ()) >= d)
-								terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+								terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 						}
 					}
 		}
@@ -742,7 +742,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					{
 						boolean possibleLocation = true;
 						for (int plane = 0; plane < sd.getMapSize ().getDepth (); plane++)
-							if (gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA))
+							if (gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.TILE_TYPE_TUNDRA))
 								possibleLocation = false;
 
 						if (possibleLocation)
@@ -774,8 +774,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					for (int plane = 0; plane < sd.getMapSize ().getDepth (); plane++)
 					{
 						final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-						terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
-						terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+						terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+						terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 					}
 					
 					// Set value of monsters + treasure in this tower, but only on Arcanus
@@ -934,7 +934,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 				final boolean riverPendingValue = riverPending [coords.getY ()] [coords.getX ()];
 
-				if ((!terrainData.getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS)) ||
+				if ((!terrainData.getTileTypeID ().equals (ServerDatabaseValues.TILE_TYPE_GRASS)) ||
 					(riverPendingValue) || (terrainData.getMapFeatureID () != null))
 
 					result = false;
@@ -1059,9 +1059,9 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 			final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 			if (isRiverMouth)
-				terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH);
+				terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_LANDSIDE_RIVER_MOUTH);
 			else
-				terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER);
+				terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_RIVER);
 
 			// Set the directions the river at this tile heads in
 
@@ -1106,7 +1106,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			final List<MapCoordinates2D> startingPositions = new ArrayList<MapCoordinates2D> ();
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-					if (gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE))
+					if (gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.TILE_TYPE_SHORE))
 					{
 						// Found a shore tile, now check
 						// a) that the shore tile has possibilities for a river leading from it (e.g. a shore tile with only shore in the corner(s) can never have a river leading from it)
@@ -1147,7 +1147,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 				// Convert river mouth tile
 				final OverlandMapTerrainData riverMouth = gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				riverMouth.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEANSIDE_RIVER_MOUTH);
+				riverMouth.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEANSIDE_RIVER_MOUTH);
 
 				// Pick the directions to extend this river in
 				final String [] riverOptions = RIVER_MOUTH_DIRECTIONS [shoreTileNumbers [coords.getY ()] [coords.getX ()]];
@@ -1402,7 +1402,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					{
 						final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 
-						if ((thisCell.getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS)) &&
+						if ((thisCell.getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.TILE_TYPE_GRASS)) &&
 							(thisCell.getTerrainData ().getMapFeatureID () == null) &&
 							(thisCell.getAuraFromNode () == null) && (placeNodeRings (nodeAuraSize, x, y, plane.getPlaneNumber (), null)))
 						{
@@ -1473,8 +1473,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		final List<String> lairMapFeatureIDs = new ArrayList<String> ();
 		for (final MapFeature thisFeature : db.getMapFeature ())
 			if ((thisFeature.getMapFeatureMagicRealm ().size () > 0) &&
-				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY)) &&
-				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)))
+				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY)) &&
+				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)))
 
 				lairMapFeatureIDs.add (thisFeature.getMapFeatureID ());
 

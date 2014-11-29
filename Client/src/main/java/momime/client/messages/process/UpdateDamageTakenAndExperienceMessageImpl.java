@@ -48,7 +48,7 @@ public final class UpdateDamageTakenAndExperienceMessageImpl extends UpdateDamag
 		mu.setDamageTaken (getDamageTaken ());
 		
 		if (getExperience () >= 0)
-			getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, getExperience ());
+			getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, getExperience ());
 		
 		// Do we have a unit info screen up showing details about this unit?  If so then we need to force the greyed out hearts to redraw
 		final UnitInfoUI ui = getClient ().getUnitInfos ().get (getUnitURN ());

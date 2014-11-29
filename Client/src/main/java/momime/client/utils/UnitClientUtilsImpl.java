@@ -182,7 +182,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		log.trace ("Entering getUnitAttributeIcon: " + unit.getUnitID () + ", " + unitAttributeID);
 		
 		final String attributeImageName;
-		if (unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+		if (unitAttributeID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
 		{
 			// Ranged attacks have their own special rules, so we select the appropriate
 			// type of range attack icon, e.g. bow, rock, blue blast.
@@ -230,7 +230,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		log.trace ("Entering getUnitSkillIcon: " + unit.getUnitID () + ", " + unitSkillID);
 		
 		final String image;
-		if (unitSkillID.equals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE))
+		if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE))
 		{
 			// Experience skill icon changes as the unit gains experience levels
 			final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (unit, true, getClient ().getPlayers (),
@@ -339,7 +339,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				 */
 				case COMBAT_DAMAGE:
 					if ((unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
-						(unit.getUnitID (), "killUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
+						(unit.getUnitID (), "killUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
 						
 						getUnitUtils ().removeUnitURN (unitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 					else
@@ -470,8 +470,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
 				relativeScale = 2;
 				relativeScaleMultiplier = 1;
-				figureMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 1 : 4;
-				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
+				figureMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 1 : 4;
+				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
 				break;
 				
 			default:
@@ -663,7 +663,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				// Get unit type
 				final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitDef.getUnitMagicRealm (), "calculateWalkTiming").getUnitTypeID ();
 				
-				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
+				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
 				break;
 				
 			default:

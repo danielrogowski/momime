@@ -87,7 +87,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 		// Actual scouting skill
 		scoutingRange = Math.max (scoutingRange, getUnitUtils ().getModifiedSkillValue
-			(unit, mergedSkills, ServerDatabaseValues.VALUE_UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db));
+			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
 		for (final UnitHasSkill thisSkill : mergedSkills)
@@ -259,7 +259,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		// Go through each tile type
 		final Map<String, Integer> movementRates = new HashMap<String, Integer> ();
 		for (final TileType tileType : db.getTileType ())
-			if (!tileType.getTileTypeID ().equals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN))
+			if (!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN))
 			{
 				Integer worstMovementRate = 0;
 

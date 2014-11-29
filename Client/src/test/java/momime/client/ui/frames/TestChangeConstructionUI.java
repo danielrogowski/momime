@@ -152,9 +152,9 @@ public final class TestChangeConstructionUI
 			unit.setUnitID ("UN00" + n);
 
 //			if (n == 1)
-				unit.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+				unit.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 //			else
-//				unit.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+//				unit.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 			
 			if (n == 2)
 				unit.setUnitRaceID ("RC01");

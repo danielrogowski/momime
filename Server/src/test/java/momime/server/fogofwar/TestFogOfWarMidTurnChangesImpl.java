@@ -882,14 +882,14 @@ public final class TestFogOfWarMidTurnChangesImpl
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.addBuildingOnServerAndClients (gsk, players, cityLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS,
-			CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, "SP028", 7, sd, db);
+		midTurn.addBuildingOnServerAndClients (gsk, players, cityLocation, CommonDatabaseConstants.BUILDING_FORTRESS,
+			CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, "SP028", 7, sd, db);
 		
 		// Prove that building got added to server's true map
 		assertEquals (2, trueMap.getBuilding ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, trueMap.getBuilding ().get (0).getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_FORTRESS, trueMap.getBuilding ().get (0).getBuildingID ());
 		assertEquals (cityLocation, trueMap.getBuilding ().get (0).getCityLocation ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, trueMap.getBuilding ().get (1).getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, trueMap.getBuilding ().get (1).getBuildingID ());
 		assertEquals (cityLocation, trueMap.getBuilding ().get (1).getCityLocation ());
 		
 		// Prove that building got added to server's copy of each player's memory, but only the players who can see it
@@ -897,23 +897,23 @@ public final class TestFogOfWarMidTurnChangesImpl
 		assertEquals (0, priv2.getFogOfWarMemory ().getBuilding ().size ());
 		
 		assertEquals (2, priv3.getFogOfWarMemory ().getBuilding ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, priv3.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_FORTRESS, priv3.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
 		assertEquals (cityLocation, priv3.getFogOfWarMemory ().getBuilding ().get (0).getCityLocation ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, priv3.getFogOfWarMemory ().getBuilding ().get (1).getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, priv3.getFogOfWarMemory ().getBuilding ().get (1).getBuildingID ());
 		assertEquals (cityLocation, priv3.getFogOfWarMemory ().getBuilding ().get (1).getCityLocation ());
 		
 		assertEquals (2, priv4.getFogOfWarMemory ().getBuilding ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, priv4.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_FORTRESS, priv4.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
 		assertEquals (cityLocation, priv4.getFogOfWarMemory ().getBuilding ().get (0).getCityLocation ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, priv4.getFogOfWarMemory ().getBuilding ().get (1).getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, priv4.getFogOfWarMemory ().getBuilding ().get (1).getBuildingID ());
 		assertEquals (cityLocation, priv4.getFogOfWarMemory ().getBuilding ().get (1).getCityLocation ());
 		
 		// Prove that human player's client was sent update msg
 		assertEquals (1, conn3.getMessages ().size ());
 		final AddBuildingMessage msg = (AddBuildingMessage) conn3.getMessages ().get (0);
 		assertEquals (cityLocation, msg.getFirstBuilding ().getCityLocation ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, msg.getFirstBuilding ().getBuildingID ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, msg.getSecondBuilding ().getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_FORTRESS, msg.getFirstBuilding ().getBuildingID ());
+		assertEquals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, msg.getSecondBuilding ().getBuildingID ());
 		assertEquals ("SP028", msg.getBuildingCreatedFromSpellID ());
 		assertEquals (7, msg.getBuildingCreationSpellCastByPlayerID ().intValue ());
 	}
@@ -1600,7 +1600,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Map feature is one that may contain monsters
 		final MapFeature mapFeature = new MapFeature ();
 		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
-		when (db.findMapFeature (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
+		when (db.findMapFeature (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
 		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
@@ -1622,11 +1622,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final OverlandMapTerrainData moveToCell = new OverlandMapTerrainData ();
 		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
-		moveToCell.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		moveToCell.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		
 		final OverlandMapTerrainData moveToCellOtherPlane = new OverlandMapTerrainData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCellOtherPlane);
-		moveToCellOtherPlane.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		moveToCellOtherPlane.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		
 		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
 		final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx (20, 10, 1);
@@ -1713,7 +1713,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 			assertEquals (n, msg1.getUnitURN ().get (n-1).intValue ());
 
 		// The tower is now cleared, on both planes
-		assertEquals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCell.getMapFeatureID ());
-		assertEquals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCellOtherPlane.getMapFeatureID ());
+		assertEquals (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCell.getMapFeatureID ());
+		assertEquals (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCellOtherPlane.getMapFeatureID ());
 	}
 }

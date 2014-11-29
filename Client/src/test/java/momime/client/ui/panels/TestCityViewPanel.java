@@ -69,14 +69,14 @@ public final class TestCityViewPanel
 		summoningCircle.setLocationY (52);
 		summoningCircle.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL98.png");
 		summoningCircle.setSizeMultiplier (1);
-		summoningCircle.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE);
+		summoningCircle.setBuildingID (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
 		
 		final CityViewElement fortress = new CityViewElement ();
 		fortress.setLocationX (202);
 		fortress.setLocationY (67);
 		fortress.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL99-frame1.png");
 		fortress.setSizeMultiplier (1);
-		fortress.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 
 		final CityViewElement evil = new CityViewElement ();
 		evil.setLocationX (21);
@@ -146,8 +146,8 @@ public final class TestCityViewPanel
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		final MemoryBuildingUtils buildings = mock (MemoryBuildingUtils.class);
-		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (null);
-		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
+		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)).thenReturn (null);
+		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
 
 		final MemoryMaintainedSpellUtils spells = mock (MemoryMaintainedSpellUtils.class);
 		when (spells.findMaintainedSpell (fow.getMaintainedSpell (), null, null, null, null, new MapCoordinates3DEx (20, 10, 0), "SE146")).thenReturn (null);

@@ -52,16 +52,16 @@ public final class TestClientDatabaseExImpl
 
 		final Unit unit1 = new Unit ();
 		unit1.setProductionCost (40);
-		unit1.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		unit1.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		db.getUnit ().add (unit1);
 
 		final Unit unit2 = new Unit ();
 		unit2.setProductionCost (50);
-		unit2.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		unit2.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		db.getUnit ().add (unit2);
 
 		final Unit unit3 = new Unit ();
-		unit3.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		unit3.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		db.getUnit ().add (unit3);
 		
 		// Run method

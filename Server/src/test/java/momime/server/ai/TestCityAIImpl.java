@@ -57,7 +57,7 @@ public final class TestCityAIImpl
 				for (final MemoryGridCell cell : row.getCell ())
 				{
 					final OverlandMapTerrainData terrain = new OverlandMapTerrainData ();
-					terrain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+					terrain.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
 
 					cell.setTerrainData (terrain);
 				}
@@ -83,7 +83,7 @@ public final class TestCityAIImpl
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
-					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 
 		final MapCoordinates3DEx tundra = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (0, tundra.getX ());
@@ -92,13 +92,13 @@ public final class TestCityAIImpl
 
 		// If we put 3 dots of grass, there's only one exact spot where the city radius will include all of them
 		// Also set the entire other plane to grass, to prove that it doesn't get considered
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (24).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
-		map.getPlane ().get (0).getRow ().get (10).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+		map.getPlane ().get (0).getRow ().get (13).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
+		map.getPlane ().get (0).getRow ().get (13).getCell ().get (24).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
+		map.getPlane ().get (0).getRow ().get (10).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 
 		for (final MapRowOfMemoryGridCells row : map.getPlane ().get (1).getRow ())
 			for (final MemoryGridCell cell : row.getCell ())
-				cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+				cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 
 		final MapCoordinates3DEx grass = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (22, grass.getX ());
@@ -124,7 +124,7 @@ public final class TestCityAIImpl
 
 		// Put a river just to the right of the city - so it would be included in the previous radius, so we get the food from it anyway
 		// But we don't get the 20% gold bonus from it unless we move the city to that location, so this proves that the gold bonus is taken into account
-		map.getPlane ().get (0).getRow ().get (11).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER);
+		map.getPlane ().get (0).getRow ().get (11).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_RIVER);
 
 		final MapCoordinates3DEx river = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (21, river.getX ());
@@ -134,11 +134,11 @@ public final class TestCityAIImpl
 		// Mountains produce no food and no gold, just like tundra, but they go give a 5% production bonus
 		// This carefully places 5 mountain tiles just along underneath where the city was previously chosen, totally 25% bonus so it then
 		// moves the city to include this 25% in preference to the 20% gold bonus from the river tile
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (19).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (14).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (14).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (14).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (23).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		map.getPlane ().get (0).getRow ().get (13).getCell ().get (19).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+		map.getPlane ().get (0).getRow ().get (14).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+		map.getPlane ().get (0).getRow ().get (14).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+		map.getPlane ().get (0).getRow ().get (14).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+		map.getPlane ().get (0).getRow ().get (13).getCell ().get (23).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 
 		final MapCoordinates3DEx mountain = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (21, mountain.getX ());
@@ -207,7 +207,7 @@ public final class TestCityAIImpl
 			cityData.setNumberOfRebels (1);
 			cityData.setOptionalFarmers (0);
 			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
-			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.VALUE_BUILDING_HOUSING);
+			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_HOUSING);
 			trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).setCityData (cityData);
 		}
 
@@ -228,7 +228,7 @@ public final class TestCityAIImpl
 			cityData.setNumberOfRebels (1);
 			cityData.setOptionalFarmers (0);
 			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
-			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
+			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
 			trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setCityData (cityData);
 		}
 
@@ -268,15 +268,15 @@ public final class TestCityAIImpl
 
 		// Need certain types of terrain in order to be able to construct all building types
 		final OverlandMapTerrainData forest = new OverlandMapTerrainData ();
-		forest.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
+		forest.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_FOREST);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (19).setTerrainData (forest);
 
 		final OverlandMapTerrainData mountain = new OverlandMapTerrainData ();
-		mountain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		mountain.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (20).setTerrainData (mountain);
 
 		final OverlandMapTerrainData ocean = new OverlandMapTerrainData ();
-		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city
@@ -303,10 +303,10 @@ public final class TestCityAIImpl
 		// Sit in a loop adding every building that it decides upon until we get trade goods
 		// Then check everything was built in the right order afterwards
 		cityData.setCityRaceID ("RC09");
-		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
+		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
-			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
+			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx (20, 10, 1);
 
@@ -355,10 +355,10 @@ public final class TestCityAIImpl
 		trueBuildings.clear ();
 		cityData.setCityRaceID ("RC01");
 		cityData.setCurrentlyConstructingBuildingID (null);
-		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
+		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
-			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
+			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MemoryBuilding building = new MemoryBuilding ();
 				building.setCityLocation (new MapCoordinates3DEx (20, 10, 1));

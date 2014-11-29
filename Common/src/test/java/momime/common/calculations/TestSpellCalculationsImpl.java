@@ -365,7 +365,7 @@ public final class TestSpellCalculationsImpl
 		// Combat at wizard's fortress
 		final MemoryBuilding fortressLocation = new MemoryBuilding ();
 		fortressLocation.setCityLocation (new MapCoordinates3DEx (3, 7, 0));
-		when (utils.findCityWithBuilding (pd.getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings)).thenReturn (fortressLocation);
+		when (utils.findCityWithBuilding (pd.getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressLocation);
 
 		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
@@ -399,7 +399,7 @@ public final class TestSpellCalculationsImpl
 		assertEquals (6, calc.calculateDoubleCombatCastingRangePenalty (player, location8, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// Channeler makes everying x1 unless right at wizard's fortress
-		when (picks.getQuantityOfPick (ppk.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER)).thenReturn (1);
+		when (picks.getQuantityOfPick (ppk.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
 		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location2, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location3, false, map, buildings, overlandMapCoordinateSystem).intValue ());

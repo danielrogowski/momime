@@ -92,7 +92,7 @@ public final class TestCombatMapBitmapGeneratorImpl
 		
 		// Overland map (we need the tile type)
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
+		terrainData.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_FOREST);
 		
 		final MapVolumeOfMemoryGridCells overlandMap = ClientTestData.createOverlandMap (mapSizeData);
 		overlandMap.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);

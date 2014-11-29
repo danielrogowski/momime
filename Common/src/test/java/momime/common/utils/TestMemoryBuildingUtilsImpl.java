@@ -1074,6 +1074,6 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (100, utils.goldFromSellingBuilding (db.findBuilding (GenerateTestData.ANIMISTS_GUILD, "testGoldFromSellingBuilding")));
-		assertEquals (0, utils.goldFromSellingBuilding (db.findBuilding (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, "testGoldFromSellingBuilding")));
+		assertEquals (0, utils.goldFromSellingBuilding (db.findBuilding (CommonDatabaseConstants.BUILDING_FORTRESS, "testGoldFromSellingBuilding")));
 	}
 }

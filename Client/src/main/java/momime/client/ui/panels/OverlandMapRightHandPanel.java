@@ -875,14 +875,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		log.trace ("Entering updateGlobalEconomyValues");
 		
 		// Amounts stored
-		updateAmountStored (goldAmountStored, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
-		updateAmountStored (manaAmountStored, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		updateAmountStored (goldAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		updateAmountStored (manaAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
 		// Amounts per turn
-		updateAmountPerTurn (goldAmountPerTurn, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, "ProductionPerTurn", MomUIConstants.GOLD);
-		updateAmountPerTurn (manaAmountPerTurn, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, "ProductionPerTurn", MomUIConstants.GOLD);
-		updateAmountPerTurn (rationsAmountPerTurn, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "ProductionPerTurn", MomUIConstants.GOLD);
-		updateAmountPerTurn (magicPowerAmountPerTurn, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, "ProductionPerTurnMagicPower", MomUIConstants.SILVER);
+		updateAmountPerTurn (goldAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "ProductionPerTurn", MomUIConstants.GOLD);
+		updateAmountPerTurn (manaAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "ProductionPerTurn", MomUIConstants.GOLD);
+		updateAmountPerTurn (rationsAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "ProductionPerTurn", MomUIConstants.GOLD);
+		updateAmountPerTurn (magicPowerAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, "ProductionPerTurnMagicPower", MomUIConstants.SILVER);
 		
 		log.trace ("Exiting updateGlobalEconomyValues");
 	}
@@ -983,33 +983,33 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				surveyorTileTypeFood.setText (null);
 			else
 			{
-				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
 				
 				surveyorTileTypeFood.setText (getTextUtils ().halfIntToStr (tileType.getDoubleFood ()) + " " +
-					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD));
+					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD));
 			}
 
 			if ((tileType.getProductionBonus () == null) || (tileType.getProductionBonus () <= 0))
 				surveyorTileTypeProduction.setText (null);
 			else
 			{
-				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
 				
 				surveyorTileTypeProduction.setText ("+" + tileType.getProductionBonus ().toString () + "% " +
-					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION));
+					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION));
 			}
 
 			if ((tileType.getGoldBonus () == null) || (tileType.getGoldBonus () <= 0))
 				surveyorTileTypeGold.setText (null);
 			else
 			{
-				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
 				
 				surveyorTileTypeGold.setText ("+" + tileType.getGoldBonus ().toString () + "% " +
-					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD));
+					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD));
 			}
 			
 			// Does the tile type stop us from building a city?

@@ -162,7 +162,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			if (unitType.getExperienceLevel ().size () > 0)
 			{
 				final UnitHasSkill exp = new UnitHasSkill ();
-				exp.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+				exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				exp.setUnitSkillValue (startingExperience);
 				unit.getUnitHasSkill ().add (exp);
 			}
@@ -327,7 +327,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		log.trace ("Entering getExperienceLevel: " + unit.getUnitID () + ", " + includeBonuses);
 
 		// Experience can never be increased by spells, combat area effects, weapon grades, etc. etc. therefore safe to do this from the basic skill value on the unmerged list
-		final int experienceSkillValue = getBasicSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+		final int experienceSkillValue = getBasicSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 
 		final ExperienceLevel result;
 		if (experienceSkillValue < 0)
@@ -361,7 +361,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				// Does the player have the Warlord retort?
 				final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "getExperienceLevel");
 				final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
-				if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD) > 0)
+				if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_WARLORD) > 0)
 					levelIncludingBonuses++;
 
 				// Does the player have the Crusade CAE?
@@ -550,7 +550,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		// (skills which we have, but have no numeric value, will have value zero so are excluded here)
 
 		// Exclude experience, otherwise we get a repetitive loop as the call to expLvl = getExperienceLevel () lower down calls getSkillValue!
-		if ((modifiedValue > 0) && (!unitSkillID.equals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE)))
+		if ((modifiedValue > 0) && (!unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)))
 		{
 			// Any bonuses due to weapon grades?
 			if (unit.getWeaponGrade () != null)
@@ -671,11 +671,11 @@ public final class UnitUtilsImpl implements UnitUtils
 		// this is how we know that e.g. adamantium gives +2 defense but not +2 resistance.
 		if ((unit.getWeaponGrade () != null) &&
 			((component == UnitAttributeComponent.WEAPON_GRADE) || (component == UnitAttributeComponent.ALL)) &&
-			((!unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
+			((!unitAttributeID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
 		{
 			// Only certain types of ranged attack get bonuses from Mithril and Adamantium weapons - e.g. bows do, magical blasts do not
 			final boolean weaponGradeBonusApplies;
-			if (unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+			if (unitAttributeID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
 			{
 				if (unitDefinition.getRangedAttackType () == null)
 					weaponGradeBonusApplies = false;
@@ -696,7 +696,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		final ExperienceLevel expLevel = getExperienceLevel (unit, true, players, combatAreaEffects, db);
 		if ((expLevel != null) &&
 			((component == UnitAttributeComponent.EXPERIENCE) || (component == UnitAttributeComponent.ALL)) &&
-			((!unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
+			((!unitAttributeID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
 		{
 			for (final ExperienceAttributeBonus bonus : expLevel.getExperienceAttributeBonus ())
 				if (bonus.getUnitAttributeID ().equals (unitAttributeID))
@@ -730,7 +730,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		// Any bonuses due to spells/special effects in the location the unit is currently in?
 		// Ditto, ranged attack bonuses only apply if we had a ranged attack to begin with
 		if (((component == UnitAttributeComponent.COMBAT_AREA_EFFECTS) || (component == UnitAttributeComponent.ALL)) &&
-			((!unitAttributeID.equals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
+			((!unitAttributeID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) || (basicValue > 0)))
 		{
 			final String storeMagicRealmLifeformTypeID = getModifiedUnitMagicRealmLifeformTypeID (unit, mergedSkills, spells, db);
 			for (final MemoryCombatAreaEffect effect : combatAreaEffects)
@@ -812,7 +812,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getModifiedUpkeepValue").getUnitMagicRealm ();
 			final String unitTypeID = db.findUnitMagicRealm (unitMagicRealmID, "getModifiedUpkeepValue").getUnitTypeID ();
 
-			final int percentageReduction = getPlayerPickUtils ().totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, unitTypeID, picks, db);
+			final int percentageReduction = getPlayerPickUtils ().totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, unitTypeID, picks, db);
 
 			// Calculate actual amount of reduction, rounding down
 			final int amountReduction = (baseUpkeepValue * percentageReduction) / 100;

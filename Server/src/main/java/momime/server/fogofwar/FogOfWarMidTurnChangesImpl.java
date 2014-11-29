@@ -1194,7 +1194,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final UpdateDamageTakenAndExperienceMessage msg = new UpdateDamageTakenAndExperienceMessage ();
 		msg.setUnitURN (tu.getUnitURN ());
 		msg.setDamageTaken (tu.getDamageTaken ());
-		msg.setExperience (getUnitUtils ().getBasicSkillValue (tu.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE));
+		msg.setExperience (getUnitUtils ().getBasicSkillValue (tu.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
 
 		// Check which players can see the unit
 		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
@@ -1209,7 +1209,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				mu.setDamageTaken (msg.getDamageTaken ());
 				
 				if (msg.getExperience () >= 0)
-					getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, msg.getExperience ());
+					getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, msg.getExperience ());
 
 				// Update player's memory on client
 				if (thisPlayer.getPlayerDescription ().isHuman ())
@@ -1300,10 +1300,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				}
 
 				// Experience?
-				final int exp = getUnitUtils ().getBasicSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+				final int exp = getUnitUtils ().getBasicSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if (exp >= 0)
 				{
-					getUnitUtils ().setBasicSkillValue (thisUnit, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, exp + 1);
+					getUnitUtils ().setBasicSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp + 1);
 					sendMsg = true;
 				}
 
@@ -1429,10 +1429,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null))
 			{
-				final int exp = getUnitUtils ().getBasicSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+				final int exp = getUnitUtils ().getBasicSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if (exp >= 0)
 				{
-					getUnitUtils ().setBasicSkillValue (trueUnit, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, exp+1);
+					getUnitUtils ().setBasicSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp+1);
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
 					updatePlayerMemoryOfUnit_DamageTakenAndExperience (trueUnit, trueTerrain, players, db, fogOfWarSettings);
@@ -1685,7 +1685,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}					
 		
 		// If we captured a tower of wizardry, then turn the light on
-		else if (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY.equals (tc.getTerrainData ().getMapFeatureID ()))
+		else if (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY.equals (tc.getTerrainData ().getMapFeatureID ()))
 		{
 			for (final Plane plane : db.getPlane ())
 			{
@@ -1693,7 +1693,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				log.debug ("Turning light on in tower at " + towerCoords);
 				
 				trueMap.getMap ().getPlane ().get (towerCoords.getZ ()).getRow ().get (towerCoords.getY ()).getCell ().get
-					(towerCoords.getX ()).getTerrainData ().setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
+					(towerCoords.getX ()).getTerrainData ().setMapFeatureID (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 				updatePlayerMemoryOfTerrain (trueMap.getMap (), players, towerCoords, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			}
 		}

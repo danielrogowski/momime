@@ -586,29 +586,29 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		
 				final int manaPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
 				final int researchPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
 				final int skillPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
 				final int magicPowerPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 				// Update the per turn labels
-				final ProductionType manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+				final ProductionType manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 				manaPerTurn.setString (getTextUtils ().intToStrCommas (manaPerTurnValue) + " " +
-					((manaProduction != null) ? manaProduction.getProductionTypeSuffix () : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA));
+					((manaProduction != null) ? manaProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA));
 		
-				final ProductionType researchProduction = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+				final ProductionType researchProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 				researchPerTurn.setString (getTextUtils ().intToStrCommas (researchPerTurnValue) + " " +
-					((researchProduction != null) ? researchProduction.getProductionTypeSuffix () : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH));
+					((researchProduction != null) ? researchProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH));
 		
-				final ProductionType skillProduction = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+				final ProductionType skillProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 				skillPerTurn.setString (getTextUtils ().intToStrCommas (skillPerTurnValue) + " " +
-					((skillProduction != null) ? skillProduction.getProductionTypeSuffix () : CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT));
+					((skillProduction != null) ? skillProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT));
 
 				magicPowerPerTurn.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "PowerBase").replaceAll
 					("AMOUNT_PER_TURN", getTextUtils ().intToStrCommas (magicPowerPerTurnValue)));				
@@ -620,7 +620,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				// Skill progress bar
 				skillPerTurn.setMaximum (getSkillCalculations ().getSkillPointsRequiredToImproveSkillFrom (currentSkill));
 				skillPerTurn.setValue (getResourceValueUtils ().findAmountStoredForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT) -
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT) -
 					getSkillCalculations ().getSkillPointsRequiredForCastingSkill (currentSkill));		// i.e. current skill pts - what we needed to attain our current skill level
 			
 				// Spell being researched

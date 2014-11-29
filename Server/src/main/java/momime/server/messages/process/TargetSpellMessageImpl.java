@@ -213,8 +213,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				// Spell that creates a building instead of an effect, like "Wall of Stone" or "Move Fortress"
 				// Is it a type of building where we only ever have one of them, and need to remove the existing one?
 				String secondBuildingID = null;
-				if ((spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)) ||
-					(spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)))
+				if ((spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) ||
+					(spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)))
 				{
 					// Find & remove the main building for this spell
 					final MemoryBuilding destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
@@ -227,10 +227,10 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							mom.getPlayers (), destroyBuildingLocation.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
 						
 						// Move summoning circle as well if its in the same place as the wizard's fortress
-						if (spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
+						if (spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))
 						{
 							final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
-								(sender.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
+								(sender.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 							
 							if (summoningCircleLocation != null)
@@ -239,7 +239,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 									mom.getPlayers (), summoningCircleLocation.getBuildingURN (),
 									false, mom.getSessionDescription (), mom.getServerDB ());
 								
-								secondBuildingID = CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE;
+								secondBuildingID = CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE;
 							}
 						}
 					}

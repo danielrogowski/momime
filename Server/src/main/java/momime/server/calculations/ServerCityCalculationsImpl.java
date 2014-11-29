@@ -72,7 +72,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		while ((farmer == null) && (taskIter.hasNext ()))
 		{
 			final RacePopulationTask thisTask = taskIter.next ();
-			if (thisTask.getPopulationTaskID ().equals (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER))
+			if (thisTask.getPopulationTaskID ().equals (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER))
 				farmer = thisTask;
 		}
 
@@ -85,7 +85,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		while ((rations == null) && (prodIter.hasNext ()))
 		{
 			final RacePopulationTaskProduction thisProd = prodIter.next ();
-			if (thisProd.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS))
+			if (thisProd.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS))
 				rations = thisProd;
 		}
 
@@ -97,7 +97,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 
 			// Bump up farming rate if we have an Animists' guild
 			getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,
-				CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, db);
+				CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, db);
 
 		log.trace ("Exiting calculateDoubleFarmingRate = " + doubleFarmingRate);
 		return doubleFarmingRate;
@@ -162,7 +162,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 
 		final int rationsNeeded = (cityData.getCityPopulation () / 1000) - getCityCalculations ().calculateSingleCityProduction
 			(players, map, buildings, cityLocation, priv.getTaxRateID (), sd, false,
-				db, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+				db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
 		// See if we need any farmers at all
 		if (rationsNeeded <= 0)

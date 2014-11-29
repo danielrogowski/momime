@@ -100,7 +100,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		if (isRangedAttack)
 		{
 			damageToDefender = getDamageCalculator ().calculateDamage (attacker, defender, attackingPlayer, defendingPlayer,
-				CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK, damageCalculationMsg, mom.getPlayers (),
+				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, damageCalculationMsg, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 			damageToAttacker = 0;
 			
@@ -109,11 +109,11 @@ public final class DamageProcessorImpl implements DamageProcessor
 		else
 		{
 			damageToDefender = getDamageCalculator ().calculateDamage (attacker, defender, attackingPlayer, defendingPlayer,
-				CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
+				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 			
 			damageToAttacker = getDamageCalculator ().calculateDamage (defender, attacker, attackingPlayer, defendingPlayer,
-				CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
+				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 		}
 		

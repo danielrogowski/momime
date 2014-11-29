@@ -217,19 +217,19 @@ public final class TestCombatProcessingImpl
 	{
 		// Mock database
 		final Unit dwarfHeroDef = new Unit ();
-		dwarfHeroDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		dwarfHeroDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		final Unit spearmenDef = new Unit ();
-		spearmenDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		spearmenDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final Unit archerHeroDef = new Unit ();
-		archerHeroDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		archerHeroDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		final Unit bowmenDef = new Unit ();
-		bowmenDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		bowmenDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final Unit settlersDef = new Unit ();
-		settlersDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		settlersDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findUnit ("UN001", "calculateUnitCombatClass")).thenReturn (dwarfHeroDef);
@@ -262,29 +262,29 @@ public final class TestCombatProcessingImpl
 		// Set up test object
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		when (unitUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 		
-		when (unitUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 			
-		when (unitUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 				
-		when (unitUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 					
-		when (unitUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
-		when (unitUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 						
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -1037,10 +1037,10 @@ public final class TestCombatProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		final Unit longbowmen = new Unit ();
-		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final Unit hero = new Unit ();
-		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		final Unit phantomWarriors = new Unit ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
@@ -1239,10 +1239,10 @@ public final class TestCombatProcessingImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		final Unit longbowmen = new Unit ();
-		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final Unit hero = new Unit ();
-		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		final Unit phantomWarriors = new Unit ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
@@ -1433,10 +1433,10 @@ public final class TestCombatProcessingImpl
 		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
 		final Unit longbowmen = new Unit ();
-		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final Unit hero = new Unit ();
-		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		final Unit phantomWarriors = new Unit ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
@@ -1622,10 +1622,10 @@ public final class TestCombatProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		final Unit longbowmen = new Unit ();
-		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final Unit hero = new Unit ();
-		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		final Unit phantomWarriors = new Unit ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
@@ -1773,10 +1773,10 @@ public final class TestCombatProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		final Unit longbowmen = new Unit ();
-		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final Unit hero = new Unit ();
-		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		final Unit phantomWarriors = new Unit ();
 		phantomWarriors.setUnitMagicRealm ("MB01");

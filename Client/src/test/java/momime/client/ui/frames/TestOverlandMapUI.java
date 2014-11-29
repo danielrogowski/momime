@@ -68,7 +68,7 @@ public final class TestOverlandMapUI
 		final TileSetEx overlandMapTileSet = new TileSetEx ();
 		overlandMapTileSet.setAnimationSpeed (2.0);
 		overlandMapTileSet.setAnimationFrameCount (3);
-		when (gfx.findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
+		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
 	
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);

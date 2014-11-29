@@ -113,7 +113,7 @@ public final class TestServerDatabaseConvertersImpl
 			assertEquals ("MF01", clientDB.getMapFeature ().get (0).getMapFeatureID ());
 			assertFalse (clientDB.getMapFeature ().get (0).isAnyMagicRealmsDefined ());
 
-			assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, clientDB.getMapFeature ().get (11).getMapFeatureID ());
+			assertEquals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, clientDB.getMapFeature ().get (11).getMapFeatureID ());
 			assertTrue (clientDB.getMapFeature ().get (11).isAnyMagicRealmsDefined ());
 		}
 	}

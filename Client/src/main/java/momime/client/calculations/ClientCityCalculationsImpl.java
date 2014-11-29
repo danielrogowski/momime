@@ -481,7 +481,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			for (final momime.common.database.Unit unit : getClient ().getClientDB ().getUnit ())
 			
 				// Check that the unit is the right race for this city or is a generic non-race specific unit, like a Trireme
-				if ((CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (unit.getUnitMagicRealm ())) &&
+				if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (unit.getUnitMagicRealm ())) &&
 					((unit.getUnitRaceID () == null) || (unit.getUnitRaceID ().equals (cityData.getCityRaceID ()))))
 				{
 					// Check if its actually a prerequsite

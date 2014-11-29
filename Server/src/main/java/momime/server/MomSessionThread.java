@@ -187,7 +187,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		}
 
 		// Set default tax rate
-		priv.setTaxRateID (ServerDatabaseValues.VALUE_TAX_RATE_DEFAULT);
+		priv.setTaxRateID (ServerDatabaseValues.TAX_RATE_DEFAULT);
 		
 		// Set default power distribution
 		final MagicPowerDistribution dist = new MagicPowerDistribution ();

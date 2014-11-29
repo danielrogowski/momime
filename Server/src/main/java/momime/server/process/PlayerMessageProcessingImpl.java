@@ -364,7 +364,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		log.trace ("Entering createHeroes");
 
 		for (final Unit thisUnit : db.getUnit ())
-			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 
 				// Add this hero for all players, even raiders, just not the monsters
 				// We won't end up sending these to the client since we're setting status as 'not generated'
@@ -515,7 +515,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			{
 				mom.getSessionLogger ().info ("Randomzing hero skills for each player...");
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if (mom.getServerDB ().findUnit (thisUnit.getUnitID (), "checkIfCanStartGame").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+					if (mom.getServerDB ().findUnit (thisUnit.getUnitID (), "checkIfCanStartGame").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 						getUnitServerUtils ().generateHeroNameAndRandomSkills (thisUnit, mom.getServerDB ());
 			}
 
@@ -540,7 +540,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				{
 					// Calculate each wizard's initial starting casting skills
 					// This effectively gives each wizard some starting stored skill in RE10, which will then be sent to the client by RecalculateGlobalProductionValues below
-					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT,
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT,
 						getSkillCalculations ().getSkillPointsRequiredForCastingSkill (getPlayerPickServerUtils ().getTotalInitialSkill
 							(ppk.getPick (), mom.getServerDB ())));
 
@@ -551,7 +551,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					else
 						startingGold = mom.getSessionDescription ().getDifficultyLevel ().getAiStartingGold ();
 
-					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, startingGold);
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, startingGold);
 				}
 
 				// Default each player's farmers to just enough to feed their initial units

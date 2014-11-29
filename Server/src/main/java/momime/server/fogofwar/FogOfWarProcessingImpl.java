@@ -186,7 +186,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		// Nature Awareness allows us to see the whole map, in which case no point checking each city or unit
 		if (((sd.isDisableFogOfWar () != null) && (sd.isDisableFogOfWar ())) ||
 			getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
-				ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
+				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
 		{
 			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
@@ -197,7 +197,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		{
 			// Check if we have regular Awareness cast, so we don't have to check individually for every city
 			final boolean awareness = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
-				ServerDatabaseValues.VALUE_SPELL_ID_AWARENESS, null, null, null, null) != null);
+				ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null) != null);
 
 			// Check what areas we can see because we have cities there
 			for (final Plane plane : db.getPlane ())

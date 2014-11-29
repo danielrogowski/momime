@@ -42,7 +42,7 @@ public final class TestMemoryGridCellUtilsImpl
 	public final void testConvertNullTileTypeToFOW_NullTileTypeID ()
 	{
 		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (new OverlandMapTerrainData ()));
+		assertEquals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (new OverlandMapTerrainData ()));
 	}
 
 	/**
@@ -52,7 +52,7 @@ public final class TestMemoryGridCellUtilsImpl
 	public final void testConvertNullTileTypeToFOW_NullTerrainData ()
 	{
 		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (null));
+		assertEquals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (null));
 	}
 
 	/**
@@ -62,7 +62,7 @@ public final class TestMemoryGridCellUtilsImpl
 	public final void testIsTerrainTowerOfWizardry_Uncleared ()
 	{
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 
 		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertTrue (utils.isTerrainTowerOfWizardry (terrainData));
@@ -75,7 +75,7 @@ public final class TestMemoryGridCellUtilsImpl
 	public final void testIsTerrainTowerOfWizardry_Cleared ()
 	{
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
+		terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 
 		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertTrue (utils.isTerrainTowerOfWizardry (terrainData));

@@ -759,12 +759,12 @@ public final class SpellBookUI extends MomClientFrameUI
 		// This can be called before we've ever opened the spell book, so none of the components exist
 		if (contentPane != null)
 		{
-			final ProductionType manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+			final ProductionType manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 			String manaSuffix = (manaProductionType == null) ? null : manaProductionType.getProductionTypeSuffix ();
 			if (manaSuffix == null)
 				manaSuffix = "";
 			
-			final ProductionType researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+			final ProductionType researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 			String researchSuffix = (researchProductionType == null) ? null : researchProductionType.getProductionTypeSuffix ();
 			if (researchSuffix == null)
 				researchSuffix = "";

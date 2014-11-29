@@ -152,7 +152,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		
 		// Second pass - now check which of those tile types actually produce any production % bonuses
 		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
-		breakdown.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		breakdown.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		
 		for (final CityProductionBreakdownTileType thisTileType : tileTypes.values ())
 		{
@@ -385,7 +385,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		
 		// Second pass - now check which of those tile types actually produce any food
 		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
-		breakdown.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		breakdown.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		
 		for (final CityProductionBreakdownTileType thisTileType : tileTypes.values ())
 		{
@@ -539,7 +539,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Add on racial unrest percentage
 		// To do this, need to find the player's capital race, i.e. the race inhabiting the city where their fortress is
 		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
-			(cityData.getCityOwnerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
+			(cityData.getCityOwnerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings);
 
 		if (fortressLocation != null)
 		{
@@ -621,7 +621,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (cityLocation.equals (thisUnit.getUnitLocation ())))
 			{
 				final String unitMagicRealmID = db.findUnit (thisUnit.getUnitID (), "calculateCityRebels").getUnitMagicRealm ();
-				if (!db.findUnitMagicRealm (unitMagicRealmID, "calculateCityRebels").getUnitTypeID ().equals (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED))
+				if (!db.findUnitMagicRealm (unitMagicRealmID, "calculateCityRebels").getUnitTypeID ().equals (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED))
 					breakdown.setUnitCount (breakdown.getUnitCount () + 1);
 			}
 
@@ -1004,7 +1004,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if ((taxRate.getDoubleTaxGold () > 0) && (taxPayers > 0))
 			{
 				final CityProductionBreakdown gold = new CityProductionBreakdown ();
-				gold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+				gold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				gold.setApplicablePopulation (taxPayers);
 				gold.setDoubleProductionAmountEachPopulation (taxRate.getDoubleTaxGold ());
 				gold.setDoubleProductionAmountAllPopulation (taxPayers * taxRate.getDoubleTaxGold ());
@@ -1018,7 +1018,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if (eaters > 0)
 			{
 				final CityProductionBreakdown rations = new CityProductionBreakdown ();
-				rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+				rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 				rations.setApplicablePopulation (eaters);
 				rations.setConsumptionAmountEachPopulation (1);
 				rations.setConsumptionAmountAllPopulation (eaters);
@@ -1028,14 +1028,14 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 
 			// Production from population
-			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER,
+			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.POPULATION_TASK_ID_FARMER,
 				cityData.getMinimumFarmers () + cityData.getOptionalFarmers (), cityLocation, buildings, db);
 
-			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER,
+			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.POPULATION_TASK_ID_WORKER,
 				(cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels (), cityLocation, buildings, db);
 
 			// With magical races, even the rebels produce power
-			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL,
+			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.POPULATION_TASK_ID_REBEL,
 				cityData.getNumberOfRebels (), cityLocation, buildings, db);
 		}
 
@@ -1044,10 +1044,10 @@ public final class CityCalculationsImpl implements CityCalculations
 			
 			// If calculatePotential is true, assume we've built everything
 			// We only really need to count the granary and farmers' market, but easier just to include everything than to specifically discount these
-			if (((calculatePotential) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))) ||
+			if (((calculatePotential) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))) ||
 				((!calculatePotential) && (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, thisBuilding.getBuildingID ()) != null)))
 			{
-				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
+				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))
 				{
 					// Wizard's fortress produces mana according to how many books were chosen at the start of the game...
 					for (final PickType thisPickType : db.getPickType ())
@@ -1068,7 +1068,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Temples and such produce magic power, but spell maintenance is charged in Mana
 
 		// See if we've got a miners' guild to boost the income from map features
-		final CityProductionBreakdown mineralPercentageResult = productionValues.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
+		final CityProductionBreakdown mineralPercentageResult = productionValues.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
 		final int buildingMineralPercentageBonus = (mineralPercentageResult != null) ? mineralPercentageResult.getPercentageBonus () : 0;
 		final int raceMineralBonusMultipler = (cityRace != null) ? cityRace.getMineralBonusMultiplier () : 1;
 
@@ -1084,7 +1084,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Gold trade % from rivers and oceans
 		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
 		// into considering the potential maximum size this city will reach and cap the gold trade % accordingly
-		calculateGoldTradeBonus (productionValues.findOrAddProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD), map, cityLocation,
+		calculateGoldTradeBonus (productionValues.findOrAddProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD), map, cityLocation,
 			(calculatePotential ? food.getCappedProductionAmount () : null), sd.getMapSize (), db);
 
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
@@ -1151,7 +1151,7 @@ public final class CityCalculationsImpl implements CityCalculations
 				((thisProduction.getBaseProductionAmount () * thisProduction.getPercentageBonus ()) / 100));
 
 			// Stop max city size going over the game set maximum
-			final int cap = (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD)) ? cityMaxSize : Integer.MAX_VALUE;
+			final int cap = (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)) ? cityMaxSize : Integer.MAX_VALUE;
 			thisProduction.setCappedProductionAmount (Math.min (thisProduction.getModifiedProductionAmount (), cap));
 		}
 

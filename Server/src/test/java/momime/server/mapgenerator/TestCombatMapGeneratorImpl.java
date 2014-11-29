@@ -71,7 +71,7 @@ public final class TestCombatMapGeneratorImpl
 				assertEquals (0, cell.getBorderID ().size ());
 				assertEquals (1, cell.getTileLayer ().size ());
 				assertEquals (CombatMapLayerID.TERRAIN, cell.getTileLayer ().get (0).getLayer ());
-				assertEquals (ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_GRASS, cell.getTileLayer ().get (0).getCombatTileTypeID ());
+				assertEquals (ServerDatabaseValues.COMBAT_TILE_TYPE_GRASS, cell.getTileLayer ().get (0).getCombatTileTypeID ());
 			}
 
 		assertEquals (CommonDatabaseConstants.COMBAT_MAP_WIDTH * CommonDatabaseConstants.COMBAT_MAP_HEIGHT, count);
@@ -172,7 +172,7 @@ public final class TestCombatMapGeneratorImpl
 		// Element from a building
 		final MemoryBuilding fortress = new MemoryBuilding ();
 		fortress.setCityLocation (combatMapLocation);
-		fortress.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		
 		trueTerrain.getBuilding ().add (fortress);
 
@@ -214,7 +214,7 @@ public final class TestCombatMapGeneratorImpl
 			}
 		
 		// Element based on map feature
-		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);		// i.e. anything that doesn't produce a combat map element
+		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);		// i.e. anything that doesn't produce a combat map element
 		terrainData.setMapFeatureID ("MF19");		// Fallen temple
 
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
@@ -315,11 +315,11 @@ public final class TestCombatMapGeneratorImpl
 		// Terrain layer
 		final String terrainTileTypeID = utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN);
 		String result;
-		if (terrainTileTypeID.equals (ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_GRASS))
+		if (terrainTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TYPE_GRASS))
 			result = ".";
-		else if (terrainTileTypeID.equals (ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_DARK))
+		else if (terrainTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TYPE_DARK))
 			result = "v";
-		else if (terrainTileTypeID.equals (ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_RIDGE))
+		else if (terrainTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TYPE_RIDGE))
 			result = "^";
 		else
 			throw new MomException ("outputCombatTile doesn't know a letter to output for terrain combat tile type \"" + terrainTileTypeID + "\"");
@@ -328,7 +328,7 @@ public final class TestCombatMapGeneratorImpl
 		final String featureTileTypeID = utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
 		if (featureTileTypeID == null)
 			result = result + " ";
-		else if (featureTileTypeID.equals (ServerDatabaseValues.VALUE_COMBAT_TILE_TERRAIN_FEATURE))
+		else if (featureTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TERRAIN_FEATURE))
 			result = result + "T";
 		else if (featureTileTypeID.equals ("CBL02"))		// House
 			result = result + "H";
@@ -378,7 +378,7 @@ public final class TestCombatMapGeneratorImpl
 		
 		// Put a city here so we get some buildings
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 		
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityPopulation (6000);
@@ -390,7 +390,7 @@ public final class TestCombatMapGeneratorImpl
 		// And a wizard's fortress
 		final MemoryBuilding fortress = new MemoryBuilding ();
 		fortress.setCityLocation (combatMapLocation);
-		fortress.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		
 		fow.getBuilding ().add (fortress);
 

@@ -91,7 +91,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		for (final MemoryUnit trueUnit : dismisses)
 		{
 			final KillUnitActionID action;
-			if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "processSpecialOrders-d").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+			if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "processSpecialOrders-d").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 				action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
 			else
 				action = KillUnitActionID.FREE;

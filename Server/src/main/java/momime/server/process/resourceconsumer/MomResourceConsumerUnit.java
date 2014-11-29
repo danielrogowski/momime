@@ -128,7 +128,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 
 		// Action needs to depend on the type of unit
 		final KillUnitActionID action;
-		if (mom.getServerDB ().findUnit (getUnit ().getUnitID (), "MomResourceConsumerUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+		if (mom.getServerDB ().findUnit (getUnit ().getUnitID (), "MomResourceConsumerUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 			action = KillUnitActionID.HERO_LACK_OF_PRODUCTION;
 		else
 			action = KillUnitActionID.UNIT_LACK_OF_PRODUCTION;

@@ -452,8 +452,8 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	{
 		log.trace ("Entering totalProductionBonus: " + productionTypeID + ", " + unitTypeID);
 
-		if ((productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH)) ||
-			(productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION)))
+		if ((productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)) ||
+			(productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION)))
 
 			throw new InvalidParameterException (PlayerPickUtilsImpl.class + ".totalProductionBonus should never be used to calculate spell cost reductions or research bonuses since these have special rules for how the bonuses are combined together");
 

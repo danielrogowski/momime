@@ -51,7 +51,7 @@ public final class TestGraphicsDatabaseExImpl
 		db.setUtils (utils);
 		
 		final TileSetEx overlandMapTileSet = new TileSetEx ();
-		overlandMapTileSet.setTileSetID (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP);
+		overlandMapTileSet.setTileSetID (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP);
 		db.getTileSet ().add (overlandMapTileSet);
 		
 		// 30 x 20 image
@@ -99,7 +99,7 @@ public final class TestGraphicsDatabaseExImpl
 		when (utils.loadImage ("fortress.png")).thenReturn (new BufferedImage (100, 100, BufferedImage.TYPE_INT_ARGB));
 		
 		final CityViewElement fortress = new CityViewElement ();
-		fortress.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortress.setCityViewImageFile ("fortress.png");
 		db.getCityViewElement ().add (fortress);
 		

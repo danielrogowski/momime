@@ -228,14 +228,14 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
 					if (getUnitUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CREATE_OUTPOST, getClient ().getPlayers (),
+						CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 					
 						settlerCount++;
 					
 					if (getUnitUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_MELD_WITH_NODE, getClient ().getPlayers (),
+						CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 						

@@ -381,7 +381,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		};
 
 		// Need the tile set in a few places
-		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
+		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
 		
 		// Initialize the frame
 		getFrame ().setTitle ("Overland Map");

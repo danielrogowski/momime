@@ -39,9 +39,9 @@ public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 	{
 		final String tileTypeID;
 		if (terrainData == null)
-			tileTypeID = CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR;
+			tileTypeID = CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR;
 		else if (terrainData.getTileTypeID () == null)
-			tileTypeID = CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR;
+			tileTypeID = CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR;
 		else
 			tileTypeID = terrainData.getTileTypeID ();
 
@@ -61,8 +61,8 @@ public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 		else if (terrainData.getMapFeatureID () == null)
 			tower = false;
 		else
-			tower = (terrainData.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)) ||
-			 	(terrainData.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY));
+			tower = (terrainData.getMapFeatureID ().equals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)) ||
+			 	(terrainData.getMapFeatureID ().equals (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY));
 
 		return tower;
 	}

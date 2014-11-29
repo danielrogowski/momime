@@ -5,9 +5,6 @@ package momime.common.database;
  */
 public final class CommonDatabaseConstants
 {
-	/** Version string - used to build the namespaces of the XSD/XML files */
-	public static final String MOM_IME_VERSION = "v0_9_5";
-
 	/** Path and name to locate the common XSD file on the classpath */
 	public static final String NEW_GAME_XSD_LOCATION = "/momime.common.database/MoMIMENewGameDatabase.xsd";
 
@@ -68,133 +65,133 @@ public final class CommonDatabaseConstants
 	/* unit magic realm lifeform types */
 
 	/** normal */
-	public static final String VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL= "LTN";
+	public static final String UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL= "LTN";
 
 	/** hero */
-	public static final String VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO  = "LTH";
+	public static final String UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO  = "LTH";
 
 	// retorts
 
 	/** Alchemy (magic weapons, and convert gold <-> mana without the 50% loss) */
-	public static final String VALUE_RETORT_ID_ALCHEMY = "RT01";
+	public static final String RETORT_ID_ALCHEMY = "RT01";
 
 	/** Warlord retort (+1 skill level) */
-	public static final String VALUE_RETORT_ID_WARLORD = "RT02";
+	public static final String RETORT_ID_WARLORD = "RT02";
 
 	/** Channeler retort (all spell upkeep reduced 50%) */
-	public static final String VALUE_RETORT_ID_CHANNELER = "RT03";
+	public static final String RETORT_ID_CHANNELER = "RT03";
 
 	// production types
 
 	/** Rations for feeding civvies + armies */
-	public static final String VALUE_PRODUCTION_TYPE_ID_RATIONS = "RE01";
+	public static final String PRODUCTION_TYPE_ID_RATIONS = "RE01";
 
 	/** Production for constructing buildings and units */
-	public static final String VALUE_PRODUCTION_TYPE_ID_PRODUCTION = "RE02";
+	public static final String PRODUCTION_TYPE_ID_PRODUCTION = "RE02";
 
 	/** Gold */
-	public static final String VALUE_PRODUCTION_TYPE_ID_GOLD = "RE03";
+	public static final String PRODUCTION_TYPE_ID_GOLD = "RE03";
 
 	/** Production type for magic power (i.e. power base, NOT magic crystal production controlled by the mana staff) */
-	public static final String VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER = "RE04";
+	public static final String PRODUCTION_TYPE_ID_MAGIC_POWER = "RE04";
 
 	/** Production type for Spell research */
-	public static final String VALUE_PRODUCTION_TYPE_ID_RESEARCH = "RE05";
+	public static final String PRODUCTION_TYPE_ID_RESEARCH = "RE05";
 
 	/** Food for max city size */
-	public static final String VALUE_PRODUCTION_TYPE_ID_FOOD = "RE06";
+	public static final String PRODUCTION_TYPE_ID_FOOD = "RE06";
 
 	/** Bonus added to map features, i.e. Miners" guild */
-	public static final String VALUE_PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER = "RE08";
+	public static final String PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER = "RE08";
 
 	/** Production type for mana crystals (i.e. stored mana, NOT magic power that is distributed to all 3 staves) */
-	public static final String VALUE_PRODUCTION_TYPE_ID_MANA = "RE09";
+	public static final String PRODUCTION_TYPE_ID_MANA = "RE09";
 
 	/** Production type for skill points */
-	public static final String VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT = "RE10";
+	public static final String PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT = "RE10";
 
 	/** Production type for reductions to spell casting cost, from e.g. Chaos Mastery and quite a few others */
-	public static final String VALUE_PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION = "RE11";
+	public static final String PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION = "RE11";
 
 	/** Unit upkeep reduction (from Summoner retort) */
-	public static final String VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION = "RE12";
+	public static final String PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION = "RE12";
 
 	// tile types
 
 	/** Forest tiles */
-	public static final String VALUE_TILE_TYPE_FOREST = "TT03";
+	public static final String TILE_TYPE_FOREST = "TT03";
 
 	/** Desert tiles */
-	public static final String VALUE_TILE_TYPE_DESERT = "TT04";
+	public static final String TILE_TYPE_DESERT = "TT04";
 
 	/** Swamp tiles */
-	public static final String VALUE_TILE_TYPE_SWAMP = "TT05";
+	public static final String TILE_TYPE_SWAMP = "TT05";
 
 	/** Areas of the map we've never seen */
-	public static final String VALUE_TILE_TYPE_FOG_OF_WAR = "FOW";
+	public static final String TILE_TYPE_FOG_OF_WAR = "FOW";
 
 	/** Areas of the map we've previously seen, and are remembering the last state that we saw them in */
-	public static final String VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN = "FOWPARTIAL";
+	public static final String TILE_TYPE_FOG_OF_WAR_HAVE_SEEN = "FOWPARTIAL";
 
 	// map features
 
 	/** Uncleared Tower of Wizardry */
-	public static final String VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY  = "MF12A";
+	public static final String FEATURE_UNCLEARED_TOWER_OF_WIZARDRY  = "MF12A";
 
 	/** Cleared Tower of Wizardry */
-	public static final String VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY = "MF12B";
+	public static final String FEATURE_CLEARED_TOWER_OF_WIZARDRY = "MF12B";
 
 	// population tasks
 
 	/** Farmers */
-	public static final String VALUE_POPULATION_TASK_ID_FARMER = "PT01";
+	public static final String POPULATION_TASK_ID_FARMER = "PT01";
 
 	/** Workers */
-	public static final String VALUE_POPULATION_TASK_ID_WORKER = "PT02";
+	public static final String POPULATION_TASK_ID_WORKER = "PT02";
 
 	/** Rebels */
-	public static final String VALUE_POPULATION_TASK_ID_REBEL = "PT03";
+	public static final String POPULATION_TASK_ID_REBEL = "PT03";
 
 	// buildings
 
 	/** Special Trade Goods setting */
-	public static final String VALUE_BUILDING_TRADE_GOODS = "BL01";
+	public static final String BUILDING_TRADE_GOODS = "BL01";
 
 	/** Special Housing setting */
-	public static final String VALUE_BUILDING_HOUSING = "BL02";
+	public static final String BUILDING_HOUSING = "BL02";
 
 	/** Marks the city where newly summoned units will appear */
-	public static final String VALUE_BUILDING_SUMMONING_CIRCLE = "BL98";
+	public static final String BUILDING_SUMMONING_CIRCLE = "BL98";
 
 	/** Wizard's fortress */
-	public static final String VALUE_BUILDING_FORTRESS = "BL99";
+	public static final String BUILDING_FORTRESS = "BL99";
 
 	// unit types
 
 	/** Units summoned from spells */
-	public static final String VALUE_UNIT_TYPE_ID_SUMMONED = "S";
+	public static final String UNIT_TYPE_ID_SUMMONED = "S";
 
 	// unit skills
 
 	/** Skill for settlers creating new cities */
-	public static final String VALUE_UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
+	public static final String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
 	
 	/** Skill for magic and guardian spirits capturing nodes */	
-	public static final String VALUE_UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
+	public static final String UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
 	
 	/** the "skill" for experience levels */
-	public static final String VALUE_UNIT_SKILL_ID_EXPERIENCE = "US098";
+	public static final String UNIT_SKILL_ID_EXPERIENCE = "US098";
 
 	/** Allows unit to cast spells, value of the skill specifies how MP worth of spells they can cast, e.g. Archangels able to cast 40 MP worth of life magic */
-	public static final String VALUE_UNIT_SKILL_ID_CASTER_UNIT = "US051";
+	public static final String UNIT_SKILL_ID_CASTER_UNIT = "US051";
 	
 	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
-	public static final String VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
+	public static final String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
 
 	// hero skills
 	
 	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
-	public static final String VALUE_UNIT_SKILL_ID_CASTER_HERO = "HS05";
+	public static final String UNIT_SKILL_ID_CASTER_HERO = "HS05";
 	
 	// combat area effects
 
@@ -202,24 +199,24 @@ public final class CommonDatabaseConstants
 	public static final String COMBAT_AREA_EFFECT_CRUSADE = "CSE158";
 
 	/** Melee attack strength */
-	public static final String VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK = "UA01";
+	public static final String UNIT_ATTRIBUTE_ID_MELEE_ATTACK = "UA01";
 	
 	/** Ranged attack strength - can be either phys like bows/rocks or mag like priest blasts */
-	public static final String VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK = "UA02";
+	public static final String UNIT_ATTRIBUTE_ID_RANGED_ATTACK = "UA02";
 	
 	/** Gives better chance of each sword/ranged attack striking its target */
-	public static final String VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT = "UA03";
+	public static final String UNIT_ATTRIBUTE_ID_PLUS_TO_HIT = "UA03";
 	
 	/** Shields for defending against phys hits */
-	public static final String VALUE_UNIT_ATTRIBUTE_ID_DEFENCE = "UA04";
+	public static final String UNIT_ATTRIBUTE_ID_DEFENCE = "UA04";
 	
-	//public static final String VALUE_UNIT_ATTRIBUTE_ID_RESISTANCE            = "UA05";
+	//public static final String UNIT_ATTRIBUTE_ID_RESISTANCE            = "UA05";
 	
 	/** Hearts for hit points */
-	public static final String VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS            = "UA06";
+	public static final String UNIT_ATTRIBUTE_ID_HIT_POINTS            = "UA06";
 	
 	/** Gives better chance of each shield blocking a hit */ 
-	public static final String VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK = "UA07";
+	public static final String UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK = "UA07";
 
 	/**
 	 * Prevent instatiation of this class

@@ -105,7 +105,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		getCombatUI ().setUnitMoving (this);
 
 		// We need this repeatedly so just work it out once
-		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "MoveUnitInCombatMessageImpl.start");
+		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "MoveUnitInCombatMessageImpl.start");
 		tickCount = Math.max (combatMapTileSet.getTileWidth (), combatMapTileSet.getTileHeight ()) * 2;
 		
 		currentX = getCombatMapBitmapGenerator ().combatCoordinatesX (getMoveFrom ().getX (), getMoveFrom ().getY (), combatMapTileSet);

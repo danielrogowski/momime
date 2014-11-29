@@ -322,7 +322,7 @@ public final class GenerateTestData
 		pick.getPickPrerequisite ().add (req);
 
 		final PickProductionBonus bonus = new PickProductionBonus ();
-		bonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		bonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		bonus.setPercentageBonus (50);
 		pick.getPickProductionBonus ().add (bonus);
 
@@ -345,7 +345,7 @@ public final class GenerateTestData
 		}
 
 		final FortressPlaneProduction myrrorFortressMana = new FortressPlaneProduction ();
-		myrrorFortressMana.setFortressProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		myrrorFortressMana.setFortressProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		myrrorFortressMana.setDoubleAmount (10);
 		planes.get (1).getFortressPlaneProduction ().add (myrrorFortressMana);
 
@@ -356,7 +356,7 @@ public final class GenerateTestData
 		gems.setMapFeatureID (GEMS);
 		gems.setRaceMineralMultiplerApplies (true);
 		final MapFeatureProduction gemsProduction = new MapFeatureProduction ();
-		gemsProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		gemsProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		gemsProduction.setDoubleAmount (10);
 		gems.getMapFeatureProduction ().add (gemsProduction);
 		mapFeatures.add (gems);
@@ -366,7 +366,7 @@ public final class GenerateTestData
 		adamantiumOre.setFeatureMagicWeapons (3);
 		adamantiumOre.setRaceMineralMultiplerApplies (true);
 		final MapFeatureProduction adamantiumOreProduction = new MapFeatureProduction ();
-		adamantiumOreProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		adamantiumOreProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		adamantiumOreProduction.setDoubleAmount (4);
 		adamantiumOre.getMapFeatureProduction ().add (adamantiumOreProduction);
 		mapFeatures.add (adamantiumOre);
@@ -374,11 +374,11 @@ public final class GenerateTestData
 		final MapFeature wildGame = new MapFeature ();
 		wildGame.setMapFeatureID (WILD_GAME);
 		final MapFeatureProduction wildGameRations = new MapFeatureProduction ();
-		wildGameRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		wildGameRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		wildGameRations.setDoubleAmount (4);
 		wildGame.getMapFeatureProduction ().add (wildGameRations);
 		final MapFeatureProduction wildGameFood = new MapFeatureProduction ();
-		wildGameFood.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		wildGameFood.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		wildGameFood.setDoubleAmount (4);
 		wildGame.getMapFeatureProduction ().add (wildGameFood);
 		mapFeatures.add (wildGame);
@@ -414,32 +414,32 @@ public final class GenerateTestData
 		final List<ProductionType> productionTypes = new ArrayList<ProductionType> ();
 
 		final ProductionType rations = new ProductionType ();
-		rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		rations.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 		productionTypes.add (rations);
 
 		final ProductionType production = new ProductionType ();
-		production.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		production.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		production.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
 		productionTypes.add (production);
 
 		final ProductionType gold = new ProductionType ();
-		gold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		gold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		gold.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
 		productionTypes.add (gold);
 
 		final ProductionType magicPower = new ProductionType ();
-		magicPower.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		magicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		magicPower.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
 		productionTypes.add (magicPower);
 
 		final ProductionType research = new ProductionType ();
-		research.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		research.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 		research.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 		productionTypes.add (research);
 
 		final ProductionType food = new ProductionType ();
-		food.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		food.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
 		productionTypes.add (food);
 
@@ -449,7 +449,7 @@ public final class GenerateTestData
 		final PickType bookPickType = new PickType ();
 		bookPickType.setPickTypeID (BOOK);
 		final FortressPickTypeProduction bookFortressMana = new FortressPickTypeProduction ();
-		bookFortressMana.setFortressProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		bookFortressMana.setFortressProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		bookFortressMana.setDoubleAmount (2);
 		bookPickType.getFortressPickTypeProduction ().add (bookFortressMana);
 		pickTypes.add (bookPickType);
@@ -489,7 +489,7 @@ public final class GenerateTestData
 
 		// Alchemy retort
 		final Pick alchemy = new Pick ();
-		alchemy.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY);
+		alchemy.setPickID (CommonDatabaseConstants.RETORT_ID_ALCHEMY);
 		alchemy.setPickMagicWeapons (1);
 		picks.add (alchemy);
 
@@ -509,20 +509,20 @@ public final class GenerateTestData
 		summoner.setPickType (RETORT);
 
 		final PickProductionBonus summonerResearchBonus = new PickProductionBonus ();
-		summonerResearchBonus.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		summonerResearchBonus.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		summonerResearchBonus.setPercentageBonus (25);
-		summonerResearchBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		summonerResearchBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 		summoner.getPickProductionBonus ().add (summonerResearchBonus);
 
 		final PickProductionBonus summonerCastingBonus = new PickProductionBonus ();
-		summonerCastingBonus.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		summonerCastingBonus.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		summonerCastingBonus.setPercentageBonus (25);
-		summonerCastingBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		summonerCastingBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
 		summoner.getPickProductionBonus ().add (summonerCastingBonus);
 
 		final PickProductionBonus summonerUpkeepReduction = new PickProductionBonus ();
-		summonerUpkeepReduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION);
-		summonerUpkeepReduction.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		summonerUpkeepReduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION);
+		summonerUpkeepReduction.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		summonerUpkeepReduction.setPercentageBonus (25);
 		summoner.getPickProductionBonus ().add (summonerUpkeepReduction);
 
@@ -534,7 +534,7 @@ public final class GenerateTestData
 
 		final PickProductionBonus sageMasterResearchBonus = new PickProductionBonus ();
 		sageMasterResearchBonus.setPercentageBonus (25);
-		sageMasterResearchBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		sageMasterResearchBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 		sageMaster.getPickProductionBonus ().add (sageMasterResearchBonus);
 
 		picks.add (sageMaster);
@@ -561,13 +561,13 @@ public final class GenerateTestData
 		final PickProductionBonus runemasterResearchBonus = new PickProductionBonus ();
 		runemasterResearchBonus.setMagicRealmIdBlank (true);
 		runemasterResearchBonus.setPercentageBonus (25);
-		runemasterResearchBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		runemasterResearchBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 		runemaster.getPickProductionBonus ().add (runemasterResearchBonus);
 
 		final PickProductionBonus runemasterCastingBonus = new PickProductionBonus ();
 		runemasterCastingBonus.setMagicRealmIdBlank (true);
 		runemasterCastingBonus.setPercentageBonus (25);
-		runemasterCastingBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		runemasterCastingBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
 		runemaster.getPickProductionBonus ().add (runemasterCastingBonus);
 
 		picks.add (runemaster);
@@ -586,13 +586,13 @@ public final class GenerateTestData
 		final PickProductionBonus chaosResearchBonus = new PickProductionBonus ();
 		chaosResearchBonus.setMagicRealmID (CHAOS_BOOK);
 		chaosResearchBonus.setPercentageBonus (15);
-		chaosResearchBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		chaosResearchBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 		chaosMastery.getPickProductionBonus ().add (chaosResearchBonus);
 
 		final PickProductionBonus chaosCastingBonus = new PickProductionBonus ();
 		chaosCastingBonus.setMagicRealmID (CHAOS_BOOK);
 		chaosCastingBonus.setPercentageBonus (15);
-		chaosCastingBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		chaosCastingBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
 		chaosMastery.getPickProductionBonus ().add (chaosCastingBonus);
 
 		picks.add (chaosMastery);
@@ -600,7 +600,7 @@ public final class GenerateTestData
 		final Pick manaFocusing = new Pick ();
 		manaFocusing.setPickID (MANA_FOCUSING);
 		final PickProductionBonus manaFocusingBonus = new PickProductionBonus ();
-		manaFocusingBonus.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		manaFocusingBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		manaFocusingBonus.setPercentageBonus (25);
 		manaFocusing.getPickProductionBonus ().add (manaFocusingBonus);
 		picks.add (manaFocusing);
@@ -610,16 +610,16 @@ public final class GenerateTestData
 
 		final Unit spearmen = new Unit ();
 		spearmen.setUnitID (BARBARIAN_SPEARMEN);
-		spearmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		spearmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		spearmen.setDoubleMovement (2);
 
 		final UnitHasAttributeValue spearmenMelee = new UnitHasAttributeValue ();
-		spearmenMelee.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		spearmenMelee.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 		spearmenMelee.setAttributeValue (1);
 		spearmen.getUnitAttributeValue ().add (spearmenMelee);
 		
 		final UnitHasAttributeValue spearmenDefence = new UnitHasAttributeValue ();
-		spearmenDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		spearmenDefence.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 		spearmenDefence.setAttributeValue (2);
 		spearmen.getUnitAttributeValue ().add (spearmenDefence);
 		units.add (spearmen);
@@ -627,22 +627,22 @@ public final class GenerateTestData
 		// Typical ranged unit
 		final Unit bowmen = new Unit ();
 		bowmen.setUnitID (BARBARIAN_BOWMEN);
-		bowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		bowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		bowmen.setDoubleMovement (2);
 		bowmen.setRangedAttackType (RANGED_ATTACK_TYPE_ARROWS);
 
 		final UnitHasAttributeValue bowmenMelee = new UnitHasAttributeValue ();
-		bowmenMelee.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		bowmenMelee.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 		bowmenMelee.setAttributeValue (1);
 		bowmen.getUnitAttributeValue ().add (bowmenMelee);
 
 		final UnitHasAttributeValue bowmenRanged = new UnitHasAttributeValue ();
-		bowmenRanged.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		bowmenRanged.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 		bowmenRanged.setAttributeValue (1);
 		bowmen.getUnitAttributeValue ().add (bowmenRanged);
 		
 		final UnitHasAttributeValue bowmenDefence = new UnitHasAttributeValue ();
-		bowmenDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		bowmenDefence.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 		bowmenDefence.setAttributeValue (2);
 		bowmen.getUnitAttributeValue ().add (bowmenDefence);
 		units.add (bowmen);
@@ -650,32 +650,32 @@ public final class GenerateTestData
 		// Typical magic unit
 		final Unit warlocks = new Unit ();
 		warlocks.setUnitID (DARK_ELF_WARLOCKS);
-		warlocks.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		warlocks.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		warlocks.setDoubleMovement (2);
 		warlocks.setRangedAttackType (RANGED_ATTACK_TYPE_FIREBALL);
 
 		final UnitHasAttributeValue warlocksMelee = new UnitHasAttributeValue ();
-		warlocksMelee.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		warlocksMelee.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 		warlocksMelee.setAttributeValue (1);
 		warlocks.getUnitAttributeValue ().add (warlocksMelee);
 
 		final UnitHasAttributeValue warlocksRanged = new UnitHasAttributeValue ();
-		warlocksRanged.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		warlocksRanged.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 		warlocksRanged.setAttributeValue (7);
 		warlocks.getUnitAttributeValue ().add (warlocksRanged);
 		
 		final UnitHasAttributeValue warlocksDefence = new UnitHasAttributeValue ();
-		warlocksDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		warlocksDefence.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 		warlocksDefence.setAttributeValue (4);
 		warlocks.getUnitAttributeValue ().add (warlocksDefence);
 		units.add (warlocks);
 		
 		final UnitUpkeep warlocksGold = new UnitUpkeep ();
-		warlocksGold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		warlocksGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		warlocksGold.setUpkeepValue (5);
 		warlocks.getUnitUpkeep ().add (warlocksGold);
 		final UnitUpkeep warlocksRations = new UnitUpkeep ();
-		warlocksRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		warlocksRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		warlocksRations.setUpkeepValue (1);
 		warlocks.getUnitUpkeep ().add (warlocksRations);
 		final UnitHasSkill warlocksWalking = new UnitHasSkill ();
@@ -693,13 +693,13 @@ public final class GenerateTestData
 		stoneGiant.setUnitMagicRealm (LIFEFORM_TYPE_NATURE);
 
 		final UnitHasAttributeValue stoneGiantDefence = new UnitHasAttributeValue ();
-		stoneGiantDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		stoneGiantDefence.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 		stoneGiantDefence.setAttributeValue (8);
 		stoneGiant.getUnitAttributeValue ().add (stoneGiantDefence);
 		units.add (stoneGiant);
 		
 		final UnitUpkeep stoneGiantUpkeep = new UnitUpkeep ();
-		stoneGiantUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		stoneGiantUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		stoneGiantUpkeep.setUpkeepValue (9);
 		stoneGiant.getUnitUpkeep ().add (stoneGiantUpkeep);
 		units.add (stoneGiant);
@@ -722,11 +722,11 @@ public final class GenerateTestData
 
 		final Unit dwarf = new Unit ();
 		dwarf.setUnitID (DWARF_HERO);
-		dwarf.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		dwarf.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		units.add (dwarf);
 
 		final UnitHasAttributeValue dwarfDefence = new UnitHasAttributeValue ();
-		dwarfDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		dwarfDefence.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 		dwarfDefence.setAttributeValue (4);
 		dwarf.getUnitAttributeValue ().add (dwarfDefence);
 		units.add (dwarf);
@@ -741,26 +741,26 @@ public final class GenerateTestData
 
 		final UnitMagicRealm arcane = new UnitMagicRealm ();
 		arcane.setUnitMagicRealmID (LIFEFORM_TYPE_ARCANE);
-		arcane.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		arcane.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		unitMagicRealms.add (arcane);
 
 		final UnitMagicRealm nature = new UnitMagicRealm ();
 		nature.setUnitMagicRealmID (LIFEFORM_TYPE_NATURE);
-		nature.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		nature.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		unitMagicRealms.add (nature);
 
 		final UnitMagicRealm chaos = new UnitMagicRealm ();
 		chaos.setUnitMagicRealmID (LIFEFORM_TYPE_CHAOS);
-		chaos.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		chaos.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		unitMagicRealms.add (chaos);
 
 		final UnitMagicRealm normalMagicRealm = new UnitMagicRealm ();
-		normalMagicRealm.setUnitMagicRealmID (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		normalMagicRealm.setUnitMagicRealmID (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		normalMagicRealm.setUnitTypeID ("N");
 		unitMagicRealms.add (normalMagicRealm);
 
 		final UnitMagicRealm heroMagicRealm = new UnitMagicRealm ();
-		heroMagicRealm.setUnitMagicRealmID (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		heroMagicRealm.setUnitMagicRealmID (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		heroMagicRealm.setUnitTypeID ("H");
 		unitMagicRealms.add (heroMagicRealm);
 
@@ -792,12 +792,12 @@ public final class GenerateTestData
 			if (n > 0)
 			{
 				final ExperienceAttributeBonus  bonus1 = new ExperienceAttributeBonus  ();
-				bonus1.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+				bonus1.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 				bonus1.setBonusValue (n);
 				expLevel.getExperienceAttributeBonus ().add (bonus1);
 
 				final ExperienceAttributeBonus  bonus2 = new ExperienceAttributeBonus  ();
-				bonus2.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+				bonus2.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 				bonus2.setBonusValue (n);
 				expLevel.getExperienceAttributeBonus ().add (bonus2);
 			}
@@ -829,14 +829,14 @@ public final class GenerateTestData
 		unitTypes.add (heroUnit);
 
 		final UnitType summonedUnit = new UnitType ();
-		summonedUnit.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		summonedUnit.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		unitTypes.add (summonedUnit);
 
 		// Unit skills
 		final List<UnitSkill> unitSkills = new ArrayList<UnitSkill> ();
 
 		final UnitSkill experience = new UnitSkill ();
-		experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+		experience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		unitSkills.add (experience);
 
 		final UnitSkill flight = new UnitSkill ();
@@ -854,13 +854,13 @@ public final class GenerateTestData
 
 		final UnitSkill agility = new UnitSkill ();
 		agility.setUnitSkillID (HERO_SKILL_AGILITY);
-		agility.setAddsToAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		agility.setAddsToAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 		agility.setAddsToAttributeDivisor (1);
 		unitSkills.add (agility);
 
 		final UnitSkill blademaster = new UnitSkill ();
 		blademaster.setUnitSkillID (HERO_SKILL_BLADEMASTER);
-		blademaster.setAddsToAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT);
+		blademaster.setAddsToAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT);
 		blademaster.setAddsToAttributeDivisor (2);
 		unitSkills.add (blademaster);
 		
@@ -886,12 +886,12 @@ public final class GenerateTestData
 			if (n >= 2)
 			{
 				final WeaponGradeAttributeBonus bonus1 = new WeaponGradeAttributeBonus ();
-				bonus1.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+				bonus1.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 				bonus1.setBonusValue (n - 1);
 				grade.getWeaponGradeAttributeBonus ().add (bonus1);
 
 				final WeaponGradeAttributeBonus bonus2 = new WeaponGradeAttributeBonus ();
-				bonus2.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+				bonus2.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 				bonus2.setBonusValue (n - 1);
 				grade.getWeaponGradeAttributeBonus ().add (bonus2);
 			}
@@ -989,13 +989,13 @@ public final class GenerateTestData
 		final CombatAreaEffectSkillBonus caeSkillBonus = new CombatAreaEffectSkillBonus ();
 		caeSkillBonus.setUnitSkillID (UNIT_SKILL_THROWN_WEAPONS);
 		caeSkillBonus.setBonusValue (1);
-		caeSkillBonus.setEffectMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		caeSkillBonus.setEffectMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		affectsAll.getCombatAreaEffectSkillBonus ().add (caeSkillBonus);
 
 		final CombatAreaEffectAttributeBonus caeAttributeBonus = new CombatAreaEffectAttributeBonus ();
-		caeAttributeBonus.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		caeAttributeBonus.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
 		caeAttributeBonus.setBonusValue (1);
-		caeAttributeBonus.setEffectMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		caeAttributeBonus.setEffectMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		affectsAll.getCombatAreaEffectAttributeBonus ().add (caeAttributeBonus);
 		
 		combatAreaEffects.add (affectsAll);
@@ -1035,11 +1035,11 @@ public final class GenerateTestData
 		final Building sawmill = new Building ();
 		sawmill.setBuildingID (SAWMILL);
 		final BuildingPopulationProductionModifier sawmillMaintenance = new BuildingPopulationProductionModifier ();
-		sawmillMaintenance.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		sawmillMaintenance.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		sawmillMaintenance.setDoubleAmount (-4);
 		sawmill.getBuildingPopulationProductionModifier ().add (sawmillMaintenance);
 		final BuildingPopulationProductionModifier sawmillProductionBoost = new BuildingPopulationProductionModifier ();
-		sawmillProductionBoost.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		sawmillProductionBoost.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		sawmillProductionBoost.setPercentageBonus (25);
 		sawmill.getBuildingPopulationProductionModifier ().add (sawmillProductionBoost);
 		buildings.add (sawmill);
@@ -1047,11 +1047,11 @@ public final class GenerateTestData
 		final Building sagesGuild = new Building ();
 		sagesGuild.setBuildingID (SAGES_GUILD);
 		final BuildingPopulationProductionModifier sagesGuildMaintenance = new BuildingPopulationProductionModifier ();
-		sagesGuildMaintenance.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		sagesGuildMaintenance.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		sagesGuildMaintenance.setDoubleAmount (-4);
 		sagesGuild.getBuildingPopulationProductionModifier ().add (sagesGuildMaintenance);
 		final BuildingPopulationProductionModifier sagesGuildResearch = new BuildingPopulationProductionModifier ();
-		sagesGuildResearch.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		sagesGuildResearch.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 		sagesGuildResearch.setDoubleAmount (6);
 		sagesGuild.getBuildingPopulationProductionModifier ().add (sagesGuildResearch);
 		buildings.add (sagesGuild);
@@ -1094,21 +1094,21 @@ public final class GenerateTestData
 		buildingRequiresHills.setDistance (2);
 		minersGuild.getBuildingRequiresTileType ().add (buildingRequiresHills);
 		final BuildingPopulationProductionModifier minersGuildMaintenance = new BuildingPopulationProductionModifier ();
-		minersGuildMaintenance.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		minersGuildMaintenance.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		minersGuildMaintenance.setDoubleAmount (-6);
 		minersGuild.getBuildingPopulationProductionModifier ().add (minersGuildMaintenance);
 		final BuildingPopulationProductionModifier minersGuildProductionBoost = new BuildingPopulationProductionModifier ();
-		minersGuildProductionBoost.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		minersGuildProductionBoost.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		minersGuildProductionBoost.setPercentageBonus (50);
 		minersGuild.getBuildingPopulationProductionModifier ().add (minersGuildProductionBoost);
 		final BuildingPopulationProductionModifier minersGuildMineralsBoost = new BuildingPopulationProductionModifier ();
-		minersGuildMineralsBoost.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
+		minersGuildMineralsBoost.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
 		minersGuildMineralsBoost.setPercentageBonus (50);
 		minersGuild.getBuildingPopulationProductionModifier ().add (minersGuildMineralsBoost);
 		buildings.add (minersGuild);
 
 		final Building fortress = new Building ();
-		fortress.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		buildings.add (fortress);
 
 		// Races
@@ -1126,37 +1126,37 @@ public final class GenerateTestData
 		highElf.setMineralBonusMultiplier (1);
 
 		final RacePopulationTask highElfFarmers = new RacePopulationTask ();
-		highElfFarmers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER);
+		highElfFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		final RacePopulationTaskProduction highElfFarmersRations = new RacePopulationTaskProduction ();
-		highElfFarmersRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		highElfFarmersRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		highElfFarmersRations.setDoubleAmount (4);
 		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmersRations);
 		final RacePopulationTaskProduction highElfFarmersProduction = new RacePopulationTaskProduction ();
-		highElfFarmersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		highElfFarmersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		highElfFarmersProduction.setDoubleAmount (1);
 		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmersProduction);
 		final RacePopulationTaskProduction highElfFarmersMagicPower = new RacePopulationTaskProduction ();
-		highElfFarmersMagicPower.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		highElfFarmersMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		highElfFarmersMagicPower.setDoubleAmount (1);
 		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmersMagicPower);
 		highElf.getRacePopulationTask ().add (highElfFarmers);
 
 		final RacePopulationTask highElfWorkers = new RacePopulationTask ();
-		highElfWorkers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER);
+		highElfWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
 		final RacePopulationTaskProduction highElfWorkersProduction = new RacePopulationTaskProduction ();
-		highElfWorkersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		highElfWorkersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		highElfWorkersProduction.setDoubleAmount (4);
 		highElfWorkers.getRacePopulationTaskProduction ().add (highElfWorkersProduction);
 		final RacePopulationTaskProduction highElfWorkersMagicPower = new RacePopulationTaskProduction ();
-		highElfWorkersMagicPower.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		highElfWorkersMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		highElfWorkersMagicPower.setDoubleAmount (1);
 		highElfWorkers.getRacePopulationTaskProduction ().add (highElfWorkersMagicPower);
 		highElf.getRacePopulationTask ().add (highElfWorkers);
 
 		final RacePopulationTask highElfRebels = new RacePopulationTask ();
-		highElfRebels.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL);
+		highElfRebels.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL);
 		final RacePopulationTaskProduction highElfRebelsMagicPower = new RacePopulationTaskProduction ();
-		highElfRebelsMagicPower.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER);
+		highElfRebelsMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		highElfRebelsMagicPower.setDoubleAmount (1);
 		highElfRebels.getRacePopulationTaskProduction ().add (highElfRebelsMagicPower);
 		highElf.getRacePopulationTask ().add (highElfRebels);
@@ -1172,21 +1172,21 @@ public final class GenerateTestData
 		highMen.setMineralBonusMultiplier (1);
 
 		final RacePopulationTask highMenFarmers = new RacePopulationTask ();
-		highMenFarmers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER);
+		highMenFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		final RacePopulationTaskProduction highMenFarmersRations = new RacePopulationTaskProduction ();
-		highMenFarmersRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		highMenFarmersRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		highMenFarmersRations.setDoubleAmount (4);
 		highMenFarmers.getRacePopulationTaskProduction ().add (highMenFarmersRations);
 		final RacePopulationTaskProduction highMenFarmersProduction = new RacePopulationTaskProduction ();
-		highMenFarmersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		highMenFarmersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		highMenFarmersProduction.setDoubleAmount (1);
 		highMenFarmers.getRacePopulationTaskProduction ().add (highMenFarmersProduction);
 		highMen.getRacePopulationTask ().add (highMenFarmers);
 
 		final RacePopulationTask highMenWorkers = new RacePopulationTask ();
-		highMenWorkers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER);
+		highMenWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
 		final RacePopulationTaskProduction highMenWorkersProduction = new RacePopulationTaskProduction ();
-		highMenWorkersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		highMenWorkersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		highMenWorkersProduction.setDoubleAmount (4);
 		highMenWorkers.getRacePopulationTaskProduction ().add (highMenWorkersProduction);
 		highMen.getRacePopulationTask ().add (highMenWorkers);
@@ -1207,21 +1207,21 @@ public final class GenerateTestData
 		dwarves.setMineralBonusMultiplier (2);
 
 		final RacePopulationTask dwarvesFarmers = new RacePopulationTask ();
-		dwarvesFarmers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER);
+		dwarvesFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		final RacePopulationTaskProduction dwarvesFarmersRations = new RacePopulationTaskProduction ();
-		dwarvesFarmersRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		dwarvesFarmersRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		dwarvesFarmersRations.setDoubleAmount (4);
 		dwarvesFarmers.getRacePopulationTaskProduction ().add (dwarvesFarmersRations);
 		final RacePopulationTaskProduction dwarvesFarmersProduction = new RacePopulationTaskProduction ();
-		dwarvesFarmersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		dwarvesFarmersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		dwarvesFarmersProduction.setDoubleAmount (1);
 		dwarvesFarmers.getRacePopulationTaskProduction ().add (dwarvesFarmersProduction);
 		dwarves.getRacePopulationTask ().add (dwarvesFarmers);
 
 		final RacePopulationTask dwarvesWorkers = new RacePopulationTask ();
-		dwarvesWorkers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER);
+		dwarvesWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
 		final RacePopulationTaskProduction dwarvesWorkersProduction = new RacePopulationTaskProduction ();
-		dwarvesWorkersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		dwarvesWorkersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		dwarvesWorkersProduction.setDoubleAmount (6);
 		dwarvesWorkers.getRacePopulationTaskProduction ().add (dwarvesWorkersProduction);
 		dwarves.getRacePopulationTask ().add (dwarvesWorkers);

@@ -101,7 +101,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
 		
 		// Choose the appropriate tile set
-		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "smoothMapTerrain");
+		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "smoothMapTerrain");
 		
 		// Now check each map cell
 		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
@@ -134,7 +134,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 						// entry under every tile for the image to use for 'NoSmooth' = No Smoothing
 						final StringBuffer bitmask = new StringBuffer ();
 						if (!getClientConfig ().isCombatSmoothTerrain ())
-							bitmask.append (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING);
+							bitmask.append (GraphicsDatabaseConstants.TILE_BITMASK_NO_SMOOTHING);
 						else							
 						{
 							// No rivers to worry about like overland tiles, so only 2 possibilities for how we create the bitmask
@@ -198,7 +198,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		final CombatMapSizeData mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		
 		// We need the tile set so we know how many animation frames there are
-		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "generateCombatMapBitmap");
+		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "generateCombatMapBitmap");
 
 		// Create the set of empty bitmaps
 		final BufferedImage [] combatMapBitmaps = new BufferedImage [combatMapTileSet.getAnimationFrameCount ()];

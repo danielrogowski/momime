@@ -276,7 +276,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			tsex.deriveAnimationFrameCountAndSpeed (this);
 			tsex.deriveTileWidthAndHeight (this);
 		}
-		final TileSetEx overlandMapTileSet = findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "consistencyChecks");
+		final TileSetEx overlandMapTileSet = findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "consistencyChecks");
 
 		// Ensure all map features match the size of the overland map tiles
 		for (final MapFeature mf : getMapFeature ())
@@ -293,8 +293,8 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			
 			// Not all CityViewElements represent buildings; also ignore Summoning circle and Wizard's fortress because we can't actually construct those
 			// (Hard coding these is a bit of a hack, but we don't learn "properly" that we can't construct these until we receive the XML from the server when we join a game)
-			if ((thisBuilding.getBuildingID () != null) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)) &&
-				(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)))
+			if ((thisBuilding.getBuildingID () != null) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
+				(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)))
 			{
 				// It could be an image or animation
 				final int thisWidth;

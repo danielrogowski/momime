@@ -95,7 +95,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 			{
 				// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server
 				final KillUnitActionID action;
-				if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "DismissUnitMessageImpl").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+				if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "DismissUnitMessageImpl").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 					action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
 				else
 					action = KillUnitActionID.FREE;

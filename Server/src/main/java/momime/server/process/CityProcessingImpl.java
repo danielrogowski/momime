@@ -307,7 +307,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 							if (productionCost != null)
 							{
-								final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+								final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 								if (productionAmount != null)
 								{
 									if (mc.getProductionSoFar () == null)
@@ -382,7 +382,7 @@ public final class CityProcessingImpl implements CityProcessing
 						}
 
 						// Use calculated values to determine population growth
-						final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+						final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 						final int maxCitySize;
 						if (productionAmount == null)
 							maxCitySize = 0;
@@ -516,7 +516,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 			// Give gold from selling it
 			final Building building = db.findBuilding (buildingID, "sellBuilding");
-			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD,
+			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD,
 				getMemoryBuildingUtils ().goldFromSellingBuilding (building));
 
 			// The sold building might have been producing rations or stemming unrest so had better recalculate everything

@@ -238,7 +238,7 @@ public final class TestUnitClientUtilsImpl
 		plusToHit.getUnitAttributeWeaponGrade ().add (plusToHitIcon);
 		
 		plusToHit.buildMap ();;
-		when (gfx.findUnitAttribute (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitAttributeIcon")).thenReturn (plusToHit);
+		when (gfx.findUnitAttribute (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitAttributeIcon")).thenReturn (plusToHit);
 		
 		// melee varies by weapon grade
 		final UnitAttributeEx melee = new UnitAttributeEx ();
@@ -252,7 +252,7 @@ public final class TestUnitClientUtilsImpl
 		}
 		
 		melee.buildMap ();
-		when (gfx.findUnitAttribute (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitAttributeIcon")).thenReturn (melee);
+		when (gfx.findUnitAttribute (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitAttributeIcon")).thenReturn (melee);
 		
 		// RAT that doesn't vary by weapon grade
 		final RangedAttackTypeEx rat1 = new RangedAttackTypeEx ();
@@ -276,9 +276,9 @@ public final class TestUnitClientUtilsImpl
 		unitUtils.setClient (client);
 		
 		// Run tests
-		assertSame (plusToHitImage, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
-		assertSame (meleeWepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK));
-		assertSame (rat1Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		assertSame (plusToHitImage, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertSame (meleeWepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK));
+		assertSame (rat1Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 
 		// RAT that does vary by weapon grade
 		unitDef.setRangedAttackType ("RAT02");
@@ -296,7 +296,7 @@ public final class TestUnitClientUtilsImpl
 		
 		rat2.buildMap ();
 
-		assertSame (rat2wepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		assertSame (rat2wepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 	}
 	
 	/**
@@ -310,12 +310,12 @@ public final class TestUnitClientUtilsImpl
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final Unit unitDef = new Unit ();
-		unitDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "getUnitSkillIcon")).thenReturn (unitDef);
 		
 		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillIcon")).thenReturn (unitMagicRealm);
+		when (db.findUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillIcon")).thenReturn (unitMagicRealm);
 
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
@@ -391,7 +391,7 @@ public final class TestUnitClientUtilsImpl
 
 		// Run tests
 		assertSame (skillImage, unitClientUtils.getUnitSkillIcon (unit, "US001"));
-		assertSame (exp2Image, unitClientUtils.getUnitSkillIcon (unit, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE));
+		assertSame (exp2Image, unitClientUtils.getUnitSkillIcon (unit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
 	}
 	
 	/**
@@ -441,7 +441,7 @@ public final class TestUnitClientUtilsImpl
 						unitUtils.drawUnitFigures ("UN106", null, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true);
 						unitUtils.drawUnitFigures ("UN075", null, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true);
 						unitUtils.drawUnitFigures ("UN035", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true);
-						unitUtils.drawUnitFigures ("UN197", CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true);
+						unitUtils.drawUnitFigures ("UN197", CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true);
 						unitUtils.drawUnitFigures ("UN037", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true);
 						
 						y = y + 80;
@@ -492,7 +492,7 @@ public final class TestUnitClientUtilsImpl
 		when (db.findUnitMagicRealm ("N", "calculateWalkTiming")).thenReturn (normalUnits);				
 
 		final UnitMagicRealm summonedUnits = new UnitMagicRealm ();
-		summonedUnits.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		summonedUnits.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		when (db.findUnitMagicRealm ("S", "calculateWalkTiming")).thenReturn (summonedUnits);				
 		
 		// Unit definitions

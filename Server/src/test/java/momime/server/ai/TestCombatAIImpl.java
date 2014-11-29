@@ -134,7 +134,7 @@ public final class TestCombatAIImpl
 		casterWithoutMP.setManaRemaining (9);
 		
 		final UnitHasSkill casterSkill = new UnitHasSkill ();
-		casterSkill.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO);
+		casterSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO);
 		casterSkill.setUnitSkillValue (3);
 		casterWithoutMP.getUnitHasSkill ().add (casterSkill);
 		
@@ -186,7 +186,7 @@ public final class TestCombatAIImpl
 		casterWithoutMP.setManaRemaining (9);
 		
 		final UnitHasSkill casterSkill = new UnitHasSkill ();
-		casterSkill.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO);
+		casterSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO);
 		casterSkill.setUnitSkillValue (3);
 		casterWithoutMP.getUnitHasSkill ().add (casterSkill);
 		

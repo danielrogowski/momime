@@ -87,11 +87,11 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		switch (getSpecialOrder ())
 		{
 			case BUILD_CITY:
-				necessarySkillID = CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CREATE_OUTPOST;
+				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST;
 				break;
 				
 			case MELD_WITH_NODE:
-				necessarySkillID = CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_MELD_WITH_NODE;
+				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE;
 				break;
 				
 			default:

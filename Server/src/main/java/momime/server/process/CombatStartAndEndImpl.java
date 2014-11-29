@@ -314,7 +314,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 				
 				final long cityPopulation = tc.getCityData ().getCityPopulation ();
-				final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+				final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (),
 					mom.getSessionDescription ().getMapSize (), mom.getServerDB ());
@@ -333,8 +333,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					goldFromRazing = 0;
 				
 				// Swipe it - the updated values will be sent to the players below
-				getResourceValueUtils ().addToAmountStored (defPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, (int) -goldSwiped);
-				getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, (int) goldSwiped + goldFromRazing);
+				getResourceValueUtils ().addToAmountStored (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, (int) -goldSwiped);
+				getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, (int) goldSwiped + goldFromRazing);
 			}
 			
 			// Send the CombatEnded message
@@ -385,8 +385,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (captureCityDecision == CaptureCityDecisionID.CAPTURE)
 				{
 					// Destroy enemy wizards' fortress and/or summoning circle
-					final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
-					final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE);
+					final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS);
+					final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
 					
 					if (wizardsFortress != null)
 						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),

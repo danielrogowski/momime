@@ -97,7 +97,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
 		
 		// Choose the appropriate tile set
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "smoothMapTerrain");
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "smoothMapTerrain");
 		
 		// Now check each map cell
 		for (int planeNo = 0; planeNo < mapSize.getDepth (); planeNo++) 
@@ -126,7 +126,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							// entry under every tile for the image to use for 'NoSmooth' = No Smoothing
 							final StringBuffer bitmask = new StringBuffer ();
 							if (!getClientConfig ().isOverlandSmoothTerrain ())
-								bitmask.append (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING);
+								bitmask.append (GraphicsDatabaseConstants.TILE_BITMASK_NO_SMOOTHING);
 							else							
 							{
 								// 3 possibilities for how we create the bitmask
@@ -216,7 +216,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
 		
 		// We need the tile set so we know how many animation frames there are
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "generateOverlandMapBitmaps");
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateOverlandMapBitmaps");
 		
 		// Create the set of empty bitmaps
 		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];
@@ -386,9 +386,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
 
 			// Choose the appropriate tile sets
-			final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "generateFogOfWarBitmap");
-			final SmoothedTileTypeEx fullFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, null, null);
-			final SmoothedTileTypeEx partialFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN, null, null);
+			final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateFogOfWarBitmap");
+			final SmoothedTileTypeEx fullFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, null, null);
+			final SmoothedTileTypeEx partialFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN, null, null);
 
 			// Create the empty bitmap
 			fogOfWarBitmap = new BufferedImage

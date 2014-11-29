@@ -193,7 +193,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	{
 		log.trace ("Entering calculateCastingSkillOfPlayer");
 
-		final int playerSkillPoints = findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		final int playerSkillPoints = findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		final int result = getSkillCalculations ().getCastingSkillForSkillPoints (playerSkillPoints);
 
 		log.trace ("Exiting calculateCastingSkillOfPlayer = " + result);
@@ -229,12 +229,12 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		final int amountPerTurnFromMagicPower;
 		final int amountPerTurnFromPercentageBonuses;
 
-		if ((productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)) ||
-			(productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH)) ||
-			(productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)))
+		if ((productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) ||
+			(productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)) ||
+			(productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)))
 		{
 			final int powerBase = calculateAmountPerTurnForProductionType (privateInfo, picks,
-				CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, spellSettings, db);
+				CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, spellSettings, db);
 
 			// Calculate research and skill
 			final int manaPerTurnAmountFromMagicPower		= (powerBase * privateInfo.getMagicPowerDistribution ().getManaRatio ()		/ CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX);
@@ -242,11 +242,11 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 			final int skillPerTurnAmountFromMagicPower			= (powerBase * privateInfo.getMagicPowerDistribution ().getSkillRatio ()			/ CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX);
 
 			// Add on the relevant amount
-			if (productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA))
+			if (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
 				amountPerTurnFromMagicPower = manaPerTurnAmountFromMagicPower;
-			else if (productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH))
+			else if (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH))
 				amountPerTurnFromMagicPower = researchPerTurnAmountFromMagicPower;
-			else /* VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT */
+			else /* PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT */
 				amountPerTurnFromMagicPower = skillPerTurnAmountFromMagicPower;
 
 			final int totalBeforePercentageBonuses = rawAmountPerTurn + amountPerTurnFromMagicPower;
@@ -264,7 +264,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	         *  Verified that original MoM always rounds down
 	         *  (12 research + 15% = 13.8 but reports as 13
 			 */
-			if (productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH))
+			if (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH))
 			{
 				// Is there a research spell specified?
 				final Spell spellBeingResearched;

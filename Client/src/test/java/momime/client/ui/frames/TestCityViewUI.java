@@ -76,15 +76,15 @@ public final class TestCityViewUI
 		final RaceEx race = new RaceEx ();
 		when (gfx.findRace ("RC01", "cityDataChanged")).thenReturn (race);
 		
-		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, "/momime.client.graphics/races/barbarian/farmer.png"));
-		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER, "/momime.client.graphics/races/barbarian/worker.png"));
-		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL, "/momime.client.graphics/races/barbarian/rebel.png"));
+		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "/momime.client.graphics/races/barbarian/farmer.png"));
+		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "/momime.client.graphics/races/barbarian/worker.png"));
+		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "/momime.client.graphics/races/barbarian/rebel.png"));
 		race.buildMap ();
 		
 		final TileSetEx overlandMapTileSet = new TileSetEx ();
 		overlandMapTileSet.setTileWidth (20);
 		overlandMapTileSet.setTileHeight (18);
-		when (gfx.findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
+		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
 		
 		final ProductionTypeEx rations = new ProductionTypeEx ();
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("1", "/momime.client.graphics/production/rations/1.png"));
@@ -92,7 +92,7 @@ public final class TestCityViewUI
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/rations/-1.png"));
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("-10", "/momime.client.graphics/production/rations/-10.png"));
 		rations.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "generateProductionImage")).thenReturn (rations);
+		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "generateProductionImage")).thenReturn (rations);
 		
 		final ProductionTypeEx gold = new ProductionTypeEx ();
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("1", "/momime.client.graphics/production/gold/1.png"));
@@ -100,11 +100,11 @@ public final class TestCityViewUI
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/gold/-1.png"));
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("-10", "/momime.client.graphics/production/gold/-10.png"));
 		gold.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, "generateProductionImage")).thenReturn (gold);
+		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "generateProductionImage")).thenReturn (gold);
 
 		final ProductionTypeEx food = new ProductionTypeEx ();
 		food.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, "generateProductionImage")).thenReturn (food);
+		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "generateProductionImage")).thenReturn (food);
 		
 		final CityViewElement granaryGfx = new CityViewElement ();
 		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
@@ -187,16 +187,16 @@ public final class TestCityViewUI
 		final int maxCitySize = 20;
 		
 		final CityProductionBreakdown maxCitySizeProd = new CityProductionBreakdown ();
-		maxCitySizeProd.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		maxCitySizeProd.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		maxCitySizeProd.setCappedProductionAmount (maxCitySize);
 
 		final CityProductionBreakdown rationsProd = new CityProductionBreakdown ();
-		rationsProd.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		rationsProd.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		rationsProd.setConsumptionAmount (4);
 		rationsProd.setCappedProductionAmount (18);
 		
 		final CityProductionBreakdown goldProd = new CityProductionBreakdown ();
-		goldProd.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		goldProd.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		goldProd.setConsumptionAmount (18);
 		goldProd.setCappedProductionAmount (4);
 		

@@ -132,7 +132,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 			else if (unit != null)
 			{
 				// Check that the unit is a normal unit (not hero or summoned)
-				if (!unit.getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL))
+				if (!unit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL))
 					msg = "The unit you're trying to build cannot be built in cities - change ignored.";
 
 				// Check unit is for the correct race

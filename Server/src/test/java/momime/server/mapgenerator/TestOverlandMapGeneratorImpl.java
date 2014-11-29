@@ -107,7 +107,7 @@ public final class TestOverlandMapGeneratorImpl
 					count++;
 					assertNotNull (serverCell);
 					assertNotNull (serverCell.getTerrainData ());
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, serverCell.getTerrainData ().getTileTypeID ());
+					assertEquals (ServerDatabaseValues.TILE_TYPE_OCEAN, serverCell.getTerrainData ().getTileTypeID ());
 				}
 
 		assertEquals (2 * 60 * 40, count);
@@ -150,7 +150,7 @@ public final class TestOverlandMapGeneratorImpl
 		mapGen.setAllToWater ();
 		for (int x = 0; x < 6; x++)
 			for (int y = 0; y < x; y++)
-				fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+				fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 		
 		// Run method
 		mapGen.makeTundra ();
@@ -160,7 +160,7 @@ public final class TestOverlandMapGeneratorImpl
 		for (final MapAreaOfMemoryGridCells plane : fow.getMap ().getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
-					if (cell.getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA))
+					if (cell.getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.TILE_TYPE_TUNDRA))
 						count++;
 		
 		assertEquals ((2 * 2 * 60) + 5, count);
@@ -217,11 +217,11 @@ public final class TestOverlandMapGeneratorImpl
 				if (arcanusCell.getTerrainData ().getMapFeatureID () == null)
 				{
 					// Its still a water tile
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, arcanusCell.getTerrainData ().getTileTypeID ());
+					assertEquals (ServerDatabaseValues.TILE_TYPE_OCEAN, arcanusCell.getTerrainData ().getTileTypeID ());
 					assertNull (arcanusCell.getNodeLairTowerPowerProportion ());
 					
 					assertNull (myrrorCell.getTerrainData ().getMapFeatureID ());
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, myrrorCell.getTerrainData ().getTileTypeID ());
+					assertEquals (ServerDatabaseValues.TILE_TYPE_OCEAN, myrrorCell.getTerrainData ().getTileTypeID ());
 					assertNull (myrrorCell.getNodeLairTowerPowerProportion ());
 				}
 				else
@@ -229,15 +229,15 @@ public final class TestOverlandMapGeneratorImpl
 					// Its a tower
 					count++;
 					
-					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, arcanusCell.getTerrainData ().getMapFeatureID ());
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, arcanusCell.getTerrainData ().getTileTypeID ());
+					assertEquals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, arcanusCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.TILE_TYPE_GRASS, arcanusCell.getTerrainData ().getTileTypeID ());
 					assertNotNull (arcanusCell.getNodeLairTowerPowerProportion ());
 					
 					if ((arcanusCell.getNodeLairTowerPowerProportion () < 0) || (arcanusCell.getNodeLairTowerPowerProportion () > 1))
 						fail ("NodeLairTowerPowerProportion must be between 0..1");
 					
-					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, myrrorCell.getTerrainData ().getMapFeatureID ());
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, myrrorCell.getTerrainData ().getTileTypeID ());
+					assertEquals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, myrrorCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.TILE_TYPE_GRASS, myrrorCell.getTerrainData ().getTileTypeID ());
 					assertNull (myrrorCell.getNodeLairTowerPowerProportion ());
 				}
 			}
@@ -287,9 +287,9 @@ public final class TestOverlandMapGeneratorImpl
 		for (int x = 0; x < mapSize.getWidth (); x++)
 			for (int y = 0; y < mapSize.getHeight (); y++)
 				if (y < 20)
-					fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+					fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 				else if (y > 20)
-					fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+					fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 		
 		// Run method
 		mapGen.placeTowersOfWizardry ();
@@ -316,15 +316,15 @@ public final class TestOverlandMapGeneratorImpl
 					count++;
 					assertEquals (20, y);
 					
-					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, arcanusCell.getTerrainData ().getMapFeatureID ());
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, arcanusCell.getTerrainData ().getTileTypeID ());
+					assertEquals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, arcanusCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.TILE_TYPE_GRASS, arcanusCell.getTerrainData ().getTileTypeID ());
 					assertNotNull (arcanusCell.getNodeLairTowerPowerProportion ());
 					
 					if ((arcanusCell.getNodeLairTowerPowerProportion () < 0) || (arcanusCell.getNodeLairTowerPowerProportion () > 1))
 						fail ("NodeLairTowerPowerProportion must be between 0..1");
 					
-					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, myrrorCell.getTerrainData ().getMapFeatureID ());
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, myrrorCell.getTerrainData ().getTileTypeID ());
+					assertEquals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, myrrorCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.TILE_TYPE_GRASS, myrrorCell.getTerrainData ().getTileTypeID ());
 					assertNull (myrrorCell.getNodeLairTowerPowerProportion ());
 				}
 			}
@@ -374,9 +374,9 @@ public final class TestOverlandMapGeneratorImpl
 		for (int x = 0; x < mapSize.getWidth (); x++)
 			for (int y = 0; y < mapSize.getHeight (); y++)
 				if (y < 20)
-					fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+					fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 				else if (y > 20)
-					fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+					fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 		
 		// Run method
 		mapGen.placeTowersOfWizardry ();
@@ -449,8 +449,8 @@ public final class TestOverlandMapGeneratorImpl
 
 		// Grass to the east and west (via wrapping), ocean to the south because we didn't overwrite it
 		mapGen.setAllToWater ();
-		fow.getMap ().getPlane ().get (0).getRow ().get (0).getCell ().get (1).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
-		fow.getMap ().getPlane ().get (0).getRow ().get (0).getCell ().get (59).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+		fow.getMap ().getPlane ().get (0).getRow ().get (0).getCell ().get (1).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
+		fow.getMap ().getPlane ().get (0).getRow ().get (0).getCell ().get (59).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 
 		// Run tests
 		final boolean [] [] riverPending = new boolean [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
@@ -514,7 +514,7 @@ public final class TestOverlandMapGeneratorImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		final TileType ocean = new TileType ();
-		when (db.findTileType (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, "placeTerrainFeatures")).thenReturn (ocean);
+		when (db.findTileType (ServerDatabaseValues.TILE_TYPE_OCEAN, "placeTerrainFeatures")).thenReturn (ocean);
 
 		// Arcanus can get MF01..02, Myrror can get MF01..03
 		final TileType mountain = new TileType ();
@@ -527,7 +527,7 @@ public final class TestOverlandMapGeneratorImpl
 				feature.setPlaneNumber (plane);
 				mountain.getTileTypeFeatureChance ().add (feature);
 			}
-		when (db.findTileType (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN, "placeTerrainFeatures")).thenReturn (mountain);
+		when (db.findTileType (ServerDatabaseValues.TILE_TYPE_MOUNTAIN, "placeTerrainFeatures")).thenReturn (mountain);
 		
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -555,7 +555,7 @@ public final class TestOverlandMapGeneratorImpl
 			for (int x = 0; x < mapSize.getWidth (); x++)
 			{
 				final OverlandMapTerrainData tc = fow.getMap ().getPlane ().get (plane).getRow ().get (10).getCell ().get (x).getTerrainData ();
-				tc.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+				tc.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 				
 				// Prove existing features won't be overridden
 				if (x % 2 == 0)
@@ -764,7 +764,7 @@ public final class TestOverlandMapGeneratorImpl
 		for (final MapAreaOfMemoryGridCells plane : fow.getMap ().getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
-					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 		
 		// Run method
 		mapGen.placeNodes ();
@@ -800,7 +800,7 @@ public final class TestOverlandMapGeneratorImpl
 						final MemoryGridCell nodeCell = fow.getMap ().getPlane ().get
 							(serverCell.getAuraFromNode ().getZ ()).getRow ().get (serverCell.getAuraFromNode ().getY ()).getCell ().get (serverCell.getAuraFromNode ().getX ());
 						
-						assertNotEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, nodeCell.getTerrainData ().getTileTypeID ());						 
+						assertNotEquals (ServerDatabaseValues.TILE_TYPE_GRASS, nodeCell.getTerrainData ().getTileTypeID ());						 
 					}
 				}
 			
@@ -1079,29 +1079,29 @@ public final class TestOverlandMapGeneratorImpl
 	private final String tileTypeIdToSingleLetter (final String tileTypeID) throws MomException
 	{
 		final String result;
-		if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN))
+		if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_OCEAN))
 			result = ".";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_GRASS))
 			result = "G";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_TUNDRA))
 			result = "T";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_HILLS))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_HILLS))
 			result = "H";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_MOUNTAIN))
 			result = "^";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_SHORE))
 			result = "S";
-		else if (tileTypeID.equals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST))
+		else if (tileTypeID.equals (CommonDatabaseConstants.TILE_TYPE_FOREST))
 			result = "F";
-		else if (tileTypeID.equals (CommonDatabaseConstants.VALUE_TILE_TYPE_DESERT))
+		else if (tileTypeID.equals (CommonDatabaseConstants.TILE_TYPE_DESERT))
 			result = "D";
-		else if (tileTypeID.equals (CommonDatabaseConstants.VALUE_TILE_TYPE_SWAMP))
+		else if (tileTypeID.equals (CommonDatabaseConstants.TILE_TYPE_SWAMP))
 			result = "W";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_RIVER))
 			result = "R";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEANSIDE_RIVER_MOUTH))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_OCEANSIDE_RIVER_MOUTH))
 			result = "O";
-		else if (tileTypeID.equals (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH))
+		else if (tileTypeID.equals (ServerDatabaseValues.TILE_TYPE_LANDSIDE_RIVER_MOUTH))
 			result = "L";
 		else if ((tileTypeID.equals ("TT12")) || (tileTypeID.equals ("TT13")) || (tileTypeID.equals ("TT14")))
 			result = "N";
@@ -1203,7 +1203,7 @@ public final class TestOverlandMapGeneratorImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		final TileType ocean = new TileType ();
-		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
 		when (db.findTileType (ocean.getTileTypeID (), "generateInitialCombatAreaEffects")).thenReturn (ocean);
 		
 		final TileType dudTileType = new TileType ();

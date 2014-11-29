@@ -89,7 +89,7 @@ public final class TestServerUnitCalculationsImpl
 		assertEquals (1, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
 		
 		// Unit with Scouting III
-		when (unitUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.VALUE_UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db)).thenReturn (3);
+		when (unitUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db)).thenReturn (3);
 		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
 		
 		// Unit with two skills, one which grants Scouting II (like Flight) and one which has nothing at all to do with scouting
@@ -219,13 +219,13 @@ public final class TestServerUnitCalculationsImpl
 			(20, 10, 0, 2, map, units, db));
 
 		// Regular tile type
-		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 
 		assertFalse (calc.willMovingHereResultInAnAttack
 			(20, 10, 0, 2, map, units, db));
 
 		// Tower that we've previously cleared but now occupied by our units
-		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		
 		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
 
@@ -247,7 +247,7 @@ public final class TestServerUnitCalculationsImpl
 
 		// Tower that we've previously cleared but now occupied by our units and we're on Myrror
 		final OverlandMapTerrainData myrrorData = new OverlandMapTerrainData ();
-		myrrorData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		myrrorData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (myrrorData);
 		
 		unit.setOwningPlayerID (2);
@@ -330,7 +330,7 @@ public final class TestServerUnitCalculationsImpl
 
 		final MemoryUnit longbowmenUnit = new MemoryUnit ();
 		longbowmenUnit.setUnitURN (1);
-		for (final String unitSkillID : new String [] {CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, "US132", "US001", "USX01"})
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "US132", "US001", "USX01"})
 		{
 			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
 			unitHasSkill.setUnitSkillID (unitSkillID);
@@ -341,7 +341,7 @@ public final class TestServerUnitCalculationsImpl
 
 		final List<String> longbowmen = calc.listAllSkillsInUnitStack (units, spells, db);
 		assertEquals (4, longbowmen.size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, longbowmen.get (0));
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, longbowmen.get (0));
 		assertEquals ("US132", longbowmen.get (1));
 		assertEquals ("US001", longbowmen.get (2));
 		assertEquals ("USX01", longbowmen.get (3));
@@ -349,7 +349,7 @@ public final class TestServerUnitCalculationsImpl
 		// Two units with skills only from DB
 		final MemoryUnit elvenLordsUnit = new MemoryUnit ();
 		elvenLordsUnit.setUnitURN (2);
-		for (final String unitSkillID : new String [] {CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, "US001", "USX01", "US028", "US029"})
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "US001", "USX01", "US028", "US029"})
 		{
 			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
 			unitHasSkill.setUnitSkillID (unitSkillID);
@@ -360,7 +360,7 @@ public final class TestServerUnitCalculationsImpl
 
 		final List<String> elvenLords = calc.listAllSkillsInUnitStack (units, spells, db);
 		assertEquals (6, elvenLords.size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, elvenLords.get (0));
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, elvenLords.get (0));
 		assertEquals ("US132", elvenLords.get (1));
 		assertEquals ("US001", elvenLords.get (2));
 		assertEquals ("USX01", elvenLords.get (3));
@@ -381,7 +381,7 @@ public final class TestServerUnitCalculationsImpl
 
 		final List<String> hellHounds = calc.listAllSkillsInUnitStack (units, spells, db);
 		assertEquals (7, hellHounds.size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, hellHounds.get (0));
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, hellHounds.get (0));
 		assertEquals ("US132", hellHounds.get (1));
 		assertEquals ("US001", hellHounds.get (2));
 		assertEquals ("USX01", hellHounds.get (3));
@@ -414,7 +414,7 @@ public final class TestServerUnitCalculationsImpl
 
 		final List<String> withSpells = calc.listAllSkillsInUnitStack (units, spells, db);
 		assertEquals (9, withSpells.size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, withSpells.get (0));
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, withSpells.get (0));
 		assertEquals ("US132", withSpells.get (1));
 		assertEquals ("US001", withSpells.get (2));
 		assertEquals ("USX01", withSpells.get (3));
@@ -782,7 +782,7 @@ public final class TestServerUnitCalculationsImpl
 		// Add tower
 		for (final Plane plane : db.getPlane ())
 			terrain.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (10).getCell ().get (20).getTerrainData ().setMapFeatureID
-				(CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
+				(CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 
 		// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
 		// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past

@@ -861,7 +861,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="surveyorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml" />
 	</bean>
 	
 	<bean id="overlandMapRightHandPanel" class="momime.client.ui.panels.OverlandMapRightHandPanel">
@@ -907,7 +907,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/MagicSlidersUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/MagicSlidersUI.xml" />
 	</bean>
 
 	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">
@@ -967,11 +967,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/CombatUI-Main.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CombatUI-Main.xml" />
 	</bean>
 
 	<bean id="combatLayoutBottom" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/CombatUI-Bottom.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CombatUI-Bottom.xml" />
 	</bean>
 
 	<bean id="combatUI" class="momime.client.ui.frames.CombatUI">
@@ -1007,7 +1007,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/RazeCityUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/RazeCityUI.xml" />
 	</bean>
 
 	<bean id="razeCityUI" class="momime.client.ui.dialogs.RazeCityUI">
@@ -1020,7 +1020,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="selectAdvisorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/SelectAdvisorUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/SelectAdvisorUI.xml" />
 	</bean>
 
 	<bean id="selectAdvisorUI" class="momime.client.ui.frames.SelectAdvisorUI">
@@ -1110,7 +1110,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="messageBoxLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/MessageBoxUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/MessageBoxUI.xml" />
 	</bean>
 	
 	<bean id="messageBoxUI" class="momime.client.ui.dialogs.MessageBoxUI" scope="prototype">
@@ -1150,7 +1150,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="cityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/CityViewUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CityViewUI.xml" />
 	</bean>
 	
 	<bean id="cityViewUI" class="momime.client.ui.frames.CityViewUI" scope="prototype">
@@ -1185,7 +1185,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="miniCityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/MiniCityViewUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/MiniCityViewUI.xml" />
 	</bean>
 	
 	<bean id="miniCityViewUI" class="momime.client.ui.dialogs.MiniCityViewUI" scope="prototype">
@@ -1256,7 +1256,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="overlandEnchantmentsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml" />
 	</bean>
 	
 	<bean id="overlandEnchantmentsUI" class="momime.client.ui.dialogs.OverlandEnchantmentsUI" scope="prototype">
@@ -1274,7 +1274,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="combatEndedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/CombatEndedUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/CombatEndedUI.xml" />
 	</bean>
 	
 	<bean id="combatEndedUI" class="momime.client.ui.dialogs.CombatEndedUI" scope="prototype">
@@ -1288,7 +1288,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="unitRowDisplayLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/UnitRowDisplayUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/UnitRowDisplayUI.xml" />
 	</bean>
 	
 	<bean id="unitRowDisplayUI" class="momime.client.ui.dialogs.UnitRowDisplayUI" scope="prototype">

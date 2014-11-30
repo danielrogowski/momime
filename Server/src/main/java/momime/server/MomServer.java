@@ -102,11 +102,12 @@ public final class MomServer extends MultiplayerSessionServer
 	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
 	 * @param sessionDescription Description of the new session
 	 * @return Thread object to handle requests for this session
-	 * @throws JAXBException If there is a problem loading the server XML file
+	 * @throws JAXBException If there is an error dealing with any XML files during creation
+	 * @throws XMLStreamException If there is an error dealing with any XML files during creation
 	 * @throws IOException If there is a problem generating the client database for this session
 	 */
 	@Override
-	public final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException, IOException
+	public final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException, XMLStreamException, IOException
 	{
 		log.trace ("Entering createSessionThread: Session ID " + sessionDescription.getSessionID ());
 
@@ -143,17 +144,7 @@ public final class MomServer extends MultiplayerSessionServer
 		mapGen.setServerDB (thread.getServerDB ());
 		mapGen.setGsk (thread.getGeneralServerKnowledge ());		// See comment in spring XML for why this isn't just injected
 		mapGen.generateOverlandTerrain ();
-		
-		try
-		{
-			mapGen.generateInitialCombatAreaEffects ();
-			
-			// Take this catch out after switching to the latest multiplayer layer version which includes XMLStreamException in the throws clause
-		}
-		catch (final XMLStreamException e)
-		{
-			throw new IOException (e);
-		}
+		mapGen.generateInitialCombatAreaEffects ();
 
 		thread.getSessionLogger ().info ("Session startup completed");
 		log.trace ("Exiting createSessionThread = " + thread);

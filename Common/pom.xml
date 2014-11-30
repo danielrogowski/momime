@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-common</artifactId>
-	<version>0.9.5.1-SNAPSHOT</version>
+	<version>0.9.5.2-SNAPSHOT</version>
 	<name>momimeCommon</name>
 	<description>MoM IME common database definitions and classes needed both by client and server</description>
 

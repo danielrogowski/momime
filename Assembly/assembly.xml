@@ -41,7 +41,11 @@
 				<exclude>com.ndg.momime:momime-server:jar:databases</exclude>
 				<exclude>com.ndg.momime:momime-client:jar:graphics</exclude>
 				<exclude>com.ndg.momime:momime-client:jar:languages</exclude>
-			</excludes>
+
+				<exclude>com.ndg.momime:momime-server:jar:config</exclude>
+				<exclude>com.ndg.momime:momime-client:jar:config</exclude>
+				<exclude>com.ndg.momime:momime-editors:jar:config</exclude>
+				</excludes>
 			<useProjectArtifact>false</useProjectArtifact>
 		</dependencySet>
 	</dependencySets>

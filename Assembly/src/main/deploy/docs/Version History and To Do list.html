@@ -67,7 +67,6 @@
 					<li>Ability to change sound volume (this is harder than it sounds and requires a complete rewrite of the sound/music player)
 					<li>Enchanted/cursed units should have a visibility different appearance (e.g. be surrounded in a white glow)
 					<li>Draw cities containing wizards' fortresses visibly different on the overland map (the graphics XML file already supports this, its just a case of drawing the images)
-					<li>Roads - this also needs a modification to the server overland move routine, so that requesting a move of only 1 distance doesn't go an obscure route over enchanted roads like the original MoM did
 					<li>If two players are in combat and a 3rd player has an overland enchantment cast that will have an effect on the combat (e.g. Eternal Night) then the combat area effect doesn't appear (it still works functionally, you just can't see it)
 					<li>I don't like that you can't tell the different on the unit info screen between unit attribute bonuses from true Combat Area Effects (i.e. node auras) and Combat Area Effect spells (e.g. Prayer) - they all just show up green
 					<li>If negative effects reduce a stat below zero (Warp Reality is the best example), you cannot tell on the unit info screen
@@ -97,6 +96,7 @@
 					<li>(Bug) If the last creature guarding a monster lair is killed and the counterattack kills the last attacker at the same time, then technically the defenders win and so the lair is not removed from the map which is correct - but walking onto it with fresh units doesn't display the "Scouts have found nothing" message and so the lair can never be removed from the map. It also behaves oddly if you find an empty lair but answer "no" to "attacking" it the first time, then answer "yes" another time. Probably the same bug.
 					<li>(Bug) Stop "Server has ended the game" from coming up if the player wilfully clicks the Leave Game button
 					<li>(Bug) esper256 reported in 0.9.3 that when taking an empty monster lair, the screen scrolls away to the next unit before it shows your unit actually taking up that square
+					<li>(Bug) Sometimes when switching music (e.g. casting a spell with music), it won't stop the previous background music... meaning from then on, there's always two sets of music playing over the top of each other which sounds awful
 				</ul></td>
 		</tr>
 		<tr>
@@ -140,6 +140,7 @@
 					<li>Create item and create artifact spells
 					<li>Non-corporeal units should appear translucent in combat
 					<li>Buildings and population being destroyed during city combats
+					<li>Roads
 				</ul>
 			</td>
 		</tr>
@@ -183,21 +184,27 @@
 					<li>Add back in the ability for custom wizards
 					<li>Add back in simultaneous turns games
 					<li>Add back in the options screen
-					<li>Add back in auto centreing of map to the unit that's moving
+					<li>Add back in auto centreing of map to the unit that's moving (though it should abort trying to centre the map if you scroll at all - the Delphi client was glitchy with that)
 					<li>Add back in mini map in corner of city view
+					<li>Add back in icons on the Next Turn button that tell you when you have insufficient production, need to target a spell, or need to pick a spell to research
+					<li>Add back in right clicking on lots of in game elements to get help text
+					<li>Add back in apprentice/F3 to view queued overland spells
+					<li>Add back in keys, e.g. arrow keys moving on overland map, N for Next Turn and so on
+					<li>Add back in ability to rename heroes
 				</ul>
 			</td>
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.5</b></td>
-			<td align=left><b>2014</b></td>
+			<td align=left><b>Current version: 0.9.5.0</b></td>
+			<td align=left><b>30 Nov 2014</b></td>
 			<td align=left>
 				<b>Major new features:</b>
 				<ul>
 					<li>Client has been ported to Java
 					<li>No cumbersome MSI installer and no configuration necessary - just unzip and run
 					<li>All the windows can be independantly moved around , and you can open multiple city and unit screens (this means there is no more full screen option)
+					<li>Eliminated concept having to "attack" nodes/lairs/towers in order to scout what kind of units are inside - can now see these just by one of your units being able to see the map cell, just like scouting units guarding an enemy city
 				</ul>
 				
 				<b>Minor new features:</b>
@@ -205,19 +212,23 @@
 					<li>No longer requires a copy of all the LBX files from the original MoM
 					<li>Should now in theory run on non-Windows operating systems, though this is untested
 					<li>New turn messages now play music (so you get the music for constructing a building or researching a spell)
+					<li>Overland enchantments changed to proper animations like the original MoM rather than just new turn messages
+					<li>Overland unit enchantments (e.g. endurance, flame blade) now show proper animations and sound effects
 				</ul>
 
 				<b>Fixed bugs:</b>
 				<ul>
-					<li>At the map wrapping boundary, fixed that sometimes units will be drawn moving e.g. up-left when tried to move them up-right, however this is a visual artefact only - at the end of their move they jump to the right location
-					<li>Fixed mixed up combat sounds and animations with ranged attacks
+					<li>At the map wrapping boundary, fixed bug that sometimes units will be drawn moving e.g. up-left when tried to move them up-right
+					<li>In 0.9.4, combat sounds and animations with ranged attacks were mixed up
+					<li>In 0.9.4, nodes would always be empty
+					<li>Fixed countless more bugs in the Java server from 0.9.4 than I can remember
 				</ul>
 				
 				<b>Changes to the editors:</b>
 				<ul>
-					<li>Removed .LBX and .NDGARC support from graphics editor, in line with how the new Java client works
-					<li>Works better with relative paths, so the editors work as-is after unzipping
-					<li>Creates "backups" folder if it is missing 
+					<li>Removed .LBX and .NDGARC support from graphics editor, in line with how the new Java client stores resources
+					<li>Now works with relative paths, so the editors work as-is after unzipping
+					<li>Creates "backups" folder if it is missing , again so that the editors work as-is after unzipping
 				</ul>
 			</td>
 		</tr>

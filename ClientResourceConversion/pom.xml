@@ -10,20 +10,19 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.9</version>
+		<version>0.1.0</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
+			<version>0.9.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-utils</artifactId>
-			<version>0.0.4</version>
+			<version>0.1.0</version>
 		</dependency>
 	</dependencies>
-
 </project>

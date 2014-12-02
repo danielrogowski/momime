@@ -4565,8 +4565,8 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="GameName">
 			<languageEntryText>Game Name</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="Custom">
-			<languageEntryText>Custom</languageEntryText>
+		<languageEntry languageEntryID="Customize">
+			<languageEntryText>Customize?</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="InvalidNumberOfPlayers">
 			<languageEntryText>The total number of Human and AI opponents must be between 1 and 13</languageEntryText>

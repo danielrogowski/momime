@@ -56,6 +56,7 @@ public final class TestNewGameUI
 		when (lang.findCategoryEntry ("frmNewGame", "SpellSettings")).thenReturn ("Spell Settings");
 		when (lang.findCategoryEntry ("frmNewGame", "DebugOptions")).thenReturn ("Use any debug options?");
 		when (lang.findCategoryEntry ("frmNewGame", "GameName")).thenReturn ("Game Name");
+		when (lang.findCategoryEntry ("frmNewGame", "Customize")).thenReturn ("Customize?");
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -96,7 +97,7 @@ public final class TestNewGameUI
 
 		// Display form
 		game.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 		game.setVisible (false);
 	}
 }

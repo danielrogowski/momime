@@ -275,6 +275,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Game name */
 	private JTextField gameName;
 	
+	/** Customize? heading over the tickboxes */
+	private JLabel customizeLabel;
+	
 	// CUSTOM MAP SIZE PANEL
 
 	/** Panel key */
@@ -677,11 +680,15 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeMapSizeAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameMapSizeButton");
 		
+		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameMapSizeCustomize");
+		
 		landProportionLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (landProportionLabel, "frmNewGameLandProportion");
 
 		newGamePanel.add (getUtils ().createImageButton (changeLandProportionAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameLandProportionButton");
+
+		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameLandProportionCustomize");
 		
 		nodesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (nodesLabel, "frmNewGameNodes");
@@ -689,11 +696,15 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeNodeStrengthAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameNodesButton");
 		
+		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameNodesCustomize");
+		
 		difficultyLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (difficultyLabel, "frmNewGameDifficulty");
 		
 		newGamePanel.add (getUtils ().createImageButton (changeDifficultyLevelAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameDifficultyButton");
+		
+		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameDifficultyCustomize");
 		
 		turnSystemLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (turnSystemLabel, "frmNewGameTurnSystem");
@@ -707,17 +718,23 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeFogOfWarSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameFogOfWarButton");
 		
+		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameFogOfWarCustomize");
+		
 		unitSettingsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (unitSettingsLabel, "frmNewGameUnitSettings");
 
 		newGamePanel.add (getUtils ().createImageButton (changeUnitSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameUnitButton");
+
+		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameUnitCustomize");
 		
 		spellSettingsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (spellSettingsLabel, "frmNewGameSpellSettings");
 		
 		newGamePanel.add (getUtils ().createImageButton (changeSpellSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameSpellButton");
+		
+		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameSpellCustomize");
 		
 		debugOptionsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (debugOptionsLabel, "frmNewGameDebugOptions");
@@ -731,6 +748,9 @@ public final class NewGameUI extends MomClientFrameUI
 		gameName = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editbox);
 		newGamePanel.add (gameName, "frmNewGameGameNameEdit");
 
+		customizeLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		newGamePanel.add (customizeLabel, "frmNewGameCustomize");
+		
 		for (int n = 1; n <= 2; n++)
 			newGamePanel.add (getUtils ().createImage (divider), "frmNewGameBar" + n);
 		
@@ -1292,6 +1312,7 @@ public final class NewGameUI extends MomClientFrameUI
 		spellSettingsLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGame", "SpellSettings"));
 		debugOptionsLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGame", "DebugOptions"));
 		gameNameLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGame", "GameName"));
+		customizeLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGame", "Customize"));
 		
 		changeTurnSystemAction.clearItems ();
 		for (final TurnSystem turnSystem : TurnSystem.values ())
@@ -1450,16 +1471,6 @@ public final class NewGameUI extends MomClientFrameUI
 		changeSpellSettingsAction.clearItems ();
 		for (final SpellSetting spellSetting : changeDatabaseAction.getSelectedItem ().getSpellSetting ())
 			changeSpellSettingsAction.addItem (spellSetting, getLanguage ().findSpellSettingDescription (spellSetting.getSpellSettingID ()));
-		
-		// Add "custom" options for all as well
-		final String custom = getLanguage ().findCategoryEntry ("frmNewGame", "Custom");
-		changeMapSizeAction.addItem					(null, custom);
-		changeLandProportionAction.addItem		(null, custom);
-		changeNodeStrengthAction.addItem			(null, custom);
-		changeDifficultyLevelAction.addItem			(null, custom);
-		changeFogOfWarSettingsAction.addItem	(null, custom);
-		changeUnitSettingsAction.addItem			(null, custom);
-		changeSpellSettingsAction.addItem			(null, custom);
 	}
 	
 	/**

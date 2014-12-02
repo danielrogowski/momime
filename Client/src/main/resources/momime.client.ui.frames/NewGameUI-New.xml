@@ -74,69 +74,117 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameDifficultyButton">
-		<left>175</left>
-		<top>182</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
 	<component name="frmNewGameHumanOpponentsButton">
-		<left>175</left>
-		<top>57</top>
+		<left>155</left>
+		<top>60</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameAIOpponentsButton">
-		<left>175</left>
-		<top>82</top>
+		<left>155</left>
+		<top>85</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameMapSizeButton">
-		<left>175</left>
-		<top>107</top>
+		<left>155</left>
+		<top>110</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameLandProportionButton">
-		<left>175</left>
-		<top>132</top>
+		<left>155</left>
+		<top>135</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameNodesButton">
-		<left>175</left>
-		<top>157</top>
+		<left>155</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameDifficultyButton">
+		<left>155</left>
+		<top>185</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameTurnSystemButton">
-		<left>175</left>
-		<top>207</top>
+		<left>155</left>
+		<top>210</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameFogOfWarButton">
-		<left>175</left>
-		<top>232</top>
+		<left>155</left>
+		<top>235</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameUnitButton">
-		<left>175</left>
-		<top>257</top>
+		<left>155</left>
+		<top>260</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameSpellButton">
-		<left>175</left>
-		<top>282</top>
+		<left>155</left>
+		<top>285</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameDebugButton">
-		<left>175</left>
-		<top>307</top>
+		<left>155</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomize">
+		<left>310</left>
+		<top>40</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameMapSizeCustomize">
+		<left>300</left>
+		<top>112</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLandProportionCustomize">
+		<left>300</left>
+		<top>137</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameNodesCustomize">
+		<left>300</left>
+		<top>162</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameDifficultyCustomize">
+		<left>300</left>
+		<top>187</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameFogOfWarCustomize">
+		<left>300</left>
+		<top>237</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameUnitCustomize">
+		<left>300</left>
+		<top>262</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameSpellCustomize">
+		<left>300</left>
+		<top>287</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

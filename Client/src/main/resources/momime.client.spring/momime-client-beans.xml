@@ -845,8 +845,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
+
+	<bean id="newGameLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Main.xml" />
+	</bean>
+
+	<bean id="newGameLayoutNew" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-New.xml" />
+	</bean>
 	
 	<bean id="newGameUI" class="momime.client.ui.frames.NewGameUI">
+		<property name="newGameLayoutMain" ref="newGameLayoutMain" />
+		<property name="newGameLayoutNew" ref="newGameLayoutNew" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />

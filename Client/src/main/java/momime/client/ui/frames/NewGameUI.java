@@ -3,6 +3,7 @@ package momime.client.ui.frames;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -47,14 +48,6 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.DifficultyLevelData;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.LandProportionData;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.database.newgame.NodeStrengthData;
-import momime.common.database.newgame.SpellSettingData;
-import momime.common.database.newgame.UnitSettingData;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.DifficultyLevelNodeStrength;
 import momime.common.database.FogOfWarSetting;
@@ -63,19 +56,27 @@ import momime.common.database.MapSize;
 import momime.common.database.NodeStrength;
 import momime.common.database.Plane;
 import momime.common.database.Race;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
 import momime.common.database.WizardPick;
+import momime.common.database.newgame.DifficultyLevelData;
+import momime.common.database.newgame.FogOfWarSettingData;
+import momime.common.database.newgame.LandProportionData;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.database.newgame.NodeStrengthData;
+import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.newgame.UnitSettingData;
+import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.TurnSystem;
 import momime.common.messages.clienttoserver.ChooseInitialSpellsMessage;
 import momime.common.messages.clienttoserver.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.ChooseWizardMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
-import momime.common.messages.CombatMapSizeData;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
-import momime.common.messages.TurnSystem;
 import momime.common.utils.PlayerPickUtils;
 
 import org.apache.commons.logging.Log;
@@ -89,6 +90,8 @@ import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Screens for setting up new and joining existing games
@@ -98,6 +101,12 @@ public final class NewGameUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewGameUI.class);
+	
+	/** XML layout of the main form */
+	private XmlLayoutContainerEx newGameLayoutMain;
+
+	/** XML layout of the "new game" right hand side */
+	private XmlLayoutContainerEx newGameLayoutNew;
 	
 	/** Large font */
 	private Font largeFont;
@@ -144,9 +153,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Shelf displaying chosen books */
 	private JPanel bookshelf;
 	
-	/** Size of mini grid bag layout to display chosen spell books */
-	private final Dimension BOOKSHELF_SIZE = new Dimension (187, 58);
-	
 	/** Currently selected picks (whether from pre-defined wizard or custom) */
 	private List<WizardPick> picks = new ArrayList<WizardPick> ();
 	
@@ -183,6 +189,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** White flag */
 	private BufferedImage flag;
 	
+	/** Title that changes as we change cards */
+	private JLabel title;
+	
 	// NEW GAME PANEL
 
 	/** Panel key */
@@ -191,9 +200,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Panel */
 	private JPanel newGamePanel;
 	
-	/** Panel title */
-	private JLabel newGameTitle;
-
 	/** Action for changing selected database */
 	private CycleAction<AvailableDatabase> changeDatabaseAction;
 	
@@ -274,88 +280,55 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Panel key */
 	private final static String MAP_SIZE_PANEL = "Map";
 	
-	/** Panel title */
-	private JLabel mapSizeTitle;
-	
 	// CUSTOM LAND PROPORTION PANEL
 
 	/** Panel key */
 	private final static String LAND_PROPORTION_PANEL = "Land";
-	
-	/** Panel title */
-	private JLabel landProportionTitle;
 	
 	// CUSTOM NODES PANEL
 
 	/** Panel key */
 	private final static String NODES_PANEL = "Nodes";
 	
-	/** Panel title */
-	private JLabel nodesTitle;
-	
 	// CUSTOM DIFFICULTY PANEL (1 of 2)
 
 	/** Panel key */
 	private final static String DIFFICULTY_1_PANEL = "Diff1";
-	
-	/** Panel title */
-	private JLabel difficulty1Title;
 	
 	// CUSTOM DIFFICULTY PANEL (2 of 2)
 	
 	/** Panel key */
 	private final static String DIFFICULTY_2_PANEL = "Diff2";
 	
-	/** Panel title */
-	private JLabel difficulty2Title;
-	
 	// CUSTOM NODES-DIFFICULTY PANEL
 	
 	/** Panel key */
 	private final static String NODES_DIFFICULTY_PANEL = "NodesDiff";
-	
-	/** Panel title */
-	private JLabel nodesDifficultyTitle;	
 	
 	// CUSTOM FOG OF WAR PANEL
 	
 	/** Panel key */
 	private final static String FOG_OF_WAR_PANEL = "FOW";
 	
-	/** Panel title */
-	private JLabel fogOfWarTitle;
-	
 	// CUSTOM UNIT SETTINGS PANEL
 	
 	/** Panel key */
 	private final static String UNITS_PANEL = "Units";
 	
-	/** Panel title */
-	private JLabel unitsTitle;
-
 	// CUSTOM SPELL SETTINGS PANEL
 	
 	/** Panel key */
 	private final static String SPELLS_PANEL = "Spell";
-	
-	/** Panel title */
-	private JLabel spellsTitle;
 	
 	// DEBUG OPTIONS PANEL
 	
 	/** Panel key */
 	private final static String DEBUG_PANEL = "Debug";
 	
-	/** Panel title */
-	private JLabel debugTitle;
-	
 	// JOIN GAME PANEL
 	
 	/** Panel key */
 	private final static String JOIN_GAME_PANEL = "Join";
-	
-	/** Panel title */
-	private JLabel joinGameTitle;
 	
 	// WIZARD SELECTION PANEL
 
@@ -364,9 +337,6 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Panel */
 	private JPanel wizardPanel;
-	
-	/** Panel title */
-	private JLabel wizardTitle;
 	
 	/** Dynamically created button actions */
 	private Map<String, Action> wizardButtonActions = new HashMap<String, Action> ();
@@ -388,9 +358,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Panel */
 	private JPanel portraitPanel;
 	
-	/** Panel title */
-	private JLabel portraitTitle;
-
 	/** Dynamically created button actions */
 	private Map<String, Action> portraitButtonActions = new HashMap<String, Action> ();
 
@@ -408,16 +375,10 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Panel key */
 	private final static String FLAG_PANEL = "Flag";
 	
-	/** Panel title */
-	private JLabel flagTitle;
-	
 	// CUSTOM PICKS PANEL (for custom wizards)
 	
 	/** Panel key */
 	private final static String PICKS_PANEL = "Picks";
-	
-	/** Panel title */
-	private JLabel picksTitle;
 	
 	// FREE SPELL SELECTION PANEL
 	
@@ -426,9 +387,6 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Panel */
 	private JPanel freeSpellsPanel;
-	
-	/** Panel title */
-	private JLabel freeSpellsTitle;
 	
 	/** Magic realm we're current choosing free spells for */
 	private String currentMagicRealmID;
@@ -450,9 +408,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Panel */
 	private JPanel racePanel;
 	
-	/** Panel title */
-	private JLabel raceTitle;
-
 	/** Dynamically created titles */
 	private Map<Integer, JLabel> racePlanes = new HashMap<Integer, JLabel> ();
 	
@@ -472,9 +427,6 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Panel */
 	private JPanel waitPanel;
-	
-	/** Panel title */
-	private JLabel waitTitle;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -599,83 +551,62 @@ public final class NewGameUI extends MomClientFrameUI
  		contentPane.setPreferredSize (fixedSize);
 		
 		// Set up main layout
- 		// This is 5x7 and quite complicated, so see "NewGameUI contentPane.psp" in the misc project
- 		// The right hand side of the screen (except the OK/cancel buttons and divider) contains a card layout
- 		// that then flips between each page of game setup, so contentPane only contains the elements
- 		// maintained across all pages
-		contentPane.setLayout (new GridBagLayout ());
-		
-		final GridBagConstraints rhsConstraints = getUtils ().createConstraintsBothFill (4, 0, 2, 5, INSET);
-		rhsConstraints.weightx = 1;
-		rhsConstraints.weighty = 1;
-		
-		cardLayout = new CardLayout ();
+		contentPane.setLayout (new XmlLayoutManager (getNewGameLayoutMain ()));
+		cardLayout = new CardLayout ()
+		{
+			/**
+			 * Update the title whenever the displayed card changes
+			 */
+			@Override
+			public final void show (final Container parent, final String name)
+			{
+				super.show (parent, name);
+				languageOrCardChanged ();
+			}
+		};
 		
 		cards = new JPanel (cardLayout);
 		cards.setOpaque (false);
-		contentPane.add (cards, rhsConstraints);
+		contentPane.add (cards, "frmNewGameLHSCard");
 		
-		// Divider, OK and Cancel buttons
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (4, 5, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		// Dividers, Title, OK and Cancel buttons (above and below the card layout)
+		for (int n = 1; n <= 2; n++)
+			contentPane.add (getUtils ().createImage (divider), "frmNewGameLHSBar" + n);
+
+		title = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (title, "frmNewGameLHSTitle");
 		
-		final GridBagConstraints okConstraints = getUtils ().createConstraintsNoFill (4, 6, 1, 1, INSET, GridBagConstraintsNoFill.EAST);
-		okConstraints.weightx = 1;		// Move the OK button as far to the right as possible
 		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), okConstraints);
+			buttonNormal, buttonPressed, buttonDisabled), "frmNewGameLHSOK");
 		
 		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraintsNoFill (5, 6, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			buttonNormal, buttonPressed, buttonDisabled), "frmNewGameLHSCancel");
 		
 		// Images in left hand side
-		wizardPortrait = new JLabel (new ImageIcon ());		// If we don't create the ImageIcon, even though empty, the layout is set incorrectly, not sure why
-		wizardPortrait.setMinimumSize (GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE);
-		wizardPortrait.setMaximumSize (GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE);
-		wizardPortrait.setPreferredSize (GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE);
-		contentPane.add (wizardPortrait, getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		wizardPortrait = new JLabel ();
+		contentPane.add (wizardPortrait, "frmNewGameLHSPhoto");
 		
-		final Dimension flagSize = new Dimension (flag.getWidth (), flag.getHeight ());
-		
-		flag1 = new JLabel (new ImageIcon ());
-		flag1.setMinimumSize (flagSize);
-		flag1.setMaximumSize (flagSize);
-		flag1.setPreferredSize (flagSize);
-		contentPane.add (flag1, getUtils ().createConstraintsNoFill (0, 3, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		flag1 = new JLabel ();
+		contentPane.add (flag1, "frmNewGameLHSFlag1");
 
-		flag2 = new JLabel (new ImageIcon ());
-		flag2.setMinimumSize (flagSize);
-		flag2.setMaximumSize (flagSize);
-		flag2.setPreferredSize (flagSize);
-		contentPane.add (flag2, getUtils ().createConstraintsNoFill (2, 3, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		flag2 = new JLabel ();
+		contentPane.add (flag2, "frmNewGameLHSFlag2");
 
 		playerName = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		contentPane.add (playerName, getUtils ().createConstraintsNoFill (1, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (playerName, "frmNewGameLHSWizardName");
 		
 		bookshelf = new JPanel (new GridBagLayout ());
 		bookshelf.setOpaque (false);
-		bookshelf.setMinimumSize (BOOKSHELF_SIZE);
-		bookshelf.setMaximumSize (BOOKSHELF_SIZE);
-		bookshelf.setPreferredSize (BOOKSHELF_SIZE);
+		
+		// Force the books to sit on the bottom of the shelf
+		bookshelf.add (Box.createRigidArea (new Dimension (0, getNewGameLayoutMain ().findComponent ("frmNewGameLHSBookshelf").getHeight ())));
 
-		contentPane.add (bookshelf, getUtils ().createConstraintsNoFill (1, 3, 1, 1, INSET, GridBagConstraintsNoFill.SOUTH));
+		contentPane.add (bookshelf, "frmNewGameLHSBookshelf");
 		
 		retorts = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (retorts, getUtils ().createConstraintsBothFill (0, 5, 3, 2, INSET));
+		contentPane.add (retorts, "frmNewGameLHSRetorts");
 		
-		// Force the books to be tall enough, or they don't sit down onto the shelf
-		bookshelf.add (Box.createRigidArea (new Dimension (0, BOOKSHELF_SIZE.height)), getUtils ().createConstraintsNoFill (0, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
-		
-		// Gap above the wizard portrait
-		// Also force the width, because nothing else in column 1 (like the books) is a fixed size to base the column width on
-		contentPane.add (Box.createRigidArea (new Dimension (0, 15)), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		// Force height of row 2, containing the player name, to the same size regardless of whether there's a name in it or not
-		contentPane.add (Box.createRigidArea (new Dimension (0, 30)), getUtils ().createConstraintsNoFill (0, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		// Small gap down spine of the "book" background
-		contentPane.add (Box.createRigidArea (new Dimension (20, 0)), getUtils ().createConstraintsNoFill (3, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-
 		// NEW GAME PANEL
-		// This is easy with 2 columns
 		changeDatabaseAction = new CycleAction<AvailableDatabase> ()
 		{
 			/**
@@ -722,98 +653,86 @@ public final class NewGameUI extends MomClientFrameUI
 		changeSpellSettingsAction = new CycleAction<SpellSetting> ();
 		changeDebugOptionsAction = new CycleAction<Boolean> ();
 		
-		newGamePanel = new JPanel ();
+		newGamePanel = new JPanel (new XmlLayoutManager (getNewGameLayoutNew ()));
 		newGamePanel.setOpaque (false);
-		newGamePanel.setLayout (new GridBagLayout ());
-		
-		newGameTitle = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		newGamePanel.add (newGameTitle, getUtils ().createConstraintsNoFill (0, 0, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		newGamePanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 1, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		newGamePanel.add (getUtils ().createImageButton (changeDatabaseAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			wideButtonNormal, wideButtonPressed, wideButtonNormal), getUtils ().createConstraintsNoFill (0, 2, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-
-		newGamePanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 3, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+			wideButtonNormal, wideButtonPressed, wideButtonNormal), "frmNewGameDatabaseButton");
 
 		humanOpponentsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (humanOpponentsLabel, getUtils ().createConstraintsNoFill (0, 4, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (humanOpponentsLabel, "frmNewGameHumanOpponents");
 
 		newGamePanel.add (getUtils ().createImageButton (changeHumanOpponentsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 4, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameHumanOpponentsButton");
 		
 		aiOpponentsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (aiOpponentsLabel, getUtils ().createConstraintsNoFill (0, 5, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (aiOpponentsLabel, "frmNewGameAIOpponents");
 
 		newGamePanel.add (getUtils ().createImageButton (changeAIOpponentsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 5, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameAIOpponentsButton");
 		
 		mapSizeLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (mapSizeLabel, getUtils ().createConstraintsNoFill (0, 6, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (mapSizeLabel, "frmNewGameMapSize");
 
 		newGamePanel.add (getUtils ().createImageButton (changeMapSizeAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 6, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameMapSizeButton");
 		
 		landProportionLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (landProportionLabel, getUtils ().createConstraintsNoFill (0, 7, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (landProportionLabel, "frmNewGameLandProportion");
 
 		newGamePanel.add (getUtils ().createImageButton (changeLandProportionAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 7, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameLandProportionButton");
 		
 		nodesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (nodesLabel, getUtils ().createConstraintsNoFill (0, 8, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (nodesLabel, "frmNewGameNodes");
 		
 		newGamePanel.add (getUtils ().createImageButton (changeNodeStrengthAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 8, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameNodesButton");
 		
 		difficultyLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (difficultyLabel, getUtils ().createConstraintsNoFill (0, 9, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (difficultyLabel, "frmNewGameDifficulty");
 		
 		newGamePanel.add (getUtils ().createImageButton (changeDifficultyLevelAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 9, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameDifficultyButton");
 		
 		turnSystemLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (turnSystemLabel, getUtils ().createConstraintsNoFill (0, 10, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (turnSystemLabel, "frmNewGameTurnSystem");
 		
 		newGamePanel.add (getUtils ().createImageButton (changeTurnSystemAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 10, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameTurnSystemButton");
 		
 		fogOfWarLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (fogOfWarLabel, getUtils ().createConstraintsNoFill (0, 11, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (fogOfWarLabel, "frmNewGameFogOfWar");
 
 		newGamePanel.add (getUtils ().createImageButton (changeFogOfWarSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 11, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameFogOfWarButton");
 		
 		unitSettingsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (unitSettingsLabel, getUtils ().createConstraintsNoFill (0, 12, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (unitSettingsLabel, "frmNewGameUnitSettings");
 
 		newGamePanel.add (getUtils ().createImageButton (changeUnitSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 12, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameUnitButton");
 		
 		spellSettingsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (spellSettingsLabel, getUtils ().createConstraintsNoFill (0, 13, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (spellSettingsLabel, "frmNewGameSpellSettings");
 		
 		newGamePanel.add (getUtils ().createImageButton (changeSpellSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 13, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameSpellButton");
 		
 		debugOptionsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (debugOptionsLabel, getUtils ().createConstraintsNoFill (0, 14, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (debugOptionsLabel, "frmNewGameDebugOptions");
 		
 		newGamePanel.add (getUtils ().createImageButton (changeDebugOptionsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraintsNoFill (1, 14, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameDebugButton");
 		
-		final GridBagConstraints newGameSpace = getUtils ().createConstraintsNoFill (0, 15, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE);
-		newGameSpace.weightx = 1;
-		newGameSpace.weighty = 1;
-		newGamePanel.add (Box.createGlue (), newGameSpace);
-		
-		newGamePanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 16, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-
 		gameNameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		newGamePanel.add (gameNameLabel, getUtils ().createConstraintsNoFill (0, 17, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		newGamePanel.add (gameNameLabel, "frmNewGameGameName");
 		
 		gameName = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editbox);
-		newGamePanel.add (gameName, getUtils ().createConstraintsNoFill (1, 17, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		newGamePanel.add (gameName, "frmNewGameGameNameEdit");
+
+		for (int n = 1; n <= 2; n++)
+			newGamePanel.add (getUtils ().createImage (divider), "frmNewGameBar" + n);
 		
 		cards.add (newGamePanel, NEW_GAME_PANEL);
 		
@@ -834,22 +753,12 @@ public final class NewGameUI extends MomClientFrameUI
 		wizardPanel.setOpaque (false);
 		wizardPanel.setLayout (new GridBagLayout ());
 		
-		wizardTitle = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		wizardPanel.add (wizardTitle, getUtils ().createConstraintsNoFill (0, 0, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		wizardPanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 1, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
 		cards.add (wizardPanel, WIZARD_PANEL);
 
 		// PORTRAIT SELECTION PANEL (for custom wizards)
 		portraitPanel = new JPanel ();
 		portraitPanel.setOpaque (false);
 		portraitPanel.setLayout (new GridBagLayout ());
-		
-		portraitTitle = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		portraitPanel.add (portraitTitle, getUtils ().createConstraintsNoFill (0, 0, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		portraitPanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 1, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		cards.add (portraitPanel, PORTRAIT_PANEL);
 		
@@ -861,11 +770,6 @@ public final class NewGameUI extends MomClientFrameUI
 		freeSpellsPanel.setOpaque (false);
 		freeSpellsPanel.setLayout (new GridBagLayout ());
 		
-		freeSpellsTitle = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		freeSpellsPanel.add (freeSpellsTitle, getUtils ().createConstraintsNoFill (0, 0, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		freeSpellsPanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 1, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
 		cards.add (freeSpellsPanel, FREE_SPELLS_PANEL);
 		
 		// RACE SELECTION PANEL
@@ -873,29 +777,12 @@ public final class NewGameUI extends MomClientFrameUI
 		racePanel.setOpaque (false);
 		racePanel.setLayout (new GridBagLayout ());
 		
-		raceTitle = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		racePanel.add (raceTitle, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		racePanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
 		cards.add (racePanel, RACE_PANEL);
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 		waitPanel = new JPanel ();
 		waitPanel.setOpaque (false);
 		waitPanel.setLayout (new GridBagLayout ());
-		
-		waitTitle = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		waitPanel.add (waitTitle, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		waitPanel.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-
-		final GridBagConstraints waitSpace = getUtils ().createConstraintsNoFill (0, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE);
-		waitSpace.weightx = 1;
-		waitSpace.weighty = 1;
-			
-		final Component waitGlue = Box.createGlue ();
-		waitPanel.add (waitGlue, waitSpace);
 		
 		cards.add (waitPanel, WAIT_PANEL);
 
@@ -957,7 +844,6 @@ public final class NewGameUI extends MomClientFrameUI
 		isWizardChosen = false;
 		isPortraitChosen = false;
 		currentMagicRealmID = null;
-		
 		cardLayout.show (cards, NEW_GAME_PANEL);
 	}
 	
@@ -1206,6 +1092,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showInitialSpellsPanel (final String magicRealmID, final List<ChooseInitialSpellsNowRank> spellRanks) throws RecordNotFoundException
 	{
+		log.trace ("Entering showInitialSpellsPanel: " + magicRealmID);
+		
 		currentMagicRealmID = magicRealmID;
 		
 		// Remove old ones
@@ -1218,7 +1106,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Set the colour of the labels to match the spell book colour
 		final Color magicRealmColour = new Color (Integer.parseInt (getGraphicsDB ().findPick (magicRealmID, "showInitialSpellsPanel").getPickBookshelfTitleColour (), 16));
-		freeSpellsTitle.setForeground (magicRealmColour);
 		
 		// Start by copying the list of spells that we get for free
 		final List<ChooseInitialSpellsNowRank> spellRanksList = new ArrayList<ChooseInitialSpellsNowRank> ();
@@ -1323,11 +1210,13 @@ public final class NewGameUI extends MomClientFrameUI
 			freeSpellsComponents.add (freeSpellsGlue);
 		}
 		
-		setCurrentMagicRealmTitleAndSpellNames ();
+		setCurrentMagicRealmSpellNames ();
 		updateInitialSpellsCount ();
 		freeSpellsPanel.validate ();
 		
 		cardLayout.show (cards, FREE_SPELLS_PANEL);
+
+		log.trace ("Exiting showInitialSpellsPanel");
 	}
 
 	/**
@@ -1384,12 +1273,13 @@ public final class NewGameUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
+		log.trace ("Entering languageChanged");
+		
 		// Overall panel
 		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmNewGame", "Cancel"));
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmNewGame", "OK"));
 		
 		// NEW GAME PANEL
-		newGameTitle.setText				(getLanguage ().findCategoryEntry ("frmNewGame", "Title"));
 		humanOpponentsLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGame", "HumanOpponents"));
 		aiOpponentsLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGame", "AIOpponents"));
 		mapSizeLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGame", "MapSize"));
@@ -1410,7 +1300,7 @@ public final class NewGameUI extends MomClientFrameUI
 		changeDebugOptionsAction.clearItems ();
 		for (final boolean debugOptions : new boolean [] {false, true})
 			changeDebugOptionsAction.addItem (debugOptions, getLanguage ().findCategoryEntry ("XsdBoolean", new Boolean (debugOptions).toString ().toLowerCase ()));
-	
+
 		// CUSTOM MAP SIZE PANEL
 		/* mapSizeTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Title"));
 		
@@ -1445,10 +1335,8 @@ public final class NewGameUI extends MomClientFrameUI
 		joinGameTitle.setText (getLanguage ().findCategoryEntry ("frmJoinGame", "Title")); */
 		
 		// WIZARD SELECTION PANEL
-		wizardTitle.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
 		
 		// PORTRAIT SELECTION PANEL (for custom wizards)
-		portraitTitle.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
 		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
 		/* flagTitle.setText (getLanguage ().findCategoryEntry ("frmChooseFlagColour", "Title"));
@@ -1457,10 +1345,11 @@ public final class NewGameUI extends MomClientFrameUI
 		picksTitle.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", "Title")); */
 		
 		// RACE SELECTION PANEL
-		raceTitle.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
-		waitTitle.setText (getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Title"));
+		
+		// Set title according to which card is displayed
+		languageOrCardChanged ();
 		
 		// Change labels for buttons on the new game form
 		if (changeDatabaseAction.getSelectedItem () != null)
@@ -1480,9 +1369,52 @@ public final class NewGameUI extends MomClientFrameUI
 		// Choose initial spells title depends on current magic realm
 		if (currentMagicRealmID != null)
 		{
-			setCurrentMagicRealmTitleAndSpellNames ();
+			setCurrentMagicRealmSpellNames ();
 			updateInitialSpellsCount ();
 		}
+
+		log.trace ("Exiting languageChanged");
+	}
+
+	/**
+	 * Updates the title above the card, depending on which card is currently displayed
+	 */
+	private final void languageOrCardChanged ()
+	{
+		log.trace ("Entering languageOrCardChanged");
+		
+		title.setForeground (MomUIConstants.GOLD);
+		if (newGamePanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGame", "Title"));
+		else if (wizardPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
+		else if (portraitPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
+		else if (racePanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
+		else if (waitPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Title"));
+		else if (freeSpellsPanel.isVisible ())
+		{
+			// "Choose Life Spells" title
+			final Pick currentMagicRealm = getLanguage ().findPick (currentMagicRealmID);
+			final String magicRealmDescription = (currentMagicRealm == null) ? currentMagicRealmID : currentMagicRealm.getBookshelfDescription ();
+			title.setText (getLanguage ().findCategoryEntry ("frmChooseInitialSpells", "Title").replaceAll ("MAGIC_REALM", magicRealmDescription));
+
+			try
+			{
+				final Color magicRealmColour = new Color (Integer.parseInt (getGraphicsDB ().findPick (currentMagicRealmID, "languageOrCardChanged").getPickBookshelfTitleColour (), 16));
+				title.setForeground (magicRealmColour);
+			}
+			catch (final RecordNotFoundException e)
+			{
+				log.error (e, e);
+			}
+		}
+		
+		getFrame ().setTitle (title.getText ());
+
+		log.trace ("Exiting languageOrCardChanged");
 	}
 	
 	/**
@@ -1634,13 +1566,8 @@ public final class NewGameUI extends MomClientFrameUI
 	/**
 	 * Choose initial spells title depends on current magic realm; sets the title for that and the names of all 40 spells
 	 */
-	private final void setCurrentMagicRealmTitleAndSpellNames ()
+	private final void setCurrentMagicRealmSpellNames ()
 	{
-		// "Choose Life Spells" title
-		final Pick currentMagicRealm = getLanguage ().findPick (currentMagicRealmID);
-		final String magicRealmDescription = (currentMagicRealm == null) ? currentMagicRealmID : currentMagicRealm.getBookshelfDescription ();
-		freeSpellsTitle.setText (getLanguage ().findCategoryEntry ("frmChooseInitialSpells", "Title").replaceAll ("MAGIC_REALM", magicRealmDescription));
-		
 		// Names of every spell
 		for (final Entry<Spell, ToggleAction> spellAction : freeSpellActions.entrySet ())
 		{
@@ -2010,5 +1937,37 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return XML layout of the main form
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutMain ()
+	{
+		return newGameLayoutMain;
+	}
+
+	/**
+	 * @param layout XML layout of the main form
+	 */
+	public final void setNewGameLayoutMain (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutMain = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "new game" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutNew ()
+	{
+		return newGameLayoutNew;
+	}
+
+	/**
+	 * @param layout XML layout of the "new game" right hand side
+	 */
+	public final void setNewGameLayoutNew (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutNew = layout;
 	}
 }

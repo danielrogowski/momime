@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>640</formWidth>
+	<formHeight>480</formHeight>
+	<component name="frmNewGameLHSPhoto">
+		<left>48</left>
+		<top>24</top>
+		<width>218</width>
+		<height>250</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSWizardName">
+		<left>156</left>
+		<top>288</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSRetorts">
+		<left>20</left>
+		<top>440</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSFlag1">
+		<left>6</left>
+		<top>340</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSFlag2">
+		<left>262</left>
+		<top>340</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSBookshelf">
+		<left>68</left>
+		<top>326</top>
+		<width>186</width>
+		<height>48</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSTitle">
+		<left>485</left>
+		<top>5</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSBar1">
+		<left>485</left>
+		<top>35</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSBar2">
+		<left>485</left>
+		<top>445</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSCancel">
+		<left>635</left>
+		<top>475</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSOK">
+		<left>555</left>
+		<top>475</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameLHSCard">
+		<left>320</left>
+		<top>41</top>
+		<width>320</width>
+		<height>400</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

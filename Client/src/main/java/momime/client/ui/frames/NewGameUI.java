@@ -438,6 +438,8 @@ public final class NewGameUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
+		log.trace ("Entering init");
+
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/background.png");
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
@@ -844,6 +846,8 @@ public final class NewGameUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
+
+		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -852,6 +856,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showNewGamePanel () throws IOException
 	{
+		log.trace ("Entering showNewGamePanel");
+		
 		playerName.setText (null);
 		wizardPortrait.setIcon (null);
 		flag1.setIcon (null);
@@ -865,6 +871,8 @@ public final class NewGameUI extends MomClientFrameUI
 		isPortraitChosen = false;
 		currentMagicRealmID = null;
 		cardLayout.show (cards, NEW_GAME_PANEL);
+
+		log.trace ("Exiting showNewGamePanel");
 	}
 	
 	/**
@@ -873,6 +881,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void afterJoinedSession ()
 	{
+		log.trace ("Entering afterJoinedSession");
+		
 		playerName.setText (getClient ().getOurPlayerName ());
 		
 		// Remove any old buttons leftover from a previous joining game
@@ -1092,6 +1102,8 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Show the page
 		cardLayout.show (cards, WIZARD_PANEL);
+
+		log.trace ("Exiting afterJoinedSession");
 	}
 	
 	/**
@@ -1246,6 +1258,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showRacePanel () throws PlayerNotFoundException, RecordNotFoundException
 	{
+		log.trace ("Entering showRacePanel");
+		
 		// Enable/disable Myrran buttons, now we know what picks we chose
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "NewGameUI.showRacePanel");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
@@ -1260,6 +1274,8 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Now can show it
 		cardLayout.show (cards, RACE_PANEL);
+
+		log.trace ("Exiting showRacePanel");
 	}
 	
 	/**
@@ -1275,6 +1291,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void enableOrDisableOkButton ()
 	{
+		log.trace ("Entering enableOrDisableOkButton");
+
 		// This gets triggered during startup before both actions have been created
 		final int totalOpponents = ((changeHumanOpponentsAction.getSelectedItem () == null) || (changeAIOpponentsAction.getSelectedItem () == null)) ? 0 :
 			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
@@ -1285,6 +1303,8 @@ public final class NewGameUI extends MomClientFrameUI
 			((portraitPanel.isVisible ()) && (isPortraitChosen)) ||
 			((freeSpellsPanel.isVisible ()) && (isCorrectNumberOfFreeSpellsChosen ())) ||
 			((racePanel.isVisible ()) && (raceChosen != null)));
+
+		log.trace ("Exiting enableOrDisableOkButton");
 	}
 	
 	/**
@@ -1444,6 +1464,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void selectedDatabaseOrLanguageChanged ()
 	{
+		log.trace ("Entering selectedDatabaseOrLanguageChanged");
+
 		changeMapSizeAction.clearItems ();
 		for (final MapSize mapSize : changeDatabaseAction.getSelectedItem ().getMapSize ())
 			changeMapSizeAction.addItem (mapSize, getLanguage ().findMapSizeDescription (mapSize.getMapSizeID ()));
@@ -1471,6 +1493,8 @@ public final class NewGameUI extends MomClientFrameUI
 		changeSpellSettingsAction.clearItems ();
 		for (final SpellSetting spellSetting : changeDatabaseAction.getSelectedItem ().getSpellSetting ())
 			changeSpellSettingsAction.addItem (spellSetting, getLanguage ().findSpellSettingDescription (spellSetting.getSpellSettingID ()));
+
+		log.trace ("Exiting selectedDatabaseOrLanguageChanged");
 	}
 	
 	/**
@@ -1479,6 +1503,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateBookshelfFromPicks () throws IOException
 	{
+		log.trace ("Entering updateBookshelfFromPicks");
+
 		// Remove all the old books
 		for (final JLabel oldBook : bookImages)
 			bookshelf.remove (oldBook);
@@ -1509,6 +1535,8 @@ public final class NewGameUI extends MomClientFrameUI
 		// bookshelf.validate only redraws the new smaller area and leaves bits of the old books showing
 		contentPane.validate ();
 		contentPane.repaint ();
+
+		log.trace ("Exiting updateBookshelfFromPicks");
 	}
 
 	/**
@@ -1517,6 +1545,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateRetortsFromPicks () throws RecordNotFoundException
 	{
+		log.trace ("Entering updateRetortsFromPicks");
+		
 		final StringBuffer desc = new StringBuffer ();
 		for (final WizardPick pick : picks)
 		{
@@ -1538,6 +1568,8 @@ public final class NewGameUI extends MomClientFrameUI
 			}
 		}
 		retorts.setText (desc.toString ());
+
+		log.trace ("Exiting updateRetortsFromPicks");
 	}	
 	
 	/**
@@ -1545,6 +1577,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void languageChangedAfterInGame ()
 	{
+		log.trace ("Entering languageChangedAfterInGame");
+		
 		// Choose wizard buttons
 		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
 			if (wizard.getKey () == null)
@@ -1570,8 +1604,10 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final Entry<Race, Action> raceAction : raceButtonActions.entrySet ())
 		{
 			final momime.client.language.database.v0_9_5.Race race = getLanguage ().findRace (raceAction.getKey ().getRaceID ());
-			raceAction.getValue ().putValue (Action.NAME, (race == null) ? raceAction.getKey () : race.getRaceName ());
+			raceAction.getValue ().putValue (Action.NAME, (race == null) ? raceAction.getKey ().getRaceID () : race.getRaceName ());
 		}
+
+		log.trace ("Exiting languageChangedAfterInGame");
 	}
 	
 	/**
@@ -1579,12 +1615,16 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void setCurrentMagicRealmSpellNames ()
 	{
+		log.trace ("Entering setCurrentMagicRealmSpellNames");
+		
 		// Names of every spell
 		for (final Entry<Spell, ToggleAction> spellAction : freeSpellActions.entrySet ())
 		{
 			final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (spellAction.getKey ().getSpellID ());
 			spellAction.getValue ().putValue (Action.NAME, (spell == null) ? spellAction.getKey ().getSpellID () : spell.getSpellName ());			
 		}
+
+		log.trace ("Exiting setCurrentMagicRealmSpellNames");
 	}
 	
 	/**
@@ -1592,6 +1632,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateInitialSpellsCount ()
 	{
+		log.trace ("Entering updateInitialSpellsCount");
+		
 		for (final Entry<ChooseInitialSpellsNowRank, JLabel> rank : spellRankTitles.entrySet ())
 		{
 			// How many spells have been chosen at this rank
@@ -1638,6 +1680,8 @@ public final class NewGameUI extends MomClientFrameUI
 				else
 					spellButton.setForeground (MomUIConstants.GRAY);
 			}
+
+		log.trace ("Exiting updateInitialSpellsCount");
 	}
 	
 	/**
@@ -1645,6 +1689,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final boolean isCorrectNumberOfFreeSpellsChosen ()
 	{
+		log.trace ("Entering isCorrectNumberOfFreeSpellsChosen");
+		
 		boolean allOk = true;
 		final Iterator<ChooseInitialSpellsNowRank> rankIter = spellRankTitles.keySet ().iterator ();
 		
@@ -1663,6 +1709,7 @@ public final class NewGameUI extends MomClientFrameUI
 				allOk = false;
 		}
 		
+		log.trace ("Exiting isCorrectNumberOfFreeSpellsChosen = " + allOk);
 		return allOk;
 	}
 	
@@ -1671,6 +1718,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final MomSessionDescription buildSessionDescription ()
 	{
+		log.trace ("Entering buildSessionDescription");
+		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Easy fields
@@ -1819,6 +1868,7 @@ public final class NewGameUI extends MomClientFrameUI
 			throw new UnsupportedOperationException ("Custom debug options not yet supported");
 		}
 		
+		log.trace ("Exiting buildSessionDescription = " + sd);
 		return sd;
 	}
 

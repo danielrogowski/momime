@@ -854,9 +854,59 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-New.xml" />
 	</bean>
 	
+	<bean id="newGameLayoutMapSize" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-MapSize.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutLandProportion" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-LandProportion.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutNodes" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Nodes.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutDifficulty1" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Difficulty1.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutDifficulty2" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Difficulty2.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutDifficulty3" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Difficulty3.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutFogOfWar" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-FogOfWar.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutUnits" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-UnitSettings.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutSpells" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-SpellSettings.xml" />
+	</bean>
+	
+	<bean id="newGameLayoutDebug" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Debug.xml" />
+	</bean>
+	
 	<bean id="newGameUI" class="momime.client.ui.frames.NewGameUI">
 		<property name="newGameLayoutMain" ref="newGameLayoutMain" />
 		<property name="newGameLayoutNew" ref="newGameLayoutNew" />
+		<property name="newGameLayoutMapSize" ref="newGameLayoutMapSize" />
+		<property name="newGameLayoutLandProportion" ref="newGameLayoutLandProportion" />
+		<property name="newGameLayoutNodes" ref="newGameLayoutNodes" />
+		<property name="newGameLayoutDifficulty1" ref="newGameLayoutDifficulty1" />
+		<property name="newGameLayoutDifficulty2" ref="newGameLayoutDifficulty2" />
+		<property name="newGameLayoutDifficulty3" ref="newGameLayoutDifficulty3" />
+		<property name="newGameLayoutFogOfWar" ref="newGameLayoutFogOfWar" />
+		<property name="newGameLayoutUnits" ref="newGameLayoutUnits" />
+		<property name="newGameLayoutSpells" ref="newGameLayoutSpells" />
+		<property name="newGameLayoutDebug" ref="newGameLayoutDebug" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />

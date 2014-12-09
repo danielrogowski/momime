@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>320</formWidth>
+	<formHeight>400</formHeight>
+	<component name="frmNewGameCustomDifficulty2TowerMonsters">
+		<left>20</left>
+		<top>10</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2TowerMonstersMin">
+		<left>175</left>
+		<top>3</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2TowerMonstersDash">
+		<left>240</left>
+		<top>10</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2TowerMonstersMax">
+		<left>245</left>
+		<top>3</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2TowerTreasure">
+		<left>20</left>
+		<top>30</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2TowerTreasureMin">
+		<left>175</left>
+		<top>23</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2TowerTreasureDash">
+		<left>240</left>
+		<top>30</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2TowerTreasureMax">
+		<left>245</left>
+		<top>23</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalLairCount">
+		<left>20</left>
+		<top>70</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalLairCountEdit">
+		<left>245</left>
+		<top>63</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairMonsters">
+		<left>20</left>
+		<top>90</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairMonstersMin">
+		<left>175</left>
+		<top>83</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairMonstersDash">
+		<left>240</left>
+		<top>90</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairMonstersMax">
+		<left>245</left>
+		<top>83</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairTreasure">
+		<left>20</left>
+		<top>110</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairTreasureMin">
+		<left>175</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairTreasureDash">
+		<left>240</left>
+		<top>110</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalArcanusLairTreasureMax">
+		<left>245</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairMonsters">
+		<left>20</left>
+		<top>140</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairMonstersMin">
+		<left>175</left>
+		<top>133</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairMonstersDash">
+		<left>240</left>
+		<top>140</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairMonstersMax">
+		<left>245</left>
+		<top>133</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairTreasure">
+		<left>20</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairTreasureMin">
+		<left>175</left>
+		<top>153</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairTreasureDash">
+		<left>240</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2NormalMyrrorLairTreasureMax">
+		<left>245</left>
+		<top>153</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakLairCount">
+		<left>20</left>
+		<top>200</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakLairCountEdit">
+		<left>245</left>
+		<top>193</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairMonsters">
+		<left>20</left>
+		<top>220</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairMonstersMin">
+		<left>175</left>
+		<top>213</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairMonstersDash">
+		<left>240</left>
+		<top>220</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairMonstersMax">
+		<left>245</left>
+		<top>213</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairTreasure">
+		<left>20</left>
+		<top>240</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairTreasureMin">
+		<left>175</left>
+		<top>233</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairTreasureDash">
+		<left>240</left>
+		<top>240</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakArcanusLairTreasureMax">
+		<left>245</left>
+		<top>233</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairMonsters">
+		<left>20</left>
+		<top>270</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairMonstersMin">
+		<left>175</left>
+		<top>263</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairMonstersDash">
+		<left>240</left>
+		<top>270</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairMonstersMax">
+		<left>245</left>
+		<top>263</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairTreasure">
+		<left>20</left>
+		<top>290</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairTreasureMin">
+		<left>175</left>
+		<top>283</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairTreasureDash">
+		<left>240</left>
+		<top>290</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty2WeakMyrrorLairTreasureMax">
+		<left>245</left>
+		<top>283</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

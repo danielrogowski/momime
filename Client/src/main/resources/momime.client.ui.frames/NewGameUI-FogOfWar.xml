@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>320</formWidth>
+	<formHeight>400</formHeight>
+	<component name="frmNewGameCustomFogOfWarTerrainNodesAuras">
+		<left>20</left>
+		<top>10</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarCitiesSpellsCAEs">
+		<left>20</left>
+		<top>100</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarUnits">
+		<left>20</left>
+		<top>210</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarTerrainAlways">
+		<left>40</left>
+		<top>30</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarTerrainRemember">
+		<left>40</left>
+		<top>45</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarTerrainForget">
+		<left>40</left>
+		<top>60</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarCitiesAlways">
+		<left>40</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarCitiesRemember">
+		<left>40</left>
+		<top>135</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarCitiesForget">
+		<left>40</left>
+		<top>150</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarUnitsAlways">
+		<left>40</left>
+		<top>230</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarUnitsRemember">
+		<left>40</left>
+		<top>245</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarUnitsForget">
+		<left>40</left>
+		<top>260</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomFogOfWarConstructing">
+		<left>40</left>
+		<top>175</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

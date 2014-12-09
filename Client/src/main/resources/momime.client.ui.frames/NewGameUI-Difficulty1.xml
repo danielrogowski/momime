@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>320</formWidth>
+	<formHeight>400</formHeight>
+	<component name="frmNewGameCustomDifficulty1HumanSpellPicks">
+		<left>95</left>
+		<top>10</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1HumanSpellPicksEdit">
+		<left>140</left>
+		<top>3</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1AISpellPicksEdit">
+		<left>300</left>
+		<top>3</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1AISpellPicks">
+		<left>215</left>
+		<top>10</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1HumanGold">
+		<left>95</left>
+		<top>30</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1HumanGoldEdit">
+		<left>140</left>
+		<top>23</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1AIGold">
+		<left>215</left>
+		<top>30</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1AIGoldEdit">
+		<left>300</left>
+		<top>23</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1SpellPicks">
+		<left>20</left>
+		<top>10</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1Gold">
+		<left>20</left>
+		<top>30</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1CustomWizards">
+		<left>20</left>
+		<top>60</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1EachWizardOnlyOnce">
+		<left>20</left>
+		<top>75</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1WizardCitySize">
+		<left>20</left>
+		<top>110</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1WizardCitySizeEdit">
+		<left>220</left>
+		<top>103</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCityCount">
+		<left>20</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCityCountEdit">
+		<left>220</left>
+		<top>153</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCitySizePrefix">
+		<left>20</left>
+		<top>190</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCitySizeMin">
+		<left>20</left>
+		<top>203</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCitySizeAnd">
+		<left>90</left>
+		<top>210</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCitySizeMax">
+		<left>115</left>
+		<top>203</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthPrefix">
+		<left>185</left>
+		<top>210</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthEdit">
+		<left>20</left>
+		<top>223</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthSuffix">
+		<left>90</left>
+		<top>230</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1MaxCitySize">
+		<left>20</left>
+		<top>130</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1MaxCitySizeEdit">
+		<left>220</left>
+		<top>123</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

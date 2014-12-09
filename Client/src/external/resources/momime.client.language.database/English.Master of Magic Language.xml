@@ -4871,7 +4871,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Forget</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Constructing">
-			<languageEntryText>Can see what enemy cities are building?</languageEntryText>
+			<languageEntryText>Can see what enemy cities are constructing?</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Units">
 			<languageEntryText>Units</languageEntryText>

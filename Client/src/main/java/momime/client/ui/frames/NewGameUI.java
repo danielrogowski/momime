@@ -27,8 +27,10 @@ import java.util.Map.Entry;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -36,6 +38,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.database.AvailableDatabase;
@@ -47,6 +51,7 @@ import momime.client.language.database.v0_9_5.Pick;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
+import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.DifficultyLevelNodeStrength;
@@ -62,12 +67,6 @@ import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
 import momime.common.database.WizardPick;
 import momime.common.database.newgame.DifficultyLevelData;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.LandProportionData;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.database.newgame.NodeStrengthData;
-import momime.common.database.newgame.SpellSettingData;
-import momime.common.database.newgame.UnitSettingData;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -107,6 +106,36 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** XML layout of the "new game" right hand side */
 	private XmlLayoutContainerEx newGameLayoutNew;
+	
+	/** XML layout of the "custom map size" right hand side */
+	private XmlLayoutContainerEx newGameLayoutMapSize;
+	
+	/** XML layout of the "custom land proportion" right hand side */
+	private XmlLayoutContainerEx newGameLayoutLandProportion;
+	
+	/** XML layout of the "custom nodes" right hand side */
+	private XmlLayoutContainerEx newGameLayoutNodes;
+
+	/** XML layout of the "custom difficulty 1" right hand side */
+	private XmlLayoutContainerEx newGameLayoutDifficulty1;
+	
+	/** XML layout of the "custom difficulty 2" right hand side */
+	private XmlLayoutContainerEx newGameLayoutDifficulty2;
+	
+	/** XML layout of the "custom difficulty 3" right hand side */
+	private XmlLayoutContainerEx newGameLayoutDifficulty3;
+	
+	/** XML layout of the "custom fog of war" right hand side */
+	private XmlLayoutContainerEx newGameLayoutFogOfWar;
+	
+	/** XML layout of the "custom unit settings" right hand side */
+	private XmlLayoutContainerEx newGameLayoutUnits;
+	
+	/** XML layout of the "custom spell settings" right hand side */
+	private XmlLayoutContainerEx newGameLayoutSpells;
+	
+	/** XML layout of the "custom debug options" right hand side */
+	private XmlLayoutContainerEx newGameLayoutDebug;
 	
 	/** Large font */
 	private Font largeFont;
@@ -221,11 +250,17 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Action for selecting pre-defined map size or custom */
 	private CycleAction<MapSize> changeMapSizeAction;
 	
+	/** Checkbox for customizing map size */
+	JCheckBox customizeMapSize;
+	
 	/** Label for land proportion button */
 	private JLabel landProportionLabel;
 
 	/** Action for selecting pre-defined land proportion or custom */
 	private CycleAction<LandProportion> changeLandProportionAction;
+
+	/** Checkbox for customizing land proportion */
+	JCheckBox customizeLandProportion;
 	
 	/** Label for nodes button */
 	private JLabel nodesLabel;
@@ -233,11 +268,17 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Action for selecting pre-defined node strength or custom */
 	private CycleAction<NodeStrength> changeNodeStrengthAction;
 	
+	/** Checkbox for customizing nodes */
+	JCheckBox customizeNodes;
+	
 	/** Label for difficulty button */
 	private JLabel difficultyLabel;
 
 	/** Action for selecting pre-defined difficulty level or custom */
 	private CycleAction<DifficultyLevel> changeDifficultyLevelAction;
+
+	/** Checkbox for customizing difficulty */
+	JCheckBox customizeDifficulty;
 	
 	/** Label for turn system button */
 	private JLabel turnSystemLabel;
@@ -250,24 +291,33 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Action for selecting pre-defined fog of war settings or custom */
 	private CycleAction<FogOfWarSetting> changeFogOfWarSettingsAction;
+
+	/** Checkbox for customizing fog of war settings */
+	JCheckBox customizeFogOfWar;
 	
 	/** Label for unit settings button */
 	private JLabel unitSettingsLabel;
 
 	/** Action for selecting pre-defined unit settings or custom */
 	private CycleAction<UnitSetting> changeUnitSettingsAction;
+
+	/** Checkbox for customizing unit settings */
+	JCheckBox customizeUnits;
 	
 	/** Label for spell settings button */
 	private JLabel spellSettingsLabel;
 
 	/** Action for selecting pre-defined spell settings or custom */
 	private CycleAction<SpellSetting> changeSpellSettingsAction;
+
+	/** Checkbox for customizing spell settings */
+	JCheckBox customizeSpells;
 	
 	/** Label for debug options button */
 	private JLabel debugOptionsLabel;
 
 	/** Action for toggling debug options */
-	private CycleAction<Boolean> changeDebugOptionsAction;
+	CycleAction<Boolean> changeDebugOptionsAction;
 	
 	/** Label for game name */
 	private JLabel gameNameLabel;
@@ -282,51 +332,618 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Panel key */
 	private final static String MAP_SIZE_PANEL = "Map";
+
+	/** Panel */
+	private JPanel mapSizePanel;
+	
+	/** Map size prompt, before width x height */
+	private JLabel mapSizeEdit;
+	
+	/** Map width */
+	private JTextField mapSizeWidth;
+	
+	/** Map height */
+	private JTextField mapSizeHeight;
+	
+	/** Map wraps left to right */
+	private JCheckBox mapWrapsLeftToRight;
+	
+	/** Map wraps top to bottom */
+	private JCheckBox mapWrapsTopToBottom;
+	
+	/** Zone size label */
+	private JTextArea mapZonesLabel;
+
+	/** Map zone width */
+	private JTextField mapZoneWidth;
+	
+	/** Map zone height */
+	private JTextField mapZoneHeight;
+	
+	/** Towers of wizardry label */
+	private JLabel towersOfWizardryLabel;
+	
+	/** Towers of wizardry */
+	private JTextField towersOfWizardryCount;
+	
+	/** Towers of wizardry separation label */
+	private JLabel towersOfWizardrySeparationLabel;
+	
+	/** Towers of wizardry separation */
+	private JTextField towersOfWizardrySeparation;
+	
+	/** Continental race chance label */
+	private JTextArea continentalRaceChanceLabel;
+	
+	/** Continental race chance */
+	private JTextField continentalRaceChance;
+	
+	/** City separation label */
+	private JLabel citySeparationLabel;
+	
+	/** City separation */
+	private JTextField citySeparation;
 	
 	// CUSTOM LAND PROPORTION PANEL
 
 	/** Panel key */
 	private final static String LAND_PROPORTION_PANEL = "Land";
+
+	/** Panel */
+	private JPanel landProportionPanel;
 	
+	/** % of map which is land */
+	private JTextField landPercentage;
+
+	/** % of map which is land label */
+	private JLabel landPercentageLabel;
+	
+	/** % of land which is hills */
+	private JTextField hillsPercentage;
+
+	/** % of land which is hills label */
+	private JLabel hillsPercentageLabel;
+	
+	/** % of hills which are mountains */
+	private JTextField mountainsPercentage;
+
+	/** % of hills which are mountains label */
+	private JLabel mountainsPercentageLabel;
+	
+	/** % of land which is trees */
+	private JTextField treesPercentage;
+
+	/** % of land which is trees label */
+	private JLabel treesPercentageLabel;
+	
+	/** Size of tree areas */
+	private JTextField treeAreaSize;
+	
+	/** Size of tree areas prefix */
+	private JLabel treeAreaSizePrefix;
+
+	/** Size of tree areas suffix */
+	private JLabel treeAreaSizeSuffix;
+
+	/** % of land which is deserts */
+	private JTextField desertsPercentage;
+
+	/** % of land which is deserts label */
+	private JLabel desertsPercentageLabel;
+	
+	/** Size of desert areas */
+	private JTextField desertAreaSize;
+	
+	/** Size of desert areas prefix */
+	private JLabel desertAreaSizePrefix;
+
+	/** Size of desert areas suffix */
+	private JLabel desertAreaSizeSuffix;
+	
+	/** % of land which is swamps */
+	private JTextField swampsPercentage;
+
+	/** % of land which is swamps label */
+	private JLabel swampsPercentageLabel;
+	
+	/** Size of swamp areas */
+	private JTextField swampAreaSize;
+	
+	/** Size of swamp areas prefix */
+	private JLabel swampAreaSizePrefix;
+
+	/** Size of swamp areas suffix */
+	private JLabel swampAreaSizeSuffix;
+	
+	/** Tundra edge distance */
+	private JTextField tundraDistance;
+	
+	/** Tundra edge distance prefix */
+	private JLabel tundraDistancePrefix;
+	
+	/** Tundra edge distance suffix */
+	private JLabel tundraDistanceSuffix;
+	
+	/** River count */
+	private JTextField riverCount;
+	
+	/** River count label */
+	private JLabel riverCountLabel;
+	
+	/** Arcanus mineral chance */
+	private JTextField arcanusMineralChance;
+	
+	/** Arcanus mineral chance prefix */
+	private JLabel arcanusMineralChancePrefix;
+	
+	/** Arcanus mineral chance suffix */
+	private JLabel arcanusMineralChanceSuffix;
+	
+	/** Myrror mineral chance */
+	private JTextField myrrorMineralChance;
+
+	/** Myrror mineral chance prefix */
+	private JLabel myrrorMineralChancePrefix;
+
+	/** Myrror mineral chance suffix */
+	private JLabel myrrorMineralChanceSuffix;
+
 	// CUSTOM NODES PANEL
 
 	/** Panel key */
 	private final static String NODES_PANEL = "Nodes";
+
+	/** Panel */
+	private JPanel nodesPanel;
 	
-	// CUSTOM DIFFICULTY PANEL (1 of 2)
+	/** 2x magic power from each cell of node aura */
+	private JTextField doubleNodeAuraMagicPower;
+
+	/** 2x magic power from each cell of node aura prefix */
+	private JLabel doubleNodeAuraMagicPowerPrefix;
+
+	/** 2x magic power from each cell of node aura suffix */
+	private JLabel doubleNodeAuraMagicPowerSuffix;
+	
+	/** Arcanus node count */
+	private JTextField arcanusNodeCount;
+
+	/** Arcanus node count label */
+	private JLabel arcanusNodeCountLabel;
+	
+	/** Minimum nbr of cells of nodes on Arcanus */
+	private JTextField arcanusNodeSizeMin;
+
+	/** Maximum nbr of cells of nodes on Arcanus */
+	private JTextField arcanusNodeSizeMax;
+
+	/** Nbr of cells of nodes on Arcanus prefix */
+	private JLabel arcanusNodeSizePrefix;
+	
+	/** Nbr of cells of nodes on Arcanus suffix */
+	private JLabel arcanusNodeSizeSuffix;
+	
+	/** Myrror node count */
+	private JTextField myrrorNodeCount;
+
+	/** Myrror node count label */
+	private JLabel myrrorNodeCountLabel;
+	
+	/** Minimum nbr of cells of nodes on Myrror */
+	private JTextField myrrorNodeSizeMin;
+
+	/** Maximum nbr of cells of nodes on Myrror */
+	private JTextField myrrorNodeSizeMax;
+	
+	/** Nbr of cells of nodes on Myrror prefix */
+	private JLabel myrrorNodeSizePrefix;
+
+	/** Nbr of cells of nodes on Myrror suffix */
+	private JLabel myrrorNodeSizeSuffix;
+	
+	// CUSTOM DIFFICULTY PANEL (1 of 3)
 
 	/** Panel key */
 	private final static String DIFFICULTY_1_PANEL = "Diff1";
+
+	/** Panel */
+	private JPanel difficulty1Panel;
 	
-	// CUSTOM DIFFICULTY PANEL (2 of 2)
+	/** Spell picks label */
+	private JLabel spellPicksLabel;
+	
+	/** Human spell picks label */
+	private JLabel humanSpellPicksLabel;
+
+	/** Human spell picks */
+	private JTextField humanSpellPicks;
+
+	/** AI spell picks label */
+	private JLabel aiSpellPicksLabel;
+
+	/** AI spell picks */
+	private JTextField aiSpellPicks;
+
+	/** Starting gold label */
+	private JLabel startingGoldLabel;
+	
+	/** Human starting gold label */
+	private JLabel humanStartingGoldLabel;
+
+	/** Human starting gold */
+	private JTextField humanStartingGold;
+
+	/** AI starting gold label */
+	private JLabel aiStartingGoldLabel;
+
+	/** AI starting gold */
+	private JTextField aiStartingGold;
+	
+	/** Allow custom wizards? */
+	private JCheckBox allowCustomWizards;
+	
+	/** Each wizard can be chosen only once? */
+	private JCheckBox eachWizardOnlyOnce;
+	
+	/** Wizard city start size label */
+	private JLabel wizardCityStartSizeLabel;
+	
+	/** Wizard city start size */
+	private JTextField wizardCityStartSize;
+	
+	/** Maximum city size label */
+	private JLabel maxCitySizeLabel;
+	
+	/** Maximum city size */
+	private JTextField maxCitySize;
+	
+	/** Raider city count label */
+	private JLabel raiderCityCountLabel;
+	
+	/** Raider city count */
+	private JTextField raiderCityCount;
+	
+	/** Raider city start size label */
+	private JLabel raiderCityStartSizeLabel;
+
+	/** Raider city start size minimum */
+	private JTextField raiderCityStartSizeMin;
+	
+	/** Raider city start size "and" */
+	private JLabel raiderCityStartSizeAnd;
+	
+	/** Raider city start size maximum */
+	private JTextField raiderCityStartSizeMax;
+	
+	/** Raider city size cap prefix */
+	private JLabel raiderCitySizeCapPrefix;
+
+	/** Raider city size cap */
+	private JTextField raiderCitySizeCap;
+
+	/** Raider city size cap suffix */
+	private JLabel raiderCitySizeCapSuffix;
+	
+	// CUSTOM DIFFICULTY PANEL (2 of 3)
 	
 	/** Panel key */
 	private final static String DIFFICULTY_2_PANEL = "Diff2";
+
+	/** Panel */
+	private JPanel difficulty2Panel;
 	
-	// CUSTOM NODES-DIFFICULTY PANEL
+	/** Strength of monsters in towers */
+	private JLabel towersMonsters;
+
+	/** Minimum strength of monsters in towers */
+	private JTextField towersMonstersMin;
+	
+	/** Maximum strength of monsters in towers */
+	private JTextField towersMonstersMax;
+	
+	/** Value of treasure in towers */
+	private JLabel towersTreasure;
+
+	/** Minimum value of treasure in towers */
+	private JTextField towersTreasureMin;
+	
+	/** Maximum value of treasure in towers */
+	private JTextField towersTreasureMax;
+	
+	/** Number of normal lairs label */
+	private JLabel normalLairCountLabel;
+
+	/** Number of normal lairs */
+	private JTextField normalLairCount;
+
+	/** Strength of monsters in normal lairs on Arcanus */
+	private JLabel arcanusNormalLairMonsters;
+
+	/** Minimum strength of monsters in normal lairs on Arcanus */
+	private JTextField arcanusNormalLairMonstersMin;
+	
+	/** Maximum strength of monsters in normal lairs on Arcanus */
+	private JTextField arcanusNormalLairMonstersMax;
+	
+	/** Value of treasure in normal lairs on Arcanus */
+	private JLabel arcanusNormalLairTreasure;
+
+	/** Minimum value of treasure in normal lairs on Arcanus */
+	private JTextField arcanusNormalLairTreasureMin;
+	
+	/** Maximum value of treasure in normal lairs on Arcanus */
+	private JTextField arcanusNormalLairTreasureMax;
+	
+	/** Strength of monsters in normal lairs on Myrror */
+	private JLabel myrrorNormalLairMonsters;
+
+	/** Minimum strength of monsters in normal lairs on Myrror */
+	private JTextField myrrorNormalLairMonstersMin;
+	
+	/** Maximum strength of monsters in normal lairs on Myrror */
+	private JTextField myrrorNormalLairMonstersMax;
+	
+	/** Value of treasure in normal lairs on Myrror */
+	private JLabel myrrorNormalLairTreasure;
+
+	/** Minimum value of treasure in normal lairs on Myrror */
+	private JTextField myrrorNormalLairTreasureMin;
+	
+	/** Maximum value of treasure in normal lairs on Myrror */
+	private JTextField myrrorNormalLairTreasureMax;
+
+	/** Number of weak lairs label */
+	private JLabel weakLairCountLabel;
+
+	/** Number of weak lairs */
+	private JTextField weakLairCount;
+
+	/** Strength of monsters in weak lairs on Arcanus */
+	private JLabel arcanusWeakLairMonsters;
+
+	/** Minimum strength of monsters in weak lairs on Arcanus */
+	private JTextField arcanusWeakLairMonstersMin;
+	
+	/** Maximum strength of monsters in weak lairs on Arcanus */
+	private JTextField arcanusWeakLairMonstersMax;
+	
+	/** Value of treasure in weak lairs on Arcanus */
+	private JLabel arcanusWeakLairTreasure;
+
+	/** Minimum value of treasure in weak lairs on Arcanus */
+	private JTextField arcanusWeakLairTreasureMin;
+	
+	/** Maximum value of treasure in weak lairs on Arcanus */
+	private JTextField arcanusWeakLairTreasureMax;
+	
+	/** Strength of monsters in weak lairs on Myrror */
+	private JLabel myrrorWeakLairMonsters;
+
+	/** Minimum strength of monsters in weak lairs on Myrror */
+	private JTextField myrrorWeakLairMonstersMin;
+	
+	/** Maximum strength of monsters in weak lairs on Myrror */
+	private JTextField myrrorWeakLairMonstersMax;
+	
+	/** Value of treasure in weak lairs on Myrror */
+	private JLabel myrrorWeakLairTreasure;
+
+	/** Minimum value of treasure in weak lairs on Myrror */
+	private JTextField myrrorWeakLairTreasureMin;
+	
+	/** Maximum value of treasure in weak lairs on Myrror */
+	private JTextField myrrorWeakLairTreasureMax;
+	
+	// CUSTOM DIFFICULTY PANEL (3 of 3 - nodes/difficulty)
 	
 	/** Panel key */
-	private final static String NODES_DIFFICULTY_PANEL = "NodesDiff";
+	private final static String DIFFICULTY_3_PANEL = "Diff3";
+	
+	/** Panel */
+	private JPanel difficulty3Panel;
+	
+	/** Strength of monsters in nodes on Arcanus */
+	private JLabel arcanusNodeMonsters;
+
+	/** Minimum strength of monsters in nodes on Arcanus */
+	private JTextField arcanusNodeMonstersMin;
+	
+	/** Maximum strength of monsters in nodes on Arcanus */
+	private JTextField arcanusNodeMonstersMax;
+	
+	/** Value of treasure in nodes on Arcanus */
+	private JLabel arcanusNodeTreasure;
+
+	/** Minimum value of treasure in nodes on Arcanus */
+	private JTextField arcanusNodeTreasureMin;
+	
+	/** Maximum value of treasure in nodes on Arcanus */
+	private JTextField arcanusNodeTreasureMax;
+	
+	/** Strength of monsters in nodes on Myrror */
+	private JLabel myrrorNodeMonsters;
+
+	/** Minimum strength of monsters in nodes on Myrror */
+	private JTextField myrrorNodeMonstersMin;
+	
+	/** Maximum strength of monsters in nodes on Myrror */
+	private JTextField myrrorNodeMonstersMax;
+	
+	/** Value of treasure in nodes on Myrror */
+	private JLabel myrrorNodeTreasure;
+
+	/** Minimum value of treasure in nodes on Myrror */
+	private JTextField myrrorNodeTreasureMin;
+	
+	/** Maximum value of treasure in nodes on Myrror */
+	private JTextField myrrorNodeTreasureMax;
 	
 	// CUSTOM FOG OF WAR PANEL
 	
 	/** Panel key */
 	private final static String FOG_OF_WAR_PANEL = "FOW";
 	
+	/** Panel */
+	private JPanel fogOfWarPanel;
+
+	/** FOW setting for terrain */
+	private JLabel fowTerrain;
+	
+	/** Can always see updates to terrain after seeing it once */
+	private JCheckBox fowTerrainAlways;
+
+	/** Remember terrain as we last saw it */
+	private JCheckBox fowTerrainRemember;
+	
+	/** Forget terrain once we can no longer see it */
+	private JCheckBox fowTerrainForget;
+	
+	/** FOW setting for cities */
+	private JLabel fowCities;
+	
+	/** Can always see updates to cities after seeing them once */
+	private JCheckBox fowCitiesAlways;
+
+	/** Remember cities as we last saw them */
+	private JCheckBox fowCitiesRemember;
+	
+	/** Forget cities once we can no longer see them */
+	private JCheckBox fowCitiesForget;
+	
+	/** Can see what enemy cities are constructing? */
+	private JCheckBox canSeeEnemyCityConstruction;
+	
+	/** FOW setting for units */
+	private JLabel fowUnits;
+	
+	/** Can always see updates to units after seeing them once */
+	private JCheckBox fowUnitsAlways;
+
+	/** Remember units as we last saw them */
+	private JCheckBox fowUnitsRemember;
+	
+	/** Forget units once we can no longer see them */
+	private JCheckBox fowUnitsForget;
+	
 	// CUSTOM UNIT SETTINGS PANEL
 	
 	/** Panel key */
 	private final static String UNITS_PANEL = "Units";
+	
+	/** Panel */
+	private JPanel unitsPanel;
+	
+	/** Maximum units per overland map grid cell label */
+	private JLabel maxUnitsPerGridCellLabel;
+	
+	/** Maximum units per overland map grid cell */
+	private JTextField maxUnitsPerGridCell;
+	
+	/** Can temporary exceed maximum units during combat */
+	private JCheckBox exceedMaxUnitsDuringCombat;
+
+	/** Can temporary exceed maximum units during combat label */
+	private JTextArea exceedMaxUnitsDuringCombatLabel;
+	
+	/** Maximum heroes hired at once label */
+	private JLabel maximumHeroesLabel;
+	
+	/** Maximum heroes hired at once */
+	private JTextField maximumHeroes;
+	
+	/** Roll hero skills at start of game? */
+	private JCheckBox rollHeroSkillsAtStart;
+	
+	/** Roll hero skills at start of game label */
+	private JTextArea rollHeroSkillsAtStartLabel;
 	
 	// CUSTOM SPELL SETTINGS PANEL
 	
 	/** Panel key */
 	private final static String SPELLS_PANEL = "Spell";
 	
+	/** Panel */
+	private JPanel spellsPanel;
+	
+	/** Options for whether we're allowed to switch research */
+	private JLabel switchResearch;
+	
+	/** No, must finish current research first */
+	private JCheckBox switchResearchNo;
+	
+	/** Can only switch if haven't started researching current spell */ 
+	private JCheckBox switchResearchNotStarted;
+	
+	/** Can switch but lose any research towards current spell */
+	private JCheckBox switchResearchLose;
+	
+	/** Can switch freely */
+	private JCheckBox switchResearchFreely;
+	
+	/** Spell books to obtain first reduction label */
+	private JLabel spellBookCountForFirstReductionLabel;
+	
+	/** Spell books to obtain first reduction */
+	private JTextField spellBookCountForFirstReduction;
+	
+	/** Each book gives */
+	private JLabel eachBookGives;
+	
+	/** Casting cost reduction prefix */
+	private JLabel castingCostReductionPrefix;
+
+	/** Casting cost reduction */
+	private JTextField castingCostReduction;
+
+	/** Casting cost reduction suffix */
+	private JLabel castingCostReductionSuffix;
+	
+	/** Research bonus prefix */
+	private JLabel researchBonusPrefix;
+
+	/** Research bonus */
+	private JTextField researchBonus;
+
+	/** Research bonus suffix */
+	private JLabel researchBonusSuffix;
+
+	/** Casting cost reductions are added together */
+	private JCheckBox castingCostReductionAdditive;
+
+	/** Casting cost reductions are multiplied together */
+	private JCheckBox castingCostReductionMultiplicative;
+	
+	/** Research bonus are added together */
+	private JCheckBox researchBonusAdditive;
+
+	/** Research bonus are multiplied together */
+	private JCheckBox researchBonusMultiplicative;
+	
+	/** Casting cost reduction cap label */
+	private JLabel castingCostReductionCapLabel;
+
+	/** Casting cost reduction cap */
+	private JTextField castingCostReductionCap;
+	
+	/** Research bonus cap label */
+	private JLabel researchBonusCapLabel;
+
+	/** Research bonus cap */
+	private JTextField researchBonusCap;
+	
 	// DEBUG OPTIONS PANEL
 	
 	/** Panel key */
 	private final static String DEBUG_PANEL = "Debug";
+	
+	/** Panel */
+	private JPanel debugPanel;
+	
+	/** Disable fog of war */
+	private JCheckBox disableFogOfWar;
+
+	/** Disable fog of war label */
+	private JTextArea disableFogOfWarLabel;
 	
 	// JOIN GAME PANEL
 	
@@ -449,7 +1066,8 @@ public final class NewGameUI extends MomClientFrameUI
 		final BufferedImage wideButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button290x17Pressed.png");
 		final BufferedImage checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
 		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
-		final BufferedImage editbox = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox125x23.png");
+		final BufferedImage editboxSmall = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox65x23.png");
+		final BufferedImage editboxWide = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox125x23.png");
 		flag = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/flag.png");
 
 		buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
@@ -474,23 +1092,19 @@ public final class NewGameUI extends MomClientFrameUI
 				try
 				{
 					// What this does depends on which 'card' is currently displayed
-					if (newGamePanel.isVisible ())
-					{
-						final PlayerDescription pd = new PlayerDescription ();
-						pd.setPlayerID (getClient ().getOurPlayerID ());
-						pd.setPlayerName (getClient ().getOurPlayerName ());
-				
-						final NewSession msg = new NewSession ();
-						msg.setSessionDescription (buildSessionDescription ());
-						msg.setPlayerDescription (pd);
-				
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
+					if ((newGamePanel.isVisible ()) || (mapSizePanel.isVisible ()) || (landProportionPanel.isVisible ()) || (nodesPanel.isVisible ()) ||
+						(difficulty1Panel.isVisible ()) || (difficulty2Panel.isVisible ()) || (difficulty3Panel.isVisible ()) || (fogOfWarPanel.isVisible ()) ||
+						(unitsPanel.isVisible ()) || (spellsPanel.isVisible ()) || (debugPanel.isVisible ()))
+						
+						showNextNewGamePanel ();
+					
 					else if (wizardPanel.isVisible ())
 					{
 						final ChooseWizardMessage msg = new ChooseWizardMessage ();
 						msg.setWizardID (wizardChosen);
 						getClient ().getServerConnection ().sendMessageToServer (msg);
+
+						okAction.setEnabled (false);
 					}
 					else if (portraitPanel.isVisible ())
 					{
@@ -503,6 +1117,8 @@ public final class NewGameUI extends MomClientFrameUI
 							msg.setPhotoID (portraitChosen);
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 						}						
+
+						okAction.setEnabled (false);
 					}
 					else if (freeSpellsPanel.isVisible ())
 					{
@@ -514,15 +1130,19 @@ public final class NewGameUI extends MomClientFrameUI
 								msg.getSpell ().add (spell.getKey ().getSpellID ());
 
 						getClient ().getServerConnection ().sendMessageToServer (msg);
+
+						okAction.setEnabled (false);
 					}
 					else if (racePanel.isVisible ())
 					{
 						final ChooseRaceMessage msg = new ChooseRaceMessage ();
 						msg.setRaceID (raceChosen);
 						getClient ().getServerConnection ().sendMessageToServer (msg);
+
+						okAction.setEnabled (false);
 					}
-					
-					okAction.setEnabled (false);
+					else
+						log.warn ("Don't know what action to take from clicking OK button");
 				}
 				catch (final Exception e)
 				{
@@ -682,7 +1302,8 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeMapSizeAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameMapSizeButton");
 		
-		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameMapSizeCustomize");
+		customizeMapSize = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeMapSize, "frmNewGameMapSizeCustomize");
 		
 		landProportionLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (landProportionLabel, "frmNewGameLandProportion");
@@ -690,7 +1311,8 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeLandProportionAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameLandProportionButton");
 
-		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameLandProportionCustomize");
+		customizeLandProportion = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeLandProportion, "frmNewGameLandProportionCustomize");
 		
 		nodesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (nodesLabel, "frmNewGameNodes");
@@ -698,7 +1320,8 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeNodeStrengthAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameNodesButton");
 		
-		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameNodesCustomize");
+		customizeNodes = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeNodes, "frmNewGameNodesCustomize");
 		
 		difficultyLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (difficultyLabel, "frmNewGameDifficulty");
@@ -706,7 +1329,8 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeDifficultyLevelAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameDifficultyButton");
 		
-		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameDifficultyCustomize");
+		customizeDifficulty = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeDifficulty, "frmNewGameDifficultyCustomize");
 		
 		turnSystemLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (turnSystemLabel, "frmNewGameTurnSystem");
@@ -720,7 +1344,8 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeFogOfWarSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameFogOfWarButton");
 		
-		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameFogOfWarCustomize");
+		customizeFogOfWar = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeFogOfWar, "frmNewGameFogOfWarCustomize");
 		
 		unitSettingsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (unitSettingsLabel, "frmNewGameUnitSettings");
@@ -728,7 +1353,8 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeUnitSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameUnitButton");
 
-		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameUnitCustomize");
+		customizeUnits = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeUnits, "frmNewGameUnitCustomize");
 		
 		spellSettingsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (spellSettingsLabel, "frmNewGameSpellSettings");
@@ -736,7 +1362,8 @@ public final class NewGameUI extends MomClientFrameUI
 		newGamePanel.add (getUtils ().createImageButton (changeSpellSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameSpellButton");
 		
-		newGamePanel.add (getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked), "frmNewGameSpellCustomize");
+		customizeSpells = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeSpells, "frmNewGameSpellCustomize");
 		
 		debugOptionsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (debugOptionsLabel, "frmNewGameDebugOptions");
@@ -747,7 +1374,7 @@ public final class NewGameUI extends MomClientFrameUI
 		gameNameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (gameNameLabel, "frmNewGameGameName");
 		
-		gameName = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editbox);
+		gameName = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editboxWide);
 		newGamePanel.add (gameName, "frmNewGameGameNameEdit");
 
 		customizeLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
@@ -759,15 +1386,673 @@ public final class NewGameUI extends MomClientFrameUI
 		cards.add (newGamePanel, NEW_GAME_PANEL);
 		
 		// CUSTOM MAP SIZE PANEL
+		mapSizePanel = new JPanel (new XmlLayoutManager (getNewGameLayoutMapSize ()));
+		mapSizePanel.setOpaque (false);
+		
+		mapSizeEdit = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (mapSizeEdit, "frmNewGameCustomMapSizeMapSize");
+		
+		mapSizeWidth = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (mapSizeWidth, "frmNewGameCustomMapSizeWidth");
+		
+		mapSizePanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "x"), "frmNewGameCustomMapSizeX1");
+		
+		mapSizeHeight = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (mapSizeHeight, "frmNewGameCustomMapSizeHeight");
+		
+		mapWrapsLeftToRight = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		mapSizePanel.add (mapWrapsLeftToRight, "frmNewGameCustomMapSizeWrapsLeftRight");
+		
+		mapWrapsTopToBottom = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		mapSizePanel.add (mapWrapsTopToBottom, "frmNewGameCustomMapSizeWrapsTopBottom");
+		
+		mapZonesLabel = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (mapZonesLabel, "frmNewGameCustomMapSizeZones");
+
+		mapZoneWidth = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (mapZoneWidth, "frmNewGameCustomMapSizeZoneWidth");
+
+		mapSizePanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "x"), "frmNewGameCustomMapSizeX2");
+		
+		mapZoneHeight = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (mapZoneHeight, "frmNewGameCustomMapSizeZoneHeight");
+		
+		towersOfWizardryLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (towersOfWizardryLabel, "frmNewGameCustomMapSizeTowers");
+		
+		towersOfWizardryCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (towersOfWizardryCount, "frmNewGameCustomMapSizeTowerCount");
+		
+		towersOfWizardrySeparationLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (towersOfWizardrySeparationLabel, "frmNewGameCustomMapSizeTowerSeparation");
+		
+		towersOfWizardrySeparation = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (towersOfWizardrySeparation, "frmNewGameCustomMapSizeTowerSeparationEdit");
+		
+		continentalRaceChanceLabel = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (continentalRaceChanceLabel, "frmNewGameCustomMapSizeContinental");
+		
+		continentalRaceChance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (continentalRaceChance, "frmNewGameCustomMapSizeContinentalRaceChance");
+		
+		mapSizePanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomMapSizeP1");
+		
+		citySeparationLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (citySeparationLabel, "frmNewGameCustomMapSizeCitySeparation");
+		
+		citySeparation = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (citySeparation, "frmNewGameCustomMapSizeCitySeparationEdit");
+
+		cards.add (mapSizePanel, MAP_SIZE_PANEL);
+		
 		// CUSTOM LAND PROPORTION PANEL
+		landProportionPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutLandProportion ()));
+		landProportionPanel.setOpaque (false);
+
+		landPercentage = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (landPercentage, "frmNewGameCustomLandProportionPercentageMapIsLandEdit");
+
+		landPercentageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (landPercentageLabel, "frmNewGameCustomLandProportionPercentageMapIsLand");
+
+		hillsPercentage = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (hillsPercentage, "frmNewGameCustomLandProportionHillsProportionEdit");
+
+		hillsPercentageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (hillsPercentageLabel, "frmNewGameCustomLandProportionHillsProportion");
+
+		mountainsPercentage = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (mountainsPercentage, "frmNewGameCustomLandProportionMountainsProportionEdit");
+
+		mountainsPercentageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (mountainsPercentageLabel, "frmNewGameCustomLandProportionMountainsProportion");
+
+		treesPercentage = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (treesPercentage, "frmNewGameCustomLandProportionTreesProportionEdit");
+
+		treesPercentageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (treesPercentageLabel, "frmNewGameCustomLandProportionTreesProportion");
+
+		treeAreaSize = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (treeAreaSize, "frmNewGameCustomLandProportionTreeAreaTileCountEdit");
+
+		treeAreaSizePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (treeAreaSizePrefix, "frmNewGameCustomLandProportionTreeAreaTileCountPrefix");
+
+		treeAreaSizeSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (treeAreaSizeSuffix, "frmNewGameCustomLandProportionTreeAreaTileCountSuffix");
+
+		desertsPercentage = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (desertsPercentage, "frmNewGameCustomLandProportionDesertProportionEdit");
+
+		desertsPercentageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (desertsPercentageLabel, "frmNewGameCustomLandProportionDesertProportion");
+
+		desertAreaSize = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (desertAreaSize, "frmNewGameCustomLandProportionDesertAreaTileCountEdit");
+
+		desertAreaSizePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (desertAreaSizePrefix, "frmNewGameCustomLandProportionDesertAreaTileCountPrefix");
+
+		desertAreaSizeSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (desertAreaSizeSuffix, "frmNewGameCustomLandProportionDesertAreaTileCountSuffix");
+
+		swampsPercentage = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (swampsPercentage, "frmNewGameCustomLandProportionSwampProportionEdit");
+
+		swampsPercentageLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (swampsPercentageLabel, "frmNewGameCustomLandProportionSwampProportion");
+
+		swampAreaSize = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (swampAreaSize, "frmNewGameCustomLandProportionSwampAreaTileCountEdit");
+
+		swampAreaSizePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (swampAreaSizePrefix, "frmNewGameCustomLandProportionSwampAreaTileCountPrefix");
+
+		swampAreaSizeSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (swampAreaSizeSuffix, "frmNewGameCustomLandProportionSwampAreaTileCountSuffix");
+
+		tundraDistance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (tundraDistance, "frmNewGameCustomLandProportionTundraEdit");
+
+		tundraDistancePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (tundraDistancePrefix, "frmNewGameCustomLandProportionTundraPrefix");
+
+		tundraDistanceSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (tundraDistanceSuffix, "frmNewGameCustomLandProportionTundraSuffix");
+
+		riverCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (riverCount, "frmNewGameCustomLandProportionRiversEdit");
+
+		riverCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (riverCountLabel, "frmNewGameCustomLandProportionRivers");
+
+		arcanusMineralChance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (arcanusMineralChance, "frmNewGameCustomLandProportionArcanusEdit");
+
+		arcanusMineralChancePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (arcanusMineralChancePrefix, "frmNewGameCustomLandProportionArcanusPrefix");
+
+		arcanusMineralChanceSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (arcanusMineralChanceSuffix, "frmNewGameCustomLandProportionArcanusSuffix");
+
+		myrrorMineralChance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		landProportionPanel.add (myrrorMineralChance, "frmNewGameCustomLandProportionMyrrorEdit");
+
+		myrrorMineralChancePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (myrrorMineralChancePrefix, "frmNewGameCustomLandProportionMyrrorPrefix");
+
+		myrrorMineralChanceSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		landProportionPanel.add (myrrorMineralChanceSuffix, "frmNewGameCustomLandProportionMyrrorSuffix");
+
+		cards.add (landProportionPanel, LAND_PROPORTION_PANEL);
+		
 		// CUSTOM NODES PANEL
-		// CUSTOM DIFFICULTY PANEL (1 of 2)
-		// CUSTOM DIFFICULTY PANEL (2 of 2)
-		// CUSTOM NODES-DIFFICULTY PANEL
+		nodesPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutNodes ()));
+		nodesPanel.setOpaque (false);
+
+		doubleNodeAuraMagicPower = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodesPanel.add (doubleNodeAuraMagicPower, "frmNewGameCustomNodesMagicPowerEdit");
+
+		doubleNodeAuraMagicPowerPrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (doubleNodeAuraMagicPowerPrefix, "frmNewGameCustomNodesMagicPowerPrefix");
+
+		doubleNodeAuraMagicPowerSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (doubleNodeAuraMagicPowerSuffix, "frmNewGameCustomNodesMagicPowerSuffix");
+
+		arcanusNodeCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodesPanel.add (arcanusNodeCount, "frmNewGameCustomNodesArcanusCountEdit");
+
+		arcanusNodeCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (arcanusNodeCountLabel, "frmNewGameCustomNodesArcanusCount");
+
+		arcanusNodeSizeMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodesPanel.add (arcanusNodeSizeMin, "frmNewGameCustomNodesArcanusNodeAuraMin");
+
+		arcanusNodeSizeMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodesPanel.add (arcanusNodeSizeMax, "frmNewGameCustomNodesArcanusNodeAuraMax");
+
+		arcanusNodeSizePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (arcanusNodeSizePrefix, "frmNewGameCustomNodesArcanusNodeAuraPrefix");
+
+		arcanusNodeSizeSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (arcanusNodeSizeSuffix, "frmNewGameCustomNodesArcanusNodeAuraSuffix");
+		
+		nodesPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomNodesArcanusNodeAuraDash");
+
+		myrrorNodeCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodesPanel.add (myrrorNodeCount, "frmNewGameCustomNodesMyrrorCountEdit");
+
+		myrrorNodeCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (myrrorNodeCountLabel, "frmNewGameCustomNodesMyrrorCount");
+
+		myrrorNodeSizeMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodesPanel.add (myrrorNodeSizeMin, "frmNewGameCustomNodesMyrrorNodeAuraMin");
+
+		myrrorNodeSizeMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodesPanel.add (myrrorNodeSizeMax, "frmNewGameCustomNodesMyrrorNodeAuraMax");
+
+		myrrorNodeSizePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (myrrorNodeSizePrefix, "frmNewGameCustomNodesMyrrorNodeAuraPrefix");
+
+		myrrorNodeSizeSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodesPanel.add (myrrorNodeSizeSuffix, "frmNewGameCustomNodesMyrrorNodeAuraSuffix");
+
+		nodesPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomNodesMyrrorNodeAuraDash");
+		
+		cards.add (nodesPanel, NODES_PANEL);
+		
+		// CUSTOM DIFFICULTY PANEL (1 of 3)
+		difficulty1Panel = new JPanel (new XmlLayoutManager (getNewGameLayoutDifficulty1 ()));
+		difficulty1Panel.setOpaque (false);
+
+		spellPicksLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (spellPicksLabel, "frmNewGameCustomDifficulty1SpellPicks");
+		
+		humanSpellPicksLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (humanSpellPicksLabel, "frmNewGameCustomDifficulty1HumanSpellPicks");
+
+		humanSpellPicks = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (humanSpellPicks, "frmNewGameCustomDifficulty1HumanSpellPicksEdit");
+
+		aiSpellPicksLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (aiSpellPicksLabel, "frmNewGameCustomDifficulty1AISpellPicks");
+
+		aiSpellPicks = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (aiSpellPicks, "frmNewGameCustomDifficulty1AISpellPicksEdit");
+
+		startingGoldLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (startingGoldLabel, "frmNewGameCustomDifficulty1Gold");
+		
+		humanStartingGoldLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (humanStartingGoldLabel, "frmNewGameCustomDifficulty1HumanGold");
+
+		humanStartingGold = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (humanStartingGold, "frmNewGameCustomDifficulty1HumanGoldEdit");
+
+		aiStartingGoldLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (aiStartingGoldLabel, "frmNewGameCustomDifficulty1AIGold");
+
+		aiStartingGold = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (aiStartingGold, "frmNewGameCustomDifficulty1AIGoldEdit");
+		
+		allowCustomWizards = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		difficulty1Panel.add (allowCustomWizards, "frmNewGameCustomDifficulty1CustomWizards");
+		
+		eachWizardOnlyOnce = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		difficulty1Panel.add (eachWizardOnlyOnce, "frmNewGameCustomDifficulty1EachWizardOnlyOnce");
+		
+		wizardCityStartSizeLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (wizardCityStartSizeLabel, "frmNewGameCustomDifficulty1WizardCitySize");
+		
+		wizardCityStartSize = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (wizardCityStartSize, "frmNewGameCustomDifficulty1WizardCitySizeEdit");
+		
+		maxCitySizeLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (maxCitySizeLabel, "frmNewGameCustomDifficulty1MaxCitySize");
+		
+		maxCitySize = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (maxCitySize, "frmNewGameCustomDifficulty1MaxCitySizeEdit");
+		
+		raiderCityCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (raiderCityCountLabel, "frmNewGameCustomDifficulty1RaiderCityCount");
+		
+		raiderCityCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (raiderCityCount, "frmNewGameCustomDifficulty1RaiderCityCountEdit");
+		
+		raiderCityStartSizeLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (raiderCityStartSizeLabel, "frmNewGameCustomDifficulty1RaiderCitySizePrefix");
+
+		raiderCityStartSizeMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (raiderCityStartSizeMin, "frmNewGameCustomDifficulty1RaiderCitySizeMin");
+		
+		raiderCityStartSizeAnd = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (raiderCityStartSizeAnd, "frmNewGameCustomDifficulty1RaiderCitySizeAnd");
+		
+		raiderCityStartSizeMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (raiderCityStartSizeMax, "frmNewGameCustomDifficulty1RaiderCitySizeMax");
+		
+		raiderCitySizeCapPrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (raiderCitySizeCapPrefix, "frmNewGameCustomDifficulty1RaiderCityGrowthPrefix");
+
+		raiderCitySizeCap = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (raiderCitySizeCap, "frmNewGameCustomDifficulty1RaiderCityGrowthEdit");
+
+		raiderCitySizeCapSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (raiderCitySizeCapSuffix, "frmNewGameCustomDifficulty1RaiderCityGrowthSuffix");
+		
+		cards.add (difficulty1Panel, DIFFICULTY_1_PANEL);
+		
+		// CUSTOM DIFFICULTY PANEL (2 of 3)
+		difficulty2Panel = new JPanel (new XmlLayoutManager (getNewGameLayoutDifficulty2 ()));
+		difficulty2Panel.setOpaque (false);
+
+		towersMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (towersMonsters, "frmNewGameCustomDifficulty2TowerMonsters");
+
+		towersMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (towersMonstersMin, "frmNewGameCustomDifficulty2TowerMonstersMin");
+		
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2TowerMonstersDash");
+		
+		towersMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (towersMonstersMax, "frmNewGameCustomDifficulty2TowerMonstersMax");
+		
+		towersTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (towersTreasure, "frmNewGameCustomDifficulty2TowerTreasure");
+
+		towersTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (towersTreasureMin, "frmNewGameCustomDifficulty2TowerTreasureMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2TowerTreasureDash");
+		
+		towersTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (towersTreasureMax, "frmNewGameCustomDifficulty2TowerTreasureMax");
+		
+		normalLairCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (normalLairCountLabel, "frmNewGameCustomDifficulty2NormalLairCount");
+
+		normalLairCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (normalLairCount, "frmNewGameCustomDifficulty2NormalLairCountEdit");
+
+		arcanusNormalLairMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (arcanusNormalLairMonsters, "frmNewGameCustomDifficulty2NormalArcanusLairMonsters");
+
+		arcanusNormalLairMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusNormalLairMonstersMin, "frmNewGameCustomDifficulty2NormalArcanusLairMonstersMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2NormalArcanusLairMonstersDash");
+		
+		arcanusNormalLairMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusNormalLairMonstersMax, "frmNewGameCustomDifficulty2NormalArcanusLairMonstersMax");
+		
+		arcanusNormalLairTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (arcanusNormalLairTreasure, "frmNewGameCustomDifficulty2NormalArcanusLairTreasure");
+
+		arcanusNormalLairTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusNormalLairTreasureMin, "frmNewGameCustomDifficulty2NormalArcanusLairTreasureMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2NormalArcanusLairTreasureDash");
+		
+		arcanusNormalLairTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusNormalLairTreasureMax, "frmNewGameCustomDifficulty2NormalArcanusLairTreasureMax");
+		
+		myrrorNormalLairMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (myrrorNormalLairMonsters, "frmNewGameCustomDifficulty2NormalMyrrorLairMonsters");
+
+		myrrorNormalLairMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorNormalLairMonstersMin, "frmNewGameCustomDifficulty2NormalMyrrorLairMonstersMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2NormalMyrrorLairMonstersDash");
+		
+		myrrorNormalLairMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorNormalLairMonstersMax, "frmNewGameCustomDifficulty2NormalMyrrorLairMonstersMax");
+		
+		myrrorNormalLairTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (myrrorNormalLairTreasure, "frmNewGameCustomDifficulty2NormalMyrrorLairTreasure");
+
+		myrrorNormalLairTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorNormalLairTreasureMin, "frmNewGameCustomDifficulty2NormalMyrrorLairTreasureMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2NormalMyrrorLairTreasureDash");
+		
+		myrrorNormalLairTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorNormalLairTreasureMax, "frmNewGameCustomDifficulty2NormalMyrrorLairTreasureMax");
+
+		weakLairCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (weakLairCountLabel, "frmNewGameCustomDifficulty2WeakLairCount");
+
+		weakLairCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (weakLairCount, "frmNewGameCustomDifficulty2WeakLairCountEdit");
+
+		arcanusWeakLairMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (arcanusWeakLairMonsters, "frmNewGameCustomDifficulty2WeakArcanusLairMonsters");
+
+		arcanusWeakLairMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusWeakLairMonstersMin, "frmNewGameCustomDifficulty2WeakArcanusLairMonstersMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2WeakArcanusLairMonstersDash");
+		
+		arcanusWeakLairMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusWeakLairMonstersMax, "frmNewGameCustomDifficulty2WeakArcanusLairMonstersMax");
+		
+		arcanusWeakLairTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (arcanusWeakLairTreasure, "frmNewGameCustomDifficulty2WeakArcanusLairTreasure");
+
+		arcanusWeakLairTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusWeakLairTreasureMin, "frmNewGameCustomDifficulty2WeakArcanusLairTreasureMin");
+		
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2WeakArcanusLairTreasureDash");
+
+		arcanusWeakLairTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (arcanusWeakLairTreasureMax, "frmNewGameCustomDifficulty2WeakArcanusLairTreasureMax");
+		
+		myrrorWeakLairMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (myrrorWeakLairMonsters, "frmNewGameCustomDifficulty2WeakMyrrorLairMonsters");
+
+		myrrorWeakLairMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorWeakLairMonstersMin, "frmNewGameCustomDifficulty2WeakMyrrorLairMonstersMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2WeakMyrrorLairMonstersDash");
+		
+		myrrorWeakLairMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorWeakLairMonstersMax, "frmNewGameCustomDifficulty2WeakMyrrorLairMonstersMax");
+		
+		myrrorWeakLairTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (myrrorWeakLairTreasure, "frmNewGameCustomDifficulty2WeakMyrrorLairTreasure");
+
+		myrrorWeakLairTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorWeakLairTreasureMin, "frmNewGameCustomDifficulty2WeakMyrrorLairTreasureMin");
+
+		difficulty2Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty2WeakMyrrorLairTreasureDash");
+		
+		myrrorWeakLairTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (myrrorWeakLairTreasureMax, "frmNewGameCustomDifficulty2WeakMyrrorLairTreasureMax");
+		
+		cards.add (difficulty2Panel, DIFFICULTY_2_PANEL);
+		
+		// CUSTOM DIFFICULTY PANEL (3 of 3)
+		difficulty3Panel = new JPanel (new XmlLayoutManager (getNewGameLayoutDifficulty3 ()));
+		difficulty3Panel.setOpaque (false);
+
+		arcanusNodeMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (arcanusNodeMonsters, "frmNewGameCustomDifficulty3ArcanusNodeMonsters");
+
+		arcanusNodeMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (arcanusNodeMonstersMin, "frmNewGameCustomDifficulty3ArcanusNodeMonstersMin");
+
+		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3ArcanusNodeMonstersDash");
+		
+		arcanusNodeMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (arcanusNodeMonstersMax, "frmNewGameCustomDifficulty3ArcanusNodeMonstersMax");
+		
+		arcanusNodeTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (arcanusNodeTreasure, "frmNewGameCustomDifficulty3ArcanusNodeTreasure");
+
+		arcanusNodeTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (arcanusNodeTreasureMin, "frmNewGameCustomDifficulty3ArcanusNodeTreasureMin");
+
+		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3ArcanusNodeTreasureDash");
+		
+		arcanusNodeTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (arcanusNodeTreasureMax, "frmNewGameCustomDifficulty3ArcanusNodeTreasureMax");
+		
+		myrrorNodeMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (myrrorNodeMonsters, "frmNewGameCustomDifficulty3MyrrorNodeMonsters");
+
+		myrrorNodeMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (myrrorNodeMonstersMin, "frmNewGameCustomDifficulty3MyrrorNodeMonstersMin");
+
+		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3MyrrorNodeMonstersDash");
+		
+		myrrorNodeMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (myrrorNodeMonstersMax, "frmNewGameCustomDifficulty3MyrrorNodeMonstersMax");
+		
+		myrrorNodeTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (myrrorNodeTreasure, "frmNewGameCustomDifficulty3MyrrorNodeTreasure");
+
+		myrrorNodeTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (myrrorNodeTreasureMin, "frmNewGameCustomDifficulty3MyrrorNodeTreasureMin");
+
+		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3MyrrorNodeTreasureDash");
+		
+		myrrorNodeTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (myrrorNodeTreasureMax, "frmNewGameCustomDifficulty3MyrrorNodeTreasureMax");
+		
+		cards.add (difficulty3Panel, DIFFICULTY_3_PANEL);
+		
 		// CUSTOM FOG OF WAR PANEL
+		fogOfWarPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutFogOfWar ()));
+		fogOfWarPanel.setOpaque (false);
+		
+		fowTerrain = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		fogOfWarPanel.add (fowTerrain, "frmNewGameCustomFogOfWarTerrainNodesAuras");
+		
+		fowTerrainAlways = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowTerrainAlways, "frmNewGameCustomFogOfWarTerrainAlways");
+
+		fowTerrainRemember = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowTerrainRemember, "frmNewGameCustomFogOfWarTerrainRemember");
+		
+		fowTerrainForget = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowTerrainForget, "frmNewGameCustomFogOfWarTerrainForget");
+		
+		fowCities = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		fogOfWarPanel.add (fowCities, "frmNewGameCustomFogOfWarCitiesSpellsCAEs");
+		
+		fowCitiesAlways = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowCitiesAlways, "frmNewGameCustomFogOfWarCitiesAlways");
+
+		fowCitiesRemember = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowCitiesRemember, "frmNewGameCustomFogOfWarCitiesRemember");
+		
+		fowCitiesForget = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowCitiesForget, "frmNewGameCustomFogOfWarCitiesForget");
+		
+		canSeeEnemyCityConstruction = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (canSeeEnemyCityConstruction, "frmNewGameCustomFogOfWarConstructing");
+		
+		fowUnits = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		fogOfWarPanel.add (fowUnits, "frmNewGameCustomFogOfWarUnits");
+		
+		fowUnitsAlways = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowUnitsAlways, "frmNewGameCustomFogOfWarUnitsAlways");
+
+		fowUnitsRemember = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowUnitsRemember, "frmNewGameCustomFogOfWarUnitsRemember");
+		
+		fowUnitsForget = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		fogOfWarPanel.add (fowUnitsForget, "frmNewGameCustomFogOfWarUnitsForget");
+		
+		final ButtonGroup terrainFowChoices = new ButtonGroup ();
+		terrainFowChoices.add (fowTerrainAlways);
+		terrainFowChoices.add (fowTerrainRemember);
+		terrainFowChoices.add (fowTerrainForget);
+
+		final ButtonGroup citiesFowChoices = new ButtonGroup ();
+		citiesFowChoices.add (fowCitiesAlways);
+		citiesFowChoices.add (fowCitiesRemember);
+		citiesFowChoices.add (fowCitiesForget);
+
+		final ButtonGroup unitsFowChoices = new ButtonGroup ();
+		unitsFowChoices.add (fowUnitsAlways);
+		unitsFowChoices.add (fowUnitsRemember);
+		unitsFowChoices.add (fowUnitsForget);
+		
+		cards.add (fogOfWarPanel, FOG_OF_WAR_PANEL);
+		
 		// CUSTOM UNIT SETTINGS PANEL
+		unitsPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutUnits ()));
+		unitsPanel.setOpaque (false);
+		
+		maxUnitsPerGridCellLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maxUnitsPerGridCellLabel, "frmNewGameCustomUnitsMaxPerGridCell");
+		
+		maxUnitsPerGridCell = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		unitsPanel.add (maxUnitsPerGridCell, "frmNewGameCustomUnitsMaxPerGridCellEdit");
+		
+		exceedMaxUnitsDuringCombat = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		unitsPanel.add (exceedMaxUnitsDuringCombat, "frmNewGameCustomUnitsCanExceedMaximumUnitsDuringCombatCheckbox");
+
+		exceedMaxUnitsDuringCombatLabel = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (exceedMaxUnitsDuringCombatLabel, "frmNewGameCustomUnitsCanExceedMaximumUnitsDuringCombat");
+		
+		maximumHeroesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maximumHeroesLabel, "frmNewGameCustomUnitsMaxHeroes");
+		
+		maximumHeroes = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		unitsPanel.add (maximumHeroes, "frmNewGameCustomUnitsMaxHeroesEdit");
+		
+		rollHeroSkillsAtStart = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		unitsPanel.add (rollHeroSkillsAtStart, "frmNewGameCustomUnitsRollHeroSkillsAtStartOfGameCheckbox");
+		
+		rollHeroSkillsAtStartLabel = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (rollHeroSkillsAtStartLabel, "frmNewGameCustomUnitsRollHeroSkillsAtStartOfGame");
+		
+		cards.add (unitsPanel, UNITS_PANEL);
+		
 		// CUSTOM SPELL SETTINGS PANEL
+		spellsPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutSpells ()));
+		spellsPanel.setOpaque (false);
+
+		switchResearch = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (switchResearch, "frmNewGameCustomSpellsSwitchResearch");
+		
+		switchResearchNo = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (switchResearchNo, "frmNewGameCustomSpellsSwitchResearchNo");
+		
+		switchResearchNotStarted = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (switchResearchNotStarted, "frmNewGameCustomSpellsSwitchResearchNotStarted");
+		
+		switchResearchLose = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (switchResearchLose, "frmNewGameCustomSpellsSwitchResearchLose");
+		
+		switchResearchFreely = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (switchResearchFreely, "frmNewGameCustomSpellsSwitchResearchFreely");
+		
+		spellBookCountForFirstReductionLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (spellBookCountForFirstReductionLabel, "frmNewGameCustomSpellsBooksToObtainFirstReduction");
+		
+		spellBookCountForFirstReduction = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		spellsPanel.add (spellBookCountForFirstReduction, "frmNewGameCustomSpellsBooksToObtainFirstReductionEdit");
+		
+		eachBookGives = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (eachBookGives, "frmNewGameCustomSpellsEachBook");
+		
+		castingCostReductionPrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (castingCostReductionPrefix, "frmNewGameCustomSpellsCastingReductionPrefix");
+
+		castingCostReduction = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		spellsPanel.add (castingCostReduction, "frmNewGameCustomSpellsCastingReduction");
+
+		castingCostReductionSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (castingCostReductionSuffix, "frmNewGameCustomSpellsCastingReductionSuffix");
+		
+		researchBonusPrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (researchBonusPrefix, "frmNewGameCustomSpellsResearchBonusPrefix");
+
+		researchBonus = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		spellsPanel.add (researchBonus, "frmNewGameCustomSpellsResearchBonus");
+
+		researchBonusSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (researchBonusSuffix, "frmNewGameCustomSpellsResearchBonusSuffix");
+
+		castingCostReductionAdditive = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (castingCostReductionAdditive, "frmNewGameCustomSpellsCastingReductionCombinationAdd");
+
+		castingCostReductionMultiplicative = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (castingCostReductionMultiplicative, "frmNewGameCustomSpellsCastingReductionCombinationMultiply");
+		
+		researchBonusAdditive = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (researchBonusAdditive, "frmNewGameCustomSpellsResearchBonusCombinationAdd");
+
+		researchBonusMultiplicative = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		spellsPanel.add (researchBonusMultiplicative, "frmNewGameCustomSpellsResearchBonusCombinationMultiply");
+		
+		castingCostReductionCapLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (castingCostReductionCapLabel, "frmNewGameCustomSpellsCastingReductionCap");
+
+		castingCostReductionCap = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		spellsPanel.add (castingCostReductionCap, "frmNewGameCustomSpellsCastingReductionCapEdit");
+		
+		spellsPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomSpellsP1");
+		
+		researchBonusCapLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (researchBonusCapLabel, "frmNewGameCustomSpellsResearchBonusCap");
+
+		researchBonusCap = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		spellsPanel.add (researchBonusCap, "frmNewGameCustomSpellsResearchBonusCapEdit");
+
+		spellsPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomSpellsP2");
+		
+		final ButtonGroup switchResearchChoices = new ButtonGroup ();
+		switchResearchChoices.add (switchResearchNo);
+		switchResearchChoices.add (switchResearchNotStarted);
+		switchResearchChoices.add (switchResearchLose);
+		switchResearchChoices.add (switchResearchFreely);
+
+		final ButtonGroup castingCostReductionChoices = new ButtonGroup ();
+		castingCostReductionChoices.add (castingCostReductionAdditive);
+		castingCostReductionChoices.add (castingCostReductionMultiplicative);
+
+		final ButtonGroup researchBonusChoices = new ButtonGroup ();
+		researchBonusChoices.add (researchBonusAdditive);
+		researchBonusChoices.add (researchBonusMultiplicative);
+		
+		cards.add (spellsPanel, SPELLS_PANEL);
+
 		// DEBUG OPTIONS PANEL
+		debugPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutDebug ()));
+		debugPanel.setOpaque (false);
+
+		disableFogOfWar = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		debugPanel.add (disableFogOfWar, "frmNewGameCustomDebugDisableFogOfWarCheckbox");
+
+		disableFogOfWarLabel = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
+		debugPanel.add (disableFogOfWarLabel, "frmNewGameCustomDebugDisableFogOfWar");
+		
+		cards.add (debugPanel, DEBUG_PANEL);
+		
 		// JOIN GAME PANEL
 		
 		// WIZARD SELECTION PANEL
@@ -873,6 +2158,107 @@ public final class NewGameUI extends MomClientFrameUI
 		cardLayout.show (cards, NEW_GAME_PANEL);
 
 		log.trace ("Exiting showNewGamePanel");
+	}
+	
+	/**
+	 * After clicking OK on the new game panel, or one of the subsequent "custom details" screens, finds the next
+	 * custom details screen we need to show, or if all done then we go ahead and send the session description
+	 * to the server to start the game
+	 * 
+	 * @throws JAXBException If we go ahead creating the game, and there is a problem converting the object into XML
+	 * @throws XMLStreamException If we go ahead creating the game, and there is a problem writing to the XML stream
+	 * @throws MomException If we couldn't figure which panel was visible when the player clicked OK
+	 */
+	final void showNextNewGamePanel () throws JAXBException, XMLStreamException, MomException
+	{
+		log.trace ("Entering showNextNewGamePanel");
+
+		// Which panel did we click OK on; basically this is "how many custom screens have we already OK'd"
+		final int currentPanel;
+		if (newGamePanel.isVisible ())
+			currentPanel = 0;
+		else if (mapSizePanel.isVisible ())
+			currentPanel = 1;
+		else if (landProportionPanel.isVisible ())
+			currentPanel = 2;
+		else if (nodesPanel.isVisible ())
+			currentPanel = 3;
+		else if (difficulty1Panel.isVisible ())
+			currentPanel = 4;
+		else if (difficulty2Panel.isVisible ())
+			currentPanel = 5;
+		else if (difficulty3Panel.isVisible ())
+			currentPanel = 6;
+		else if (fogOfWarPanel.isVisible ())
+			currentPanel = 7;
+		else if (unitsPanel.isVisible ())
+			currentPanel = 8;
+		else if (spellsPanel.isVisible ())
+			currentPanel = 9;
+		else if (debugPanel.isVisible ())
+			currentPanel = 10;
+		else
+			throw new MomException ("showNextNewGamePanel could not determine currently visible panel");
+		
+		// Customize map size
+		if ((customizeMapSize.isSelected ()) && (currentPanel < 1))
+			cardLayout.show (cards, MAP_SIZE_PANEL);
+		
+		// Customize land proportion
+		else if ((customizeLandProportion.isSelected ()) && (currentPanel < 2))
+			cardLayout.show (cards, LAND_PROPORTION_PANEL);
+		
+		// Customize nodes
+		else if ((customizeNodes.isSelected ()) && (currentPanel < 3))
+			cardLayout.show (cards, NODES_PANEL);
+		
+		// Customize difficulty (1 of 3)
+		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 4))
+			cardLayout.show (cards, DIFFICULTY_1_PANEL);
+
+		// Customize difficulty (2 of 3)
+		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 5))
+			cardLayout.show (cards, DIFFICULTY_2_PANEL);
+
+		// Customize difficulty (3 of 3)
+		else if (((customizeDifficulty.isSelected ()) || (customizeNodes.isSelected ())) && (currentPanel < 6))
+			cardLayout.show (cards, DIFFICULTY_3_PANEL);
+
+		// Customize fog of war
+		else if ((customizeFogOfWar.isSelected ()) && (currentPanel < 7))
+			cardLayout.show (cards, FOG_OF_WAR_PANEL);
+
+		// Customize units
+		else if ((customizeUnits.isSelected ()) && (currentPanel < 8))
+			cardLayout.show (cards, UNITS_PANEL);
+		
+		// Customize spells
+		else if ((customizeSpells.isSelected ()) && (currentPanel < 9))
+			cardLayout.show (cards, SPELLS_PANEL);
+		
+		// Debug options
+		else if ((changeDebugOptionsAction.getSelectedItem ()) && (currentPanel < 10))
+			cardLayout.show (cards, DEBUG_PANEL);
+		
+		// Start up game
+		else
+		{
+			final PlayerDescription pd = new PlayerDescription ();
+			pd.setPlayerID (getClient ().getOurPlayerID ());
+			pd.setPlayerName (getClient ().getOurPlayerName ());
+	
+			final NewSession msg = new NewSession ();
+			msg.setSessionDescription (buildSessionDescription ());
+			msg.setPlayerDescription (pd);
+	
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			// Only disable button if actually starting the game; otherwise OK is enabled for all the
+			// "custom" screens because they can just to confirm settings as they are if desired
+			okAction.setEnabled (false);
+		}
+		
+		log.trace ("Exiting showNextNewGamePanel");
 	}
 	
 	/**
@@ -1343,47 +2729,135 @@ public final class NewGameUI extends MomClientFrameUI
 			changeDebugOptionsAction.addItem (debugOptions, getLanguage ().findCategoryEntry ("XsdBoolean", new Boolean (debugOptions).toString ().toLowerCase ()));
 
 		// CUSTOM MAP SIZE PANEL
-		/* mapSizeTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Title"));
+		mapSizeEdit.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "MapSize"));
+		mapWrapsLeftToRight.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "WrapsLeftRight"));
+		mapWrapsTopToBottom.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "WrapsTopBottom"));
+		mapZonesLabel.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Zones"));
+		towersOfWizardryLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Towers"));
+		towersOfWizardrySeparationLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "TowersSeparation"));
+		continentalRaceChanceLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Continental"));
+		citySeparationLabel.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "CitySeparation"));
 		
 		// CUSTOM LAND PROPORTION PANEL
-		landProportionTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "Title"));
+		landPercentageLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "PercentageMapIsLand"));
+		hillsPercentageLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "HillsProportion"));
+		mountainsPercentageLabel.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "MountainsProportion"));
+		treesPercentageLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "TreesProportion"));
+		treeAreaSizePrefix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "TreeAreaTileCountPrefix"));
+		treeAreaSizeSuffix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "TreeAreaTileCountSuffix"));
+		desertsPercentageLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "DesertProportion"));
+		desertAreaSizePrefix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "DesertAreaTileCountPrefix"));
+		desertAreaSizeSuffix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "DesertAreaTileCountSuffix"));
+		swampsPercentageLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "SwampProportion"));
+		swampAreaSizePrefix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "SwampAreaTileCountPrefix"));
+		swampAreaSizeSuffix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "SwampAreaTileCountSuffix"));
+		tundraDistancePrefix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "TundraPrefix"));
+		tundraDistanceSuffix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "TundraSuffix"));
+		riverCountLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "Rivers"));
+		arcanusMineralChancePrefix.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "ArcanusPrefix"));
+		arcanusMineralChanceSuffix.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "ArcanusSuffix"));
+		myrrorMineralChancePrefix.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "MyrrorPrefix"));
+		myrrorMineralChanceSuffix.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "MyrrorSuffix"));
 		
 		// CUSTOM NODES PANEL
-		nodesTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "Title"));
+		doubleNodeAuraMagicPowerPrefix.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MagicPowerPrefix"));
+		doubleNodeAuraMagicPowerSuffix.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MagicPowerSuffix"));
+		arcanusNodeCountLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "ArcanusCount"));
+		arcanusNodeSizePrefix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "ArcanusNodeAuraPrefix"));
+		arcanusNodeSizeSuffix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "ArcanusNodeAuraSuffix"));
+		myrrorNodeCountLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorCount"));
+		myrrorNodeSizePrefix.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorNodeAuraPrefix"));
+		myrrorNodeSizeSuffix.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorNodeAuraSuffix"));
 		
-		// CUSTOM DIFFICULTY PANEL (1 of 2)
-		difficulty1Title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "Title"));
+		// CUSTOM DIFFICULTY PANEL (1 of 3)
+		spellPicksLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "SpellPicks"));
+		humanSpellPicksLabel.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanSpellPicks"));
+		aiSpellPicksLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellPicks"));
+		startingGoldLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "Gold"));
+		humanStartingGoldLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanGold"));
+		aiStartingGoldLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIGold"));
+		allowCustomWizards.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "CustomWizards"));
+		eachWizardOnlyOnce.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "EachWizardOnlyOnce"));
+		wizardCityStartSizeLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "WizardCitySize"));
+		maxCitySizeLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "MaxCitySize"));
+		raiderCityCountLabel.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityCount"));
+		raiderCityStartSizeLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizePrefix"));
+		raiderCityStartSizeAnd.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizeAnd"));
+		raiderCitySizeCapPrefix.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthPrefix"));
+		raiderCitySizeCapSuffix.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthSuffix"));
 		
-		// CUSTOM DIFFICULTY PANEL (2 of 2)
-		difficulty2Title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "Title"));
+		// CUSTOM DIFFICULTY PANEL (2 of 3)
+		towersMonsters.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerMonsters"));
+		towersTreasure.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerTreasure"));
+		normalLairCountLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalLairCount"));
+		arcanusNormalLairMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairMonsters"));
+		arcanusNormalLairTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairTreasure"));
+		myrrorNormalLairMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairMonsters"));
+		myrrorNormalLairTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairTreasure"));
+		weakLairCountLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakLairCount"));
+		arcanusWeakLairMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairMonsters"));
+		arcanusWeakLairTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairTreasure"));
+		myrrorWeakLairMonsters.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakMyrrorLairMonsters"));
+		myrrorWeakLairTreasure.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakMyrrorLairTreasure"));
 		
-		// CUSTOM NODES-DIFFICULTY PANEL
-		nodesDifficultyTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty3", "Title"));	
+		// CUSTOM DIFFICULTY PANEL (3 of 3)
+		arcanusNodeMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty3", "ArcanusNodeMonsters"));
+		arcanusNodeTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty3", "ArcanusNodeTreasure"));
+		myrrorNodeMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty3", "MyrrorNodeMonsters"));
+		myrrorNodeTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty3", "MyrrorNodeTreasure"));
 		
 		// CUSTOM FOG OF WAR PANEL
-		fogOfWarTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "Title"));
+		fowTerrain.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainNodesAuras"));
+		fowTerrainAlways.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainAlways"));
+		fowTerrainRemember.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainRemember"));
+		fowTerrainForget.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainForget"));
+		fowCities.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesSpellsCAEs"));
+		fowCitiesAlways.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesAlways"));
+		fowCitiesRemember.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesRemember"));
+		fowCitiesForget.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesForget"));
+		canSeeEnemyCityConstruction.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "Constructing"));
+		fowUnits.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "Units"));
+		fowUnitsAlways.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "UnitsAlways"));
+		fowUnitsRemember.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "UnitsRemember"));
+		fowUnitsForget.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "UnitsForget"));
 		
 		// CUSTOM UNIT SETTINGS PANEL
-		unitsTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "Title"));
+		maxUnitsPerGridCellLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "MaxPerGridCell"));
+		exceedMaxUnitsDuringCombatLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "CanExceedMaximumUnitsDuringCombat"));
+		maximumHeroesLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroes"));
+		rollHeroSkillsAtStartLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "RollHeroSkillsAtStartOfGame"));
 
 		// CUSTOM SPELL SETTINGS PANEL
-		spellsTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "Title"));
+		switchResearch.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearch"));
+		switchResearchNo.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchNo"));
+		switchResearchNotStarted.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchNotStarted"));
+		switchResearchLose.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchLose"));
+		switchResearchFreely.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchFreely"));
+		spellBookCountForFirstReductionLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "BooksToObtainFirstReduction"));
+		eachBookGives.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "EachBook"));
+		castingCostReductionPrefix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionPrefix"));
+		castingCostReductionSuffix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionSuffix"));
+		researchBonusPrefix.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusPrefix"));
+		researchBonusSuffix.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusSuffix"));
+		castingCostReductionAdditive.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCombinationAdd"));
+		castingCostReductionMultiplicative.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCombinationMultiply"));
+		researchBonusAdditive.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCombinationAdd"));
+		researchBonusMultiplicative.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCombinationMultiply"));
+		castingCostReductionCapLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCap"));
+		researchBonusCapLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCap"));
 		
 		// DEBUG OPTIONS PANEL
-		debugTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDebug", "Title"));
+		disableFogOfWarLabel.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDebug", "DisableFogOfWar"));
 		
 		// JOIN GAME PANEL
-		joinGameTitle.setText (getLanguage ().findCategoryEntry ("frmJoinGame", "Title")); */
 		
 		// WIZARD SELECTION PANEL
 		
 		// PORTRAIT SELECTION PANEL (for custom wizards)
 		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
-		/* flagTitle.setText (getLanguage ().findCategoryEntry ("frmChooseFlagColour", "Title"));
 		
 		// CUSTOM PICKS PANEL (for custom wizards)
-		picksTitle.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", "Title")); */
 		
 		// RACE SELECTION PANEL
 		
@@ -1427,6 +2901,26 @@ public final class NewGameUI extends MomClientFrameUI
 		title.setForeground (MomUIConstants.GOLD);
 		if (newGamePanel.isVisible ())
 			title.setText (getLanguage ().findCategoryEntry ("frmNewGame", "Title"));
+		else if (mapSizePanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Title"));
+		else if (landProportionPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "Title"));
+		else if (nodesPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "Title"));
+		else if (difficulty1Panel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "Title"));
+		else if (difficulty2Panel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "Title"));
+		else if (difficulty3Panel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty3", "Title"));
+		else if (fogOfWarPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomFogOfWar", "Title"));
+		else if (unitsPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "Title"));
+		else if (spellsPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "Title"));
+		else if (debugPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDebug", "Title"));		
 		else if (wizardPanel.isVisible ())
 			title.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
 		else if (portraitPanel.isVisible ())
@@ -1732,14 +3226,7 @@ public final class NewGameUI extends MomClientFrameUI
 		sd.setAiPlayerCount (changeAIOpponentsAction.getSelectedItem ());
 		
 		// Map size
-		if (changeMapSizeAction.getSelectedItem () != null)
-			sd.setMapSize (changeMapSizeAction.getSelectedItem ());
-		else
-		{
-			final MapSizeData customMapSize = new MapSizeData ();
-			sd.setMapSize (customMapSize);
-			throw new UnsupportedOperationException ("Custom map size not yet supported");
-		}
+		sd.setMapSize (changeMapSizeAction.getSelectedItem ());
 		
 		// Combat map size is fixed, at least for now
 		final CombatMapSizeData combatMapSize = new CombatMapSizeData ();
@@ -1754,119 +3241,59 @@ public final class NewGameUI extends MomClientFrameUI
 		sd.setCombatMapSize (combatMapSize);
 		
 		// Land proportion
-		if (changeLandProportionAction.getSelectedItem () != null)
-			sd.setLandProportion (changeLandProportionAction.getSelectedItem ());
-		else
-		{
-			final LandProportionData customLandProportion = new LandProportionData ();
-			sd.setLandProportion (customLandProportion);
-			throw new UnsupportedOperationException ("Custom land proportion not yet supported");
-		}
+		sd.setLandProportion (changeLandProportionAction.getSelectedItem ());
 		
 		// Node strength
-		if (changeNodeStrengthAction.getSelectedItem () != null)
-			sd.setNodeStrength (changeNodeStrengthAction.getSelectedItem ());
-		else
-		{
-			final NodeStrengthData customNodeStrength = new NodeStrengthData ();
-			sd.setNodeStrength (customNodeStrength);
-			throw new UnsupportedOperationException ("Custom node strength not yet supported");
-		}
+		sd.setNodeStrength (changeNodeStrengthAction.getSelectedItem ());
 		
-		// Difficulty level
-		if (changeDifficultyLevelAction.getSelectedItem () != null)
-		{
-			// Recreate the difficulty level, otherwise it gets sent as the DifficultyLevel subtype (rather than DifficultyLevelData) including all the unncessary DifficultyLevelNodeStrengths
-			final DifficultyLevelData src = changeDifficultyLevelAction.getSelectedItem ();
-			final DifficultyLevelData dest = new DifficultyLevelData ();
-			
-		    dest.setHumanSpellPicks (src.getHumanSpellPicks ());
-		    dest.setAiSpellPicks (src.getAiSpellPicks ());
-		    dest.setHumanStartingGold (src.getHumanStartingGold ());
-		    dest.setAiStartingGold (src.getAiStartingGold ());
-		    dest.setCustomWizards (src.isCustomWizards ());
-		    dest.setEachWizardOnlyOnce (src.isEachWizardOnlyOnce ());
-		    
-		    dest.setNormalLairCount (src.getNormalLairCount ());
-		    dest.setWeakLairCount (src.getWeakLairCount ());
-		    
-		    dest.setTowerMonstersMinimum (src.getTowerMonstersMinimum ());
-		    dest.setTowerMonstersMaximum (src.getTowerMonstersMaximum ());
-		    dest.setTowerTreasureMinimum (src.getTowerTreasureMinimum ());
-		    dest.setTowerTreasureMaximum (src.getTowerTreasureMaximum ());
-		    
-		    dest.setRaiderCityCount (src.getRaiderCityCount ());
-		    dest.setRaiderCityStartSizeMin (src.getRaiderCityStartSizeMin ());
-		    dest.setRaiderCityStartSizeMax (src.getRaiderCityStartSizeMax ());
-		    dest.setRaiderCityGrowthCap (src.getRaiderCityGrowthCap ());
-		    
-		    dest.setWizardCityStartSize (src.getWizardCityStartSize ());
-		    dest.setCityMaxSize (src.getCityMaxSize ());
-		    dest.getDifficultyLevelPlane ().addAll (src.getDifficultyLevelPlane ());
-			
-			sd.setDifficultyLevel (dest);
-		}
-		else
-		{
-			final DifficultyLevelData customDifficultyLevel = new DifficultyLevelData ();
-			sd.setDifficultyLevel (customDifficultyLevel);
-			throw new UnsupportedOperationException ("Custom difficulty level not yet supported");
-		}
+		// Difficulty level - recreate it, otherwise it gets sent as the DifficultyLevel subtype (rather than DifficultyLevelData) including all the unncessary DifficultyLevelNodeStrengths
+		final DifficultyLevelData src = changeDifficultyLevelAction.getSelectedItem ();
+		final DifficultyLevelData dest = new DifficultyLevelData ();
+		
+	    dest.setHumanSpellPicks (src.getHumanSpellPicks ());
+	    dest.setAiSpellPicks (src.getAiSpellPicks ());
+	    dest.setHumanStartingGold (src.getHumanStartingGold ());
+	    dest.setAiStartingGold (src.getAiStartingGold ());
+	    dest.setCustomWizards (src.isCustomWizards ());
+	    dest.setEachWizardOnlyOnce (src.isEachWizardOnlyOnce ());
+	    
+	    dest.setNormalLairCount (src.getNormalLairCount ());
+	    dest.setWeakLairCount (src.getWeakLairCount ());
+	    
+	    dest.setTowerMonstersMinimum (src.getTowerMonstersMinimum ());
+	    dest.setTowerMonstersMaximum (src.getTowerMonstersMaximum ());
+	    dest.setTowerTreasureMinimum (src.getTowerTreasureMinimum ());
+	    dest.setTowerTreasureMaximum (src.getTowerTreasureMaximum ());
+	    
+	    dest.setRaiderCityCount (src.getRaiderCityCount ());
+	    dest.setRaiderCityStartSizeMin (src.getRaiderCityStartSizeMin ());
+	    dest.setRaiderCityStartSizeMax (src.getRaiderCityStartSizeMax ());
+	    dest.setRaiderCityGrowthCap (src.getRaiderCityGrowthCap ());
+	    
+	    dest.setWizardCityStartSize (src.getWizardCityStartSize ());
+	    dest.setCityMaxSize (src.getCityMaxSize ());
+	    dest.getDifficultyLevelPlane ().addAll (src.getDifficultyLevelPlane ());
+		
+		sd.setDifficultyLevel (dest);
 
 		// Difficulty level - node strength
-		if ((changeDifficultyLevelAction.getSelectedItem () != null) && (changeNodeStrengthAction.getSelectedItem () != null))
-		{
-			// Note there's multiple entries, one for each plane, so isn't a simple search and exit as soon as we get a match
-			final String nodeStrengthID = changeNodeStrengthAction.getSelectedItem ().getNodeStrengthID ();
-			for (final DifficultyLevelNodeStrength dlns : changeDifficultyLevelAction.getSelectedItem ().getDifficultyLevelNodeStrength ())
-				if (dlns.getNodeStrengthID ().equals (nodeStrengthID))
-					sd.getDifficultyLevelNodeStrength ().add (dlns);
-		}
-		else
-		{
-			throw new UnsupportedOperationException ("Custom difficulty level-node strength not yet supported");
-		}
+		// Note there's multiple entries, one for each plane, so isn't a simple search and exit as soon as we get a match
+		final String nodeStrengthID = changeNodeStrengthAction.getSelectedItem ().getNodeStrengthID ();
+		for (final DifficultyLevelNodeStrength dlns : changeDifficultyLevelAction.getSelectedItem ().getDifficultyLevelNodeStrength ())
+			if (dlns.getNodeStrengthID ().equals (nodeStrengthID))
+				sd.getDifficultyLevelNodeStrength ().add (dlns);
 		
 		// FOW setting
-		if (changeFogOfWarSettingsAction.getSelectedItem () != null)
-			sd.setFogOfWarSetting (changeFogOfWarSettingsAction.getSelectedItem ());
-		else
-		{
-			final FogOfWarSettingData customFogOfWarSetting = new FogOfWarSettingData ();
-			sd.setFogOfWarSetting (customFogOfWarSetting);
-			throw new UnsupportedOperationException ("Custom fog of war settings not yet supported");
-		}
+		sd.setFogOfWarSetting (changeFogOfWarSettingsAction.getSelectedItem ());
 		
 		// Unit setting
-		if (changeUnitSettingsAction.getSelectedItem () != null)
-			sd.setUnitSetting (changeUnitSettingsAction.getSelectedItem ());
-		else
-		{
-			final UnitSettingData customUnitSetting = new UnitSettingData ();
-			sd.setUnitSetting (customUnitSetting);
-			throw new UnsupportedOperationException ("Custom unit settings not yet supported");
-		}
+		sd.setUnitSetting (changeUnitSettingsAction.getSelectedItem ());
 		
 		// Spell setting
-		if (changeSpellSettingsAction.getSelectedItem () != null)
-			sd.setSpellSetting (changeSpellSettingsAction.getSelectedItem ());
-		else
-		{
-			final SpellSettingData customSpellSetting = new SpellSettingData ();
-			sd.setSpellSetting (customSpellSetting);
-			throw new UnsupportedOperationException ("Custom spell settings not yet supported");
-		}
+		sd.setSpellSetting (changeSpellSettingsAction.getSelectedItem ());
 		
-		// Debug options
-		if (!changeDebugOptionsAction.getSelectedItem ())
-		{
-			// No debug options, set defaults
-			sd.setDisableFogOfWar (false);
-		}
-		else
-		{
-			throw new UnsupportedOperationException ("Custom debug options not yet supported");
-		}
+		// Default debug options
+		sd.setDisableFogOfWar (false);
 		
 		log.trace ("Exiting buildSessionDescription = " + sd);
 		return sd;
@@ -2030,5 +3457,165 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setNewGameLayoutNew (final XmlLayoutContainerEx layout)
 	{
 		newGameLayoutNew = layout;
+	}
+
+	/**
+	 * @return XML layout of the "custom map size" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutMapSize ()
+	{
+		return newGameLayoutMapSize;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom map size" right hand side
+	 */
+	public final void setNewGameLayoutMapSize (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutMapSize = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom land proportion" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutLandProportion ()
+	{
+		return newGameLayoutLandProportion;
+	}
+	
+	/**
+	 * @param layout XML layout of the "custom land proportion" right hand side
+	 */
+	public final void setNewGameLayoutLandProportion (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutLandProportion = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom nodes" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutNodes ()
+	{
+		return newGameLayoutNodes;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom nodes" right hand side
+	 */
+	public final void setNewGameLayoutNodes (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutNodes = layout;
+	}
+
+	/**
+	 * @return XML layout of the "custom difficulty 1" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutDifficulty1 ()
+	{
+		return newGameLayoutDifficulty1;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom difficulty 1" right hand side
+	 */
+	public final void setNewGameLayoutDifficulty1 (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutDifficulty1 = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom difficulty 2" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutDifficulty2 ()
+	{
+		return newGameLayoutDifficulty2;
+	}
+	
+	/**
+	 * @param layout XML layout of the "custom difficulty 2" right hand side
+	 */
+	public final void setNewGameLayoutDifficulty2 (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutDifficulty2 = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom difficulty 3" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutDifficulty3 ()
+	{
+		return newGameLayoutDifficulty3;
+	}
+	
+	/**
+	 * @param layout XML layout of the "custom difficulty 3" right hand side
+	 */
+	public final void setNewGameLayoutDifficulty3 (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutDifficulty3 = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom fog of war" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutFogOfWar ()
+	{
+		return newGameLayoutFogOfWar;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom fog of war" right hand side
+	 */
+	public final void setNewGameLayoutFogOfWar (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutFogOfWar = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom unit settings" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutUnits ()
+	{
+		return newGameLayoutUnits;
+	}
+	
+	/**
+	 * @param layout XML layout of the "custom unit settings" right hand side
+	 */
+	public final void setNewGameLayoutUnits (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutUnits = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom spell settings" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutSpells ()
+	{
+		return newGameLayoutSpells;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom spell settings" right hand side
+	 */
+	public final void setNewGameLayoutSpells (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutSpells = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom debug options" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutDebug ()
+	{
+		return newGameLayoutDebug;
+	}
+	
+	/**
+	 * @param layout XML layout of the "custom debug options" right hand side
+	 */
+	public final void setNewGameLayoutDebug (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutDebug = layout;
 	}
 }

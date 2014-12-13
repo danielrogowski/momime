@@ -66,7 +66,21 @@ import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
 import momime.common.database.WizardPick;
+import momime.common.database.newgame.CastingReductionCombination;
 import momime.common.database.newgame.DifficultyLevelData;
+import momime.common.database.newgame.DifficultyLevelNodeStrengthData;
+import momime.common.database.newgame.DifficultyLevelPlane;
+import momime.common.database.newgame.FogOfWarSettingData;
+import momime.common.database.newgame.FogOfWarValue;
+import momime.common.database.newgame.LandProportionData;
+import momime.common.database.newgame.LandProportionPlane;
+import momime.common.database.newgame.LandProportionTileType;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.database.newgame.NodeStrengthData;
+import momime.common.database.newgame.NodeStrengthPlane;
+import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.newgame.SwitchResearch;
+import momime.common.database.newgame.UnitSettingData;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -2176,7 +2190,10 @@ public final class NewGameUI extends MomClientFrameUI
 		// Which panel did we click OK on; basically this is "how many custom screens have we already OK'd"
 		final int currentPanel;
 		if (newGamePanel.isVisible ())
+		{
 			currentPanel = 0;
+			populateNewGameFieldsFromSelectedOptions ();
+		}
 		else if (mapSizePanel.isVisible ())
 			currentPanel = 1;
 		else if (landProportionPanel.isVisible ())
@@ -3208,7 +3225,185 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return Session description built from all the selected options
+	 * Populates all the custom new game forms according to what options were chosen on the new game screen 
+	 */
+	private final void populateNewGameFieldsFromSelectedOptions ()
+	{
+		log.trace ("Entering populateNewGameFieldsFromSelectedOptions");
+		
+		// Map size
+		final MapSizeData mapSize = changeMapSizeAction.getSelectedItem ();
+		mapSizeWidth.setText						(new Integer (mapSize.getWidth ()).toString ());
+		mapSizeHeight.setText						(new Integer (mapSize.getHeight ()).toString ());
+		mapWrapsLeftToRight.setSelected		(mapSize.isWrapsLeftToRight ());
+		mapWrapsTopToBottom.setSelected	(mapSize.isWrapsTopToBottom ());
+		mapZoneWidth.setText						(new Integer (mapSize.getZoneWidth ()).toString ());
+		mapZoneHeight.setText						(new Integer (mapSize.getZoneHeight ()).toString ());
+		towersOfWizardryCount.setText			(new Integer (mapSize.getTowersOfWizardryCount ()).toString ());
+		towersOfWizardrySeparation.setText	(new Integer (mapSize.getTowersOfWizardrySeparation ()).toString ());
+		continentalRaceChance.setText			(new Integer (mapSize.getContinentalRaceChance ()).toString ());
+		citySeparation.setText							(new Integer (mapSize.getCitySeparation ()).toString ());
+	    
+		// Land proportion
+		final LandProportionData landProportion = changeLandProportionAction.getSelectedItem ();
+		landPercentage.setText			(new Integer (landProportion.getPercentageOfMapIsLand ()).toString ());
+		hillsPercentage.setText			(new Integer (landProportion.getPercentageOfLandIsHills ()).toString ());
+		mountainsPercentage.setText	(new Integer (landProportion.getPercentageOfHillsAreMountains ()).toString ());
+		tundraDistance.setText			(new Integer (landProportion.getTundraRowCount ()).toString ());
+		riverCount.setText					(new Integer (landProportion.getRiverCount ()).toString ());
+		
+		for (final LandProportionTileType tileType : landProportion.getLandProportionTileType ())
+			if (tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOREST))
+			{
+				treesPercentage.setText (new Integer (tileType.getPercentageOfLand ()).toString ());
+				treeAreaSize.setText (new Integer (tileType.getEachAreaTileCount ()).toString ());
+			}
+			else if (tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_DESERT))
+			{
+				desertsPercentage.setText (new Integer (tileType.getPercentageOfLand ()).toString ());
+				desertAreaSize.setText (new Integer (tileType.getEachAreaTileCount ()).toString ());
+			}
+			else if (tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_SWAMP))
+			{
+				swampsPercentage.setText (new Integer (tileType.getPercentageOfLand ()).toString ());
+				swampAreaSize.setText (new Integer (tileType.getEachAreaTileCount ()).toString ());
+			}
+		
+		for (final LandProportionPlane plane : landProportion.getLandProportionPlane ())
+			if (plane.getPlaneNumber () == 0)
+				arcanusMineralChance.setText (new Integer (plane.getFeatureChance ()).toString ());
+			else
+				myrrorMineralChance.setText (new Integer (plane.getFeatureChance ()).toString ());
+
+		// Node strength
+		final NodeStrengthData nodeStrength = changeNodeStrengthAction.getSelectedItem ();
+		doubleNodeAuraMagicPower.setText (new Integer (nodeStrength.getDoubleNodeAuraMagicPower ()).toString ());
+		
+		for (final NodeStrengthPlane plane : nodeStrength.getNodeStrengthPlane ())
+			if (plane.getPlaneNumber () == 0)
+			{
+				arcanusNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
+				arcanusNodeSizeMin.setText (new Integer (plane.getNodeAuraSquaresMinimum ()).toString ());
+				arcanusNodeSizeMax.setText (new Integer (plane.getNodeAuraSquaresMaximum ()).toString ());
+			}
+			else
+			{
+				myrrorNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
+				myrrorNodeSizeMin.setText (new Integer (plane.getNodeAuraSquaresMinimum ()).toString ());
+				myrrorNodeSizeMax.setText (new Integer (plane.getNodeAuraSquaresMaximum ()).toString ());
+			}
+		
+		// Difficulty level
+		final DifficultyLevelData difficultyLevel = changeDifficultyLevelAction.getSelectedItem ();
+		humanSpellPicks.setText					(new Integer (difficultyLevel.getHumanSpellPicks ()).toString ());
+		aiSpellPicks.setText						(new Integer (difficultyLevel.getAiSpellPicks ()).toString ());
+		humanStartingGold.setText				(new Integer (difficultyLevel.getHumanStartingGold ()).toString ());
+		aiStartingGold.setText						(new Integer (difficultyLevel.getAiStartingGold ()).toString ());
+		allowCustomWizards.setSelected		(difficultyLevel.isCustomWizards ());
+		eachWizardOnlyOnce.setSelected		(difficultyLevel.isEachWizardOnlyOnce ());
+		wizardCityStartSize.setText				(new Integer (difficultyLevel.getWizardCityStartSize ()).toString ());
+		maxCitySize.setText						(new Integer (difficultyLevel.getCityMaxSize ()).toString ());
+		raiderCityCount.setText					(new Integer (difficultyLevel.getRaiderCityCount ()).toString ());
+		raiderCityStartSizeMin.setText			(new Integer (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
+		raiderCityStartSizeMax.setText		(new Integer (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
+		raiderCitySizeCap.setText				(new Integer (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
+		towersMonstersMin.setText				(new Integer (difficultyLevel.getTowerMonstersMinimum ()).toString ());
+		towersMonstersMax.setText			(new Integer (difficultyLevel.getTowerMonstersMaximum ()).toString ());
+		towersTreasureMin.setText				(new Integer (difficultyLevel.getTowerTreasureMinimum ()).toString ());
+		towersTreasureMax.setText			(new Integer (difficultyLevel.getTowerTreasureMaximum ()).toString ());
+		normalLairCount.setText					(new Integer (difficultyLevel.getNormalLairCount ()).toString ());
+		weakLairCount.setText					(new Integer (difficultyLevel.getWeakLairCount ()).toString ());
+		
+		for (final DifficultyLevelPlane plane : difficultyLevel.getDifficultyLevelPlane ())
+			if (plane.getPlaneNumber () == 0)
+			{
+				arcanusNormalLairMonstersMin.setText	(new Integer (plane.getNormalLairMonstersMinimum ()).toString ());
+				arcanusNormalLairMonstersMax.setText	(new Integer (plane.getNormalLairMonstersMaximum ()).toString ());
+				arcanusNormalLairTreasureMin.setText	(new Integer (plane.getNormalLairTreasureMinimum ()).toString ());
+				arcanusNormalLairTreasureMax.setText	(new Integer (plane.getNormalLairTreasureMaximum ()).toString ());
+				arcanusWeakLairMonstersMin.setText		(new Integer (plane.getWeakLairMonstersMinimum ()).toString ());
+				arcanusWeakLairMonstersMax.setText		(new Integer (plane.getWeakLairMonstersMaximum ()).toString ());
+				arcanusWeakLairTreasureMin.setText		(new Integer (plane.getWeakLairTreasureMinimum ()).toString ());
+				arcanusWeakLairTreasureMax.setText		(new Integer (plane.getWeakLairTreasureMaximum ()).toString ());
+			}
+			else
+			{
+				myrrorNormalLairMonstersMin.setText		(new Integer (plane.getNormalLairMonstersMinimum ()).toString ());
+				myrrorNormalLairMonstersMax.setText		(new Integer (plane.getNormalLairMonstersMaximum ()).toString ());
+				myrrorNormalLairTreasureMin.setText		(new Integer (plane.getNormalLairTreasureMinimum ()).toString ());
+				myrrorNormalLairTreasureMax.setText		(new Integer (plane.getNormalLairTreasureMaximum ()).toString ());
+				myrrorWeakLairMonstersMin.setText		(new Integer (plane.getWeakLairMonstersMinimum ()).toString ());
+				myrrorWeakLairMonstersMax.setText		(new Integer (plane.getWeakLairMonstersMaximum ()).toString ());
+				myrrorWeakLairTreasureMin.setText		(new Integer (plane.getWeakLairTreasureMinimum ()).toString ());
+				myrrorWeakLairTreasureMax.setText		(new Integer (plane.getWeakLairTreasureMaximum ()).toString ());
+			}
+		
+		// Node difficulty
+		// Note there's multiple entries, one for each plane, so isn't a simple search and exit as soon as we get a match
+		final String nodeStrengthID = changeNodeStrengthAction.getSelectedItem ().getNodeStrengthID ();
+		for (final DifficultyLevelNodeStrength dlns : changeDifficultyLevelAction.getSelectedItem ().getDifficultyLevelNodeStrength ())
+			if (dlns.getNodeStrengthID ().equals (nodeStrengthID))
+			{
+				if (dlns.getPlaneNumber () == 0)
+				{
+					arcanusNodeMonstersMin.setText	(new Integer (dlns.getMonstersMinimum ()).toString ());
+					arcanusNodeMonstersMax.setText	(new Integer (dlns.getMonstersMaximum ()).toString ());
+					arcanusNodeTreasureMin.setText	(new Integer (dlns.getTreasureMinimum ()).toString ());
+					arcanusNodeTreasureMax.setText	(new Integer (dlns.getTreasureMaximum ()).toString ());
+				}
+				else
+				{
+					myrrorNodeMonstersMin.setText		(new Integer (dlns.getMonstersMinimum ()).toString ());
+					myrrorNodeMonstersMax.setText		(new Integer (dlns.getMonstersMaximum ()).toString ());
+					myrrorNodeTreasureMin.setText		(new Integer (dlns.getTreasureMinimum ()).toString ());
+					myrrorNodeTreasureMax.setText		(new Integer (dlns.getTreasureMaximum ()).toString ());
+				}
+			}
+		
+		// Fog of war settings
+		final FogOfWarSettingData fowSettings = changeFogOfWarSettingsAction.getSelectedItem ();
+		fowTerrainAlways.setSelected						(fowSettings.getTerrainAndNodeAuras () == FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
+		fowTerrainRemember.setSelected				(fowSettings.getTerrainAndNodeAuras () == FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		fowTerrainForget.setSelected						(fowSettings.getTerrainAndNodeAuras () == FogOfWarValue.FORGET);
+		fowCitiesAlways.setSelected						(fowSettings.getCitiesSpellsAndCombatAreaEffects () == FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
+		fowCitiesRemember.setSelected					(fowSettings.getCitiesSpellsAndCombatAreaEffects () == FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		fowCitiesForget.setSelected							(fowSettings.getCitiesSpellsAndCombatAreaEffects () == FogOfWarValue.FORGET);
+		canSeeEnemyCityConstruction.setSelected	(fowSettings.isSeeEnemyCityConstruction ());
+		fowUnitsAlways.setSelected							(fowSettings.getUnits () == FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
+		fowUnitsRemember.setSelected					(fowSettings.getUnits () == FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		fowUnitsForget.setSelected							(fowSettings.getUnits () == FogOfWarValue.FORGET);
+		
+		// Unit settings
+		final UnitSettingData unitSettings = changeUnitSettingsAction.getSelectedItem ();
+		maxUnitsPerGridCell.setText						(new Integer (unitSettings.getUnitsPerMapCell ()).toString ());
+		exceedMaxUnitsDuringCombat.setSelected	(unitSettings.isCanExceedMaximumUnitsDuringCombat ());
+		maximumHeroes.setText								(new Integer (unitSettings.getMaxHeroes ()).toString ());
+		rollHeroSkillsAtStart.setSelected					(unitSettings.isRollHeroSkillsAtStartOfGame ());
+		
+		// Spell settings
+		final SpellSettingData spellSettings = changeSpellSettingsAction.getSelectedItem ();
+		switchResearchNo.setSelected							(spellSettings.getSwitchResearch () == SwitchResearch.DISALLOWED);
+		switchResearchNotStarted.setSelected				(spellSettings.getSwitchResearch () == SwitchResearch.ONLY_IF_NOT_STARTED);
+		switchResearchLose.setSelected						(spellSettings.getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH);
+		switchResearchFreely.setSelected					(spellSettings.getSwitchResearch () == SwitchResearch.FREE);
+		castingCostReductionAdditive.setSelected			(spellSettings.getSpellBooksCastingReductionCombination () == CastingReductionCombination.ADDITIVE);
+		castingCostReductionMultiplicative.setSelected	(spellSettings.getSpellBooksCastingReductionCombination () == CastingReductionCombination.MULTIPLICATIVE);
+		researchBonusAdditive.setSelected					(spellSettings.getSpellBooksResearchBonusCombination () == CastingReductionCombination.ADDITIVE);
+		researchBonusMultiplicative.setSelected			(spellSettings.getSpellBooksResearchBonusCombination () == CastingReductionCombination.MULTIPLICATIVE);
+		spellBookCountForFirstReduction.setText			(new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString ());
+		castingCostReduction.setText							(new Integer (spellSettings.getSpellBooksCastingReduction ()).toString ());
+		researchBonus.setText									(new Integer (spellSettings.getSpellBooksResearchBonus ()).toString ());
+		castingCostReductionCap.setText						(new Integer (spellSettings.getSpellBooksCastingReductionCap ()).toString ());
+		researchBonusCap.setText								(new Integer (spellSettings.getSpellBooksResearchBonusCap ()).toString ());
+		
+		// Debug options
+		disableFogOfWar.setSelected (false);
+		
+		log.trace ("Exiting populateNewGameFieldsFromSelectedOptions");
+	}
+	
+	/**
+	 * @return Session description built from all the custom new game forms
 	 */
 	private final MomSessionDescription buildSessionDescription ()
 	{
@@ -3226,74 +3421,217 @@ public final class NewGameUI extends MomClientFrameUI
 		sd.setAiPlayerCount (changeAIOpponentsAction.getSelectedItem ());
 		
 		// Map size
-		sd.setMapSize (changeMapSizeAction.getSelectedItem ());
+		final MapSizeData mapSize = new MapSizeData ();
+	    mapSize.setCoordinateSystemType			(CoordinateSystemType.SQUARE);
+	    mapSize.setWidth									(Integer.parseInt (mapSizeWidth.getText ()));
+	    mapSize.setHeight									(Integer.parseInt (mapSizeHeight.getText ()));
+	    mapSize.setDepth									(2);
+	    mapSize.setWrapsLeftToRight					(mapWrapsLeftToRight.isSelected ());
+	    mapSize.setWrapsTopToBottom				(mapWrapsTopToBottom.isSelected ());
+	    mapSize.setZoneWidth							(Integer.parseInt (mapZoneWidth.getText ()));
+	    mapSize.setZoneHeight							(Integer.parseInt (mapZoneHeight.getText ()));
+	    mapSize.setTowersOfWizardryCount		(Integer.parseInt (towersOfWizardryCount.getText ()));
+	    mapSize.setTowersOfWizardrySeparation	(Integer.parseInt (towersOfWizardrySeparation.getText ()));
+	    mapSize.setContinentalRaceChance			(Integer.parseInt (continentalRaceChance.getText ()));
+	    mapSize.setCitySeparation						(Integer.parseInt (citySeparation.getText ()));
+		sd.setMapSize (mapSize);
 		
 		// Combat map size is fixed, at least for now
 		final CombatMapSizeData combatMapSize = new CombatMapSizeData ();
+		combatMapSize.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
 		combatMapSize.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
 		combatMapSize.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
-		combatMapSize.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		combatMapSize.setDepth (1);
 		combatMapSize.setWrapsLeftToRight (false);
 		combatMapSize.setWrapsTopToBottom (false);
 		combatMapSize.setZoneWidth (10);
 		combatMapSize.setZoneHeight (8);
-		
 		sd.setCombatMapSize (combatMapSize);
 		
 		// Land proportion
-		sd.setLandProportion (changeLandProportionAction.getSelectedItem ());
+		final LandProportionTileType forestTileType = new LandProportionTileType ();
+		forestTileType.setTileTypeID				(CommonDatabaseConstants.TILE_TYPE_FOREST);
+		forestTileType.setPercentageOfLand		(Integer.parseInt (treesPercentage.getText ()));
+		forestTileType.setEachAreaTileCount	(Integer.parseInt (treeAreaSize.getText ()));
+
+		final LandProportionTileType desertTileType = new LandProportionTileType ();
+		desertTileType.setTileTypeID				(CommonDatabaseConstants.TILE_TYPE_DESERT);
+		desertTileType.setPercentageOfLand	(Integer.parseInt (desertsPercentage.getText ()));
+		desertTileType.setEachAreaTileCount	(Integer.parseInt (desertAreaSize.getText ()));
+		
+		final LandProportionTileType swampTileType = new LandProportionTileType ();
+		swampTileType.setTileTypeID				(CommonDatabaseConstants.TILE_TYPE_SWAMP);
+		swampTileType.setPercentageOfLand	(Integer.parseInt (swampsPercentage.getText ()));
+		swampTileType.setEachAreaTileCount	(Integer.parseInt (swampAreaSize.getText ()));
+		
+		final LandProportionPlane arcanusLandProportion = new LandProportionPlane ();
+		arcanusLandProportion.setPlaneNumber (0);
+		arcanusLandProportion.setFeatureChance (Integer.parseInt (arcanusMineralChance.getText ()));
+
+		final LandProportionPlane myrrorLandProportion = new LandProportionPlane ();
+		myrrorLandProportion.setPlaneNumber (1);
+		myrrorLandProportion.setFeatureChance (Integer.parseInt (myrrorMineralChance.getText ()));
+		
+		final LandProportionData landProportion = new LandProportionData (); 
+		landProportion.setPercentageOfMapIsLand			(Integer.parseInt (landPercentage.getText ()));
+		landProportion.setPercentageOfLandIsHills			(Integer.parseInt (hillsPercentage.getText ()));
+		landProportion.setPercentageOfHillsAreMountains	(Integer.parseInt (mountainsPercentage.getText ()));
+		landProportion.setTundraRowCount						(Integer.parseInt (tundraDistance.getText ()));
+		landProportion.setRiverCount								(Integer.parseInt (riverCount.getText ()));
+		landProportion.getLandProportionTileType ().add (forestTileType);
+		landProportion.getLandProportionTileType ().add (desertTileType);
+		landProportion.getLandProportionTileType ().add (swampTileType);
+		landProportion.getLandProportionPlane ().add (arcanusLandProportion);
+		landProportion.getLandProportionPlane ().add (myrrorLandProportion);
+		sd.setLandProportion (landProportion);		
 		
 		// Node strength
-		sd.setNodeStrength (changeNodeStrengthAction.getSelectedItem ());
+		final NodeStrengthPlane arcanusNodeStrength = new NodeStrengthPlane ();
+		arcanusNodeStrength.setPlaneNumber (0);
+		arcanusNodeStrength.setNumberOfNodesOnPlane		(Integer.parseInt (arcanusNodeCount.getText ()));
+		arcanusNodeStrength.setNodeAuraSquaresMinimum	(Integer.parseInt (arcanusNodeSizeMin.getText ()));
+		arcanusNodeStrength.setNodeAuraSquaresMaximum	(Integer.parseInt (arcanusNodeSizeMax.getText ()));
 		
-		// Difficulty level - recreate it, otherwise it gets sent as the DifficultyLevel subtype (rather than DifficultyLevelData) including all the unncessary DifficultyLevelNodeStrengths
-		final DifficultyLevelData src = changeDifficultyLevelAction.getSelectedItem ();
-		final DifficultyLevelData dest = new DifficultyLevelData ();
+		final NodeStrengthPlane myrrorNodeStrength = new NodeStrengthPlane ();
+		myrrorNodeStrength.setPlaneNumber (1);
+		myrrorNodeStrength.setNumberOfNodesOnPlane		(Integer.parseInt (myrrorNodeCount.getText ()));
+		myrrorNodeStrength.setNodeAuraSquaresMinimum	(Integer.parseInt (myrrorNodeSizeMin.getText ()));
+		myrrorNodeStrength.setNodeAuraSquaresMaximum	(Integer.parseInt (myrrorNodeSizeMax.getText ()));
 		
-	    dest.setHumanSpellPicks (src.getHumanSpellPicks ());
-	    dest.setAiSpellPicks (src.getAiSpellPicks ());
-	    dest.setHumanStartingGold (src.getHumanStartingGold ());
-	    dest.setAiStartingGold (src.getAiStartingGold ());
-	    dest.setCustomWizards (src.isCustomWizards ());
-	    dest.setEachWizardOnlyOnce (src.isEachWizardOnlyOnce ());
-	    
-	    dest.setNormalLairCount (src.getNormalLairCount ());
-	    dest.setWeakLairCount (src.getWeakLairCount ());
-	    
-	    dest.setTowerMonstersMinimum (src.getTowerMonstersMinimum ());
-	    dest.setTowerMonstersMaximum (src.getTowerMonstersMaximum ());
-	    dest.setTowerTreasureMinimum (src.getTowerTreasureMinimum ());
-	    dest.setTowerTreasureMaximum (src.getTowerTreasureMaximum ());
-	    
-	    dest.setRaiderCityCount (src.getRaiderCityCount ());
-	    dest.setRaiderCityStartSizeMin (src.getRaiderCityStartSizeMin ());
-	    dest.setRaiderCityStartSizeMax (src.getRaiderCityStartSizeMax ());
-	    dest.setRaiderCityGrowthCap (src.getRaiderCityGrowthCap ());
-	    
-	    dest.setWizardCityStartSize (src.getWizardCityStartSize ());
-	    dest.setCityMaxSize (src.getCityMaxSize ());
-	    dest.getDifficultyLevelPlane ().addAll (src.getDifficultyLevelPlane ());
+		final NodeStrengthData nodeStrength = new NodeStrengthData ();
+		nodeStrength.setDoubleNodeAuraMagicPower (Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
+		nodeStrength.getNodeStrengthPlane ().add (arcanusNodeStrength);
+		nodeStrength.getNodeStrengthPlane ().add (myrrorNodeStrength);
+		sd.setNodeStrength (nodeStrength);
 		
-		sd.setDifficultyLevel (dest);
-
+		// Difficulty level
+		final DifficultyLevelPlane arcanusDifficultyLevel = new DifficultyLevelPlane ();
+		arcanusDifficultyLevel.setPlaneNumber (0);
+		arcanusDifficultyLevel.setNormalLairMonstersMinimum	(Integer.parseInt (arcanusNormalLairMonstersMin.getText ()));
+		arcanusDifficultyLevel.setNormalLairMonstersMaximum	(Integer.parseInt (arcanusNormalLairMonstersMax.getText ()));
+		arcanusDifficultyLevel.setNormalLairTreasureMinimum	(Integer.parseInt (arcanusNormalLairTreasureMin.getText ()));
+		arcanusDifficultyLevel.setNormalLairTreasureMaximum	(Integer.parseInt (arcanusNormalLairTreasureMax.getText ()));
+		arcanusDifficultyLevel.setWeakLairMonstersMinimum	(Integer.parseInt (arcanusWeakLairMonstersMin.getText ()));
+		arcanusDifficultyLevel.setWeakLairMonstersMaximum	(Integer.parseInt (arcanusWeakLairMonstersMax.getText ()));
+		arcanusDifficultyLevel.setWeakLairTreasureMinimum	(Integer.parseInt (arcanusWeakLairTreasureMin.getText ()));
+		arcanusDifficultyLevel.setWeakLairTreasureMaximum	(Integer.parseInt (arcanusWeakLairTreasureMax.getText ()));
+		
+		final DifficultyLevelPlane myrrorDifficultyLevel = new DifficultyLevelPlane ();
+		myrrorDifficultyLevel.setPlaneNumber (1);
+		myrrorDifficultyLevel.setNormalLairMonstersMinimum	(Integer.parseInt (myrrorNormalLairMonstersMin.getText ()));
+		myrrorDifficultyLevel.setNormalLairMonstersMaximum	(Integer.parseInt (myrrorNormalLairMonstersMax.getText ()));
+		myrrorDifficultyLevel.setNormalLairTreasureMinimum	(Integer.parseInt (myrrorNormalLairTreasureMin.getText ()));
+		myrrorDifficultyLevel.setNormalLairTreasureMaximum	(Integer.parseInt (myrrorNormalLairTreasureMax.getText ()));
+		myrrorDifficultyLevel.setWeakLairMonstersMinimum	(Integer.parseInt (myrrorWeakLairMonstersMin.getText ()));
+		myrrorDifficultyLevel.setWeakLairMonstersMaximum	(Integer.parseInt (myrrorWeakLairMonstersMax.getText ()));
+		myrrorDifficultyLevel.setWeakLairTreasureMinimum	(Integer.parseInt (myrrorWeakLairTreasureMin.getText ()));
+		myrrorDifficultyLevel.setWeakLairTreasureMaximum	(Integer.parseInt (myrrorWeakLairTreasureMax.getText ()));
+		
+		final DifficultyLevelData difficultyLevel = new DifficultyLevelData ();
+	    difficultyLevel.setHumanSpellPicks				(Integer.parseInt (humanSpellPicks.getText ()));
+	    difficultyLevel.setAiSpellPicks						(Integer.parseInt (aiSpellPicks.getText ()));
+	    difficultyLevel.setHumanStartingGold				(Integer.parseInt (humanStartingGold.getText ()));
+	    difficultyLevel.setAiStartingGold					(Integer.parseInt (aiStartingGold.getText ()));
+	    difficultyLevel.setCustomWizards					(allowCustomWizards.isSelected ());
+	    difficultyLevel.setEachWizardOnlyOnce			(eachWizardOnlyOnce.isSelected ());
+	    difficultyLevel.setNormalLairCount				(Integer.parseInt (normalLairCount.getText ()));
+	    difficultyLevel.setWeakLairCount					(Integer.parseInt (weakLairCount.getText ()));
+	    difficultyLevel.setTowerMonstersMinimum		(Integer.parseInt (towersMonstersMin.getText ()));
+	    difficultyLevel.setTowerMonstersMaximum	(Integer.parseInt (towersMonstersMax.getText ()));
+	    difficultyLevel.setTowerTreasureMinimum		(Integer.parseInt (towersTreasureMin.getText ()));
+	    difficultyLevel.setTowerTreasureMaximum	(Integer.parseInt (towersTreasureMax.getText ()));
+	    difficultyLevel.setRaiderCityCount					(Integer.parseInt (raiderCityCount.getText ()));
+	    difficultyLevel.setRaiderCityStartSizeMin		(Integer.parseInt (raiderCityStartSizeMin.getText ()));
+	    difficultyLevel.setRaiderCityStartSizeMax		(Integer.parseInt (raiderCityStartSizeMax.getText ()));
+	    difficultyLevel.setRaiderCityGrowthCap			(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
+	    difficultyLevel.setWizardCityStartSize			(Integer.parseInt (raiderCitySizeCap.getText ()));
+	    difficultyLevel.setCityMaxSize						(Integer.parseInt (maxCitySize.getText ()));
+	    difficultyLevel.getDifficultyLevelPlane ().add (arcanusDifficultyLevel);
+	    difficultyLevel.getDifficultyLevelPlane ().add (myrrorDifficultyLevel);
+		sd.setDifficultyLevel (difficultyLevel);
+		
 		// Difficulty level - node strength
-		// Note there's multiple entries, one for each plane, so isn't a simple search and exit as soon as we get a match
-		final String nodeStrengthID = changeNodeStrengthAction.getSelectedItem ().getNodeStrengthID ();
-		for (final DifficultyLevelNodeStrength dlns : changeDifficultyLevelAction.getSelectedItem ().getDifficultyLevelNodeStrength ())
-			if (dlns.getNodeStrengthID ().equals (nodeStrengthID))
-				sd.getDifficultyLevelNodeStrength ().add (dlns);
+		final DifficultyLevelNodeStrengthData arcanusNodeDifficultyLevel = new DifficultyLevelNodeStrengthData ();
+		arcanusNodeDifficultyLevel.setPlaneNumber (0);
+		arcanusNodeDifficultyLevel.setMonstersMinimum	(Integer.parseInt (arcanusNodeMonstersMin.getText ()));
+		arcanusNodeDifficultyLevel.setMonstersMaximum	(Integer.parseInt (arcanusNodeMonstersMax.getText ()));
+		arcanusNodeDifficultyLevel.setTreasureMinimum	(Integer.parseInt (arcanusNodeTreasureMin.getText ()));
+		arcanusNodeDifficultyLevel.setTreasureMaximum	(Integer.parseInt (arcanusNodeTreasureMax.getText ()));
 		
-		// FOW setting
-		sd.setFogOfWarSetting (changeFogOfWarSettingsAction.getSelectedItem ());
+		final DifficultyLevelNodeStrengthData myrrorNodeDifficultyLevel = new DifficultyLevelNodeStrengthData ();
+		myrrorNodeDifficultyLevel.setPlaneNumber (1);
+		myrrorNodeDifficultyLevel.setMonstersMinimum		(Integer.parseInt (myrrorNodeMonstersMin.getText ()));
+		myrrorNodeDifficultyLevel.setMonstersMaximum	(Integer.parseInt (myrrorNodeMonstersMax.getText ()));
+		myrrorNodeDifficultyLevel.setTreasureMinimum		(Integer.parseInt (myrrorNodeTreasureMin.getText ()));
+		myrrorNodeDifficultyLevel.setTreasureMaximum	(Integer.parseInt (myrrorNodeTreasureMax.getText ()));
 		
-		// Unit setting
-		sd.setUnitSetting (changeUnitSettingsAction.getSelectedItem ());
+		sd.getDifficultyLevelNodeStrength ().add (arcanusNodeDifficultyLevel);
+		sd.getDifficultyLevelNodeStrength ().add (myrrorNodeDifficultyLevel);
 		
-		// Spell setting
-		sd.setSpellSetting (changeSpellSettingsAction.getSelectedItem ());
+		// FOW settings
+		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		if (fowTerrainAlways.isSelected ())
+			fowSettings.setTerrainAndNodeAuras (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
+		else if (fowTerrainRemember.isSelected ())
+			fowSettings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		else
+			fowSettings.setTerrainAndNodeAuras (FogOfWarValue.FORGET);
+
+		if (fowCitiesAlways.isSelected ())
+			fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
+		else if (fowCitiesRemember.isSelected ())
+			fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		else
+			fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.FORGET);
+
+		if (fowUnitsAlways.isSelected ())
+			fowSettings.setUnits (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
+		else if (fowUnitsRemember.isSelected ())
+			fowSettings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		else
+			fowSettings.setUnits (FogOfWarValue.FORGET);
 		
-		// Default debug options
-		sd.setDisableFogOfWar (false);
+		fowSettings.setSeeEnemyCityConstruction (canSeeEnemyCityConstruction.isSelected ());
+		sd.setFogOfWarSetting (fowSettings);
+		
+		// Unit settings
+		final UnitSettingData unitSettings = new UnitSettingData ();
+		unitSettings.setUnitsPerMapCell									(Integer.parseInt (maxUnitsPerGridCell.getText ()));
+		unitSettings.setCanExceedMaximumUnitsDuringCombat	(exceedMaxUnitsDuringCombat.isSelected ());
+		unitSettings.setMaxHeroes											(Integer.parseInt (maximumHeroes.getText ()));
+		unitSettings.setRollHeroSkillsAtStartOfGame					(rollHeroSkillsAtStart.isSelected ());
+		sd.setUnitSetting (unitSettings);
+		
+		// Spell settings
+		final SpellSettingData spellSettings = new SpellSettingData ();
+		if (switchResearchNo.isSelected ())
+			spellSettings.setSwitchResearch (SwitchResearch.DISALLOWED);
+		else if (switchResearchNotStarted.isSelected ())
+			spellSettings.setSwitchResearch (SwitchResearch.ONLY_IF_NOT_STARTED);
+		else if (switchResearchLose.isSelected ())
+			spellSettings.setSwitchResearch (SwitchResearch.LOSE_CURRENT_RESEARCH);
+		else
+			spellSettings.setSwitchResearch (SwitchResearch.FREE);
+
+		if (castingCostReductionAdditive.isSelected ())
+			spellSettings.setSpellBooksCastingReductionCombination (CastingReductionCombination.ADDITIVE);
+		else
+			spellSettings.setSpellBooksCastingReductionCombination (CastingReductionCombination.MULTIPLICATIVE);
+		
+		if (researchBonusAdditive.isSelected ())
+			spellSettings.setSpellBooksResearchBonusCombination (CastingReductionCombination.ADDITIVE);
+		else
+			spellSettings.setSpellBooksResearchBonusCombination (CastingReductionCombination.MULTIPLICATIVE);
+		
+		spellSettings.setSpellBooksToObtainFirstReduction	(Integer.parseInt (spellBookCountForFirstReduction.getText ()));
+		spellSettings.setSpellBooksCastingReduction			(Integer.parseInt (castingCostReduction.getText ()));
+		spellSettings.setSpellBooksCastingReductionCap	(Integer.parseInt (castingCostReductionCap.getText ()));
+		spellSettings.setSpellBooksResearchBonus			(Integer.parseInt (researchBonus.getText ()));
+		spellSettings.setSpellBooksResearchBonusCap		(Integer.parseInt (researchBonusCap.getText ()));
+		sd.setSpellSetting (spellSettings);
+		
+		// Debug options
+		sd.setDisableFogOfWar (disableFogOfWar.isSelected ());
 		
 		log.trace ("Exiting buildSessionDescription = " + sd);
 		return sd;

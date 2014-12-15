@@ -25,9 +25,28 @@ only way to prevent this is to declare the session description elements in a sep
 					<xsd:element minOccurs="1" maxOccurs="1" name="towersOfWizardrySeparation" type="momimenewgame:integerMapDistance" nxe:label="Towers of Wizardry separation" nxe:gridwidth="180" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="continentalRaceChance" type="momimenewgame:percentage" nxe:label="% chance that raider cities are the race chosen for the continent" nxe:gridwidth="300" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="citySeparation" type="momimenewgame:integerMapDistance" nxe:label="City separation" nxe:gridwidth="100" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityCount" type="momimenewgame:cityCount" nxe:label="Nbr. raider cities" nxe:gridwidth="100" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="riverCount" type="momimenewgame:mapTileCount" nxe:label="Nbr. Rivers on each plane" nxe:gridwidth="150" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSizePlane" type="momimenewgame:mapSizePlane" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="mapSizePlane" nxe:singular="Map Size Plane" nxe:plural="Map Size Planes">
+        <xsd:annotation>
+        	<xsd:documentation>Defines map size details that are different on each plane.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfNodesOnPlane" type="momimenewgame:numberOfNodesOnPlane" nxe:label="Number of nodes on Plane" nxe:gridwidth="150" />
+		</xsd:sequence>
+		<xsd:attribute name="planeNumber" type="momimenewgame:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="landProportionData">
@@ -39,7 +58,6 @@ only way to prevent this is to declare the session description elements in a sep
 			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLandIsHills" type="momimenewgame:percentage" nxe:label="% of land which is hills" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfHillsAreMountains" type="momimenewgame:percentage" nxe:label="% of hills which are mountains" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="tundraRowCount" type="momimenewgame:mapTileCount" nxe:label="Nbr. rows from map edge where tundra can appear" nxe:gridwidth="270" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="riverCount" type="momimenewgame:mapTileCount" nxe:label="Nbr. Rivers on each plane" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionTileType" type="momimenewgame:landProportionTileType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionPlane" type="momimenewgame:landProportionPlane" />
 		</xsd:sequence>
@@ -93,7 +111,6 @@ only way to prevent this is to declare the session description elements in a sep
         	<xsd:documentation>Defines node strength characteristics that are different on each plane.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfNodesOnPlane" type="momimenewgame:numberOfNodesOnPlane" nxe:label="Number of nodes on Plane" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="nodeAuraSquaresMinimum" type="momimenewgame:nodeAuraSqaures" nxe:label="Min. map cells node aura covers" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="nodeAuraSquaresMaximum" type="momimenewgame:nodeAuraSqaures" nxe:label="Max. map cells node aura covers" nxe:gridwidth="200" />
 		</xsd:sequence>
@@ -123,7 +140,6 @@ only way to prevent this is to declare the session description elements in a sep
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMaximum" type="momimenewgame:monsterStrength" nxe:label="Tower Max. monster strength" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMinimum" type="momimenewgame:treasureValue" nxe:label="Tower Min. treasure value" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMaximum" type="momimenewgame:treasureValue" nxe:label="Tower Max. treasure value" nxe:gridwidth="170" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityCount" type="momimenewgame:cityCount" nxe:label="Nbr. raider cities" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMin" type="momimenewgame:cityPopulationDiv1000" nxe:label="Min. starting size of raider cities" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMax" type="momimenewgame:cityPopulationDiv1000" nxe:label="Max. starting size of raider cities" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityGrowthCap" type="momimenewgame:cityPopulationDiv1000" nxe:label="Amount raider cities are allowed to grow" nxe:gridwidth="200" />

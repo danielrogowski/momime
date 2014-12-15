@@ -17688,6 +17688,14 @@
 		<towersOfWizardrySeparation>10</towersOfWizardrySeparation>
 		<continentalRaceChance>75</continentalRaceChance>
 		<citySeparation>3</citySeparation>
+		<raiderCityCount>15</raiderCityCount>
+		<riverCount>20</riverCount>
+		<mapSizePlane planeNumber="0">
+			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizePlane planeNumber="1">
+			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+		</mapSizePlane>
 		<mapSizeDescription>Standard 60x40 map</mapSizeDescription>
 	</mapSize>
 	<landProportion landProportionID="LP01">
@@ -17695,7 +17703,6 @@
 		<percentageOfLandIsHills>25</percentageOfLandIsHills>
 		<percentageOfHillsAreMountains>45</percentageOfHillsAreMountains>
 		<tundraRowCount>7</tundraRowCount>
-		<riverCount>20</riverCount>
 		<landProportionTileType tileTypeID="TT03">
 			<percentageOfLand>17</percentageOfLand>
 			<eachAreaTileCount>15</eachAreaTileCount>
@@ -17721,7 +17728,6 @@
 		<percentageOfLandIsHills>25</percentageOfLandIsHills>
 		<percentageOfHillsAreMountains>45</percentageOfHillsAreMountains>
 		<tundraRowCount>7</tundraRowCount>
-		<riverCount>20</riverCount>
 		<landProportionTileType tileTypeID="TT03">
 			<percentageOfLand>17</percentageOfLand>
 			<eachAreaTileCount>15</eachAreaTileCount>
@@ -17747,7 +17753,6 @@
 		<percentageOfLandIsHills>25</percentageOfLandIsHills>
 		<percentageOfHillsAreMountains>45</percentageOfHillsAreMountains>
 		<tundraRowCount>7</tundraRowCount>
-		<riverCount>20</riverCount>
 		<landProportionTileType tileTypeID="TT03">
 			<percentageOfLand>17</percentageOfLand>
 			<eachAreaTileCount>15</eachAreaTileCount>
@@ -17771,12 +17776,10 @@
 	<nodeStrength nodeStrengthID="NS01">
 		<doubleNodeAuraMagicPower>1</doubleNodeAuraMagicPower>
 		<nodeStrengthPlane planeNumber="0">
-			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
 			<nodeAuraSquaresMinimum>5</nodeAuraSquaresMinimum>
 			<nodeAuraSquaresMaximum>10</nodeAuraSquaresMaximum>
 		</nodeStrengthPlane>
 		<nodeStrengthPlane planeNumber="1">
-			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 			<nodeAuraSquaresMinimum>10</nodeAuraSquaresMinimum>
 			<nodeAuraSquaresMaximum>20</nodeAuraSquaresMaximum>
 		</nodeStrengthPlane>
@@ -17785,12 +17788,10 @@
 	<nodeStrength nodeStrengthID="NS02">
 		<doubleNodeAuraMagicPower>2</doubleNodeAuraMagicPower>
 		<nodeStrengthPlane planeNumber="0">
-			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
 			<nodeAuraSquaresMinimum>5</nodeAuraSquaresMinimum>
 			<nodeAuraSquaresMaximum>10</nodeAuraSquaresMaximum>
 		</nodeStrengthPlane>
 		<nodeStrengthPlane planeNumber="1">
-			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 			<nodeAuraSquaresMinimum>10</nodeAuraSquaresMinimum>
 			<nodeAuraSquaresMaximum>20</nodeAuraSquaresMaximum>
 		</nodeStrengthPlane>
@@ -17799,12 +17800,10 @@
 	<nodeStrength nodeStrengthID="NS03">
 		<doubleNodeAuraMagicPower>3</doubleNodeAuraMagicPower>
 		<nodeStrengthPlane planeNumber="0">
-			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
 			<nodeAuraSquaresMinimum>5</nodeAuraSquaresMinimum>
 			<nodeAuraSquaresMaximum>10</nodeAuraSquaresMaximum>
 		</nodeStrengthPlane>
 		<nodeStrengthPlane planeNumber="1">
-			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 			<nodeAuraSquaresMinimum>10</nodeAuraSquaresMinimum>
 			<nodeAuraSquaresMaximum>20</nodeAuraSquaresMaximum>
 		</nodeStrengthPlane>
@@ -17823,7 +17822,6 @@
 		<towerMonstersMaximum>300</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
 		<towerTreasureMaximum>1500</towerTreasureMaximum>
-		<raiderCityCount>15</raiderCityCount>
 		<raiderCityStartSizeMin>1</raiderCityStartSizeMin>
 		<raiderCityStartSizeMax>4</raiderCityStartSizeMax>
 		<raiderCityGrowthCap>2</raiderCityGrowthCap>
@@ -17900,7 +17898,6 @@
 		<towerMonstersMaximum>600</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
 		<towerTreasureMaximum>1500</towerTreasureMaximum>
-		<raiderCityCount>15</raiderCityCount>
 		<raiderCityStartSizeMin>1</raiderCityStartSizeMin>
 		<raiderCityStartSizeMax>4</raiderCityStartSizeMax>
 		<raiderCityGrowthCap>4</raiderCityGrowthCap>
@@ -17977,7 +17974,6 @@
 		<towerMonstersMaximum>900</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
 		<towerTreasureMaximum>1500</towerTreasureMaximum>
-		<raiderCityCount>15</raiderCityCount>
 		<raiderCityStartSizeMin>2</raiderCityStartSizeMin>
 		<raiderCityStartSizeMax>5</raiderCityStartSizeMax>
 		<raiderCityGrowthCap>6</raiderCityGrowthCap>
@@ -18054,7 +18050,6 @@
 		<towerMonstersMaximum>1200</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
 		<towerTreasureMaximum>1500</towerTreasureMaximum>
-		<raiderCityCount>15</raiderCityCount>
 		<raiderCityStartSizeMin>2</raiderCityStartSizeMin>
 		<raiderCityStartSizeMax>8</raiderCityStartSizeMax>
 		<raiderCityGrowthCap>8</raiderCityGrowthCap>
@@ -18131,7 +18126,6 @@
 		<towerMonstersMaximum>1500</towerMonstersMaximum>
 		<towerTreasureMinimum>437</towerTreasureMinimum>
 		<towerTreasureMaximum>1875</towerTreasureMaximum>
-		<raiderCityCount>15</raiderCityCount>
 		<raiderCityStartSizeMin>2</raiderCityStartSizeMin>
 		<raiderCityStartSizeMax>11</raiderCityStartSizeMax>
 		<raiderCityGrowthCap>10</raiderCityGrowthCap>

@@ -76,6 +76,7 @@ import momime.common.database.newgame.LandProportionData;
 import momime.common.database.newgame.LandProportionPlane;
 import momime.common.database.newgame.LandProportionTileType;
 import momime.common.database.newgame.MapSizeData;
+import momime.common.database.newgame.MapSizePlane;
 import momime.common.database.newgame.NodeStrengthData;
 import momime.common.database.newgame.NodeStrengthPlane;
 import momime.common.database.newgame.SpellSettingData;
@@ -397,6 +398,30 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** City separation */
 	private JTextField citySeparation;
+
+	/** River count */
+	private JTextField riverCount;
+	
+	/** River count label */
+	private JLabel riverCountLabel;
+
+	/** Raider city count label */
+	private JLabel raiderCityCountLabel;
+	
+	/** Raider city count */
+	private JTextField raiderCityCount;
+
+	/** Arcanus node count */
+	private JTextField arcanusNodeCount;
+
+	/** Arcanus node count label */
+	private JLabel arcanusNodeCountLabel;
+	
+	/** Myrror node count */
+	private JTextField myrrorNodeCount;
+
+	/** Myrror node count label */
+	private JLabel myrrorNodeCountLabel;
 	
 	// CUSTOM LAND PROPORTION PANEL
 
@@ -478,12 +503,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Tundra edge distance suffix */
 	private JLabel tundraDistanceSuffix;
 	
-	/** River count */
-	private JTextField riverCount;
-	
-	/** River count label */
-	private JLabel riverCountLabel;
-	
 	/** Arcanus mineral chance */
 	private JTextField arcanusMineralChance;
 	
@@ -519,12 +538,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** 2x magic power from each cell of node aura suffix */
 	private JLabel doubleNodeAuraMagicPowerSuffix;
 	
-	/** Arcanus node count */
-	private JTextField arcanusNodeCount;
-
-	/** Arcanus node count label */
-	private JLabel arcanusNodeCountLabel;
-	
 	/** Minimum nbr of cells of nodes on Arcanus */
 	private JTextField arcanusNodeSizeMin;
 
@@ -536,13 +549,7 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Nbr of cells of nodes on Arcanus suffix */
 	private JLabel arcanusNodeSizeSuffix;
-	
-	/** Myrror node count */
-	private JTextField myrrorNodeCount;
 
-	/** Myrror node count label */
-	private JLabel myrrorNodeCountLabel;
-	
 	/** Minimum nbr of cells of nodes on Myrror */
 	private JTextField myrrorNodeSizeMin;
 
@@ -610,12 +617,6 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Maximum city size */
 	private JTextField maxCitySize;
-	
-	/** Raider city count label */
-	private JLabel raiderCityCountLabel;
-	
-	/** Raider city count */
-	private JTextField raiderCityCount;
 	
 	/** Raider city start size label */
 	private JLabel raiderCityStartSizeLabel;
@@ -1457,6 +1458,30 @@ public final class NewGameUI extends MomClientFrameUI
 		citySeparation = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		mapSizePanel.add (citySeparation, "frmNewGameCustomMapSizeCitySeparationEdit");
 
+		riverCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (riverCount, "frmNewGameCustomMapSizeRiversEdit");
+
+		riverCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (riverCountLabel, "frmNewGameCustomMapSizeRivers");
+
+		raiderCityCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (raiderCityCountLabel, "frmNewGameCustomMapSizeRaiderCityCount");
+		
+		raiderCityCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (raiderCityCount, "frmNewGameCustomMapSizeRaiderCityCountEdit");
+
+		arcanusNodeCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (arcanusNodeCount, "frmNewGameCustomMapSizeArcanusNodeCountEdit");
+
+		arcanusNodeCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (arcanusNodeCountLabel, "frmNewGameCustomMapSizeArcanusNodeCount");
+		
+		myrrorNodeCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (myrrorNodeCount, "frmNewGameCustomMapSizeMyrrorNodeCountEdit");
+
+		myrrorNodeCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (myrrorNodeCountLabel, "frmNewGameCustomMapSizeMyrrorNodeCount");
+		
 		cards.add (mapSizePanel, MAP_SIZE_PANEL);
 		
 		// CUSTOM LAND PROPORTION PANEL
@@ -1535,12 +1560,6 @@ public final class NewGameUI extends MomClientFrameUI
 		tundraDistanceSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		landProportionPanel.add (tundraDistanceSuffix, "frmNewGameCustomLandProportionTundraSuffix");
 
-		riverCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		landProportionPanel.add (riverCount, "frmNewGameCustomLandProportionRiversEdit");
-
-		riverCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		landProportionPanel.add (riverCountLabel, "frmNewGameCustomLandProportionRivers");
-
 		arcanusMineralChance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		landProportionPanel.add (arcanusMineralChance, "frmNewGameCustomLandProportionArcanusEdit");
 
@@ -1574,12 +1593,6 @@ public final class NewGameUI extends MomClientFrameUI
 		doubleNodeAuraMagicPowerSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		nodesPanel.add (doubleNodeAuraMagicPowerSuffix, "frmNewGameCustomNodesMagicPowerSuffix");
 
-		arcanusNodeCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		nodesPanel.add (arcanusNodeCount, "frmNewGameCustomNodesArcanusCountEdit");
-
-		arcanusNodeCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		nodesPanel.add (arcanusNodeCountLabel, "frmNewGameCustomNodesArcanusCount");
-
 		arcanusNodeSizeMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		nodesPanel.add (arcanusNodeSizeMin, "frmNewGameCustomNodesArcanusNodeAuraMin");
 
@@ -1593,12 +1606,6 @@ public final class NewGameUI extends MomClientFrameUI
 		nodesPanel.add (arcanusNodeSizeSuffix, "frmNewGameCustomNodesArcanusNodeAuraSuffix");
 		
 		nodesPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomNodesArcanusNodeAuraDash");
-
-		myrrorNodeCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		nodesPanel.add (myrrorNodeCount, "frmNewGameCustomNodesMyrrorCountEdit");
-
-		myrrorNodeCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		nodesPanel.add (myrrorNodeCountLabel, "frmNewGameCustomNodesMyrrorCount");
 
 		myrrorNodeSizeMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		nodesPanel.add (myrrorNodeSizeMin, "frmNewGameCustomNodesMyrrorNodeAuraMin");
@@ -1667,12 +1674,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		maxCitySize = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		difficulty1Panel.add (maxCitySize, "frmNewGameCustomDifficulty1MaxCitySizeEdit");
-		
-		raiderCityCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty1Panel.add (raiderCityCountLabel, "frmNewGameCustomDifficulty1RaiderCityCount");
-		
-		raiderCityCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty1Panel.add (raiderCityCount, "frmNewGameCustomDifficulty1RaiderCityCountEdit");
 		
 		raiderCityStartSizeLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		difficulty1Panel.add (raiderCityStartSizeLabel, "frmNewGameCustomDifficulty1RaiderCitySizePrefix");
@@ -2754,6 +2755,10 @@ public final class NewGameUI extends MomClientFrameUI
 		towersOfWizardrySeparationLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "TowersSeparation"));
 		continentalRaceChanceLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Continental"));
 		citySeparationLabel.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "CitySeparation"));
+		riverCountLabel.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "Rivers"));
+		raiderCityCountLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityCount"));
+		arcanusNodeCountLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "ArcanusCount"));
+		myrrorNodeCountLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorCount"));
 		
 		// CUSTOM LAND PROPORTION PANEL
 		landPercentageLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "PercentageMapIsLand"));
@@ -2770,7 +2775,6 @@ public final class NewGameUI extends MomClientFrameUI
 		swampAreaSizeSuffix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "SwampAreaTileCountSuffix"));
 		tundraDistancePrefix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "TundraPrefix"));
 		tundraDistanceSuffix.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "TundraSuffix"));
-		riverCountLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "Rivers"));
 		arcanusMineralChancePrefix.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "ArcanusPrefix"));
 		arcanusMineralChanceSuffix.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "ArcanusSuffix"));
 		myrrorMineralChancePrefix.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "MyrrorPrefix"));
@@ -2779,10 +2783,8 @@ public final class NewGameUI extends MomClientFrameUI
 		// CUSTOM NODES PANEL
 		doubleNodeAuraMagicPowerPrefix.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MagicPowerPrefix"));
 		doubleNodeAuraMagicPowerSuffix.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MagicPowerSuffix"));
-		arcanusNodeCountLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "ArcanusCount"));
 		arcanusNodeSizePrefix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "ArcanusNodeAuraPrefix"));
 		arcanusNodeSizeSuffix.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "ArcanusNodeAuraSuffix"));
-		myrrorNodeCountLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorCount"));
 		myrrorNodeSizePrefix.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorNodeAuraPrefix"));
 		myrrorNodeSizeSuffix.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorNodeAuraSuffix"));
 		
@@ -2797,7 +2799,6 @@ public final class NewGameUI extends MomClientFrameUI
 		eachWizardOnlyOnce.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "EachWizardOnlyOnce"));
 		wizardCityStartSizeLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "WizardCitySize"));
 		maxCitySizeLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "MaxCitySize"));
-		raiderCityCountLabel.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityCount"));
 		raiderCityStartSizeLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizePrefix"));
 		raiderCityStartSizeAnd.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizeAnd"));
 		raiderCitySizeCapPrefix.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthPrefix"));
@@ -3243,6 +3244,14 @@ public final class NewGameUI extends MomClientFrameUI
 		towersOfWizardrySeparation.setText	(new Integer (mapSize.getTowersOfWizardrySeparation ()).toString ());
 		continentalRaceChance.setText			(new Integer (mapSize.getContinentalRaceChance ()).toString ());
 		citySeparation.setText							(new Integer (mapSize.getCitySeparation ()).toString ());
+		riverCount.setText								(new Integer (mapSize.getRiverCount ()).toString ());
+		raiderCityCount.setText						(new Integer (mapSize.getRaiderCityCount ()).toString ());
+		
+		for (final MapSizePlane plane : mapSize.getMapSizePlane ())
+			if (plane.getPlaneNumber () == 0)
+				arcanusNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
+			else
+				myrrorNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
 	    
 		// Land proportion
 		final LandProportionData landProportion = changeLandProportionAction.getSelectedItem ();
@@ -3250,7 +3259,6 @@ public final class NewGameUI extends MomClientFrameUI
 		hillsPercentage.setText			(new Integer (landProportion.getPercentageOfLandIsHills ()).toString ());
 		mountainsPercentage.setText	(new Integer (landProportion.getPercentageOfHillsAreMountains ()).toString ());
 		tundraDistance.setText			(new Integer (landProportion.getTundraRowCount ()).toString ());
-		riverCount.setText					(new Integer (landProportion.getRiverCount ()).toString ());
 		
 		for (final LandProportionTileType tileType : landProportion.getLandProportionTileType ())
 			if (tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOREST))
@@ -3282,13 +3290,11 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final NodeStrengthPlane plane : nodeStrength.getNodeStrengthPlane ())
 			if (plane.getPlaneNumber () == 0)
 			{
-				arcanusNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
 				arcanusNodeSizeMin.setText (new Integer (plane.getNodeAuraSquaresMinimum ()).toString ());
 				arcanusNodeSizeMax.setText (new Integer (plane.getNodeAuraSquaresMaximum ()).toString ());
 			}
 			else
 			{
-				myrrorNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
 				myrrorNodeSizeMin.setText (new Integer (plane.getNodeAuraSquaresMinimum ()).toString ());
 				myrrorNodeSizeMax.setText (new Integer (plane.getNodeAuraSquaresMaximum ()).toString ());
 			}
@@ -3303,7 +3309,6 @@ public final class NewGameUI extends MomClientFrameUI
 		eachWizardOnlyOnce.setSelected		(difficultyLevel.isEachWizardOnlyOnce ());
 		wizardCityStartSize.setText				(new Integer (difficultyLevel.getWizardCityStartSize ()).toString ());
 		maxCitySize.setText						(new Integer (difficultyLevel.getCityMaxSize ()).toString ());
-		raiderCityCount.setText					(new Integer (difficultyLevel.getRaiderCityCount ()).toString ());
 		raiderCityStartSizeMin.setText			(new Integer (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
 		raiderCityStartSizeMax.setText		(new Integer (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
 		raiderCitySizeCap.setText				(new Integer (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
@@ -3421,6 +3426,14 @@ public final class NewGameUI extends MomClientFrameUI
 		sd.setAiPlayerCount (changeAIOpponentsAction.getSelectedItem ());
 		
 		// Map size
+		final MapSizePlane arcanusMapSize = new MapSizePlane ();
+		arcanusMapSize.setPlaneNumber (0);
+		arcanusMapSize.setNumberOfNodesOnPlane (Integer.parseInt (arcanusNodeCount.getText ()));
+		
+		final MapSizePlane myrrorMapSize = new MapSizePlane ();
+		myrrorMapSize.setPlaneNumber (1);
+		myrrorMapSize.setNumberOfNodesOnPlane (Integer.parseInt (myrrorNodeCount.getText ()));
+		
 		final MapSizeData mapSize = new MapSizeData ();
 	    mapSize.setCoordinateSystemType			(CoordinateSystemType.SQUARE);
 	    mapSize.setWidth									(Integer.parseInt (mapSizeWidth.getText ()));
@@ -3434,6 +3447,10 @@ public final class NewGameUI extends MomClientFrameUI
 	    mapSize.setTowersOfWizardrySeparation	(Integer.parseInt (towersOfWizardrySeparation.getText ()));
 	    mapSize.setContinentalRaceChance			(Integer.parseInt (continentalRaceChance.getText ()));
 	    mapSize.setCitySeparation						(Integer.parseInt (citySeparation.getText ()));
+	    mapSize.setRiverCount							(Integer.parseInt (riverCount.getText ()));
+	    mapSize.setRaiderCityCount					(Integer.parseInt (raiderCityCount.getText ()));
+	    mapSize.getMapSizePlane ().add (arcanusMapSize);
+	    mapSize.getMapSizePlane ().add (myrrorMapSize);
 		sd.setMapSize (mapSize);
 		
 		// Combat map size is fixed, at least for now
@@ -3477,7 +3494,6 @@ public final class NewGameUI extends MomClientFrameUI
 		landProportion.setPercentageOfLandIsHills			(Integer.parseInt (hillsPercentage.getText ()));
 		landProportion.setPercentageOfHillsAreMountains	(Integer.parseInt (mountainsPercentage.getText ()));
 		landProportion.setTundraRowCount						(Integer.parseInt (tundraDistance.getText ()));
-		landProportion.setRiverCount								(Integer.parseInt (riverCount.getText ()));
 		landProportion.getLandProportionTileType ().add (forestTileType);
 		landProportion.getLandProportionTileType ().add (desertTileType);
 		landProportion.getLandProportionTileType ().add (swampTileType);
@@ -3488,13 +3504,11 @@ public final class NewGameUI extends MomClientFrameUI
 		// Node strength
 		final NodeStrengthPlane arcanusNodeStrength = new NodeStrengthPlane ();
 		arcanusNodeStrength.setPlaneNumber (0);
-		arcanusNodeStrength.setNumberOfNodesOnPlane		(Integer.parseInt (arcanusNodeCount.getText ()));
 		arcanusNodeStrength.setNodeAuraSquaresMinimum	(Integer.parseInt (arcanusNodeSizeMin.getText ()));
 		arcanusNodeStrength.setNodeAuraSquaresMaximum	(Integer.parseInt (arcanusNodeSizeMax.getText ()));
 		
 		final NodeStrengthPlane myrrorNodeStrength = new NodeStrengthPlane ();
 		myrrorNodeStrength.setPlaneNumber (1);
-		myrrorNodeStrength.setNumberOfNodesOnPlane		(Integer.parseInt (myrrorNodeCount.getText ()));
 		myrrorNodeStrength.setNodeAuraSquaresMinimum	(Integer.parseInt (myrrorNodeSizeMin.getText ()));
 		myrrorNodeStrength.setNodeAuraSquaresMaximum	(Integer.parseInt (myrrorNodeSizeMax.getText ()));
 		
@@ -3540,7 +3554,6 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setTowerMonstersMaximum	(Integer.parseInt (towersMonstersMax.getText ()));
 	    difficultyLevel.setTowerTreasureMinimum		(Integer.parseInt (towersTreasureMin.getText ()));
 	    difficultyLevel.setTowerTreasureMaximum	(Integer.parseInt (towersTreasureMax.getText ()));
-	    difficultyLevel.setRaiderCityCount					(Integer.parseInt (raiderCityCount.getText ()));
 	    difficultyLevel.setRaiderCityStartSizeMin		(Integer.parseInt (raiderCityStartSizeMin.getText ()));
 	    difficultyLevel.setRaiderCityStartSizeMax		(Integer.parseInt (raiderCityStartSizeMax.getText ()));
 	    difficultyLevel.setRaiderCityGrowthCap			(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));

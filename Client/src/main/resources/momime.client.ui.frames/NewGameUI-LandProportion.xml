@@ -130,31 +130,19 @@
 	</component>
 	<component name="frmNewGameCustomLandProportionTundraPrefix">
 		<left>20</left>
-		<top>230</top>
+		<top>250</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomLandProportionTundraEdit">
 		<left>120</left>
-		<top>223</top>
+		<top>243</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomLandProportionTundraSuffix">
 		<left>300</left>
-		<top>250</top>
-		<horizontalAlignment>1.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomLandProportionRivers">
-		<left>20</left>
-		<top>280</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomLandProportionRiversEdit">
-		<left>300</left>
-		<top>273</top>
+		<top>270</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

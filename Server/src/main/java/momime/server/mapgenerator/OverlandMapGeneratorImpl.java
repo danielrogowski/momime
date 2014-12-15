@@ -15,6 +15,7 @@ import momime.common.database.newgame.DifficultyLevelNodeStrengthData;
 import momime.common.database.newgame.DifficultyLevelPlane;
 import momime.common.database.newgame.LandProportionPlane;
 import momime.common.database.newgame.LandProportionTileType;
+import momime.common.database.newgame.MapSizePlane;
 import momime.common.database.newgame.NodeStrengthPlane;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
@@ -1099,7 +1100,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		final boolean [] [] riverPending = new boolean [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		int riverNo = 0;
-		while (riverNo < sd.getLandProportion ().getRiverCount ())
+		while (riverNo < sd.getMapSize ().getRiverCount ())
 		{
 			// Get a list of all shoreline tiles for which there is a river tile where all the directions
 			// lead to grassland, i.e. all valid starting locations for a river
@@ -1137,8 +1138,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			if (startingPositions.size () == 0)
 			{
 				// No more suitable start locations, so give up trying - force loop to exit
-				log.warn ("Couldn't place desired number of rivers on plane " + plane + " - wanted " + sd.getLandProportion ().getRiverCount () + " rivers but only managed to find space for " + riverNo);
-				riverNo = sd.getLandProportion ().getRiverCount ();
+				log.warn ("Couldn't place desired number of rivers on plane " + plane + " - wanted " + sd.getMapSize ().getRiverCount () + " rivers but only managed to find space for " + riverNo);
+				riverNo = sd.getMapSize ().getRiverCount ();
 			}
 			else
 			{
@@ -1371,7 +1372,22 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	{
 		log.trace ("Entering placeNodes");
 
-		// Validate the right planes are listed in the session description
+		// Validate the right map size planes are listed in the session description
+		if (sd.getMapSize ().getMapSizePlane ().size () != sd.getMapSize ().getDepth ())
+			throw new MomException ("placeNodes: Incorrect number of Map Size Planes listed in session description");
+
+		final List<Integer> mapSizePlaneNumbersFound = new ArrayList<Integer> ();
+		for (final MapSizePlane plane : sd.getMapSize ().getMapSizePlane ())
+		{
+			// Check it isn't already in the list
+			for (final Integer planeCheck : mapSizePlaneNumbersFound)
+				if (planeCheck == plane.getPlaneNumber ())
+					throw new MomException ("placeNodes: Plane " + planeCheck + " is repeated twice in session description Map Size Planes");
+
+			mapSizePlaneNumbersFound.add (plane.getPlaneNumber ());
+		}
+		
+		// Validate the right node strength planes are listed in the session description
 		if (sd.getNodeStrength ().getNodeStrengthPlane ().size () != sd.getMapSize ().getDepth ())
 			throw new MomException ("placeNodes: Incorrect number of Node Strength Planes listed in session description");
 
@@ -1387,9 +1403,15 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		}
 
 		// Now we know the session description is valid, can process each plane in turn
-		for (final NodeStrengthPlane plane : sd.getNodeStrength ().getNodeStrengthPlane ())
-			for (int nodeNo = 0; nodeNo < plane.getNumberOfNodesOnPlane (); nodeNo++)
+		for (final MapSizePlane mapSizePlane : sd.getMapSize ().getMapSizePlane ())
+			for (int nodeNo = 0; nodeNo < mapSizePlane.getNumberOfNodesOnPlane (); nodeNo++)
 			{
+				// Find the equivalent node strength plane (don't need to be too careful here, we've already validated and know it exists)
+				NodeStrengthPlane plane = null;
+				for (final NodeStrengthPlane thisPlane : sd.getNodeStrength ().getNodeStrengthPlane ())
+					if (thisPlane.getPlaneNumber () == mapSizePlane.getPlaneNumber ())
+						plane = thisPlane;
+
 				// Pick a random size for this node's aura
 				final double nodePowerProportion = getRandomUtils ().nextInt (10001) / 10000d;	// Make sure we can roll a 1.0, which you cannot just by using nextDouble ()
 				final int nodeAuraSize = plane.getNodeAuraSquaresMinimum () + (int) Math.round

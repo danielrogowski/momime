@@ -23,10 +23,16 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.LandProportion;
+import momime.common.database.MapSize;
+import momime.common.database.NodeStrength;
 import momime.common.database.Plane;
 import momime.common.database.Race;
 import momime.common.database.Spell;
-import momime.common.database.newgame.DifficultyLevelData;
+import momime.common.database.SpellSetting;
+import momime.common.database.UnitSetting;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
@@ -335,14 +341,43 @@ public final class TestNewGameUI
 		when (client.getOurPlayerID ()).thenReturn (3);
 		when (client.getPlayers ()).thenReturn (players);
 		
-		// Session description
-		final DifficultyLevelData difficulty = new DifficultyLevelData ();
-		difficulty.setCustomWizards (true);
+		// Default new game settings
+		final AvailableDatabase newGameDB = dbs.getMomimeXmlDatabase ().get (0);
 		
+		final MapSize mapSize = new MapSize ();
+		mapSize.setMapSizeID ("60x40");
+		newGameDB.getMapSize ().add (mapSize);
+		
+		final LandProportion landProportion = new LandProportion ();
+		landProportion.setLandProportionID ("LP01");
+		newGameDB.getLandProportion ().add (landProportion);
+		
+		final NodeStrength nodeStrength = new NodeStrength ();
+		nodeStrength.setNodeStrengthID ("NS01");
+		newGameDB.getNodeStrength ().add (nodeStrength);
+
+		final DifficultyLevel difficulty = new DifficultyLevel ();
+		difficulty.setDifficultyLevelID ("DL01");
+		difficulty.setCustomWizards (true);
+		newGameDB.getDifficultyLevel ().add (difficulty);
+		
+		final FogOfWarSetting fowSetting = new FogOfWarSetting ();
+		fowSetting.setFogOfWarSettingID ("FOW01");
+		newGameDB.getFogOfWarSetting ().add (fowSetting);
+		
+		final UnitSetting unitSettings = new UnitSetting ();
+		unitSettings.setUnitSettingID ("US01");
+		newGameDB.getUnitSetting ().add (unitSettings);
+		
+		final SpellSetting spellSettings = new SpellSetting ();
+		spellSettings.setSpellSettingID ("SS01");
+		newGameDB.getSpellSetting ().add (spellSettings);
+		
+		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setDifficultyLevel (difficulty);
 		when (client.getSessionDescription ()).thenReturn (sd);
-		
+
 		// Layouts
 		final Unmarshaller unmarshaller = ClientTestData.createXmlLayoutUnmarshaller ();
 		final XmlLayoutContainerEx mainLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Main.xml"));

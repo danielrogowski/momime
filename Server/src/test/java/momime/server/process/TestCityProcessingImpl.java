@@ -153,12 +153,14 @@ public final class TestCityProcessingImpl
 		
 		// Session description
 		final MapSizeData sys = ServerTestData.createMapSizeData ();
+		sys.setRaiderCityCount (2);
+
 		final DifficultyLevelData difficultyLevel = new DifficultyLevelData ();
 		difficultyLevel.setWizardCityStartSize (4);
 		difficultyLevel.setRaiderCityStartSizeMin (2);
 		difficultyLevel.setRaiderCityStartSizeMax (11);
 		difficultyLevel.setRaiderCityGrowthCap (8);
-		difficultyLevel.setRaiderCityCount (2);
+		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setMapSize (sys);
 		sd.setDifficultyLevel (difficultyLevel);

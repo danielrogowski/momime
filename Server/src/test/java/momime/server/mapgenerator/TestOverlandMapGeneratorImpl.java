@@ -30,6 +30,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.LandProportionData;
 import momime.common.database.newgame.LandProportionPlane;
 import momime.common.database.newgame.MapSizeData;
+import momime.common.database.newgame.MapSizePlane;
 import momime.common.database.newgame.NodeStrengthData;
 import momime.common.database.newgame.NodeStrengthPlane;
 import momime.common.database.newgame.UnitSettingData;
@@ -707,18 +708,26 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceNodes () throws MomException
 	{
 		// Session description
+		final MapSizePlane mapSizeArcanus = new MapSizePlane ();
+		mapSizeArcanus.setNumberOfNodesOnPlane (14);
+		mapSizeArcanus.setPlaneNumber (0);
+
+		final MapSizePlane mapSizeMyrror = new MapSizePlane ();
+		mapSizeMyrror.setNumberOfNodesOnPlane (18);
+		mapSizeMyrror.setPlaneNumber (1);
+		
 		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		mapSize.getMapSizePlane ().add (mapSizeArcanus);
+		mapSize.getMapSizePlane ().add (mapSizeMyrror);
 
 		final NodeStrengthPlane nodeStrengthArcanus = new NodeStrengthPlane ();
 		nodeStrengthArcanus.setNodeAuraSquaresMinimum (5);
 		nodeStrengthArcanus.setNodeAuraSquaresMaximum (10);
-		nodeStrengthArcanus.setNumberOfNodesOnPlane (14);
 		nodeStrengthArcanus.setPlaneNumber (0);
 		
 		final NodeStrengthPlane nodeStrengthMyrror = new NodeStrengthPlane ();
 		nodeStrengthMyrror.setNodeAuraSquaresMinimum (10);
 		nodeStrengthMyrror.setNodeAuraSquaresMaximum (15);
-		nodeStrengthMyrror.setNumberOfNodesOnPlane (18);
 		nodeStrengthMyrror.setPlaneNumber (1);
 		
 		final NodeStrengthData nodeStrength = new NodeStrengthData ();
@@ -805,14 +814,16 @@ public final class TestOverlandMapGeneratorImpl
 				}
 			
 			// Check plane totals
-			assertEquals (plane.getNumberOfNodesOnPlane (), nodeCount);
+			final MapSizePlane mapSizePlane = mapSize.getMapSizePlane ().get (plane.getPlaneNumber ()); 
 			
-			if ((auraCount < plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMinimum ()) ||
-				(auraCount > plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMaximum ()))
+			assertEquals (mapSizePlane.getNumberOfNodesOnPlane (), nodeCount);
+			
+			if ((auraCount < mapSizePlane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMinimum ()) ||
+				(auraCount > mapSizePlane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMaximum ()))
 				
 				fail ("auraCount for plane " + plane.getPlaneNumber () + " must be between " +
-					(plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMinimum ()) + " and " +
-					(plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMaximum ()) + " but was " + auraCount);
+					(mapSizePlane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMinimum ()) + " and " +
+					(mapSizePlane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMaximum ()) + " but was " + auraCount);
 		}
 	}
 	

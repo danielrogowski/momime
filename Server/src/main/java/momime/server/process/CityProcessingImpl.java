@@ -140,7 +140,7 @@ public final class CityProcessingImpl implements CityProcessing
 				numberOfCities = 1;
 
 			else if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
-				numberOfCities = sd.getDifficultyLevel ().getRaiderCityCount ();
+				numberOfCities = sd.getMapSize ().getRaiderCityCount ();
 
 			else
 				numberOfCities = 0;	// For monsters

@@ -17142,34 +17142,29 @@
 	</spell>
 	<movementRateRule>
 		<unitSkillID>US022</unitSkillID>
-		
 		<doubleMovement>1</doubleMovement>
 		<description>Non-corporeal *prevents* unit from gaining any other benefits, e.g. enchanted road, wind walking</description>
 	</movementRateRule>
 	<movementRateRule>
 		<unitSkillID>SS181</unitSkillID>
-		
 		<doubleMovement>1</doubleMovement>
 		<description>Non-corporeal *prevents* unit from gaining any other benefits, e.g. enchanted road, wind walking</description>
 	</movementRateRule>
 	<movementRateRule>
 		<tileTypeID>TT99</tileTypeID>
 		<unitSkillID>USX04</unitSkillID>
-		
 		<doubleMovement>0</doubleMovement>
 		<description>Any flying unit (even flying boats, or boats stacked with wind walkers) can use enchanted road</description>
 	</movementRateRule>
 	<movementRateRule>
 		<tileTypeID>TT99</tileTypeID>
 		<unitSkillID>SS056</unitSkillID>
-		
 		<doubleMovement>0</doubleMovement>
 		<description>Any flying unit (even flying boats, or boats stacked with wind walkers) can use enchanted road</description>
 	</movementRateRule>
 	<movementRateRule>
 		<tileTypeID>TT99</tileTypeID>
 		<unitSkillID>SS093C</unitSkillID>
-		
 		<doubleMovement>0</doubleMovement>
 		<description>Any flying unit (even flying boats, or boats stacked with wind walkers) can use enchanted road</description>
 	</movementRateRule>
@@ -17188,25 +17183,21 @@
 	<movementRateRule>
 		<tileTypeID>TT99</tileTypeID>
 		<unitSkillID>USX01</unitSkillID>
-		
 		<doubleMovement>0</doubleMovement>
 		<description>Any walking unit (i.e. anything besides boats and non-corporeals) can use enchanted road</description>
 	</movementRateRule>
 	<movementRateRule>
 		<unitSkillID>USX04</unitSkillID>
-		
 		<doubleMovement>2</doubleMovement>
 		<description>Flying units fly above normal road, so all terrain other than enchanted roads costs 1 MP</description>
 	</movementRateRule>
 	<movementRateRule>
 		<unitSkillID>SS056</unitSkillID>
-		
 		<doubleMovement>2</doubleMovement>
 		<description>Flying units fly above normal road, so all terrain other than enchanted roads costs 1 MP</description>
 	</movementRateRule>
 	<movementRateRule>
 		<unitSkillID>SS093C</unitSkillID>
-		
 		<doubleMovement>2</doubleMovement>
 		<description>Flying units fly above normal road, so all terrain other than enchanted roads costs 1 MP</description>
 	</movementRateRule>
@@ -17223,7 +17214,6 @@
 	<movementRateRule>
 		<tileTypeID>TT98</tileTypeID>
 		<unitSkillID>USX01</unitSkillID>
-		
 		<doubleMovement>1</doubleMovement>
 		<description>Any ground units can use road</description>
 	</movementRateRule>
@@ -17527,7 +17517,6 @@
 	<movementRateRule>
 		<tileTypeID>FOW</tileTypeID>
 		<unitSkillID>USX03</unitSkillID>
-		
 		<doubleMovement>2</doubleMovement>
 	</movementRateRule>
 	<movementRateRule>
@@ -17675,7 +17664,53 @@
 	<unitMagicRealm unitMagicRealmID="LTU">
 		<unitMagicRealmName>Undead (killed by Ghouls/Life Steal or Black Channeled units)</unitMagicRealmName>
 	</unitMagicRealm>
-	<mapSize mapSizeID="60x40">
+	<mapSize mapSizeID="MS01">
+		<coordinateSystemType>S</coordinateSystemType>
+		<width>30</width>
+		<height>20</height>
+		<depth>2</depth>
+		<wrapsLeftToRight>true</wrapsLeftToRight>
+		<wrapsTopToBottom>false</wrapsTopToBottom>
+		<zoneWidth>6</zoneWidth>
+		<zoneHeight>6</zoneHeight>
+		<towersOfWizardryCount>4</towersOfWizardryCount>
+		<towersOfWizardrySeparation>6</towersOfWizardrySeparation>
+		<continentalRaceChance>75</continentalRaceChance>
+		<citySeparation>3</citySeparation>
+		<raiderCityCount>10</raiderCityCount>
+		<riverCount>8</riverCount>
+		<mapSizePlane planeNumber="0">
+			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizePlane planeNumber="1">
+			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizeDescription>Tiny 30x20 map</mapSizeDescription>
+	</mapSize>
+	<mapSize mapSizeID="MS02">
+		<coordinateSystemType>S</coordinateSystemType>
+		<width>45</width>
+		<height>30</height>
+		<depth>2</depth>
+		<wrapsLeftToRight>true</wrapsLeftToRight>
+		<wrapsTopToBottom>false</wrapsTopToBottom>
+		<zoneWidth>8</zoneWidth>
+		<zoneHeight>8</zoneHeight>
+		<towersOfWizardryCount>5</towersOfWizardryCount>
+		<towersOfWizardrySeparation>8</towersOfWizardrySeparation>
+		<continentalRaceChance>75</continentalRaceChance>
+		<citySeparation>3</citySeparation>
+		<raiderCityCount>12</raiderCityCount>
+		<riverCount>12</riverCount>
+		<mapSizePlane planeNumber="0">
+			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizePlane planeNumber="1">
+			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizeDescription>Small 45x30 map</mapSizeDescription>
+	</mapSize>
+	<mapSize mapSizeID="MS03">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>60</width>
 		<height>40</height>
@@ -17697,6 +17732,52 @@
 			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<mapSizeDescription>Standard 60x40 map</mapSizeDescription>
+	</mapSize>
+	<mapSize mapSizeID="MS04">
+		<coordinateSystemType>S</coordinateSystemType>
+		<width>75</width>
+		<height>50</height>
+		<depth>2</depth>
+		<wrapsLeftToRight>true</wrapsLeftToRight>
+		<wrapsTopToBottom>false</wrapsTopToBottom>
+		<zoneWidth>12</zoneWidth>
+		<zoneHeight>12</zoneHeight>
+		<towersOfWizardryCount>8</towersOfWizardryCount>
+		<towersOfWizardrySeparation>12</towersOfWizardrySeparation>
+		<continentalRaceChance>75</continentalRaceChance>
+		<citySeparation>3</citySeparation>
+		<raiderCityCount>20</raiderCityCount>
+		<riverCount>30</riverCount>
+		<mapSizePlane planeNumber="0">
+			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizePlane planeNumber="1">
+			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizeDescription>Large 75x50 map</mapSizeDescription>
+	</mapSize>
+	<mapSize mapSizeID="MS05">
+		<coordinateSystemType>S</coordinateSystemType>
+		<width>90</width>
+		<height>60</height>
+		<depth>2</depth>
+		<wrapsLeftToRight>true</wrapsLeftToRight>
+		<wrapsTopToBottom>false</wrapsTopToBottom>
+		<zoneWidth>15</zoneWidth>
+		<zoneHeight>15</zoneHeight>
+		<towersOfWizardryCount>10</towersOfWizardryCount>
+		<towersOfWizardrySeparation>15</towersOfWizardrySeparation>
+		<continentalRaceChance>75</continentalRaceChance>
+		<citySeparation>3</citySeparation>
+		<raiderCityCount>25</raiderCityCount>
+		<riverCount>40</riverCount>
+		<mapSizePlane planeNumber="0">
+			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizePlane planeNumber="1">
+			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizeDescription>Huge 90x60 map</mapSizeDescription>
 	</mapSize>
 	<landProportion landProportionID="LP01">
 		<percentageOfMapIsLand>15</percentageOfMapIsLand>
@@ -19354,7 +19435,7 @@
 		<languageEntry languageEntryID="ProductionPerTurn" />
 		<languageEntry languageEntryID="ProductionPerTurnMagicPower" />
 		<languageEntry languageEntryID="TargetSpell" />
-	</languageCategory>	
+	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Prompt" />
@@ -19668,3 +19749,4 @@
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
 </momimesvr:serverDatabase>
+

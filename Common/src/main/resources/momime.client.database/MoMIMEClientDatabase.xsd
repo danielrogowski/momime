@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:momimecommon="http://momime/common/database"
 	xmlns:momimeclient="http://momime/client/database" targetNamespace="http://momime/client/database">
 
-	<xsd:import namespace="http://momime/common/database"/>
+	<xsd:import namespace="http://momime/common/database" />
 	
     <xsd:annotation>
     	<xsd:documentation>Defines the portions of the main data XML file that are needed only on the client, although they still have to be declared within
@@ -16,15 +16,16 @@ the common project and so accessible to the server so that the server is able to
     		<xsd:documentation>Tells client details about one database available on the server, and the new game settings from it.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSize" type="momimecommon:mapSize"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportion" type="momimecommon:landProportion"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrength" type="momimecommon:nodeStrength"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevel" type="momimecommon:difficultyLevel"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimecommon:unitSetting"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimecommon:spellSetting"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSize" type="momimecommon:mapSize" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportion" type="momimecommon:landProportion" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrength" type="momimecommon:nodeStrength" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevel" type="momimecommon:difficultyLevel" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimecommon:unitSetting" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimecommon:spellSetting" />
 		</xsd:sequence>
-		<xsd:attribute name="dbName" type="momimeclient:filename" use="required"/>
+		<xsd:attribute name="dbName" type="momimeclient:filename" use="required" />
 	</xsd:complexType>
 
 	<xsd:complexType name="newGameDatabase">
@@ -32,7 +33,7 @@ the common project and so accessible to the server so that the server is able to
     		<xsd:documentation>Tells client details about all databases available on the server, and their new game settings.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="momimeXmlDatabase" type="momimeclient:availableDatabase"/>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="momimeXmlDatabase" type="momimeclient:availableDatabase" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -44,27 +45,27 @@ the common project and so accessible to the server so that the server is able to
 the server XML and send to the client once they join a session.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="plane" type="momimecommon:plane"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionType" type="momimecommon:productionType"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeature" type="momimeclient:mapFeature"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileType" type="momimecommon:tileType"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickType" type="momimecommon:pickType"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pick"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizard" type="momimeclient:wizard"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="race" type="momimecommon:race"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="taxRate" type="momimecommon:taxRate"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="building" type="momimecommon:building"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttribute" type="momimecommon:unitAttribute"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitType" type="momimecommon:unitType"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimecommon:unitSkill"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimecommon:rangedAttackType"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimecommon:unit"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimecommon:spell"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimecommon:unitMagicRealm"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType"/>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder"/>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="plane" type="momimecommon:plane" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionType" type="momimecommon:productionType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeature" type="momimeclient:mapFeature" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileType" type="momimecommon:tileType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickType" type="momimecommon:pickType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pick" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizard" type="momimeclient:wizard" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="race" type="momimecommon:race" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="taxRate" type="momimecommon:taxRate" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="building" type="momimecommon:building" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttribute" type="momimecommon:unitAttribute" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitType" type="momimecommon:unitType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimecommon:unitSkill" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimecommon:rangedAttackType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimecommon:unit" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimecommon:spell" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimecommon:unitMagicRealm" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -75,7 +76,7 @@ the server XML and send to the client once they join a session.</xsd:documentati
 		<xsd:complexContent>
 			<xsd:extension base="momimecommon:mapFeature">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="anyMagicRealmsDefined" type="xsd:boolean"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="anyMagicRealmsDefined" type="xsd:boolean" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

@@ -58,6 +58,7 @@ import momime.common.database.DifficultyLevelNodeStrength;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.LandProportion;
 import momime.common.database.MapSize;
+import momime.common.database.NewGameDefaults;
 import momime.common.database.NodeStrength;
 import momime.common.database.Plane;
 import momime.common.database.Race;
@@ -2978,6 +2979,7 @@ public final class NewGameUI extends MomClientFrameUI
 	{
 		log.trace ("Entering selectedDatabaseOrLanguageChanged");
 
+		// Reload the available selections of all the buttons
 		changeMapSizeAction.clearItems ();
 		for (final MapSize mapSize : changeDatabaseAction.getSelectedItem ().getMapSize ())
 			changeMapSizeAction.addItem (mapSize, getLanguage ().findMapSizeDescription (mapSize.getMapSizeID ()));
@@ -3005,6 +3007,32 @@ public final class NewGameUI extends MomClientFrameUI
 		changeSpellSettingsAction.clearItems ();
 		for (final SpellSetting spellSetting : changeDatabaseAction.getSelectedItem ().getSpellSetting ())
 			changeSpellSettingsAction.addItem (spellSetting, getLanguage ().findSpellSettingDescription (spellSetting.getSpellSettingID ()));
+		
+		// Select the default values for each button
+		final NewGameDefaults defaults = changeDatabaseAction.getSelectedItem ().getNewGameDefaults ();
+		if (defaults != null)
+		{
+			while ((defaults.getDefaultMapSizeID () != null) && (!defaults.getDefaultMapSizeID ().equals (changeMapSizeAction.getSelectedItem ().getMapSizeID ())))
+				changeMapSizeAction.actionPerformed (null);
+
+			while ((defaults.getDefaultLandProportionID () != null) && (!defaults.getDefaultLandProportionID ().equals (changeLandProportionAction.getSelectedItem ().getLandProportionID ())))
+				changeLandProportionAction.actionPerformed (null);
+
+			while ((defaults.getDefaultNodeStrengthID () != null) && (!defaults.getDefaultNodeStrengthID ().equals (changeNodeStrengthAction.getSelectedItem ().getNodeStrengthID ())))
+				changeNodeStrengthAction.actionPerformed (null);
+
+			while ((defaults.getDefaultDifficultyLevelID () != null) && (!defaults.getDefaultDifficultyLevelID ().equals (changeDifficultyLevelAction.getSelectedItem ().getDifficultyLevelID ())))
+				changeDifficultyLevelAction.actionPerformed (null);
+
+			while ((defaults.getDefaultFogOfWarSettingID () != null) && (!defaults.getDefaultFogOfWarSettingID ().equals (changeFogOfWarSettingsAction.getSelectedItem ().getFogOfWarSettingID ())))
+				changeFogOfWarSettingsAction.actionPerformed (null);
+
+			while ((defaults.getDefaultUnitSettingID () != null) && (!defaults.getDefaultUnitSettingID ().equals (changeUnitSettingsAction.getSelectedItem ().getUnitSettingID ())))
+				changeUnitSettingsAction.actionPerformed (null);
+
+			while ((defaults.getDefaultSpellSettingID () != null) && (!defaults.getDefaultSpellSettingID ().equals (changeSpellSettingsAction.getSelectedItem ().getSpellSettingID ())))
+				changeSpellSettingsAction.actionPerformed (null);
+		}
 
 		log.trace ("Exiting selectedDatabaseOrLanguageChanged");
 	}

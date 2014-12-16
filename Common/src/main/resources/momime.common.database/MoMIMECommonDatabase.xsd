@@ -104,6 +104,21 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="newGameDefaults">
+        <xsd:annotation>
+        	<xsd:documentation>Default map size, difficulty level and so on to preselect on the new game screen.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultMapSizeID" type="momimecommon:mapSizeID" nxe:label="Default Map Size" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultLandProportionID" type="momimecommon:landProportionID" nxe:label="Default Land Proportion" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultNodeStrengthID" type="momimecommon:nodeStrengthID" nxe:label="Default Node Strength" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultDifficultyLevelID" type="momimecommon:difficultyLevelID" nxe:label="Default Difficulty Level" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultFogOfWarSettingID" type="momimecommon:fogOfWarSettingID" nxe:label="Default Fog of War Settings" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultUnitSettingID" type="momimecommon:unitSettingID" nxe:label="Default Unit Settings" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultSpellSettingID" type="momimecommon:spellSettingID" nxe:label="Default Spell Settings" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 <!-- Types used in the client side database that it sends to each client as they join a session -->
 
 	<xsd:complexType name="plane" nxe:singular="Plane" nxe:plural="Planes" nxe:submenu="Overland Map">

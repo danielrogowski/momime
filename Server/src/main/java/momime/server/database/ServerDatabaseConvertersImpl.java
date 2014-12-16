@@ -74,6 +74,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	{
 		final AvailableDatabase dest = new AvailableDatabase ();
 		dest.setDbName (dbName);
+		dest.setNewGameDefaults (src.getNewGameDefaults ());
 
 		for (final MapSize mapSize : src.getMapSize ())
 			dest.getMapSize ().add (mapSize);

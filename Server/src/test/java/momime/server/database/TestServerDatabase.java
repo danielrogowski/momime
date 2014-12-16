@@ -50,7 +50,7 @@ public final class TestServerDatabase
 		assertEquals ("Failed to load correct number of combat map elements",				106,				serverDB.getCombatMapElement ().size ());
 
 		// Server only entities - new game settings
-		assertEquals ("Failed to load correct number of map sizes",								1,					serverDB.getMapSize ().size ());
+		assertEquals ("Failed to load correct number of map sizes",								5,					serverDB.getMapSize ().size ());
 		assertEquals ("Failed to load correct number of land proportions",						3,					serverDB.getLandProportion ().size ());
 		assertEquals ("Failed to load correct number of node strengths",						3,					serverDB.getNodeStrength ().size ());
 		assertEquals ("Failed to load correct number of difficulty levels",							5,					serverDB.getDifficultyLevel ().size ());

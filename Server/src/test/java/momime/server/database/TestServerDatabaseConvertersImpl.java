@@ -74,7 +74,7 @@ public final class TestServerDatabaseConvertersImpl
 
 		final AvailableDatabase db = msg.getNewGameDatabase ().getMomimeXmlDatabase ().get (0);
 		assertEquals ("Original Master of Magic 1.31 rules", db.getDbName ());
-		assertEquals ("Failed to load correct number of map sizes",				1, db.getMapSize ().size ());
+		assertEquals ("Failed to load correct number of map sizes",				5, db.getMapSize ().size ());
 		assertEquals ("Failed to load correct number of land proportions",		3, db.getLandProportion ().size ());
 		assertEquals ("Failed to load correct number of node strengths",		3, db.getNodeStrength ().size ());
 		assertEquals ("Failed to load correct number of difficulty levels",			5, db.getDifficultyLevel ().size ());

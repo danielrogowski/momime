@@ -1131,7 +1131,7 @@ public final class TestOverlandMapGeneratorImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();

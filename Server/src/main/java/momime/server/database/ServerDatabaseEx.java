@@ -3,6 +3,7 @@ package momime.server.database;
 import java.util.List;
 
 import momime.common.database.CommonDatabase;
+import momime.common.database.NewGameDefaults;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.server.database.v0_9_5.Building;
@@ -42,6 +43,11 @@ import momime.server.database.v0_9_5.Wizard;
  */
 public interface ServerDatabaseEx extends CommonDatabase
 {
+	/**
+	 * @return Default map size, difficulty level and so on to preselect on the new game screen
+	 */
+	public NewGameDefaults getNewGameDefaults ();
+	
 	/**
 	 * @return Complete list of all planes in game
 	 */

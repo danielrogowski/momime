@@ -18320,6 +18320,15 @@
 		<spellBooksResearchBonusCombination>A</spellBooksResearchBonusCombination>
 		<spellSettingDescription>Recommended</spellSettingDescription>
 	</spellSetting>
+	<newGameDefaults>
+		<defaultMapSizeID>MS03</defaultMapSizeID>
+		<defaultLandProportionID>LP03</defaultLandProportionID>
+		<defaultNodeStrengthID>NS03</defaultNodeStrengthID>
+		<defaultDifficultyLevelID>DL05</defaultDifficultyLevelID>
+		<defaultFogOfWarSettingID>FOW02</defaultFogOfWarSettingID>
+		<defaultUnitSettingID>US02</defaultUnitSettingID>
+		<defaultSpellSettingID>SS02</defaultSpellSettingID>
+	</newGameDefaults>
 	<knownServer knownServerID="SVR01">
 		<knownServerDescription>Local PC</knownServerDescription>
 		<knownServerIP>localhost</knownServerIP>

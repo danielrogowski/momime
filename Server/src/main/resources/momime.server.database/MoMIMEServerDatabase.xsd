@@ -186,7 +186,12 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimesvr:movementRateRule" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimesvr:citySpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimesvr:unitMagicRealm" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSize" type="momimesvr:mapSize" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSize" type="momimesvr:mapSize">
+				<xsd:key name="mapSizePlanePK">
+					<xsd:selector xpath="mapSizePlane" />
+					<xsd:field xpath="@planeNumber" />
+				</xsd:key>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportion" type="momimesvr:landProportion">
 				<xsd:key name="landProportionTileTypePK">
 					<xsd:selector xpath="landProportionTileType" />
@@ -217,6 +222,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimesvr:fogOfWarSetting" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimesvr:unitSetting" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimesvr:spellSetting" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />			
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownServer" type="momimesvr:knownServer" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimesvr:combatTileType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimesvr:combatTileBorder" />

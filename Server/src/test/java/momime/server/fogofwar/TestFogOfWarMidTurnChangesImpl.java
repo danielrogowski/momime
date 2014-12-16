@@ -74,7 +74,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// True terrain
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 		
 		final OverlandMapTerrainData td = new OverlandMapTerrainData ();
@@ -231,7 +231,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// True terrain
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 		
 		final OverlandMapCityData td = new OverlandMapCityData ();
@@ -655,7 +655,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	public final void testAddBuildingOnServerAndClients_RegularConstruction () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -787,7 +787,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	public final void testAddBuildingOnServerAndClients_MoveFortress () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();

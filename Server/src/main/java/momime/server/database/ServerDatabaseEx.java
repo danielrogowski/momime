@@ -227,6 +227,7 @@ public interface ServerDatabaseEx extends CommonDatabase
 	/**
 	 * @return Complete list of all picks in game
 	 */
+	@Override
 	public List<Pick> getPick ();
 
 	/**

@@ -18,7 +18,7 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.database.NewGameDatabase;
 import momime.client.database.Wizard;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -28,6 +28,8 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.LandProportion;
 import momime.common.database.MapSize;
 import momime.common.database.NodeStrength;
+import momime.common.database.Pick;
+import momime.common.database.PickExclusiveFrom;
 import momime.common.database.Plane;
 import momime.common.database.Race;
 import momime.common.database.Spell;
@@ -36,11 +38,13 @@ import momime.common.database.UnitSetting;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.PlayerPickUtilsImpl;
 
 import org.junit.Test;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.random.RandomUtilsImpl;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -245,16 +249,66 @@ public final class TestNewGameUI
 		when (lang.findCategoryEntry ("frmChoosePortrait", "Title")).thenReturn ("Select Picture");
 		when (lang.findCategoryEntry ("frmChoosePortrait", "Custom")).thenReturn ("Custom");
 		
+		// CUSTOM PICKS PANEL (for custom wizards)
+		when (lang.findCategoryEntry ("frmCustomPicks", "Title")).thenReturn ("Select Custom Picks");
+		
+		final List<Pick> picks = new ArrayList<Pick> ();
+		for (int n = 1; n <= 18; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("RT" + ((n < 10) ? "0" : "") + n);
+			pick.setPickCost (1);
+			picks.add (pick);
+			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
+			
+			final momime.client.graphics.database.v0_9_5.Pick pickGfx = new momime.client.graphics.database.v0_9_5.Pick ();
+			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
+
+			final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
+			pickLang.setPickDescription ("Retort " + pick.getPickID ());
+			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
+		}
+
+		int magicRealmNo = 0;
+		for (final String magicRealmName : new String [] {"Life", "Death", "Chaos", "Nature", "Sorcery"})
+		{
+			int colourNo = magicRealmNo * 2;
+			magicRealmNo++;
+			
+			final Pick pick = new Pick ();
+			pick.setPickID ("MB0" + magicRealmNo);
+			pick.setPickCost (1);
+			picks.add (pick);
+			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
+			
+			final momime.client.graphics.database.v0_9_5.Pick pickGfx = new momime.client.graphics.database.v0_9_5.Pick ();
+			pickGfx.setPickBookshelfTitleColour ("FF" + colourNo + "0" + colourNo + "0");
+			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
+
+			final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
+			pickLang.setBookshelfDescription (magicRealmName);
+			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
+			
+			for (int imageNo = 1; imageNo <= 3; imageNo++)
+			{
+				final BookImage bookImage = new BookImage ();
+				bookImage.setBookImageFile ("/momime.client.graphics/picks/" + magicRealmName.toLowerCase () + "-" + imageNo + ".png");
+				pickGfx.getBookImage ().add (bookImage);
+			}
+		}
+		
+		doReturn (picks).when (db).getPick ();
+		
+		// Don't allow picking both life + death books
+		for (int n = 1; n <= 2; n++)
+		{
+			final PickExclusiveFrom ex = new PickExclusiveFrom ();
+			ex.setPickExclusiveFromID ("MB0" + (3-n));
+			db.findPick ("MB0" + n, "createNewGameUI").getPickExclusiveFrom ().add (ex);
+		}
+		
 		// FREE SPELL SELECTION PANEL
 		when (lang.findCategoryEntry ("frmChooseInitialSpells", "Title")).thenReturn ("Select MAGIC_REALM Spells");
-		
-		final momime.client.language.database.v0_9_5.Pick magicRealmLang = new momime.client.language.database.v0_9_5.Pick ();
-		magicRealmLang.setBookshelfDescription ("Life");
-		when (lang.findPick ("MB01")).thenReturn (magicRealmLang);
-
-		final Pick magicRealm = new Pick ();
-		magicRealm.setPickBookshelfTitleColour ("FF8080");
-		when (gfx.findPick (eq ("MB01"), anyString ())).thenReturn (magicRealm);
 		
 		for (int n = 1; n <= 4; n++)
 			when (lang.findSpellRankDescription ("SR0" + n)).thenReturn ("Rank " + n);
@@ -359,6 +413,7 @@ public final class TestNewGameUI
 		final DifficultyLevel difficulty = new DifficultyLevel ();
 		difficulty.setDifficultyLevelID ("DL01");
 		difficulty.setCustomWizards (true);
+		difficulty.setHumanSpellPicks (11);
 		newGameDB.getDifficultyLevel ().add (difficulty);
 		
 		final FogOfWarSetting fowSetting = new FogOfWarSetting ();
@@ -392,6 +447,7 @@ public final class TestNewGameUI
 		final XmlLayoutContainerEx unitSettingsLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
 		final XmlLayoutContainerEx debugOptionsLayout	= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Debug.xml"));
+		final XmlLayoutContainerEx picksLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Picks.xml"));
 		mainLayout.buildMaps ();
 		newLayout.buildMaps ();
 		mapSizeLayout.buildMaps ();
@@ -404,6 +460,7 @@ public final class TestNewGameUI
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
 		debugOptionsLayout.buildMaps ();
+		picksLayout.buildMaps ();
 		
 		// Set up form
 		final NewGameUI game = new NewGameUI ();
@@ -413,6 +470,8 @@ public final class TestNewGameUI
 		game.setClient (client);
 		game.setGraphicsDB (gfx);
 		game.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setNewGameLayoutMain (mainLayout);
 		game.setNewGameLayoutNew (newLayout);
 		game.setNewGameLayoutMapSize (mapSizeLayout);
@@ -425,6 +484,7 @@ public final class TestNewGameUI
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
 		game.setNewGameLayoutDebug (debugOptionsLayout);
+		game.setNewGameLayoutPicks (picksLayout);
 		game.setSmallFont (CreateFontsForTests.getSmallFont ());
 		game.setMediumFont (CreateFontsForTests.getMediumFont ());
 		game.setLargeFont (CreateFontsForTests.getLargeFont ());
@@ -651,6 +711,23 @@ public final class TestNewGameUI
 		game.afterJoinedSession ();		// Need this too to create the wizard buttons
 		game.showPortraitPanel ();
 		Thread.sleep (5000);
+		game.setVisible (false);
+	}
+	
+	/**
+	 * Tests the "custom picks" screen (if a custom wizard was chosen)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testNewGameUI_CustomPicks () throws Exception
+	{
+		final NewGameUI game = createNewGameUI ();
+		
+		// Display form
+		game.setVisible (true);
+		game.afterJoinedSession ();		// Need this too to create the retort buttons and bookshelves
+		game.showCustomPicksPanel ();
+		Thread.sleep (50000);
 		game.setVisible (false);
 	}
 	

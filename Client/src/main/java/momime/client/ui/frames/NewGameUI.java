@@ -47,7 +47,6 @@ import momime.client.database.Wizard;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.BookImage;
-import momime.client.language.database.v0_9_5.Pick;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
@@ -60,6 +59,7 @@ import momime.common.database.LandProportion;
 import momime.common.database.MapSize;
 import momime.common.database.NewGameDefaults;
 import momime.common.database.NodeStrength;
+import momime.common.database.Pick;
 import momime.common.database.Plane;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
@@ -86,7 +86,9 @@ import momime.common.database.newgame.UnitSettingData;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.TurnSystem;
+import momime.common.messages.clienttoserver.ChooseCustomPicksMessage;
 import momime.common.messages.clienttoserver.ChooseInitialSpellsMessage;
 import momime.common.messages.clienttoserver.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
@@ -152,6 +154,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** XML layout of the "custom debug options" right hand side */
 	private XmlLayoutContainerEx newGameLayoutDebug;
+
+	/** XML layout of the "custom picks" right hand side */
+	private XmlLayoutContainerEx newGameLayoutPicks;
 	
 	/** Large font */
 	private Font largeFont;
@@ -199,9 +204,9 @@ public final class NewGameUI extends MomClientFrameUI
 	private JPanel bookshelf;
 	
 	/** Currently selected picks (whether from pre-defined wizard or custom) */
-	private List<WizardPick> picks = new ArrayList<WizardPick> ();
+	private List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 	
-	/** Images added to draw the books on the shelf */
+	/** Images added to draw the books on the shelf, this includes all 6 bookshelves (merged, and for each magic realm) */
 	private List<JLabel> bookImages = new ArrayList<JLabel> ();
 	
 	/** Currently selected retorts */
@@ -233,6 +238,24 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** White flag */
 	private BufferedImage flag;
+	
+	/** Shelf where we add and take away books from the 5 magic realms */
+	private BufferedImage bookshelfWithGargoyles;
+	
+	/** Bottom shelf has no space for gargoyles */
+	private BufferedImage bookshelfWithoutGargoyles;
+	
+	/** Add custom pick book button */
+	private BufferedImage addBookNormal;
+	
+	/** Add custom pick book button pressed */
+	private BufferedImage addBookPressed;
+	
+	/** Remove custom pick book button */
+	private BufferedImage removeBookNormal;
+	
+	/** Remove custom pick book button pressed */
+	private BufferedImage removeBookPressed;
 	
 	/** Title that changes as we change cards */
 	private JLabel title;
@@ -980,9 +1003,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Dynamically created buttons etc */
 	private List<Component> wizardComponents = new ArrayList<Component> ();
 	
-	/** Gets set to true after player clicks a button */
-	private boolean isWizardChosen;
-	
 	/** Gets set to chosen wizard ID when player clicks a button, or null if they click custom */
 	private String wizardChosen;
 	
@@ -1000,9 +1020,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Dynamically created buttons etc */
 	private List<Component> portraitComponents = new ArrayList<Component> ();
 	
-	/** Gets set to true after player clicks a button */
-	private boolean isPortraitChosen;
-	
 	/** Gets set to chosen portrait ID when player clicks a button, or null if they click custom */
 	private String portraitChosen;
 	
@@ -1015,6 +1032,27 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Panel key */
 	private final static String PICKS_PANEL = "Picks";
+	
+	/** Panel */
+	private JPanel picksPanel;
+	
+	/** Dynamically created button actions */
+	private Map<String, ToggleAction> retortButtonActions = new HashMap<String, ToggleAction> ();
+
+	/** Dynamically created bookshelf titles */
+	private Map<String, JLabel> bookshelfTitles = new HashMap<String, JLabel> ();
+
+	/** Dynamically created buttons for adding books */
+	private Map<String, Action> addBookActions = new HashMap<String, Action> ();
+	
+	/** Dynamically created buttons for removing books */
+	private Map<String, Action> removeBookActions = new HashMap<String, Action> ();
+	
+	/** Dynamically created buttons etc */
+	private List<Component> customPicksComponents = new ArrayList<Component> ();
+
+	/** Shelf displaying each kind of book */
+	private Map<String, JPanel> magicRealmBookshelves = new HashMap<String, JPanel> ();
 	
 	// FREE SPELL SELECTION PANEL
 	
@@ -1076,6 +1114,14 @@ public final class NewGameUI extends MomClientFrameUI
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/background.png");
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
+		
+		bookshelfWithGargoyles = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/bookshelfWithGargoyles.png");
+		bookshelfWithoutGargoyles = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/bookshelfWithoutGargoyles.png");
+		addBookNormal = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/addBookNormal.png");
+		addBookPressed = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/addBookPressed.png");
+		removeBookNormal = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/removeBookNormal.png");
+		removeBookPressed = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/removeBookPressed.png");
+		
 		final BufferedImage midButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button135x17Normal.png");
 		final BufferedImage midButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button135x17Pressed.png");
 		final BufferedImage wideButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button290x17Normal.png");
@@ -1134,6 +1180,19 @@ public final class NewGameUI extends MomClientFrameUI
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 						}						
 
+						okAction.setEnabled (false);
+					}
+					else if (picksPanel.isVisible ())
+					{
+						final ChooseCustomPicksMessage msg = new ChooseCustomPicksMessage ();
+						for (final PlayerPick src : picks)
+						{
+							final WizardPick dest = new WizardPick ();
+							dest.setPick (src.getPickID ());
+							dest.setQuantity (src.getQuantity ());
+							msg.getPick ().add (dest);
+						}
+						getClient ().getServerConnection ().sendMessageToServer (msg);
 						okAction.setEnabled (false);
 					}
 					else if (freeSpellsPanel.isVisible ())
@@ -1268,7 +1327,7 @@ public final class NewGameUI extends MomClientFrameUI
 			@Override
 			protected final void selectedItemChanged ()
 			{
-				enableOrDisableOkButton ();
+				enableOrDisableNewGameOkButton ();
 			}
 		};
 		
@@ -1280,7 +1339,7 @@ public final class NewGameUI extends MomClientFrameUI
 			@Override
 			protected final void selectedItemChanged ()
 			{
-				enableOrDisableOkButton ();
+				enableOrDisableNewGameOkButton ();
 			}
 		};
 		
@@ -2086,7 +2145,12 @@ public final class NewGameUI extends MomClientFrameUI
 		cards.add (portraitPanel, PORTRAIT_PANEL);
 		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
+		
 		// CUSTOM PICKS PANEL (for custom wizards)
+		picksPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutPicks ()));
+		picksPanel.setOpaque (false);
+		
+		cards.add (picksPanel, PICKS_PANEL);
 		
 		// FREE SPELL SELECTION PANEL
 		freeSpellsPanel = new JPanel ();
@@ -2119,19 +2183,19 @@ public final class NewGameUI extends MomClientFrameUI
 			@Override
 			public final void insertUpdate (final DocumentEvent e)
 			{
-				enableOrDisableOkButton ();
+				enableOrDisableNewGameOkButton ();
 			}
 
 			@Override
 			public final void removeUpdate (final DocumentEvent e)
 			{
-				enableOrDisableOkButton ();
+				enableOrDisableNewGameOkButton ();
 			}
 
 			@Override
 			public final void changedUpdate (final DocumentEvent e)
 			{
-				enableOrDisableOkButton ();
+				enableOrDisableNewGameOkButton ();
 			}
 		};
 		
@@ -2168,8 +2232,6 @@ public final class NewGameUI extends MomClientFrameUI
 		picks.clear ();
 		updateBookshelfFromPicks ();
 		
-		isWizardChosen = false;
-		isPortraitChosen = false;
 		currentMagicRealmID = null;
 		cardLayout.show (cards, NEW_GAME_PANEL);
 
@@ -2283,8 +2345,10 @@ public final class NewGameUI extends MomClientFrameUI
 	/**
 	 * After we join a session, server sends us the database so then we know all things like
 	 * all the wizards and retorts available, so can set up the controls for those
+	 * 
+	 * @throws RecordNotFoundException If we find a pick that doesn't have an entry in the graphics XML
 	 */
-	public final void afterJoinedSession ()
+	public final void afterJoinedSession () throws RecordNotFoundException
 	{
 		log.trace ("Entering afterJoinedSession");
 		
@@ -2297,6 +2361,9 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final Component oldComponent : portraitComponents)
 			portraitPanel.remove (oldComponent);
 
+		for (final Component oldComponent : customPicksComponents)
+			picksPanel.remove (oldComponent);
+		
 		for (final Component oldComponent : raceComponents)
 			racePanel.remove (oldComponent);
 		
@@ -2304,6 +2371,12 @@ public final class NewGameUI extends MomClientFrameUI
 		wizardButtonActions.clear ();
 		portraitComponents.clear ();
 		portraitButtonActions.clear ();
+		customPicksComponents.clear ();
+		retortButtonActions.clear ();
+		addBookActions.clear ();
+		removeBookActions.clear ();
+		bookshelfTitles.clear ();
+		magicRealmBookshelves.clear ();
 		raceComponents.clear ();
 		racePlanes.clear ();
 		raceButtonActions.clear ();
@@ -2343,9 +2416,8 @@ public final class NewGameUI extends MomClientFrameUI
 						@Override
 						public final void actionPerformed (final ActionEvent ev)
 						{
-							isWizardChosen = true;
 							wizardChosen = wizardID;
-							enableOrDisableOkButton ();
+							okAction.setEnabled (true);
 							try
 							{
 								picks.clear ();
@@ -2366,7 +2438,13 @@ public final class NewGameUI extends MomClientFrameUI
 									flag1.setIcon (new ImageIcon (wizardFlag));
 									flag2.setIcon (new ImageIcon (wizardFlag));
 									
-									picks.addAll (wizard.getWizardPick ());
+									for (final WizardPick src : wizard.getWizardPick ())
+									{
+										final PlayerPick dest = new PlayerPick ();
+										dest.setPickID (src.getPick ());
+										dest.setQuantity (src.getQuantity ());
+										picks.add (dest);
+									}
 								}
 								updateBookshelfFromPicks ();
 								updateRetortsFromPicks ();
@@ -2392,9 +2470,8 @@ public final class NewGameUI extends MomClientFrameUI
 						@Override
 						public final void actionPerformed (final ActionEvent ev)
 						{
-							isPortraitChosen = true;
 							portraitChosen = wizardID;
-							enableOrDisableOkButton ();
+							okAction.setEnabled (true);
 							try
 							{
 								if (wizard == null)
@@ -2457,7 +2534,123 @@ public final class NewGameUI extends MomClientFrameUI
 			portraitComponents.add (portraitGlue);
 		}
 		
-		// Race buttons - first go through each plane
+		// CUSTOM PICKS PANEL (for custom wizards)
+		// First we need to count how many bookshelves we need
+		int bookshelfCount = 0;
+		for (final Pick pick : getClient ().getClientDB ().getPick ())
+		{
+			final momime.client.graphics.database.v0_9_5.Pick pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+			if (pickGfx.getBookImage ().size () > 0)
+				bookshelfCount++;
+		}
+		
+		int retortNo = 0;
+		int bookshelfNo = 0;
+		for (final Pick pick : getClient ().getClientDB ().getPick ())
+		{
+			final momime.client.graphics.database.v0_9_5.Pick pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+			if (pickGfx.getBookImage ().size () == 0)
+			{
+				// Show as a retort label in the top half of the screen
+				retortNo++;
+				final ToggleAction retortAction = new ToggleAction ()
+				{
+					@Override
+					protected final void selectedChanged ()
+					{
+						try
+						{
+							getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), isSelected () ? 1 : -1);
+							updateCustomPicksCount ();
+							updateRetortsFromPicks ();
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				};
+				
+				retortButtonActions.put (pick.getPickID (), retortAction);
+				
+				final JButton retortButton = getUtils ().createTextOnlyButton (retortAction, MomUIConstants.DULL_GOLD, getSmallFont ());
+				picksPanel.add (retortButton, "frmCustomPicksRetort" + retortNo);
+				customPicksComponents.add (retortButton);
+			}
+			else
+			{
+				// Show as bookshelf
+				bookshelfNo++;
+				final JLabel thisImage = getUtils ().createImage ((bookshelfNo == bookshelfCount) ? bookshelfWithoutGargoyles : bookshelfWithGargoyles);
+				picksPanel.add (thisImage, "frmCustomPicksBookshelf" + bookshelfNo);
+				customPicksComponents.add (thisImage);
+				
+				final JPanel thisBookshelf = new JPanel (new GridBagLayout ());
+				thisBookshelf.setOpaque (false);
+				thisBookshelf.add (Box.createRigidArea (new Dimension (0, getNewGameLayoutPicks ().findComponent ("frmCustomPicksBooks" + bookshelfNo).getHeight ())));
+				picksPanel.add (thisBookshelf, "frmCustomPicksBooks" + bookshelfNo);
+				magicRealmBookshelves.put (pick.getPickID (), thisBookshelf);
+
+				// Have to add title after panel, so it appears behind the books
+				final Color magicRealmColour = new Color (Integer.parseInt (pickGfx.getPickBookshelfTitleColour (), 16));
+				
+				final JLabel bookshelfTitle = getUtils ().createLabel (magicRealmColour, getLargeFont ());
+				picksPanel.add (bookshelfTitle, "frmCustomPicksBookshelfTitle" + bookshelfNo);
+				bookshelfTitles.put (pick.getPickID (), bookshelfTitle);
+				
+				// Add a book of this type
+				final Action addBookAction = new AbstractAction ()
+				{
+					@Override
+					public final void actionPerformed (final ActionEvent ev)
+					{
+						try
+						{
+							getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), 1);
+							updateCustomPicksCount ();
+							updateBookshelfFromPicks ();
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				};
+				
+				addBookActions.put (pick.getPickID (), addBookAction);
+				
+				final JButton addBookButton = getUtils ().createImageButton (addBookAction, null, null, null, addBookNormal, addBookPressed, addBookNormal);
+				picksPanel.add (addBookButton, "frmCustomPicksBookshelfAdd" + bookshelfNo);
+				customPicksComponents.add (addBookButton);				
+				
+				// Remove a book of this type
+				final Action removeBookAction = new AbstractAction ()
+				{
+					@Override
+					public final void actionPerformed (final ActionEvent ev)
+					{
+						try
+						{
+							getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), -1);
+							updateCustomPicksCount ();
+							updateBookshelfFromPicks ();
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				};
+				
+				removeBookActions.put (pick.getPickID (), removeBookAction);
+				
+				final JButton removeBookButton = getUtils ().createImageButton (removeBookAction, null, null, null, removeBookNormal, removeBookPressed, removeBookNormal);
+				picksPanel.add (removeBookButton, "frmCustomPicksBookshelfRemove" + bookshelfNo);
+				customPicksComponents.add (removeBookButton);				
+			}
+		}
+		
+		// RACE SELECTION PANEL
 		int gridy = 2;
 		for (final Plane plane : getClient ().getClientDB ().getPlane ())
 		{
@@ -2478,7 +2671,7 @@ public final class NewGameUI extends MomClientFrameUI
 						public final void actionPerformed (final ActionEvent ev)
 						{
 							raceChosen = race.getRaceID ();
-							enableOrDisableOkButton ();
+							okAction.setEnabled (true);
 						}
 					};
 					
@@ -2516,7 +2709,23 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showPortraitPanel ()
 	{
+		log.trace ("Entering showPortraitPanel");
+
 		cardLayout.show (cards, PORTRAIT_PANEL);
+
+		log.trace ("Exiting showPortraitPanel");
+	}
+
+	/**
+	 * Show picks panel, if custom wizard was chosen
+	 */
+	public final void showCustomPicksPanel ()
+	{
+		log.trace ("Entering showCustomPicksPanel");
+
+		cardLayout.show (cards, PICKS_PANEL);
+
+		log.trace ("Exiting showCustomPicksPanel");
 	}
 	
 	/**
@@ -2619,7 +2828,7 @@ public final class NewGameUI extends MomClientFrameUI
 							protected final void selectedChanged ()
 							{
 								updateInitialSpellsCount ();
-								enableOrDisableOkButton ();
+								okAction.setEnabled (isCorrectNumberOfFreeSpellsChosen ());
 							}
 						};
 						freeSpellActions.put (spell, spellAction);
@@ -2692,24 +2901,19 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 
 	/**
-	 * Ok button should only be enabled once we have enough info
+	 * Ok button should only be enabled once we have enough info on the newGamePanel
 	 */
-	private final void enableOrDisableOkButton ()
+	private final void enableOrDisableNewGameOkButton ()
 	{
-		log.trace ("Entering enableOrDisableOkButton");
+		log.trace ("Entering enableOrDisableNewGameOkButton");
 
 		// This gets triggered during startup before both actions have been created
 		final int totalOpponents = ((changeHumanOpponentsAction.getSelectedItem () == null) || (changeAIOpponentsAction.getSelectedItem () == null)) ? 0 :
 			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
 		
-		okAction.setEnabled
-			(((newGamePanel.isVisible ()) && (totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals (""))) ||
-			((wizardPanel.isVisible ()) && (isWizardChosen)) ||
-			((portraitPanel.isVisible ()) && (isPortraitChosen)) ||
-			((freeSpellsPanel.isVisible ()) && (isCorrectNumberOfFreeSpellsChosen ())) ||
-			((racePanel.isVisible ()) && (raceChosen != null)));
+		okAction.setEnabled ((totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals ("")));
 
-		log.trace ("Exiting enableOrDisableOkButton");
+		log.trace ("Exiting enableOrDisableNewGameOkButton");
 	}
 	
 	/**
@@ -2944,6 +3148,17 @@ public final class NewGameUI extends MomClientFrameUI
 			title.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
 		else if (portraitPanel.isVisible ())
 			title.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
+		else if (picksPanel.isVisible ())
+		{
+			try
+			{
+				updateCustomPicksCount ();
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+		}
 		else if (racePanel.isVisible ())
 			title.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
 		else if (waitPanel.isVisible ())
@@ -2951,7 +3166,7 @@ public final class NewGameUI extends MomClientFrameUI
 		else if (freeSpellsPanel.isVisible ())
 		{
 			// "Choose Life Spells" title
-			final Pick currentMagicRealm = getLanguage ().findPick (currentMagicRealmID);
+			final momime.client.language.database.v0_9_5.Pick currentMagicRealm = getLanguage ().findPick (currentMagicRealmID);
 			final String magicRealmDescription = (currentMagicRealm == null) ? currentMagicRealmID : currentMagicRealm.getBookshelfDescription ();
 			title.setText (getLanguage ().findCategoryEntry ("frmChooseInitialSpells", "Title").replaceAll ("MAGIC_REALM", magicRealmDescription));
 
@@ -3045,30 +3260,49 @@ public final class NewGameUI extends MomClientFrameUI
 	{
 		log.trace ("Entering updateBookshelfFromPicks");
 
-		// Remove all the old books
+		// Remove all the old books; try to remove from all bookshelves since we only keep one list so we don't know which bookshelf this image is on
 		for (final JLabel oldBook : bookImages)
+		{
 			bookshelf.remove (oldBook);
+			for (final JPanel thisBookshelf : magicRealmBookshelves.values ())
+				thisBookshelf.remove (oldBook);
+		}
 		
 		bookImages.clear ();
 		
 		// Generate new images
-		int gridx = 1;
-		for (final WizardPick pick : picks)
+		int mergedBookshelfGridx = 0;
+		final Map<String, Integer> magicRealmBookshelvesGridx = new HashMap<String, Integer> (); 
+		
+		for (final PlayerPick pick : picks)
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPick (), "NewGameUI.updateBookshelfFromPicks").getBookImage ();
+			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateBookshelfFromPicks").getBookImage ();
 			if (possibleImages.size () > 0)
-			{
-				// Add images onto bookshelf
 				for (int n = 0; n < pick.getQuantity (); n++)
 				{
 					// Choose random image for the pick
-					final JLabel img = getUtils ().createImage (getUtils ().loadImage (possibleImages.get (getRandomUtils ().nextInt (possibleImages.size ())).getBookImageFile ()));
-					bookshelf.add (img, getUtils ().createConstraintsNoFill (gridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
-					bookImages.add (img);
-					gridx++;
+					final BufferedImage bookImage = getUtils ().loadImage (possibleImages.get (getRandomUtils ().nextInt (possibleImages.size ())).getBookImageFile ());
+					
+					// Add on merged bookshelf
+					mergedBookshelfGridx++;
+					final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
+					bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
+					bookImages.add (mergedBookshelfImg);
+					
+					// Add on bookshelf for this pick type
+					Integer magicRealmBookshelfGridx = magicRealmBookshelvesGridx.get (pick.getPickID ());
+					if (magicRealmBookshelfGridx == null)
+						magicRealmBookshelfGridx = 0;
+					
+					magicRealmBookshelfGridx++;
+					magicRealmBookshelvesGridx.put (pick.getPickID (), magicRealmBookshelfGridx);
+
+					final JLabel magicRealmBookshelfImg = getUtils ().createImage (bookImage);
+					magicRealmBookshelves.get (pick.getPickID ()).add (magicRealmBookshelfImg,
+						getUtils ().createConstraintsNoFill (magicRealmBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
+					bookImages.add (magicRealmBookshelfImg);
 				}
-			}
 		}
 		
 		// Redrawing only the bookshelf isn't enough, because the new books might be smaller than before so only the smaller so
@@ -3088,10 +3322,10 @@ public final class NewGameUI extends MomClientFrameUI
 		log.trace ("Entering updateRetortsFromPicks");
 		
 		final StringBuffer desc = new StringBuffer ();
-		for (final WizardPick pick : picks)
+		for (final PlayerPick pick : picks)
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPick (), "NewGameUI.updateRetortsFromPicks").getBookImage ();
+			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateRetortsFromPicks").getBookImage ();
 			if (possibleImages.size () == 0)
 			{
 				if (desc.length () > 0)
@@ -3100,9 +3334,9 @@ public final class NewGameUI extends MomClientFrameUI
 				if (pick.getQuantity () > 1)
 					desc.append (pick.getQuantity () + "x");
 				
-				final Pick pickDesc = getLanguage ().findPick (pick.getPick ());
+				final momime.client.language.database.v0_9_5.Pick pickDesc = getLanguage ().findPick (pick.getPickID ());
 				if (pickDesc == null)
-					desc.append (pick.getPick ());
+					desc.append (pick.getPickID ());
 				else
 					desc.append (pickDesc.getPickDescription ());
 			}
@@ -3133,6 +3367,22 @@ public final class NewGameUI extends MomClientFrameUI
 			else
 				portrait.getValue ().putValue (Action.NAME, getLanguage ().findWizardName (portrait.getKey ()));
 		
+		// Retort buttons
+		for (final Entry<String, ToggleAction> retort : retortButtonActions.entrySet ())
+		{
+			final momime.client.language.database.v0_9_5.Pick pick = getLanguage ().findPick (retort.getKey ());
+			final String pickDescription = (pick == null) ? null : pick.getPickDescription ();
+			retort.getValue ().putValue (Action.NAME, (pickDescription != null) ? pickDescription : retort.getKey ());
+		}
+		
+		// Bookshelf titles
+		for (final Entry<String, JLabel> bookshelfTitle : bookshelfTitles.entrySet ())
+		{
+			final momime.client.language.database.v0_9_5.Pick pick = getLanguage ().findPick (bookshelfTitle.getKey ());
+			final String pickDescription = (pick == null) ? null : pick.getBookshelfDescription ();
+			bookshelfTitle.getValue ().setText ((pickDescription != null) ? pickDescription : bookshelfTitle.getKey ());
+		}
+		
 		// Race plane titles
 		for (final Entry<Integer, JLabel> planeLabel : racePlanes.entrySet ())
 		{
@@ -3148,6 +3398,64 @@ public final class NewGameUI extends MomClientFrameUI
 		}
 
 		log.trace ("Exiting languageChangedAfterInGame");
+	}
+	
+	/**
+	 * Recount how many custom picks we've chosen so far, e.g. 5/11, and enable/disable all buttons appropriately.
+	 * e.g. once we reach 9/11 we disable the Myrran button since it costs 3 picks.
+	 * 
+	 * @throws RecordNotFoundException If we counter a button for a pick that we can't find in the DB
+	 */
+	private final void updateCustomPicksCount () throws RecordNotFoundException
+	{
+		log.trace ("Entering updateCustomPicksCount");
+		
+		// Count retorts and books
+		final int count = getPlayerPickUtils ().getTotalPickCost (picks, getClient ().getClientDB ());
+		
+		// Update counter in title
+		final int totalPicks = getClient ().getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ();
+		title.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", "Title") + ": " + count + "/" + totalPicks);
+
+		// Enable or disable retort buttons
+		for (final Entry<String, ToggleAction> retort : retortButtonActions.entrySet ())
+			retort.getValue ().setEnabled (retort.getValue ().isSelected () ||
+				((count + getClient ().getClientDB ().findPick (retort.getKey (), "updateCustomPicksCount").getPickCost () <= totalPicks) &&
+				(getPlayerPickUtils ().meetsPickRequirements (retort.getKey (), picks, getClient ().getClientDB ()))));
+
+		// Enable or disable add book buttons
+		for (final Entry<String, Action> pick : addBookActions.entrySet ())
+			pick.getValue ().setEnabled ((count + getClient ().getClientDB ().findPick (pick.getKey (), "updateCustomPicksCount").getPickCost () <= totalPicks) &&
+				(getPlayerPickUtils ().canSafelyAdd (pick.getKey (), picks, getClient ().getClientDB ())));
+		
+		// Enable or disable remove book buttons
+		for (final Entry<String, Action> pick : removeBookActions.entrySet ())
+			pick.getValue ().setEnabled (getPlayerPickUtils ().canSafelyRemove (pick.getKey (), picks, getClient ().getClientDB ()));
+
+		// Now we've set the state of the actions correctly, colour the buttons to match
+		for (final Component comp : customPicksComponents)
+			if (comp instanceof JButton)
+			{
+				final JButton button = (JButton) comp;
+				if (button.getAction () instanceof ToggleAction)
+				{
+					// Retort
+					final ToggleAction retortAction = (ToggleAction) button.getAction ();
+					
+					if (retortAction.isEnabled ())
+						button.setForeground (retortAction.isSelected () ? MomUIConstants.GOLD : MomUIConstants.DULL_GOLD);
+					else
+						button.setForeground (MomUIConstants.GRAY);
+				}
+				else
+				{
+					// Add or remove book buttons
+					button.setVisible (button.getAction ().isEnabled ());
+				}
+			}
+
+		okAction.setEnabled (count == totalPicks);
+		log.trace ("Exiting updateCustomPicksCount");
 	}
 	
 	/**
@@ -3996,5 +4304,21 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setNewGameLayoutDebug (final XmlLayoutContainerEx layout)
 	{
 		newGameLayoutDebug = layout;
+	}
+	
+	/**
+	 * @return XML layout of the "custom picks" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutPicks ()
+	{
+		return newGameLayoutPicks;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom picks" right hand side
+	 */
+	public final void setNewGameLayoutPicks (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutPicks = layout;
 	}
 }

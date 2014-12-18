@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>320</formWidth>
+	<formHeight>400</formHeight>
+	<component name="frmCustomPicksRetort1">
+		<left>67</left>
+		<top>10</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort2">
+		<left>67</left>
+		<top>25</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort3">
+		<left>67</left>
+		<top>40</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort4">
+		<left>67</left>
+		<top>55</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort5">
+		<left>67</left>
+		<top>70</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort6">
+		<left>67</left>
+		<top>85</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort7">
+		<left>163</left>
+		<top>10</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort8">
+		<left>163</left>
+		<top>25</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort9">
+		<left>163</left>
+		<top>40</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort10">
+		<left>163</left>
+		<top>55</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort11">
+		<left>163</left>
+		<top>70</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort12">
+		<left>163</left>
+		<top>85</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort13">
+		<left>259</left>
+		<top>10</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort14">
+		<left>259</left>
+		<top>25</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort15">
+		<left>259</left>
+		<top>40</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort16">
+		<left>259</left>
+		<top>55</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort17">
+		<left>259</left>
+		<top>70</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksRetort18">
+		<left>259</left>
+		<top>85</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelf1">
+		<left>165</left>
+		<top>130</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelf2">
+		<left>165</left>
+		<top>190</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelf3">
+		<left>165</left>
+		<top>250</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelf4">
+		<left>165</left>
+		<top>310</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelf5">
+		<left>165</left>
+		<top>370</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfTitle1">
+		<left>165</left>
+		<top>108</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfTitle2">
+		<left>165</left>
+		<top>168</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfTitle3">
+		<left>165</left>
+		<top>228</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfTitle4">
+		<left>165</left>
+		<top>288</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfTitle5">
+		<left>165</left>
+		<top>348</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfAdd1">
+		<left>295</left>
+		<top>130</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfAdd2">
+		<left>295</left>
+		<top>190</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfAdd3">
+		<left>295</left>
+		<top>250</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfAdd4">
+		<left>295</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfAdd5">
+		<left>295</left>
+		<top>370</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfRemove1">
+		<left>23</left>
+		<top>130</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfRemove2">
+		<left>23</left>
+		<top>190</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfRemove3">
+		<left>23</left>
+		<top>250</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfRemove4">
+		<left>23</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBookshelfRemove5">
+		<left>23</left>
+		<top>370</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBooks1">
+		<left>165</left>
+		<top>130</top>
+		<width>186</width>
+		<height>48</height>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBooks2">
+		<left>165</left>
+		<top>190</top>
+		<width>186</width>
+		<height>48</height>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBooks3">
+		<left>165</left>
+		<top>250</top>
+		<width>186</width>
+		<height>48</height>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBooks4">
+		<left>165</left>
+		<top>310</top>
+		<width>186</width>
+		<height>48</height>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCustomPicksBooks5">
+		<left>165</left>
+		<top>370</top>
+		<width>186</width>
+		<height>48</height>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

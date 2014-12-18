@@ -19,6 +19,8 @@
 	<component name="frmNewGameLHSRetorts">
 		<left>20</left>
 		<top>440</top>
+		<width>284</width>
+		<height>50</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

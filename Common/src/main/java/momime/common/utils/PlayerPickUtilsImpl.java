@@ -207,19 +207,20 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	 * Certain picks have pre-requisite other picks, e.g. to choose Divine Power you have to have 4 life books.  This tests if a player has the necessary pre-requisites to add a particular pick.
 	 * Written as much as possible so that pre-requisite retorts will also work, even though the original MoM has none of these, e.g. could have Super Warlord with Warlord as a pre-requisite
 	 * This is used for retorts - it notably doesn't check exclusivity (can't have both life + death books) because there's no exclusive retorts
-	 * @param pick The pick that the player wants to add
+	 * @param pickID The pick that the player wants to add
 	 * @param picks List of picks to check
 	 * @param db Lookup lists built over the XML database
 	 * @return True if player has the necessary pre-requisites for this pick
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final CommonDatabase db)
+	public final boolean meetsPickRequirements (final String pickID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering meetsPickRequirements: " + pick.getPickID ());
+		log.trace ("Entering meetsPickRequirements: " + pickID);
 
 		boolean result = true;
+		final Pick pick = db.findPick (pickID, "meetsPickRequirements");
 
 		// Make a copy of all the picks we have, then as we use those picks to satisfy various pre-requisites, we can remove them from the list
 		final List<PlayerPick> picksLeftToUse = duplicatePlayerPicksList (picks);
@@ -284,7 +285,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 		final Iterator<PlayerPick> iter = picks.iterator ();
 
 		while ((result) && (iter.hasNext ()))
-			if (!meetsPickRequirements (db.findPick (iter.next ().getPickID (), "allRequirementsMet"), picks, db))
+			if (!meetsPickRequirements (iter.next ().getPickID (), picks, db))
 				result = false;
 
 		log.trace ("Exiting allRequirementsMet = " + result);
@@ -332,15 +333,20 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	 * Tests if a certain pick can be added, or if we've another type of pick which is exclusive from it
 	 * This is used to make sure we can't add a life book if we've got death books, and vice versa
 	 * Ths is used for books - it notably doesn't check pre-requisites (other required picks) because no books have any
-	 * @param pick The pick that the player wants to add
+	 * @param pickID The pick that the player wants to add
 	 * @param picks List of picks to check
+	 * @param db Lookup lists built over the XML database
 	 * @return True if the player can add the pick without violating exclusivity of any picks they already have
+	 * @throws RecordNotFoundException If we can't find the pick in the db
 	 */
 	@Override
-	public final boolean canSafelyAdd (final Pick pick, final List<PlayerPick> picks)
+	public final boolean canSafelyAdd (final String pickID, final List<PlayerPick> picks, final CommonDatabase db)
+		throws RecordNotFoundException
 	{
-		log.trace ("Entering canSafelyAdd: " + pick.getPickID ());
+		log.trace ("Entering canSafelyAdd: " + pickID);
 
+		final Pick pick = db.findPick (pickID, "canSafelyAdd");
+		
 		boolean result = true;
 		for (final PickExclusiveFrom thisExclusive : pick.getPickExclusiveFrom ())
 		{

@@ -96,6 +96,11 @@ public interface CommonDatabase
 	public PickType findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @return Complete list of all picks in game
+	 */
+	public List<? extends Pick> getPick ();
+	
+	/**
 	 * @param pickID Pick ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Pick object

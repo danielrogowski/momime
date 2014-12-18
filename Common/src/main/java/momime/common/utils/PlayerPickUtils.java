@@ -5,7 +5,6 @@ import java.util.List;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Pick;
 import momime.common.messages.PlayerPick;
 
 /**
@@ -56,13 +55,13 @@ public interface PlayerPickUtils
 	 * Certain picks have pre-requisite other picks, e.g. to choose Divine Power you have to have 4 life books.  This tests if a player has the necessary pre-requisites to add a particular pick.
 	 * Written as much as possible so that pre-requisite retorts will also work, even though the original MoM has none of these, e.g. could have Super Warlord with Warlord as a pre-requisite
 	 * This is used for retorts - it notably doesn't check exclusivity (can't have both life + death books) because there's no exclusive retorts
-	 * @param pick The pick that the player wants to add
+	 * @param pickID The pick that the player wants to add
 	 * @param picks List of picks to check
 	 * @param db Lookup lists built over the XML database
 	 * @return True if player has the necessary pre-requisites for this pick
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final CommonDatabase db)
+	public boolean meetsPickRequirements (final String pickID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -82,11 +81,14 @@ public interface PlayerPickUtils
 	 * Tests if a certain pick can be added, or if we've another type of pick which is exclusive from it
 	 * This is used to make sure we can't add a life book if we've got death books, and vice versa
 	 * Ths is used for books - it notably doesn't check pre-requisites (other required picks) because no books have any
-	 * @param pick The pick that the player wants to add
+	 * @param pickID The pick that the player wants to add
 	 * @param picks List of picks to check
+	 * @param db Lookup lists built over the XML database
 	 * @return True if the player can add the pick without violating exclusivity of any picks they already have
+	 * @throws RecordNotFoundException If we can't find the pick in the db
 	 */
-	public boolean canSafelyAdd (final Pick pick, final List<PlayerPick> picks);
+	public boolean canSafelyAdd (final String pickID, final List<PlayerPick> picks, final CommonDatabase db)
+		throws RecordNotFoundException;
 
 	/**
 	 * Some picks (the Alchemy retort) grant improved weapon grades for all Normal units.  This method finds the highest weapon grade granted by this set of picks.

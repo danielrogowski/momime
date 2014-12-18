@@ -1,6 +1,10 @@
 package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,86 +25,6 @@ import org.junit.Test;
  */
 public final class TestPlayerPickUtilsImpl
 {
-	/**
-	 * @return Death book with its exclusivities
-	 */
-	private final Pick createDeathBook ()
-	{
-		final Pick pick = new Pick ();
-
-		final PickExclusiveFrom ex = new PickExclusiveFrom ();
-		ex.setPickExclusiveFromID (GenerateTestData.LIFE_BOOK);
-		pick.getPickExclusiveFrom ().add (ex);
-
-		return pick;
-	}
-
-	/**
-	 * @return Divine power retort with its pre-requisites
-	 */
-	private final Pick createDivinePowerRetort ()
-	{
-		final Pick pick = new Pick ();
-
-		final PickPrerequisite req = new PickPrerequisite ();
-		req.setPrerequisiteID (GenerateTestData.LIFE_BOOK);
-		req.setPrerequisiteCount (4);
-		pick.getPickPrerequisite ().add (req);
-
-		return pick;
-	}
-
-	/**
-	 * @return Sorcery mastery retort with its pre-requisites
-	 */
-	private final Pick createSorceryMasteryRetort ()
-	{
-		final Pick pick = new Pick ();
-
-		final PickPrerequisite req = new PickPrerequisite ();
-		req.setPrerequisiteID (GenerateTestData.SORCERY_BOOK);
-		req.setPrerequisiteCount (4);
-		pick.getPickPrerequisite ().add (req);
-
-		return pick;
-	}
-
-	/**
-	 * @return Runemaster retort with its pre-requisites
-	 */
-	private final Pick createRunemasterRetort ()
-	{
-		final Pick pick = new Pick ();
-
-		for (int n = 1; n <= 3; n++)
-		{
-			final PickPrerequisite req = new PickPrerequisite ();
-			req.setPrerequisiteTypeID (GenerateTestData.BOOK);
-			req.setPrerequisiteCount (2);
-			pick.getPickPrerequisite ().add (req);
-		}
-
-		return pick;
-	}
-
-	/**
-	 * @return Node mastery retort with its pre-requisites
-	 */
-	private final Pick createNodeMasteryRetort ()
-	{
-		final Pick pick = new Pick ();
-
-		for (int n = 3; n <= 5; n++)
-		{
-			final PickPrerequisite req = new PickPrerequisite ();
-			req.setPrerequisiteID ("MB0" + n);
-			req.setPrerequisiteCount (1);
-			pick.getPickPrerequisite ().add (req);
-		}
-
-		return pick;
-	}
-
 	/**
 	 * @return Ariel's standard picks for 20 picks
 	 */
@@ -213,40 +137,94 @@ public final class TestPlayerPickUtilsImpl
 	@Test
 	public final void testMeetsPickRequirements () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		for (int n = 1 ; n <= 4; n++)
+		{
+			final Pick Book = new Pick ();
+			Book.setPickType ("B");
+			when (db.findPick (eq ("MB0" + n), anyString ())).thenReturn (Book);
+		}
+		
+		final PickPrerequisite archmagePrereq = new PickPrerequisite ();
+		archmagePrereq.setPrerequisiteCount (4);
+		archmagePrereq.setPrerequisiteTypeID ("B");
+		
+		final Pick archmage = new Pick ();
+		archmage.getPickPrerequisite ().add (archmagePrereq);
+		when (db.findPick (eq ("RT01"), anyString ())).thenReturn (archmage);
+
+		final PickPrerequisite divinePowerPrereq = new PickPrerequisite (); 
+		divinePowerPrereq.setPrerequisiteCount (4);
+		divinePowerPrereq.setPrerequisiteID ("MB01");
+		
+		final Pick divinePower = new Pick ();
+		divinePower.getPickPrerequisite ().add (divinePowerPrereq);
+		when (db.findPick (eq ("RT02"), anyString ())).thenReturn (divinePower);
+		
+		final PickPrerequisite sorceryMasteryPrereq = new PickPrerequisite (); 
+		sorceryMasteryPrereq.setPrerequisiteCount (4);
+		sorceryMasteryPrereq.setPrerequisiteID ("MB03");
+		
+		final Pick sorceryMastery = new Pick ();
+		sorceryMastery.getPickPrerequisite ().add (sorceryMasteryPrereq);
+		when (db.findPick (eq ("RT03"), anyString ())).thenReturn (sorceryMastery);
+		
+		final Pick runemaster = new Pick ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final PickPrerequisite req = new PickPrerequisite ();
+			req.setPrerequisiteTypeID ("B");
+			req.setPrerequisiteCount (2);
+			runemaster.getPickPrerequisite ().add (req);
+		}
+		when (db.findPick (eq ("RT04"), anyString ())).thenReturn (runemaster);
+		
+		final Pick nodeMastery = new Pick ();
+		for (int n = 3; n <= 5; n++)
+		{
+			final PickPrerequisite req = new PickPrerequisite ();
+			req.setPrerequisiteID ("MB0" + n);
+			req.setPrerequisiteCount (1);
+			nodeMastery.getPickPrerequisite ().add (req);
+		}
+		when (db.findPick (eq ("RT05"), anyString ())).thenReturn (nodeMastery);
+		
+		// Set up object to test
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final CommonDatabase db = GenerateTestData.createDB ();
-		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Divine power needs 4 life books; Archmage needs 4 of any book; so both should return false with 3 life books
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 3);
-		assertEquals ("Archmage was allowed with only 3 books", false, utils.meetsPickRequirements (GenerateTestData.createArchmageRetort (), picks, db));
-		assertEquals ("Divine Power was allowed with only 3 life books", false, utils.meetsPickRequirements (createDivinePowerRetort (), picks, db));
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		utils.updatePickQuantity (picks, "MB01", 3);
+		assertEquals ("Archmage was allowed with only 3 books", false, utils.meetsPickRequirements ("RT01", picks, db));
+		assertEquals ("Divine Power was allowed with only 3 life books", false, utils.meetsPickRequirements ("RT02", picks, db));
 
 		// Archmage needs all 4 books of the same type - adding a sorcery book doesn't help
-		utils.updatePickQuantity (picks, GenerateTestData.SORCERY_BOOK, 1);
-		assertEquals ("Archmage was allowed with all 4 books not being the same type", false, utils.meetsPickRequirements (GenerateTestData.createArchmageRetort (), picks, db));
+		utils.updatePickQuantity (picks, "MB03", 1);
+		assertEquals ("Archmage was allowed with all 4 books not being the same type", false, utils.meetsPickRequirements ("RT01", picks, db));
 
 		// Both should be OK with 4 life books
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 1);
-		assertEquals ("Archmage was not allowed with only 4 life books", true, utils.meetsPickRequirements (GenerateTestData.createArchmageRetort (), picks, db));
-		assertEquals ("Divine Power was not allowed with only 4 life books", true, utils.meetsPickRequirements (createDivinePowerRetort (), picks, db));
+		utils.updatePickQuantity (picks, "MB01", 1);
+		assertEquals ("Archmage was not allowed with only 4 life books", true, utils.meetsPickRequirements ("RT01", picks, db));
+		assertEquals ("Divine Power was not allowed with only 4 life books", true, utils.meetsPickRequirements ("RT02", picks, db));
 
 		// Sorcery mastery needs 4 sorcery books
-		assertEquals ("Sorcery Mastery was allowed with only 1 sorcery book", false, utils.meetsPickRequirements (createSorceryMasteryRetort (), picks, db));
-		utils.updatePickQuantity (picks, GenerateTestData.SORCERY_BOOK, 3);
-		assertEquals ("Sorcery Mastery was not allowed with 4 sorcery books", true, utils.meetsPickRequirements (createSorceryMasteryRetort (), picks, db));
+		assertEquals ("Sorcery Mastery was allowed with only 1 sorcery book", false, utils.meetsPickRequirements ("RT03", picks, db));
+		utils.updatePickQuantity (picks, "MB03", 3);
+		assertEquals ("Sorcery Mastery was not allowed with 4 sorcery books", true, utils.meetsPickRequirements ("RT03", picks, db));
 
 		// Runemaster requires 2 of 3 different types of spell book
-		assertEquals ("Runemaster was allowed with only 2 types of book", false, utils.meetsPickRequirements (createRunemasterRetort (), picks, db));
-		utils.updatePickQuantity (picks, GenerateTestData.NATURE_BOOK, 1);
-		assertEquals ("Runemaster was allowed with only having 1 book in the 3rd type", false, utils.meetsPickRequirements (createRunemasterRetort (), picks, db));
-		utils.updatePickQuantity (picks, GenerateTestData.NATURE_BOOK, 1);
-		assertEquals ("Runemaster was not allowed with 2 of 3 different types of spell book", true, utils.meetsPickRequirements (createRunemasterRetort (), picks, db));
+		assertEquals ("Runemaster was allowed with only 2 types of book", false, utils.meetsPickRequirements ("RT04", picks, db));
+		utils.updatePickQuantity (picks, "MB04", 1);
+		assertEquals ("Runemaster was allowed with only having 1 book in the 3rd type", false, utils.meetsPickRequirements ("RT04", picks, db));
+		utils.updatePickQuantity (picks, "MB04", 1);
+		assertEquals ("Runemaster was not allowed with 2 of 3 different types of spell book", true, utils.meetsPickRequirements ("RT04", picks, db));
 
 		// Node mastery requires 3 specific books
-		assertEquals ("Node Mastery was allowed without a Chaos book", false, utils.meetsPickRequirements (createNodeMasteryRetort (), picks, db));
-		utils.updatePickQuantity (picks, GenerateTestData.CHAOS_BOOK, 1);
-		assertEquals ("Node Mastery was not allowed with all 3 book types", true, utils.meetsPickRequirements (createNodeMasteryRetort (), picks, db));
+		assertEquals ("Node Mastery was allowed without a Chaos book", false, utils.meetsPickRequirements ("RT05", picks, db));
+		utils.updatePickQuantity (picks, "MB05", 1);
+		assertEquals ("Node Mastery was not allowed with all 3 book types", true, utils.meetsPickRequirements ("RT05", picks, db));
 	}
 
 	/**
@@ -273,20 +251,32 @@ public final class TestPlayerPickUtilsImpl
 
 	/**
 	 * Tests the canSafelyAdd method
+	 * @throws RecordNotFoundException If there is a problem
 	 */
 	@Test
-	public final void testCanSafelyAdd ()
+	public final void testCanSafelyAdd () throws RecordNotFoundException
 	{
-		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		// Mock database
+		final Pick pickB = new Pick ();
 
+		final PickExclusiveFrom ex = new PickExclusiveFrom ();
+		ex.setPickExclusiveFromID ("A");
+		pickB.getPickExclusiveFrom ().add (ex);
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.findPick ("B", "canSafelyAdd")).thenReturn (pickB);
+		
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl ();
+		
 		// Can't add a death book if we have a life book
-		utils.updatePickQuantity (picks, GenerateTestData.ARTIFICER, 1);
-		utils.updatePickQuantity (picks, GenerateTestData.CHAOS_BOOK, 1);
-		assertEquals ("Not allowed to add a Death book even though we have no life books", true, utils.canSafelyAdd (createDeathBook (), picks));
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		utils.updatePickQuantity (picks, "C", 1);
+		utils.updatePickQuantity (picks, "D", 1);
+		assertEquals (true, utils.canSafelyAdd ("B", picks, db));
 
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 1);
-		assertEquals ("Allowed to add a Death book even though we have a life book", false, utils.canSafelyAdd (createDeathBook (), picks));
+		utils.updatePickQuantity (picks, "A", 1);
+		assertEquals (false, utils.canSafelyAdd ("B", picks, db));
 	}
 
 	/**

@@ -35,7 +35,11 @@ public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage impleme
 	{
 		log.trace ("Entering start");
 
-		getNewGameUI ().showCustomPicksPanel ();
+		// Standard portraits have fixed colours, only if we chose a custom portrait do we need to go to the flag colour screen
+		if (getNewGameUI ().getPortraitChosen () == null)
+			getNewGameUI ().showCustomFlagColourPanel ();
+		else
+			getNewGameUI ().showCustomPicksPanel ();
 		
 		log.trace ("Exiting start");
 	}

@@ -14,6 +14,8 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -31,11 +34,16 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.bind.JAXBException;
@@ -50,6 +58,7 @@ import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
@@ -88,11 +97,13 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.TurnSystem;
+import momime.common.messages.clienttoserver.ChooseCustomFlagColourMessage;
 import momime.common.messages.clienttoserver.ChooseCustomPicksMessage;
 import momime.common.messages.clienttoserver.ChooseInitialSpellsMessage;
 import momime.common.messages.clienttoserver.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.ChooseWizardMessage;
+import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
 import momime.common.utils.PlayerPickUtils;
 
@@ -107,8 +118,11 @@ import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.filefilters.ExtensionFileFilter;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.StreamUtils;
 
 /**
  * Screens for setting up new and joining existing games
@@ -118,6 +132,9 @@ public final class NewGameUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewGameUI.class);
+
+	/** White with some alpha to make the bar brighten the background colour */
+	private static final Color SLIDER_BAR_COLOUR = new Color (255, 255, 255, 80);
 	
 	/** XML layout of the main form */
 	private XmlLayoutContainerEx newGameLayoutMain;
@@ -155,6 +172,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** XML layout of the "custom debug options" right hand side */
 	private XmlLayoutContainerEx newGameLayoutDebug;
 
+	/** XML layout of the "custom flag colour" right hand side */
+	private XmlLayoutContainerEx newGameLayoutFlagColour;
+	
 	/** XML layout of the "custom picks" right hand side */
 	private XmlLayoutContainerEx newGameLayoutPicks;
 	
@@ -181,6 +201,9 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -256,6 +279,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Remove custom pick book button pressed */
 	private BufferedImage removeBookPressed;
+	
+	/** Background for flag colour sliders */
+	private BufferedImage flagColourSliderBackground;
 	
 	/** Title that changes as we change cards */
 	private JLabel title;
@@ -1023,10 +1049,34 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Gets set to chosen portrait ID when player clicks a button, or null if they click custom */
 	private String portraitChosen;
 	
+	/** File chooser for selecting image file */
+	private JFileChooser customPortraitChooser;
+	
 	// FLAG COLOUR PANEL (for custom wizards with custom portraits)
 	
 	/** Panel key */
 	private final static String FLAG_PANEL = "Flag";
+	
+	/** Panel */
+	private JPanel flagColourPanel;
+	
+	/** Red title */
+	private JLabel flagColourRedTitle;
+	
+	/** Green title */
+	private JLabel flagColourGreenTitle;
+	
+	/** Blue title */
+	private JLabel flagColourBlueTitle;
+
+	/** Red slider */
+	private JSlider flagColourRed;
+	
+	/** Green slider */
+	private JSlider flagColourGreen;
+	
+	/** Blue slider */
+	private JSlider flagColourBlue;
 	
 	// CUSTOM PICKS PANEL (for custom wizards)
 	
@@ -1114,6 +1164,7 @@ public final class NewGameUI extends MomClientFrameUI
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/background.png");
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
+		flagColourSliderBackground = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/flagColourSlider.png");
 		
 		bookshelfWithGargoyles = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/bookshelfWithGargoyles.png");
 		bookshelfWithoutGargoyles = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/bookshelfWithoutGargoyles.png");
@@ -1172,6 +1223,17 @@ public final class NewGameUI extends MomClientFrameUI
 					{
 						if (portraitChosen == null)
 						{
+							try (final FileInputStream in = new FileInputStream (customPortraitChooser.getSelectedFile ()))
+							{
+								try (final ByteArrayOutputStream out = new ByteArrayOutputStream ())
+								{
+									StreamUtils.copyBetweenStreams (in, out, true, false, 0);
+									
+									final UploadCustomPhotoMessage msg = new UploadCustomPhotoMessage ();
+									msg.setNdgBmpImage (out.toByteArray ());
+									getClient ().getServerConnection ().sendMessageToServer (msg);
+								}
+							}
 						}
 						else
 						{
@@ -1181,6 +1243,15 @@ public final class NewGameUI extends MomClientFrameUI
 						}						
 
 						okAction.setEnabled (false);
+					}
+					else if (flagColourPanel.isVisible ())
+					{
+						final ChooseCustomFlagColourMessage msg = new ChooseCustomFlagColourMessage ();
+						msg.setFlagColour (sliderToHex (flagColourRed) + sliderToHex (flagColourGreen) + sliderToHex (flagColourBlue));
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+						
+						// We assume the server is going to accept this, and go straight to the custom picks screen
+						showCustomPicksPanel ();
 					}
 					else if (picksPanel.isVisible ())
 					{
@@ -2144,7 +2215,49 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		cards.add (portraitPanel, PORTRAIT_PANEL);
 		
+		customPortraitChooser = new JFileChooser ();
+		customPortraitChooser.setAcceptAllFileFilterUsed (false);
+		customPortraitChooser.addChoosableFileFilter (new ExtensionFileFilter (new String [] {"jpg", "jpeg", "gif", "png"}, "Image files"));
+		customPortraitChooser.setAcceptAllFileFilterUsed (true);		// Add it again after, so we make sure it isn't the default
+		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
+		flagColourPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutFlagColour ()));
+		flagColourPanel.setOpaque (false);
+		
+		flagColourRedTitle = getUtils ().createLabel (Color.RED, getLargeFont ());
+		flagColourPanel.add (flagColourRedTitle, "frmChooseFlagColourRedLabel");
+
+		flagColourGreenTitle = getUtils ().createLabel (Color.GREEN, getLargeFont ());
+		flagColourPanel.add (flagColourGreenTitle, "frmChooseFlagColourGreenLabel");
+		
+		flagColourBlueTitle = getUtils ().createLabel (Color.BLUE, getLargeFont ());
+		flagColourPanel.add (flagColourBlueTitle, "frmChooseFlagColourBlueLabel");
+		
+		flagColourRed = new FlagColourSlider ();
+		flagColourRed.setMaximum (255);
+		flagColourPanel.add (flagColourRed, "frmChooseFlagColourRed");
+		
+		flagColourGreen = new FlagColourSlider ();
+		flagColourGreen.setMaximum (255);
+		flagColourPanel.add (flagColourGreen, "frmChooseFlagColourGreen");
+		
+		flagColourBlue = new FlagColourSlider ();
+		flagColourBlue.setMaximum (255);
+		flagColourPanel.add (flagColourBlue, "frmChooseFlagColourBlue");
+		
+		final ChangeListener flagColourChangeListener = new ChangeListener ()
+		{
+			@Override
+			public final void stateChanged (final ChangeEvent ev)
+			{
+				updateCustomFlagColour ();
+			}
+		};
+		flagColourRed.addChangeListener (flagColourChangeListener);
+		flagColourGreen.addChangeListener (flagColourChangeListener);
+		flagColourBlue.addChangeListener (flagColourChangeListener);
+		
+		cards.add (flagColourPanel, FLAG_PANEL);
 		
 		// CUSTOM PICKS PANEL (for custom wizards)
 		picksPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutPicks ()));
@@ -2471,15 +2584,32 @@ public final class NewGameUI extends MomClientFrameUI
 						public final void actionPerformed (final ActionEvent ev)
 						{
 							portraitChosen = wizardID;
-							okAction.setEnabled (true);
 							try
 							{
 								if (wizard == null)
 								{
 									// Custom wizard - ask for filename
-									wizardPortrait.setIcon (null);
-									flag1.setIcon (null);
-									flag2.setIcon (null);
+									if (customPortraitChooser.showOpenDialog (null) == JFileChooser.APPROVE_OPTION)
+									{
+										final BufferedImage customPortrait = ImageIO.read (customPortraitChooser.getSelectedFile ());
+										final XmlLayoutComponent portraitSize = getNewGameLayoutMain ().findComponent ("frmNewGameLHSPhoto");
+										if ((customPortrait.getWidth () > portraitSize.getWidth ()) || (customPortrait.getHeight () > portraitSize.getHeight ()))
+										{
+											final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
+											msgBox.setTitleLanguageCategoryID ("frmChoosePortrait");
+											msgBox.setTitleLanguageEntryID ("Title");
+											msgBox.setTextLanguageCategoryID ("frmChoosePortrait");
+											msgBox.setTextLanguageEntryID ("CustomTooLarge");
+											msgBox.setVisible (true);
+										}
+										else
+										{										
+											wizardPortrait.setIcon (new ImageIcon (customPortrait));
+											flag1.setIcon (null);
+											flag2.setIcon (null);
+											okAction.setEnabled (true);
+										}
+									}
 								}
 								else
 								{
@@ -2490,6 +2620,7 @@ public final class NewGameUI extends MomClientFrameUI
 									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (portrait.getFlagColour (), 16));
 									flag1.setIcon (new ImageIcon (wizardFlag));
 									flag2.setIcon (new ImageIcon (wizardFlag));
+									okAction.setEnabled (true);
 								}
 							}
 							catch (final Exception e)
@@ -2717,6 +2848,20 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 
 	/**
+	 * Show flag colour panel, if custom wizard with custom portrait was chosen
+	 */
+	public final void showCustomFlagColourPanel ()
+	{
+		log.trace ("Entering showCustomFlagColourPanel");
+
+		updateCustomFlagColour ();
+		okAction.setEnabled (true);		// Since we can just OK the default colour immediately if we wish
+		cardLayout.show (cards, FLAG_PANEL);
+
+		log.trace ("Exiting showCustomFlagColourPanel");
+	}
+
+	/**
 	 * Show picks panel, if custom wizard was chosen
 	 */
 	public final void showCustomPicksPanel ()
@@ -2915,6 +3060,36 @@ public final class NewGameUI extends MomClientFrameUI
 
 		log.trace ("Exiting enableOrDisableNewGameOkButton");
 	}
+
+	/**
+	 * Keeps the flag colour preview up to date as the sliders move
+	 */
+	private final void updateCustomFlagColour ()
+	{
+		log.trace ("Entering updateCustomFlagColour");
+
+		final int rgb = (flagColourRed.getValue () << 16) + (flagColourGreen.getValue () << 8) + flagColourBlue.getValue ();
+		final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, rgb);
+		flag1.setIcon (new ImageIcon (wizardFlag));
+		flag2.setIcon (new ImageIcon (wizardFlag));
+
+		log.trace ("Exiting updateCustomFlagColour");
+	}
+	
+	/**
+	 * @param slider Slider to read value from
+	 * @return Value converted to hex string
+	 */
+	private final String sliderToHex (final JSlider slider)
+	{
+		String value = Integer.toHexString (slider.getValue ());
+		
+		// The main point of having this as a method is to ensure that the output is 2 chars long
+		while (value.length () < 2)
+			value = "0" + value;
+		
+		return value.toUpperCase ();
+	}
 	
 	/**
 	 * Update all labels and such from the chosen language 
@@ -3074,15 +3249,10 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// JOIN GAME PANEL
 		
-		// WIZARD SELECTION PANEL
-		
-		// PORTRAIT SELECTION PANEL (for custom wizards)
-		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
-		
-		// CUSTOM PICKS PANEL (for custom wizards)
-		
-		// RACE SELECTION PANEL
+		flagColourRedTitle.setText		(getLanguage ().findCategoryEntry ("frmChooseFlagColour", "RedLabel"));
+		flagColourGreenTitle.setText	(getLanguage ().findCategoryEntry ("frmChooseFlagColour", "GreenLabel"));
+		flagColourBlueTitle.setText		(getLanguage ().findCategoryEntry ("frmChooseFlagColour", "BlueLabel"));
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 		
@@ -3148,6 +3318,8 @@ public final class NewGameUI extends MomClientFrameUI
 			title.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
 		else if (portraitPanel.isVisible ())
 			title.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
+		else if (flagColourPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmChooseFlagColour", "Title"));
 		else if (picksPanel.isVisible ())
 		{
 			try
@@ -3987,6 +4159,14 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return Gets set to chosen portrait ID when player clicks a button, or null if they click custom
+	 */
+	public final String getPortraitChosen ()
+	{
+		return portraitChosen;
+	}
+	
+	/**
 	 * @return Large font
 	 */
 	public final Font getLargeFont ()
@@ -4114,6 +4294,22 @@ public final class NewGameUI extends MomClientFrameUI
 		multiplayerSessionUtils = util;
 	}
 
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+	
 	/**
 	 * @return XML layout of the main form
 	 */
@@ -4305,6 +4501,22 @@ public final class NewGameUI extends MomClientFrameUI
 	{
 		newGameLayoutDebug = layout;
 	}
+
+	/**
+	 * @return XML layout of the "custom flag colour" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutFlagColour ()
+	{
+		return newGameLayoutFlagColour;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom flag colour" right hand side
+	 */
+	public final void setNewGameLayoutFlagColour (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutFlagColour = layout;
+	}
 	
 	/**
 	 * @return XML layout of the "custom picks" right hand side
@@ -4320,5 +4532,33 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setNewGameLayoutPicks (final XmlLayoutContainerEx layout)
 	{
 		newGameLayoutPicks = layout;
+	}
+
+	/**
+	 * Overrides slider appearance to more match the brown background colour
+	 */
+	private final class FlagColourSlider extends JSlider
+	{
+		/**
+		 * Default slider to vertical orientation
+		 */
+		private FlagColourSlider ()
+		{
+			super (SwingConstants.VERTICAL);
+		}
+		
+		/**
+		 * Override slider appearance
+		 */
+		@Override
+		protected final void paintComponent (final Graphics g)
+		{
+			g.drawImage (flagColourSliderBackground, 0, 0, null);
+			
+			// Whole area is 7x205
+			g.setColor (SLIDER_BAR_COLOUR);
+			final int height = (205 * getValue ()) / getMaximum ();
+			g.fillRect (7, 212-height, 7, height);
+		}
 	}
 }

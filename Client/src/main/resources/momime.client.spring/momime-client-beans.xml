@@ -240,6 +240,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
+	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+
 	<bean id="fullSpellListMessage" class="momime.client.messages.process.FullSpellListMessageImpl" scope="prototype" >
 		<property name="client" ref="client" />
 		<property name="spellUtils" ref="spellUtils" />
@@ -429,7 +434,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype" />
 	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
-	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype" />
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
@@ -896,6 +900,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="newGameLayoutDebug" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Debug.xml" />
 	</bean>
+
+	<bean id="newGameLayoutFlagColour" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-FlagColour.xml" />
+	</bean>
 	
 	<bean id="newGameLayoutPicks" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Picks.xml" />
@@ -914,6 +922,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameLayoutUnits" ref="newGameLayoutUnits" />
 		<property name="newGameLayoutSpells" ref="newGameLayoutSpells" />
 		<property name="newGameLayoutDebug" ref="newGameLayoutDebug" />
+		<property name="newGameLayoutFlagColour" ref="newGameLayoutFlagColour" />
 		<property name="newGameLayoutPicks" ref="newGameLayoutPicks" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
@@ -926,6 +935,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="surveyorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

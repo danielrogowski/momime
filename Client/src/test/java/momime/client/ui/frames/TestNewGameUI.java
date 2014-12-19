@@ -249,6 +249,12 @@ public final class TestNewGameUI
 		when (lang.findCategoryEntry ("frmChoosePortrait", "Title")).thenReturn ("Select Picture");
 		when (lang.findCategoryEntry ("frmChoosePortrait", "Custom")).thenReturn ("Custom");
 		
+		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
+		when (lang.findCategoryEntry ("frmChooseFlagColour", "Title")).thenReturn ("Select Flag Colour");
+		when (lang.findCategoryEntry ("frmChooseFlagColour", "RedLabel")).thenReturn ("Red");
+		when (lang.findCategoryEntry ("frmChooseFlagColour", "GreenLabel")).thenReturn ("Green");
+		when (lang.findCategoryEntry ("frmChooseFlagColour", "BlueLabel")).thenReturn ("Blue");
+		
 		// CUSTOM PICKS PANEL (for custom wizards)
 		when (lang.findCategoryEntry ("frmCustomPicks", "Title")).thenReturn ("Select Custom Picks");
 		
@@ -447,6 +453,7 @@ public final class TestNewGameUI
 		final XmlLayoutContainerEx unitSettingsLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
 		final XmlLayoutContainerEx debugOptionsLayout	= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Debug.xml"));
+		final XmlLayoutContainerEx flagColourLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FlagColour.xml"));
 		final XmlLayoutContainerEx picksLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Picks.xml"));
 		mainLayout.buildMaps ();
 		newLayout.buildMaps ();
@@ -460,6 +467,7 @@ public final class TestNewGameUI
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
 		debugOptionsLayout.buildMaps ();
+		flagColourLayout.buildMaps ();
 		picksLayout.buildMaps ();
 		
 		// Set up form
@@ -484,6 +492,7 @@ public final class TestNewGameUI
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
 		game.setNewGameLayoutDebug (debugOptionsLayout);
+		game.setNewGameLayoutFlagColour (flagColourLayout);
 		game.setNewGameLayoutPicks (picksLayout);
 		game.setSmallFont (CreateFontsForTests.getSmallFont ());
 		game.setMediumFont (CreateFontsForTests.getMediumFont ());
@@ -713,6 +722,22 @@ public final class TestNewGameUI
 		Thread.sleep (5000);
 		game.setVisible (false);
 	}
+
+	/**
+	 * Tests the "custom flag colour" screen (if a custom wizard with a custom portrait was chosen)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testNewGameUI_CustomFlagColour () throws Exception
+	{
+		final NewGameUI game = createNewGameUI ();
+		
+		// Display form
+		game.setVisible (true);
+		game.showCustomFlagColourPanel ();
+		Thread.sleep (5000);
+		game.setVisible (false);
+	}
 	
 	/**
 	 * Tests the "custom picks" screen (if a custom wizard was chosen)
@@ -727,7 +752,7 @@ public final class TestNewGameUI
 		game.setVisible (true);
 		game.afterJoinedSession ();		// Need this too to create the retort buttons and bookshelves
 		game.showCustomPicksPanel ();
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 		game.setVisible (false);
 	}
 	

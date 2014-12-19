@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>320</formWidth>
+	<formHeight>400</formHeight>
+	<component name="frmChooseFlagColourGreenLabel">
+		<left>163</left>
+		<top>10</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmChooseFlagColourRedLabel">
+		<left>103</left>
+		<top>10</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmChooseFlagColourBlueLabel">
+		<left>223</left>
+		<top>10</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmChooseFlagColourRed">
+		<left>93</left>
+		<top>35</top>
+		<width>22</width>
+		<height>220</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmChooseFlagColourGreen">
+		<left>153</left>
+		<top>35</top>
+		<width>22</width>
+		<height>220</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmChooseFlagColourBlue">
+		<left>213</left>
+		<top>35</top>
+		<width>22</width>
+		<height>220</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

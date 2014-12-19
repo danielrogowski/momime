@@ -19391,6 +19391,7 @@
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="LeaveGame" />
 		<languageEntry languageEntryID="Custom" />
+		<languageEntry languageEntryID="CustomTooLarge" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseFlagColour">
 		<languageEntry languageEntryID="Title" />

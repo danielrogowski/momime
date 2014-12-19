@@ -5053,6 +5053,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="Custom">
 			<languageEntryText>Custom</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CustomTooLarge">
+			<languageEntryText>Custom portraits are limited to a maximum size of 218 x 250 pixels.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseFlagColour">
 		<languageEntry languageEntryID="Title">

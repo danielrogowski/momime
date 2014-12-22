@@ -185,6 +185,15 @@ public final class MainMenuUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getNewGameUI ().setVisible (true);
+					getNewGameUI ().showJoinGamePanel ();
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		

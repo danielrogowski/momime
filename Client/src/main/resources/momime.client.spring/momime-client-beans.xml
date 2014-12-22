@@ -901,6 +901,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Debug.xml" />
 	</bean>
 
+	<bean id="newGameLayoutJoin" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Join.xml" />
+	</bean>
+
 	<bean id="newGameLayoutFlagColour" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-FlagColour.xml" />
 	</bean>
@@ -922,6 +926,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameLayoutUnits" ref="newGameLayoutUnits" />
 		<property name="newGameLayoutSpells" ref="newGameLayoutSpells" />
 		<property name="newGameLayoutDebug" ref="newGameLayoutDebug" />
+		<property name="newGameLayoutJoin" ref="newGameLayoutJoin" />
 		<property name="newGameLayoutFlagColour" ref="newGameLayoutFlagColour" />
 		<property name="newGameLayoutPicks" ref="newGameLayoutPicks" />
 		<property name="largeFont" ref="largeFont" />

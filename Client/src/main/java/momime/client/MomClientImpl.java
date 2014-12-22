@@ -182,6 +182,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			@Override
 			public final void receivedSessionList (final List<SessionAndPlayerDescriptions> sessions) throws JAXBException, XMLStreamException, IOException
 			{
+				getNewGameUI ().setSessions (sessions);
 			}
 
 			/**

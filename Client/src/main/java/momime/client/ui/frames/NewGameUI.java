@@ -37,7 +37,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -46,6 +48,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -114,8 +119,11 @@ import com.ndg.map.CoordinateSystemType;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.JoinSession;
 import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.RequestSessionList;
+import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.filefilters.ExtensionFileFilter;
@@ -172,6 +180,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** XML layout of the "custom debug options" right hand side */
 	private XmlLayoutContainerEx newGameLayoutDebug;
 
+	/** XML layout of the "join game" right hand side */
+	private XmlLayoutContainerEx newGameLayoutJoin;
+	
 	/** XML layout of the "custom flag colour" right hand side */
 	private XmlLayoutContainerEx newGameLayoutFlagColour;
 	
@@ -227,10 +238,10 @@ public final class NewGameUI extends MomClientFrameUI
 	private JPanel bookshelf;
 	
 	/** Currently selected picks (whether from pre-defined wizard or custom) */
-	private List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+	private final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 	
 	/** Images added to draw the books on the shelf, this includes all 6 bookshelves (merged, and for each magic realm) */
-	private List<JLabel> bookImages = new ArrayList<JLabel> ();
+	private final List<JLabel> bookImages = new ArrayList<JLabel> ();
 	
 	/** Currently selected retorts */
 	private JTextArea retorts;
@@ -1015,6 +1026,21 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Panel key */
 	private final static String JOIN_GAME_PANEL = "Join";
 	
+	/** Panel */
+	private JPanel joinPanel;
+	
+	/** List of sessions we can join */
+	private List<SessionAndPlayerDescriptions> sessions;
+	
+	/** Table of sessions we can join */
+	private JTable sessionsTable;
+	
+	/** Table model of sessions we can join */
+	private final SessionListTableModel sessionsTableModel = new SessionListTableModel ();
+	
+	/** Refresh action */
+	private Action refreshAction;
+	
 	// WIZARD SELECTION PANEL
 
 	/** Panel key */
@@ -1024,10 +1050,10 @@ public final class NewGameUI extends MomClientFrameUI
 	private JPanel wizardPanel;
 	
 	/** Dynamically created button actions */
-	private Map<String, Action> wizardButtonActions = new HashMap<String, Action> ();
+	private final Map<String, Action> wizardButtonActions = new HashMap<String, Action> ();
 
 	/** Dynamically created buttons etc */
-	private List<Component> wizardComponents = new ArrayList<Component> ();
+	private final List<Component> wizardComponents = new ArrayList<Component> ();
 	
 	/** Gets set to chosen wizard ID when player clicks a button, or null if they click custom */
 	private String wizardChosen;
@@ -1041,10 +1067,10 @@ public final class NewGameUI extends MomClientFrameUI
 	private JPanel portraitPanel;
 	
 	/** Dynamically created button actions */
-	private Map<String, Action> portraitButtonActions = new HashMap<String, Action> ();
+	private final Map<String, Action> portraitButtonActions = new HashMap<String, Action> ();
 
 	/** Dynamically created buttons etc */
-	private List<Component> portraitComponents = new ArrayList<Component> ();
+	private final List<Component> portraitComponents = new ArrayList<Component> ();
 	
 	/** Gets set to chosen portrait ID when player clicks a button, or null if they click custom */
 	private String portraitChosen;
@@ -1087,22 +1113,22 @@ public final class NewGameUI extends MomClientFrameUI
 	private JPanel picksPanel;
 	
 	/** Dynamically created button actions */
-	private Map<String, ToggleAction> retortButtonActions = new HashMap<String, ToggleAction> ();
+	private final Map<String, ToggleAction> retortButtonActions = new HashMap<String, ToggleAction> ();
 
 	/** Dynamically created bookshelf titles */
-	private Map<String, JLabel> bookshelfTitles = new HashMap<String, JLabel> ();
+	private final Map<String, JLabel> bookshelfTitles = new HashMap<String, JLabel> ();
 
 	/** Dynamically created buttons for adding books */
-	private Map<String, Action> addBookActions = new HashMap<String, Action> ();
+	private final Map<String, Action> addBookActions = new HashMap<String, Action> ();
 	
 	/** Dynamically created buttons for removing books */
-	private Map<String, Action> removeBookActions = new HashMap<String, Action> ();
+	private final Map<String, Action> removeBookActions = new HashMap<String, Action> ();
 	
 	/** Dynamically created buttons etc */
-	private List<Component> customPicksComponents = new ArrayList<Component> ();
+	private final List<Component> customPicksComponents = new ArrayList<Component> ();
 
 	/** Shelf displaying each kind of book */
-	private Map<String, JPanel> magicRealmBookshelves = new HashMap<String, JPanel> ();
+	private final Map<String, JPanel> magicRealmBookshelves = new HashMap<String, JPanel> ();
 	
 	// FREE SPELL SELECTION PANEL
 	
@@ -1116,13 +1142,13 @@ public final class NewGameUI extends MomClientFrameUI
 	private String currentMagicRealmID;
 	
 	/** Dynamically created rank titles */
-	private Map<ChooseInitialSpellsNowRank, JLabel> spellRankTitles = new HashMap<ChooseInitialSpellsNowRank, JLabel> ();
+	private final Map<ChooseInitialSpellsNowRank, JLabel> spellRankTitles = new HashMap<ChooseInitialSpellsNowRank, JLabel> ();
 	
 	/** Free spell actions */
-	private Map<Spell, ToggleAction> freeSpellActions = new HashMap<Spell, ToggleAction> ();
+	private final Map<Spell, ToggleAction> freeSpellActions = new HashMap<Spell, ToggleAction> ();
 
 	/** Dynamically created buttons etc */
-	private List<Component> freeSpellsComponents = new ArrayList<Component> ();
+	private final List<Component> freeSpellsComponents = new ArrayList<Component> ();
 	
 	// RACE SELECTION PANEL
 	
@@ -1133,13 +1159,13 @@ public final class NewGameUI extends MomClientFrameUI
 	private JPanel racePanel;
 	
 	/** Dynamically created titles */
-	private Map<Integer, JLabel> racePlanes = new HashMap<Integer, JLabel> ();
+	private final Map<Integer, JLabel> racePlanes = new HashMap<Integer, JLabel> ();
 	
 	/** Dynamically created button actions */
-	private Map<Race, Action> raceButtonActions = new HashMap<Race, Action> ();
+	private final Map<Race, Action> raceButtonActions = new HashMap<Race, Action> ();
 
 	/** Dynamically created buttons etc */
-	private List<Component> raceComponents = new ArrayList<Component> ();
+	private final List<Component> raceComponents = new ArrayList<Component> ();
 	
 	/** Gets set to chosen race ID when player clicks a button */
 	private String raceChosen;
@@ -1211,6 +1237,22 @@ public final class NewGameUI extends MomClientFrameUI
 						
 						showNextNewGamePanel ();
 					
+					else if (joinPanel.isVisible ())
+					{
+						final SessionAndPlayerDescriptions spd = getSessions ().get (sessionsTable.getSelectedRow ());
+						
+						final PlayerDescription pd = new PlayerDescription ();
+						pd.setPlayerID (getClient ().getOurPlayerID ());
+						pd.setPlayerName (getClient ().getOurPlayerName ());
+				
+						final JoinSession msg = new JoinSession ();
+						msg.setSessionID (spd.getSessionDescription ().getSessionID ());
+						msg.setPlayerDescription (pd);
+				
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+
+						okAction.setEnabled (false);
+					}
 					else if (wizardPanel.isVisible ())
 					{
 						final ChooseWizardMessage msg = new ChooseWizardMessage ();
@@ -2200,6 +2242,53 @@ public final class NewGameUI extends MomClientFrameUI
 		cards.add (debugPanel, DEBUG_PANEL);
 		
 		// JOIN GAME PANEL
+		refreshAction = new AbstractAction ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				try
+				{
+					getClient ().getServerConnection ().sendMessageToServer (new RequestSessionList ());
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			}
+		};
+
+		joinPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutJoin ()));
+		joinPanel.setOpaque (false);
+		
+		joinPanel.add (getUtils ().createImageButton (refreshAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonDisabled), "frmJoinGameRefresh");
+		
+		sessionsTable = new JTable ();
+		sessionsTable.setModel (sessionsTableModel);
+		sessionsTable.setFont (getSmallFont ());
+		sessionsTable.setForeground (MomUIConstants.SILVER);
+		sessionsTable.setBackground (new Color (0, 0, 0, 0));
+		sessionsTable.getTableHeader ().setFont (getSmallFont ());
+		sessionsTable.setOpaque (false);
+		sessionsTable.setRowSelectionAllowed (true);
+		sessionsTable.setColumnSelectionAllowed (false);
+		
+		final JScrollPane sessionsTablePane = new JScrollPane (sessionsTable);
+		sessionsTablePane.getViewport ().setOpaque (false);
+		joinPanel.add (sessionsTablePane, "frmJoinGameSessions");
+		
+		sessionsTable.getSelectionModel ().addListSelectionListener (new ListSelectionListener ()
+		{
+			@Override
+			public final void valueChanged (final ListSelectionEvent ev)
+			{
+				// Enable button as soon as a row is clicked on
+				okAction.setEnabled (true);
+			}
+		});
+		
+		cards.add (joinPanel, JOIN_GAME_PANEL);
 		
 		// WIZARD SELECTION PANEL
 		wizardPanel = new JPanel ();
@@ -2834,6 +2923,19 @@ public final class NewGameUI extends MomClientFrameUI
 
 		log.trace ("Exiting afterJoinedSession");
 	}
+
+	/**
+	 * Show join game panel
+	 */
+	public final void showJoinGamePanel ()
+	{
+		log.trace ("Entering showJoinGamePanel");
+
+		refreshAction.actionPerformed (null);
+		cardLayout.show (cards, JOIN_GAME_PANEL);
+
+		log.trace ("Exiting showJoinGamePanel");
+	}
 	
 	/**
 	 * Show portrait panel, if custom wizard was chosen
@@ -3248,6 +3350,8 @@ public final class NewGameUI extends MomClientFrameUI
 		disableFogOfWarLabel.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDebug", "DisableFogOfWar"));
 		
 		// JOIN GAME PANEL
+		refreshAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmJoinGame", "Refresh"));
+		sessionsTableModel.fireTableDataChanged ();
 		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
 		flagColourRedTitle.setText		(getLanguage ().findCategoryEntry ("frmChooseFlagColour", "RedLabel"));
@@ -3314,6 +3418,8 @@ public final class NewGameUI extends MomClientFrameUI
 			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "Title"));
 		else if (debugPanel.isVisible ())
 			title.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDebug", "Title"));		
+		else if (joinPanel.isVisible ())
+			title.setText (getLanguage ().findCategoryEntry ("frmJoinGame", "SelectGame"));		
 		else if (wizardPanel.isVisible ())
 			title.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
 		else if (portraitPanel.isVisible ())
@@ -4167,6 +4273,23 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return List of sessions we can join
+	 */
+	public final List<SessionAndPlayerDescriptions> getSessions ()
+	{
+		return sessions;
+	}
+
+	/**
+	 * @param ses List of sessions we can join
+	 */
+	public final void setSessions (final List<SessionAndPlayerDescriptions> ses)
+	{
+		sessions = ses;
+		sessionsTableModel.fireTableDataChanged ();
+	}
+	
+	/**
 	 * @return Large font
 	 */
 	public final Font getLargeFont ()
@@ -4503,6 +4626,22 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return XML layout of the "join game" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutJoin ()
+	{
+		return newGameLayoutJoin;
+	}
+
+	/**
+	 * @param layout XML layout of the "join game" right hand side
+	 */
+	public final void setNewGameLayoutJoin (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutJoin = layout;
+	}
+	
+	/**
 	 * @return XML layout of the "custom flag colour" right hand side
 	 */
 	public final XmlLayoutContainerEx getNewGameLayoutFlagColour ()
@@ -4559,6 +4698,70 @@ public final class NewGameUI extends MomClientFrameUI
 			g.setColor (SLIDER_BAR_COLOUR);
 			final int height = (205 * getValue ()) / getMaximum ();
 			g.fillRect (7, 212-height, 7, height);
+		}
+	}
+	
+	/**
+	 * Table model for displaying game session we can join
+	 */
+	private final class SessionListTableModel extends AbstractTableModel
+	{
+		/**
+		 * @return Number of columns in the grid
+		 */
+		@Override
+		public final int getColumnCount ()
+		{
+			return 3;
+		}
+		
+		/**
+		 * @return Heading for each column
+		 */
+		@Override
+		public final String getColumnName (final int column)
+		{
+			return getLanguage ().findCategoryEntry ("frmJoinGame", "SessionsColumn" + column);
+		}
+		
+		/**
+		 * @return Number of sessions we can join
+		 */
+		@Override
+		public final int getRowCount ()
+		{
+			return getSessions ().size ();
+		}
+
+		/**
+		 * @return Value to display at particular cell
+		 */
+		@Override
+		public final Object getValueAt (final int rowIndex, final int columnIndex)
+		{
+			final SessionAndPlayerDescriptions spd = getSessions ().get (rowIndex);
+			final MomSessionDescription sd = (MomSessionDescription) spd.getSessionDescription ();
+			
+			final String value;
+			switch (columnIndex)
+			{
+				case 0:
+					value = spd.getSessionDescription ().getSessionName ();
+					break;
+
+				case 1:
+					value = spd.getPlayer ().size () + " / " + (sd.getMaxPlayers () - sd.getAiPlayerCount () - 2) +
+						(sd.getAiPlayerCount () == 0 ? "" : (", +" + sd.getAiPlayerCount () + " AI")); 
+					break;
+
+				case 2:
+					value = sd.getMapSize ().getWidth () + " x " + sd.getMapSize ().getHeight ();
+					break;
+					
+				default:
+					value = null;
+			}
+			return value;
 		}
 	}
 }

@@ -5126,6 +5126,15 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="ListColumn2">
 			<languageEntryText>Human or AI?</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Human">
+			<languageEntryText>Human</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AI">
+			<languageEntryText>AI</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Custom">
+			<languageEntryText>Custom</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMapButtonBar">
 		<languageEntry languageEntryID="Game">

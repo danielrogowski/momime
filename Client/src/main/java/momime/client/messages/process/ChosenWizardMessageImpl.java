@@ -9,6 +9,7 @@ import momime.client.MomClient;
 import momime.client.ui.frames.NewGameUI;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ChosenWizardMessage;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,10 +53,11 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 		// If it is us, and we chose Custom, then we need to go to the Choose Portrait screen
 		// If it is us and we picked a pre-defined Wizard then do nothing - the server will have already sent us either mmChooseInitialSpells or
 		// mmChooseYourRaceNow to tell us what to do next before it sent this mmChosenWizard message
-		if ((getPlayerID () == getClient ().getOurPlayerID ()) && (getWizardID () == null))
+		if ((getPlayerID () == getClient ().getOurPlayerID ()) && (PlayerKnowledgeUtils.isCustomWizard (getWizardID ())))
 			getNewGameUI ().showPortraitPanel ();
-			
-		// Some screens need updating when we learn what wizard a player is using
+		
+		// Show chosen wizard on wait for players list
+		getNewGameUI ().updateWaitPanelPlayersList ();
 		
 		log.trace ("Exiting start");
 	}

@@ -25,7 +25,7 @@ public interface PlayerMessageProcessing
 	 * Message we send to the server when we choose which wizard we want to be; AI players also call this to do their wizard, picks and spells setup
 	 * which is why this isn't all just in ChooseWizardMessageImpl
 	 *
-	 * @param wizardIdFromMessage wizard ID the player wants to choose
+	 * @param wizardID wizard ID the player wants to choose
 	 * @param player Player who sent the message
 	 * @param players List of players in the session
 	 * @param sd Session description
@@ -35,7 +35,7 @@ public interface PlayerMessageProcessing
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
-	public void chooseWizard (final String wizardIdFromMessage, final PlayerServerDetails player,
+	public void chooseWizard (final String wizardID, final PlayerServerDetails player,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException;
 

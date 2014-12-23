@@ -912,6 +912,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="newGameLayoutPicks" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Picks.xml" />
 	</bean>
+
+	<bean id="newGameLayoutWait" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Wait.xml" />
+	</bean>
 	
 	<bean id="newGameUI" class="momime.client.ui.frames.NewGameUI">
 		<property name="newGameLayoutMain" ref="newGameLayoutMain" />
@@ -929,6 +933,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameLayoutJoin" ref="newGameLayoutJoin" />
 		<property name="newGameLayoutFlagColour" ref="newGameLayoutFlagColour" />
 		<property name="newGameLayoutPicks" ref="newGameLayoutPicks" />
+		<property name="newGameLayoutWait" ref="newGameLayoutWait" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -939,6 +944,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>

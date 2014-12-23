@@ -214,6 +214,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			@Override
 			public final void additionalPlayerJoined (final int playerID) throws JAXBException, XMLStreamException, IOException
 			{
+				getNewGameUI ().updateWaitPanelPlayersList ();
 			}
 
 			/**
@@ -228,6 +229,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			@Override
 			public final void playerLeft (final int playerID) throws JAXBException, XMLStreamException, IOException
 			{
+				// This isn't really right, because as per comments above, the list hasn't been updated yet
+				getNewGameUI ().updateWaitPanelPlayersList ();
 			}
 
 			/**

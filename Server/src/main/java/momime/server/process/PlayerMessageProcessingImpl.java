@@ -140,7 +140,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * Message we send to the server when we choose which wizard we want to be; AI players also call this to do their wizard, picks and spells setup
 	 * which is why this isn't all just in ChooseWizardMessageImpl
 	 *
-	 * @param wizardIdFromMessage wizard ID the player wants to choose
+	 * @param wizardID wizard ID the player wants to choose
 	 * @param player Player who sent the message
 	 * @param players List of players in the session
 	 * @param sd Session description
@@ -151,19 +151,20 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
 	@Override
-	public final void chooseWizard (final String wizardIdFromMessage, final PlayerServerDetails player,
+	public final void chooseWizard (final String wizardID, final PlayerServerDetails player,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering chooseWizard: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + wizardIdFromMessage);
+		log.trace ("Entering chooseWizard: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + wizardID);
 
-		// Blank or null are used for custom wizard
-		final String wizardID = ((wizardIdFromMessage != null) && (wizardIdFromMessage.equals (""))) ? null : wizardIdFromMessage;
-
-		// Check if custom
+		// Check if not specified
 		boolean valid;
 		Wizard wizard = null;
-		if (wizardID == null)
+		if (!PlayerKnowledgeUtils.hasWizardBeenChosen (wizardID))
+			valid = false;
+		
+		// Check if custom
+		else if (PlayerKnowledgeUtils.isCustomWizard (wizardID))
 			valid = sd.getDifficultyLevel ().isCustomWizards ();
 
 		// Check if Raiders
@@ -207,10 +208,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		else
 		{
 			// Successful - Remember choice on the server
-			// Convert custom null to blank at this point
 			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-
-			ppk.setWizardID ((wizardID == null) ? "" : wizardID);
+			ppk.setWizardID (wizardID);
 
 			if (wizard != null)
 			{
@@ -318,15 +317,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Convert empty string (custom wizard) to a null
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		final String wizardIdToSend;
-		if (ppk.getWizardID ().equals (""))
-			wizardIdToSend = null;
-		else
-			wizardIdToSend = ppk.getWizardID ();
 
 		final ChosenWizardMessage msg = new ChosenWizardMessage ();
 		msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-		msg.setWizardID (wizardIdToSend);
+		msg.setWizardID (ppk.getWizardID ());
 
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 

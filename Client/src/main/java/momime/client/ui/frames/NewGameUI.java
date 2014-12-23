@@ -64,6 +64,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
@@ -110,6 +111,7 @@ import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
 import org.apache.commons.logging.Log;
@@ -188,6 +190,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** XML layout of the "custom picks" right hand side */
 	private XmlLayoutContainerEx newGameLayoutPicks;
+
+	/** XML layout of the "wait for players to join" right hand side */
+	private XmlLayoutContainerEx newGameLayoutWait;
 	
 	/** Large font */
 	private Font largeFont;
@@ -215,6 +220,9 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -1030,7 +1038,7 @@ public final class NewGameUI extends MomClientFrameUI
 	private JPanel joinPanel;
 	
 	/** List of sessions we can join */
-	private List<SessionAndPlayerDescriptions> sessions;
+	private List<SessionAndPlayerDescriptions> sessions = new ArrayList<SessionAndPlayerDescriptions> ();
 	
 	/** Table of sessions we can join */
 	private JTable sessionsTable;
@@ -1177,6 +1185,9 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Panel */
 	private JPanel waitPanel;
+	
+	/** Table players in session */
+	private final PlayerListTableModel playersTableModel = new PlayerListTableModel ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -2369,9 +2380,22 @@ public final class NewGameUI extends MomClientFrameUI
 		cards.add (racePanel, RACE_PANEL);
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
-		waitPanel = new JPanel ();
+		waitPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutWait ()));
 		waitPanel.setOpaque (false);
-		waitPanel.setLayout (new GridBagLayout ());
+		
+		final JTable playersTable = new JTable ();
+		playersTable.setModel (playersTableModel);
+		playersTable.setFont (getSmallFont ());
+		playersTable.setForeground (MomUIConstants.SILVER);
+		playersTable.setBackground (new Color (0, 0, 0, 0));
+		playersTable.getTableHeader ().setFont (getSmallFont ());
+		playersTable.setOpaque (false);
+		playersTable.setRowSelectionAllowed (false);
+		playersTable.setColumnSelectionAllowed (false);
+		
+		final JScrollPane playersTablePane = new JScrollPane (playersTable);
+		playersTablePane.getViewport ().setOpaque (false);
+		waitPanel.add (playersTablePane, "frmWaitForPlayersToJoinSessions");
 		
 		cards.add (waitPanel, WAIT_PANEL);
 
@@ -2610,7 +2634,7 @@ public final class NewGameUI extends MomClientFrameUI
 				if ((rowNo < rowCount - 1) || (wizardNo + (rowCount * (colCount - 1 - colNo)) < wizards.size ()))
 				{
 					final Wizard wizard = wizards.get (wizardNo);
-					final String wizardID = (wizard == null) ? null : wizard.getWizardID ();
+					final String wizardID = (wizard == null) ? "" : wizard.getWizardID ();
 					
 					// Choose wizard button
 					final Action wizardButtonAction = new AbstractAction ()
@@ -3144,7 +3168,24 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showWaitPanel ()
 	{
+		log.trace ("Entering showWaitPanel");
+
+		playersTableModel.fireTableDataChanged ();
 		cardLayout.show (cards, WAIT_PANEL);
+
+		log.trace ("Exiting showWaitPanel");
+	}
+	
+	/**
+	 * Hook so the multiplayer layer can call into it when players join or leave
+	 */
+	public final void updateWaitPanelPlayersList ()
+	{
+		log.trace ("Entering updateWaitPanelPlayersList");
+
+		playersTableModel.fireTableDataChanged ();
+
+		log.trace ("Exiting updateWaitPanelPlayersList");
 	}
 
 	/**
@@ -3633,14 +3674,14 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Choose wizard buttons
 		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
-			if (wizard.getKey () == null)
+			if (PlayerKnowledgeUtils.isCustomWizard (wizard.getKey ()))
 				wizard.getValue ().putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChooseWizard", "Custom"));
 			else
 				wizard.getValue ().putValue (Action.NAME, getLanguage ().findWizardName (wizard.getKey ()));
 		
 		// Choose portrait buttons
 		for (final Entry<String, Action> portrait : portraitButtonActions.entrySet ())
-			if (portrait.getKey () == null)
+			if (PlayerKnowledgeUtils.isCustomWizard (portrait.getKey ()))
 				portrait.getValue ().putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChoosePortrait", "Custom"));
 			else
 				portrait.getValue ().putValue (Action.NAME, getLanguage ().findWizardName (portrait.getKey ()));
@@ -4434,6 +4475,22 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
+	}
+	
+	/**
 	 * @return XML layout of the main form
 	 */
 	public final XmlLayoutContainerEx getNewGameLayoutMain ()
@@ -4674,6 +4731,22 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return XML layout of the "wait for players to join" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutWait ()
+	{
+		return newGameLayoutWait;
+	}
+
+	/**
+	 * @param layout XML layout of the "wait for players to join" right hand side
+	 */
+	public final void setNewGameLayoutWait (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutWait = layout;
+	}
+	
+	/**
 	 * Overrides slider appearance to more match the brown background colour
 	 */
 	private final class FlagColourSlider extends JSlider
@@ -4756,6 +4829,77 @@ public final class NewGameUI extends MomClientFrameUI
 
 				case 2:
 					value = sd.getMapSize ().getWidth () + " x " + sd.getMapSize ().getHeight ();
+					break;
+					
+				default:
+					value = null;
+			}
+			return value;
+		}
+	}
+
+	/**
+	 * Table model for displaying players in the session
+	 */
+	private final class PlayerListTableModel extends AbstractTableModel
+	{
+		/**
+		 * @return Number of columns in the grid
+		 */
+		@Override
+		public final int getColumnCount ()
+		{
+			return 3;
+		}
+		
+		/**
+		 * @return Heading for each column
+		 */
+		@Override
+		public final String getColumnName (final int column)
+		{
+			return getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "ListColumn" + column);
+		}
+		
+		/**
+		 * @return Number of sessions we can join
+		 */
+		@Override
+		public final int getRowCount ()
+		{
+			return getClient ().getPlayers ().size ();
+		}
+
+		/**
+		 * @return Value to display at particular cell
+		 */
+		@Override
+		public final Object getValueAt (final int rowIndex, final int columnIndex)
+		{
+			final PlayerPublicDetails ppd = getClient ().getPlayers ().get (rowIndex);
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ppd.getPersistentPlayerPublicKnowledge ();
+			
+			final String value;
+			switch (columnIndex)
+			{
+				case 0:
+					value = getWizardClientUtils ().getPlayerName (ppd);
+					break;
+
+				case 1:
+					if (!PlayerKnowledgeUtils.hasWizardBeenChosen (pub.getWizardID ()))
+						value = "";
+					
+					else if (PlayerKnowledgeUtils.isCustomWizard (pub.getWizardID ()))
+						value = getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom");
+					
+					else
+						value = getLanguage ().findWizardName (pub.getWizardID ());
+					break;
+
+				case 2:
+					value = getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin",
+						ppd.getPlayerDescription ().isHuman () ? "Human" : "AI");
 					break;
 					
 				default:

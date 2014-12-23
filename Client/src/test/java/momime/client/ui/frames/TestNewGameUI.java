@@ -23,6 +23,7 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.LandProportion;
@@ -45,6 +46,7 @@ import org.junit.Test;
 import com.ndg.multiplayer.base.client.ClientToServerConnection;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.random.RandomUtilsImpl;
 import com.ndg.swing.NdgUIUtils;
@@ -348,11 +350,17 @@ public final class TestNewGameUI
 		// RACE SELECTION PANEL
 		when (lang.findCategoryEntry ("frmChooseRace", "Title")).thenReturn ("Choose Race");
 
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		pd.setPlayerName ("Mr. Blah");
+		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("");
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (null, pub, null);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, null);
+		players.add (ourPlayer);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 3, "NewGameUI.showRacePanel")).thenReturn (ourPlayer);
@@ -391,6 +399,15 @@ public final class TestNewGameUI
 
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Title")).thenReturn ("Waiting for other Players to Join");
+		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "ListColumn0")).thenReturn ("Name");
+		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "ListColumn1")).thenReturn ("Wizard");
+		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "ListColumn2")).thenReturn ("Human or AI?");
+		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Human")).thenReturn ("Human");
+		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "AI")).thenReturn ("AI");
+		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Custom")).thenReturn ("Custom");
+		
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		when (wizardClientUtils.getPlayerName (ourPlayer)).thenReturn (pd.getPlayerName ());
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -468,6 +485,7 @@ public final class TestNewGameUI
 		final XmlLayoutContainerEx joinLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Join.xml"));
 		final XmlLayoutContainerEx flagColourLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FlagColour.xml"));
 		final XmlLayoutContainerEx picksLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Picks.xml"));
+		final XmlLayoutContainerEx waitLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Wait.xml"));
 		mainLayout.buildMaps ();
 		newLayout.buildMaps ();
 		mapSizeLayout.buildMaps ();
@@ -483,6 +501,7 @@ public final class TestNewGameUI
 		joinLayout.buildMaps ();
 		flagColourLayout.buildMaps ();
 		picksLayout.buildMaps ();
+		waitLayout.buildMaps ();
 		
 		// Set up form
 		final NewGameUI game = new NewGameUI ();
@@ -492,6 +511,7 @@ public final class TestNewGameUI
 		game.setClient (client);
 		game.setGraphicsDB (gfx);
 		game.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		game.setWizardClientUtils (wizardClientUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setNewGameLayoutMain (mainLayout);
@@ -509,6 +529,7 @@ public final class TestNewGameUI
 		game.setNewGameLayoutJoin (joinLayout);
 		game.setNewGameLayoutFlagColour (flagColourLayout);
 		game.setNewGameLayoutPicks (picksLayout);
+		game.setNewGameLayoutWait (waitLayout);
 		game.setSmallFont (CreateFontsForTests.getSmallFont ());
 		game.setMediumFont (CreateFontsForTests.getMediumFont ());
 		game.setLargeFont (CreateFontsForTests.getLargeFont ());
@@ -857,6 +878,8 @@ public final class TestNewGameUI
 	{
 		final NewGameUI game = createNewGameUI ();
 		
+		// Set up some dummy players
+
 		// Display form
 		game.setVisible (true);
 		game.showWaitPanel ();

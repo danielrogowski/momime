@@ -2778,6 +2778,9 @@ public final class NewGameUI extends MomClientFrameUI
 			portraitComponents.add (portraitGlue);
 		}
 		
+		// Deal with the 'each wizard only once' option
+		enableOrDisableWizardButtons ();
+		
 		// CUSTOM PICKS PANEL (for custom wizards)
 		// First we need to count how many bookshelves we need
 		int bookshelfCount = 0;
@@ -2946,6 +2949,40 @@ public final class NewGameUI extends MomClientFrameUI
 		cardLayout.show (cards, WIZARD_PANEL);
 
 		log.trace ("Exiting afterJoinedSession");
+	}
+
+	/**
+	 * Enables or disables all the wizard selection buttons, on the chance that the "allow each wizard only once" option is ticked
+	 */
+	public final void enableOrDisableWizardButtons ()
+	{
+		log.trace ("Entering enableOrDisableWizardButtons");
+
+		// First enable them all
+		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
+			wizard.getValue ().setEnabled (true);
+		
+		// Then if the option is chosen, disable actions for any already chosen wizards
+		if (getClient ().getSessionDescription ().getDifficultyLevel ().isEachWizardOnlyOnce ())
+		{
+			for (final PlayerPublicDetails player : getClient ().getPlayers ())
+			{
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				System.out.println (player.getPlayerDescription ().getPlayerName () + " = " + pub.getWizardID ());
+				if ((PlayerKnowledgeUtils.hasWizardBeenChosen (pub.getWizardID ())) && (PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) &&
+					(!PlayerKnowledgeUtils.isCustomWizard (pub.getWizardID ())))
+					
+					wizardButtonActions.get (pub.getWizardID ()).setEnabled (false);
+			}
+			
+			// If we've now got a wizard selected who's become disabled, better disable the OK button
+			if ((okAction.isEnabled ()) && (!PlayerKnowledgeUtils.isCustomWizard (wizardChosen)) &&
+				(!wizardButtonActions.get (wizardChosen).isEnabled ()))
+				
+				okAction.setEnabled (false);
+		}
+		
+		log.trace ("Exiting enableOrDisableWizardButtons");
 	}
 
 	/**

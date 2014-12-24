@@ -12,6 +12,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.ui.frames.NewGameUI;
 import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Message server sends to a player to let them know their choice of photo was OK (regardless of whether it was a
@@ -36,7 +37,7 @@ public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage impleme
 		log.trace ("Entering start");
 
 		// Standard portraits have fixed colours, only if we chose a custom portrait do we need to go to the flag colour screen
-		if (getNewGameUI ().getPortraitChosen () == null)
+		if (PlayerKnowledgeUtils.isCustomWizard (getNewGameUI ().getPortraitChosen ()))
 			getNewGameUI ().showCustomFlagColourPanel ();
 		else
 			getNewGameUI ().showCustomPicksPanel ();

@@ -1274,7 +1274,7 @@ public final class NewGameUI extends MomClientFrameUI
 					}
 					else if (portraitPanel.isVisible ())
 					{
-						if (portraitChosen == null)
+						if (PlayerKnowledgeUtils.isCustomWizard (portraitChosen))
 						{
 							try (final FileInputStream in = new FileInputStream (customPortraitChooser.getSelectedFile ()))
 							{

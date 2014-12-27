@@ -228,6 +228,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 					
 						// Update the mana per turn shown on the right hand panel of the overland map
 						getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
+						
+						// We might not need to research a spell anymore if we set RP slider to nothing
+						getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 					}
 					catch (final Exception e)
 					{

@@ -9,6 +9,7 @@ import java.util.List;
 import javazoom.jl.decoder.JavaLayerException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.messages.NewTurnMessageData;
 
@@ -31,6 +32,9 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	
 	/** Music player */
 	private AudioPlayer musicPlayer;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/**
 	 * At the start of a new turn, we get a new block of new turn messages, so need to get rid of the old ones.
@@ -115,6 +119,9 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 			{
 				log.error (e, e);
 			}
+		
+		// See if any new NTM must be acted on
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		
 		log.trace ("Exiting readNewTurnMessagesFromServer = " + getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size ());
 	}
@@ -213,5 +220,21 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	public final void setMusicPlayer (final AudioPlayer player)
 	{
 		musicPlayer = player;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

@@ -338,6 +338,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype">
@@ -755,6 +756,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="newTurnMessagesFactory" ref="newTurnMessagesFactory" />
 		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="wizardClientUtils" class="momime.client.utils.WizardClientUtilsImpl">
@@ -971,6 +973,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">

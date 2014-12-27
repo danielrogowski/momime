@@ -14,18 +14,23 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import momime.client.MomClient;
 import momime.client.database.MapFeature;
+import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.newturnmessages.NewTurnMessageMustBeAnswered;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -39,6 +44,7 @@ import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.EnforceProductionID;
 import momime.common.database.MapFeatureProduction;
 import momime.common.database.ProductionType;
 import momime.common.database.RecordNotFoundException;
@@ -47,14 +53,19 @@ import momime.common.database.TileType;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.NewTurnMessageData;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -127,6 +138,15 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 	/** City calculations */
 	private CityCalculations cityCalculations;
+	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
 	
 	/** What is displayed in the variable top section */
 	private OverlandMapRightHandPanelTop top;
@@ -245,6 +265,15 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Map location currently being surveyed; can be null to blank out all the surveyor labels */
 	private MapCoordinates3DEx surveyorLocation;
 	
+	/** Next turn action */
+	private Action nextTurnAction;
+	
+	/** Next turn button */
+	private JButton nextTurnButton;
+	
+	/** Image of disabled next turn button with no resource icons on it */
+	private BufferedImage nextTurnButtonDisabled;
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -280,6 +309,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 		final BufferedImage nextTurnButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/nextTurnNormal.png");
 		final BufferedImage nextTurnButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/nextTurnPressed.png");
+		nextTurnButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/nextTurnDisabled.png");
 		final BufferedImage cancelBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/oneButton.png");
 		final BufferedImage specialOrdersBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/fourButtons.png");
 		
@@ -290,7 +320,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		getPanel ().setPreferredSize (backgroundSize);
 		
 		// Actions
-		final Action nextTurnAction = new AbstractAction ()
+		nextTurnAction = new AbstractAction ()
 		{
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
@@ -582,8 +612,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		targetSpellPanel.add (targetSpellText, targetSpellConstraints);
 		
 		// Bottom card - next turn button
-		bottomCards.add (getUtils ().createImageButton (nextTurnAction, null, null, null, nextTurnButtonNormal, nextTurnButtonPressed, nextTurnButtonNormal),
-			OverlandMapRightHandPanelBottom.NEXT_TURN_BUTTON.name ());
+		nextTurnButton = getUtils ().createImageButton (nextTurnAction, null, null, null, nextTurnButtonNormal, nextTurnButtonPressed, nextTurnButtonDisabled);
+		bottomCards.add (nextTurnButton, OverlandMapRightHandPanelBottom.NEXT_TURN_BUTTON.name ());
 		
 		// Bottom card - cancel
 		final JPanel cancelPanel = getUtils ().createPanelWithBackgroundImage (cancelBackground);
@@ -1107,6 +1137,121 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 		log.trace ("Exiting surveyorLocationOrLanguageChanged");
 	}
+
+	/**
+	 * We can't End Turn if we have insufficient rations, gold or mana - this routine checks each of those resources
+	 * or other conditions that prevent us from ending turn, such as needing to target a spell.
+	 * This regenerates the "disbaled" image state of the button with a new image containing the relevant resource icons, and enables or disables the button.
+	 * We don't need to replace the images for the "normal" or "pressed" states, since if the button is enabled then obviously nothing is stopping us from ending turn.
+	 * 
+	 * @throws IOException If we can't find any of the resource images
+	 */
+	public final void updateProductionTypesStoppingUsFromEndingTurn () throws IOException
+	{
+		log.trace ("Entering updateProductionTypesStoppingUsFromEndingTurn");
+		
+		// This can be ran prior to init even being called
+		if (nextTurnButton != null)
+		{		
+			// Before we bother creating an image that we might not need, first just get a list of all the images we need to put onto the button
+			final List<String> resourceIconFilenames = new ArrayList<String> ();
+			
+			// Now check every defined production type
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateProductionTypesStoppingUsFromEndingTurn");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+
+			for (final ProductionType productionType : getClient ().getClientDB ().getProductionType ())
+				if (productionType.getEnforceProduction () != null)
+				{
+					int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
+						pub.getPick (), productionType.getProductionTypeID (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					
+					if (productionType.getEnforceProduction () == EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO)
+						valueToCheck = valueToCheck + getResourceValueUtils ().findAmountStoredForProductionType
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionType.getProductionTypeID ());
+					
+					// If gold in a simultaneous turns game, we will get gold at the end of the turn from selling buildings - we need to allow this
+					// e.g. 0 gold stored, -3 gold production per turnHowever we're selling a builders' hall - this alters our per turn production to -2 but this
+					// still isn't good enough - However, we'll also get 20 gold from the sale so that's fine, we'll have 18 gold for next turn, so have to allow this.
+					if ((productionType.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)) &&
+						(getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS))
+						
+						// Search whole map for all cities with pending building sales
+						for (int plane = 0; plane < getClient ().getSessionDescription ().getMapSize ().getDepth (); plane++)
+							for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
+								for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
+								{
+									final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+										(plane).getRow ().get (y).getCell ().get (x);
+									final OverlandMapCityData cityData = mc.getCityData ();
+										
+									if ((cityData != null) && (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) && (mc.getBuildingIdSoldThisTurn () != null))
+										valueToCheck = valueToCheck + getMemoryBuildingUtils ().goldFromSellingBuilding
+											(getClient ().getClientDB ().findBuilding (mc.getBuildingIdSoldThisTurn (), "updateProductionTypesStoppingUsFromEndingTurn"));
+								}						
+	                
+	                // Do we have a problem?
+					if (valueToCheck < 0)
+						resourceIconFilenames.add (getGraphicsDB ().findProductionType
+							(productionType.getProductionTypeID (), "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
+				}
+			
+			// Must choose a spell to research?
+			if ((getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null) &&
+				(getSpellUtils ().getSpellsForStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
+					SpellResearchStatusID.RESEARCHABLE_NOW, getClient ().getClientDB ()).size () > 0) &&
+				(getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
+					pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()) > 0))
+					
+					resourceIconFilenames.add (getGraphicsDB ().findProductionType
+						(CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
+			
+			// Do we have unanswered new turn messages?
+			boolean found = false;
+			final Iterator<NewTurnMessageData> iter = getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().iterator ();
+			while ((!found) && (iter.hasNext ()))
+			{
+				final NewTurnMessageData ntm = iter.next ();
+				if (ntm instanceof NewTurnMessageMustBeAnswered)
+				{
+					if (!((NewTurnMessageMustBeAnswered) ntm).isAnswered ())
+						found = true;
+				}
+			}
+			
+			if (found)
+				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToNTMs.png");
+	
+			// Regenerate disabled button?
+			if (resourceIconFilenames.size () > 0)
+			{
+				final BufferedImage disabledImage = new BufferedImage (nextTurnButtonDisabled.getWidth (), nextTurnButtonDisabled.getHeight (), BufferedImage.TYPE_INT_ARGB);
+				final Graphics g = disabledImage.getGraphics ();
+				try
+				{
+					g.drawImage (nextTurnButtonDisabled, 0, 0, null);
+					int nextX = 12;
+					for (final String resourceIconFilename : resourceIconFilenames)
+					{
+						final BufferedImage iconImage = getUtils ().loadImage (resourceIconFilename);
+						g.drawImage (iconImage, nextX, 14, null);
+						nextX = nextX + iconImage.getWidth () + 2;
+					}
+				}
+				finally
+				{
+					g.dispose ();
+				}
+				
+				nextTurnButton.setDisabledIcon (new ImageIcon (disabledImage));
+			}
+			
+			// Can we end turn?
+			nextTurnAction.setEnabled (resourceIconFilenames.size () == 0);
+		}
+		
+		log.trace ("Exiting updateProductionTypesStoppingUsFromEndingTurn");
+	}
 	
 	/**
 	 * @return What is displayed in the variable top section
@@ -1450,6 +1595,54 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		cityCalculations = calc;
 	}
 
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+	
 	/**
 	 * @return XML layout for the surveyor subpanel
 	 */

@@ -9,6 +9,7 @@ import momime.client.MomClient;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +38,9 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
 	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -58,6 +62,9 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 		
 		// There's probably a new turn message telling us that we had to choose a spell to research
 		getNewTurnMessagesUI ().languageChanged ();
+		
+		// Perhaps enable the next turn button if it was blocked waiting for us to choose a spell to research
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		
 		log.trace ("Exiting start");
 	}
@@ -124,5 +131,21 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

@@ -70,6 +70,7 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		
 		// Update new values in UI screens that rely on any resource values
 		getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		getMagicSlidersUI ().updateProductionLabels ();
 		getAlchemyUI ().updateSliderMaximum ();
 		

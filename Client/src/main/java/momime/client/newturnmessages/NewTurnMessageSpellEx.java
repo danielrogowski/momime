@@ -3,6 +3,7 @@ package momime.client.newturnmessages;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.io.IOException;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -30,7 +31,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
  * NTM about a spell, either one we've researched or need to pick a target for
  */
 public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageClickable, NewTurnMessageMusic
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageClickable, NewTurnMessageMusic, NewTurnMessageMustBeAnswered
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewTurnMessageSpellEx.class);
@@ -175,6 +176,22 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 		}
 		
 		return text;
+	}
+	
+	/**
+	 * @return Whether the user has acted on this message yet
+	 */
+	@Override
+	public final boolean isAnswered ()
+	{
+		// Only applicable for "target spell"
+		final boolean answered;
+		if (getMsgType () == NewTurnMessageTypeID.TARGET_SPELL)
+			answered = (isTargettingCancelled ()) || (getTargettedCity () != null) || (getTargettedUnitURN () != null);
+		else
+			answered = true;
+		
+		return answered;
 	}
 	
 	/**
@@ -372,10 +389,12 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 
 	/**
 	 * @param cancelled Did we cancel targetting the spell?
+	 * @throws IOException If we can't find any of the resource images
 	 */
-	public final void setTargettingCancelled (final boolean cancelled)
+	public final void setTargettingCancelled (final boolean cancelled) throws IOException
 	{
 		targettingCancelled = cancelled;
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 	}
 	
 	/**
@@ -388,10 +407,12 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	
 	/**
 	 * @param city Chosen city target
+	 * @throws IOException If we can't find any of the resource images
 	 */
-	public final void setTargettedCity (final MapCoordinates3DEx city)
+	public final void setTargettedCity (final MapCoordinates3DEx city) throws IOException
 	{
 		targettedCity = city;
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 	}
 	
 	/**
@@ -404,9 +425,11 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 
 	/**
 	 * @param unitURN Chosen unit target
+	 * @throws IOException If we can't find any of the resource images
 	 */
-	public final void setTargettedUnitURN (final Integer unitURN)
+	public final void setTargettedUnitURN (final Integer unitURN) throws IOException
 	{
 		targettedUnitURN = unitURN;
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 	}
 }

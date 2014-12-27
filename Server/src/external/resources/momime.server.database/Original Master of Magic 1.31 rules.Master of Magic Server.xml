@@ -19448,6 +19448,10 @@
 		<languageEntry languageEntryID="ProductionPerTurn" />
 		<languageEntry languageEntryID="ProductionPerTurnMagicPower" />
 		<languageEntry languageEntryID="TargetSpell" />
+		<languageEntry languageEntryID="CannotEndTurnTitle" />
+		<languageEntry languageEntryID="CannotEndTurnPrefix" />
+		<languageEntry languageEntryID="CannotEndTurnResearch" />
+		<languageEntry languageEntryID="CannotEndTurnNTMs" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title" />

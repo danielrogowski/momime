@@ -88,6 +88,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Class logger */
 	private final Log log = LogFactory.getLog (OverlandMapRightHandPanel.class);
 	
+	/** Bullet point prefix for each line explaining why we cannot end turn right now */
+	private final static String BULLET_POINT = "\u2022 ";
+	
 	/** XML layout for the surveyor subpanel */
 	private XmlLayoutContainerEx surveyorLayout;
 	
@@ -772,6 +775,31 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		playerLine2 = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		playerPanel.add (playerLine2, getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 0, 4, 0), GridBagConstraintsNoFill.CENTRE));
+
+		// Clicking on next turn button when its disabled explains why we can't end turn right now
+		nextTurnButton.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				try
+				{
+					final String text = updateProductionTypesStoppingUsFromEndingTurn ();
+					if (text != null)
+					{
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("frmMapRightHandBar");
+						msg.setTitleLanguageEntryID ("CannotEndTurnTitle");
+						msg.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnPrefix") + System.lineSeparator () + text);
+						msg.setVisible (true);
+					}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			}
+		});
 		
 		// Fill in variable labels
 		updateGlobalEconomyValues ();
@@ -1144,11 +1172,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 * This regenerates the "disbaled" image state of the button with a new image containing the relevant resource icons, and enables or disables the button.
 	 * We don't need to replace the images for the "normal" or "pressed" states, since if the button is enabled then obviously nothing is stopping us from ending turn.
 	 * 
+	 * @return Text description of why we can't end turn right now; null if we can end turn
 	 * @throws IOException If we can't find any of the resource images
 	 */
-	public final void updateProductionTypesStoppingUsFromEndingTurn () throws IOException
+	public final String updateProductionTypesStoppingUsFromEndingTurn () throws IOException
 	{
 		log.trace ("Entering updateProductionTypesStoppingUsFromEndingTurn");
+
+		final StringBuffer text = new StringBuffer (); 
 		
 		// This can be ran prior to init even being called
 		if (nextTurnButton != null)
@@ -1192,8 +1223,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	                
 	                // Do we have a problem?
 					if (valueToCheck < 0)
+					{
 						resourceIconFilenames.add (getGraphicsDB ().findProductionType
 							(productionType.getProductionTypeID (), "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
+						
+						final momime.client.language.database.v0_9_5.ProductionType productionTypeLang = getLanguage ().findProductionType (productionType.getProductionTypeID ());
+						final String msg = (productionTypeLang == null) ? null : productionTypeLang.getCannotEndTurnDueToLackOfProduction ();
+						text.append (BULLET_POINT + ((msg != null) ? msg : productionType.getProductionTypeID ()) + System.lineSeparator ()); 
+					}
 				}
 			
 			// Must choose a spell to research?
@@ -1202,9 +1239,12 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					SpellResearchStatusID.RESEARCHABLE_NOW, getClient ().getClientDB ()).size () > 0) &&
 				(getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
 					pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()) > 0))
-					
-					resourceIconFilenames.add (getGraphicsDB ().findProductionType
-						(CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
+			{
+				resourceIconFilenames.add (getGraphicsDB ().findProductionType
+					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
+				
+				text.append (BULLET_POINT + getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnResearch") + System.lineSeparator ());
+			}
 			
 			// Do we have unanswered new turn messages?
 			boolean found = false;
@@ -1220,7 +1260,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			}
 			
 			if (found)
+			{
 				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToNTMs.png");
+				text.append (BULLET_POINT + getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnNTMs") + System.lineSeparator ());
+			}
 	
 			// Regenerate disabled button?
 			if (resourceIconFilenames.size () > 0)
@@ -1250,7 +1293,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			nextTurnAction.setEnabled (resourceIconFilenames.size () == 0);
 		}
 		
-		log.trace ("Exiting updateProductionTypesStoppingUsFromEndingTurn");
+		final String result = text.toString ();
+		log.trace ("Exiting updateProductionTypesStoppingUsFromEndingTurn: " + result);
+		return result;
 	}
 	
 	/**

@@ -5196,6 +5196,18 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="TargetSpell">
 			<languageEntryText>Target Spell</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CannotEndTurnTitle">
+			<languageEntryText>Cannot end turn</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CannotEndTurnPrefix">
+			<languageEntryText>You cannot end turn right now because:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CannotEndTurnResearch">
+			<languageEntryText>You must choose a spell to begin researching, or set your research to zero.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CannotEndTurnNTMs">
+			<languageEntryText>You have completed casting spells that you still need to choose targets for.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title">

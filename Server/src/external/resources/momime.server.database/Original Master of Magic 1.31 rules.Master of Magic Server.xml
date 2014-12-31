@@ -19765,5 +19765,9 @@
 	<languageCategory languageCategoryID="frmUnitRowDisplay">
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmSpellQueue">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Close" />
+	</languageCategory>
 </momimesvr:serverDatabase>
 

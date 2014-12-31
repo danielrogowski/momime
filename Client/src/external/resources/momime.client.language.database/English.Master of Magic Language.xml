@@ -6047,6 +6047,14 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmSpellQueue">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Queued Overland Spells</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Close">
+			<languageEntryText>Close</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<shift>false</shift>
 		<alt>false</alt>

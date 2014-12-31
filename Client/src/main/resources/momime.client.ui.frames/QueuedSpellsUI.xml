@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>320</formWidth>
+	<formHeight>200</formHeight>
+	<component name="frmSpellQueueTitle">
+		<left>160</left>
+		<top>5</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0</verticalAlignment>
+	</component>
+	<component name="frmSpellQueueClose">
+		<left>275</left>
+		<top>195</top>
+		<horizontalAlignment>1</horizontalAlignment>
+		<verticalAlignment>1</verticalAlignment>
+	</component>
+	<component name="frmSpellQueueList">
+		<left>50</left>
+		<top>40</top>
+		<width>220</width>
+		<height>125</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

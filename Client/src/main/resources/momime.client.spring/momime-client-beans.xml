@@ -350,14 +350,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
+		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
 	</bean>
 
 	<bean id="updateManaSpentOnCastingCurrentSpellMessage" class="momime.client.messages.process.UpdateManaSpentOnCastingCurrentSpellMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
+		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
 	</bean>
 
 	<bean id="removeQueuedSpellMessage" class="momime.client.messages.process.RemoveQueuedSpellMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
+		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
 	</bean>
 	
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype">
@@ -1123,6 +1126,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
+		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
 		<property name="taxRateUI" ref="taxRateUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
@@ -1135,6 +1139,22 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
 		<property name="textUtils" ref="textUtils" />
+	</bean>
+
+	<bean id="queuedSpellsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/QueuedSpellsUI.xml" />
+	</bean>
+
+	<bean id="queuedSpellsUI" class="momime.client.ui.frames.QueuedSpellsUI">
+		<property name="queuedSpellsLayout" ref="queuedSpellsLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="client" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="queuedSpellListCellRenderer" ref="queuedSpellListCellRenderer" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<!-- Prototype UI components -->
@@ -1173,6 +1193,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+	</bean>
+
+	<bean id="queuedSpellListCellRenderer" class="momime.client.ui.renderer.QueuedSpellListCellRenderer" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >

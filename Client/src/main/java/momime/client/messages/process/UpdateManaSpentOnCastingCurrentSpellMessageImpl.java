@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.QueuedSpellsUI;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 
 import org.apache.commons.logging.Log;
@@ -24,6 +25,9 @@ public final class UpdateManaSpentOnCastingCurrentSpellMessageImpl extends Updat
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Queued spells UI */
+	private QueuedSpellsUI queuedSpellsUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -35,6 +39,7 @@ public final class UpdateManaSpentOnCastingCurrentSpellMessageImpl extends Updat
 		log.trace ("Entering start: " + getManaSpentOnCastingCurrentSpell ());
 		
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().setManaSpentOnCastingCurrentSpell (getManaSpentOnCastingCurrentSpell ());
+		getQueuedSpellsUI ().updateQueuedSpells ();
 		
 		log.trace ("Exiting start");
 	}
@@ -53,5 +58,21 @@ public final class UpdateManaSpentOnCastingCurrentSpellMessageImpl extends Updat
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Queued spells UI
+	 */
+	public final QueuedSpellsUI getQueuedSpellsUI ()
+	{
+		return queuedSpellsUI;
+	}
+
+	/**
+	 * @param ui Queued spells UI
+	 */
+	public final void setQueuedSpellsUI (final QueuedSpellsUI ui)
+	{
+		queuedSpellsUI = ui;
 	}
 }

@@ -45,6 +45,9 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	
 	/** Small font */
 	private Font smallFont;
+
+	/** Queued spells UI */
+	private QueuedSpellsUI queuedSpellsUI;
 	
 	/** Tax rate UI */
 	private TaxRateUI taxRateUI;
@@ -130,6 +133,16 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getQueuedSpellsUI ().setVisible (true);
+					getQueuedSpellsUI ().updateQueuedSpells ();
+					setVisible (false);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -280,6 +293,22 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		smallFont = font;
 	}
 
+	/**
+	 * @return Queued spells UI
+	 */
+	public final QueuedSpellsUI getQueuedSpellsUI ()
+	{
+		return queuedSpellsUI;
+	}
+
+	/**
+	 * @param ui Queued spells UI
+	 */
+	public final void setQueuedSpellsUI (final QueuedSpellsUI ui)
+	{
+		queuedSpellsUI = ui;
+	}
+	
 	/**
 	 * @return Tax rate UI
 	 */

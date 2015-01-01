@@ -1,9 +1,13 @@
 package momime.client.ui.frames;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,23 +17,30 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.random.RandomUtils;
+import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -41,6 +52,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Class logger */
 	private final Log log = LogFactory.getLog (WizardsUI.class);
 
+	/** Special inset for books */
+	private final static int NO_INSET = 0;
+	
 	/** XML layout */
 	private XmlLayoutContainerEx wizardsLayout;
 	
@@ -56,14 +70,44 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Small font */
 	private Font smallFont;
 	
+	/** Medium font */
+	private Font mediumFont;
+
+	/** Large font */
+	private Font largeFont;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
+	
 	/** List of gem images */
 	private List<JLabel> gems;
 	
 	/** List of wizard portrait images */
 	private List<JLabel> portraits;
 
+	/** Content pane */
+	private JPanel contentPane;
+	
 	/** Close action */
 	private Action closeAction;
+	
+	/** Shelf displaying chosen books */
+	private JPanel bookshelf;
+	
+	/** Images added to draw the books on the shelf */
+	private final List<JLabel> bookImages = new ArrayList<JLabel> ();
+	
+	/** Area listing retorts */
+	private JTextArea retorts;
+	
+	/** Wizard's name */
+	private JLabel playerName;
+	
+	/** Wizard being viewed */
+	private PlayerPublicDetails selectedWizard;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -90,13 +134,27 @@ public final class WizardsUI extends MomClientFrameUI
 		};
 		
 		// Initialize the content pane
-		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getWizardsLayout ()));
 		
 		contentPane.add (getUtils ().createImageButton (closeAction,
 			MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmWizardsClose");
+		
+		playerName = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (playerName, "frmWizardsName");
+		
+		bookshelf = new JPanel (new GridBagLayout ());
+		bookshelf.setOpaque (false);
+		
+		// Force the books to sit on the bottom of the shelf
+		bookshelf.add (Box.createRigidArea (new Dimension (0, getWizardsLayout ().findComponent ("frmWizardsBookshelf").getHeight ())));
+
+		contentPane.add (bookshelf, "frmWizardsBookshelf");
+		
+		retorts = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (retorts, "frmWizardsRetorts");
 		
 		// Create all the gems and portait labels, initially with no image, because the gems get regenerated with the
 		// wizard's colour, and the portraits with the wizard's picture
@@ -113,6 +171,31 @@ public final class WizardsUI extends MomClientFrameUI
 			final JLabel gem = new JLabel ();
 			contentPane.add (gem, "frmWizardsGem" + n);
 			gems.add (gem);
+			
+			// Create actions once out here too
+			final int wizardNo = n - 1;
+			final MouseAdapter displayWizardHandler = new MouseAdapter ()
+			{
+				@Override
+				public final void mouseClicked (final MouseEvent ev)
+				{
+					try
+					{
+						selectedWizard = getClient ().getPlayers ().get (wizardNo);
+						
+						updateBookshelfFromPicks ();
+						updateRetortsFromPicks ();
+						updateWizardName ();
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			};
+			
+			portrait.addMouseListener (displayWizardHandler);
+			gem.addMouseListener (displayWizardHandler);
 		}
 		
 		updateWizards ();
@@ -167,6 +250,100 @@ public final class WizardsUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * When the selected picks change, update the books on the bookshelf
+	 * @throws IOException If there is a problem loading any of the book images
+	 */
+	private final void updateBookshelfFromPicks () throws IOException
+	{
+		log.trace ("Entering updateBookshelfFromPicks: " + selectedWizard.getPlayerDescription ().getPlayerID ());
+
+		// Remove all the old books
+		for (final JLabel oldBook : bookImages)
+			bookshelf.remove (oldBook);
+		
+		bookImages.clear ();
+		
+		// Generate new images
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
+		int mergedBookshelfGridx = 0;
+		
+		for (final PlayerPick pick : pub.getPick ())
+		{
+			// Pick must exist in the graphics XML file, but may not have any image(s)
+			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks").getBookImage ();
+			if (possibleImages.size () > 0)
+				for (int n = 0; n < pick.getQuantity (); n++)
+				{
+					// Choose random image for the pick
+					final BufferedImage bookImage = getUtils ().loadImage (possibleImages.get (getRandomUtils ().nextInt (possibleImages.size ())).getBookImageFile ());
+					
+					// Add on merged bookshelf
+					mergedBookshelfGridx++;
+					final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
+					bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
+					bookImages.add (mergedBookshelfImg);
+				}
+		}
+		
+		// Redrawing only the bookshelf isn't enough, because the new books might be smaller than before so only the smaller so
+		// bookshelf.validate only redraws the new smaller area and leaves bits of the old books showing
+		contentPane.validate ();
+		contentPane.repaint ();
+
+		log.trace ("Exiting updateBookshelfFromPicks");
+	}
+	
+	/**
+	 * When the selected picks (or language) change, update the retort descriptions
+	 * @throws RecordNotFoundException If one of the picks we have isn't in the graphics XML file
+	 */
+	private final void updateRetortsFromPicks () throws RecordNotFoundException
+	{
+		log.trace ("Entering updateRetortsFromPicks: " + selectedWizard.getPlayerDescription ().getPlayerID ());
+		
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
+		final StringBuffer desc = new StringBuffer ();
+		
+		for (final PlayerPick pick : pub.getPick ())
+		{
+			// Pick must exist in the graphics XML file, but may not have any image(s)
+			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImage ();
+			if (possibleImages.size () == 0)
+			{
+				if (desc.length () > 0)
+					desc.append (", ");
+				
+				if (pick.getQuantity () > 1)
+					desc.append (pick.getQuantity () + "x");
+				
+				final momime.client.language.database.v0_9_5.Pick pickDesc = getLanguage ().findPick (pick.getPickID ());
+				if (pickDesc == null)
+					desc.append (pick.getPickID ());
+				else
+					desc.append (pickDesc.getPickDescription ());
+			}
+		}
+		retorts.setText (desc.toString ());
+
+		log.trace ("Exiting updateRetortsFromPicks");
+	}	
+	
+	/**
+	 * Updates the name of the currently selected wizard
+	 */
+	private final void updateWizardName ()
+	{
+		log.trace ("Entering updateWizardName");
+		
+		if (selectedWizard == null)
+			playerName.setText (null);
+		else
+			playerName.setText (getWizardClientUtils ().getPlayerName (selectedWizard));
+		
+		log.trace ("Exiting updateWizardName");
+	}
+	
+	/**
 	 * Update all labels and such from the chosen language 
 	 */
 	@Override
@@ -174,7 +351,10 @@ public final class WizardsUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
+		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmWizards", "Title"));
 		closeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmWizards", "Close"));
+		
+		updateWizardName ();
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -257,5 +437,69 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setSmallFont (final Font font)
 	{
 		smallFont = font;
+	}
+
+	/**
+	 * @return Medium font
+	 */
+	public final Font getMediumFont ()
+	{
+		return mediumFont;
+	}
+
+	/**
+	 * @param font Medium font
+	 */
+	public final void setMediumFont (final Font font)
+	{
+		mediumFont = font;
+	}
+
+	/**
+	 * @return Large font
+	 */
+	public final Font getLargeFont ()
+	{
+		return largeFont;
+	}
+
+	/**
+	 * @param font Large font
+	 */
+	public final void setLargeFont (final Font font)
+	{
+		largeFont = font;
+	}
+	
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
 	}
 }

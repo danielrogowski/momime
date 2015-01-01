@@ -170,6 +170,28 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmWizardsBookshelf">
+		<left>86</left>
+		<top>315</top>
+		<width>186</width>
+		<height>48</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardsRetorts">
+		<left>20</left>
+		<top>420</top>
+		<width>320</width>
+		<height>36</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardsName">
+		<left>180</left>
+		<top>262</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0</verticalAlignment>
+	</component>
 	<component name="frmWizardsClose">
 		<left>622</left>
 		<top>460</top>

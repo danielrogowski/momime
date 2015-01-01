@@ -46,6 +46,7 @@ public final class TestWizardsUI
 		
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("frmWizards", "Title")).thenReturn ("Wizards");
 		when (lang.findCategoryEntry ("frmWizards", "Close")).thenReturn ("Close");
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();

@@ -1169,8 +1169,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="smallFont" ref="smallFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="largeFont" ref="largeFont" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->

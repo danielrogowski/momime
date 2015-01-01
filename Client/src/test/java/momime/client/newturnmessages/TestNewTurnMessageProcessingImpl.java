@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.client.MomClient;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageData;
@@ -112,6 +113,7 @@ public final class TestNewTurnMessageProcessingImpl
 		
 		// Set up object to test
 		final NewTurnMessageProcessingImpl proc = new NewTurnMessageProcessingImpl ();
+		proc.setOverlandMapRightHandPanel (new OverlandMapRightHandPanel ());
 		proc.setClient (client);
 		
 		// Run method

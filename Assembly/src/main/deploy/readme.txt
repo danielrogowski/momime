@@ -26,7 +26,7 @@ Here's some quick notes on how to get a game up and running in case some parts a
     at least one opponent (Human and/or AI) and enter a game name at the bottom.
     Feel free to change any of the other options, and you can tick "customize" to manually
     specify any of the game values.  Don't set turns to "Simultaneous" since this hasn't
-    been added back into 0.9.5.2 yet.
+    been added back into ${project.version} yet.
 
  7) Pick a predefined wizard or "Custom".  For custom wizards, you then choose a portrait, and
     picking choose "Custom" again will let you pick any GIF/PNG/JPG file for your wizard

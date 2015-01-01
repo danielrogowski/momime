@@ -52,6 +52,9 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	/** Tax rate UI */
 	private TaxRateUI taxRateUI;
 	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
+	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
@@ -136,7 +139,6 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 				try
 				{
 					getQueuedSpellsUI ().setVisible (true);
-					getQueuedSpellsUI ().updateQueuedSpells ();
 					setVisible (false);
 				}
 				catch (final Exception e)
@@ -200,6 +202,15 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getWizardsUI ().setVisible (true);
+					setVisible (false);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -325,6 +336,22 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		taxRateUI = ui;
 	}
 
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
+	}
+	
 	/**
 	 * @return Overland map right hand panel showing economy etc
 	 */

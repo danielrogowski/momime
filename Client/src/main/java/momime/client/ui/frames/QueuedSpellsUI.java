@@ -116,6 +116,8 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 		spellsScroll.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add (spellsScroll, "frmSpellQueueList");
 		
+		updateQueuedSpells ();
+		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);

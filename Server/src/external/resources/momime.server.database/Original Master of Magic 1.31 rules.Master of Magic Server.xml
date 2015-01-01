@@ -19769,5 +19769,7 @@
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Close" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmWizards">
+		<languageEntry languageEntryID="Close" />
+	</languageCategory>
 </momimesvr:serverDatabase>
-

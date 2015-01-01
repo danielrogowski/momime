@@ -6055,6 +6055,11 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>Close</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmWizards">
+		<languageEntry languageEntryID="Close">
+			<languageEntryText>Close</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<shift>false</shift>
 		<alt>false</alt>

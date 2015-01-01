@@ -35,6 +35,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/** Colour multiplied flags for each player's mirrors */
 	private final Map<Integer, BufferedImage> mirrorImages = new HashMap<Integer, BufferedImage> ();
+
+	/** Colour multiplied gems for each player */
+	private final Map<Integer, BufferedImage> wizardGemImages = new HashMap<Integer, BufferedImage> ();
 	
 	/** Uncoloured unit background image */
 	private BufferedImage unitBackgroundImage;
@@ -47,6 +50,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/** Uncoloured mirror image */
 	private BufferedImage mirrorImage;
+
+	/** Uncoloured wizard gem image */
+	private BufferedImage wizardGemImage;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -148,6 +154,20 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 			mirrorImage = getUtils ().loadImage ("/momime.client.graphics/ui/mirror/mirror.png");
 
 		return getImage (playerID, mirrorImage, mirrorImages);
+	}
+	
+	/**
+	 * @param playerID Unit owner player ID
+	 * @return Wizard gem background image in their correct colour
+	 * @throws IOException If there is a problem loading the background image
+	 */
+	@Override
+	public final BufferedImage getWizardGemImage (final int playerID) throws IOException
+	{
+		if (wizardGemImage == null)
+			wizardGemImage = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/gem.png");
+
+		return getImage (playerID, wizardGemImage, wizardGemImages);
 	}
 	
 	/**

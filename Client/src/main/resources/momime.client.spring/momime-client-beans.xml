@@ -1128,6 +1128,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
 		<property name="taxRateUI" ref="taxRateUI" />
+		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
@@ -1155,6 +1156,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="queuedSpellListCellRenderer" ref="queuedSpellListCellRenderer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
+	<bean id="wizardsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/WizardsUI.xml" />
+	</bean>
+
+	<bean id="wizardsUI" class="momime.client.ui.frames.WizardsUI">
+		<property name="wizardsLayout" ref="wizardsLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="client" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<!-- Prototype UI components -->

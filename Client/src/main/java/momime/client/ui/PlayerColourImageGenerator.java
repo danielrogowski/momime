@@ -37,4 +37,11 @@ public interface PlayerColourImageGenerator
 	 * @throws IOException If there is a problem loading the mirror image
 	 */
 	public BufferedImage getOverlandEnchantmentMirror (final int playerID) throws IOException;
+
+	/**
+	 * @param playerID Unit owner player ID
+	 * @return Wizard gem background image in their correct colour
+	 * @throws IOException If there is a problem loading the background image
+	 */
+	public BufferedImage getWizardGemImage (final int playerID) throws IOException;
 }

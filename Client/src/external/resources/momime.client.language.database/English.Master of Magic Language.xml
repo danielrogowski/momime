@@ -5301,6 +5301,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmOptions">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Options</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="SoundAndMusicSection">
 			<languageEntryText>Sound and Music</languageEntryText>
 		</languageEntry>
@@ -5332,7 +5335,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Combat Map</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="CombatUnitScale">
-			<languageEntryText>Unit scale:</languageEntryText>
+			<languageEntryText>Unit scale (visual only; showing 4x figures does not mean 4x attacks):</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DebugSection">
 			<languageEntryText>Debug Options</languageEntryText>
@@ -5341,7 +5344,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Show Frame Rate (fps)</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ShowUnitURNs">
-			<languageEntryText>Show Unit URNs on Unit Info screen</languageEntryText>
+			<languageEntryText>Show Unit, Building and Spell URNs</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DontSynchronizeScreenUpdates">
 			<languageEntryText>Don't synchronize screen updates</languageEntryText>
@@ -5354,6 +5357,12 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="ResolutionDescription">
 			<languageEntryText>You can switch between windowed and full screen mode by pressing Alt-Enter.  Select here the resolution to use when in full screen mode:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="LanguageSection">
+			<languageEntryText>Language</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ChooseLanguage">
+			<languageEntryText>Choose Language:</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSurveyor">

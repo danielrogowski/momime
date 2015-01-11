@@ -123,6 +123,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Advisors UI */
 	private SelectAdvisorUI selectAdvisorUI;
 
+	/** Options UI */
+	private OptionsUI optionsUI;
+	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 
@@ -377,6 +380,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOptionsUI ().setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
@@ -1471,6 +1482,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setSelectAdvisorUI (final SelectAdvisorUI ui)
 	{
 		selectAdvisorUI = ui;
+	}
+
+	/**
+	 * @return Options UI
+	 */
+	public final OptionsUI getOptionsUI ()
+	{
+		return optionsUI;
+	}
+
+	/**
+	 * @param ui Options UI
+	 */
+	public final void setOptionsUI (final OptionsUI ui)
+	{
+		optionsUI = ui;
 	}
 	
 	/**

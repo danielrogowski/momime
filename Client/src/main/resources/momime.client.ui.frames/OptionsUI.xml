@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>640</formWidth>
+	<formHeight>480</formHeight>
+	<component name="frmOptionsIMELabel">
+		<left>630</left>
+		<top>90</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsVersion">
+		<left>630</left>
+		<top>110</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsOK">
+		<left>532</left>
+		<top>422</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsOverlandMapSection">
+		<left>20</left>
+		<top>170</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsLinearTextureFilter">
+		<left>20</left>
+		<top>200</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsOverlandShowPartialFogOfWar">
+		<left>20</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsOverlandSmoothTerrain">
+		<left>20</left>
+		<top>230</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsOverlandSmoothFogOfWar">
+		<left>20</left>
+		<top>245</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsCombatMapSection">
+		<left>20</left>
+		<top>290</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsSmoothCombatTerrain">
+		<left>20</left>
+		<top>320</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsCombatUnitScale">
+		<left>20</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsCombatSampleUnits">
+		<left>15</left>
+		<top>380</top>
+		<width>130</width>
+		<height>80</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsDebugSection">
+		<left>400</left>
+		<top>150</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsShowURNs">
+		<left>400</left>
+		<top>180</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsShowEdgesOfMap">
+		<left>400</left>
+		<top>195</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsLanguageSection">
+		<left>20</left>
+		<top>90</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsChooseLanguage">
+		<left>20</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsChooseLanguageList">
+		<left>150</left>
+		<top>115</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

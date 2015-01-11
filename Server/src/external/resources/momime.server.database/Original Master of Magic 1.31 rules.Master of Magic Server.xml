@@ -19491,6 +19491,7 @@
 		<languageEntry languageEntryID="TheUnitOfNamePlural" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmOptions">
+		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="SoundAndMusicSection" />
 		<languageEntry languageEntryID="SoundVolumeLabel" />
 		<languageEntry languageEntryID="MusicVolumeLabel" />
@@ -19509,6 +19510,8 @@
 		<languageEntry languageEntryID="ShowEdgesOfMap" />
 		<languageEntry languageEntryID="ResolutionSection" />
 		<languageEntry languageEntryID="ResolutionDescription" />
+		<languageEntry languageEntryID="LanguageSection" />
+		<languageEntry languageEntryID="ChooseLanguage" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSurveyor">
 		<languageEntry languageEntryID="Title" />

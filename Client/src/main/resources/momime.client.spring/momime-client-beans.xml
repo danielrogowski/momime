@@ -829,6 +829,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="chooseLanguageUI" ref="chooseLanguageUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="optionsUI" ref="optionsUI" />
 		<property name="client" ref="client" />
 		<property name="anim" ref="anim" />
 		<property name="musicPlayer" ref="musicPlayer" />
@@ -997,6 +998,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="selectAdvisorUI" ref="selectAdvisorUI" />
+		<property name="optionsUI" ref="optionsUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="clientConfig" ref="clientConfig" />
@@ -1176,7 +1178,26 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 	</bean>
+	
+	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/OptionsUI.xml" />
+	</bean>
 
+	<bean id="optionsUI" class="momime.client.ui.frames.OptionsUI">
+		<property name="version" value="${momime.client.version}" />
+		<property name="optionsLayout" ref="optionsLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
+	</bean>
+	
 	<!-- Prototype UI components -->
 
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">

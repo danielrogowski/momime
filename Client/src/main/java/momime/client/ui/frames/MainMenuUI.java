@@ -57,6 +57,9 @@ public final class MainMenuUI extends MomClientFrameUI
 	/** Choose language UI */
 	private ChooseLanguageUI chooseLanguageUI;
 	
+	/** Options UI */
+	private OptionsUI optionsUI;
+	
 	/** Connect to server UI */
 	private ConnectToServerUI connectToServerUI;
 
@@ -202,6 +205,14 @@ public final class MainMenuUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOptionsUI ().setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -448,6 +459,22 @@ public final class MainMenuUI extends MomClientFrameUI
 		chooseLanguageUI = ui;
 	}
 
+	/**
+	 * @return Options UI
+	 */
+	public final OptionsUI getOptionsUI ()
+	{
+		return optionsUI;
+	}
+
+	/**
+	 * @param ui Options UI
+	 */
+	public final void setOptionsUI (final OptionsUI ui)
+	{
+		optionsUI = ui;
+	}
+	
 	/**
 	 * @return Connect to server UI
 	 */

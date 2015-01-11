@@ -39,6 +39,10 @@
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecltconfig:unitCombatScale" />
+				
+				<!-- Debug options -->
+				<xsd:element minOccurs="1" maxOccurs="1" name="debugShowURNs" type="xsd:boolean" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="debugShowEdgesOfMap" type="xsd:boolean" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>

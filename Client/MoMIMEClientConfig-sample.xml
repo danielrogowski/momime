@@ -9,4 +9,6 @@
 	<overlandSmoothFogOfWar>true</overlandSmoothFogOfWar>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
 	<unitCombatScale>D</unitCombatScale>
+	<debugShowURNs>false</debugShowURNs>
+	<debugShowEdgesOfMap>false</debugShowEdgesOfMap>
 </config:momImeClientConfig>

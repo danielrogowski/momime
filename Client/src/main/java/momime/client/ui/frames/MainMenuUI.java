@@ -54,9 +54,6 @@ public final class MainMenuUI extends MomClientFrameUI
 	/** Medium font */
 	private Font mediumFont;
 	
-	/** Choose language UI */
-	private ChooseLanguageUI chooseLanguageUI;
-	
 	/** Options UI */
 	private OptionsUI optionsUI;
 	
@@ -75,9 +72,6 @@ public final class MainMenuUI extends MomClientFrameUI
 	/** Music player */
 	private AudioPlayer musicPlayer;
 	
-	/** Change language action */
-	private Action changeLanguageAction;
-
 	/** Connect to server action */
 	private Action connectToServerAction;
 
@@ -134,22 +128,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/mainMenu/background.png");
 
 		// Create actions
-		changeLanguageAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getChooseLanguageUI ().setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
 		connectToServerAction = new AbstractAction ()
 		{
 			@Override
@@ -295,7 +273,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		contentPane.add (Box.createGlue (), constraints);
 		
 		// Main menu options
-		contentPane.add (getUtils ().createTextOnlyButton (changeLanguageAction,	MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 7, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		contentPane.add (getUtils ().createTextOnlyButton (connectToServerAction,	MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 8, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		newGameButton = getUtils ().createTextOnlyButton (newGameAction, MomUIConstants.GOLD, getLargeFont ());
@@ -375,7 +352,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		originalCopyrightLine2Label.setText	(getLanguage ().findCategoryEntry ("frmMainMenu", "OriginalCopyrightLine2"));
 		authorLabel.setText						(getLanguage ().findCategoryEntry ("frmMainMenu", "LanguageFileAuthor"));
 
-		changeLanguageAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "ChangeLanguage"));
 		connectToServerAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "ConnectToServer"));
 		newGameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "NewGame"));
 		joinGameAction.putValue				(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "JoinGame"));
@@ -441,22 +417,6 @@ public final class MainMenuUI extends MomClientFrameUI
 	public final void setMediumFont (final Font font)
 	{
 		mediumFont = font;
-	}
-
-	/**
-	 * @return Choose language UI
-	 */
-	public final ChooseLanguageUI getChooseLanguageUI ()
-	{
-		return chooseLanguageUI;
-	}
-
-	/**
-	 * @param ui Choose language UI
-	 */
-	public final void setChooseLanguageUI (final ChooseLanguageUI ui)
-	{
-		chooseLanguageUI = ui;
 	}
 
 	/**

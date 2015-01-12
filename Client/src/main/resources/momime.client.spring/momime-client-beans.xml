@@ -824,9 +824,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
-		<property name="chooseLanguageUI" ref="chooseLanguageUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="optionsUI" ref="optionsUI" />
@@ -835,25 +834,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 
-	<bean id="chooseLanguageUI" class="momime.client.ui.frames.ChooseLanguageUI">
-		<property name="largeFont" ref="largeFont" />
-		<property name="smallFont" ref="smallFont" />
-		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
-		<property name="utils" ref="uiUtils" />
-		<property name="pathToLanguageXmlFiles" value="#{clientConfig.pathToLanguageXmlFiles}" />
-		<property name="languageDatabaseUnmarshaller" ref="languageDatabaseUnmarshaller" />
-		<property name="clientConfig" ref="clientConfig" />
-		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
-		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
-	</bean>
-	
 	<bean id="connectToServerUI" class="momime.client.ui.frames.ConnectToServerUI">
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -944,7 +930,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -962,7 +948,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="overlandMapRightHandPanel" class="momime.client.ui.panels.OverlandMapRightHandPanel">
 		<property name="surveyorLayout" ref="surveyorLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
@@ -985,7 +971,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
@@ -1012,7 +998,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">
 		<property name="magicSlidersLayout" ref="magicSlidersLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -1031,7 +1017,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -1043,14 +1029,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="newTurnMessagesUI" class="momime.client.ui.frames.NewTurnMessagesUI">
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="anim" ref="anim" />
 	</bean>
 	
 	<bean id="spellBookUI" class="momime.client.ui.frames.SpellBookUI">
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -1077,7 +1063,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatLayoutMain" ref="combatLayoutMain" />
 		<property name="combatLayoutBottom" ref="combatLayoutBottom" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -1112,7 +1098,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="razeCityUI" class="momime.client.ui.dialogs.RazeCityUI">
 		<property name="razeCityLayout" ref="razeCityLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="smallFont" ref="smallFont" />
@@ -1125,7 +1111,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="selectAdvisorUI" class="momime.client.ui.frames.SelectAdvisorUI">
 		<property name="selectAdvisorLayout" ref="selectAdvisorLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
@@ -1137,7 +1123,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="taxRateUI" class="momime.client.ui.frames.TaxRateUI">
 		<property name="selectAdvisorLayout" ref="selectAdvisorLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
@@ -1151,7 +1137,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="queuedSpellsUI" class="momime.client.ui.frames.QueuedSpellsUI">
 		<property name="queuedSpellsLayout" ref="queuedSpellsLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="smallFont" ref="smallFont" />
@@ -1167,7 +1153,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="wizardsUI" class="momime.client.ui.frames.WizardsUI">
 		<property name="wizardsLayout" ref="wizardsLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="smallFont" ref="smallFont" />
@@ -1187,12 +1173,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="version" value="${momime.client.version}" />
 		<property name="optionsLayout" ref="optionsLayout" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="pathToLanguageXmlFiles" value="#{clientConfig.pathToLanguageXmlFiles}" />
+		<property name="languageDatabaseUnmarshaller" ref="languageDatabaseUnmarshaller" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
 		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
@@ -1279,7 +1267,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="messageBoxLayout" ref="messageBoxLayout" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
@@ -1289,14 +1277,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="calculationBoxUI" class="momime.client.ui.frames.CalculationBoxUI" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<bean id="editStringUI" class="momime.client.ui.frames.EditStringUI" scope="prototype">
 		<property name="largeFont" ref="largeFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 	</bean>
@@ -1323,7 +1311,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -1356,7 +1344,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="soundPlayer" ref="soundPlayer" />
@@ -1367,7 +1355,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="unitInfoPanel" class="momime.client.ui.panels.UnitInfoPanel" scope="prototype">
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -1389,7 +1377,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -1409,7 +1397,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="unitInfoUI" class="momime.client.ui.frames.UnitInfoUI" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
@@ -1427,7 +1415,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
@@ -1444,7 +1432,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="textUtils" ref="textUtils" />
 	</bean>
@@ -1459,7 +1447,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />

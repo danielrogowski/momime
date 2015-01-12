@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -20,10 +22,14 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.LanguageVariableUI;
+import momime.client.language.database.LanguageDatabaseExImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
@@ -37,7 +43,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 /**
  * Options screen, for changing the values held in the config file.
  */
-public final class OptionsUI extends MomClientFrameUI
+public final class OptionsUI extends MomClientFrameUI implements LanguageChangeMaster
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (OptionsUI.class);
@@ -95,6 +101,12 @@ public final class OptionsUI extends MomClientFrameUI
 	
 	/** Location to save updated client config */
 	private String clientConfigLocation;
+
+	/** Where to look for language XML files */
+	private String pathToLanguageXmlFiles;
+	
+	/** For reading in different language XML files when selection is changed */
+	private Unmarshaller languageDatabaseUnmarshaller;
 	
 	/** Short title */
 	private JLabel shortTitleLabel;
@@ -140,6 +152,9 @@ public final class OptionsUI extends MomClientFrameUI
 
 	/** Choose language label */
 	private JLabel chooseLanguageLabel;
+	
+	/** List of screens that need to be notified when the selected language changes */
+	private final List<LanguageVariableUI> languageChangeListeners = new ArrayList<LanguageVariableUI> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -316,8 +331,29 @@ public final class OptionsUI extends MomClientFrameUI
 			@Override
 		    public final void itemStateChanged (final ItemEvent ev)
 		    {
-				getClientConfig ().setChosenLanguage (chooseLanguage.getSelectedItem ().toString ());
-				saveConfigFile ();
+				try
+				{
+					final String langName = chooseLanguage.getSelectedItem ().toString ();
+					
+					// Load the new langauge XML
+					final LanguageDatabaseExImpl lang = (LanguageDatabaseExImpl) getLanguageDatabaseUnmarshaller ().unmarshal (new File
+						(getPathToLanguageXmlFiles () + "/" + langName + FILE_SUFFIX));
+					
+					lang.buildMaps ();
+					getLanguageHolder ().setLanguage (lang);
+					
+					// Notify all the forms
+					for (final LanguageVariableUI ui : languageChangeListeners)
+						ui.languageChanged ();
+					
+					// Update selected language in the config XML
+					getClientConfig ().setChosenLanguage (langName);
+					saveConfigFile ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 		    }
 		});
 		
@@ -450,6 +486,26 @@ public final class OptionsUI extends MomClientFrameUI
 		}
 
 		log.trace ("Exiting saveConfigFile");
+	}
+
+	/**
+	 * Remember that we need to tell the listener when the user changes the selected language
+	 * @param listener Screen on which to call the .languageChanged () method
+	 */
+	@Override
+	public final void addLanguageChangeListener (final LanguageVariableUI listener)
+	{
+		languageChangeListeners.add (listener);
+	}
+	
+	/**
+	 * Since singleton screens have their containers kept around, this is typically only used by prototype screens disposing themselves
+	 * @param listener Screen on which to cancel calling the .languageChanged () method
+	 */
+	@Override
+	public final void removeLanguageChangeListener (final LanguageVariableUI listener)
+	{
+		languageChangeListeners.remove (listener);
 	}
 	
 	/**
@@ -594,5 +650,37 @@ public final class OptionsUI extends MomClientFrameUI
 	public final void setClientConfigLocation (final String loc)
 	{
 		clientConfigLocation = loc;
+	}
+
+	/**
+	 * @return Where to look for language XML files
+	 */
+	public final String getPathToLanguageXmlFiles ()
+	{
+		return pathToLanguageXmlFiles;
+	}
+
+	/**
+	 * @param path Where to look for language XML files
+	 */
+	public final void setPathToLanguageXmlFiles (final String path)
+	{
+		pathToLanguageXmlFiles = path;
+	}
+
+	/**
+	 * @return For reading in different language XML files when selection is changed
+	 */
+	public final Unmarshaller getLanguageDatabaseUnmarshaller ()
+	{
+		return languageDatabaseUnmarshaller;
+	}
+
+	/**
+	 * @param unmarshaller For reading in different language XML files when selection is changed
+	 */
+	public final void setLanguageDatabaseUnmarshaller (final Unmarshaller unmarshaller)
+	{
+		languageDatabaseUnmarshaller = unmarshaller;
 	}
 }

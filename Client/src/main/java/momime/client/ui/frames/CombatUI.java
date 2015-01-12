@@ -1006,8 +1006,7 @@ public final class CombatUI extends MomClientFrameUI
 			}
 			
 			// Generates the bitmap for the static portion of the terrain
-			getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
-			combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps ();
+			smoothCombatMapAndGenerateBitmaps ();
 			
 			// Work out who the two players involved are.
 			// There must always be at least one unit on each side.  The only situation where we can get a combat with zero defenders is attacking an empty city,
@@ -1060,6 +1059,22 @@ public final class CombatUI extends MomClientFrameUI
 		}
 
 		log.trace ("Exiting initNewCombat");
+	}
+	
+	/**
+	 * This is called during map startup, but also from the options screen if we change smoothing options
+	 * 
+	 * @throws IOException If there is a problem loading any of the images
+	 * @throws RecordNotFoundException If required entries in the graphics XML cannot be found
+	 */
+	public final void smoothCombatMapAndGenerateBitmaps () throws IOException, RecordNotFoundException
+	{
+		log.trace ("Entering smoothCombatMapAndGenerateBitmaps");
+
+		getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
+		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps ();
+
+		log.trace ("Exiting smoothCombatMapAndGenerateBitmaps");
 	}
 
 	/**

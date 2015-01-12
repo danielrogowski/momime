@@ -1179,6 +1179,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
+		<property name="combatUI" ref="combatUI" />
 		<property name="pathToLanguageXmlFiles" value="#{clientConfig.pathToLanguageXmlFiles}" />
 		<property name="languageDatabaseUnmarshaller" ref="languageDatabaseUnmarshaller" />
 		<property name="clientConfig" ref="clientConfig" />

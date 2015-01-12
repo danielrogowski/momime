@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -107,7 +108,16 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	
 	/** For reading in different language XML files when selection is changed */
 	private Unmarshaller languageDatabaseUnmarshaller;
+
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
 	
+	/** Overland map bitmap generator */
+	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
+
 	/** Short title */
 	private JLabel shortTitleLabel;
 	
@@ -365,6 +375,16 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			{
 				getClientConfig ().setOverlandSmoothTerrain (overlandSmoothTerrain.isSelected ());
 				saveConfigFile ();
+				
+				try
+				{
+					getOverlandMapBitmapGenerator ().smoothMapTerrain (null);
+					getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		});
 		
@@ -385,6 +405,15 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			{
 				getClientConfig ().setOverlandShowPartialFogOfWar (overlandShowPartialFogOfWar.isSelected ());
 				saveConfigFile ();
+
+				try
+				{
+					getOverlandMapUI ().regenerateFogOfWarBitmap ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		});
 
@@ -395,6 +424,15 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			{
 				getClientConfig ().setOverlandSmoothFogOfWar (overlandSmoothFogOfWar.isSelected ());
 				saveConfigFile ();
+
+				try
+				{
+					getOverlandMapUI ().regenerateFogOfWarBitmap ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		});
 	
@@ -405,6 +443,15 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			{
 				getClientConfig ().setCombatSmoothTerrain (combatSmoothTerrain.isSelected ());
 				saveConfigFile ();
+
+				try
+				{
+					getCombatUI ().smoothCombatMapAndGenerateBitmaps ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		});
 
@@ -682,5 +729,53 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	public final void setLanguageDatabaseUnmarshaller (final Unmarshaller unmarshaller)
 	{
 		languageDatabaseUnmarshaller = unmarshaller;
+	}
+
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Overland map bitmap generator
+	 */
+	public final OverlandMapBitmapGenerator getOverlandMapBitmapGenerator ()
+	{
+		return overlandMapBitmapGenerator;
+	}
+	
+	/**
+	 * @param gen Overland map bitmap generator
+	 */
+	public final void setOverlandMapBitmapGenerator (final OverlandMapBitmapGenerator gen)
+	{
+		overlandMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

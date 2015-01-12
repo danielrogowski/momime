@@ -19170,7 +19170,6 @@
 		<languageEntry languageEntryID="Version" />
 		<languageEntry languageEntryID="OriginalCopyrightLine1" />
 		<languageEntry languageEntryID="OriginalCopyrightLine2" />
-		<languageEntry languageEntryID="ChangeLanguage" />
 		<languageEntry languageEntryID="ConnectToServer" />
 		<languageEntry languageEntryID="NewGame" />
 		<languageEntry languageEntryID="JoinGame" />
@@ -19178,11 +19177,6 @@
 		<languageEntry languageEntryID="Exit" />
 		<languageEntry languageEntryID="LanguageFileAuthor" />
 		<languageEntry languageEntryID="Connected" />
-	</languageCategory>
-	<languageCategory languageCategoryID="frmChooseLanguage">
-		<languageEntry languageEntryID="Title" />
-		<languageEntry languageEntryID="OK" />
-		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMessageBox">
 		<languageEntry languageEntryID="ErrorTitle" />

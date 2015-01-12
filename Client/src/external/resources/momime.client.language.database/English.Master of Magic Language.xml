@@ -4458,9 +4458,6 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="OriginalCopyrightLine2">
 			<languageEntryText>Simtex Software and Microprose</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ChangeLanguage">
-			<languageEntryText>Change Language</languageEntryText>
-		</languageEntry>
 		<languageEntry languageEntryID="ConnectToServer">
 			<languageEntryText>Connect to Server</languageEntryText>
 		</languageEntry>
@@ -4481,17 +4478,6 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="Connected">
 			<languageEntryText>Logged on to server SERVER_NAME as PLAYER_NAME</languageEntryText>
-		</languageEntry>
-	</languageCategory>
-	<languageCategory languageCategoryID="frmChooseLanguage">
-		<languageEntry languageEntryID="Title">
-			<languageEntryText>Choose Language</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="OK">
-			<languageEntryText>OK</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="Cancel">
-			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMessageBox">

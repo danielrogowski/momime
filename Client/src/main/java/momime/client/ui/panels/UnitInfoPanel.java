@@ -33,6 +33,7 @@ import javax.swing.event.ListSelectionListener;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.Spell;
@@ -169,6 +170,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 	/** Image of unit movement */
 	private JLabel currentlyConstructingMoves;
+
+	/** URN label */
+	private JLabel urnLabel;
+	
+	/** URN value */
+	private JLabel urnValue;
 	
 	/** Card layout for top section */
 	private CardLayout topCardLayout;
@@ -208,6 +215,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Client config, containing various combat map settings */
+	private MomImeClientConfig clientConfig;
 	
 	/**
 	 * Sets up the panel once all values have been injected
@@ -309,6 +319,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		currentlyConstructingMoves = new JLabel ();
 		getPanel ().add (currentlyConstructingMoves, getUtils ().createConstraintsNoFill (2, 3, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+
+		urnLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
+		getPanel ().add (urnLabel, getUtils ().createConstraintsNoFill (1, 4, 1, 1, new Insets (0, 0, 0, 4), GridBagConstraintsNoFill.WEST));
+
+		urnValue = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
+		getPanel ().add (urnValue, getUtils ().createConstraintsNoFill (2, 4, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
 		
 		// Card layouts
 		topCardLayout = new CardLayout ();
@@ -625,7 +641,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Update language independant labels
 		currentlyConstructingProductionCost.setText ((buildingInfo.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (buildingInfo.getProductionCost ()));
 		costLabel.setVisible (buildingInfo.getProductionCost () != null);
-		movesLabel.setVisible (false);
+		movesLabel.setText (" ");		// Space ensures the line where the movement goes for units is still occupied so the URN line goes in the right place
 		currentlyConstructingMoves.setVisible (false);
 
 		// Search for upkeep values (i.e. no population task specified, and the value is negative)
@@ -653,6 +669,19 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Show the image of the selected building
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
 		getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (building.getBuildingID (), "showBuilding").getCityViewAnimation (), currentlyConstructingImage);
+		
+		// Show URN?
+		if ((showBuilding.getBuildingURN () > 0) && (getClientConfig ().isDebugShowURNs ()))
+		{
+			urnValue.setText (getTextUtils ().intToStrCommas (showBuilding.getBuildingURN ()));
+			urnLabel.setVisible (true);
+			urnValue.setVisible (true);
+		}
+		else
+		{
+			urnLabel.setVisible (false);
+			urnValue.setVisible (false);
+		}
 		
 		log.trace ("Entering showBuilding");
 	}
@@ -771,6 +800,19 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
 		getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), movingActionID, 4, currentlyConstructingImage); 
 		
+		// Show URN?
+		if ((showUnit instanceof MemoryUnit) && (((MemoryUnit) showUnit).getUnitURN () > 0) && (getClientConfig ().isDebugShowURNs ()))
+		{
+			urnValue.setText (getTextUtils ().intToStrCommas (((MemoryUnit) showUnit).getUnitURN ()));
+			urnLabel.setVisible (true);
+			urnValue.setVisible (true);
+		}
+		else
+		{
+			urnLabel.setVisible (false);
+			urnValue.setVisible (false);
+		}
+		
 		log.trace ("Entering showUnit");
 	}
 
@@ -832,10 +874,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			currentlyConstructingName.setText ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
 			currentlyConstructingDescription.setText ((buildingLang != null) ? buildingLang.getBuildingHelpText () : null);
 			currentlyConstructingAllows.setText (getClientCityCalculations ().describeWhatBuildingAllows (building.getBuildingID (), (MapCoordinates3DEx) building.getCityLocation ()));
+			urnLabel.setText (getLanguage ().findCategoryEntry ("frmChangeConstruction", "BuildingURN"));
 		}
 		
 		// Labels if showing a unit
-		if (unit != null)
+		else if (unit != null)
 		{
 			String unitName = null;
 			try
@@ -849,6 +892,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			}
 			
 			currentlyConstructingName.setText (unitName);
+			urnLabel.setText (getLanguage ().findCategoryEntry ("frmChangeConstruction", "UnitURN"));
 		}
 		
 		log.trace ("Exiting currentConstructionChanged");
@@ -1155,5 +1199,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Client config, containing various combat map settings
+	 */	
+	public final MomImeClientConfig getClientConfig ()
+	{
+		return clientConfig;
+	}
+
+	/**
+	 * @param config Client config, containing various combat map settings
+	 */
+	public final void setClientConfig (final MomImeClientConfig config)
+	{
+		clientConfig = config;
 	}
 }

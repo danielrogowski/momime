@@ -82,6 +82,7 @@ public final class TestUnitInfoPanel
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Moves")).thenReturn ("Moves");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
+		when (lang.findCategoryEntry ("frmChangeConstruction", "BuildingURN")).thenReturn ("Building URN");
 
 		final momime.client.language.database.v0_9_5.Building granaryName = new momime.client.language.database.v0_9_5.Building ();
 		granaryName.setBuildingName ("Granary");
@@ -211,6 +212,7 @@ public final class TestUnitInfoPanel
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Moves")).thenReturn ("Moves");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
+		when (lang.findCategoryEntry ("frmChangeConstruction", "UnitURN")).thenReturn ("Unit URN");
 		
 		int unitAttrNo = 0;
 		for (final String unitAttributeDesc : new String [] {"Melee", "Ranged", "+ to Hit", "Defence", "Resistance", "Hit Points", "+ to Block"})

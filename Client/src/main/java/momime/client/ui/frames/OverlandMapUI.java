@@ -665,6 +665,18 @@ public final class OverlandMapUI extends MomClientFrameUI
 					{
 						log.error (e, e);
 					}
+				
+				// Draw white border around map edge?
+				if (getClientConfig ().isDebugShowEdgesOfMap ())
+				{
+					g.setColor (Color.GRAY);
+					
+					if (getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ())
+						g.drawLine (mapZoomedWidth - mapViewX, 0, mapZoomedWidth - mapViewX, mapZoomedHeight);
+
+					if (getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ())
+						g.drawLine (0, mapZoomedHeight - mapViewY, mapZoomedWidth, mapZoomedHeight - mapViewY);
+				}
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);

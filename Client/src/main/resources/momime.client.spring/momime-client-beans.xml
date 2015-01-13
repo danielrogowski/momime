@@ -1182,6 +1182,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="client" ref="client" />
 		<property name="pathToLanguageXmlFiles" value="#{clientConfig.pathToLanguageXmlFiles}" />
 		<property name="languageDatabaseUnmarshaller" ref="languageDatabaseUnmarshaller" />
 		<property name="clientConfig" ref="clientConfig" />
@@ -1374,6 +1375,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />		<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
+		<property name="clientConfig" ref="clientConfig" />
 	</bean>	
 
 	<bean id="changeConstructionUI" class="momime.client.ui.frames.ChangeConstructionUI" scope="prototype">

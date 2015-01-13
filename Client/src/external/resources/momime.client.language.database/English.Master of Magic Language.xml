@@ -5263,6 +5263,12 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="Cancel">
 			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="UnitURN">
+			<languageEntryText>Unit URN</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="BuildingURN">
+			<languageEntryText>Building URN</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmUnitInfo">
 		<languageEntry languageEntryID="OK">

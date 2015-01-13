@@ -19473,6 +19473,8 @@
 		<languageEntry languageEntryID="Allows" />
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="Cancel" />
+		<languageEntry languageEntryID="UnitURN" />
+		<languageEntry languageEntryID="BuildingURN" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmUnitInfo">
 		<languageEntry languageEntryID="OK" />

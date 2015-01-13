@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.config.v0_9_5.UnitCombatScale;
@@ -118,6 +119,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** Combat UI */
 	private CombatUI combatUI;
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/** Short title */
 	private JLabel shortTitleLabel;
 	
@@ -462,6 +466,16 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			{
 				getClientConfig ().setDebugShowURNs (debugShowURNs.isSelected ());
 				saveConfigFile ();
+				
+				for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
+					try
+					{
+						unitInfo.getUnitInfoPanel ().showUnit (unitInfo.getUnitInfoPanel ().getUnit ());
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 		});
 
@@ -777,5 +791,21 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

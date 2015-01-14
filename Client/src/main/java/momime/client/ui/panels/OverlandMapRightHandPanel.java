@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -25,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.Timer;
 
 import momime.client.MomClient;
 import momime.client.database.MapFeature;
@@ -53,6 +55,7 @@ import momime.common.database.TileType;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageData;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -90,6 +93,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Bullet point prefix for each line explaining why we cannot end turn right now */
 	private final static String BULLET_POINT = "\u2022 ";
+
+	/** Width of the colour patch for one player */
+	private final static int COLOUR_PATCH_WIDTH = 8;
 	
 	/** XML layout for the surveyor subpanel */
 	private XmlLayoutContainerEx surveyorLayout;
@@ -277,6 +283,12 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Image of disabled next turn button with no resource icons on it */
 	private BufferedImage nextTurnButtonDisabled;
 	
+	/** Number of pixels that the colour patches are shifted at the moment */
+	private int colourPatchCurrentPos;
+
+	/** Number of pixels that the colour patches should be shifted at the moment (according to who the current player is) */
+	private int colourPatchDesiredPos;
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -315,6 +327,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		nextTurnButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/nextTurnDisabled.png");
 		final BufferedImage cancelBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/oneButton.png");
 		final BufferedImage specialOrdersBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/fourButtons.png");
+
+		final BufferedImage playerHuman = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/playerHuman.png");
+		final BufferedImage playerAI = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/playerAI.png");
 		
 		// Fix the size of the panel to be the same as the background
 		final Dimension backgroundSize = new Dimension (background.getWidth (), background.getHeight ());
@@ -529,8 +544,53 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Colour patches showing players' turn sequence
 		final Dimension colourPatchesSize = new Dimension (134, 26);
 		
-		final JPanel colourPatches = new JPanel ();
-		colourPatches.setBackground (new Color (0x800000));
+		final JPanel colourPatches = new JPanel ()
+		{
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				// Black out background
+				super.paintComponent (g);
+				
+				int x = -colourPatchCurrentPos;
+				switch (getClient ().getSessionDescription ().getTurnSystem ())
+				{
+					case ONE_PLAYER_AT_A_TIME:
+						int playerIndex = 0;
+						while (x < colourPatchesSize.getWidth ())
+						{
+							// Draw colour patch for next player
+							final PlayerPublicDetails player = getClient ().getPlayers ().get (playerIndex);
+							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.height);
+							
+							// Draw icon for AI or human player
+							g.drawImage (player.getPlayerDescription ().isHuman () ? playerHuman : playerAI, x + 1, 1, null);
+							
+							// Move to next position
+							x = x + COLOUR_PATCH_WIDTH;
+							playerIndex++;
+							
+							// Draw white line if boundary between turns
+							if (playerIndex >= getClient ().getPlayers ().size ())
+							{
+								playerIndex = 0;
+								x++;				// leave black gap
+								g.setColor (Color.WHITE);
+								g.drawLine (x, 0, x, colourPatchesSize.height);
+								x = x + 2;		// leave white line + black gap
+							}
+						}
+						break;
+						
+					case SIMULTANEOUS:
+						break;
+				};
+			}
+		};
+		
+		colourPatches.setBackground (Color.BLACK);
 		colourPatches.setMinimumSize (colourPatchesSize);
 		colourPatches.setMaximumSize (colourPatchesSize);
 		colourPatches.setPreferredSize (colourPatchesSize);
@@ -803,6 +863,23 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		// Fill in variable labels
 		updateGlobalEconomyValues ();
+		
+		// Set up animation to make the colour patches slide along
+		new Timer (30, new ActionListener ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				if (colourPatchCurrentPos != colourPatchDesiredPos)
+				{
+					colourPatchCurrentPos++;
+					if (colourPatchCurrentPos >= getClient ().getPlayers ().size () * COLOUR_PATCH_WIDTH)
+						colourPatchCurrentPos = 0;
+					
+					colourPatches.repaint ();
+				}
+			}
+		}).start ();
 		
 		log.trace ("Exiting init");
 	}
@@ -1296,6 +1373,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		final String result = text.toString ();
 		log.trace ("Exiting updateProductionTypesStoppingUsFromEndingTurn: " + result);
 		return result;
+	}
+	
+	/**
+	 * @param index The index into the player list of the current player, in a one-at-a-time turns game, so 0 = 1st player, 1 = 2nd and so on, including monsters+raiders players
+	 */
+	public final void setIndexOfCurrentPlayer (final int index)
+	{
+		colourPatchDesiredPos = index * COLOUR_PATCH_WIDTH;
 	}
 	
 	/**

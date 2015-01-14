@@ -290,6 +290,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="addNewTurnMessagesMessage" class="momime.client.messages.process.AddNewTurnMessagesMessageImpl" scope="prototype">

@@ -11,6 +11,7 @@ import momime.client.newturnmessages.NewTurnMessageStatus;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.utils.UnitUtils;
@@ -19,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Server sends this to all clients at the start of a new players' turn in a one-at-a-time turns game
@@ -49,6 +52,12 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
 	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -72,6 +81,8 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 		// Update label to show current player (if its our turn, this is hidden behind the next turn button)
 		
 		// Work out the position to scroll the colour patch to
+		final PlayerPublicDetails currentPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getCurrentPlayerID (), "SetCurrentPlayerMessageImpl");
+		getOverlandMapRightHandPanel ().setIndexOfCurrentPlayer (getClient ().getPlayers ().indexOf (currentPlayer));
 
 		// Read in the new turn messages
 		if (isExpireMessages ())
@@ -213,5 +224,37 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

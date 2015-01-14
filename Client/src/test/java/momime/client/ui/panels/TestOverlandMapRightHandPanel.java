@@ -35,6 +35,7 @@ import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.MemoryGridCellUtilsImpl;
@@ -195,12 +196,26 @@ public final class TestOverlandMapRightHandPanel
 		pd1.setHuman (true);
 		pd1.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
+		trans1.setFlagColour ("FF8000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub, null);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (-1);
+		pd2.setHuman (false);
+		pd2.setPlayerName ("Mr. Pants");
+		
+		final MomPersistentPlayerPublicKnowledge pub2 = new MomPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPublicKnowledge trans2 = new MomTransientPlayerPublicKnowledge ();
+		trans2.setFlagColour ("FF0080");
+		
+		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, pub2, trans2);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
+		players.add (player2);
 		
 		when (client.getPlayers ()).thenReturn (players);
 		
@@ -269,6 +284,7 @@ public final class TestOverlandMapRightHandPanel
 
 		// Have to do this after the frame is displayed
 		panel.setSurveyorLocation (new MapCoordinates3DEx (20, 10, 1));
+		panel.setIndexOfCurrentPlayer (1);
 		
 		final PanelAndFrame result = new PanelAndFrame ();
 		result.panel = panel;

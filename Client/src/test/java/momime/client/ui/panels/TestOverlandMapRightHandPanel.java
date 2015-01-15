@@ -23,6 +23,7 @@ import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
+import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
@@ -191,27 +192,29 @@ public final class TestOverlandMapRightHandPanel
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		// Players
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
 		pd1.setHuman (true);
-		pd1.setPlayerName ("Mr. Blah");
 		
 		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("FF8000");
 		
 		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Mr. Blah");
 
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
 		pd2.setHuman (false);
-		pd2.setPlayerName ("Mr. Pants");
 		
 		final MomPersistentPlayerPublicKnowledge pub2 = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPublicKnowledge trans2 = new MomTransientPlayerPublicKnowledge ();
 		trans2.setFlagColour ("FF0080");
 		
 		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, pub2, trans2);
+		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Mr. Pants");
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
@@ -273,6 +276,7 @@ public final class TestOverlandMapRightHandPanel
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setLargeFont (CreateFontsForTests.getLargeFont ());
 		panel.setSurveyorLayout (surveyorLayout);
+		panel.setWizardClientUtils (wizardClientUtils);
 		
 		// Set up a dummy frame to display the panel
 		final JFrame frame = new JFrame ("testOverlandMapRightHandPanel");

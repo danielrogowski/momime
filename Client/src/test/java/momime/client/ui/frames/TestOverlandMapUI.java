@@ -24,6 +24,7 @@ import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.TextUtilsImpl;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -31,6 +32,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
@@ -122,15 +124,19 @@ public final class TestOverlandMapUI
 		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		
 		// Player
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
 		pd1.setHuman (true);
-		pd1.setPlayerName ("Mr. Blah");
 		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
+		trans.setFlagColour ("800000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub, null);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub, trans);
+		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Mr. Blah");
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
@@ -178,6 +184,7 @@ public final class TestOverlandMapUI
 		rhp.setMediumFont (CreateFontsForTests.getMediumFont ());
 		rhp.setLargeFont (CreateFontsForTests.getLargeFont ());
 		rhp.setSurveyorLayout (surveyorLayout);
+		rhp.setWizardClientUtils (wizardClientUtils);
 
 		// Give it some dummy images for the terrain
 		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];

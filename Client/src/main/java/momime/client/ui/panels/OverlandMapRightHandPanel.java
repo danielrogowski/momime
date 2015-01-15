@@ -43,6 +43,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.TextUtils;
+import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -156,6 +157,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
+
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/** What is displayed in the variable top section */
 	private OverlandMapRightHandPanelTop top;
@@ -934,13 +938,12 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		{
 			updateGlobalEconomyValues ();
 			surveyorLocationOrLanguageChanged ();
+			turnSystemOrCurrentPlayerChanged ();
 		}
 		catch (final Exception e)
 		{
 			log.error (e, e);
 		}
-		
-		turnSystemOrCurrentPlayerChanged ();
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -1024,8 +1027,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 	/**
 	 * Update labels that depend both on the language, and on the turn system and/or current player
+	 * @throws PlayerNotFoundException If we can't find the player whose turn it now is
 	 */
-	public final void turnSystemOrCurrentPlayerChanged ()
+	public final void turnSystemOrCurrentPlayerChanged () throws PlayerNotFoundException
 	{
 		log.trace ("Entering turnSystemOrCurrentPlayerChanged");
 		
@@ -1041,8 +1045,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					playerLine2.setText (null);
 				else
 				{
-					final PlayerPublicDetails currentPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ());
-					playerLine2.setText ((currentPlayer != null) ? currentPlayer.getPlayerDescription ().getPlayerName () : "Player ID " + getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ());
+					final PlayerPublicDetails currentPlayer = getMultiplayerSessionUtils ().findPlayerWithID
+						(getClient ().getPlayers (), getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID (), "turnSystemOrCurrentPlayerChanged");
+					
+					playerLine2.setText (getWizardClientUtils ().getPlayerName (currentPlayer));
 				}
 				break;
 				
@@ -1771,6 +1777,22 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
 	}
 	
 	/**

@@ -968,6 +968,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">

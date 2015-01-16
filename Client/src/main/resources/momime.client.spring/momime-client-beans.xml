@@ -294,6 +294,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
+	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="scheduledCombatsUI" ref="scheduledCombatsUI" />
+	</bean>
+
+	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+	</bean>
+
 	<bean id="addNewTurnMessagesMessage" class="momime.client.messages.process.AddNewTurnMessagesMessageImpl" scope="prototype">
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
@@ -437,14 +454,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
-	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype" />
 	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
 	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
-	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
 	
@@ -1191,6 +1206,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
 		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
+	</bean>
+
+	<bean id="scheduledCombatsUI" class="momime.client.ui.frames.ScheduledCombatsUI">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<!-- Prototype UI components -->

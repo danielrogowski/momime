@@ -293,6 +293,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Number of pixels that the colour patches should be shifted at the moment (according to who the current player is) */
 	private int colourPatchDesiredPos;
 	
+	/** Mini panel showing colour patch for each wizard to show progression of their turns */
+	private JPanel colourPatches;
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -334,6 +337,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 		final BufferedImage playerHuman = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/playerHuman.png");
 		final BufferedImage playerAI = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/playerAI.png");
+		final BufferedImage playerAllocatedMovement = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/playerAllocatedMovement.png");
 		
 		// Fix the size of the panel to be the same as the background
 		final Dimension backgroundSize = new Dimension (background.getWidth (), background.getHeight ());
@@ -548,7 +552,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Colour patches showing players' turn sequence
 		final Dimension colourPatchesSize = new Dimension (134, 26);
 		
-		final JPanel colourPatches = new JPanel ()
+		colourPatches = new JPanel ()
 		{
 			@Override
 			protected final void paintComponent (final Graphics g)
@@ -556,10 +560,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				// Black out background
 				super.paintComponent (g);
 				
-				int x = -colourPatchCurrentPos;
+				int x;
 				switch (getClient ().getSessionDescription ().getTurnSystem ())
 				{
 					case ONE_PLAYER_AT_A_TIME:
+						x = -colourPatchCurrentPos;
 						int playerIndex = 0;
 						while (x < colourPatchesSize.getWidth ())
 						{
@@ -589,6 +594,24 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						break;
 						
 					case SIMULTANEOUS:
+						// Always draw players in order, with no animation, so much simpler than above
+						x = 0;
+						for (final PlayerPublicDetails player : getClient ().getPlayers ())
+						{
+							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.height);
+							
+							// Draw icon for AI or human player
+							g.drawImage (player.getPlayerDescription ().isHuman () ? playerHuman : playerAI, x + 1, 1, null);
+							
+							// Show whether they finished allocating movement yet
+							if (trans.getMovementAllocatedForTurnNumber () >= getClient ().getGeneralPublicKnowledge ().getTurnNumber ())
+								g.drawImage (playerAllocatedMovement, x + 1, colourPatchesSize.height - playerAllocatedMovement.getHeight () - 1, null);
+
+							// Move to next position
+							x = x + COLOUR_PATCH_WIDTH;
+						}
 						break;
 				};
 			}
@@ -895,6 +918,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	protected final void paintComponent (final Graphics g)
 	{
 		g.drawImage (background, 0, 0, null);
+	}
+	
+	/**
+	 * Forces the colour patches to repaint when a player's status changes
+	 */
+	public final void repaintColourPatches ()
+	{
+		colourPatches.repaint ();
 	}
 
 	/**

@@ -133,7 +133,7 @@ public final class TestCityViewPanel
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setMapSize (mapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = new MapVolumeOfMemoryGridCells (); 
+		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);

@@ -73,6 +73,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
+import momime.common.messages.clienttoserver.SellBuildingMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -729,88 +730,98 @@ public final class CityViewUI extends MomClientFrameUI
 				final OverlandMapCityData cityData = mc.getCityData ();
 				if ((cityData != null) && (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())))
 				{
-					// Language entry ID of error or confirmation message
-					final String languageEntryID;
-					String prerequisiteBuildingName = null;
-					boolean ok = false;
-					
-					// How much money do we get for selling it?
-					// If this is zero, then they're trying to do something daft like sell their Wizard's Fortress or Summoning Circle
-					final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (getClient ().getClientDB ().findBuilding (buildingID, "buildingClicked"));
-					if (goldValue <= 0)
-						languageEntryID = "CannotSellSpecialBuilding";
-					
-					// We can only sell one building a turn
-					else if (mc.getBuildingIdSoldThisTurn () != null)
-						languageEntryID = "OnlySellOneEachTurn";
-					
-					else
+					// If cancelling a pending sale, there's no lookups or confirmations or anything to do, just send the message
+					if (buildingID == null)
 					{
-						// We can't sell a building if another building depends on it, e.g. trying to sell a Granary when we already have a Farmers' Market
-						final String prerequisiteBuildingID = getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-							getCityLocation (), buildingID, getClient ().getClientDB ());
-						if (prerequisiteBuildingID != null)
-						{
-							languageEntryID = "CannotSellRequiredByAnother";
-							final Building prerequisiteBuilding = getLanguage ().findBuilding (prerequisiteBuildingID);
-							prerequisiteBuildingName = (prerequisiteBuilding != null) ? prerequisiteBuilding.getBuildingName () : prerequisiteBuildingID;
-						}
+						final SellBuildingMessage msg = new SellBuildingMessage ();
+						msg.setCityLocation (getCityLocation ());
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					else
+					{					
+						// Language entry ID of error or confirmation message
+						final String languageEntryID;
+						String prerequisiteBuildingName = null;
+						boolean ok = false;
+						
+						// How much money do we get for selling it?
+						// If this is zero, then they're trying to do something daft like sell their Wizard's Fortress or Summoning Circle
+						final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (getClient ().getClientDB ().findBuilding (buildingID, "buildingClicked"));
+						if (goldValue <= 0)
+							languageEntryID = "CannotSellSpecialBuilding";
+						
+						// We can only sell one building a turn
+						else if (mc.getBuildingIdSoldThisTurn () != null)
+							languageEntryID = "OnlySellOneEachTurn";
+						
 						else
 						{
-							// OK - but first check if current construction project depends on the one we're selling
-							// If so, then we can still sell it, but it will cancel our current construction project
-							ok = true;
-							if (((cityData.getCurrentlyConstructingBuildingID () != null) &&
-									(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, cityData.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
-								((cityData.getCurrentlyConstructingUnitID () != null) &&
-									(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, cityData.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
+							// We can't sell a building if another building depends on it, e.g. trying to sell a Granary when we already have a Farmers' Market
+							final String prerequisiteBuildingID = getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+								getCityLocation (), buildingID, getClient ().getClientDB ());
+							if (prerequisiteBuildingID != null)
 							{
-								languageEntryID = "SellPromptPrerequisite";
-								if (cityData.getCurrentlyConstructingBuildingID () != null)
-								{
-									final Building currentConstruction = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
-									prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ();
-								}
-								else if (cityData.getCurrentlyConstructingUnitID () != null)
-								{
-									final Unit currentConstruction = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
-									prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getUnitName () : cityData.getCurrentlyConstructingUnitID ();
-								}
+								languageEntryID = "CannotSellRequiredByAnother";
+								final Building prerequisiteBuilding = getLanguage ().findBuilding (prerequisiteBuildingID);
+								prerequisiteBuildingName = (prerequisiteBuilding != null) ? prerequisiteBuilding.getBuildingName () : prerequisiteBuildingID;
 							}
 							else
-								languageEntryID = "SellPromptNormal";
+							{
+								// OK - but first check if current construction project depends on the one we're selling
+								// If so, then we can still sell it, but it will cancel our current construction project
+								ok = true;
+								if (((cityData.getCurrentlyConstructingBuildingID () != null) &&
+										(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, cityData.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
+									((cityData.getCurrentlyConstructingUnitID () != null) &&
+										(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, cityData.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
+								{
+									languageEntryID = "SellPromptPrerequisite";
+									if (cityData.getCurrentlyConstructingBuildingID () != null)
+									{
+										final Building currentConstruction = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+										prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ();
+									}
+									else if (cityData.getCurrentlyConstructingUnitID () != null)
+									{
+										final Unit currentConstruction = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
+										prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getUnitName () : cityData.getCurrentlyConstructingUnitID ();
+									}
+								}
+								else
+									languageEntryID = "SellPromptNormal";
+							}
 						}
-					}
-					
-					// Work out the text for the message box
-					final Building building = getLanguage ().findBuilding (buildingID);
-					String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", languageEntryID).replaceAll
-						("BUILDING_NAME", (building != null) ? building.getBuildingName () : buildingID).replaceAll
-						("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
-					
-					if (prerequisiteBuildingName != null)
-						text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
-					
-					// Show message box
-					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
-					msg.setTitleLanguageEntryID ("SellTitle");
-					msg.setText (text);
-					
-					if (ok)
-					{
-						final MemoryBuilding sellBuilding = getMemoryBuildingUtils ().findBuilding
-							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), buildingID);
-						if (sellBuilding == null)
-							log.error ("Can't find building with ID " + buildingID + " in city " + getCityLocation () + " to sell even though it was clicked on");
-						else
-						{						
-							msg.setCityLocation (getCityLocation ());
-							msg.setBuildingURN (sellBuilding.getBuildingURN ());
+						
+						// Work out the text for the message box
+						final Building building = getLanguage ().findBuilding (buildingID);
+						String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", languageEntryID).replaceAll
+							("BUILDING_NAME", (building != null) ? building.getBuildingName () : buildingID).replaceAll
+							("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
+						
+						if (prerequisiteBuildingName != null)
+							text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
+						
+						// Show message box
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
+						msg.setTitleLanguageEntryID ("SellTitle");
+						msg.setText (text);
+						
+						if (ok)
+						{
+							final MemoryBuilding sellBuilding = getMemoryBuildingUtils ().findBuilding
+								(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), buildingID);
+							if (sellBuilding == null)
+								log.error ("Can't find building with ID " + buildingID + " in city " + getCityLocation () + " to sell even though it was clicked on");
+							else
+							{						
+								msg.setCityLocation (getCityLocation ());
+								msg.setBuildingURN (sellBuilding.getBuildingURN ());
+							}
 						}
+						
+						msg.setVisible (true);
 					}
-					
-					msg.setVisible (true);
 				}				
 			}
 		});

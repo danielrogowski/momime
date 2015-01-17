@@ -452,7 +452,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
-	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
 	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
@@ -616,6 +615,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+	
+	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 	
 	<!-- Version of the client -->

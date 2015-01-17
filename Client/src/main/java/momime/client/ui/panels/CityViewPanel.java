@@ -66,6 +66,9 @@ public final class CityViewPanel extends JPanel
 	/** Where to send building clicks to */
 	private List<BuildingListener> buildingListeners = new ArrayList<BuildingListener> ();
 	
+	/** Image to show building to be sold at the end of the turn in simultaneous turns games */
+	private BufferedImage pendingSaleImage;
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -74,6 +77,9 @@ public final class CityViewPanel extends JPanel
 	{
 		log.trace ("Entering init");
 
+		// Used for simultaneous turns games
+		pendingSaleImage = getUtils ().loadImage ("/momime.client.graphics/cityView/spellEffects/SE145.png");
+		
 		// Fix the size of the panel to be the same as a typical background
 		final BufferedImage exampleBackground = getUtils ().loadImage ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		
@@ -112,12 +118,38 @@ public final class CityViewPanel extends JPanel
 					if (buildingListeners.size () > 0)
 						try
 						{
+							// Was the pending sale gold coin clicked on?
+							boolean found = false;
+							String buildingID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+								(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
+							if (buildingID != null)
+							{
+								final CityViewElement element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-clickPendingSale");
+								
+								// Is the click within the gold coin?
+								if ((ev.getPoint ().x >= element.getLocationX ()) && (ev.getPoint ().y >= element.getLocationY ()) &&
+									(ev.getPoint ().x < element.getLocationX () + pendingSaleImage.getWidth ()) &&
+									(ev.getPoint ().y < element.getLocationY () + pendingSaleImage.getHeight ()))
+								{
+									{
+										// Now more detailed check - ignore clicks on transparent pixels
+										// First shift the point relative to the building location
+										final int x = ev.getPoint ().x - element.getLocationX ();
+										final int y = ev.getPoint ().y - element.getLocationY ();
+									
+										final int alpha = new Color (pendingSaleImage.getRGB (x, y), true).getAlpha ();
+										if (alpha > 0)
+											found = true;		// buildingID gets set to null just below anyway
+									}
+								}
+							}
+							
 							// Look for a building that was clicked on
 							String elementSetsDoneClick = "";
-							String buildingID = null;
+							buildingID = null;
 					
 							final Iterator<CityViewElement> iter = getGraphicsDB ().getCityViewElement ().iterator ();
-							while ((buildingID == null) && (iter.hasNext ()))
+							while ((!found) && (iter.hasNext ()))
 							{
 								final CityViewElement element = iter.next ();
 	
@@ -143,7 +175,10 @@ public final class CityViewPanel extends JPanel
 										
 											final int alpha = new Color (image.getRGB (x, y), true).getAlpha ();
 											if (alpha > 0)
+											{
+												found = true;
 												buildingID = element.getBuildingID ();
+											}
 										}
 									}
 							
@@ -154,7 +189,7 @@ public final class CityViewPanel extends JPanel
 							}
 							
 							// So was a building clicked on?
-							if (buildingID != null)
+							if (found)
 								for (final BuildingListener listener : buildingListeners)
 									listener.buildingClicked (buildingID);
 						}
@@ -209,6 +244,20 @@ public final class CityViewPanel extends JPanel
 				// List in sets
 				if (element.getCityViewElementSetID () != null)
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
+			}
+		
+		// Need to show a pending sale?
+		final String buildingID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
+		if (buildingID != null)
+			try
+			{
+				final CityViewElement element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-drawPendingSale");
+				g.drawImage (pendingSaleImage, element.getLocationX (), element.getLocationY (), null);
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
 			}
 	}
 	

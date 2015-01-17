@@ -232,6 +232,7 @@ public final class TestCityViewUI
 		panel.setUtils (utils);
 		panel.setGraphicsDB (gfx);
 		panel.setAnim (anim);
+		panel.setClient (client);
 		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();

@@ -77,10 +77,10 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	 * @throws PlayerNotFoundException If one of the players listed for the combat can't be found in the players list
 	 */
 	@Override
-	public final PlayerPublicDetails determineOtherHumanPlayer (final MomScheduledCombat combat, final PlayerPublicDetails besidesWho, final List<? extends PlayerPublicDetails> players)
+	public final PlayerPublicDetails determineOtherHumanPlayer (final MomScheduledCombat combat, final int besidesWho, final List<? extends PlayerPublicDetails> players)
 		throws PlayerNotFoundException
 	{
-		log.trace ("Entering determineOtherHumanPlayer: " + combat.getScheduledCombatURN () + ", Player ID " + besidesWho.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering determineOtherHumanPlayer: " + combat.getScheduledCombatURN () + ", Player ID " + besidesWho);
 		
 		final PlayerPublicDetails ohp;
 		if (combat.isWalkInWithoutAFight ())
@@ -89,9 +89,9 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 		else
 		{
 			final Integer otherPlayerID;
-			if (besidesWho.getPlayerDescription ().getPlayerID ().intValue () == combat.getAttackingPlayerID ())
+			if (besidesWho == combat.getAttackingPlayerID ())
 				otherPlayerID = combat.getDefendingPlayerID ();
-			else if (besidesWho.getPlayerDescription ().getPlayerID ().intValue () == combat.getDefendingPlayerID ())
+			else if (besidesWho == combat.getDefendingPlayerID ())
 				otherPlayerID = combat.getAttackingPlayerID ();
 			else
 				// besidesWho isn't either of the 2 players in the combat, so just return null

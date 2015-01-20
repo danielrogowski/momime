@@ -62,7 +62,8 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 			(mom.getGeneralServerKnowledge ().getScheduledCombat (), getScheduledCombatURN ());
 		
 		// Who else is involved?
-		final PlayerServerDetails ohp = (combat == null) ? null : (PlayerServerDetails) getScheduledCombatUtils ().determineOtherHumanPlayer (combat, sender, mom.getPlayers ());
+		final PlayerServerDetails ohp = (combat == null) ? null : (PlayerServerDetails) getScheduledCombatUtils ().determineOtherHumanPlayer
+			(combat, sender.getPlayerDescription ().getPlayerID (), mom.getPlayers ());
 		
 		final MomTransientPlayerPublicKnowledge senderTpk= (MomTransientPlayerPublicKnowledge) sender.getTransientPlayerPublicKnowledge ();
 		final MomTransientPlayerPublicKnowledge ohpTpk= (ohp == null) ? null : (MomTransientPlayerPublicKnowledge) ohp.getTransientPlayerPublicKnowledge ();

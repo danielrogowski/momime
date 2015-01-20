@@ -6064,6 +6064,62 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>Close</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="ScheduledCombats">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Combats</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="RequestingUsToPlayCategory">
+			<languageEntryText>Combats other players are requesting you to play</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="HumanOpponentFreeCategory">
+			<languageEntryText>Combats you need to play against other players</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="HumanOpponentBusyCategory">
+			<languageEntryText>ombats against players who are busy playing another combat</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AIOpponentCategory">
+			<languageEntryText>Combats you need to play against AI opponents</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="WalkInWithoutAFightCategory">
+			<languageEntryText>Areas already captured that you can advance into freely</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NotInvolvedCategory">
+			<languageEntryText>Combats other players need to play</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="WalkInWithoutAFight">
+			<languageEntryText>Your ATTACKING_UNIT_COUNT unit(s) can advance freely into already captured area</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackingCity">
+			<languageEntryText>Your ATTACKING_UNIT_COUNT unit(s) attacking DEFENDER_NAME's CITY_NAME with DEFENDING_UNIT_COUNT unit(s) defending</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefendingCity">
+			<languageEntryText>ATTACKER_NAME's ATTACKING_UNIT_COUNT unit(s) attacking your CITY_NAME with DEFENDING_UNIT_COUNT unit(s) defending</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackingUnclearedNodeLairTower">
+			<languageEntryText>Your ATTACKING_UNIT_COUNT unit(s) attacking a NODE_LAIR_TOWER with DEFENDING_UNIT_COUNT unit(s) defending</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackingClearedNodeLairTower">
+			<languageEntryText>Your ATTACKING_UNIT_COUNT unit(s) attacking DEFENDER_NAME's NODE_LAIR_TOWER with DEFENDING_UNIT_COUNT unit(s) defending</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefendingClearedNodeLairTower">
+			<languageEntryText>ATTACKER_NAME's ATTACKING_UNIT_COUNT unit(s) attacking your NODE_LAIR_TOWER with DEFENDING_UNIT_COUNT unit(s) defending</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackingOutside">
+			<languageEntryText>Your ATTACKING_UNIT_COUNT unit(s) attacking DEFENDER_NAME's DEFENDING_UNIT_COUNT unit(s)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefendingOutside">
+			<languageEntryText>ATTACKER_NAME's ATTACKING_UNIT_COUNT unit(s) attacking your DEFENDING_UNIT_COUNT unit(s)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NotInvolved">
+			<languageEntryText>There are COMBAT_COUNT combat(s) other players need to play</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ClickBusy">
+			<languageEntryText>PLAYER_NAME is already involved in a combat, try again in a moment</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ClickWaiting">
+			<languageEntryText>Asking PLAYER_NAME to play this combat now, please wait for them to respond...</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<shift>false</shift>
 		<alt>false</alt>

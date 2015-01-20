@@ -28,6 +28,7 @@ import org.junit.Test;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the NewTurnMessagesUI class
@@ -130,8 +131,13 @@ public final class TestNewTurnMessagesUI
 		msg3.setNewPopulation (22850);
 		msgs.add (msg3);
 		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
 		// Set up form
 		final NewTurnMessagesUI scroll = new NewTurnMessagesUI ();
+		scroll.setNewTurnMessagesLayout (layout);
 		scroll.setUtils (utils);
 		scroll.setLanguageHolder (langHolder);
 		scroll.setLanguageChangeMaster (langMaster);

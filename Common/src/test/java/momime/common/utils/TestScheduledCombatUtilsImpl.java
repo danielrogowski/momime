@@ -110,20 +110,20 @@ public final class TestScheduledCombatUtilsImpl
 		final MomScheduledCombat combat = new MomScheduledCombat ();
 		combat.setAttackingPlayerID (-1);
 		combat.setDefendingPlayerID (1);
-		assertNull (utils.determineOtherHumanPlayer (combat, human1, players));
-		assertSame (human1, utils.determineOtherHumanPlayer (combat, ai1, players));
+		assertNull (utils.determineOtherHumanPlayer (combat, pd1.getPlayerID (), players));
+		assertSame (human1, utils.determineOtherHumanPlayer (combat, pd3.getPlayerID (), players));
 		
 		// Try requesting for a player who isn't even involved - should get null even though there is an "other" human player
-		assertNull (utils.determineOtherHumanPlayer (combat, human2, players));
+		assertNull (utils.determineOtherHumanPlayer (combat, pd2.getPlayerID (), players));
 		
 		// Test combat with two human players
 		combat.setAttackingPlayerID (2);
-		assertSame (human1, utils.determineOtherHumanPlayer (combat, human2, players));
-		assertSame (human2, utils.determineOtherHumanPlayer (combat, human1, players));
-		assertNull (utils.determineOtherHumanPlayer (combat, ai1, players));
+		assertSame (human1, utils.determineOtherHumanPlayer (combat, pd2.getPlayerID (), players));
+		assertSame (human2, utils.determineOtherHumanPlayer (combat, pd1.getPlayerID (), players));
+		assertNull (utils.determineOtherHumanPlayer (combat, pd3.getPlayerID (), players));
 		
 		// "Walk in without a fight" nullifies every other condition
 		combat.setWalkInWithoutAFight (true);
-		assertNull (utils.determineOtherHumanPlayer (combat, human2, players));
+		assertNull (utils.determineOtherHumanPlayer (combat, pd2.getPlayerID (), players));
 	}
 }

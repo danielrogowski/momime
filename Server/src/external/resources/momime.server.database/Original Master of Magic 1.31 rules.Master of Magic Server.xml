@@ -19772,4 +19772,24 @@
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Close" />
 	</languageCategory>
+	<languageCategory languageCategoryID="ScheduledCombats">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="RequestingUsToPlayCategory" />
+		<languageEntry languageEntryID="HumanOpponentFreeCategory" />
+		<languageEntry languageEntryID="HumanOpponentBusyCategory" />
+		<languageEntry languageEntryID="AIOpponentCategory" />
+		<languageEntry languageEntryID="WalkInWithoutAFightCategory" />
+		<languageEntry languageEntryID="NotInvolvedCategory" />
+		<languageEntry languageEntryID="WalkInWithoutAFight" />
+		<languageEntry languageEntryID="AttackingCity" />
+		<languageEntry languageEntryID="DefendingCity" />
+		<languageEntry languageEntryID="AttackingUnclearedNodeLairTower" />
+		<languageEntry languageEntryID="AttackingClearedNodeLairTower" />
+		<languageEntry languageEntryID="DefendingClearedNodeLairTower" />
+		<languageEntry languageEntryID="AttackingOutside" />
+		<languageEntry languageEntryID="DefendingOutside" />
+		<languageEntry languageEntryID="NotInvolved" />
+		<languageEntry languageEntryID="ClickBusy" />
+		<languageEntry languageEntryID="ClickWaiting" />
+	</languageCategory>	
 </momimesvr:serverDatabase>

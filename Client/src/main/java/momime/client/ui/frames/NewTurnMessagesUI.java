@@ -1,10 +1,7 @@
 package momime.client.ui.frames;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -32,7 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Scroll that displays new turn messages like "City of blah has grown from population 4,900 to 5,050" or "City of blah has finished constructing a Granary" or
@@ -43,17 +41,17 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewTurnMessagesUI.class);
 
+	/** XML layout */
+	private XmlLayoutContainerEx newTurnMessagesLayout;
+	
 	/** Animation controller */
 	private AnimationController anim;
 	
 	/** Number of pixels that the roller at the top of the scroll overlaps the main piece of background */
-	private final static int SCROLL_OVERLAP_TOP = 6;
+	public final static int SCROLL_OVERLAP_TOP = 6;
 	
 	/** Number of pixels that the roller at the bottom of the scroll overlaps the main piece of background */
-	private final static int SCROLL_OVERLAP_BOTTOM = 7;
-	
-	/** Number of pixels that the close button overlaps the roller at the bottom */
-	private final static int CLOSE_BUTTON_OVERLAP = 6;
+	public final static int SCROLL_OVERLAP_BOTTOM = 7;
 	
 	/** Width of the drawable (list box) area of the NTM scroll */
 	public final static int SCROLL_WIDTH = 452;
@@ -78,10 +76,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		final BufferedImage roller = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/position3-0.png");
 		final BufferedImage closeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/closeButtonNormal.png");
 		final BufferedImage closeButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/closeButtonPressed.png");
-		
-		final Dimension backgroundSize = new Dimension (roller.getWidth (),
-			background.getHeight () + (2 * roller.getHeight ()) - SCROLL_OVERLAP_TOP - SCROLL_OVERLAP_BOTTOM +
-			closeButtonNormal.getHeight () - CLOSE_BUTTON_OVERLAP);
 		
 		final int backgroundTop = roller.getHeight () - SCROLL_OVERLAP_TOP;
 		final int backgroundLeft = (roller.getWidth () - background.getWidth ()) / 2;
@@ -113,30 +107,20 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		};
 		
 		contentPane.setBackground (Color.BLACK);
-		contentPane.setMinimumSize (backgroundSize);
-		contentPane.setMaximumSize (backgroundSize);
-		contentPane.setPreferredSize (backgroundSize);
 		
 		// Set up layout
-		contentPane.setLayout (new GridBagLayout ());
+		contentPane.setLayout (new XmlLayoutManager (getNewTurnMessagesLayout ()));
 
-		final Dimension listSize = new Dimension (SCROLL_WIDTH, 361);
-		
 		newTurnMessagesList = new JList<NewTurnMessageUI> ();
 		newTurnMessagesList.setOpaque (false);
 		newTurnMessagesList.setModel (newTurnMessages);
 		newTurnMessagesList.setCellRenderer (new NewTurnMessageRenderer ());		// The renderer has no injections (yet) so doesn't have a spring prototype
 		newTurnMessagesList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
-		newTurnMessagesList.setMinimumSize (listSize);
-		newTurnMessagesList.setMaximumSize (listSize);
-		newTurnMessagesList.setPreferredSize (listSize);
-		
-		contentPane.add (newTurnMessagesList, getUtils ().createConstraintsNoFill (0, 0, 1, 1,
-			new Insets (backgroundTop + 2, 0, roller.getHeight () - SCROLL_OVERLAP_BOTTOM - CLOSE_BUTTON_OVERLAP + 2, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (newTurnMessagesList, "frmNewTurnMessagesList");
 		
 		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
-			getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 300, 0, 0), GridBagConstraintsNoFill.CENTRE));
+			"frmNewTurnMessagesClose");
 		
 		// Pass clicks to the NTM objects
 		newTurnMessagesList.addMouseListener (new MouseAdapter ()
@@ -185,7 +169,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 			(new int [] {backgroundLeft + background.getWidth (), backgroundLeft + background.getWidth (),
 					
 				// Bottom-right roller
-				backgroundLeft + background.getWidth () + 2, backgroundSize.width - 29, backgroundSize.width - 22, backgroundSize.width - 16, backgroundSize.width - 7, backgroundSize.width, backgroundSize.width, backgroundSize.width - 7, backgroundSize.width - 16, backgroundSize.width - 22, backgroundSize.width - 29, backgroundLeft + background.getWidth () + 2,
+				backgroundLeft + background.getWidth () + 2, getNewTurnMessagesLayout ().getFormWidth () - 29, getNewTurnMessagesLayout ().getFormWidth () - 22, getNewTurnMessagesLayout ().getFormWidth () - 16, getNewTurnMessagesLayout ().getFormWidth () - 7, getNewTurnMessagesLayout ().getFormWidth (), getNewTurnMessagesLayout ().getFormWidth (), getNewTurnMessagesLayout ().getFormWidth () - 7, getNewTurnMessagesLayout ().getFormWidth () - 16, getNewTurnMessagesLayout ().getFormWidth () - 22, getNewTurnMessagesLayout ().getFormWidth () - 29, backgroundLeft + background.getWidth () + 2,
 				
 				// Bottom edge incl. close button
 				backgroundLeft + background.getWidth (), 428, 431, 431, 428, 428, 432, 412, 410, 410, 413, 413, 410, backgroundLeft,
@@ -203,7 +187,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 				backgroundLeft, backgroundLeft + background.getWidth (),
 					
 				// Top-right roller
-				backgroundLeft + background.getWidth () + 2, backgroundSize.width - 29, backgroundSize.width - 22, backgroundSize.width - 16, backgroundSize.width - 7, backgroundSize.width, backgroundSize.width, backgroundSize.width - 7, backgroundSize.width - 16, backgroundSize.width - 22, backgroundSize.width - 29, backgroundLeft + background.getWidth () + 2},
+				backgroundLeft + background.getWidth () + 2, getNewTurnMessagesLayout ().getFormWidth () - 29, getNewTurnMessagesLayout ().getFormWidth () - 22, getNewTurnMessagesLayout ().getFormWidth () - 16, getNewTurnMessagesLayout ().getFormWidth () - 7, getNewTurnMessagesLayout ().getFormWidth (), getNewTurnMessagesLayout ().getFormWidth (), getNewTurnMessagesLayout ().getFormWidth () - 7, getNewTurnMessagesLayout ().getFormWidth () - 16, getNewTurnMessagesLayout ().getFormWidth () - 22, getNewTurnMessagesLayout ().getFormWidth () - 29, backgroundLeft + background.getWidth () + 2},
 					
 			new int [] {backgroundTop, backgroundTop + background.getHeight (),
 						
@@ -211,7 +195,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 				bottomRollerTop, bottomRollerTop, bottomRollerTop + 9, bottomRollerTop + 10, bottomRollerTop + 6, bottomRollerTop + 14, bottomRollerBottom - 14, bottomRollerBottom - 6, bottomRollerBottom - 10, bottomRollerBottom - 9, bottomRollerBottom, bottomRollerBottom,
 
 				// Bottom edge incl. close button
-				bottomRollerBottom - 6, bottomRollerBottom - 6, bottomRollerBottom - 3, bottomRollerBottom + 2, bottomRollerBottom + 5, backgroundSize.height - 7, backgroundSize.height, backgroundSize.height, backgroundSize.height - 7, bottomRollerBottom + 5, bottomRollerBottom + 2, bottomRollerBottom - 3, bottomRollerBottom - 6, bottomRollerBottom - 6,
+				bottomRollerBottom - 6, bottomRollerBottom - 6, bottomRollerBottom - 3, bottomRollerBottom + 2, bottomRollerBottom + 5, getNewTurnMessagesLayout ().getFormHeight () - 7, getNewTurnMessagesLayout ().getFormHeight (), getNewTurnMessagesLayout ().getFormHeight (), getNewTurnMessagesLayout ().getFormHeight () - 7, bottomRollerBottom + 5, bottomRollerBottom + 2, bottomRollerBottom - 3, bottomRollerBottom - 6, bottomRollerBottom - 6,
 				
 				// Bottom-left roller
 				bottomRollerBottom, bottomRollerBottom, bottomRollerBottom - 9, bottomRollerBottom - 10, bottomRollerBottom - 6, bottomRollerBottom - 14, bottomRollerTop + 14, bottomRollerTop + 6, bottomRollerTop + 10, bottomRollerTop + 9, bottomRollerTop, bottomRollerTop,
@@ -322,5 +306,21 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	public final void setAnim (final AnimationController controller)
 	{
 		anim = controller;
+	}
+
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getNewTurnMessagesLayout ()
+	{
+		return newTurnMessagesLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setNewTurnMessagesLayout (final XmlLayoutContainerEx layout)
+	{
+		newTurnMessagesLayout = layout;
 	}
 }

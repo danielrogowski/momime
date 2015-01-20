@@ -430,6 +430,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="client" ref="client" />
+		<property name="scheduledCombatMessageProcessing" ref="scheduledCombatMessageProcessing" />
+		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
+		<property name="scheduledCombatsUI" ref="scheduledCombatsUI" />
 	</bean>
 	
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype">
@@ -451,13 +455,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="taxRateUI" ref="taxRateUI" />
 	</bean>
 	
-	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
 	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
-	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
-	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
-	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
 	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
@@ -534,6 +534,32 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="factory" ref="momClientServerToClientServerFactory" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+	</bean>
+
+	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+	</bean>
+
+	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+	</bean>
+
+	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype">
+		<property name="scheduledCombatsUI" ref="scheduledCombatsUI" />
+		<property name="scheduledCombatMessageProcessing" ref="scheduledCombatMessageProcessing" />
+	</bean>
+
+	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype">
+		<property name="scheduledCombatsUI" ref="scheduledCombatsUI" />
+		<property name="scheduledCombatMessageProcessing" ref="scheduledCombatMessageProcessing" />
+	</bean>
+
+	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="scheduledCombatMessageProcessing" ref="scheduledCombatMessageProcessing" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="scheduledCombatsUI" ref="scheduledCombatsUI" />
 	</bean>
 
 	<!-- Create extended versions of NTMs which include drawing implementations -->
@@ -617,9 +643,26 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
-	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
+	<bean id="scheduledCombatMessageCategory" class="momime.client.scheduledcombatmessages.ScheduledCombatMessageCategory" scope="prototype">
+		<property name="largeFont" ref="largeFont" />
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+	
+	<bean id="scheduledCombatMessageCombat" class="momime.client.scheduledcombatmessages.ScheduledCombatMessageCombat" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
-		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="scheduledCombatMessageProcessing" ref="scheduledCombatMessageProcessing" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
+	<bean id="scheduledCombatMessageOther" class="momime.client.scheduledcombatmessages.ScheduledCombatMessageOther" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
 	</bean>
 	
 	<!-- Version of the client -->
@@ -785,6 +828,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="wizardClientUtils" class="momime.client.utils.WizardClientUtilsImpl">
 		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+
+	<bean id="scheduledCombatMessagesFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.scheduledcombatmessages.ScheduledCombatMessagesFactory" />
+	</bean>
+
+	<bean id="scheduledCombatMessageProcessing" class="momime.client.scheduledcombatmessages.ScheduledCombatMessageProcessingImpl">
+		<property name="client" ref="client" />
+		<property name="scheduledCombatMessagesFactory" ref="scheduledCombatMessagesFactory" />
 	</bean>
 	
 	<!-- Language variable replacers -->
@@ -1049,7 +1101,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
+	<bean id="newTurnMessagesLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewTurnMessagesUI.xml" />
+	</bean>
+
 	<bean id="newTurnMessagesUI" class="momime.client.ui.frames.NewTurnMessagesUI">
+		<property name="newTurnMessagesLayout" ref="newTurnMessagesLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
@@ -1213,6 +1270,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="scheduledCombatsUI" class="momime.client.ui.frames.ScheduledCombatsUI">
+		<property name="newTurnMessagesLayout" ref="newTurnMessagesLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />

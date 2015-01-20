@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>542</formWidth>
+	<formHeight>439</formHeight>
+	<component name="frmNewTurnMessagesList">
+		<left>45</left>
+		<top>30</top>
+		<width>452</width>
+		<height>361</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewTurnMessagesClose">
+		<left>411</left>
+		<top>414</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

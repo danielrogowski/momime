@@ -59,14 +59,14 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final MomScheduledCombat combat = getScheduledCombatUtils ().findScheduledCombatURN
-			(mom.getGeneralServerKnowledge ().getScheduledCombat (), getScheduledCombatURN ());
+			(mom.getGeneralServerKnowledge ().getScheduledCombat (), getScheduledCombatURN (), "RequestStartScheduledCombatMessageImpl");
 		
 		// Who else is involved?
 		final PlayerServerDetails ohp = (combat == null) ? null : (PlayerServerDetails) getScheduledCombatUtils ().determineOtherHumanPlayer
 			(combat, sender.getPlayerDescription ().getPlayerID (), mom.getPlayers ());
 		
-		final MomTransientPlayerPublicKnowledge senderTpk= (MomTransientPlayerPublicKnowledge) sender.getTransientPlayerPublicKnowledge ();
-		final MomTransientPlayerPublicKnowledge ohpTpk= (ohp == null) ? null : (MomTransientPlayerPublicKnowledge) ohp.getTransientPlayerPublicKnowledge ();
+		final MomTransientPlayerPublicKnowledge senderTpk = (MomTransientPlayerPublicKnowledge) sender.getTransientPlayerPublicKnowledge ();
+		final MomTransientPlayerPublicKnowledge ohpTpk = (ohp == null) ? null : (MomTransientPlayerPublicKnowledge) ohp.getTransientPlayerPublicKnowledge ();
 		
 		// Now do some checks
 		String error = null;
@@ -102,7 +102,8 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 		// If another human player, check whether they've also requested the same combat.
 		// If not, we can't kick the combat off yet, we have to let them know that we want to play this combat now and wait for them to accept.
 		// And we send this to *everyone*, not just the other player, since we need them to know that we're busy and they can't request combats against us.
-		else if ((ohpTpk != null) && (getScheduledCombatURN () != ohpTpk.getScheduledCombatUrnRequested ()))
+		else if ((ohpTpk != null) &&
+			((ohpTpk.getScheduledCombatUrnRequested () == null) || (getScheduledCombatURN () != ohpTpk.getScheduledCombatUrnRequested ())))
 		{
 			// Remember on server
 			senderTpk.setScheduledCombatUrnRequested (getScheduledCombatURN ());
@@ -116,9 +117,15 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 		}
 		else
 		{
+			// The attacking player isn't necessarily the sender; if a human-vs-human combat then we're processing the message from
+			// whoever was second to click on the combat; that might be the attacker or defender.
+			// Also don't rely on comparing and picking either sender or ohp, because if the attacker is an AI player, they're neither of these.
+			final PlayerServerDetails attackingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
+				(mom.getPlayers (), combat.getAttackingPlayerID (), "RequestStartScheduledCombatMessageImpl");
+			
 			// Actually start the combat (Or pop up the 'found node/lair/tower' window if applicable)
 			getCombatProcessing ().initiateCombat ((MapCoordinates3DEx) combat.getDefendingLocation (), (MapCoordinates3DEx) combat.getAttackingFrom (),
-				getScheduledCombatURN (), sender, combat.getAttackingUnitURN (), mom);
+				getScheduledCombatURN (), attackingPlayer, combat.getAttackingUnitURN (), mom);
 		}
 	
 		log.trace ("Exiting process");

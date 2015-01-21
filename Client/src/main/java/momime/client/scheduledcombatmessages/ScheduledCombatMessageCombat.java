@@ -265,8 +265,8 @@ public final class ScheduledCombatMessageCombat implements ScheduledCombatMessag
 				("ATTACKING_UNIT_COUNT", new Integer (attackingUnitCount).toString ()).replaceAll
 				("DEFENDING_UNIT_COUNT", new Integer (defendingUnitCount).toString ()).replaceAll
 				("CITY_NAME", cityName).replaceAll
-				("DEFENDERS_NAME", getWizardClientUtils ().getPlayerName (defendingPlayer)).replaceAll
-				("ATTACKERS_NAME", getWizardClientUtils ().getPlayerName (attackingPlayer)).replaceAll
+				("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (defendingPlayer)).replaceAll
+				("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (attackingPlayer)).replaceAll
 				("NODE_LAIR_TOWER", nodeLairTowerName);
 		}
 		catch (final IOException e)

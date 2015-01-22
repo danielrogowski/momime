@@ -147,11 +147,14 @@ public final class TestAnimationControllerImpl
 		dummy.repaint ();
 		assertEquals ("0", triggeredFrames.toString ());
 		
-		Thread.sleep (5100);
-		assertEquals ("0123012301", triggeredFrames.toString ());
+		// Timing of this is a bit iffy, sometimes we get the "1" on the end and sometimes we don't, depending how the test runs
+		Thread.sleep (5000);
+		if (!triggeredFrames.toString ().equals ("012301230"))
+			assertEquals ("0123012301", triggeredFrames.toString ());
 		
 		controller.unregisterRepaintTrigger ("ANIM", dummy);
 		Thread.sleep (1000);
-		assertEquals ("0123012301", triggeredFrames.toString ());
+		if (!triggeredFrames.toString ().equals ("012301230"))
+			assertEquals ("0123012301", triggeredFrames.toString ());
 	}
 }

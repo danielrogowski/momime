@@ -25,8 +25,7 @@ Here's some quick notes on how to get a game up and running in case some parts a
  6) Click "New Game".  Note the "OK" button is disabled.  To get it enabled you have to add
     at least one opponent (Human and/or AI) and enter a game name at the bottom.
     Feel free to change any of the other options, and you can tick "customize" to manually
-    specify any of the game values.  Don't set turns to "Simultaneous" since this hasn't
-    been added back into ${project.version} yet.
+    specify any of the game values.
 
  7) Pick a predefined wizard or "Custom".  For custom wizards, you then choose a portrait, and
     picking choose "Custom" again will let you pick any GIF/PNG/JPG file for your wizard
@@ -38,7 +37,7 @@ Here's some quick notes on how to get a game up and running in case some parts a
 
  9) Afer the game starts up I hope it should be self explanatory to anyone used to the original MoM.
     A lot of features aren't implemented yet, e.g. keyboard shortcuts, and on the "Info" menu the
-    only Advisors that work so far are the Surveyor and Tax Collector.
+    only Advisors that work so far are the Apprentice, Surveyor and Tax Collector.
 
 NB. All the windows in the client can be moved around by dragging an empty piece of the window
     away from any buttons or other controls.  Only the overland map window can be resized.

@@ -147,7 +147,7 @@ public final class TestAnimationControllerImpl
 		dummy.repaint ();
 		assertEquals ("0", triggeredFrames.toString ());
 		
-		Thread.sleep (5000);
+		Thread.sleep (5100);
 		assertEquals ("0123012301", triggeredFrames.toString ());
 		
 		controller.unregisterRepaintTrigger ("ANIM", dummy);

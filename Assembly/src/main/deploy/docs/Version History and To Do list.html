@@ -20,10 +20,6 @@
 		reserves your player name on your server.  After connecting, choose New Game and set options in a similar way to the original MoM
 		(you must add at least one human or AI opponent) and click OK, and proceed through the rest of the normal game setup like choosing a wizard, picks, race and so on.</p>
 		
-	<p>Note several key features (ablilty to join multiplayer games, custom game setup, custom wizards, simultaneous turns games) are missing from the initial 0.9.5 version
-		because I wanted to get the Java client and installer out there so people could be trying it out and so it wasn't several years between releases
-		again.  See more detailed list below.</p>
-		
 	<p>Now MoM IME is a pure Java application, it should now work on operating systems other than Windows.  However I have no way (or time) to
 		test this so if anybody tries this out, let me know how you get on.  I expect there will be a number of bugs to fix to get this to work properly.</p>
 
@@ -162,6 +158,7 @@
 			<td align=left></td>
 			<td align=left><b>Planned features:</b>
 				<ul>
+					<li>Complete revamp of simultaneous turns combat system
 					<li>Calculate position of national borders/friendly zones from each player's memory independantly, and allow viewing by a new checkbox on the Options screen
 					<li>AI calculates unit factory rating for its cities and thus can choose the best city to build units at
 					<li>AI calculates defence rating for its cities and thus knows where it needs to send (or summon) more units to
@@ -174,13 +171,11 @@
 			</td>
 		</tr>
 		<tr>
-			<td align=left>Further 0.9.5.x releases</td>
+			<td align=left>0.9.5.5</td>
 			<td align=left></td>
 			<td align=left>
 				<b>Planned features.</b>  These are things that previously worked in the 0.9.4 Delphi client that still need to be added to the Java client.
 				<ul>
-					<li>Add back in simultaneous turns games
-					<li>Add back in the options screen
 					<li>Add back in auto centreing of map to the unit that's moving (though it should abort trying to centre the map if you scroll at all - the Delphi client was glitchy with that)
 					<li>Add back in right clicking on lots of in game elements to get help text
 					<li>Add back in keys, e.g. arrow keys moving on overland map, N for Next Turn and so on
@@ -190,8 +185,26 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.5.3</b></td>
-			<td align=left><b>1 Jan 2015</b></td>
+			<td align=left><b>Current version: 0.9.5.4</b></td>
+			<td align=left><b>22 Jan 2015</b></td>
+			<td align=left>
+				<b>Features from 0.9.4 Delphi client added back in:</b>
+				<ul>
+					<li>Options screen
+					<li>Coloured bars on the overland map screen to show progression of players' turns
+					<li>Show name of player whose turn it currently is
+					<li>Simultaneous turns games (however there's a lot of issues with combats; recommend sticking to one-player-at-a-time games if you want a stable game, see planned list for 0.9.6)
+				</ul>
+
+				<b>Minor new features:</b>
+				<ul>
+					<li>Language choice moved from its own main menu option to a value on the options screen, so its now possible to change language after a game has started
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.5.3</td>
+			<td align=left>1 Jan 2015</td>
 			<td align=left>
 				<b>Features from 0.9.4 Delphi client added back in:</b>
 				<ul>

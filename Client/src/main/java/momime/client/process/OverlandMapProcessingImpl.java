@@ -138,6 +138,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			showSelectUnitBoxes (new MapCoordinates3DEx ((MapCoordinates3DEx) unitToMove.getUnitLocation ()));
 			
 			// Shift the map to be centred on this location
+			getOverlandMapUI ().scrollTo (unitToMove.getUnitLocation ().getX (), unitToMove.getUnitLocation ().getY (), unitToMove.getUnitLocation ().getZ (), false);
 		}
 		else
 		{

@@ -232,7 +232,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Turn label */
 	private JLabel turnLabel;
-
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * 
@@ -318,20 +318,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
-				mapViewPlane = 1 - mapViewPlane;
-				
 				try
 				{
-					regenerateOverlandMapBitmaps ();
-					regenerateFogOfWarBitmap ();
+					switchMapViewPlane ();
 				}
 				catch (final Exception e)
 				{
 					log.error (e, e);
 				}
-
-				// Keep the same movement types array, but regenerate the bitmap from it to show movement available on the new plane
-				setMovementTypes (movementTypes);
 			}
 		};
 
@@ -714,10 +708,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 				{
 					// Make the zoom take effect from the centrepoint of the map, not the top-left corner
 					double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2)) / mapZoomedWidth;
+					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2d)) / mapZoomedWidth;
 
 					double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2)) / mapZoomedHeight;
+					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2d)) / mapZoomedHeight;
 					
 					mapViewZoom++;
 					
@@ -747,10 +741,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 				{
 					// Make the zoom take effect from the centrepoint of the map, not the top-left corner
 					double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2)) / mapZoomedWidth;
+					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2d)) / mapZoomedWidth;
 
 					double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2)) / mapZoomedHeight;
+					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2d)) / mapZoomedHeight;
 					
 					mapViewZoom--;
 					
@@ -1285,6 +1279,96 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		sceneryPanel.repaint ();
 
+		log.trace ("Exiting setMovementTypes");
+	}
+	
+	/**
+	 * Switches the plane we're viewing when the player clicks the button, or scrollTo below changes it
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	private final void switchMapViewPlane () throws IOException
+	{
+		log.trace ("Entering switchMapViewPlane");
+
+		mapViewPlane = 1 - mapViewPlane;
+		
+		regenerateOverlandMapBitmaps ();
+		regenerateFogOfWarBitmap ();
+
+		// Keep the same movement types array, but regenerate the bitmap from it to show movement available on the new plane
+		setMovementTypes (movementTypes);
+
+		log.trace ("Exiting switchMapViewPlane");
+	}
+	
+	/**
+	 * Ensures that the specified location is visible
+	 * 
+	 * @param x X coordinate to show, in map coords
+	 * @param y Y coordinate to show, in map coords
+	 * @param plane Plane to show, in map coords
+	 * @param force If true, will forcibly recentre the map on x, y regardless of whether x, y is already visible
+	 */
+	public final void scrollTo (final int x, final int y, final int plane, final boolean force)
+	{
+		log.trace ("Entering setMovementTypes: (" + x + ", " + y + ", " + plane + ")");
+
+		try
+		{
+			// Switch plane if necessary
+			if (plane != mapViewPlane)
+				switchMapViewPlane ();
+
+			// Work out centre pixel of the tile
+			final double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+			final double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+			
+			final double scaledX = (x + 0.5d) / getClient ().getSessionDescription ().getMapSize ().getWidth ();
+			final double scaledY = (y + 0.5d) / getClient ().getSessionDescription ().getMapSize ().getHeight ();
+			
+			final double centreX = scaledX * mapZoomedWidth;
+			final double centreY = scaledY * mapZoomedHeight;
+			
+			// Are the required coords already visible?
+			boolean visible = false;
+			if (!force)
+			{
+				// Check the map in all 4 positions to see if it covers that pixel
+				final int xRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight () ? 2 : 1;
+				final int yRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom () ? 2 : 1;
+				
+				for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+					for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+					{
+						final double drawX = mapViewX - (mapZoomedWidth * xRepeat);
+						final double drawY = mapViewY - (mapZoomedHeight * yRepeat);
+						
+						if ((centreX >= drawX) && (centreY >= drawY) &&
+							(centreX < drawX + Math.min (sceneryPanel.getWidth (), mapZoomedWidth)) &&
+							(centreY < drawY + Math.min (sceneryPanel.getHeight (), mapZoomedHeight)))
+							visible = true;
+					}
+			}
+			
+			if (!visible)
+			{
+				final int newMapViewX = (int) (centreX - (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2));
+				final int newMapViewY = (int) (centreY - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
+				
+				mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+					sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+	
+				mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+					sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+				
+				sceneryPanel.repaint ();
+			}
+		}
+		catch (final IOException e)
+		{
+			log.error (e, e);
+		}
+		
 		log.trace ("Exiting setMovementTypes");
 	}
 

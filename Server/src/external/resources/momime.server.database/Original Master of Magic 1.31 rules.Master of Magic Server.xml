@@ -19481,6 +19481,8 @@
 		<languageEntry languageEntryID="Dismiss" />
 		<languageEntry languageEntryID="DismissTitle" />
 		<languageEntry languageEntryID="DismissPrompt" />
+		<languageEntry languageEntryID="Rename" />
+		<languageEntry languageEntryID="RenamePrompt" />
 	</languageCategory>
 	<languageCategory languageCategoryID="UnitName">
 		<languageEntry languageEntryID="TheUnitOfNameSingular" />

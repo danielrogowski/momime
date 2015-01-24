@@ -99,6 +99,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** How many pixels of the buttons backgrounds overlap the main background */
 	private final int BUTTONS_OVERLAP = 5;
 	
+	/** Names of numbers, for generating button panel filename */
+	private final String [] NUMBER_NAMES = new String [] {"Zero", "One", "Two", "Three"};
+	
 	/** Medium font */
 	private Font mediumFont;
 
@@ -135,8 +138,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Client unit calculations */
 	private ClientUnitCalculations clientUnitCalculations;
 	
-	/** 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called */
-	private Action [] actions;
+	/** 0-3 actions to set up red buttons for; NB. this must be set prior to init () being called */
+	private List<Action> actions = new ArrayList<Action> ();
 	
 	/** If true then buttons appear on the right; if false then buttons appear underneath; NB. this must be set prior to init () being called */
 	private boolean buttonsPositionRight;
@@ -233,11 +236,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redPressed.png");
 		
-		if ((getActions () != null) && (getActions ().length > 0))
+		if (getActions ().size () > 0)
 		{
 			if (isButtonsPositionRight ())
 				backgroundButtons = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsButtonsRight" +
-					((getActions ().length == 1) ? "One" : "Two") + ".png");
+					NUMBER_NAMES [getActions ().size ()] + ".png");
 			else
 				backgroundButtons = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsButtonsBelow.png");
 		}
@@ -350,12 +353,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (3, 0, 1, 7, new Insets (0, 10, 0, 0), GridBagConstraintsNoFill.SOUTH));
 		
 				redButtonsPanel.setLayout (new GridBagLayout ());
-				redButtonsPanel.add (getUtils ().createImageButton (getActions () [0], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+				redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (0), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
 					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 0, 3, 0), GridBagConstraintsNoFill.SOUTH));
 
-				if (getActions ().length == 2)
-					redButtonsPanel.add (getUtils ().createImageButton (getActions () [1], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-						buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (4, 0, 3, 0), GridBagConstraintsNoFill.SOUTH));
+				for (int n = 1; n < getActions ().size (); n++)
+					redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (n), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+						buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, n, 1, 1, new Insets (4, 0, 3, 0), GridBagConstraintsNoFill.SOUTH));
 
 				redButtonsPanel.add (Box.createRigidArea (new Dimension (3, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 2, INSET, GridBagConstraintsNoFill.SOUTH));
 			}
@@ -366,12 +369,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (0, 7, 3, 1, new Insets (4, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
 		
 				redButtonsPanel.setLayout (new GridBagLayout ());
-				redButtonsPanel.add (getUtils ().createImageButton (getActions () [0], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+				redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (0), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
 					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
 
 				redButtonsPanel.add (Box.createRigidArea (new Dimension (24, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
 
-				redButtonsPanel.add (getUtils ().createImageButton (getActions () [1], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+				redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (1), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
 					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
 
 				redButtonsPanel.add (Box.createRigidArea (new Dimension (0, 1)), getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.NORTH));
@@ -1135,22 +1138,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 
 	/**
-	 * @return 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called
+	 * @return 0-3 actions to set up red buttons for; NB. this must be set prior to init () being called
 	 */
-	public final Action [] getActions ()
+	public final List<Action> getActions ()
 	{
 		return actions;
-	}
-
-	/**
-	 * @param ac 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called
-	 */
-	public final void setActions (final Action [] ac)
-	{
-		if ((ac != null) && (ac.length > 2))
-			throw new IllegalArgumentException ("UnitInfoPanel.setActions only supports 0, 1 or 2 actions, but was passed " + ac.length + " actions");
-		
-		actions = ac;
 	}
 
 	/**

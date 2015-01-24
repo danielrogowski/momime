@@ -62,6 +62,7 @@ public final class TestUnitInfoUI
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final Unit longbowmen = new Unit ();
+		longbowmen.setUnitMagicRealm ("X");
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (longbowmen);
 		
 		final MomClient client = mock (MomClient.class);
@@ -162,6 +163,7 @@ public final class TestUnitInfoUI
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final Unit longbowmen = new Unit ();
+		longbowmen.setUnitMagicRealm ("X");
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (longbowmen);
 		
 		final MomClient client = mock (MomClient.class);

@@ -21,6 +21,7 @@ import javax.swing.WindowConstants;
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.clienttoserver.ChooseCityNameMessage;
+import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,6 +69,9 @@ public final class EditStringUI extends MomClientFrameUI
 	
 	/** The coordinates of the city being named; null if the string being edited isn't a city name */
 	private MapCoordinates3DEx cityBeingNamed;
+
+	/** The unit being named; null if the string being edited isn't a unit name */
+	private Integer unitBeingNamed;
 	
 	/** The text being entered; so we can set it prior to the UI components being created */
 	private String text;
@@ -107,6 +111,14 @@ public final class EditStringUI extends MomClientFrameUI
 						msg.setCityLocation (getCityBeingNamed ());
 						msg.setCityName (getText ());
 					
+						getClient ().getServerConnection ().sendMessageToServer (msg);					
+					}
+					else if (getUnitBeingNamed () != null)
+					{
+						final RequestUpdateUnitNameMessage msg = new RequestUpdateUnitNameMessage ();
+						msg.setUnitURN (getUnitBeingNamed ());
+						msg.setUnitName (getText ());
+						
 						getClient ().getServerConnection ().sendMessageToServer (msg);					
 					}
 					else
@@ -329,6 +341,22 @@ public final class EditStringUI extends MomClientFrameUI
 		cityBeingNamed = loc;
 	}
 
+	/**
+	 * @return The unit being named; null if the string being edited isn't a unit name
+	 */
+	public final Integer getUnitBeingNamed ()
+	{
+		return unitBeingNamed;
+	}
+
+	/**
+	 * @param unitURN The unit being named; null if the string being edited isn't a unit name
+	 */
+	public final void setUnitBeingNamed (final Integer unitURN)
+	{
+		unitBeingNamed = unitURN;
+	}
+	
 	/**
 	 * @return The text being entered
 	 */

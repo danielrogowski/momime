@@ -203,7 +203,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		};
 		
 		// Must do this prior to calling .getPanel () on it
-		getUnitInfoPanel ().setActions (new Action [] {cancelAction, okAction});
+		getUnitInfoPanel ().getActions ().add (cancelAction);
+		getUnitInfoPanel ().getActions ().add (okAction);
 		
 		// Initialize the frame
 		final ChangeConstructionUI ui = this;

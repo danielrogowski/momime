@@ -18,6 +18,7 @@ import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
 
@@ -57,6 +58,9 @@ public final class UnitInfoUI extends MomClientFrameUI
 	/** Dismiss action */
 	private Action dismissAction;
 
+	/** Rename action */
+	private Action renameAction;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -67,15 +71,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 		log.trace ("Entering init: " + getUnit ().getUnitURN ());
 		
 		// Actions
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().dispose ();
-			}
-		};
-		
 		// Only show the dismiss button for our own units
 		if (getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
 		{
@@ -106,10 +101,49 @@ public final class UnitInfoUI extends MomClientFrameUI
 				}
 			};
 			
-			getUnitInfoPanel ().setActions (new Action [] {dismissAction, okAction});
+			getUnitInfoPanel ().getActions ().add (dismissAction);
+			
+			// Only show the rename button for our own heroes
+			if (getClient ().getClientDB ().findUnit
+				(getUnit ().getUnitID (), "UnitInfoUI").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+			{
+				renameAction = new AbstractAction ()
+				{
+					@Override
+					public final void actionPerformed (final ActionEvent ev)
+					{
+						final EditStringUI msg = getPrototypeFrameCreator ().createEditString ();
+						msg.setTitleLanguageCategoryID ("frmUnitInfo");
+						msg.setTitleLanguageEntryID ("Rename");
+						msg.setPromptLanguageCategoryID ("frmUnitInfo");
+						msg.setPromptLanguageEntryID ("RenamePrompt");
+						msg.setUnitBeingNamed (getUnit ().getUnitURN ());
+						
+						try
+						{
+							msg.setText (getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.SIMPLE_UNIT_NAME));
+							msg.setVisible (true);
+						}
+						catch (final IOException e)
+						{
+							log.error (e, e);
+						}
+					}
+				};
+
+				getUnitInfoPanel ().getActions ().add (renameAction);
+			}			
 		}
-		else
-			getUnitInfoPanel ().setActions (new Action [] {okAction});
+
+		okAction = new AbstractAction ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				getFrame ().dispose ();
+			}
+		};
+		getUnitInfoPanel ().getActions ().add (okAction);
 		
 		// Initialize the frame
 		final UnitInfoUI ui = this;
@@ -173,6 +207,9 @@ public final class UnitInfoUI extends MomClientFrameUI
 		if (dismissAction != null)
 			dismissAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmUnitInfo", "Dismiss"));
 
+		if (renameAction != null)
+			renameAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmUnitInfo", "Rename"));
+		
 		try
 		{
 			getFrame ().setTitle (getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME));

@@ -179,7 +179,8 @@ public final class TestUnitInfoPanel
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
-		panel.setActions (new Action [] {blahAction, pantsAction});
+		panel.getActions ().add (blahAction);
+		panel.getActions ().add (pantsAction);
 		panel.getPanel ();
 		panel.showBuilding (building);
 
@@ -197,10 +198,10 @@ public final class TestUnitInfoPanel
 
 	/**
 	 * Tests the info panel to display a unit
+	 * @param actions Action buttons to display
 	 * @throws Exception If there is a problem
 	 */
-	@Test
-	public final void testUnitInfoPanel () throws Exception
+	private final void testUnitInfoPanel (final Action [] actions) throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -420,19 +421,6 @@ public final class TestUnitInfoPanel
 		renderer.setUtils (utils);
 		renderer.setUnitClientUtils (unitClientUtils);
 
-		// Create some dummy actions for buttons
-		final Action blahAction = new AbstractAction ("Blah")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
-		
-		final Action pantsAction = new AbstractAction ("Pants")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
-		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -450,7 +438,10 @@ public final class TestUnitInfoPanel
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
-		panel.setActions (new Action [] {blahAction, pantsAction});
+		
+		for (final Action action : actions)
+			panel.getActions ().add (action);
+		
 		panel.setButtonsPositionRight (true);
 		panel.getPanel ();
 		panel.showUnit (unit);
@@ -465,5 +456,81 @@ public final class TestUnitInfoPanel
 		frame.setVisible (true);
 		Thread.sleep (5000);
 		frame.setVisible (false);
+	}
+
+	/**
+	 * Tests the info panel to display a unit, with 0 buttons
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitInfoPanel_NoButtons () throws Exception
+	{
+		testUnitInfoPanel (null);
+	}
+
+	/**
+	 * Tests the info panel to display a unit, with 1 button
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitInfoPanel_OneButtons () throws Exception
+	{
+		final Action blahAction = new AbstractAction ("Blah")
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
+		testUnitInfoPanel (new Action [] {blahAction});
+	}
+
+	/**
+	 * Tests the info panel to display a unit, with 2 buttons
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitInfoPanel_TwoButtons () throws Exception
+	{
+		final Action blahAction = new AbstractAction ("Blah")
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
+		final Action pantsAction = new AbstractAction ("Pants")
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
+		testUnitInfoPanel (new Action [] {blahAction, pantsAction});
+	}
+	
+	/**
+	 * Tests the info panel to display a unit, with 3 buttons
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitInfoPanel_ThreeButtons () throws Exception
+	{
+		final Action blahAction = new AbstractAction ("Blah")
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
+		final Action pantsAction = new AbstractAction ("Pants")
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+
+		final Action yuckAction = new AbstractAction ("Yuck")
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
+		testUnitInfoPanel (new Action [] {blahAction, pantsAction, yuckAction});
 	}
 }

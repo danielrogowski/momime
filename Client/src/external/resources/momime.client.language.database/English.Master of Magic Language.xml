@@ -5283,6 +5283,12 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="DismissPrompt">
 			<languageEntryText>Do you wish to disband THE_UNIT_OF_NAME?</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Rename">
+			<languageEntryText>Rename</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="RenamePrompt">
+			<languageEntryText>Enter new name for hero</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="UnitName">
 		<languageEntry languageEntryID="TheUnitOfNameSingular">

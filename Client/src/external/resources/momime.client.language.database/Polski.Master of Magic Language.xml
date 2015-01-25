@@ -5536,49 +5536,49 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</languageEntry
 		<ctrl>false</ctrl>
 		<virtualKey>VK_SUBTRACT</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_UP">
+	<shortcutKey shortcut="MOVE_OVERLAND_NORTH">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
 		<virtualKey>VK_UP</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_UP_RIGHT">
+	<shortcutKey shortcut="MOVE_OVERLAND_NORTHEAST">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
-		<virtualKey>VK_PRIOR</virtualKey>
+		<virtualKey>VK_PAGE_UP</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_RIGHT">
+	<shortcutKey shortcut="MOVE_OVERLAND_EAST">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
 		<virtualKey>VK_RIGHT</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_DOWN_RIGHT">
+	<shortcutKey shortcut="MOVE_OVERLAND_SOUTHEAST">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
-		<virtualKey>VK_NEXT</virtualKey>
+		<virtualKey>VK_PAGE_DOWN</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_DOWN">
+	<shortcutKey shortcut="MOVE_OVERLAND_SOUTH">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
 		<virtualKey>VK_DOWN</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_DOWN_LEFT">
+	<shortcutKey shortcut="MOVE_OVERLAND_SOUTHWEST">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
 		<virtualKey>VK_END</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_LEFT">
+	<shortcutKey shortcut="MOVE_OVERLAND_WEST">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
 		<virtualKey>VK_LEFT</virtualKey>
 	</shortcutKey>
-	<shortcutKey shortcut="MOVE_OVERLAND_UP_LEFT">
+	<shortcutKey shortcut="MOVE_OVERLAND_NORTHWEST">
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
@@ -5708,7 +5708,7 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</languageEntry
 		<shift>false</shift>
 		<alt>false</alt>
 		<ctrl>false</ctrl>
-		<virtualKey>VK_RETURN</virtualKey>
+		<virtualKey>VK_ENTER</virtualKey>
 	</shortcutKey>
 	<shortcutKey shortcut="MESSAGE_BOX_YES">
 		<shift>false</shift>
@@ -5722,17 +5722,4 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</languageEntry
 		<ctrl>false</ctrl>
 		<normalKey>N</normalKey>
 	</shortcutKey>
-	<shortcutKey shortcut="FOUND_NODE_LAIR_TOWER-ENTER_YES">
-		<shift>false</shift>
-		<alt>false</alt>
-		<ctrl>false</ctrl>
-		<normalKey>Y</normalKey>
-	</shortcutKey>
-	<shortcutKey shortcut="FOUND_NODE_LAIR_TOWER-ENTER_NO">
-		<shift>false</shift>
-		<alt>false</alt>
-		<ctrl>false</ctrl>
-		<normalKey>N</normalKey>
-	</shortcutKey>
 </momimelang:languageDatabase>
-

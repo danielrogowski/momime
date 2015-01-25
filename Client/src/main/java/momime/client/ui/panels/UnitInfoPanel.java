@@ -344,7 +344,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Mini panel at the bottom or right containing the 2 red buttons.
 		// The constraints to position these correctly are so different that its a mess trying to do this in 1 block; just keep them separate.
-		if (getActions () != null)
+		if (getActions ().size () > 0)
 		{
 			if (isButtonsPositionRight ())
 			{

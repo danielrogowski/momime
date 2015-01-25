@@ -439,8 +439,9 @@ public final class TestUnitInfoPanel
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
-		for (final Action action : actions)
-			panel.getActions ().add (action);
+		if (actions != null)
+			for (final Action action : actions)
+				panel.getActions ().add (action);
 		
 		panel.setButtonsPositionRight (true);
 		panel.getPanel ();

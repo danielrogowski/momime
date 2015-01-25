@@ -19,6 +19,8 @@ import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.RangedAttackType;
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.SpellRank;
@@ -30,6 +32,7 @@ import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.client.language.database.v0_9_5.Wizard;
 import momime.common.database.SpellBookSectionID;
+
 import org.junit.Test;
 
 /**
@@ -55,7 +58,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("PLDesc02", lang.findPlane (2).getPlaneDescription ());
-		assertNull ("PL04", lang.findPlane (4));
+		assertNull (lang.findPlane (4));
 	}
 
 	/**
@@ -76,7 +79,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("REDesc02", lang.findProductionType ("RE02").getProductionTypeDescription ());
-		assertNull ("RE04", lang.findProductionType ("RE04"));
+		assertNull (lang.findProductionType ("RE04"));
 	}
 
 	/**
@@ -97,7 +100,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("MFDesc02", lang.findMapFeature ("MF02").getMapFeatureDescription ());
-		assertNull ("MF04", lang.findMapFeature ("MF04"));
+		assertNull (lang.findMapFeature ("MF04"));
 	}
 
 	/**
@@ -118,7 +121,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("TTDesc02", lang.findTileType ("TT02").getTileTypeDescription ());
-		assertNull ("TT04", lang.findTileType ("TT04"));
+		assertNull (lang.findTileType ("TT04"));
 	}
 
 	/**
@@ -160,7 +163,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("MBDesc02", lang.findPick ("MB02").getPickDescription ());
-		assertNull ("MB04", lang.findPick ("MB04"));
+		assertNull (lang.findPick ("MB04"));
 	}
 
 	/**
@@ -202,7 +205,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("PTSingle02", lang.findPopulationTask ("PT02").getPopulationTaskSingular ());
-		assertNull ("PT04", lang.findPopulationTask ("PT04"));
+		assertNull (lang.findPopulationTask ("PT04"));
 	}
 	
 	/**
@@ -223,7 +226,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("RCDesc02", lang.findRace ("RC02").getRaceName ());
-		assertNull ("RC04", lang.findRace ("RC04"));
+		assertNull (lang.findRace ("RC04"));
 	}
 	
 	/**
@@ -244,7 +247,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("BLDesc02", lang.findBuilding ("BL02").getBuildingName ());
-		assertNull ("BL04", lang.findBuilding ("BL04"));
+		assertNull (lang.findBuilding ("BL04"));
 	}
 
 	/**
@@ -265,7 +268,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("UTDesc02", lang.findUnitType ("UT02").getUnitTypeExperienced ());
-		assertNull ("UT04", lang.findUnitType ("UT04"));
+		assertNull (lang.findUnitType ("UT04"));
 	}
 	
 	/**
@@ -286,7 +289,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("UADesc02", lang.findUnitAttribute ("UA02").getUnitAttributeDescription ());
-		assertNull ("UA04", lang.findUnitAttribute ("UA04"));
+		assertNull (lang.findUnitAttribute ("UA04"));
 	}
 	
 	/**
@@ -307,7 +310,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("USDesc02", lang.findUnitSkill ("US02").getUnitSkillDescription ());
-		assertNull ("US04", lang.findUnitSkill ("US04"));
+		assertNull (lang.findUnitSkill ("US04"));
 	}
 
 	/**
@@ -349,7 +352,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("UNDesc02", lang.findUnit ("UN002").getUnitName ());
-		assertNull ("UN004", lang.findUnit ("UN004"));
+		assertNull (lang.findUnit ("UN004"));
 	}
 
 	/**
@@ -433,7 +436,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("SCDesc02", lang.findSpellBookSection (SpellBookSectionID.OVERLAND_ENCHANTMENTS).getSpellBookSectionName ());
-		assertNull ("SC04", lang.findSpellBookSection (SpellBookSectionID.UNIT_ENCHANTMENTS));
+		assertNull (lang.findSpellBookSection (SpellBookSectionID.UNIT_ENCHANTMENTS));
 	}
 
 	/**
@@ -454,7 +457,7 @@ public final class TestLanguageDatabaseExImpl
 		lang.buildMaps ();
 
 		assertEquals ("MBDesc02", lang.findSpell ("MB02").getSpellDescription ());
-		assertNull ("MB04", lang.findSpell ("MB04"));
+		assertNull (lang.findSpell ("MB04"));
 	}
 	
 	/**
@@ -639,5 +642,26 @@ public final class TestLanguageDatabaseExImpl
 		
 		// Whole category missing
 		assertEquals ("C4/C4E4", lang.findCategoryEntry ("C4", "C4E4"));
+	}
+
+	/**
+	 * Tests the findShortcutKey method
+	 */
+	@Test
+	public final void testFindShortcutKey ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 2; n++)
+		{
+			final ShortcutKey newKey = new ShortcutKey ();
+			newKey.setNormalKey (new Integer (n).toString ());
+			newKey.setShortcut ((n == 1) ? Shortcut.SPELLBOOK : Shortcut.OVERLAND_MOVE_DONE);
+			lang.getShortcutKey ().add (newKey);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("2", lang.findShortcutKey (Shortcut.OVERLAND_MOVE_DONE).getNormalKey ());
+		assertNull (lang.findShortcutKey (Shortcut.OVERLAND_MOVE_WAIT));
 	}
 }

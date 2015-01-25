@@ -10,6 +10,8 @@ import momime.client.language.database.v0_9_5.Plane;
 import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.TileType;
@@ -196,4 +198,10 @@ public interface LanguageDatabaseEx
 	 * @return List of all known servers
 	 */
 	public List<KnownServer> getKnownServer ();
+	
+	/**
+	 * @param shortcut Game shortcut that we're looking to see if there is a key defined for it
+	 * @return Details of the key that should activate this shortcut, or null if none is defined
+	 */
+	public ShortcutKey findShortcutKey (final Shortcut shortcut);
 }

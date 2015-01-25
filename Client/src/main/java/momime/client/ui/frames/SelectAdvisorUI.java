@@ -9,9 +9,14 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
@@ -87,6 +92,9 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	
 	/** Wizards action */
 	private Action wizardsAction;
+	
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -215,7 +223,7 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		};
 		
 		// Initialize the content pane
-		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		contentPane.setBackground (Color.BLACK);
 		
 		// Set up layout
@@ -245,6 +253,17 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 			new int [] {0, 0, 2, 2, 0, 0, TOP_HEIGHT, TOP_HEIGHT, background.getHeight () - BOTTOM_HEIGHT, background.getHeight () - BOTTOM_HEIGHT, background.getHeight (), background.getHeight (), background.getHeight () - 2, background.getHeight () - 2, background.getHeight (), background.getHeight (), background.getHeight () - BOTTOM_HEIGHT, background.getHeight () - BOTTOM_HEIGHT, TOP_HEIGHT, TOP_HEIGHT},
 			20));		
 
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_SURVEYOR,				surveyorAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_PARCHMENT_MAP,	cartographerAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_SPELL_QUEUE,			apprenticeAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_POWER_GRAPH,		historianAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_WIZARD_STATS,		astrologerAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_MESSAGES,				chancellorAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_TAX_RATE,				taxCollectorAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_AUTO_CONTROL,		grandVizierAction);
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_WIZARDS,					wizardsAction);
+		
 		log.trace ("Exiting init");
 	}
 	
@@ -269,7 +288,29 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		grandVizierAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "GrandVizier"));
 		wizardsAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Wizards"));
 		
+		// Shortcut keys
+		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
+		for (final Object shortcut : contentPane.getActionMap ().keys ())
+			if (shortcut instanceof Shortcut)
+			{
+				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				if (shortcutKey != null)
+				{
+					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
+					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
+					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
+				}
+			}
+		
 		log.trace ("Exiting languageChanged");
+	}
+	
+	/**
+	 * @return Function key mappings, so the overland map UI can copy them
+	 */
+	public final ActionMap getActionMap ()
+	{
+		return contentPane.getActionMap ();
 	}
 	
 	/**

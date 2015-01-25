@@ -18,9 +18,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -32,6 +34,8 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
 import momime.client.language.database.v0_9_5.MapFeature;
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.messages.process.ApplyDamageMessageImpl;
@@ -356,6 +360,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Frame number to display of combat cast animation */
 	private int combatCastAnimationFrame;
 	
+	/** Content pane */
+	private JPanel contentPane;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -490,8 +497,7 @@ public final class CombatUI extends MomClientFrameUI
 		// itself as fast as it can, so its not necessary to fire repaint events at it every time an animation updates.
 		
 		// The bottom half contains all the standard Swing controls such as all the buttons.  So there's nothing special here.
-		final JPanel contentPane = new JPanel ();
-		contentPane.setLayout (new XmlLayoutManager (getCombatLayoutMain ()));
+		contentPane = new JPanel (new XmlLayoutManager (getCombatLayoutMain ()));
 		
 		final JPanelWithConstantRepaints topPanel = new JPanelWithConstantRepaints ()
 		{
@@ -941,6 +947,14 @@ public final class CombatUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.COMBAT_TOGGLE_AUTO,								autoAction);
+		contentPane.getActionMap ().put (Shortcut.COMBAT_TOGGLE_DAMAGE_CALCULATIONS,	toggleDamageCalculationsAction);
+		contentPane.getActionMap ().put (Shortcut.COMBAT_MOVE_DONE,									doneAction);
+		contentPane.getActionMap ().put (Shortcut.COMBAT_FLEE,												fleeAction);
+		contentPane.getActionMap ().put (Shortcut.COMBAT_CAST_SPELL,									spellAction);
+		contentPane.getActionMap ().put (Shortcut.COMBAT_MOVE_WAIT,									waitAction);
+		
 		topPanel.init ("CombatUI-repaintTimer");
 		
 		log.trace ("Exiting init");
@@ -1042,8 +1056,7 @@ public final class CombatUI extends MomClientFrameUI
 			
 			// If using the CombatUI for the first combat, languageChanged () will be called automatically after this method.  If calling it for a subsequent
 			// combat then it won't be, so have to force a call here to get the player names to be displayed properly.
-			if (defendingPlayerName != null)
-				languageChanged ();
+			languageChanged ();
 			
 			// Find all the units involved in this combat and make a grid showing which is in
 			// which cell, so when we draw them its easier to draw the back ones first.
@@ -1257,6 +1270,21 @@ public final class CombatUI extends MomClientFrameUI
 		
 		defendingPlayerName.setText (defPlayerName);
 		languageOrSelectedUnitChanged ();
+		
+		// Shortcut keys
+		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
+		if (contentPane.getActionMap ().keys () != null)
+			for (final Object shortcut : contentPane.getActionMap ().keys ())
+				if (shortcut instanceof Shortcut)
+				{
+					final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+					if (shortcutKey != null)
+					{
+						final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
+						log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
+						contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
+					}
+				}
 		
 		log.trace ("Exiting languageChanged");
 	}

@@ -1553,6 +1553,38 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		surveyorLocation = loc;
 		surveyorLocationOrLanguageChanged ();
 	}
+
+	/**
+	 * @return Next turn action
+	 */
+	public final Action getNextTurnAction ()
+	{
+		return nextTurnAction;
+	}
+	
+	/**
+	 * @return Done action
+	 */
+	public final Action getDoneAction ()
+	{
+		return doneAction;
+	}
+	
+	/**
+	 * @return Wait action
+	 */
+	public final Action getWaitAction ()
+	{
+		return waitAction;
+	}
+	
+	/**
+	 * @return Settlers creating a new outpost
+	 */
+	public final Action getCreateOutpostAction ()
+	{
+		return createOutpostAction;
+	}
 	
 	/**
 	 * @return Text utils

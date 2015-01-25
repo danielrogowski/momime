@@ -655,14 +655,16 @@
 			<xsd:enumeration value="ZOOM_IN" />
 			<xsd:enumeration value="ZOOM_OUT" />
 
-			<xsd:enumeration value="MOVE_OVERLAND_UP" />
-			<xsd:enumeration value="MOVE_OVERLAND_UP_RIGHT" />
-			<xsd:enumeration value="MOVE_OVERLAND_RIGHT" />
-			<xsd:enumeration value="MOVE_OVERLAND_DOWN_RIGHT" />
-			<xsd:enumeration value="MOVE_OVERLAND_DOWN" />
-			<xsd:enumeration value="MOVE_OVERLAND_DOWN_LEFT" />
-			<xsd:enumeration value="MOVE_OVERLAND_LEFT" />
-			<xsd:enumeration value="MOVE_OVERLAND_UP_LEFT" />
+			<!-- The latter part of these names must exactly match the enums defined in SquareMapDirection.java -->
+			<xsd:enumeration value="MOVE_OVERLAND_NORTH" />
+			<xsd:enumeration value="MOVE_OVERLAND_NORTHEAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_EAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTHEAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTH" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTHWEST" />
+			<xsd:enumeration value="MOVE_OVERLAND_WEST" />
+			<xsd:enumeration value="MOVE_OVERLAND_NORTHWEST" />
+			
 			<xsd:enumeration value="OVERLAND_MOVE_DONE" />
 			<xsd:enumeration value="OVERLAND_MOVE_WAIT" />
 			<xsd:enumeration value="BUILD_ROAD_OR_CITY" />
@@ -693,8 +695,6 @@
 			<xsd:enumeration value="MESSAGE_BOX_CLOSE" />
 			<xsd:enumeration value="MESSAGE_BOX_YES" />
 			<xsd:enumeration value="MESSAGE_BOX_NO" />
-			<xsd:enumeration value="FOUND_NODE_LAIR_TOWER-ENTER_YES" />
-			<xsd:enumeration value="FOUND_NODE_LAIR_TOWER-ENTER_NO" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -723,13 +723,13 @@
 			<xsd:enumeration value="VK_DOWN" />
 			<xsd:enumeration value="VK_HOME" />
 			<xsd:enumeration value="VK_END" />
-			<xsd:enumeration value="VK_PRIOR" />
-			<xsd:enumeration value="VK_NEXT" />
+			<xsd:enumeration value="VK_PAGE_UP" />
+			<xsd:enumeration value="VK_PAGE_DOWN" />
 
 			<xsd:enumeration value="VK_ADD" />
 			<xsd:enumeration value="VK_SUBTRACT" />
 
-			<xsd:enumeration value="VK_RETURN" />
+			<xsd:enumeration value="VK_ENTER" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

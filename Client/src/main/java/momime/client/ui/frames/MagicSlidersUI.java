@@ -13,12 +13,14 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
@@ -27,6 +29,8 @@ import javax.swing.table.AbstractTableModel;
 
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
@@ -171,6 +175,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 
 	/** Enchantments table */
 	private JTable spellsTable;
+	
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -387,7 +394,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		};
 		
 		// Initialize the content pane
-		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getMagicSlidersLayout ()));
@@ -541,6 +548,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 		
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.ALCHEMY, alchemyAction);
+		
 		log.trace ("Exiting init");
 	}
 	
@@ -567,6 +577,20 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		applyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMagicSliders", "Apply"));
 		
 		updateProductionLabels ();
+		
+		// Shortcut keys
+		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
+		for (final Object shortcut : contentPane.getActionMap ().keys ())
+			if (shortcut instanceof Shortcut)
+			{
+				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				if (shortcutKey != null)
+				{
+					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
+					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
+					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
+				}
+			}
 		
 		log.trace ("Exiting languageChanged");
 	}

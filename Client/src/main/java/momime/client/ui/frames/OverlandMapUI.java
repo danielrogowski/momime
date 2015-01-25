@@ -16,15 +16,22 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
@@ -34,6 +41,8 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.language.database.v0_9_5.Building;
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.messages.process.MoveUnitStackOverlandMessageImpl;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -63,6 +72,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
@@ -218,20 +228,11 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Chat action */
 	private Action chatAction;
 
-	/** Info action */
-	private Action infoAction;
-
-	/** Zoom in action */
-	private Action zoomInAction;
-
-	/** Zoom out action */
-	private Action zoomOutAction;
-
-	/** Options action */
-	private Action optionsAction;
-
 	/** Turn label */
 	private JLabel turnLabel;
+	
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -353,7 +354,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 			}
 		};
 
-		infoAction = new AbstractAction ()
+		final Action infoAction = new AbstractAction ()
 		{
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
@@ -369,7 +370,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 			}
 		};
 
-		optionsAction = new AbstractAction ()
+		final Action optionsAction = new AbstractAction ()
 		{
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
@@ -384,7 +385,37 @@ public final class OverlandMapUI extends MomClientFrameUI
 				}
 			}
 		};
-
+		
+		final Action centreOnSelectedUnitAction = new AbstractAction ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				final MapCoordinates3DEx coords = getOverlandMapProcessing ().getUnitMoveFrom ();
+				if (coords != null)
+					scrollTo (coords.getX (), coords.getY (), coords.getZ (), true);
+			}
+		};
+		
+		// Compacted these up a lot because they're so repetetive
+		final Map<SquareMapDirection, Action> moveUnitStackInDirectionActions = new HashMap<SquareMapDirection, Action> ();
+		for (final SquareMapDirection d : SquareMapDirection.values ())
+			moveUnitStackInDirectionActions.put (d, new AbstractAction ()
+			{
+				@Override
+				public final void actionPerformed (final ActionEvent ev)
+				{
+					try
+					{
+						moveUnitStackInDirection (d);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			});
+		
 		// Need the tile set in a few places
 		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
 		
@@ -393,7 +424,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		getFrame ().setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ();
+		contentPane = new JPanel ();
 		contentPane.setBackground (Color.BLACK);
 		contentPane.setPreferredSize (new Dimension (640, 480));
 		
@@ -699,7 +730,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		}).start ();
 
 		// Zoom actions (need the sceneryPanel, hence why defined down here)
-		zoomInAction = new AbstractAction ()
+		final Action zoomInAction = new AbstractAction ()
 		{
 			@Override
 			public void actionPerformed (final ActionEvent e)
@@ -732,7 +763,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 			}
 		};
 
-		zoomOutAction = new AbstractAction ()
+		final Action zoomOutAction = new AbstractAction ()
 		{
 			@Override
 			public void actionPerformed (final ActionEvent e)
@@ -937,6 +968,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 						}
 						
 						// Left clicking on a space to move a stack of units to - can only do this if its our turn
+						// Conditions here are duplicated in moveUnitStackInDirection
 						else if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
 							((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 							(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
@@ -1040,7 +1072,40 @@ public final class OverlandMapUI extends MomClientFrameUI
 				}
 			}
 		}).start ();
+		
+		// Shortcut keys
+		// 'Build city or road' isn't really right, maybe once you can actually build roads I'll make B=built city, R=build road
+		// since you could have both a settler and engineer in the same stack and hit 'B' and it can't be ambigious which happens.
+		contentPane.getActionMap ().put (Shortcut.ARMIES_SCREEN,										armiesAction);
+		contentPane.getActionMap ().put (Shortcut.GAME_SCREEN,											planeAction);
+		contentPane.getActionMap ().put (Shortcut.MAGIC_SCREEN,											magicAction);
+		contentPane.getActionMap ().put (Shortcut.SWITCH_PLANE,											planeAction);
+		contentPane.getActionMap ().put (Shortcut.SPELLBOOK,												spellsAction);
+		contentPane.getActionMap ().put (Shortcut.ZOOM_IN,													zoomInAction);
+		contentPane.getActionMap ().put (Shortcut.ZOOM_OUT,												zoomOutAction);
+		contentPane.getActionMap ().put (Shortcut.CENTRE_OVERLAND_ON_SELECTED_UNIT,	centreOnSelectedUnitAction);
+		contentPane.getActionMap ().put (Shortcut.NEXT_TURN,												getOverlandMapRightHandPanel ().getNextTurnAction ());
+		contentPane.getActionMap ().put (Shortcut.OVERLAND_MOVE_DONE,							getOverlandMapRightHandPanel ().getDoneAction ());
+		contentPane.getActionMap ().put (Shortcut.OVERLAND_MOVE_WAIT,							getOverlandMapRightHandPanel ().getWaitAction ());
+		contentPane.getActionMap ().put (Shortcut.BUILD_ROAD_OR_CITY,								getOverlandMapRightHandPanel ().getCreateOutpostAction ());
+		contentPane.getActionMap ().put (Shortcut.ADVISOR_SCREEN,										infoAction);
 
+		for (final Entry<SquareMapDirection, Action> d : moveUnitStackInDirectionActions.entrySet ())
+			contentPane.getActionMap ().put (Shortcut.fromValue ("MOVE_OVERLAND_" + d.getKey ().name ()), d.getValue ());
+		
+		// Plus we need to hook all the F-keys from the select advisor screen.
+		// To do so, we have to force the advisors screen to initialize itself to ensure these are all created.
+		// The way I've done this is a bit sneaky - isVisible is null-safe, and setVisible inits the form even if you pass in "false".
+		if (getSelectAdvisorUI () != null)		// Just so TestOverlandMapUI doesn't require the SelectAdvisorUI
+		{
+			if (!getSelectAdvisorUI ().isVisible ())
+				getSelectAdvisorUI ().setVisible (false);
+		
+			for (final Object shortcut : getSelectAdvisorUI ().getActionMap ().keys ())
+				if (shortcut instanceof Shortcut)
+					contentPane.getActionMap ().put (shortcut, getSelectAdvisorUI ().getActionMap ().get (shortcut));
+		}
+		
 		log.trace ("Exiting init");
 	}
 
@@ -1052,16 +1117,54 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 
-		gameAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Game"));
-		spellsAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Spells"));
-		armiesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Armies"));
-		citiesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Cities"));
-		magicAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Magic"));
-		planeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Plane"));
-		messagesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "NewTurnMessages"));
-		chatAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Chat"));
+		gameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Game"));
+		spellsAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Spells"));
+		armiesAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Armies"));
+		citiesAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Cities"));
+		magicAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Magic"));
+		planeAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Plane"));
+		messagesAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "NewTurnMessages"));
+		chatAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Chat"));
 
+		// Shortcut keys
+		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
+		for (final Object shortcut : contentPane.getActionMap ().keys ())
+			if (shortcut instanceof Shortcut)
+			{
+				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				if (shortcutKey != null)
+				{
+					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
+					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
+					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
+				}
+			}
+		
 		log.trace ("Exiting languageChanged");
+	}
+	
+	/**
+	 * @param d Direction for which arrow key was pressed
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	private final void moveUnitStackInDirection (final SquareMapDirection d) throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering moveUnitStackInDirection: " + d);
+
+		if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
+			((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
+			(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
+			(getMovementTypes () != null) && (getOverlandMapProcessing ().getUnitMoveFrom () != null))
+		{
+			// So its our turn, and have a current position, now have to check the direction pressed is a valid move
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (getOverlandMapProcessing ().getUnitMoveFrom ());
+			if (getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), coords, d.getDirectionID ()))
+				if (getMovementTypes ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()) != OverlandMoveTypeID.CANNOT_MOVE_HERE)
+					getOverlandMapProcessing ().moveUnitStackTo (coords);
+		}
+
+		log.trace ("Exiting moveUnitStackInDirection");
 	}
 	
 	/**
@@ -1070,7 +1173,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 * @param ev Mouse click event
 	 * @return Overland map coordinates, or null if the mouse coordinates are off the map
 	 */
-	private MapCoordinates2DEx convertMouseCoordsToMapGridCell (final MouseEvent ev)
+	private final MapCoordinates2DEx convertMouseCoordsToMapGridCell (final MouseEvent ev)
 	{
 		final MapCoordinates2DEx result;
 		

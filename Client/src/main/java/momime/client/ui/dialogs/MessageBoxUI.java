@@ -10,11 +10,15 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -109,6 +113,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** Spell we're thinking of switching off; null if the message box isn't about switching off a spell */
 	private MemoryMaintainedSpell switchOffSpell;
+	
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/**
 	 * Sets up the dialog once all values have been injected
@@ -256,7 +263,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		});
 		
 		// Initialize the content pane
-		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getMessageBoxLayout ()));
@@ -269,17 +276,27 @@ public final class MessageBoxUI extends MomClientDialogUI
 
 		// Is it just a regular message box with an OK button, or do we need separate no/yes buttons?
 		if (buttonCount == 1)
+		{
 			contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxOK");
+			noAction.setEnabled (false);
+			yesAction.setEnabled (false);
+		}
 		else
 		{
 			contentPane.add (getUtils ().createImageButton (noAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxNo");
 			contentPane.add (getUtils ().createImageButton (yesAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxYes");
+			okAction.setEnabled (false);
 		}
 		
 		// Lock dialog size
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
 
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.MESSAGE_BOX_CLOSE,	okAction);
+		contentPane.getActionMap ().put (Shortcut.MESSAGE_BOX_YES,		yesAction);
+		contentPane.getActionMap ().put (Shortcut.MESSAGE_BOX_NO,		noAction);
+		
 		log.trace ("Exiting init");
 	}
 	
@@ -289,6 +306,8 @@ public final class MessageBoxUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
+		log.trace ("Entering languageChanged");
+
 		// Title
 		String useTitle;
 		if (getTitle () != null)
@@ -310,6 +329,22 @@ public final class MessageBoxUI extends MomClientDialogUI
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "OK"));
 		noAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "No"));
 		yesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "Yes"));
+
+		// Shortcut keys
+		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
+		for (final Object shortcut : contentPane.getActionMap ().keys ())
+			if (shortcut instanceof Shortcut)
+			{
+				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				if (shortcutKey != null)
+				{
+					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
+					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
+					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
+				}
+			}
+
+		log.trace ("Exiting languageChanged");
 	}
 
 	/**

@@ -21,6 +21,8 @@ import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.RangedAttackType;
+import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.SpellRank;
@@ -34,11 +36,17 @@ import momime.client.language.database.v0_9_5.UnitType;
 import momime.client.language.database.v0_9_5.Wizard;
 import momime.common.database.SpellBookSectionID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Implementation of language XML database - extends stubs auto-generated from XSD to add additional functionality from the interface
  */
 public final class LanguageDatabaseExImpl extends LanguageDatabase implements LanguageDatabaseEx
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (LanguageDatabaseExImpl.class);
+	
 	/** Map of plane IDs to plane objects */
 	private Map<Integer, Plane> planesMap;
 
@@ -122,12 +130,17 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 
 	/** Map of category IDs to category objects */
 	private Map<String, LanguageCategoryEx> categoriesMap;
+	
+	/** Map of shortcuts to shortcut keys objects */
+	private Map<Shortcut, ShortcutKey> shortcutsMap;
 
 	/**
 	 * Builds all the hash maps to enable finding records faster
 	 */
 	public final void buildMaps ()
 	{
+		log.trace ("Entering buildMaps");
+		
 		// Create planes map
 		planesMap = new HashMap<Integer, Plane> ();
 		for (final Plane thisPlane : getPlane ())
@@ -275,6 +288,13 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			catEx.buildMap ();
 			categoriesMap.put (thisCategory.getLanguageCategoryID (), catEx);
 		}
+		
+		// Create shortcuts map
+		shortcutsMap = new HashMap<Shortcut, ShortcutKey> ();
+		for (final ShortcutKey thisShortcut : getShortcutKey ())
+			shortcutsMap.put (thisShortcut.getShortcut (), thisShortcut);
+
+		log.trace ("Exiting buildMaps");
 	}	
 
 	/**
@@ -584,5 +604,15 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		final LanguageCategoryEx cat = categoriesMap.get (languageCategoryID);
 		final String entry = (cat == null) ? null : cat.findEntry (languageEntryID);
 		return (entry == null) ? (languageCategoryID + "/" + languageEntryID) : entry;
+	}
+
+	/**
+	 * @param shortcut Game shortcut that we're looking to see if there is a key defined for it
+	 * @return Details of the key that should activate this shortcut, or null if none is defined
+	 */
+	@Override
+	public final ShortcutKey findShortcutKey (final Shortcut shortcut)
+	{
+		return shortcutsMap.get (shortcut);
 	}
 }

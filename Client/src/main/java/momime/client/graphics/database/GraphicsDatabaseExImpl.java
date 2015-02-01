@@ -63,6 +63,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of building IDs to city view elements */
 	private Map<String, CityViewElement> buildingsMap;
+
+	/** Map of city spell effect IDs to city view elements */
+	private Map<String, CityViewElement> citySpellEffectsMap;
 	
 	/** Map of spell IDs to spell objects */
 	private Map<String, Spell> spellsMap;
@@ -150,13 +153,18 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			racesMap.put (rex.getRaceID (), rex);
 		}
 
-		// Create buildings map
+		// Create buildings and city spell effects maps
 		buildingsMap = new HashMap<String, CityViewElement> ();
-		for (final CityViewElement thisBuilding : getCityViewElement ())
+		citySpellEffectsMap = new HashMap<String, CityViewElement> ();
+		for (final CityViewElement thisElement : getCityViewElement ())
+		{
+			// CityViewElements may be buildings, spell effects or neither (e.g. landscape)
+			if (thisElement.getBuildingID () != null)
+				buildingsMap.put (thisElement.getBuildingID (), thisElement);
 			
-			// Not all CityViewElements represent buildings
-			if (thisBuilding.getBuildingID () != null)
-				buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
+			if (thisElement.getCitySpellEffectID () != null)
+				citySpellEffectsMap.put (thisElement.getCitySpellEffectID (), thisElement);
+		}
 
 		// Create spells map
 		spellsMap = new HashMap<String, Spell> ();
@@ -413,6 +421,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final CityViewElement found = buildingsMap.get (buildingID);
 		if (found == null)
 			throw new RecordNotFoundException (CityViewElement.class, buildingID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param citySpellEffectID City spell effect ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return City spell effect object; note city spell effects in the graphics XML are just a special case of city view elements
+	 * @throws RecordNotFoundException If the citySpellEffectID doesn't exist
+	 */
+	@Override
+	public final CityViewElement findCitySpellEffect (final String citySpellEffectID, final String caller) throws RecordNotFoundException
+	{
+		final CityViewElement found = citySpellEffectsMap.get (citySpellEffectID);
+		if (found == null)
+			throw new RecordNotFoundException (CityViewElement.class, citySpellEffectID, caller);
 
 		return found;
 	}

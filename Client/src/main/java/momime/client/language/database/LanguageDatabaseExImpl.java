@@ -5,6 +5,7 @@ import java.util.Map;
 
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
+import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
 import momime.client.language.database.v0_9_5.Hero;
@@ -98,6 +99,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	/** Map of city size IDs to city size objects */
 	private Map<String, CitySize> citySizesMap;
 	
+	/** Map of combat area effect IDs to unit objects */
+	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
+
 	/** Map of spell rank IDs to spell rank objects */
 	private Map<String, SpellRank> spellRanksMap;
 	
@@ -229,6 +233,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		citySizesMap = new HashMap<String, CitySize> ();
 		for (final CitySize thisCitySize : getCitySize ())
 			citySizesMap.put (thisCitySize.getCitySizeID (), thisCitySize);
+		
+		// Create combatAreaEffects map
+		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
+		for (final CombatAreaEffect cae : getCombatAreaEffect ())
+			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), cae);
 		
 		// Create spell ranks map
 		spellRanksMap = new HashMap<String, SpellRank> ();
@@ -475,6 +484,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		final CitySize thisCitySize = citySizesMap.get (citySizeID);
 		final String citySizeName = (thisCitySize != null) ? thisCitySize.getCitySizeName () : null; 
 		return (citySizeName != null) ? citySizeName : citySizeID;
+	}
+	
+	/**
+	 * @param combatAreaEffectID Combat area effect ID to search for
+	 * @return Combat area effect descriptions object; or null if not found
+	 */
+	@Override
+	public final CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID)
+	{
+		return combatAreaEffectsMap.get (combatAreaEffectID);
 	}
 	
 	/**

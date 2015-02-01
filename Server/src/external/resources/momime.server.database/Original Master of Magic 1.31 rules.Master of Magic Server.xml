@@ -19794,4 +19794,24 @@
 		<languageEntry languageEntryID="ClickBusy" />
 		<languageEntry languageEntryID="ClickWaiting" />
 	</languageCategory>	
+	<languageCategory languageCategoryID="frmHelp">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="SpellBookSection" />
+		<languageEntry languageEntryID="SpellBookResearchCostNotOurs" />
+		<languageEntry languageEntryID="SpellBookResearchCostResearched" />
+		<languageEntry languageEntryID="SpellBookResearchCostNotStarted" />
+		<languageEntry languageEntryID="SpellBookResearchCostPartial" />
+		<languageEntry languageEntryID="SpellBookOverlandCostFull" />
+		<languageEntry languageEntryID="SpellBookOverlandCostReduced" />
+		<languageEntry languageEntryID="SpellBookCombatCostFull" />
+		<languageEntry languageEntryID="SpellBookCombatCostReduced" />
+		<languageEntry languageEntryID="SpellBookNoSavingThrow" />
+		<languageEntry languageEntryID="SpellBookNoSavingThrowModifier" />
+		<languageEntry languageEntryID="SpellBookSingleSavingThrowModifier" />
+		<languageEntry languageEntryID="SpellBookMultipleSavingThrowModifiers" />
+		<languageEntry languageEntryID="SpellUpkeepWithoutChanneler" />
+		<languageEntry languageEntryID="SpellUpkeepWithChanneler" />
+		<languageEntry languageEntryID="SpellUpkeepFixed" />
+		<languageEntry languageEntryID="SpellUpkeepRange" />
+	</languageCategory>
 </momimesvr:serverDatabase>

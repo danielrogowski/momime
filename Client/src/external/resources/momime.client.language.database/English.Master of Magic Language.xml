@@ -6126,6 +6126,62 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>Asking PLAYER_NAME to play this combat now, please wait for them to respond...</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmHelp">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Help</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookSection">
+			<languageEntryText>Spell book section: SPELL_BOOK_SECTION</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookResearchCostNotOurs">
+			<languageEntryText>Research cost: RESEARCH_TOTAL PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookResearchCostResearched">
+			<languageEntryText>Research cost: RESEARCH_TOTAL PRODUCTION_TYPE (Already researched)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookResearchCostNotStarted">
+			<languageEntryText>Research cost: RESEARCH_TOTAL PRODUCTION_TYPE (Not yet researched)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookResearchCostPartial">
+			<languageEntryText>Research cost: RESEARCH_SO_FAR / RESEARCH_TOTAL PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookOverlandCostFull">
+			<languageEntryText>Overland casting cost: FULL_CASTING_COST PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookOverlandCostReduced">
+			<languageEntryText>Overland casting cost: REDUCED_CASTING_COST PRODUCTION_TYPE (reduced from FULL_CASTING_COST PRODUCTION_TYPE)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookCombatCostFull">
+			<languageEntryText>Combat casting cost: FULL_CASTING_COST PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookCombatCostReduced">
+			<languageEntryText>Combat casting cost: REDUCED_CASTING_COST PRODUCTION_TYPE (reduced from FULL_CASTING_COST PRODUCTION_TYPE)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookNoSavingThrow">
+			<languageEntryText>Saving throw: None - spell effects cannot be resisted</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookNoSavingThrowModifier">
+			<languageEntryText>Saving throw: Saves against UNIT_ATTRIBUTE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookSingleSavingThrowModifier">
+			<languageEntryText>Saving throw: Saves against UNIT_ATTRIBUTE with a SAVING_THROW_MODIFIER saving throw modifier</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellBookMultipleSavingThrowModifiers">
+			<languageEntryText>Saving throw: Saves against UNIT_ATTRIBUTE with a saving throw modifier between SAVING_THROW_MODIFIER_MINIMUM and SAVING_THROW_MODIFIER_MAXIMUM</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellUpkeepWithoutChanneler">
+			<languageEntryText>UPKEEP_VALUE PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellUpkeepWithChanneler">
+			<languageEntryText>HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellUpkeepFixed">
+			<languageEntryText>Upkeep: UPKEEP_LIST per turn</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellUpkeepRange">
+			<languageEntryText>Upkeep: Between LOWEST_UPKEEP and HIGHEST_UPKEEP per turn, depending on the unit summoned</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<shift>false</shift>
 		<alt>false</alt>

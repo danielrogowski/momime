@@ -3,6 +3,7 @@ package momime.client.language.database;
 import java.util.List;
 
 import momime.client.language.database.v0_9_5.Building;
+import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.Pick;
@@ -126,6 +127,12 @@ public interface LanguageDatabaseEx
 	 * @return City size name; or replays back the ID if no description exists
 	 */
 	public String findCitySizeName (final String citySizeID);
+
+	/**
+	 * @param combatAreaEffectID Combat area effect ID to search for
+	 * @return Combat area effect descriptions object; or null if not found
+	 */
+	public CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID);
 	
 	/**
 	 * @param spellRankID Spell rank ID to search for

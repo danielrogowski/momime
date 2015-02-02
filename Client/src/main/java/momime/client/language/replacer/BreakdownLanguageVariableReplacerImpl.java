@@ -43,7 +43,7 @@ public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageV
 			for (final String pickID : pickIDs)
 			{
 				final Pick pick = getLanguage ().findPick (pickID);
-				final String pickDesc = (pick == null) ? pickID : pick.getPickDescription ();
+				final String pickDesc = (pick == null) ? pickID : pick.getPickDescriptionSingular ();
 			
 				if (retortList.length () > 0)
 					retortList.append (", ");

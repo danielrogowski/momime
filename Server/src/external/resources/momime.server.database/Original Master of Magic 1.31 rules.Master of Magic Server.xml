@@ -19399,6 +19399,9 @@
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="LeaveGame" />
+		<languageEntry languageEntryID="NoPicks" />
+		<languageEntry languageEntryID="InsufficientPicks" />
+		<languageEntry languageEntryID="Prerequisites" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseInitialSpells">
 		<languageEntry languageEntryID="Title" />

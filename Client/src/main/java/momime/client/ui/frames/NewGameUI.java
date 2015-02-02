@@ -13,6 +13,8 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -64,6 +66,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -223,6 +226,12 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
+	
+	/** Help text scroll */
+	private HelpUI helpUI;
+	
+	/** Client-side pick utils */
+	private PlayerPickClientUtils playerPickClientUtils;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -2823,6 +2832,52 @@ public final class NewGameUI extends MomClientFrameUI
 				final JButton retortButton = getUtils ().createTextOnlyButton (retortAction, MomUIConstants.DULL_GOLD, getSmallFont ());
 				picksPanel.add (retortButton, "frmCustomPicksRetort" + retortNo);
 				customPicksComponents.add (retortButton);
+				
+				// Right clicking on reports gets help text
+				retortButton.addMouseListener (new MouseAdapter ()
+				{
+					@Override
+					public final void mouseClicked (final MouseEvent ev)
+					{
+						try
+						{
+							// Right clicking gets help text describing the retort
+							if (ev.getButton () != MouseEvent.BUTTON1)
+								getHelpUI ().showPickID (pick.getPickID ());
+							
+							// Clicking on disabled retorts explains why they're disabled
+							else if (!retortAction.isEnabled ())
+							{
+								final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+								msg.setTitleLanguageCategoryID ("frmCustomPicks");
+								msg.setTitleLanguageEntryID ("Title");
+								
+								final momime.client.language.database.v0_9_5.Pick pickLang = getLanguage ().findPick (pick.getPickID ());
+								final String pickDescription = (pickLang == null) ? null : pickLang.getPickDescriptionSingular ();
+								
+								final String languageEntryID;
+								final int count = getPlayerPickUtils ().getTotalPickCost (picks, getClient ().getClientDB ());
+								if (count == getClient ().getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ())
+									languageEntryID = "NoPicks";
+								else if (count + pick.getPickCost () > getClient ().getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ())
+									languageEntryID = "InsufficientPicks";
+								else
+									languageEntryID = "Prerequisites";
+								
+								msg.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", languageEntryID).replaceAll
+									("PICK_COUNT", new Integer (pick.getPickCost ()).toString ()).replaceAll
+									("PICK", (pickDescription != null) ? pickDescription : pick.getPickID ()).replaceAll
+									("PREREQUISITES", getPlayerPickClientUtils ().describePickPreRequisites (pick)));
+								
+								msg.setVisible (true);
+							}
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				});
 			}
 			else
 			{
@@ -2838,6 +2893,25 @@ public final class NewGameUI extends MomClientFrameUI
 				picksPanel.add (thisBookshelf, "frmCustomPicksBooks" + bookshelfNo);
 				magicRealmBookshelves.put (pick.getPickID (), thisBookshelf);
 
+				// Right clicking on the bookshels gets help text
+				thisBookshelf.addMouseListener (new MouseAdapter ()
+				{
+					@Override
+					public final void mouseClicked (final MouseEvent ev)
+					{
+						try
+						{
+							// Right clicking gets help text describing the realm of magic
+							if (ev.getButton () != MouseEvent.BUTTON1)
+								getHelpUI ().showPickID (pick.getPickID ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				});
+				
 				// Have to add title after panel, so it appears behind the books
 				final Color magicRealmColour = new Color (Integer.parseInt (pickGfx.getPickBookshelfTitleColour (), 16));
 				
@@ -3694,7 +3768,7 @@ public final class NewGameUI extends MomClientFrameUI
 				if (pickDesc == null)
 					desc.append (pick.getPickID ());
 				else
-					desc.append (pickDesc.getPickDescription ());
+					desc.append (pickDesc.getPickDescriptionSingular ());
 			}
 		}
 		retorts.setText (desc.toString ());
@@ -3727,7 +3801,7 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final Entry<String, ToggleAction> retort : retortButtonActions.entrySet ())
 		{
 			final momime.client.language.database.v0_9_5.Pick pick = getLanguage ().findPick (retort.getKey ());
-			final String pickDescription = (pick == null) ? null : pick.getPickDescription ();
+			final String pickDescription = (pick == null) ? null : pick.getPickDescriptionSingular ();
 			retort.getValue ().putValue (Action.NAME, (pickDescription != null) ? pickDescription : retort.getKey ());
 		}
 		
@@ -4527,6 +4601,38 @@ public final class NewGameUI extends MomClientFrameUI
 		wizardClientUtils = util;
 	}
 	
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
+	}
+	
+	/**
+	 * @return Client-side pick utils
+	 */
+	public final PlayerPickClientUtils getPlayerPickClientUtils ()
+	{
+		return playerPickClientUtils;
+	}
+
+	/**
+	 * @param util Client-side pick utils
+	 */
+	public final void setPlayerPickClientUtils (final PlayerPickClientUtils util)
+	{
+		playerPickClientUtils = util;
+	}
+
 	/**
 	 * @return XML layout of the main form
 	 */

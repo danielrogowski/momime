@@ -302,7 +302,7 @@ public final class HelpUI extends MomClientFrameUI
 		if (pickID != null)
 		{
 			final Pick pick = getLanguage ().findPick (pickID);
-			final String pickTitle = (pick == null) ? null : pick.getPickDescription ();
+			final String pickTitle = (pick == null) ? null : pick.getPickDescriptionSingular ();
 			final String pickHelpText = (pick == null) ? null : pick.getPickHelpText ();
 			title.setText ((pickTitle != null) ? pickTitle : pickID);
 			indentedText.setText ((pickHelpText != null) ? pickHelpText : pickID);

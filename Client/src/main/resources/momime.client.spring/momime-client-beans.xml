@@ -843,6 +843,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="scheduledCombatMessagesFactory" ref="scheduledCombatMessagesFactory" />
 	</bean>
 	
+	<bean id="spellClientUtils" class="momime.client.utils.SpellClientUtilsImpl">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="client" />
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+	</bean>
+
+	<bean id="playerPickClientUtils" class="momime.client.utils.PlayerPickClientUtilsImpl">
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+	
 	<!-- Language variable replacers -->
 	
 	<bean id="unrestReplacer" class="momime.client.language.replacer.CityUnrestLanguageVariableReplacerImpl">
@@ -1016,6 +1030,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="helpUI" ref="helpUI" />
+		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 	</bean>
 
 	<bean id="surveyorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1278,6 +1294,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
+	</bean>
+	
+	<bean id="helpUI" class="momime.client.ui.frames.HelpUI">
+		<property name="newTurnMessagesLayout" ref="newTurnMessagesLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
+		<property name="client" ref="client" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
 	<!-- Prototype UI components -->

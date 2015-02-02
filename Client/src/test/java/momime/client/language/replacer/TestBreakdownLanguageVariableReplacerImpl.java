@@ -29,7 +29,7 @@ public final class TestBreakdownLanguageVariableReplacerImpl
 		for (int n = 1; n <= 3; n++)
 		{
 			final Pick pick = new Pick ();
-			pick.setPickDescription ("Retort " + n);
+			pick.setPickDescriptionSingular ("Retort " + n);
 			
 			when (lang.findPick ("RT0" + n)).thenReturn (pick);
 		}

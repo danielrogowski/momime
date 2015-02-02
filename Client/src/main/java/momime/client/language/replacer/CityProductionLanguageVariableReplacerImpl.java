@@ -2,6 +2,7 @@ package momime.client.language.replacer;
 
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.MapFeature;
+import momime.client.language.database.v0_9_5.PickType;
 import momime.client.language.database.v0_9_5.Plane;
 import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -258,7 +259,9 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 
 			// Dependant on current pick type
 			case "PICK_TYPE":
-				text = getLanguage ().findPickTypeDescription (getCurrentPickType ().getPickTypeID ());
+				final PickType pickType = getLanguage ().findPickType (getCurrentPickType ().getPickTypeID ());
+				final String pickTypeDescription = (pickType == null) ? null : pickType.getPickTypeDescriptionSingular ();
+				text = (pickTypeDescription != null) ? pickTypeDescription : getCurrentPickType ().getPickTypeID ();
 				break;
 
 			case "PICK_COUNT":

@@ -254,38 +254,44 @@
 		<tileTypeCannotBuildCityDescription>Odkryte</tileTypeCannotBuildCityDescription>
 	</tileType>
 	<pickType pickTypeID="B">
-		<pickTypeDescription>Księga Czarów</pickTypeDescription>
+		<pickTypeDescriptionSingular>Księga Czarów</pickTypeDescriptionSingular>
+		<pickTypeDescriptionPlural>Księgi Czarów</pickTypeDescriptionPlural>
 	</pickType>
 	<pickType pickTypeID="R">
-		<pickTypeDescription>Retorta</pickTypeDescription>
+		<pickTypeDescriptionSingular>Retorta</pickTypeDescriptionSingular>
 	</pickType>
 	<pick pickID="MB01">
-		<pickDescription>Księga Życia</pickDescription>
+		<pickDescriptionSingular>Księga Życia</pickDescriptionSingular>
+		<pickDescriptionPlural>Księgi Życia</pickDescriptionPlural>
 		<bookshelfDescription>Życie</bookshelfDescription>
 		<pickHelpText>Czary magii życia skupiają się leczeniu, ochronie i czarach wspierających, a także podróży pomiędzy sferami. Magia życia mocno przeciwstawia się mocom śmierci i częściowo mocom chaosu.</pickHelpText>
 	</pick>
 	<pick pickID="MB02">
-		<pickDescription>Księga Śmierci</pickDescription>
+		<pickDescriptionSingular>Księga Śmierci</pickDescriptionSingular>
+		<pickDescriptionPlural>Księgi Śmierci</pickDescriptionPlural>
 		<bookshelfDescription>Śmierć</bookshelfDescription>
 		<pickHelpText>Czary magii śmierci zapewniają przywoływanie i kontrolę nad umarłymi i siłami ciemności. Magia śmierci posiada potężne uroki, które powodują choroby i nieszczęście u jej przeciwników.</pickHelpText>
 	</pick>
 	<pick pickID="MB03">
-		<pickDescription>Księga Chaosu</pickDescription>
+		<pickDescriptionSingular>Księga Chaosu</pickDescriptionSingular>
+		<pickDescriptionPlural>Księgi Chaosu</pickDescriptionPlural>
 		<bookshelfDescription>Chaos</bookshelfDescription>
 		<pickHelpText>Czary magii chaosu przede wszystkim powiązane są z zepsuciem i destrukcją, przywoływując zmienne siły żywiołów</pickHelpText>
 	</pick>
 	<pick pickID="MB04">
-		<pickDescription>Księga Natury</pickDescription>
+		<pickDescriptionSingular>Księga Natury</pickDescriptionSingular>
+		<pickDescriptionPlural>Księgi Natury</pickDescriptionPlural>
 		<bookshelfDescription>Natura</bookshelfDescription>
 		<pickHelpText>Czary magii natury kontrolują pierwotne siły ziemi i wody, jak również płodności i wzrostu.</pickHelpText>
 	</pick>
 	<pick pickID="MB05">
-		<pickDescription>Księga Czarnoksięstwa</pickDescription>
+		<pickDescriptionSingular>Księga Czarnoksięstwa</pickDescriptionSingular>
+		<pickDescriptionPlural>Księgi Czarnoksięstwa</pickDescriptionPlural>
 		<bookshelfDescription>Czarnoksięstwo</bookshelfDescription>
 		<pickHelpText>Czary magii czarnoksięskiej skupiają się na siłach żywiołu powietrza i iluzjach. Czarnoksięstwo posiada także liczne czary meta-magiczne, które przeciwstawiają się lub kontrolują czary innych czarodziei.</pickHelpText>
 	</pick>
 	<pick pickID="RT01">
-		<pickDescription>Alchemia</pickDescription>
+		<pickDescriptionSingular>Alchemia</pickDescriptionSingular>
 		<pickHelpText>Pozwala czarodziejowi przemienić złoto w manę, a manę w złoto w stosunku 1:1, zamiast tracić połowę.
 
 Dodaje również wszystkim jednostkom zbudowanym w miastach magiczną broń z ulepszeniem +1 do trafienia i możliwością zranienia jednostek z Niewrażliwością na Broń, tak jakby zostały zbudowane w mieście z Gildią Alchemików.
@@ -293,59 +299,59 @@ Dodaje również wszystkim jednostkom zbudowanym w miastach magiczną broń z ul
 Ta Retorta jest jedynym sposobem, by Gnolle, Klackoni, Jaszczuroludzie i Trolle mogły budować jednostki z magiczną bronią, gdyż te rasy nie mogą zbudować Gildii Alchemików.</pickHelpText>
 	</pick>
 	<pick pickID="RT02">
-		<pickDescription>Wojownik</pickDescription>
+		<pickDescriptionSingular>Wojownik</pickDescriptionSingular>
 		<pickHelpText>Zwiększa poziom wszystkich jednostek pod kontrolą czarodzieja o jeden.
 
 Dodatkowo, Wojownik pozwala twoim jednostkom na osiągnięcie statusu Ultra-Elity, który może być zdobyty jedynie poprzez posiadanie retorty Wojownik, rzucenie czaru magii Życia Krucjata, albo posiadanie statusu Czempiona, który może być osiągnięty tylko przez posiadanie zarówno retorty Wojownik, jak i rzuconego czaru Krucjata.</pickHelpText>
 	</pick>
 	<pick pickID="RT03">
-		<pickDescription>Mistrz Prądów</pickDescription>
+		<pickDescriptionSingular>Mistrz Prądów</pickDescriptionSingular>
 		<pickHelpText>Pozwala czarodziejowi na rzucanie czarów w walce tak jakby robił to w swojej fortecy, co oznacza, że mistrz prądów nie zużywa żadnej dodatkowej many przy rzucaniu czarów w walce.
 
 Dodatkowo, mistrz prądów płaci tylko połowę kosztów utrzymania czarów</pickHelpText>
 	</pick>
 	<pick pickID="RT04">
-		<pickDescription>Arcymag</pickDescription>
+		<pickDescriptionSingular>Arcymag</pickDescriptionSingular>
 		<pickHelpText>Arcymag zwiększa umiejętność czarodzieja o +10,  i powoduje, że jego czary są dwa razy trudniejsze do rozproszenia.
 
 Poza tym, arcymag otrzymuje 50% premię do mocy magicznej wydanej na zwiększenie umiejętności.</pickHelpText>
 	</pick>
 	<pick pickID="RT05">
-		<pickDescription>Wynalazca</pickDescription>
+		<pickDescriptionSingular>Wynalazca</pickDescriptionSingular>
 		<pickHelpText>Wynalazca zmniejsza koszt tworzenia magicznych przedmiotów o 50%.
 
 Poza tym, wynalazca zaczynają grę z czarami Stworzenie Magicznego Przedmiotu i Stworzenie Artefaktu.</pickHelpText>
 	</pick>
 	<pick pickID="RT06">
-		<pickDescription>Mistrz Przywołań</pickDescription>
+		<pickDescriptionSingular>Mistrz Przywołań</pickDescriptionSingular>
 		<pickHelpText>Mistrz przywołań zmniejsza koszt rzucania oraz utrzymywania wszystkich czarów przywoływań o 25%, a także daje 25% bonus do badań czarów przywoływań.</pickHelpText>
 	</pick>
 	<pick pickID="RT07">
-		<pickDescription>Mędrzec</pickDescription>
+		<pickDescriptionSingular>Mędrzec</pickDescriptionSingular>
 		<pickHelpText>Mędrzec daje 25% premię do badań wszystkich czarów.</pickHelpText>
 	</pick>
 	<pick pickID="RT08">
-		<pickDescription>Myrrański</pickDescription>
+		<pickDescriptionSingular>Myrrański</pickDescriptionSingular>
 		<pickHelpText>Czarodziej rozpoczyna grę w mieście na Myrror, zamiast Arcanus. Myrrański czarodziej zaczyna z nietypową rasą: Zwierzoludźmi, Mrocznymi Elfami, Drakonianami, Krasnoludami albo Trollami, i będzie miał szybszy dostęp do potężniejszych legowisk i węzłów mocy, posiadających wspanialsze skarby. 
 
 Poza tym, forteca czarodzieja generuje dodatkowe 5 many.</pickHelpText>
 	</pick>
 	<pick pickID="RT09">
-		<pickDescription>Święta Moc</pickDescription>
+		<pickDescriptionSingular>Święta Moc</pickDescriptionSingular>
 		<pickHelpText>Zwiększa uspokajające efekty i moc magiczną zdobywaną przez czarodzieja z kaplic, świątyń, partenonów i katedr o 50%.</pickHelpText>
 	</pick>
 	<pick pickID="RT10">
-		<pickDescription>Sławny</pickDescription>
+		<pickDescriptionSingular>Sławny</pickDescriptionSingular>
 		<pickHelpText>Sławny zwiększa sławę czarodzieja o +10, i podwaja szansę czarodzieja na wynajmowanie bohaterów, zatrudnianie najemników i kupowanie magicznych przedmiotów.</pickHelpText>
 	</pick>
 	<pick pickID="RT11">
-		<pickDescription>Mistrz Run</pickDescription>
+		<pickDescriptionSingular>Mistrz Run</pickDescriptionSingular>
 		<pickHelpText>Moc wszystkich czarów rozproszenia jest podwojona.
 
 Dodatkowo, czary magii tajemnej dostają 25% premię do badań i mają zmniejszony o 25% koszt.</pickHelpText>
 	</pick>
 	<pick pickID="RT12">
-		<pickDescription>Chayzmatyczny</pickDescription>
+		<pickDescriptionSingular>Chayzmatyczny</pickDescriptionSingular>
 		<pickHelpText>Posiada ponadnaturalną osobowość, która drastycznie poprawia jego stosunki z innymi.
 
 Charyzmatyczny czarodziej płaci połowę sumy przy wynajmowaniu bohaterów, najemników i kupowaniu magicznych przedmiotów.
@@ -353,27 +359,27 @@ Charyzmatyczny czarodziej płaci połowę sumy przy wynajmowaniu bohaterów, naj
 Dodatkowo, wszystkie kary dyplomatyczne za negatywne akcje są zmniejszane o połowę, a pozytywne efekty dyplomatyczne są podwajane.</pickHelpText>
 	</pick>
 	<pick pickID="RT13">
-		<pickDescription>Mistrzostwo w Chaosie</pickDescription>
+		<pickDescriptionSingular>Mistrzostwo w Chaosie</pickDescriptionSingular>
 		<pickHelpText>Zwiększa badania czarów Chaosu o 15%, zmniejsza koszt rzucania czarów chaosu o 15%, podwaja trudność rozpraszania czarów chaosu czarodzieja i moc magiczną zdobywaną z węzłów chaosu.</pickHelpText>
 	</pick>
 	<pick pickID="RT14">
-		<pickDescription>Mistrzostwo w Naturze</pickDescription>
+		<pickDescriptionSingular>Mistrzostwo w Naturze</pickDescriptionSingular>
 		<pickHelpText>Zwiększa badania czarów natury o15%, zmniejsza koszt rzucania czarów natury o 15%, podwaja trudność rozpraszania czarów natury czarodzieja i moc magiczną zdobywaną z węzłów natury.</pickHelpText>
 	</pick>
 	<pick pickID="RT15">
-		<pickDescription>Mistrzostwo w Czarnoksięstwie</pickDescription>
+		<pickDescriptionSingular>Mistrzostwo w Czarnoksięstwie</pickDescriptionSingular>
 		<pickHelpText>Zwiększa badania czarów czarnoksięstwa o15%, zmniejsza koszt rzucania czarów czarnoksięstwa o 15%, podwaja trudność rozpraszania czarów czarnoksięstwa czarodzieja i moc magiczną zdobywaną z węzłów czarnoksięstwa.</pickHelpText>
 	</pick>
 	<pick pickID="RT16">
-		<pickDescription>Piekelna Moc</pickDescription>
+		<pickDescriptionSingular>Piekelna Moc</pickDescriptionSingular>
 		<pickHelpText>Zwiększa uspokajające efekty i moc magiczną zdobywaną przez czarodzieja z kaplic, świątyń, partenonów i katedr o 50%.</pickHelpText>
 	</pick>
 	<pick pickID="RT17">
-		<pickDescription>Skupianie Many</pickDescription>
+		<pickDescriptionSingular>Skupianie Many</pickDescriptionSingular>
 		<pickHelpText>Zwiększa ilość many zdobywanej z mocy magicznej o 25%.</pickHelpText>
 	</pick>
 	<pick pickID="RT18">
-		<pickDescription>Mistrz Węzłów</pickDescription>
+		<pickDescriptionSingular>Mistrz Węzłów</pickDescriptionSingular>
 		<pickHelpText>Mistrz Węzłów podwaja magiczną moc zdobywaną z wszystkich węzłów.
 
 Dodatkowo, czarodziej może dowolnie wewnątrz węzłów rzucać czary, które normalnie mogłyby zostać rozproszone.</pickHelpText>

@@ -320,7 +320,7 @@ public final class WizardsUI extends MomClientFrameUI
 				if (pickDesc == null)
 					desc.append (pick.getPickID ());
 				else
-					desc.append (pickDesc.getPickDescription ());
+					desc.append (pickDesc.getPickDescriptionSingular ());
 			}
 		}
 		retorts.setText (desc.toString ());

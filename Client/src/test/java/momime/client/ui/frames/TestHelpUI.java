@@ -55,7 +55,7 @@ public final class TestHelpUI
 		when (lang.findCategoryEntry ("frmHelp", "Title")).thenReturn ("Help");
 		
 		final Pick retort = new Pick ();
-		retort.setPickDescription ("Alchemy");
+		retort.setPickDescriptionSingular ("Alchemy");
 		retort.setPickHelpText ("Allows the wizard to change gold into mana and mana into gold in a 1 to 1 ratio, instead of loosing ½ in the exchange process." +
 			System.lineSeparator () + System.lineSeparator () +
 			"It also gives all units built in cities magic weapons with +1 to hit bonus and the ability to hurt units with Weapon Immunity, the same as if they were built in a city with an Alchemists' Guild." +
@@ -64,7 +64,7 @@ public final class TestHelpUI
 		when (lang.findPick ("RT01")).thenReturn (retort);
 		
 		final Pick book = new Pick ();
-		book.setPickDescription ("Life Book");
+		book.setPickDescriptionSingular ("Life Book");
 		book.setPickHelpText ("Life spells focus on healing, protections and inspirational enchantments, and planar travel.  Life magic forcefully opposes the forces of death and mildly resists the forces of chaos.");
 		when (lang.findPick ("MB01")).thenReturn (book);
 		

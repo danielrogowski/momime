@@ -282,7 +282,7 @@ public final class TestNewGameUI
 			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
 
 			final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
-			pickLang.setPickDescription ("Retort " + pick.getPickID ());
+			pickLang.setPickDescriptionSingular ("Retort " + pick.getPickID ());
 			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
 		}
 

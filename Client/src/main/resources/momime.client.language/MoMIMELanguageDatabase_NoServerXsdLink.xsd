@@ -276,14 +276,18 @@
 	
 	<xsd:complexType name="pickType" nxe:singular="Pick Type" nxe:plural="Pick Types" nxe:submenu="Magic">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="pickTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="pickTypeDescriptionSingular" type="momimecommon:description" nxe:label="Singular" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickTypeDescriptionPlural" type="momimecommon:description" nxe:label="Plural" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickTypePrerequisiteSingular" type="momimecommon:description" nxe:label="Pre-req singular" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickTypePrerequisitePlural" type="momimecommon:description" nxe:label="Pre-req Plural" nxe:gridwidth="200" />
 		</xsd:sequence>
 		<xsd:attribute name="pickTypeID" type="momimecommon:pickTypeID" use="required" nxe:label="Pick Type ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="pick" nxe:singular="Pick" nxe:plural="Picks" nxe:submenu="Magic">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="pickDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="pickDescriptionSingular" type="momimecommon:description" nxe:label="Singular" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickDescriptionPlural" type="momimecommon:description" nxe:label="Plural" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="bookshelfDescription" type="momimecommon:description" nxe:label="Label on Bookshelf" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="pickHelpText" type="momimelang:helpText" nxe:label="Help Text" nxe:gridwidth="600" />
 		</xsd:sequence>

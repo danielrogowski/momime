@@ -254,38 +254,44 @@
 		<tileTypeCannotBuildCityDescription>Have Seen</tileTypeCannotBuildCityDescription>
 	</tileType>
 	<pickType pickTypeID="B">
-		<pickTypeDescription>Spell Book</pickTypeDescription>
+		<pickTypeDescriptionSingular>Spell Book</pickTypeDescriptionSingular>
+		<pickTypeDescriptionPlural>Spell Books</pickTypeDescriptionPlural>
 	</pickType>
 	<pickType pickTypeID="R">
-		<pickTypeDescription>Retort</pickTypeDescription>
+		<pickTypeDescriptionSingular>Retort</pickTypeDescriptionSingular>
 	</pickType>
 	<pick pickID="MB01">
-		<pickDescription>Lebenbuch</pickDescription>
+		<pickDescriptionSingular>Lebenbuch</pickDescriptionSingular>
+		<pickDescriptionPlural>Lebenbucher</pickDescriptionPlural>
 		<bookshelfDescription>Leben</bookshelfDescription>
 		<pickHelpText>Life spells focus on healing, protections and inspirational enchantments, and planar travel.  Life magic forcefully opposes the forces of death and mildly resists the forces of chaos.</pickHelpText>
 	</pick>
 	<pick pickID="MB02">
-		<pickDescription>Todesbuch</pickDescription>
+		<pickDescriptionSingular>Todesbuch</pickDescriptionSingular>
+		<pickDescriptionPlural>Todesbucher</pickDescriptionPlural>
 		<bookshelfDescription>Todes</bookshelfDescription>
 		<pickHelpText>Death spells provide the summoning and controlling of the dead and the forces of darkness.  Death magic has powerful enchantments that strike disease and misfortune upon their enemies.</pickHelpText>
 	</pick>
 	<pick pickID="MB03">
-		<pickDescription>Chaosbuch</pickDescription>
+		<pickDescriptionSingular>Chaosbuch</pickDescriptionSingular>
+		<pickDescriptionPlural>Chaosbucher</pickDescriptionPlural>
 		<bookshelfDescription>Chaos</bookshelfDescription>
 		<pickHelpText>Chaos spells deal primarily with corruption and destruction, calling upon the elemental forces of change.</pickHelpText>
 	</pick>
 	<pick pickID="MB04">
-		<pickDescription>Naturbuch</pickDescription>
+		<pickDescriptionSingular>Naturbuch</pickDescriptionSingular>
+		<pickDescriptionPlural>Naturbucher</pickDescriptionPlural>
 		<bookshelfDescription>Natur</bookshelfDescription>
 		<pickHelpText>Nature spells control the raw forces of earth and water, as well as fertility and growth.</pickHelpText>
 	</pick>
 	<pick pickID="MB05">
-		<pickDescription>Hexenbuch</pickDescription>
+		<pickDescriptionSingular>Hexenbuch</pickDescriptionSingular>
+		<pickDescriptionPlural>Hexenbucher</pickDescriptionPlural>
 		<bookshelfDescription>Hexen</bookshelfDescription>
 		<pickHelpText>Sorcery spells focus on elemental forces of air and illusion.  Sorcery also has a number of meta-magic spells that resist and control other wizard's spells.</pickHelpText>
 	</pick>
 	<pick pickID="RT01">
-		<pickDescription>Alchimie</pickDescription>
+		<pickDescriptionSingular>Alchimie</pickDescriptionSingular>
 		<pickHelpText>Allows the wizard to change gold into mana and mana into gold in a 1 to 1 ratio, instead of loosing ½ in the exchange process.
 
 It also gives all units built in cities magic weapons with +1 to hit bonus and the ability to hurt units with Weapon Immunity, the same as if they were built in a city with an Alchemists' Guild.
@@ -293,59 +299,59 @@ It also gives all units built in cities magic weapons with +1 to hit bonus and t
 The Alchemy retort is the only way that Gnolls, Klackons, Lizardmen or Trolls can build units with magic weapons, since these races cannot build Alchemists' Guilds.</pickHelpText>
 	</pick>
 	<pick pickID="RT02">
-		<pickDescription>Kriegsherr</pickDescription>
+		<pickDescriptionSingular>Kriegsherr</pickDescriptionSingular>
 		<pickHelpText>Increases the level of all units under the wizard's control by one level.
 
 In addition, Warlord allows your units to achieve Ultra-Elite status which can only be attained by having the Warlord retort or by casting the Life spell Crusade, or the Champion status which can only be attained by having both the Warlord retort and casting the Life spell Crusade.</pickHelpText>
 	</pick>
 	<pick pickID="RT03">
-		<pickDescription>Gabe d. Uebertr.</pickDescription>
+		<pickDescriptionSingular>Gabe d. Uebertr.</pickDescriptionSingular>
 		<pickHelpText>Allows the wizard to cast spells in combat as if the battle took place at his fortress, which means channeler does not spend any extra mana when casting any spell in combat.
 
 In addition, a channeler only pays one half the normal spell maintenance.</pickHelpText>
 	</pick>
 	<pick pickID="RT04">
-		<pickDescription>Erzmagie</pickDescription>
+		<pickDescriptionSingular>Erzmagie</pickDescriptionSingular>
 		<pickHelpText>Archmage increases the wizard's skill by +10, and makes it twice as hard to dispel any of his spells.
 
 Also, there is a 50% bonus to all magic power spent on increasing skill.</pickHelpText>
 	</pick>
 	<pick pickID="RT05">
-		<pickDescription>Erfindergabe</pickDescription>
+		<pickDescriptionSingular>Erfindergabe</pickDescriptionSingular>
 		<pickHelpText>Artificer reduces the cost of making magical items by 50%.
 
 Artificers also begin the game with the Create Magic Item and Create Artifact spells.</pickHelpText>
 	</pick>
 	<pick pickID="RT06">
-		<pickDescription>Kunstfrtk.</pickDescription>
+		<pickDescriptionSingular>Kunstfrtk.</pickDescriptionSingular>
 		<pickHelpText>Summoner reduces the casting cost and maintenance of all summoning spells by 25%, and also gives a 25% bonus to research put towards summoning spells.</pickHelpText>
 	</pick>
 	<pick pickID="RT07">
-		<pickDescription>Weisheit</pickDescription>
+		<pickDescriptionSingular>Weisheit</pickDescriptionSingular>
 		<pickHelpText>Sage gives a 25% bonus to research towards all spells.</pickHelpText>
 	</pick>
 	<pick pickID="RT08">
-		<pickDescription>Myrraner</pickDescription>
+		<pickDescriptionSingular>Myrraner</pickDescriptionSingular>
 		<pickHelpText>Wizard begins the game in a city on Myrror instead of Arcanus.  The Myrran wizard starts with an unusual race: Beastmen, Dark Elves, Draconians, Dwarves, or Trolls, and will have earlier access to more powerful lairs and nodes containing more powerful treasures.
 
 In addition the wizard's fortress generates 5 additional mana.</pickHelpText>
 	</pick>
 	<pick pickID="RT09">
-		<pickDescription>Goettliche Macht</pickDescription>
+		<pickDescriptionSingular>Goettliche Macht</pickDescriptionSingular>
 		<pickHelpText>Increases the pacifying effects and magic power the wizard obtains from shrines, temples, parthenons, and cathedrals by 50%.</pickHelpText>
 	</pick>
 	<pick pickID="RT10">
-		<pickDescription>Beruehmtheit</pickDescription>
+		<pickDescriptionSingular>Beruehmtheit</pickDescriptionSingular>
 		<pickHelpText>Famous increases the wizard's game by +10, and doubles the chance of a wizard hiring heroes, recruiting mercenaries, and buying magical items.</pickHelpText>
 	</pick>
 	<pick pickID="RT11">
-		<pickDescription>Runenmeister</pickDescription>
+		<pickDescriptionSingular>Runenmeister</pickDescriptionSingular>
 		<pickHelpText>The power of all dispel magic type spells is doubled.
 
 In addition, arcane spells have a 25% bonus to research and a 25% reduction in casting cost.</pickHelpText>
 	</pick>
 	<pick pickID="RT12">
-		<pickDescription>Charisma</pickDescription>
+		<pickDescriptionSingular>Charisma</pickDescriptionSingular>
 		<pickHelpText>Possesses an unnatural presence that dramatically improves his dealings with others.
 
 The charismatic wizard pays half for hiring heroes, mercenaries, and purchasing magical items.
@@ -353,27 +359,27 @@ The charismatic wizard pays half for hiring heroes, mercenaries, and purchasing 
 In addition, all diplomatic penalties from negative actions are halved and good diplomatic effects are doubled.</pickHelpText>
 	</pick>
 	<pick pickID="RT13">
-		<pickDescription>Chaosbeherrschung</pickDescription>
+		<pickDescriptionSingular>Chaosbeherrschung</pickDescriptionSingular>
 		<pickHelpText>Increases the wizard's chaos spell research by 15%, reduces the casting cost of chaos spells by 15%, makes it twice as hard to dispel the wizard's chaos spells, and doubles the magic power obtained from chaos nodes.</pickHelpText>
 	</pick>
 	<pick pickID="RT14">
-		<pickDescription>Naturbeherrschung</pickDescription>
+		<pickDescriptionSingular>Naturbeherrschung</pickDescriptionSingular>
 		<pickHelpText>Increases the wizard's nature spell research by 15%, reduces the casting cost of nature spells by 15%, makes it twice as hard to dispel the wizard's nature spells, and doubles the magic power obtained from nature nodes.</pickHelpText>
 	</pick>
 	<pick pickID="RT15">
-		<pickDescription>Hexenmeister</pickDescription>
+		<pickDescriptionSingular>Hexenmeister</pickDescriptionSingular>
 		<pickHelpText>Increases the wizard's sorcery spell research by 15%, reduces the casting cost of sorcery spells by 15%, makes it twice as hard to dispel the wizard's sorcery spells, and doubles the magic power obtained from sorcery nodes.</pickHelpText>
 	</pick>
 	<pick pickID="RT16">
-		<pickDescription>Hoellenmacht</pickDescription>
+		<pickDescriptionSingular>Hoellenmacht</pickDescriptionSingular>
 		<pickHelpText>Increases the pacifying effects and magic power the wizard obtains from shrines, temples, parthenons, and cathedrals by 50%.</pickHelpText>
 	</pick>
 	<pick pickID="RT17">
-		<pickDescription>Mana-Konzentr.</pickDescription>
+		<pickDescriptionSingular>Mana-Konzentr.</pickDescriptionSingular>
 		<pickHelpText>Increases the mana obtained from magic power by 25%.</pickHelpText>
 	</pick>
 	<pick pickID="RT18">
-		<pickDescription>Z.knotenbeherrschung</pickDescription>
+		<pickDescriptionSingular>Z.knotenbeherrschung</pickDescriptionSingular>
 		<pickHelpText>Node Mastery doubles the magical power obtained from all nodes.
 
 In addition the wizard is able to freely cast spells inside nodes which would normally have a chance of being dispelled.</pickHelpText>
@@ -5753,4 +5759,3 @@ This will cease production of your PREREQUISITE_BUILDING_NAME.</languageEntryTex
 		<normalKey>N</normalKey>
 	</shortcutKey>
 </momimelang:languageDatabase>
-

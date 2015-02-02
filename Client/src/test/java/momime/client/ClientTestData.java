@@ -50,16 +50,16 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 public final class ClientTestData
 {
 	/**
-	 * @return Location of "English.Master of Magic Language.xml" to test with
+	 * @return Location of "English.Master of Magic Language.xml" and other language XMLs
 	 * @throws IOException If we are unable to locate the English XML file
 	 */
-	public final static File locateEnglishXmlFile () throws IOException
+	public final static File locateLanguageXmlFolder () throws IOException
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location
 		final URL languageXSD = new Object ().getClass ().getResource (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION);
 		final File languageFile = new File (languageXSD.getFile ());
-		final File englishXmlFile = new File (languageFile, "../../../../src/external/resources/momime.client.language.database/English.Master of Magic Language.xml");
+		final File englishXmlFile = new File (languageFile, "../../../../src/external/resources/momime.client.language.database");
 
 		return englishXmlFile.getCanonicalFile ();
 	}
@@ -68,7 +68,7 @@ public final class ClientTestData
 	 * @return Location of "Default.Master of Magic Graphics.xml" to test with
 	 * @throws IOException If we are unable to locate the default graphics XML file
 	 */
-	public final static File locateDefaultGraphicsXmlFile () throws IOException
+	private final static File locateDefaultGraphicsXmlFile () throws IOException
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location

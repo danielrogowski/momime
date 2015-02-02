@@ -7,6 +7,7 @@ import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.PickType;
 import momime.client.language.database.v0_9_5.Plane;
 import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -52,9 +53,9 @@ public interface LanguageDatabaseEx
 
 	/**
 	 * @param pickTypeID Pick type ID to search for
-	 * @return Pick type description; or replays back the ID if no description exists
+	 * @return Pick type descriptions object; or null if not found
 	 */
-	public String findPickTypeDescription (final String pickTypeID);
+	public PickType findPickType (final String pickTypeID);
 	
 	/**
 	 * @param pickID Pick ID to search for

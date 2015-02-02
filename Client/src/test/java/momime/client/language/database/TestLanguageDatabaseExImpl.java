@@ -126,24 +126,24 @@ public final class TestLanguageDatabaseExImpl
 	}
 
 	/**
-	 * Tests the findPickTypeDescription method
+	 * Tests the findPickType method
 	 */
 	@Test
-	public final void testFindPickTypeDescription ()
+	public final void testFindPickType ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final PickType newPickType = new PickType ();
 			newPickType.setPickTypeID ("PT0" + n);
-			newPickType.setPickTypeDescription ("PTDesc0" + n);
+			newPickType.setPickTypeDescriptionSingular ("PTDesc0" + n);
 			lang.getPickType ().add (newPickType);
 		}
 
 		lang.buildMaps ();
 
-		assertEquals ("PTDesc02", lang.findPickTypeDescription ("PT02"));
-		assertEquals ("PT04", lang.findPickTypeDescription ("PT04"));
+		assertEquals ("PTDesc02", lang.findPickType ("PT02").getPickTypeDescriptionSingular ());
+		assertNull (lang.findPickType ("PT04"));
 	}
 	
 	/**
@@ -157,13 +157,13 @@ public final class TestLanguageDatabaseExImpl
 		{
 			final Pick newPick = new Pick ();
 			newPick.setPickID ("MB0" + n);
-			newPick.setPickDescription ("MBDesc0" + n);
+			newPick.setPickDescriptionSingular ("MBDesc0" + n);
 			lang.getPick ().add (newPick);
 		}
 
 		lang.buildMaps ();
 
-		assertEquals ("MBDesc02", lang.findPick ("MB02").getPickDescription ());
+		assertEquals ("MBDesc02", lang.findPick ("MB02").getPickDescriptionSingular ());
 		assertNull (lang.findPick ("MB04"));
 	}
 

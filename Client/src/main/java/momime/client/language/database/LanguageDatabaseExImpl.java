@@ -348,14 +348,12 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 
 	/**
 	 * @param pickTypeID Pick type ID to search for
-	 * @return Pick type description; or replays back the ID if no description exists
+	 * @return Pick type descriptions object; or null if not found
 	 */
 	@Override
-	public final String findPickTypeDescription (final String pickTypeID)
+	public final PickType findPickType (final String pickTypeID)
 	{
-		final PickType thisPickType = pickTypesMap.get (pickTypeID);
-		final String desc = (thisPickType != null) ? thisPickType.getPickTypeDescription () : null;
-		return (desc != null) ? desc : pickTypeID;
+		return pickTypesMap.get (pickTypeID);
 	}
 	
 	/**

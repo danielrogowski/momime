@@ -254,38 +254,44 @@
 		<tileTypeCannotBuildCityDescription>Hors de vue</tileTypeCannotBuildCityDescription>
 	</tileType>
 	<pickType pickTypeID="B">
-		<pickTypeDescription>Livre de Sort</pickTypeDescription>
+		<pickTypeDescriptionSingular>Livre de Sort</pickTypeDescriptionSingular>
+		<pickTypeDescriptionPlural>Livres des Sort</pickTypeDescriptionPlural>
 	</pickType>
 	<pickType pickTypeID="R">
-		<pickTypeDescription>Cornue</pickTypeDescription>
+		<pickTypeDescriptionSingular>Cornue</pickTypeDescriptionSingular>
 	</pickType>
 	<pick pickID="MB01">
-		<pickDescription>Livre de Vie</pickDescription>
+		<pickDescriptionSingular>Livre de Vie</pickDescriptionSingular>
+		<pickDescriptionPlural>Livres des Vie</pickDescriptionPlural>
 		<bookshelfDescription>Vie</bookshelfDescription>
 		<pickHelpText>Les sorts de Vie se concentrent sur les enchantements de soins, protections et d'inspirations, ainsi que le voyage entre les plans. La magie de Vie s'oppose vigoureusement aux forces de mort et résiste modérément aux forces du chaos.</pickHelpText>
 	</pick>
 	<pick pickID="MB02">
-		<pickDescription>Livre de Mort</pickDescription>
+		<pickDescriptionSingular>Livre de Mort</pickDescriptionSingular>
+		<pickDescriptionPlural>Livres des Mort</pickDescriptionPlural>
 		<bookshelfDescription>Mort</bookshelfDescription>
 		<pickHelpText>Les sorts de Mort procurent l'invocation et le contrôle de la mort et des forces de l'ombre. La magie de Mort dispose d'enchantements puissants qui frappent maladie et malheur sur ses ennemis.</pickHelpText>
 	</pick>
 	<pick pickID="MB03">
-		<pickDescription>Livre de Chaos</pickDescription>
+		<pickDescriptionSingular>Livre de Chaos</pickDescriptionSingular>
+		<pickDescriptionPlural>Livres des Chaos</pickDescriptionPlural>
 		<bookshelfDescription>Chaos</bookshelfDescription>
 		<pickHelpText>Les sorts de Chaos traitent primairement de corruption et destruction, invoquant les forces élémentales du changement.</pickHelpText>
 	</pick>
 	<pick pickID="MB04">
-		<pickDescription>Livre de Nature</pickDescription>
+		<pickDescriptionSingular>Livre de Nature</pickDescriptionSingular>
+		<pickDescriptionPlural>Livres des Nature</pickDescriptionPlural>
 		<bookshelfDescription>Nature</bookshelfDescription>
 		<pickHelpText>Les sorts de Nature contrôlent les forces brutes de la terre et l'eau, aussi bien que la fertilité et la croissance.</pickHelpText>
 	</pick>
 	<pick pickID="MB05">
-		<pickDescription>Livre de Sorcellerie</pickDescription>
+		<pickDescriptionSingular>Livre de Sorcellerie</pickDescriptionSingular>
+		<pickDescriptionPlural>Livres des Sorcellerie</pickDescriptionPlural>
 		<bookshelfDescription>Sorcellerie</bookshelfDescription>
 		<pickHelpText>Les sorts de Sorcellerie se concentrent sur les forces élémentales de l'air de et l'illusion. La sorcellerie dispose également de nombres de sorts méta-magiques qui résistent et contrôlent les sorts des autres sorciers.</pickHelpText>
 	</pick>
 	<pick pickID="RT01">
-		<pickDescription>Alchimie</pickDescription>
+		<pickDescriptionSingular>Alchimie</pickDescriptionSingular>
 		<pickHelpText>Permet au sorcier de transformer l'or en mana et la mana en or dans un ratio de 1 pour 1, au lieu de perdre 1/2 dans le processus d'échange.
 
 Elle procure également à toutes les unités formées dans les cités des armes magiques fournissant un bonus de frappe de +1 et la capacité de blesser les unités bénéficiant de l'Immunité aux Armes, comme si elles avaient été formées dans une cité possédant une Guilde d'Alchimistes.
@@ -293,59 +299,59 @@ Elle procure également à toutes les unités formées dans les cités des armes
 La cornue Alchimique est le seul moyen qu'ont les Gnolls, Klackons, Hommes-Lézards ou Trolls de pouvoir entraîner des unités avec des armes magiques, puisque ces races ne peuvent pas construire de Guildes d'Alchimistes.</pickHelpText>
 	</pick>
 	<pick pickID="RT02">
-		<pickDescription>Seigneur de Guerre</pickDescription>
+		<pickDescriptionSingular>Seigneur de Guerre</pickDescriptionSingular>
 		<pickHelpText>Augmente toutes les unités sous contrôle du sorcier de un niveau.
 
 En supplément, Seigneur de Guerre permet à vos unités de parvenir au statut Ultra-Elite qui peut seulement être atteint en disposant de la cornue Seigneur de Guerre ou en jetant le sort de Vie Croisade, ou le statut Champion qui ne peut seulement être atteint qu'en bénéficiant à la fois de la cornue Seigneur de Guerre et du sort de Vie Croisade.</pickHelpText>
 	</pick>
 	<pick pickID="RT03">
-		<pickDescription>Canaliseur</pickDescription>
+		<pickDescriptionSingular>Canaliseur</pickDescriptionSingular>
 		<pickHelpText>Permet au sorcier de jeter de sorts pendant les combats comme si la bataille se déroulait dans sa forteresse, ce qui signifie que le canaliseur ne dépense pas de points de mana supplémentaires lorsqu'il jete n'importe quel sort durant un combat.
 
 En plus de cela, un canaliseur paye seulement la moitié de la maintenance normal des sorts.</pickHelpText>
 	</pick>
 	<pick pickID="RT04">
-		<pickDescription>Archimage</pickDescription>
+		<pickDescriptionSingular>Archimage</pickDescriptionSingular>
 		<pickHelpText>Archimage augmente la capacité du sorcier de +10, et rend ses sorts deux fois plus difficiles à dissiper.
 
 Il y a également un bonus de 50% de toute puissance magique injectée pour augmenter la capacité.</pickHelpText>
 	</pick>
 	<pick pickID="RT05">
-		<pickDescription>Artificier</pickDescription>
+		<pickDescriptionSingular>Artificier</pickDescriptionSingular>
 		<pickHelpText>Artificier réduit le coût de réalisation des objets de 50%.
 
 Les Artificiers débutent également la partie avec les sorts Créer Objet Magique et Créer Artefact.</pickHelpText>
 	</pick>
 	<pick pickID="RT06">
-		<pickDescription>Conjureur</pickDescription>
+		<pickDescriptionSingular>Conjureur</pickDescriptionSingular>
 		<pickHelpText>Conjureur réduit le coût de lancement et de maintenance de tous les sorts d'invocation de 25%, et procure également un bonus de 25% à la recherche investie dans les sorts d'invocation.</pickHelpText>
 	</pick>
 	<pick pickID="RT07">
-		<pickDescription>Maître Sage</pickDescription>
+		<pickDescriptionSingular>Maître Sage</pickDescriptionSingular>
 		<pickHelpText>Sage procure un bonus de 25% à la recherche investie dans tous les sorts.</pickHelpText>
 	</pick>
 	<pick pickID="RT08">
-		<pickDescription>Myrrien</pickDescription>
+		<pickDescriptionSingular>Myrrien</pickDescriptionSingular>
 		<pickHelpText>Le sorcier débute la partie dans une cité sur Myrror au lieu d'Arcanus. Le sorcier Myrrien commence avec une race inhabituelle : Hommes-Bêtes, Elfes Noirs, Draconiens, Nains, ou Trolls, et procurera plus rapidement l'accès à des tanières plus puissantes et des noeuds contenant des trésors plus puissants.
 
 En plus de cela, la forteresse du sorcier génére 5 mana supplémentaires.</pickHelpText>
 	</pick>
 	<pick pickID="RT09">
-		<pickDescription>Puissance Divine</pickDescription>
+		<pickDescriptionSingular>Puissance Divine</pickDescriptionSingular>
 		<pickHelpText>Augmente les effets pacifiants et la puissance magique que le sorcier obtient grâce aux sanctuaires, temples, parthénons, et cathédrales de 50%.</pickHelpText>
 	</pick>
 	<pick pickID="RT10">
-		<pickDescription>Célébrité</pickDescription>
+		<pickDescriptionSingular>Célébrité</pickDescriptionSingular>
 		<pickHelpText>Célébrité augmente la renommée du sorcier de +10, et double les chances d'une sorcier d'engager des héros, de recruter des mercenaires, et d'acheter des objets magiques.</pickHelpText>
 	</pick>
 	<pick pickID="RT11">
-		<pickDescription>Maître des Runes</pickDescription>
+		<pickDescriptionSingular>Maître des Runes</pickDescriptionSingular>
 		<pickHelpText>Le pouvoir de tous les sorts de type de dissipation de magie est doublé.
 
 En supplément, les sorts d'arcanes disposent d'un bonus de 25% en recherche et d'une réduction en coût de lancement de 25%.</pickHelpText>
 	</pick>
 	<pick pickID="RT12">
-		<pickDescription>Charismatique</pickDescription>
+		<pickDescriptionSingular>Charismatique</pickDescriptionSingular>
 		<pickHelpText>Insuffle une prestance non-naturelle qui améliore considérablement les échanges avec les autres.
 
 Le sorcier charismatique paye moitié prix pour engager des héros, mercenaires, et acheter des objets magiques.
@@ -353,27 +359,27 @@ Le sorcier charismatique paye moitié prix pour engager des héros, mercenaires,
 En supplément, toutes les conséquences diplomatiques des actions négatives sont réduites de moitié tandis que les bienfaits diplomatiques des bonnes sont doublés.</pickHelpText>
 	</pick>
 	<pick pickID="RT13">
-		<pickDescription>Maître du Chaos</pickDescription>
+		<pickDescriptionSingular>Maître du Chaos</pickDescriptionSingular>
 		<pickHelpText>Augmente la recherche du sorcier des sorts du chaos de 15%, réduit les coûts de lancement des sorts du chaos de 15%, rend deux fois plus difficile à dissiper les sorts du chaos du sorcier, et double la puissance magique obtenue des noeuds du chaos.</pickHelpText>
 	</pick>
 	<pick pickID="RT14">
-		<pickDescription>Maître de Nature</pickDescription>
+		<pickDescriptionSingular>Maître de Nature</pickDescriptionSingular>
 		<pickHelpText>Augmente la recherche du sorcier des sorts de nature de 15%, réduit les coûts de lancement des sorts de nature de 15%, rend deux fois plus difficile à dissiper les sorts du chaos du sorcier, et double la puissance magique obtenue des noeuds de nature.</pickHelpText>
 	</pick>
 	<pick pickID="RT15">
-		<pickDescription>Maître de Sorc.</pickDescription>
+		<pickDescriptionSingular>Maître de Sorc.</pickDescriptionSingular>
 		<pickHelpText>Augmente la recherche du sorcier des sorts de sorcellerie de 15%, réduit les coûts de lancement des sorts de sorcellerie de 15%, rend deux fois plus difficile à dissiper les sorts du chaos du sorcier, et double la puissance magique obtenue des noeuds de sorcellerie.</pickHelpText>
 	</pick>
 	<pick pickID="RT16">
-		<pickDescription>Puissance Infernale</pickDescription>
+		<pickDescriptionSingular>Puissance Infernale</pickDescriptionSingular>
 		<pickHelpText>Augmente les effets pacifiants et la puissance magique que le sorcier obtient grâce aux sanctuaires, temples, parthénons, et cathédrales de 50%.</pickHelpText>
 	</pick>
 	<pick pickID="RT17">
-		<pickDescription>Conc. de Mana</pickDescription>
+		<pickDescriptionSingular>Conc. de Mana</pickDescriptionSingular>
 		<pickHelpText>Augmente la mana obtenue par la puissance magique de 25%.</pickHelpText>
 	</pick>
 	<pick pickID="RT18">
-		<pickDescription>Maître des Noeuds</pickDescription>
+		<pickDescriptionSingular>Maître des Noeuds</pickDescriptionSingular>
 		<pickHelpText>Maître des Noeuds double la puissance magique obtenue par tous les noeuds.
 
 En supplément le sorcier est capable de lancer librement des sorts à l'intérieur des noeuds alors qu'ils auraient normalement un risque d'être dissipés.</pickHelpText>
@@ -5750,4 +5756,3 @@ Cela provoquera l'arrêt de la production de votre PREREQUISITE_BUILDING_NAME.</
 		<normalKey>N</normalKey>
 	</shortcutKey>
 </momimelang:languageDatabase>
-

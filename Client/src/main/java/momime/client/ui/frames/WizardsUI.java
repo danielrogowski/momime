@@ -82,6 +82,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
 	
+	/** Help text scroll */
+	private HelpUI helpUI;
+	
 	/** List of gem images */
 	private List<JLabel> gems;
 	
@@ -156,6 +159,28 @@ public final class WizardsUI extends MomClientFrameUI
 		retorts = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (retorts, "frmWizardsRetorts");
 		
+		// Right clicking on specific retorts in the text area brings up help text about them
+		retorts.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (ev.getButton () != MouseEvent.BUTTON1)
+				{
+					try
+					{
+						final String pickID = updateRetortsFromPicks (retorts.viewToModel (ev.getPoint ()));
+						if (pickID != null)
+							getHelpUI ().showPickID (pickID);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		});				
+		
 		// Create all the gems and portait labels, initially with no image, because the gems get regenerated with the
 		// wizard's colour, and the portraits with the wizard's picture
 		gems = new ArrayList<JLabel> ();
@@ -184,7 +209,7 @@ public final class WizardsUI extends MomClientFrameUI
 						selectedWizard = getClient ().getPlayers ().get (wizardNo);
 						
 						updateBookshelfFromPicks ();
-						updateRetortsFromPicks ();
+						updateRetortsFromPicks (-1);
 						updateWizardName ();
 					}
 					catch (final Exception e)
@@ -295,14 +320,18 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/**
 	 * When the selected picks (or language) change, update the retort descriptions
+	 * 
+	 * @param charIndex Index into the generated text that we want to locate and get in the return param; -1 if we don't care about the return param
+	 * @return PickID of the pick at the requested charIndex; -1 if the charIndex is outside of the text or doesn't represent a pick (i.e. is one of the commas)
 	 * @throws RecordNotFoundException If one of the picks we have isn't in the graphics XML file
 	 */
-	private final void updateRetortsFromPicks () throws RecordNotFoundException
+	private final String updateRetortsFromPicks (final int charIndex) throws RecordNotFoundException
 	{
 		log.trace ("Entering updateRetortsFromPicks: " + selectedWizard.getPlayerDescription ().getPlayerID ());
 		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
 		final StringBuffer desc = new StringBuffer ();
+		String result = null;
 		
 		for (final PlayerPick pick : pub.getPick ())
 		{
@@ -317,15 +346,24 @@ public final class WizardsUI extends MomClientFrameUI
 					desc.append (pick.getQuantity () + "x");
 				
 				final momime.client.language.database.v0_9_5.Pick pickDesc = getLanguage ().findPick (pick.getPickID ());
+				final String thisPickText;
 				if (pickDesc == null)
-					desc.append (pick.getPickID ());
+					thisPickText = pick.getPickID ();
 				else
-					desc.append (pickDesc.getPickDescriptionSingular ());
+					thisPickText = pickDesc.getPickDescriptionSingular ();
+
+				// Does the required index fall within the text for this pick?
+				if ((charIndex >= desc.length ()) && (charIndex < desc.length () + thisPickText.length ()))
+					result = pick.getPickID ();
+				
+				// Now add it
+				desc.append (thisPickText);
 			}
 		}
 		retorts.setText (desc.toString ());
 
-		log.trace ("Exiting updateRetortsFromPicks");
+		log.trace ("Exiting updateRetortsFromPicks = " + result);
+		return result;
 	}	
 	
 	/**
@@ -501,5 +539,21 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
+	}
+
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
 	}
 }

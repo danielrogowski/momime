@@ -1439,6 +1439,28 @@ public final class NewGameUI extends MomClientFrameUI
 		retorts = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (retorts, "frmNewGameLHSRetorts");
 		
+		// Right clicking on specific retorts in the text area brings up help text about them
+		retorts.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (ev.getButton () != MouseEvent.BUTTON1)
+				{
+					try
+					{
+						final String pickID = updateRetortsFromPicks (retorts.viewToModel (ev.getPoint ()));
+						if (pickID != null)
+							getHelpUI ().showPickID (pickID);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		});				
+		
 		// NEW GAME PANEL
 		changeDatabaseAction = new CycleAction<AvailableDatabase> ()
 		{
@@ -2682,7 +2704,7 @@ public final class NewGameUI extends MomClientFrameUI
 									}
 								}
 								updateBookshelfFromPicks ();
-								updateRetortsFromPicks ();
+								updateRetortsFromPicks (-1);
 							}
 							catch (final Exception e)
 							{
@@ -2801,7 +2823,6 @@ public final class NewGameUI extends MomClientFrameUI
 		}
 		
 		int retortNo = 0;
-		int bookshelfNo = 0;
 		for (final Pick pick : getClient ().getClientDB ().getPick ())
 		{
 			final momime.client.graphics.database.v0_9_5.Pick pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
@@ -2818,7 +2839,7 @@ public final class NewGameUI extends MomClientFrameUI
 						{
 							getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), isSelected () ? 1 : -1);
 							updateCustomPicksCount ();
-							updateRetortsFromPicks ();
+							updateRetortsFromPicks (-1);
 						}
 						catch (final Exception e)
 						{
@@ -2879,7 +2900,13 @@ public final class NewGameUI extends MomClientFrameUI
 					}
 				});
 			}
-			else
+		}
+
+		int bookshelfNo = 0;
+		for (final Pick pick : getClient ().getClientDB ().getPick ())
+		{
+			final momime.client.graphics.database.v0_9_5.Pick pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+			if (pickGfx.getBookImage ().size () > 0)
 			{
 				// Show as bookshelf
 				bookshelfNo++;
@@ -3523,7 +3550,7 @@ public final class NewGameUI extends MomClientFrameUI
 		languageChangedAfterInGame ();
 		try
 		{
-			updateRetortsFromPicks ();
+			updateRetortsFromPicks (-1);
 		}
 		catch (final RecordNotFoundException e)
 		{
@@ -3745,13 +3772,17 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/**
 	 * When the selected picks (or language) change, update the retort descriptions
+	 * 
+	 * @param charIndex Index into the generated text that we want to locate and get in the return param; -1 if we don't care about the return param
+	 * @return PickID of the pick at the requested charIndex; -1 if the charIndex is outside of the text or doesn't represent a pick (i.e. is one of the commas)
 	 * @throws RecordNotFoundException If one of the picks we have isn't in the graphics XML file
 	 */
-	private final void updateRetortsFromPicks () throws RecordNotFoundException
+	private final String updateRetortsFromPicks (final int charIndex) throws RecordNotFoundException
 	{
 		log.trace ("Entering updateRetortsFromPicks");
 		
 		final StringBuffer desc = new StringBuffer ();
+		String result = null;
 		for (final PlayerPick pick : picks)
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
@@ -3763,17 +3794,26 @@ public final class NewGameUI extends MomClientFrameUI
 				
 				if (pick.getQuantity () > 1)
 					desc.append (pick.getQuantity () + "x");
-				
+
 				final momime.client.language.database.v0_9_5.Pick pickDesc = getLanguage ().findPick (pick.getPickID ());
+				final String thisPickText;
 				if (pickDesc == null)
-					desc.append (pick.getPickID ());
+					thisPickText = pick.getPickID ();
 				else
-					desc.append (pickDesc.getPickDescriptionSingular ());
+					thisPickText = pickDesc.getPickDescriptionSingular ();
+
+				// Does the required index fall within the text for this pick?
+				if ((charIndex >= desc.length ()) && (charIndex < desc.length () + thisPickText.length ()))
+					result = pick.getPickID ();
+				
+				// Now add it
+				desc.append (thisPickText);
 			}
 		}
 		retorts.setText (desc.toString ());
 
-		log.trace ("Exiting updateRetortsFromPicks");
+		log.trace ("Exiting updateRetortsFromPicks = " + result);
+		return result;
 	}	
 	
 	/**

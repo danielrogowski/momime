@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -818,7 +819,7 @@ public final class CombatUI extends MomClientFrameUI
 				// If it is our unit, not the currently selected unit, and it has movement left, then right clicking selects it.
 				try
 				{
-					if (ev.getButton () != MouseEvent.BUTTON1)
+					if (SwingUtilities.isRightMouseButton (ev))
 					{
 						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
 							getCombatLocation (), combatCoords);

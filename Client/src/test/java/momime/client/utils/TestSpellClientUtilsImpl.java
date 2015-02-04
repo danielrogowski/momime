@@ -79,7 +79,7 @@ public final class TestSpellClientUtilsImpl
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithoutChanneler")).thenReturn ("UPKEEP_VALUE PRODUCTION_TYPE");
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepList")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
+		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
 		
 		final ProductionType mana = new ProductionType ();
 		mana.setProductionTypeDescription ("Mana");
@@ -122,7 +122,7 @@ public final class TestSpellClientUtilsImpl
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithoutChanneler")).thenReturn ("UPKEEP_VALUE PRODUCTION_TYPE");
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepList")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
+		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
 		
 		final ProductionType mana = new ProductionType ();
 		mana.setProductionTypeDescription ("Mana");
@@ -165,7 +165,7 @@ public final class TestSpellClientUtilsImpl
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithoutChanneler")).thenReturn ("UPKEEP_VALUE PRODUCTION_TYPE");
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepList")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
+		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
 		
 		final ProductionType mana = new ProductionType ();
 		mana.setProductionTypeDescription ("Mana");

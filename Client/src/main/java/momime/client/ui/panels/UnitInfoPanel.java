@@ -9,6 +9,8 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -39,6 +42,7 @@ import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.HelpUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationController;
@@ -221,6 +225,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Client config, containing various combat map settings */
 	private MomImeClientConfig clientConfig;
+	
+	/** Help text scroll */
+	private HelpUI helpUI;
 	
 	/**
 	 * Sets up the panel once all values have been injected
@@ -563,7 +570,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		bottomCards.add (unitSkillsScrollPane, KEY_UNITS);
 		
 		// Clicking a unit skill from a spell asks about cancelling it
-		final ListSelectionListener spellSelectionListener = new ListSelectionListener ()
+		unitSkillsList.addListSelectionListener (new ListSelectionListener ()
 		{
 			@Override
 			public final void valueChanged (final ListSelectionEvent ev)
@@ -606,8 +613,32 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					}
 				}
 			}
-		};
-		unitSkillsList.addListSelectionListener (spellSelectionListener);
+		});
+		
+		// Right clicking on skills shows help text about them
+		unitSkillsList.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isRightMouseButton (ev))
+				{
+					final int row = unitSkillsList.locationToIndex (ev.getPoint ());
+					if ((row >= 0) && (row < unitSkillsItems.size ()))
+					{
+						final UnitHasSkill unitSkill = unitSkillsItems.get (row);
+						try
+						{
+							getHelpUI ().showUnitSkillID (unitSkill.getUnitSkillID (), getUnit ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				}
+			}
+		});
 		
 		log.trace ("Exiting init");
 	}
@@ -1207,5 +1238,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
+	}
+
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
 	}
 }

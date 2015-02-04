@@ -22,6 +22,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -165,7 +166,7 @@ public final class WizardsUI extends MomClientFrameUI
 			@Override
 			public final void mouseClicked (final MouseEvent ev)
 			{
-				if (ev.getButton () != MouseEvent.BUTTON1)
+				if (SwingUtilities.isRightMouseButton (ev))
 				{
 					try
 					{

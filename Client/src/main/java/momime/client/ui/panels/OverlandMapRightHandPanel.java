@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import momime.client.MomClient;
@@ -768,7 +769,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						try
 						{
 							// Right mouse clicks to open up the unit info screen are always enabled
-							if (ev.getButton () != MouseEvent.BUTTON1)
+							if (SwingUtilities.isRightMouseButton (ev))
 							{
 								// Is there a unit info screen already open for this unit?
 								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (selectUnitButton.getUnit ().getUnitURN ());

@@ -28,6 +28,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import javax.xml.bind.JAXBException;
@@ -865,7 +866,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 					try
 					{
 						// Right clicking to get unit info screen
-						if (ev.getButton () != MouseEvent.BUTTON1)
+						if (SwingUtilities.isRightMouseButton (ev))
 						{
 							final OverlandMapCityData cityData = mc.getCityData ();
 							if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))

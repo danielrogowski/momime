@@ -45,6 +45,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -1445,7 +1446,7 @@ public final class NewGameUI extends MomClientFrameUI
 			@Override
 			public final void mouseClicked (final MouseEvent ev)
 			{
-				if (ev.getButton () != MouseEvent.BUTTON1)
+				if (SwingUtilities.isRightMouseButton (ev))
 				{
 					try
 					{
@@ -2863,7 +2864,7 @@ public final class NewGameUI extends MomClientFrameUI
 						try
 						{
 							// Right clicking gets help text describing the retort
-							if (ev.getButton () != MouseEvent.BUTTON1)
+							if (SwingUtilities.isRightMouseButton (ev))
 								getHelpUI ().showPickID (pick.getPickID ());
 							
 							// Clicking on disabled retorts explains why they're disabled
@@ -2929,7 +2930,7 @@ public final class NewGameUI extends MomClientFrameUI
 						try
 						{
 							// Right clicking gets help text describing the realm of magic
-							if (ev.getButton () != MouseEvent.BUTTON1)
+							if (SwingUtilities.isRightMouseButton (ev))
 								getHelpUI ().showPickID (pick.getPickID ());
 						}
 						catch (final Exception e)

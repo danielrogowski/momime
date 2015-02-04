@@ -104,7 +104,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		
 		// Did we find any?
 		final String result = (upkeepList == null) ? null :
-			getLanguage ().findCategoryEntry ("frmHelp", "SpellUpkeepList").replaceAll ("UPKEEP_LIST", upkeepList);
+			getLanguage ().findCategoryEntry ("frmHelp", "SpellUpkeepFixed").replaceAll ("UPKEEP_LIST", upkeepList);
 		
 		log.trace ("Exiting listUpkeepsOfSpell = \"" + result + "\"");
 		return result;

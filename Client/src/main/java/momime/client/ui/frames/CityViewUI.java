@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -868,7 +869,7 @@ public final class CityViewUI extends MomClientFrameUI
 						try
 						{
 							// Right mouse clicks to open up the unit info screen are always enabled
-							if (ev.getButton () != MouseEvent.BUTTON1)
+							if (SwingUtilities.isRightMouseButton (ev))
 							{
 								// Is there a unit info screen already open for this unit?
 								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (selectUnitButton.getUnit ().getUnitURN ());

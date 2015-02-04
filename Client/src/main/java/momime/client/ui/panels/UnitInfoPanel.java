@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,10 +53,10 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitAttribute;
 import momime.common.database.UnitHasSkill;
@@ -544,6 +545,27 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			
 			unitAttributesPanel.add (attrValue, getUtils ().createConstraintsNoFill (1, y, 1, 1, new Insets (1, 0, 1, 0), GridBagConstraintsNoFill.EAST));
 			y++;
+			
+			// Right clicking on unit attribute labels or icon area gives help about that attribute
+			final MouseListener unitAttributeHelpListener = new MouseAdapter ()
+			{
+				@Override
+				public final void mouseClicked (final MouseEvent ev)
+				{
+					if (SwingUtilities.isRightMouseButton (ev))
+						try
+						{
+							getHelpUI ().showUnitAttributeID (attr.getUnitAttributeID (), getUnit ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
+			};
+			
+			attrLabel.addMouseListener (unitAttributeHelpListener);
+			attrValue.addMouseListener (unitAttributeHelpListener);
 		}
 
 		topCards.add (unitAttributesPanel, KEY_UNITS);

@@ -27,8 +27,8 @@ import javax.swing.SwingUtilities;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -72,10 +72,10 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.TargetSpellResult;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -189,6 +189,9 @@ public final class CombatUI extends MomClientFrameUI
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+
+	/** Help text scroll */
+	private HelpUI helpUI;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -1190,6 +1193,26 @@ public final class CombatUI extends MomClientFrameUI
 					
 					caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
 					caeList.add (label);
+					
+					// Right clicking on CAEs displays help text about them
+					label.addMouseListener (new MouseAdapter ()
+					{
+						@Override
+						public final void mouseClicked (final MouseEvent ev)
+						{
+							if (SwingUtilities.isRightMouseButton (ev))
+							{
+								try
+								{
+									getHelpUI ().showCombatAreaEffectID (cae.getCombatAreaEffectID ());
+								}
+								catch (final Exception e)
+								{
+									log.error (e, e);
+								}
+							}
+						}
+					});
 				}
 			
 			defenderCAEs.revalidate ();
@@ -2051,6 +2074,22 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
 	}
 	
 	/**

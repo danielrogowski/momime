@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
+import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
@@ -398,6 +399,27 @@ public final class TestLanguageDatabaseExImpl
 		assertEquals ("CS04", lang.findCitySizeName ("CS04"));
 	}
 	
+	/**
+	 * Tests the findCitySpellEffect method
+	 */
+	@Test
+	public final void testFindCitySpellEffect ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CitySpellEffect newCitySpellEffect = new CitySpellEffect ();
+			newCitySpellEffect.setCitySpellEffectID ("CSE00" + n);
+			newCitySpellEffect.setCitySpellEffectName ("CSEDesc0" + n);
+			lang.getCitySpellEffect ().add (newCitySpellEffect);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("CSEDesc02", lang.findCitySpellEffect ("CSE002").getCitySpellEffectName ());
+		assertNull (lang.findCitySpellEffect ("CSE004"));
+	}
+
 	/**
 	 * Tests the findCombatAreaEffect method
 	 */

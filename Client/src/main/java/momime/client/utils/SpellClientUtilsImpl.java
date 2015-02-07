@@ -263,7 +263,11 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 					
 					// Spells that create city effects, like Altar of Battle
 					for (final SpellHasCityEffect citySpellEffect : spell.getSpellHasCityEffect ())
-						cityViewElements.add (getGraphicsDB ().findCitySpellEffect (citySpellEffect.getCitySpellEffectID (), "findImageForSpell"));
+					{
+						final CityViewElement cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffect.getCitySpellEffectID (), "findImageForSpell");
+						if (cityViewElement != null)
+							cityViewElements.add (cityViewElement);
+					}
 					
 					// Spells that create buildings, like Wall of Stone
 					if (spell.getBuildingID () != null)
@@ -279,7 +283,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 						{
 							// Just pick the first animation frame.  Sure it'd be nice to actually have the animations displayed in
 							// the help scrolls and anywhere else this is used, but it complicates things enormously having to
-							// set up repaint timers, and there's only a handful of spells this actually effects
+							// set up repaint timers, and there's only a handful of spells this actually affects
 							// e.g. Dark Rituals, Altar of Battle, Move Fortress
 							final AnimationEx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
 							if (anim.getFrame ().size () > 0)

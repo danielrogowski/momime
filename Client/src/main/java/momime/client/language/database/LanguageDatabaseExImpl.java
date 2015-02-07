@@ -5,6 +5,7 @@ import java.util.Map;
 
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
+import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
@@ -98,6 +99,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/** Map of city size IDs to city size objects */
 	private Map<String, CitySize> citySizesMap;
+
+	/** Map of city spell effect IDs to unit objects */
+	private Map<String, CitySpellEffect> citySpellEffectsMap;
 	
 	/** Map of combat area effect IDs to unit objects */
 	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
@@ -233,8 +237,13 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		citySizesMap = new HashMap<String, CitySize> ();
 		for (final CitySize thisCitySize : getCitySize ())
 			citySizesMap.put (thisCitySize.getCitySizeID (), thisCitySize);
+
+		// Create city spell effects map
+		citySpellEffectsMap = new HashMap<String, CitySpellEffect> ();
+		for (final CitySpellEffect effect : getCitySpellEffect ())
+			citySpellEffectsMap.put (effect.getCitySpellEffectID (), effect);
 		
-		// Create combatAreaEffects map
+		// Create combat area effects map
 		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
 		for (final CombatAreaEffect cae : getCombatAreaEffect ())
 			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), cae);
@@ -484,6 +493,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		return (citySizeName != null) ? citySizeName : citySizeID;
 	}
 	
+	/**
+	 * @param citySpellEffectID City spell effect ID to search for
+	 * @return City spell effect descriptions object; or null if not found
+	 */
+	@Override
+	public final CitySpellEffect findCitySpellEffect (final String citySpellEffectID)
+	{
+		return citySpellEffectsMap.get (citySpellEffectID);
+	}
+
 	/**
 	 * @param combatAreaEffectID Combat area effect ID to search for
 	 * @return Combat area effect descriptions object; or null if not found

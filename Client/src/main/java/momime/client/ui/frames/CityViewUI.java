@@ -41,9 +41,9 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.Building;
+import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
-import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.process.OverlandMapProcessing;
@@ -59,8 +59,8 @@ import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
-import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityGrowthRateBreakdown;
@@ -85,6 +85,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -176,6 +177,12 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Client unit calculations */
 	private ClientUnitCalculations clientUnitCalculations;
+
+	/** Help text scroll */
+	private HelpUI helpUI;
+
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -580,7 +587,7 @@ public final class CityViewUI extends MomClientFrameUI
 		contentPane.add (spellsScrollPane, "frmCityEnchantments");
 		
 		// Clicking a spell asks about cancelling it
-		final ListSelectionListener spellSelectionListener = new ListSelectionListener ()
+		spellsList.addListSelectionListener (new ListSelectionListener ()
 		{
 			@Override
 			public final void valueChanged (final ListSelectionEvent ev)
@@ -594,16 +601,16 @@ public final class CityViewUI extends MomClientFrameUI
 						msg.setTitleLanguageCategoryID ("SpellCasting");
 						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
 
-						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
-						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						final CitySpellEffect effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
+						final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
 						
 						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
 							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+								("SPELL_NAME", (effectName != null) ? effectName : spell.getCitySpellEffectID ()));
 						else
 						{
 							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+								("SPELL_NAME", (effectName != null) ? effectName : spell.getCitySpellEffectID ()));
 							msg.setSwitchOffSpell (spell);
 						}
 
@@ -615,8 +622,33 @@ public final class CityViewUI extends MomClientFrameUI
 					}
 				}
 			}
-		};
-		spellsList.addListSelectionListener (spellSelectionListener);
+		});
+		
+		// Right clicking on city spell effects shows help text about them
+		spellsList.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isRightMouseButton (ev))
+				{
+					final int row = spellsList.locationToIndex (ev.getPoint ());
+					if ((row >= 0) && (row < spellsItems.size ()))
+					{
+						final MemoryMaintainedSpell spell = spellsItems.get (row);
+						try
+						{
+							getHelpUI ().showCitySpellEffectID (spell.getCitySpellEffectID (), spell.getSpellID (),
+								getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "citySpellEffectHelp"));
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				}
+			}
+		});
 		
 		// Set up the mini panel to show progress towards current construction
 		final JPanel constructionProgressPanel = new JPanel ()
@@ -1739,6 +1771,38 @@ public final class CityViewUI extends MomClientFrameUI
 		clientUnitCalculations = calc;
 	}
 
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+	
 	/**
 	 * @return Dynamically created select unit buttons
 	 */

@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import momime.client.MomClient;
@@ -105,6 +106,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Combat UI */
 	private CombatUI combatUI;
+	
+	/** Help text scroll */
+	private HelpUI helpUI;
 	
 	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
 	private final static int SPELLS_PER_PAGE = 4;
@@ -457,7 +461,17 @@ public final class SpellBookUI extends MomClientFrameUI
 								
 								try
 								{
-									if (sectionID == SpellBookSectionID.RESEARCHABLE_NOW)
+									final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
+									final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+
+									if (SwingUtilities.isRightMouseButton (ev))
+									{
+										// Right clicking on a spell to get help text for it
+										// Don't allow right clicking on ????? spells to find out what they are!
+										if (sectionID != SpellBookSectionID.RESEARCHABLE)
+											getHelpUI ().showSpellID (spell.getSpellID (), ourPlayer);
+									}
+									else if (sectionID == SpellBookSectionID.RESEARCHABLE_NOW)
 									{
 										// Clicking on a spell to research it
 										// Whether we're allowed to depends on what spell settings are, and what's currently selected to research
@@ -527,9 +541,6 @@ public final class SpellBookUI extends MomClientFrameUI
 										final boolean proceed;
 										
 										// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
-										final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
-										final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-
 										final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
 											getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 										
@@ -1115,6 +1126,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
 	}
 	
 	/**

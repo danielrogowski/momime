@@ -10,7 +10,7 @@ import javax.swing.ListCellRenderer;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
- * Renderer for writing spell names onto the city screen, and colouring spell names according to the wizard who cast them
+ * Renderer for writing city spell effect names onto the city screen, and colouring city spell effect names according to the wizard who cast them
  */
 public final class MemoryMaintainedSpellListCellRenderer extends JLabel implements ListCellRenderer<MemoryMaintainedSpell>
 {
@@ -39,10 +39,10 @@ public final class MemoryMaintainedSpellListCellRenderer extends JLabel implemen
 	public final Component getListCellRendererComponent (final JList<? extends MemoryMaintainedSpell> list, final MemoryMaintainedSpell spell,
 		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
-		// Get spell name
-		final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
-		final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-		setText ((spellName != null) ? spellName : spell.getSpellID ());
+		// Get city spell effect name
+		final CitySpellEffect effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
+		final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
+		setText ((effectName != null) ? effectName : spell.getCitySpellEffectID ());
 		
 		// Get wizard colour
 		final PlayerPublicDetails pub = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID ());

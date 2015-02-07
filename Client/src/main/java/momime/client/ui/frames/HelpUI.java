@@ -21,8 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 
 import momime.client.MomClient;
+import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.BookImage;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.Pick;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -42,6 +45,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -137,7 +141,10 @@ public final class HelpUI extends MomClientFrameUI
 	/** Spell ID we're displaying help text about, null if displaying help text about something other than a spell */
 	private String spellID;
 	
-	/** Player who owns the spell we're displaying help text about, null if displaying help text about something other than a spell */
+	/** City spell effect ID we're displaying help text about, null if displaying help text about something other than a city spell effect */
+	private String citySpellEffectID;
+
+	/** Player who owns the spell or city spell effect we're displaying help text about, null if displaying help text about something other than a spell or city spell effect*/
 	private PlayerPublicDetails castingPlayer;
 	
 	/**
@@ -340,6 +347,26 @@ public final class HelpUI extends MomClientFrameUI
 					}
 			}
 		}
+		else if (citySpellEffectID != null)
+		{
+			final CitySpellEffect effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
+			final String effectTitle = (effect == null) ? null : effect.getCitySpellEffectName ();
+			final String effectHelpText = (effect == null) ? null : effect.getCitySpellEffectHelpText ();
+			title.setText ((effectTitle != null) ? effectTitle : citySpellEffectID);
+			unindentedText.setText ((effectHelpText != null) ? effectHelpText : citySpellEffectID);
+			
+			// City spell effects *must* be the result of a spell, so we should already know the spellID and who cast it
+			try
+			{
+				final Spell spellDef = getClient ().getClientDB ().findSpell (spellID, "HelpUI");
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
+				indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+		}
 		else if (unitAttributeID != null)
 		{
 			final UnitAttribute unitAttribute = getLanguage ().findUnitAttribute (unitAttributeID);
@@ -384,7 +411,7 @@ public final class HelpUI extends MomClientFrameUI
 				{
 					final ProductionType research = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 					final String researchSuffix = (research == null) ? null : research.getProductionTypeSuffix ();
-					if ((castingPlayer == null) || (!castingPlayer.equals (getClient ().getOurPlayerID ())))
+					if ((castingPlayer == null) || (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())))
 						
 						// Someone else's spell, so don't show any details about research status
 						text.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp", "SpellBookResearchCostNotOurs").replaceAll
@@ -395,7 +422,7 @@ public final class HelpUI extends MomClientFrameUI
 						// Our spell - find research status
 						final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spellID);
 						final String languageEntryID;
-						if (researchStatus.getRemainingResearchCost () == 0)
+						if (researchStatus.getStatus () == SpellResearchStatusID.AVAILABLE)
 							languageEntryID = "SpellBookResearchCostResearched";
 						else if (researchStatus.getRemainingResearchCost () == spellDef.getResearchCost ())
 							languageEntryID = "SpellBookResearchCostNotStarted";
@@ -497,6 +524,8 @@ public final class HelpUI extends MomClientFrameUI
 		unit = null;
 		spellID = null;
 		castingPlayer = null;
+		citySpellEffectID = null;
+		combatAreaEffectID = null;
 
 		log.trace ("Exiting clear");
 	}
@@ -580,7 +609,7 @@ public final class HelpUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @param id Unit Atrtibute ID to display help text about
+	 * @param id Unit attribute ID to display help text about
 	 * @param u Unit who owns the skill
 	 * @throws IOException If a resource cannot be found
 	 */
@@ -599,7 +628,7 @@ public final class HelpUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @param id Combat Area Effect ID to display help text about
+	 * @param id Combat area effect ID to display help text about
 	 * @throws IOException If a resource cannot be found
 	 */
 	public final void showCombatAreaEffectID (final String id) throws IOException
@@ -616,7 +645,54 @@ public final class HelpUI extends MomClientFrameUI
 		languageChanged ();
 		setVisible (true);
 
-		log.trace ("Exiting showUnitSkillID");
+		log.trace ("Exiting showCombatAreaEffectID");
+	}
+
+	/**
+	 * @param id City spell effect ID to display help text about
+	 * @param aSpellID Spell ID that resulted in this effect
+	 * @param player Player who owns the spell
+	 * @throws IOException If a resource cannot be found
+	 */
+	public final void showCitySpellEffectID (final String id, final String aSpellID, final PlayerPublicDetails player) throws IOException
+	{
+		log.trace ("Entering showCitySpellEffectID: " + id);
+
+		clear ();
+		citySpellEffectID = id;
+		spellID = aSpellID;
+		castingPlayer = player;
+
+		final CityViewElement cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffectID, "showCitySpellEffectID");
+		if (cityViewElement != null)
+		{
+			String imageFilename = null;
+			if (cityViewElement.getCityViewAlternativeImageFile () != null)
+				imageFilename = cityViewElement.getCityViewAlternativeImageFile ();
+			else if (cityViewElement.getCityViewImageFile () != null)
+				imageFilename = cityViewElement.getCityViewImageFile ();
+			else if (cityViewElement.getCityViewAnimation () != null)
+			{
+				// Just pick the first animation frame.  Sure it'd be nice to actually have the animations displayed in
+				// the help scrolls and anywhere else this is used, but it complicates things enormously having to
+				// set up repaint timers, and there's only a handful of effects this actually affects
+				// e.g. Dark Rituals, Altar of Battle
+				final AnimationEx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
+				if (anim.getFrame ().size () > 0)
+					imageFilename = anim.getFrame ().get (0);
+			}
+		
+			if (imageFilename != null)
+			{
+				imageLabel.setIcon (new ImageIcon (getUtils ().loadImage (imageFilename)));
+				imageLabel.setVisible (true);
+			}
+		}
+		
+		languageChanged ();
+		setVisible (true);
+
+		log.trace ("Exiting showCitySpellEffectID");
 	}
 	
 	/**

@@ -428,17 +428,12 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/**
 	 * @param citySpellEffectID City spell effect ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return City spell effect object; note city spell effects in the graphics XML are just a special case of city view elements
-	 * @throws RecordNotFoundException If the citySpellEffectID doesn't exist
+	 * @return City spell effect object, or null if not found (e.g. Pestilence has no image)
 	 */
 	@Override
-	public final CityViewElement findCitySpellEffect (final String citySpellEffectID, final String caller) throws RecordNotFoundException
+	public final CityViewElement findCitySpellEffect (final String citySpellEffectID, final String caller)
 	{
-		final CityViewElement found = citySpellEffectsMap.get (citySpellEffectID);
-		if (found == null)
-			throw new RecordNotFoundException (CityViewElement.class, citySpellEffectID, caller);
-
-		return found;
+		return citySpellEffectsMap.get (citySpellEffectID);
 	}
 	
 	/**

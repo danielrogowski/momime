@@ -1107,6 +1107,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellTableCellRenderer" ref="memoryMaintainedSpellTableCellRenderer" />
+		<property name="helpUI" ref="helpUI" />
 	</bean>
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">
@@ -1148,6 +1149,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="helpUI" ref="helpUI" />
 	</bean>
 
 	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1460,6 +1462,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="helpUI" ref="helpUI" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 		<property name="memoryMaintainedSpellListCellRenderer" ref="memoryMaintainedSpellListCellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>

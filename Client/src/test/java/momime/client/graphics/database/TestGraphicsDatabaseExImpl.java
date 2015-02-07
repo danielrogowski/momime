@@ -1,6 +1,7 @@
 package momime.client.graphics.database;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -314,10 +315,9 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findCitySpellEffect method to find a citySpellEffect ID that does exist
-	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindCitySpellEffect_Exists () throws RecordNotFoundException
+	public final void testFindCitySpellEffect ()
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -329,27 +329,8 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.buildMaps ();
 
-		assertEquals ("CSE02", db.findCitySpellEffect ("CSE02", "testFindCitySpellEffect_Exists").getCitySpellEffectID ());
-	}
-
-	/**
-	 * Tests the findCitySpellEffect method to find a citySpellEffect ID that doesn't exist
-	 * @throws RecordNotFoundException If the record is not found
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testFindCitySpellEffect_NotExists () throws RecordNotFoundException
-	{
-		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final CityViewElement newCitySpellEffect = new CityViewElement ();
-			newCitySpellEffect.setCitySpellEffectID ("CSE0" + n);
-			db.getCityViewElement ().add (newCitySpellEffect);
-		}
-
-		db.buildMaps ();
-
-		db.findCitySpellEffect ("CSE04", "testFindCitySpellEffect_NotExists");
+		assertEquals ("CSE02", db.findCitySpellEffect ("CSE02", "testFindCitySpellEffect").getCitySpellEffectID ());
+		assertNull (db.findCitySpellEffect ("CSE04", "testFindCitySpellEffect"));
 	}
 
 	/**

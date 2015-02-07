@@ -18,6 +18,7 @@ import javax.swing.WindowConstants;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.messages.process.AddBuildingMessageImpl;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
@@ -290,11 +291,13 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		}
 		
 		// Set the text at the bottom
+		// Use the name of the specific effect in preference to the generic spell name, so Spell Ward says e.g. "You have completed casting Chaos Ward"
 		String spellID = null;
+		String citySpellEffectID = null;
 		Integer castingPlayerID = null;
 		if (getAddSpellMessage () != null)
 		{
-			spellID = getAddSpellMessage ().getMaintainedSpell ().getSpellID ();
+			citySpellEffectID = getAddSpellMessage ().getMaintainedSpell ().getCitySpellEffectID ();
 			castingPlayerID = getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ();
 		}
 		else if (getBuildingMessage () != null)
@@ -304,15 +307,26 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		}
 
 		String text = null;
-		if ((spellID != null) && (castingPlayerID != null))
+		if (((spellID != null) || (citySpellEffectID != null)) && (castingPlayerID != null))
 		{
-			final Spell spell = getLanguage ().findSpell (spellID);
-			final String spellName = (spell != null) ? spell.getSpellName () : null;
+			final String useSpellName;
+			if (citySpellEffectID != null)
+			{
+				final CitySpellEffect effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
+				final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
+				useSpellName = (effectName != null) ? effectName : citySpellEffectID;
+			}
+			else
+			{
+				final Spell spell = getLanguage ().findSpell (spellID);
+				final String spellName = (spell != null) ? spell.getSpellName () : null;
+				useSpellName = (spellName != null) ? spellName : spellID;
+			}
 			
 			final PlayerPublicDetails castingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID);
 			
 			text = getLanguage ().findCategoryEntry ("SpellCasting", (castingPlayerID == getClient ().getOurPlayerID ()) ? "YouHaveCast" : "SomeoneElseHasCast").replaceAll
-				("SPELL_NAME", (spellName != null) ? spellName : spellID).replaceAll
+				("SPELL_NAME", useSpellName).replaceAll
 				("PLAYER_NAME", (castingPlayer != null) ? castingPlayer.getPlayerDescription ().getPlayerName () : "Player " + castingPlayerID);
 		}
 		textLabel.setText (text);

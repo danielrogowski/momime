@@ -105,6 +105,7 @@ import momime.common.database.newgame.UnitSettingData;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.clienttoserver.ChooseCustomFlagColourMessage;
@@ -2382,7 +2383,14 @@ public final class NewGameUI extends MomClientFrameUI
 			@Override
 			public final void stateChanged (final ChangeEvent ev)
 			{
-				updateCustomFlagColour ();
+				try
+				{
+					updateCustomFlagColour ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		flagColourRed.addChangeListener (flagColourChangeListener);
@@ -2692,9 +2700,7 @@ public final class NewGameUI extends MomClientFrameUI
 									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
 										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 									
-									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (portrait.getFlagColour (), 16));
-									flag1.setIcon (new ImageIcon (wizardFlag));
-									flag2.setIcon (new ImageIcon (wizardFlag));
+									updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
 									
 									for (final WizardPick src : wizard.getWizardPick ())
 									{
@@ -2762,9 +2768,7 @@ public final class NewGameUI extends MomClientFrameUI
 									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
 										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 
-									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (portrait.getFlagColour (), 16));
-									flag1.setIcon (new ImageIcon (wizardFlag));
-									flag2.setIcon (new ImageIcon (wizardFlag));
+									updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
 									okAction.setEnabled (true);
 								}
 							}
@@ -3114,8 +3118,9 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/**
 	 * Show flag colour panel, if custom wizard with custom portrait was chosen
+	 * @throws PlayerNotFoundException If we cannot find the local player
 	 */
-	public final void showCustomFlagColourPanel ()
+	public final void showCustomFlagColourPanel () throws PlayerNotFoundException
 	{
 		log.trace ("Entering showCustomFlagColourPanel");
 
@@ -3247,6 +3252,29 @@ public final class NewGameUI extends MomClientFrameUI
 						freeSpellsPanel.add (spellButton, getUtils ().createConstraintsNoFill (colNo, gridy + rowNo, 1, 1, NO_INSET, GridBagConstraintsNoFill.CENTRE));
 						freeSpellsComponents.add (spellButton);
 						
+						// Right clicking on a spell displays help text for it
+						spellButton.addMouseListener (new MouseAdapter ()
+						{
+							@Override
+							public final void mouseClicked (final MouseEvent ev)
+							{
+								if (SwingUtilities.isRightMouseButton (ev))
+								{
+									try
+									{
+										final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID
+											(getClient ().getPlayers (), getClient ().getOurPlayerID (), "NewGameUI.showSpellHelpText");
+										
+										getHelpUI ().showSpellID (spell.getSpellID (), ourPlayer);
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}
+								}
+							}
+						});
+						
 						spellNo++;
 					}
 			
@@ -3345,17 +3373,45 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/**
 	 * Keeps the flag colour preview up to date as the sliders move
+	 * @throws PlayerNotFoundException If we cannot find the local player
 	 */
-	private final void updateCustomFlagColour ()
+	private final void updateCustomFlagColour () throws PlayerNotFoundException
 	{
 		log.trace ("Entering updateCustomFlagColour");
 
-		final int rgb = (flagColourRed.getValue () << 16) + (flagColourGreen.getValue () << 8) + flagColourBlue.getValue ();
+		updateFlagColour ((flagColourRed.getValue () << 16) + (flagColourGreen.getValue () << 8) + flagColourBlue.getValue ());
+
+		log.trace ("Exiting updateCustomFlagColour");
+	}
+	
+	/**
+	 * This is called to recolour the two sample flags on the left hand side.  Its called regardless how the colour is set,
+	 * via choosing a standard wizard, standard portrait, or dragging the custom flag colour sliders.
+	 * 
+	 * @param rgb New colour to set flags to
+	 * @throws PlayerNotFoundException If we cannot find the local player
+	 */
+	private final void updateFlagColour (final int rgb) throws PlayerNotFoundException
+	{
+		log.trace ("Entering updateFlagColour: " + rgb);
+
 		final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, rgb);
 		flag1.setIcon (new ImageIcon (wizardFlag));
 		flag2.setIcon (new ImageIcon (wizardFlag));
+		
+		// Store the flag colour temporarily to our player data.  The server will send this properly when the game starts up,
+		// but we need it before then for right clicking on the free spell selection screen on overland spells, to get the
+		// mirror the right colour.
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateFlagColour");
+		final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) ourPlayer.getTransientPlayerPublicKnowledge ();
 
-		log.trace ("Exiting updateCustomFlagColour");
+		String value = Integer.toHexString (rgb);
+		while (value.length () < 6)
+			value = "0" + value;
+		
+		trans.setFlagColour (value);
+		
+		log.trace ("Exiting updateFlagColour");
 	}
 	
 	/**

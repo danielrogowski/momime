@@ -6,15 +6,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.BookImage;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.Pick;
 import momime.client.language.database.v0_9_5.UnitAttribute;
@@ -25,6 +28,8 @@ import momime.client.utils.SpellClientUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.Spell;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.PlayerPick;
 import momime.common.utils.SpellUtils;
 
 import org.junit.Test;
@@ -104,6 +109,13 @@ public final class TestHelpUI
 			"Every spell cast by the enemy drains the magic power (strength) of the counter magic spell by 5 mana points and, therefore, lessens its effectiveness against subsequent spells.");
 		when (lang.findCombatAreaEffect ("CSE048")).thenReturn (cae);
 		
+		final CitySpellEffect citySpellEffect = new CitySpellEffect ();
+		citySpellEffect.setCitySpellEffectName ("Chaos Rift");
+		citySpellEffect.setCitySpellEffectHelpText ("Opens a great magical vortex over an enemy city." +
+			System.lineSeparator () + System.lineSeparator () +
+			"Each turn, units inside the city sustain five strength 8 Lightning Bolt attacks, and there is a 5% chance of a building being destroyed.");
+		when (lang.findCitySpellEffect ("SE110")).thenReturn (citySpellEffect);
+		
 		final momime.client.language.database.v0_9_5.Spell spell = new momime.client.language.database.v0_9_5.Spell ();
 		spell.setSpellName ("Counter Magic");
 		spell.setSpellDescription ("All enemy spell cast in combat must resist being dispelled while this spell is in effect.");
@@ -119,10 +131,13 @@ public final class TestHelpUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from client XML
-		final Spell spellDef = new Spell ();
-		
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		when (db.findSpell ("SP048", "HelpUI")).thenReturn (spellDef);
+		
+		final Spell spellDef1 = new Spell ();		
+		when (db.findSpell ("SP048", "HelpUI")).thenReturn (spellDef1);
+
+		final Spell spellDef2 = new Spell ();		
+		when (db.findSpell ("SP110", "HelpUI")).thenReturn (spellDef2);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -144,6 +159,10 @@ public final class TestHelpUI
 		caeGfx.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CSE048.png");
 		when (gfx.findCombatAreaEffect ("CSE048", "showCombatAreaEffectID")).thenReturn (caeGfx);
 		
+		final CityViewElement citySpellEffectGfx = new CityViewElement ();
+		citySpellEffectGfx.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-SE110-mini.png");
+		when (gfx.findCitySpellEffect ("SE110", "showCitySpellEffectID")).thenReturn (citySpellEffectGfx);
+		
 		// Unit skills
 		final BufferedImage skillIcon = utils.loadImage ("/momime.client.graphics/unitSkills/US020-icon.png");
 		
@@ -158,6 +177,8 @@ public final class TestHelpUI
 		// Spells
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
 		when (spellClientUtils.findImageForSpell ("SP048", 3)).thenReturn (utils.loadImage (caeGfx.getCombatAreaEffectImageFile ()));
+		
+		when (spellClientUtils.listUpkeepsOfSpell (spellDef2, new ArrayList<PlayerPick> ())).thenReturn ("Upkeep: 5 Mana per turn");
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 
@@ -248,6 +269,25 @@ public final class TestHelpUI
 	{
 		final HelpUI help = createHelpUI ();
 		help.showCombatAreaEffectID ("CSE048");
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a city spell effect
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_CitySpellEffect () throws Exception
+	{
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerPublicDetails castingPlayer = new PlayerPublicDetails (pd, pub, null);
+
+		final HelpUI help = createHelpUI ();
+		help.showCitySpellEffectID ("SE110", "SP110", castingPlayer);
 		Thread.sleep (5000);
 		help.setVisible (false);
 	}

@@ -22,6 +22,7 @@ import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -107,6 +108,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 
+	/** Help text scroll */
+	private HelpUI helpUI;
+	
 	/** Mana title above the slider */
 	private JLabel manaTitle;
 	
@@ -519,27 +523,33 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				final int index = (row * 2) + col;
 				
 				if ((index >= 0) && (index < spellsTableModel.getSpells ().size ()))
-				{
-					final MemoryMaintainedSpell spell = spellsTableModel.getSpells ().get (index);
-					if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 					try
 					{
-						final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
-						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-						
-						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("SpellCasting");
-						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
-						msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-							("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-						msg.setSwitchOffSpell (spell);
-						msg.setVisible (true);
+						final MemoryMaintainedSpell spell = spellsTableModel.getSpells ().get (index);
+						if (SwingUtilities.isRightMouseButton (ev))
+						{
+							// Right clicking on spells gets help text about them
+							getHelpUI ().showSpellID (spell.getSpellID (),
+								getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "OverlandEnchantmentHelpText"));
+						}
+						else if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
+						{
+							final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+							
+							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+							msg.setTitleLanguageCategoryID ("SpellCasting");
+							msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+							msg.setSwitchOffSpell (spell);
+							msg.setVisible (true);
+						}
 					}
 					catch (final Exception e)
 					{
 						log.error (e, e);
 					}
-				}
 			}
 		};
 		spellsTable.addMouseListener (spellSelectionListener);
@@ -934,6 +944,22 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
 	}
 	
 	/**

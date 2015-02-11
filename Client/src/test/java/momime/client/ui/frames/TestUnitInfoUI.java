@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -91,7 +91,7 @@ public final class TestUnitInfoUI
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
-		final UnitSkill movementSkill = new UnitSkill ();
+		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 
@@ -192,7 +192,7 @@ public final class TestUnitInfoUI
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
-		final UnitSkill movementSkill = new UnitSkill ();
+		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 

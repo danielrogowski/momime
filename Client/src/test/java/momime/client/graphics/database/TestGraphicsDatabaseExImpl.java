@@ -12,17 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.graphics.database.v0_9_5.CityImage;
-import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.graphics.database.v0_9_5.CombatAction;
-import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
-import momime.client.graphics.database.v0_9_5.Pick;
-import momime.client.graphics.database.v0_9_5.PlayList;
-import momime.client.graphics.database.v0_9_5.Spell;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
-import momime.client.graphics.database.v0_9_5.WeaponGrade;
-import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
@@ -51,14 +40,14 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		db.setUtils (utils);
 		
-		final TileSetEx overlandMapTileSet = new TileSetEx ();
+		final TileSetGfx overlandMapTileSet = new TileSetGfx ();
 		overlandMapTileSet.setTileSetID (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP);
 		db.getTileSet ().add (overlandMapTileSet);
 		
 		// 30 x 20 image
 		when (utils.loadImage ("building1.png")).thenReturn (new BufferedImage (30, 20, BufferedImage.TYPE_INT_ARGB));
 		
-		final CityViewElement building1 = new CityViewElement ();
+		final CityViewElementGfx building1 = new CityViewElementGfx ();
 		building1.setBuildingID ("BL01");
 		building1.setCityViewImageFile ("building1.png");
 		db.getCityViewElement ().add (building1);
@@ -67,7 +56,7 @@ public final class TestGraphicsDatabaseExImpl
 		when (utils.loadImage ("building2.png")).thenReturn (new BufferedImage (60, 70, BufferedImage.TYPE_INT_ARGB));
 		when (utils.loadImage ("building2alt.png")).thenReturn (new BufferedImage (50, 10, BufferedImage.TYPE_INT_ARGB));
 
-		final CityViewElement building2 = new CityViewElement ();
+		final CityViewElementGfx building2 = new CityViewElementGfx ();
 		building2.setBuildingID ("BL02");
 		building2.setCityViewImageFile ("building2.png");
 		building2.setCityViewAlternativeImageFile ("building2alt.png");
@@ -77,14 +66,14 @@ public final class TestGraphicsDatabaseExImpl
 		when (utils.loadImage ("frame1.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
 		when (utils.loadImage ("frame2.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
 		
-		final AnimationEx anim = new AnimationEx ();
+		final AnimationGfx anim = new AnimationGfx ();
 		anim.setAnimationID ("building3");
 		anim.getFrame ().add ("frame1.png");
 		anim.getFrame ().add ("frame2.png");
 		anim.setUtils (utils);
 		db.getAnimation ().add (anim);
 
-		final CityViewElement building3 = new CityViewElement ();
+		final CityViewElementGfx building3 = new CityViewElementGfx ();
 		building3.setBuildingID ("BL03");
 		building3.setCityViewAnimation ("building3");
 		db.getCityViewElement ().add (building3);
@@ -92,14 +81,14 @@ public final class TestGraphicsDatabaseExImpl
 		// Huge image that isn't a building
 		when (utils.loadImage ("nonBuilding.png")).thenReturn (new BufferedImage (100, 100, BufferedImage.TYPE_INT_ARGB));
 		
-		final CityViewElement nonBuilding = new CityViewElement ();
+		final CityViewElementGfx nonBuilding = new CityViewElementGfx ();
 		nonBuilding.setCityViewImageFile ("nonBuilding.png");
 		db.getCityViewElement ().add (nonBuilding);
 		
 		// Huge Wizard's Fortress to prove that it gets ignored
 		when (utils.loadImage ("fortress.png")).thenReturn (new BufferedImage (100, 100, BufferedImage.TYPE_INT_ARGB));
 		
-		final CityViewElement fortress = new CityViewElement ();
+		final CityViewElementGfx fortress = new CityViewElementGfx ();
 		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortress.setCityViewImageFile ("fortress.png");
 		db.getCityViewElement ().add (fortress);
@@ -123,7 +112,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick newPick = new Pick ();
+			final PickGfx newPick = new PickGfx ();
 			newPick.setPickID ("MB0" + n);
 			db.getPick ().add (newPick);
 		}
@@ -143,7 +132,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick newPick = new Pick ();
+			final PickGfx newPick = new PickGfx ();
 			newPick.setPickID ("MB0" + n);
 			db.getPick ().add (newPick);
 		}
@@ -163,7 +152,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Wizard newWizard = new Wizard ();
+			final WizardGfx newWizard = new WizardGfx ();
 			newWizard.setWizardID ("WZ0" + n);
 			db.getWizard ().add (newWizard);
 		}
@@ -183,7 +172,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Wizard newWizard = new Wizard ();
+			final WizardGfx newWizard = new WizardGfx ();
 			newWizard.setWizardID ("WZ0" + n);
 			db.getWizard ().add (newWizard);
 		}
@@ -203,7 +192,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final ProductionTypeEx newProductionType = new ProductionTypeEx ();
+			final ProductionTypeGfx newProductionType = new ProductionTypeGfx ();
 			newProductionType.setProductionTypeID ("RE0" + n);
 			db.getProductionType ().add (newProductionType);
 		}
@@ -223,7 +212,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final ProductionTypeEx newProductionType = new ProductionTypeEx ();
+			final ProductionTypeGfx newProductionType = new ProductionTypeGfx ();
 			newProductionType.setProductionTypeID ("RE0" + n);
 			db.getProductionType ().add (newProductionType);
 		}
@@ -243,7 +232,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final RaceEx newRace = new RaceEx ();
+			final RaceGfx newRace = new RaceGfx ();
 			newRace.setRaceID ("RC0" + n);
 			db.getRace ().add (newRace);
 		}
@@ -263,7 +252,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final RaceEx newRace = new RaceEx ();
+			final RaceGfx newRace = new RaceGfx ();
 			newRace.setRaceID ("RC0" + n);
 			db.getRace ().add (newRace);
 		}
@@ -283,7 +272,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CityViewElement newBuilding = new CityViewElement ();
+			final CityViewElementGfx newBuilding = new CityViewElementGfx ();
 			newBuilding.setBuildingID ("BL0" + n);
 			db.getCityViewElement ().add (newBuilding);
 		}
@@ -303,7 +292,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CityViewElement newBuilding = new CityViewElement ();
+			final CityViewElementGfx newBuilding = new CityViewElementGfx ();
 			newBuilding.setBuildingID ("BL0" + n);
 			db.getCityViewElement ().add (newBuilding);
 		}
@@ -322,7 +311,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CityViewElement newCitySpellEffect = new CityViewElement ();
+			final CityViewElementGfx newCitySpellEffect = new CityViewElementGfx ();
 			newCitySpellEffect.setCitySpellEffectID ("CSE0" + n);
 			db.getCityViewElement ().add (newCitySpellEffect);
 		}
@@ -343,7 +332,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Spell newSpell = new Spell ();
+			final SpellGfx newSpell = new SpellGfx ();
 			newSpell.setSpellID ("SP0" + n);
 			db.getSpell ().add (newSpell);
 		}
@@ -363,7 +352,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Spell newSpell = new Spell ();
+			final SpellGfx newSpell = new SpellGfx ();
 			newSpell.setSpellID ("SP0" + n);
 			db.getSpell ().add (newSpell);
 		}
@@ -383,7 +372,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatAction newCombatAction = new CombatAction ();
+			final CombatActionGfx newCombatAction = new CombatActionGfx ();
 			newCombatAction.setCombatActionID ("CMB0" + n);
 			db.getCombatAction ().add (newCombatAction);
 		}
@@ -403,7 +392,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatAction newCombatAction = new CombatAction ();
+			final CombatActionGfx newCombatAction = new CombatActionGfx ();
 			newCombatAction.setCombatActionID ("CMB0" + n);
 			db.getCombatAction ().add (newCombatAction);
 		}
@@ -423,7 +412,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitTypeEx newUnitType = new UnitTypeEx ();
+			final UnitTypeGfx newUnitType = new UnitTypeGfx ();
 			newUnitType.setUnitTypeID ("UT0" + n);
 			db.getUnitType ().add (newUnitType);
 		}
@@ -443,7 +432,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitTypeEx newUnitType = new UnitTypeEx ();
+			final UnitTypeGfx newUnitType = new UnitTypeGfx ();
 			newUnitType.setUnitTypeID ("UT0" + n);
 			db.getUnitType ().add (newUnitType);
 		}
@@ -463,7 +452,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitAttributeEx newUnitAttribute = new UnitAttributeEx ();
+			final UnitAttributeGfx newUnitAttribute = new UnitAttributeGfx ();
 			newUnitAttribute.setUnitAttributeID ("UA0" + n);
 			db.getUnitAttribute ().add (newUnitAttribute);
 		}
@@ -483,7 +472,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitAttributeEx newUnitAttribute = new UnitAttributeEx ();
+			final UnitAttributeGfx newUnitAttribute = new UnitAttributeGfx ();
 			newUnitAttribute.setUnitAttributeID ("UA0" + n);
 			db.getUnitAttribute ().add (newUnitAttribute);
 		}
@@ -503,7 +492,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSkill newUnitSkill = new UnitSkill ();
+			final UnitSkillGfx newUnitSkill = new UnitSkillGfx ();
 			newUnitSkill.setUnitSkillID ("US0" + n);
 			db.getUnitSkill ().add (newUnitSkill);
 		}
@@ -523,7 +512,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSkill newUnitSkill = new UnitSkill ();
+			final UnitSkillGfx newUnitSkill = new UnitSkillGfx ();
 			newUnitSkill.setUnitSkillID ("US0" + n);
 			db.getUnitSkill ().add (newUnitSkill);
 		}
@@ -543,7 +532,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitEx newUnit = new UnitEx ();
+			final UnitGfx newUnit = new UnitGfx ();
 			newUnit.setUnitID ("UN00" + n);
 			db.getUnit ().add (newUnit);
 		}
@@ -563,7 +552,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitEx newUnit = new UnitEx ();
+			final UnitGfx newUnit = new UnitGfx ();
 			newUnit.setUnitID ("UN00" + n);
 			db.getUnit ().add (newUnit);
 		}
@@ -583,7 +572,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final RangedAttackTypeEx newRangedAttackType = new RangedAttackTypeEx ();
+			final RangedAttackTypeGfx newRangedAttackType = new RangedAttackTypeGfx ();
 			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
 			db.getRangedAttackType ().add (newRangedAttackType);
 		}
@@ -603,7 +592,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final RangedAttackTypeEx newRangedAttackType = new RangedAttackTypeEx ();
+			final RangedAttackTypeGfx newRangedAttackType = new RangedAttackTypeGfx ();
 			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
 			db.getRangedAttackType ().add (newRangedAttackType);
 		}
@@ -623,7 +612,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			final WeaponGradeGfx newWeaponGrade = new WeaponGradeGfx ();
 			newWeaponGrade.setWeaponGradeNumber (n);
 			db.getWeaponGrade ().add (newWeaponGrade);
 		}
@@ -643,7 +632,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			final WeaponGradeGfx newWeaponGrade = new WeaponGradeGfx ();
 			newWeaponGrade.setWeaponGradeNumber (n);
 			db.getWeaponGrade ().add (newWeaponGrade);
 		}
@@ -663,7 +652,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileUnitRelativeScaleEx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleEx ();
+			final CombatTileUnitRelativeScaleGfx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleGfx ();
 			newCombatTileUnitRelativeScale.setScale (n);
 			db.getCombatTileUnitRelativeScale ().add (newCombatTileUnitRelativeScale);
 		}
@@ -683,7 +672,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileUnitRelativeScaleEx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleEx ();
+			final CombatTileUnitRelativeScaleGfx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleGfx ();
 			newCombatTileUnitRelativeScale.setScale (n);
 			db.getCombatTileUnitRelativeScale ().add (newCombatTileUnitRelativeScale);
 		}
@@ -703,7 +692,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileSetEx newTileSet = new TileSetEx ();
+			final TileSetGfx newTileSet = new TileSetGfx ();
 			newTileSet.setTileSetID ("WZ0" + n);
 			db.getTileSet ().add (newTileSet);
 		}
@@ -723,7 +712,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileSetEx newTileSet = new TileSetEx ();
+			final TileSetGfx newTileSet = new TileSetGfx ();
 			newTileSet.setTileSetID ("WZ0" + n);
 			db.getTileSet ().add (newTileSet);
 		}
@@ -743,7 +732,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapFeatureEx newMapFeature = new MapFeatureEx ();
+			final MapFeatureGfx newMapFeature = new MapFeatureGfx ();
 			newMapFeature.setMapFeatureID ("MF0" + n);
 			db.getMapFeature ().add (newMapFeature);
 		}
@@ -763,7 +752,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapFeatureEx newMapFeature = new MapFeatureEx ();
+			final MapFeatureGfx newMapFeature = new MapFeatureGfx ();
 			newMapFeature.setMapFeatureID ("MF0" + n);
 			db.getMapFeature ().add (newMapFeature);
 		}
@@ -783,7 +772,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			final CombatAreaEffectGfx newCombatAreaEffect = new CombatAreaEffectGfx ();
 			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
 			db.getCombatAreaEffect ().add (newCombatAreaEffect);
 		}
@@ -803,7 +792,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			final CombatAreaEffectGfx newCombatAreaEffect = new CombatAreaEffectGfx ();
 			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
 			db.getCombatAreaEffect ().add (newCombatAreaEffect);
 		}
@@ -836,38 +825,38 @@ public final class TestGraphicsDatabaseExImpl
 		db.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// An image for CS01 needing no buildings
-		final CityImage image1 = new CityImage ();
+		final CityImageGfx image1 = new CityImageGfx ();
 		image1.setCitySizeID ("CS01");
 		db.getCityImage ().add (image1);
 		
 		// An image for CS01 needing a building that we have (this should get chosen)
-		final CityImagePrerequisite image2prereq = new CityImagePrerequisite ();
+		final CityImagePrerequisiteGfx image2prereq = new CityImagePrerequisiteGfx ();
 		image2prereq.setPrerequisiteID ("BL01");
 		
-		final CityImage image2 = new CityImage ();
+		final CityImageGfx image2 = new CityImageGfx ();
 		image2.setCitySizeID ("CS01");
 		image2.getCityImagePrerequisite ().add (image2prereq);
 		db.getCityImage ().add (image2);
 
 		// An image for CS01 needing a building that we have plus one that we don't
-		final CityImagePrerequisite image3prereq1 = new CityImagePrerequisite ();
+		final CityImagePrerequisiteGfx image3prereq1 = new CityImagePrerequisiteGfx ();
 		image3prereq1.setPrerequisiteID ("BL01");
-		final CityImagePrerequisite image3prereq2 = new CityImagePrerequisite ();
+		final CityImagePrerequisiteGfx image3prereq2 = new CityImagePrerequisiteGfx ();
 		image3prereq2.setPrerequisiteID ("BL02");
 		
-		final CityImage image3 = new CityImage ();
+		final CityImageGfx image3 = new CityImageGfx ();
 		image3.setCitySizeID ("CS01");
 		image3.getCityImagePrerequisite ().add (image3prereq1);
 		image3.getCityImagePrerequisite ().add (image3prereq2);
 		db.getCityImage ().add (image3);
 		
 		// An image for CS02 needing two building that we have
-		final CityImagePrerequisite image4prereq1 = new CityImagePrerequisite ();
+		final CityImagePrerequisiteGfx image4prereq1 = new CityImagePrerequisiteGfx ();
 		image4prereq1.setPrerequisiteID ("BL01");
-		final CityImagePrerequisite image4prereq2 = new CityImagePrerequisite ();
+		final CityImagePrerequisiteGfx image4prereq2 = new CityImagePrerequisiteGfx ();
 		image4prereq2.setPrerequisiteID ("BL03");
 		
-		final CityImage image4 = new CityImage ();
+		final CityImageGfx image4 = new CityImageGfx ();
 		image4.setCitySizeID ("CS02");
 		image4.getCityImagePrerequisite ().add (image4prereq1);
 		image4.getCityImagePrerequisite ().add (image4prereq2);
@@ -896,7 +885,7 @@ public final class TestGraphicsDatabaseExImpl
 		db.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// An image for CS01 needing no buildings
-		final CityImage image1 = new CityImage ();
+		final CityImageGfx image1 = new CityImageGfx ();
 		image1.setCitySizeID ("CS01");
 		db.getCityImage ().add (image1);
 		
@@ -915,7 +904,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final AnimationEx newAnimation = new AnimationEx ();
+			final AnimationGfx newAnimation = new AnimationGfx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
 		}
@@ -937,7 +926,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final AnimationEx newAnimation = new AnimationEx ();
+			final AnimationGfx newAnimation = new AnimationGfx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
 		}
@@ -959,7 +948,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final PlayList newPlayList = new PlayList ();
+			final PlayListGfx newPlayList = new PlayListGfx ();
 			newPlayList.setPlayListID ("PL0" + n);
 			db.getPlayList ().add (newPlayList);
 		}
@@ -981,7 +970,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final PlayList newPlayList = new PlayList ();
+			final PlayListGfx newPlayList = new PlayListGfx ();
 			newPlayList.setPlayListID ("PL0" + n);
 			db.getPlayList ().add (newPlayList);
 		}

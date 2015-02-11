@@ -15,7 +15,7 @@ import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -67,7 +67,7 @@ public final class TestOverlandMapUI
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final TileSetEx overlandMapTileSet = new TileSetEx ();
+		final TileSetGfx overlandMapTileSet = new TileSetGfx ();
 		overlandMapTileSet.setAnimationSpeed (2.0);
 		overlandMapTileSet.setAnimationFrameCount (3);
 		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);

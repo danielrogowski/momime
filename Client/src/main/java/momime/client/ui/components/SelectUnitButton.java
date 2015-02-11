@@ -10,7 +10,7 @@ import javax.swing.JToggleButton;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.WeaponGrade;
+import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -137,7 +137,7 @@ public final class SelectUnitButton extends JToggleButton
 				// Weapon grade
 				if (getUnit ().getWeaponGrade () != null)
 				{
-					final WeaponGrade wepGrade = getGraphicsDB ().findWeaponGrade (getUnit ().getWeaponGrade (), "SelectUnitButton");
+					final WeaponGradeGfx wepGrade = getGraphicsDB ().findWeaponGrade (getUnit ().getWeaponGrade (), "SelectUnitButton");
 					if (wepGrade.getWeaponGradeMiniImageFile () != null)
 					{
 						final BufferedImage wepGradeImage = getUtils ().loadImage (wepGrade.getWeaponGradeMiniImageFile ());

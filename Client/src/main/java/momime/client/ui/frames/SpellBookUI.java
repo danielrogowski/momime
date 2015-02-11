@@ -32,9 +32,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.PickGfx;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.ui.MomUIConstants;
@@ -45,13 +45,13 @@ import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SwitchResearch;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.messages.clienttoserver.RequestCastSpellMessage;
-import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
+import momime.common.database.newgame.SwitchResearch;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -201,7 +201,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		final Dimension fixedSize = new Dimension (background.getWidth () * 2, (background.getHeight () * 2) + ANIM_VERTICAL_OFFSET);
 
 		// Set up animation of the page flipping left and right
-		final AnimationEx pageTurnAnim = getGraphicsDB ().findAnimation (ANIM_PAGE_TURN, "SpellBookUI");
+		final AnimationGfx pageTurnAnim = getGraphicsDB ().findAnimation (ANIM_PAGE_TURN, "SpellBookUI");
 		
 		// Actions
 		final Action closeAction = new AbstractAction ()
@@ -824,7 +824,7 @@ public final class SpellBookUI extends MomClientFrameUI
 								if (spell.getSpellRealm () != null)
 									try
 									{
-										final Pick magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
+										final PickGfx magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
 										if (magicRealm.getPickBookshelfTitleColour () != null)
 										{
 											final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));

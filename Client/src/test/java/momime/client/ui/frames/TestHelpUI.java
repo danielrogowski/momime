@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.BookImageGfx;
+import momime.client.graphics.database.CityViewElementGfx;
+import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.BookImage;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -145,21 +147,21 @@ public final class TestHelpUI
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final momime.client.graphics.database.v0_9_5.Pick bookGfx = new momime.client.graphics.database.v0_9_5.Pick ();
+		final PickGfx bookGfx = new PickGfx ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final BookImage bookImage = new BookImage ();
+			final BookImageGfx bookImage = new BookImageGfx ();
 			bookImage.setBookImageFile ("/momime.client.graphics/picks/life-" + n + ".png");
 			bookGfx.getBookImage ().add (bookImage);
 		}
 		when (gfx.findPick ("MB01", "showPickID")).thenReturn (bookGfx);
-		when (gfx.findPick ("RT01", "showPickID")).thenReturn (new momime.client.graphics.database.v0_9_5.Pick ());
+		when (gfx.findPick ("RT01", "showPickID")).thenReturn (new PickGfx ());
 		
-		final momime.client.graphics.database.v0_9_5.CombatAreaEffect caeGfx = new momime.client.graphics.database.v0_9_5.CombatAreaEffect ();
+		final CombatAreaEffectGfx caeGfx = new CombatAreaEffectGfx ();
 		caeGfx.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CSE048.png");
 		when (gfx.findCombatAreaEffect ("CSE048", "showCombatAreaEffectID")).thenReturn (caeGfx);
 		
-		final CityViewElement citySpellEffectGfx = new CityViewElement ();
+		final CityViewElementGfx citySpellEffectGfx = new CityViewElementGfx ();
 		citySpellEffectGfx.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-SE110-mini.png");
 		when (gfx.findCitySpellEffect ("SE110", "showCitySpellEffectID")).thenReturn (citySpellEffectGfx);
 		

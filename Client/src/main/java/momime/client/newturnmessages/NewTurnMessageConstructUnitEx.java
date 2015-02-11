@@ -14,16 +14,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.NdgUIUtils;
-
 import momime.client.MomClient;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Building;
@@ -35,6 +28,13 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.AnimationController;
 import momime.common.messages.NewTurnMessageConstructUnit;
 import momime.common.messages.OverlandMapCityData;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * NTM describing a unit that completed construction
@@ -186,7 +186,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			// Building image
 			if (cityData.getCurrentlyConstructingBuildingID () != null)
 			{
-				final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
+				final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
 				final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 					((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 					buildingImage.getCityViewAnimation (), true);
@@ -225,7 +225,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 		// Look up the image for the new construction, if it is a building
 		if (cityData.getCurrentlyConstructingBuildingID () != null)
 		{
-			final CityViewElement newBuilding = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
+			final CityViewElementGfx newBuilding = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
 			getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList);
 		}
 		

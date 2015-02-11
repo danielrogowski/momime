@@ -23,17 +23,18 @@ import momime.client.audio.AudioPlayer;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.CombatActionGfx;
+import momime.client.graphics.database.ExperienceLevelGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.RangedAttackTypeEx;
-import momime.client.graphics.database.UnitAttributeEx;
-import momime.client.graphics.database.UnitCombatActionEx;
-import momime.client.graphics.database.UnitEx;
-import momime.client.graphics.database.UnitTypeEx;
-import momime.client.graphics.database.v0_9_5.CombatAction;
-import momime.client.graphics.database.v0_9_5.RangedAttackTypeWeaponGrade;
-import momime.client.graphics.database.v0_9_5.UnitAttributeWeaponGrade;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
+import momime.client.graphics.database.RangedAttackTypeGfx;
+import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
+import momime.client.graphics.database.UnitAttributeGfx;
+import momime.client.graphics.database.UnitAttributeWeaponGradeGfx;
+import momime.client.graphics.database.UnitCombatActionGfx;
+import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.UnitSkillGfx;
+import momime.client.graphics.database.UnitTypeGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
@@ -231,9 +232,9 @@ public final class TestUnitClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// + to hit doesn't vary by weapon grade
-		final UnitAttributeEx plusToHit = new UnitAttributeEx ();
+		final UnitAttributeGfx plusToHit = new UnitAttributeGfx ();
 
-		final UnitAttributeWeaponGrade plusToHitIcon = new UnitAttributeWeaponGrade ();
+		final UnitAttributeWeaponGradeGfx plusToHitIcon = new UnitAttributeWeaponGradeGfx ();
 		plusToHitIcon.setAttributeImageFile ("plusToHit.png");
 		plusToHit.getUnitAttributeWeaponGrade ().add (plusToHitIcon);
 		
@@ -241,11 +242,11 @@ public final class TestUnitClientUtilsImpl
 		when (gfx.findUnitAttribute (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitAttributeIcon")).thenReturn (plusToHit);
 		
 		// melee varies by weapon grade
-		final UnitAttributeEx melee = new UnitAttributeEx ();
+		final UnitAttributeGfx melee = new UnitAttributeGfx ();
 
 		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
 		{
-			final UnitAttributeWeaponGrade meleeIcon = new UnitAttributeWeaponGrade ();
+			final UnitAttributeWeaponGradeGfx meleeIcon = new UnitAttributeWeaponGradeGfx ();
 			meleeIcon.setAttributeImageFile ("melee" + wepGrade + ".png");
 			meleeIcon.setWeaponGradeNumber (wepGrade);
 			melee.getUnitAttributeWeaponGrade ().add (meleeIcon);
@@ -255,10 +256,10 @@ public final class TestUnitClientUtilsImpl
 		when (gfx.findUnitAttribute (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitAttributeIcon")).thenReturn (melee);
 		
 		// RAT that doesn't vary by weapon grade
-		final RangedAttackTypeEx rat1 = new RangedAttackTypeEx ();
+		final RangedAttackTypeGfx rat1 = new RangedAttackTypeGfx ();
 		when (gfx.findRangedAttackType ("RAT01", "getUnitAttributeIcon")).thenReturn (rat1);
 
-		final RangedAttackTypeWeaponGrade rat1Icon = new RangedAttackTypeWeaponGrade ();
+		final RangedAttackTypeWeaponGradeGfx rat1Icon = new RangedAttackTypeWeaponGradeGfx ();
 		rat1Icon.setUnitDisplayRangedImageFile ("rat1.png");
 		rat1.getRangedAttackTypeWeaponGrade ().add (rat1Icon);
 		
@@ -283,12 +284,12 @@ public final class TestUnitClientUtilsImpl
 		// RAT that does vary by weapon grade
 		unitDef.setRangedAttackType ("RAT02");
 
-		final RangedAttackTypeEx rat2 = new RangedAttackTypeEx ();
+		final RangedAttackTypeGfx rat2 = new RangedAttackTypeGfx ();
 		when (gfx.findRangedAttackType ("RAT02", "getUnitAttributeIcon")).thenReturn (rat2);
 
 		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
 		{
-			final RangedAttackTypeWeaponGrade rat2Icon = new RangedAttackTypeWeaponGrade ();
+			final RangedAttackTypeWeaponGradeGfx rat2Icon = new RangedAttackTypeWeaponGradeGfx ();
 			rat2Icon.setUnitDisplayRangedImageFile ("rat2-" + wepGrade + ".png");
 			rat2Icon.setWeaponGradeNumber (wepGrade);
 			rat2.getRangedAttackTypeWeaponGrade ().add (rat2Icon);
@@ -338,15 +339,15 @@ public final class TestUnitClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final UnitSkill skillGfx = new UnitSkill ();
+		final UnitSkillGfx skillGfx = new UnitSkillGfx ();
 		skillGfx.setUnitSkillImageFile ("skill.png");
 		when (gfx.findUnitSkill ("US001", "getUnitSkillIcon")).thenReturn (skillGfx);
 
-		final UnitTypeEx unitType = new UnitTypeEx ();
+		final UnitTypeGfx unitType = new UnitTypeGfx ();
 		
 		for (int n = 0; n < 4; n++)
 		{
-			final momime.client.graphics.database.v0_9_5.ExperienceLevel expLvl = new momime.client.graphics.database.v0_9_5.ExperienceLevel ();
+			final ExperienceLevelGfx expLvl = new ExperienceLevelGfx ();
 			expLvl.setLevelNumber (n);
 			expLvl.setExperienceLevelImageFile ("exp" + n + ".png");
 			unitType.getExperienceLevel ().add (expLvl);
@@ -566,14 +567,14 @@ public final class TestUnitClientUtilsImpl
 	public final void testPlayCombatActionSound_Default () throws Exception
 	{
 		// Mock entries from graphics DB
-		final UnitCombatActionEx unitCombatAction = new UnitCombatActionEx ();
+		final UnitCombatActionGfx unitCombatAction = new UnitCombatActionGfx ();
 		unitCombatAction.setCombatActionID ("X");
 		
-		final UnitEx unitGfx = new UnitEx ();
+		final UnitGfx unitGfx = new UnitGfx ();
 		unitGfx.getUnitCombatAction ().add (unitCombatAction);
 		unitGfx.buildMap ();
 		
-		final CombatAction defaultAction = new CombatAction ();
+		final CombatActionGfx defaultAction = new CombatActionGfx ();
 		defaultAction.setDefaultActionSoundFile ("DefaultActionSound.mp3");
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -606,15 +607,15 @@ public final class TestUnitClientUtilsImpl
 	public final void testPlayCombatActionSound_Override () throws Exception
 	{
 		// Mock entries from graphics DB
-		final UnitCombatActionEx unitCombatAction = new UnitCombatActionEx ();
+		final UnitCombatActionGfx unitCombatAction = new UnitCombatActionGfx ();
 		unitCombatAction.setCombatActionID ("X");
 		unitCombatAction.setOverrideActionSoundFile ("OverrideActionSound.mp3");
 		
-		final UnitEx unitGfx = new UnitEx ();
+		final UnitGfx unitGfx = new UnitGfx ();
 		unitGfx.getUnitCombatAction ().add (unitCombatAction);
 		unitGfx.buildMap ();
 		
-		final CombatAction defaultAction = new CombatAction ();
+		final CombatActionGfx defaultAction = new CombatActionGfx ();
 		defaultAction.setDefaultActionSoundFile ("DefaultActionSound.mp3");
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);

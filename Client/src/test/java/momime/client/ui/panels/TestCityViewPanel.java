@@ -11,6 +11,7 @@ import javax.swing.WindowConstants;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.utils.AnimationControllerImpl;
@@ -51,48 +52,48 @@ public final class TestCityViewPanel
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final CityViewElement landscape = new CityViewElement ();
+		final CityViewElementGfx landscape = new CityViewElementGfx ();
 		landscape.setLocationX (0);
 		landscape.setLocationY (0);
 		landscape.setCityViewImageFile ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		landscape.setSizeMultiplier (2);
 
-		final CityViewElement sky = new CityViewElement ();
+		final CityViewElementGfx sky = new CityViewElementGfx ();
 		sky.setLocationX (0);
 		sky.setLocationY (0);
 		sky.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-hills.png");
 		sky.setSizeMultiplier (2);
 		sky.setTileTypeID ("TT02");
 
-		final CityViewElement summoningCircle = new CityViewElement ();
+		final CityViewElementGfx summoningCircle = new CityViewElementGfx ();
 		summoningCircle.setLocationX (122);
 		summoningCircle.setLocationY (52);
 		summoningCircle.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL98.png");
 		summoningCircle.setSizeMultiplier (1);
 		summoningCircle.setBuildingID (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
 		
-		final CityViewElement fortress = new CityViewElement ();
+		final CityViewElementGfx fortress = new CityViewElementGfx ();
 		fortress.setLocationX (202);
 		fortress.setLocationY (67);
 		fortress.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL99-frame1.png");
 		fortress.setSizeMultiplier (1);
 		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 
-		final CityViewElement evil = new CityViewElement ();
+		final CityViewElementGfx evil = new CityViewElementGfx ();
 		evil.setLocationX (21);
 		evil.setLocationY (31);
 		evil.setCityViewImageFile ("/momime.client.graphics/cityView/spellEffects/SE183.png");
 		evil.setSizeMultiplier (1);
 		evil.setCitySpellEffectID ("SE183");
 		
-		final CityViewElement altar = new CityViewElement ();
+		final CityViewElementGfx altar = new CityViewElementGfx ();
 		altar.setLocationX (293);
 		altar.setLocationY (111);
 		altar.setCityViewImageFile ("/momime.client.graphics/cityView/spellEffects/SE146-frame1.png");
 		altar.setSizeMultiplier (1);
 		altar.setCitySpellEffectID ("SE146");
 
-		final CityViewElement ocean = new CityViewElement ();
+		final CityViewElementGfx ocean = new CityViewElementGfx ();
 		ocean.setLocationX (2);
 		ocean.setLocationY (0);
 		ocean.setCityViewImageFile ("/momime.client.graphics/cityView/water/arcanus-ocean-frame1.png");
@@ -100,14 +101,14 @@ public final class TestCityViewPanel
 		ocean.setPlaneNumber (0);
 		ocean.setCityViewElementSetID ("X");
 		
-		final CityViewElement river = new CityViewElement ();
+		final CityViewElementGfx river = new CityViewElementGfx ();
 		river.setLocationX (70);
 		river.setLocationY (0);
 		river.setCityViewImageFile ("/momime.client.graphics/cityView/water/arcanus-river-frame1.png");
 		river.setSizeMultiplier (2);
 		river.setPlaneNumber (1);
 		
-		final CityViewElement setElement = new CityViewElement ();
+		final CityViewElementGfx setElement = new CityViewElementGfx ();
 		setElement.setLocationX (140);
 		setElement.setLocationY (0);
 		setElement.setCityViewImageFile ("/momime.client.graphics/cityView/water/myrror-ocean-frame1.png");

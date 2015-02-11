@@ -9,7 +9,7 @@ import java.util.List;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Wizard;
+import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -59,7 +59,7 @@ public final class TestWizardsUI
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		for (int n = 1; n <= 14; n++)
 		{
-			final Wizard wizard = new Wizard ();
+			final WizardGfx wizard = new WizardGfx ();
 			wizard.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
 			wizard.setPortraitFile ("/momime.client.graphics/wizards/" + wizard.getWizardID () + ".png");
 			

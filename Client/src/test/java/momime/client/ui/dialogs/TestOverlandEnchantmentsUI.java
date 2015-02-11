@@ -12,9 +12,10 @@ import java.util.List;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Wizard;
+import momime.client.graphics.database.SpellGfx;
+import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -56,15 +57,15 @@ public final class TestOverlandEnchantmentsUI
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the graphics XML
-		final AnimationEx fade = new AnimationEx ();
+		final AnimationGfx fade = new AnimationGfx ();
 		fade.setAnimationSpeed (8);
 		for (int n = 1; n <= 15; n++)
 			fade.getFrame ().add ("/momime.client.graphics/ui/mirror/mirror-fade-frame" + ((n < 10) ? "0" : "") + n + ".png");
 		
-		final Wizard wizard = new Wizard ();
+		final WizardGfx wizard = new WizardGfx ();
 		wizard.setPortraitFile ("/momime.client.graphics/wizards/WZ12.png");
 		
-		final momime.client.graphics.database.v0_9_5.Spell spellGfx = new momime.client.graphics.database.v0_9_5.Spell ();
+		final SpellGfx spellGfx = new SpellGfx ();
 		spellGfx.setOverlandEnchantmentImageFile ("/momime.client.graphics/spells/SP127/overlandEnchantment.png");
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);

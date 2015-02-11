@@ -10,10 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -259,12 +259,12 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				case CITY_ENCHANTMENTS:
 				case CITY_CURSES:
 				{
-					final List<CityViewElement> cityViewElements = new ArrayList<CityViewElement> ();
+					final List<CityViewElementGfx> cityViewElements = new ArrayList<CityViewElementGfx> ();
 					
 					// Spells that create city effects, like Altar of Battle
 					for (final SpellHasCityEffect citySpellEffect : spell.getSpellHasCityEffect ())
 					{
-						final CityViewElement cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffect.getCitySpellEffectID (), "findImageForSpell");
+						final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffect.getCitySpellEffectID (), "findImageForSpell");
 						if (cityViewElement != null)
 							cityViewElements.add (cityViewElement);
 					}
@@ -274,7 +274,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 						cityViewElements.add (getGraphicsDB ().findBuilding (spell.getBuildingID (), "findImageForSpell"));
 					
 					// Find the image for each
-					for (final CityViewElement cityViewElement : cityViewElements)
+					for (final CityViewElementGfx cityViewElement : cityViewElements)
 						if (cityViewElement.getCityViewAlternativeImageFile () != null)
 							imageFilenames.add (cityViewElement.getCityViewAlternativeImageFile ());
 						else if (cityViewElement.getCityViewImageFile () != null)
@@ -285,7 +285,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 							// the help scrolls and anywhere else this is used, but it complicates things enormously having to
 							// set up repaint timers, and there's only a handful of spells this actually affects
 							// e.g. Dark Rituals, Altar of Battle, Move Fortress
-							final AnimationEx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
+							final AnimationGfx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
 							if (anim.getFrame ().size () > 0)
 								imageFilenames.add (anim.getFrame ().get (0));
 						}

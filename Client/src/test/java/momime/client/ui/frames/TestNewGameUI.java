@@ -17,8 +17,9 @@ import momime.client.database.AvailableDatabase;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.NewGameDatabase;
 import momime.client.database.Wizard;
+import momime.client.graphics.database.BookImageGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.BookImage;
+import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -38,6 +39,7 @@ import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
 import momime.common.utils.PlayerPickUtilsImpl;
 
@@ -278,7 +280,7 @@ public final class TestNewGameUI
 			picks.add (pick);
 			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
 			
-			final momime.client.graphics.database.v0_9_5.Pick pickGfx = new momime.client.graphics.database.v0_9_5.Pick ();
+			final PickGfx pickGfx = new PickGfx ();
 			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
 
 			final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
@@ -298,7 +300,7 @@ public final class TestNewGameUI
 			picks.add (pick);
 			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
 			
-			final momime.client.graphics.database.v0_9_5.Pick pickGfx = new momime.client.graphics.database.v0_9_5.Pick ();
+			final PickGfx pickGfx = new PickGfx ();
 			pickGfx.setPickBookshelfTitleColour ("FF" + colourNo + "0" + colourNo + "0");
 			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
 
@@ -308,7 +310,7 @@ public final class TestNewGameUI
 			
 			for (int imageNo = 1; imageNo <= 3; imageNo++)
 			{
-				final BookImage bookImage = new BookImage ();
+				final BookImageGfx bookImage = new BookImageGfx ();
 				bookImage.setBookImageFile ("/momime.client.graphics/picks/" + magicRealmName.toLowerCase () + "-" + imageNo + ".png");
 				pickGfx.getBookImage ().add (bookImage);
 			}
@@ -356,14 +358,16 @@ public final class TestNewGameUI
 		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		pub.setWizardID ("");
+		
+		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
 		players.add (ourPlayer);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, 3, "NewGameUI.showRacePanel")).thenReturn (ourPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (3), anyString ())).thenReturn (ourPlayer);
 		
 		final List<Plane> planes = new ArrayList<Plane> ();
 		for (int n = 0; n < 2; n++)

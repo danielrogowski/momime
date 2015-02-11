@@ -14,8 +14,8 @@ import javax.swing.JPanel;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitEx;
-import momime.client.graphics.database.v0_9_5.WeaponGrade;
+import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -94,7 +94,7 @@ public final class TestSelectUnitButton
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final UnitEx unit = new UnitEx ();
+		final UnitGfx unit = new UnitGfx ();
 		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
 		when (gfx.findUnit ("UN176", "SelectUnitButton")).thenReturn (unit);
 		
@@ -191,11 +191,11 @@ public final class TestSelectUnitButton
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final UnitEx unit = new UnitEx ();
+		final UnitGfx unit = new UnitGfx ();
 		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN102/overland.png");
 		when (gfx.findUnit ("UN102", "SelectUnitButton")).thenReturn (unit);
 		
-		final WeaponGrade wepGrade = new WeaponGrade ();
+		final WeaponGradeGfx wepGrade = new WeaponGradeGfx ();
 		wepGrade.setWeaponGradeMiniImageFile ("/momime.client.graphics/weaponGrades/weaponGradeMiniImageMithril.png");
 		when (gfx.findWeaponGrade (2, "SelectUnitButton")).thenReturn (wepGrade);
 		

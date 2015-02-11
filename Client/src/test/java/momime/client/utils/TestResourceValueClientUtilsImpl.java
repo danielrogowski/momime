@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeEx;
-import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
+import momime.client.graphics.database.ProductionTypeGfx;
+import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitUpkeep;
 
@@ -77,20 +77,20 @@ public final class TestResourceValueClientUtilsImpl
 		when (utils.loadImage ("I-1")).thenReturn (minusOneImage);
 		
 		// Mock entries from the graphics XML
-		final ProductionTypeImage plusOneImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusOneImageContainer = new ProductionTypeImageGfx ();
 		plusOneImageContainer.setProductionImageFile ("I+1");
 		plusOneImageContainer.setProductionValue ("1");
 		
-		final ProductionTypeImage minusOneImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx minusOneImageContainer = new ProductionTypeImageGfx ();
 		minusOneImageContainer.setProductionImageFile ("I-1");
 		minusOneImageContainer.setProductionValue ("-1");
 
-		final ProductionTypeEx productionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx productionTypeImages = new ProductionTypeGfx ();
 		productionTypeImages.getProductionTypeImage ().add (plusOneImageContainer);
 		productionTypeImages.getProductionTypeImage ().add (minusOneImageContainer);
 		productionTypeImages.buildMap ();
 
-		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx noProductionTypeImages = new ProductionTypeGfx ();
 		noProductionTypeImages.buildMap ();
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -150,30 +150,30 @@ public final class TestResourceValueClientUtilsImpl
 		when (utils.loadImage ("I-10")).thenReturn (minusTenImage);
 		
 		// Mock entries from the graphics XML
-		final ProductionTypeImage plusOneImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusOneImageContainer = new ProductionTypeImageGfx ();
 		plusOneImageContainer.setProductionImageFile ("I+1");
 		plusOneImageContainer.setProductionValue ("1");
 		
-		final ProductionTypeImage minusOneImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx minusOneImageContainer = new ProductionTypeImageGfx ();
 		minusOneImageContainer.setProductionImageFile ("I-1");
 		minusOneImageContainer.setProductionValue ("-1");
 
-		final ProductionTypeImage plusTenImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusTenImageContainer = new ProductionTypeImageGfx ();
 		plusTenImageContainer.setProductionImageFile ("I+10");
 		plusTenImageContainer.setProductionValue ("10");
 		
-		final ProductionTypeImage minusTenImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx minusTenImageContainer = new ProductionTypeImageGfx ();
 		minusTenImageContainer.setProductionImageFile ("I-10");
 		minusTenImageContainer.setProductionValue ("-10");
 
-		final ProductionTypeEx productionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx productionTypeImages = new ProductionTypeGfx ();
 		productionTypeImages.getProductionTypeImage ().add (plusOneImageContainer);
 		productionTypeImages.getProductionTypeImage ().add (minusOneImageContainer);
 		productionTypeImages.getProductionTypeImage ().add (plusTenImageContainer);
 		productionTypeImages.getProductionTypeImage ().add (minusTenImageContainer);
 		productionTypeImages.buildMap ();
 
-		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx noProductionTypeImages = new ProductionTypeGfx ();
 		noProductionTypeImages.buildMap ();
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -233,33 +233,33 @@ public final class TestResourceValueClientUtilsImpl
 		when (utils.loadImage ("M+half")).thenReturn (plusHalfMana);
 
 		// Mock entries from the graphics XML
-		final ProductionTypeImage plusOneImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusOneImageContainer = new ProductionTypeImageGfx ();
 		plusOneImageContainer.setProductionImageFile ("I+1");
 		plusOneImageContainer.setProductionValue ("1");
 
-		final ProductionTypeImage plusHalfImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusHalfImageContainer = new ProductionTypeImageGfx ();
 		plusHalfImageContainer.setProductionImageFile ("I+half");
 		plusHalfImageContainer.setProductionValue ("½");
 
-		final ProductionTypeEx productionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx productionTypeImages = new ProductionTypeGfx ();
 		productionTypeImages.getProductionTypeImage ().add (plusOneImageContainer);
 		productionTypeImages.getProductionTypeImage ().add (plusHalfImageContainer);
 		productionTypeImages.buildMap ();
 		
-		final ProductionTypeImage plusOneManaContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusOneManaContainer = new ProductionTypeImageGfx ();
 		plusOneManaContainer.setProductionImageFile ("M+1");
 		plusOneManaContainer.setProductionValue ("1");
 
-		final ProductionTypeImage plusHalfManaContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusHalfManaContainer = new ProductionTypeImageGfx ();
 		plusHalfManaContainer.setProductionImageFile ("M+half");
 		plusHalfManaContainer.setProductionValue ("½");
 
-		final ProductionTypeEx manaImages = new ProductionTypeEx ();
+		final ProductionTypeGfx manaImages = new ProductionTypeGfx ();
 		manaImages.getProductionTypeImage ().add (plusOneManaContainer);
 		manaImages.getProductionTypeImage ().add (plusHalfManaContainer);
 		manaImages.buildMap ();
 		
-		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx noProductionTypeImages = new ProductionTypeGfx ();
 		noProductionTypeImages.buildMap ();
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -361,43 +361,43 @@ public final class TestResourceValueClientUtilsImpl
 		when (utils.loadImage ("M+half")).thenReturn (plusHalfMana);
 
 		// Mock entries from the graphics XML
-		final ProductionTypeImage plusOneImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusOneImageContainer = new ProductionTypeImageGfx ();
 		plusOneImageContainer.setProductionImageFile ("I+1");
 		plusOneImageContainer.setProductionValue ("1");
 
-		final ProductionTypeImage plusTenImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusTenImageContainer = new ProductionTypeImageGfx ();
 		plusTenImageContainer.setProductionImageFile ("I+10");
 		plusTenImageContainer.setProductionValue ("10");
 		
-		final ProductionTypeImage plusHalfImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusHalfImageContainer = new ProductionTypeImageGfx ();
 		plusHalfImageContainer.setProductionImageFile ("I+half");
 		plusHalfImageContainer.setProductionValue ("½");
 
-		final ProductionTypeEx productionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx productionTypeImages = new ProductionTypeGfx ();
 		productionTypeImages.getProductionTypeImage ().add (plusOneImageContainer);
 		productionTypeImages.getProductionTypeImage ().add (plusTenImageContainer);
 		productionTypeImages.getProductionTypeImage ().add (plusHalfImageContainer);
 		productionTypeImages.buildMap ();
 		
-		final ProductionTypeImage plusOneManaContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusOneManaContainer = new ProductionTypeImageGfx ();
 		plusOneManaContainer.setProductionImageFile ("M+1");
 		plusOneManaContainer.setProductionValue ("1");
 
-		final ProductionTypeImage plusTenManaContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusTenManaContainer = new ProductionTypeImageGfx ();
 		plusTenManaContainer.setProductionImageFile ("M+10");
 		plusTenManaContainer.setProductionValue ("10");
 		
-		final ProductionTypeImage plusHalfManaContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusHalfManaContainer = new ProductionTypeImageGfx ();
 		plusHalfManaContainer.setProductionImageFile ("M+half");
 		plusHalfManaContainer.setProductionValue ("½");
 
-		final ProductionTypeEx manaImages = new ProductionTypeEx ();
+		final ProductionTypeGfx manaImages = new ProductionTypeGfx ();
 		manaImages.getProductionTypeImage ().add (plusOneManaContainer);
 		manaImages.getProductionTypeImage ().add (plusTenManaContainer);
 		manaImages.getProductionTypeImage ().add (plusHalfManaContainer);
 		manaImages.buildMap ();
 		
-		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx noProductionTypeImages = new ProductionTypeGfx ();
 		noProductionTypeImages.buildMap ();
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);

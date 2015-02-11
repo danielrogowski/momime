@@ -14,18 +14,18 @@ import javax.xml.bind.Unmarshaller;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.MapFeature;
+import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
-import momime.client.graphics.database.UnitEx;
-import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
-import momime.client.graphics.database.v0_9_5.Wizard;
-import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
+import momime.client.graphics.database.TileSetGfx;
+import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.UnitSkillGfx;
+import momime.client.graphics.database.WizardCombatPlayListGfx;
+import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -53,9 +53,9 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitAttributeComponent;
 import momime.common.utils.UnitAttributePositiveNegative;
-import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
@@ -113,24 +113,25 @@ public final class TestCombatUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Mock entries from the graphics XML
-		final Wizard monsterWizardGfx = new Wizard ();
-		monsterWizardGfx.getCombatPlayList ().add (new WizardCombatPlayList ());
+		final WizardGfx monsterWizardGfx = new WizardGfx ();
+		monsterWizardGfx.getCombatPlayList ().add (new WizardCombatPlayListGfx ());
+		monsterWizardGfx.setRandomUtils (mock (RandomUtils.class));
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "initNewCombat")).thenReturn (monsterWizardGfx);
 		
-		final TileSetEx combatMapTileSet = new TileSetEx ();
+		final TileSetGfx combatMapTileSet = new TileSetGfx ();
 		combatMapTileSet.setAnimationSpeed (2.0);
 		combatMapTileSet.setAnimationFrameCount (3);
 		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI")).thenReturn (combatMapTileSet);
 		
-		final UnitEx unitGfx = new UnitEx ();
+		final UnitGfx unitGfx = new UnitGfx ();
 		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN197/overland.png");
 		when (gfx.findUnit ("UN197", "setSelectedUnitInCombat")).thenReturn (unitGfx);
 		
 		for (int n = 1; n <= 6; n++)
 		{
-			final CombatAreaEffect cae = new CombatAreaEffect ();
+			final CombatAreaEffectGfx cae = new CombatAreaEffectGfx ();
 			cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CAE0" + n + ".png");
 			when (gfx.findCombatAreaEffect ("CAE0" + n, "generateCombatAreaEffectIcons")).thenReturn (cae);
 		}
@@ -324,7 +325,7 @@ public final class TestCombatUI
 		when (unitClientUtils.getUnitAttributeIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
 			(utils.loadImage ("/momime.client.graphics/rangedAttacks/rock/iconNormal.png"));
 		
-		final UnitSkill movementSkill = new UnitSkill ();
+		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		
 		final ClientUnitCalculations clientUnitCalculations = mock (ClientUnitCalculations.class);
@@ -355,7 +356,6 @@ public final class TestCombatUI
 		combat.setUnitUtils (unitUtils);
 		combat.setClientUnitCalculations (clientUnitCalculations);
 		combat.setCombatLocation (new MapCoordinates3DEx (20, 10, 0));
-		combat.setRandomUtils (mock (RandomUtils.class));
 		combat.setMusicPlayer (mock (AudioPlayer.class));
 		combat.setCombatMapProcessing (mock (CombatMapProcessing.class));
 		combat.setUnitCalculations (unitCalc);

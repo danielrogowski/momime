@@ -62,7 +62,8 @@ import momime.client.database.AvailableDatabase;
 import momime.client.database.Wizard;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.BookImage;
+import momime.client.graphics.database.PickGfx;
+import momime.client.graphics.database.WizardGfx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
@@ -2696,7 +2697,7 @@ public final class NewGameUI extends MomClientFrameUI
 								}
 								else
 								{
-									final momime.client.graphics.database.v0_9_5.Wizard portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.wizardButtonAction"); 
+									final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.wizardButtonAction"); 
 									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
 										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 									
@@ -2764,7 +2765,7 @@ public final class NewGameUI extends MomClientFrameUI
 								}
 								else
 								{
-									final momime.client.graphics.database.v0_9_5.Wizard portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.portraitButtonAction"); 
+									final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.portraitButtonAction"); 
 									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
 										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 
@@ -2822,7 +2823,7 @@ public final class NewGameUI extends MomClientFrameUI
 		int bookshelfCount = 0;
 		for (final Pick pick : getClient ().getClientDB ().getPick ())
 		{
-			final momime.client.graphics.database.v0_9_5.Pick pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
 			if (pickGfx.getBookImage ().size () > 0)
 				bookshelfCount++;
 		}
@@ -2830,7 +2831,7 @@ public final class NewGameUI extends MomClientFrameUI
 		int retortNo = 0;
 		for (final Pick pick : getClient ().getClientDB ().getPick ())
 		{
-			final momime.client.graphics.database.v0_9_5.Pick pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
 			if (pickGfx.getBookImage ().size () == 0)
 			{
 				// Show as a retort label in the top half of the screen
@@ -2910,7 +2911,7 @@ public final class NewGameUI extends MomClientFrameUI
 		int bookshelfNo = 0;
 		for (final Pick pick : getClient ().getClientDB ().getPick ())
 		{
-			final momime.client.graphics.database.v0_9_5.Pick pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
 			if (pickGfx.getBookImage ().size () > 0)
 			{
 				// Show as bookshelf
@@ -3791,12 +3792,12 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final PlayerPick pick : picks)
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateBookshelfFromPicks").getBookImage ();
-			if (possibleImages.size () > 0)
+			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateBookshelfFromPicks");
+			if (pickGfx.getBookImage ().size () > 0)
 				for (int n = 0; n < pick.getQuantity (); n++)
 				{
 					// Choose random image for the pick
-					final BufferedImage bookImage = getUtils ().loadImage (possibleImages.get (getRandomUtils ().nextInt (possibleImages.size ())).getBookImageFile ());
+					final BufferedImage bookImage = getUtils ().loadImage (pickGfx.chooseRandomBookImageFilename ());
 					
 					// Add on merged bookshelf
 					mergedBookshelfGridx++;
@@ -3843,8 +3844,7 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final PlayerPick pick : picks)
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateRetortsFromPicks").getBookImage ();
-			if (possibleImages.size () == 0)
+			if (getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateRetortsFromPicks").getBookImage ().size () == 0)
 			{
 				if (desc.length () > 0)
 					desc.append (", ");

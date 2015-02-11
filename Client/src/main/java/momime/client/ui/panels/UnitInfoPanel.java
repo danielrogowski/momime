@@ -38,8 +38,8 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
@@ -281,7 +281,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					// Draw building
 					if (building != null)
 					{
-						final CityViewElement buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "currentlyConstructingBuilding");
+						final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "currentlyConstructingBuilding");
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 							buildingImage.getCityViewAnimation (), true);

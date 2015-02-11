@@ -6,7 +6,7 @@ import java.util.List;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.PlaybackListener;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.PlayList;
+import momime.client.graphics.database.PlayListGfx;
 import momime.common.database.RecordNotFoundException;
 
 import org.apache.commons.logging.Log;
@@ -86,7 +86,7 @@ public final class AudioPlayerImpl implements AudioPlayer
 	{
 		log.trace ("Entering playPlayList: " + playListID);
 		
-		final PlayList playList = getGraphicsDB ().findPlayList (playListID, "playPlayList");
+		final PlayListGfx playList = getGraphicsDB ().findPlayList (playListID, "playPlayList");
 		
 		// Copy the playlist, so that removing entries if loop=false doesn't change the actual XML file
 		final List<String> audioFiles = new ArrayList<String> ();

@@ -11,7 +11,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.MomException;
 
@@ -108,7 +108,7 @@ public final class TestAnimationControllerImpl
 		}
 
 		// Mock entries from the graphics XML
-		final AnimationEx anim = new AnimationEx ();
+		final AnimationGfx anim = new AnimationGfx ();
 		anim.setAnimationSpeed (2);
 		for (int n = 0; n < 4; n++)
 			anim.getFrame ().add (n + ".png");

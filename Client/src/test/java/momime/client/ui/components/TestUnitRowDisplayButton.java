@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitEx;
+import momime.client.graphics.database.UnitGfx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -47,7 +47,7 @@ public final class TestUnitRowDisplayButton
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final UnitEx unitGfx = new UnitEx ();
+		final UnitGfx unitGfx = new UnitGfx ();
 		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
 		when (gfx.findUnit ("UN176", "UnitRowDisplayButton")).thenReturn (unitGfx);
 		

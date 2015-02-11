@@ -37,9 +37,9 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.OverlandMapBitmapGenerator;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.RaceEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.RaceGfx;
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -726,7 +726,7 @@ public final class CityViewUI extends MomClientFrameUI
 					// Draw building
 					if (cityData.getCurrentlyConstructingBuildingID () != null)
 					{
-						final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
+						final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 							buildingImage.getCityViewAnimation (), true);
@@ -1000,7 +1000,7 @@ public final class CityViewUI extends MomClientFrameUI
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
-		final RaceEx race = getGraphicsDB ().findRace (cityData.getCityRaceID (), "cityDataChanged");
+		final RaceGfx race = getGraphicsDB ().findRace (cityData.getCityRaceID (), "cityDataChanged");
 		
 		// Start with farmers
 		Image civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "cityDataChanged")));

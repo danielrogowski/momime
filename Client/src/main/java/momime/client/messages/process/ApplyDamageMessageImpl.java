@@ -7,14 +7,14 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.RangedAttackTypeEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.RangedAttackTypeCombatImageGfx;
+import momime.client.graphics.database.RangedAttackTypeGfx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.v0_9_5.RangedAttackTypeActionID;
-import momime.client.graphics.database.v0_9_5.RangedAttackTypeCombatImage;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
@@ -128,13 +128,13 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	private int [] [] current;
 	
 	/** Image of ranged attack flying towards its target */
-	private RangedAttackTypeCombatImage ratFlyImage;
+	private RangedAttackTypeCombatImageGfx ratFlyImage;
 
 	/** Image of ranged attack hitting its target */
-	private RangedAttackTypeCombatImage ratStrikeImage;
+	private RangedAttackTypeCombatImageGfx ratStrikeImage;
 	
 	/** Current image of ranged attack */
-	private RangedAttackTypeCombatImage ratCurrentImage;
+	private RangedAttackTypeCombatImageGfx ratCurrentImage;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -184,7 +184,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			{
 				// Start a ranged attack animation - firstly, after a brief frame of showing the unit firing, it'll be back to standing still
 				// To animate the missiles, first we need the locations (in pixels) of the two units involved
-				final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
+				final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
 				
 				final int startX = getCombatMapBitmapGenerator ().combatCoordinatesX (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
 				final int startY = getCombatMapBitmapGenerator ().combatCoordinatesY (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
@@ -214,7 +214,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 
 				// Start animation of the missile; e.g. fireballs don't have a constant image
 				final String rangedAttackTypeID = attackerUnitDef.getRangedAttackType ();
-				final RangedAttackTypeEx rat = getGraphicsDB ().findRangedAttackType (rangedAttackTypeID, "ApplyDamageMessageImpl");
+				final RangedAttackTypeGfx rat = getGraphicsDB ().findRangedAttackType (rangedAttackTypeID, "ApplyDamageMessageImpl");
 				ratFlyImage = rat.findCombatImage (RangedAttackTypeActionID.FLY, getAttackerDirection (), "ApplyDamageMessageImpl");
 				
 				ratStrikeImage = rat.findCombatImage (RangedAttackTypeActionID.STRIKE, getAttackerDirection (), "ApplyDamageMessageImpl");
@@ -645,7 +645,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * @return Current image of ranged attack
 	 */
-	public final RangedAttackTypeCombatImage getRatCurrentImage ()
+	public final RangedAttackTypeCombatImageGfx getRatCurrentImage ()
 	{
 		return ratCurrentImage;
 	}

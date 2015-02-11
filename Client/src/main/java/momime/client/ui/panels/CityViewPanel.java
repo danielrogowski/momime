@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import momime.client.MomClient;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.utils.AnimationController;
@@ -94,7 +95,7 @@ public final class CityViewPanel extends JPanel
 		String elementSetsDone = "";
 		
 		for (final CityViewElement element : getGraphicsDB ().getCityViewElement ())
-			if (drawElement (element, elementSetsDone))
+			if (drawElement ((CityViewElementGfx) element, elementSetsDone))
 			{
 				// Register it, if its an animation
 				getAnim ().registerRepaintTrigger (element.getCityViewAnimation (), this);
@@ -124,7 +125,7 @@ public final class CityViewPanel extends JPanel
 								(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
 							if (buildingID != null)
 							{
-								final CityViewElement element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-clickPendingSale");
+								final CityViewElementGfx element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-clickPendingSale");
 								
 								// Is the click within the gold coin?
 								if ((ev.getPoint ().x >= element.getLocationX ()) && (ev.getPoint ().y >= element.getLocationY ()) &&
@@ -151,7 +152,7 @@ public final class CityViewPanel extends JPanel
 							final Iterator<CityViewElement> iter = getGraphicsDB ().getCityViewElement ().iterator ();
 							while ((!found) && (iter.hasNext ()))
 							{
-								final CityViewElement element = iter.next ();
+								final CityViewElementGfx element = (CityViewElementGfx) iter.next ();
 	
 								if (drawElement (element, elementSetsDoneClick))
 								{
@@ -226,7 +227,7 @@ public final class CityViewPanel extends JPanel
 		String elementSetsDone = "";
 		
 		for (final CityViewElement element : getGraphicsDB ().getCityViewElement ())
-			if (drawElement (element, elementSetsDone))
+			if (drawElement ((CityViewElementGfx) element, elementSetsDone))
 			{
 				// Draw it
 				try
@@ -252,7 +253,7 @@ public final class CityViewPanel extends JPanel
 		if (buildingID != null)
 			try
 			{
-				final CityViewElement element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-drawPendingSale");
+				final CityViewElementGfx element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-drawPendingSale");
 				g.drawImage (pendingSaleImage, element.getLocationX (), element.getLocationY (), null);
 			}
 			catch (final Exception e)
@@ -268,7 +269,7 @@ public final class CityViewPanel extends JPanel
 	 * @param elementSetsDone List of element sets that we already drew an element for
 	 * @return Whether this element should be drawn, depending on what buildings etc. are in this city
 	 */
-	final boolean drawElement (final CityViewElement element, final String elementSetsDone)
+	final boolean drawElement (final CityViewElementGfx element, final String elementSetsDone)
 	{
 		// Some special "buildings" list trade goods have no coordinates and hence are never drawn in the city view
 		return ((element.getLocationX () != null) && (element.getLocationY () != null) &&

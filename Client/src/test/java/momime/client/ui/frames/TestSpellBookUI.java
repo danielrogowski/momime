@@ -9,9 +9,9 @@ import java.util.List;
 
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -20,9 +20,9 @@ import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.newgame.SpellSettingData;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -101,7 +101,7 @@ public final class TestSpellBookUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from the graphics XML
-		final AnimationEx pageTurn = new AnimationEx ();
+		final AnimationGfx pageTurn = new AnimationGfx ();
 		pageTurn.setAnimationSpeed (5);
 		for (int n = 1; n <= 4; n++)
 			pageTurn.getFrame ().add ("/momime.client.graphics/ui/spellBook/spellBookAnim-frame" + n + ".png");
@@ -109,11 +109,11 @@ public final class TestSpellBookUI
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (SpellBookUI.ANIM_PAGE_TURN, "SpellBookUI")).thenReturn (pageTurn);
 		
-		final Pick redPick = new Pick ();
+		final PickGfx redPick = new PickGfx ();
 		redPick.setPickBookshelfTitleColour ("FF0000");
 		when (gfx.findPick ("MB01", "languageOrPageChanged")).thenReturn (redPick);
 		
-		final Pick greenPick = new Pick ();
+		final PickGfx greenPick = new PickGfx ();
 		greenPick.setPickBookshelfTitleColour ("00FF00");
 		when (gfx.findPick ("MB02", "languageOrPageChanged")).thenReturn (greenPick);
 		

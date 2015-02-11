@@ -26,7 +26,7 @@ import javax.swing.SwingUtilities;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.BookImage;
+import momime.client.graphics.database.PickGfx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.utils.WizardClientUtils;
@@ -40,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -76,9 +75,6 @@ public final class WizardsUI extends MomClientFrameUI
 
 	/** Large font */
 	private Font largeFont;
-	
-	/** Random number generator */
-	private RandomUtils randomUtils;
 	
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
@@ -296,12 +292,12 @@ public final class WizardsUI extends MomClientFrameUI
 		for (final PlayerPick pick : pub.getPick ())
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks").getBookImage ();
-			if (possibleImages.size () > 0)
+			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
+			if (pickGfx.getBookImage ().size () > 0)
 				for (int n = 0; n < pick.getQuantity (); n++)
 				{
 					// Choose random image for the pick
-					final BufferedImage bookImage = getUtils ().loadImage (possibleImages.get (getRandomUtils ().nextInt (possibleImages.size ())).getBookImageFile ());
+					final BufferedImage bookImage = getUtils ().loadImage (pickGfx.chooseRandomBookImageFilename ());
 					
 					// Add on merged bookshelf
 					mergedBookshelfGridx++;
@@ -337,8 +333,7 @@ public final class WizardsUI extends MomClientFrameUI
 		for (final PlayerPick pick : pub.getPick ())
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImage ();
-			if (possibleImages.size () == 0)
+			if (getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImage ().size () == 0)
 			{
 				if (desc.length () > 0)
 					desc.append (", ");
@@ -510,22 +505,6 @@ public final class WizardsUI extends MomClientFrameUI
 		largeFont = font;
 	}
 	
-	/**
-	 * @return Random number generator
-	 */
-	public final RandomUtils getRandomUtils ()
-	{
-		return randomUtils;
-	}
-
-	/**
-	 * @param utils Random number generator
-	 */
-	public final void setRandomUtils (final RandomUtils utils)
-	{
-		randomUtils = utils;
-	}
-
 	/**
 	 * @return Wizard client utils
 	 */

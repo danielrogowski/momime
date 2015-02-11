@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.PickGfx;
 import momime.client.ui.frames.CombatUI;
 import momime.common.database.Spell;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
@@ -67,7 +67,7 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 			if (spell.getSpellRealm () != null)
 			{
 				// Now look up the magic realm in the graphics XML file
-				final Pick magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "AddCombatAreaEffectMessageImpl");
+				final PickGfx magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "AddCombatAreaEffectMessageImpl");
 				flashColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
 			}
 		}

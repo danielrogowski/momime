@@ -8,20 +8,30 @@ public interface GraphicsDatabaseFactory
 	/**
 	 * @return Newly created smoothed tile type
 	 */
-	public SmoothedTileTypeEx createSmoothedTileType ();
+	public SmoothedTileTypeGfx createSmoothedTileType ();
 	
 	/**
 	 * @return Newly created tile set
 	 */
-	public TileSetEx createTileSet ();
+	public TileSetGfx createTileSet ();
 
 	/**
 	 * @return Newly created map feature
 	 */
-	public MapFeatureEx createMapFeature ();
+	public MapFeatureGfx createMapFeature ();
 	
 	/**
 	 * @return Newly created animation
 	 */
-	public AnimationEx createAnimation ();
+	public AnimationGfx createAnimation ();
+	
+	/**
+	 * @return Newly created pick
+	 */
+	public PickGfx createPick ();
+	
+	/**
+	 * @return Newly created wizard
+	 */
+	public WizardGfx createWizard ();
 }

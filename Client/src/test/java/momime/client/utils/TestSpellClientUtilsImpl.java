@@ -16,12 +16,13 @@ import java.util.List;
 
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
+import momime.client.graphics.database.CityViewElementGfx;
+import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
+import momime.client.graphics.database.SpellGfx;
+import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -440,7 +441,7 @@ public final class TestSpellClientUtilsImpl
 		when (uiUtils.loadImage ("SP001.png")).thenReturn (image);
 		
 		// Mock entries from graphics DB
-		final momime.client.graphics.database.v0_9_5.Spell spellGfx = new momime.client.graphics.database.v0_9_5.Spell ();
+		final SpellGfx spellGfx = new SpellGfx ();
 		spellGfx.setOverlandEnchantmentImageFile ("SP001.png");
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -500,7 +501,7 @@ public final class TestSpellClientUtilsImpl
 		when (uiUtils.loadImage ("SP001.png")).thenReturn (image);
 		
 		// Mock entries from graphics DB
-		final momime.client.graphics.database.v0_9_5.Spell spellGfx = new momime.client.graphics.database.v0_9_5.Spell ();
+		final SpellGfx spellGfx = new SpellGfx ();
 		spellGfx.setOverlandEnchantmentImageFile ("SP001.png");
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -580,7 +581,7 @@ public final class TestSpellClientUtilsImpl
 		for (int n = 1; n < 10; n++)
 			if (n % 2 == 1)
 			{
-				final UnitEx unitGfx = new UnitEx ();
+				final UnitGfx unitGfx = new UnitGfx ();
 				unitGfx.setUnitSummonImageFile ("Male.png");
 				when (gfx.findUnit ("UN00" + n, "findImageForSpell")).thenReturn (unitGfx);
 			}
@@ -657,7 +658,7 @@ public final class TestSpellClientUtilsImpl
 		// So this creates units 1,3,5,7,9 all which use the male summonining image, and 2,4,6,8 use the female image
 		for (int n = 1; n < 10; n++)
 		{
-			final UnitEx unitGfx = new UnitEx ();
+			final UnitGfx unitGfx = new UnitGfx ();
 			unitGfx.setUnitSummonImageFile ((n % 2 == 1) ? "Male.png" : "Female.png");
 			when (gfx.findUnit ("UN00" + n, "findImageForSpell")).thenReturn (unitGfx);
 		}
@@ -724,7 +725,7 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final UnitSkill skill = new UnitSkill ();
+		final UnitSkillGfx skill = new UnitSkillGfx ();
 		skill.setUnitSkillImageFile ("US050.png");
 		when (gfx.findUnitSkill ("US050", "findImageForSpell")).thenReturn (skill);
 		
@@ -779,7 +780,7 @@ public final class TestSpellClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		for (int n = 50; n <= 51; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillGfx skill = new UnitSkillGfx ();
 			skill.setUnitSkillImageFile ("US0" + n + ".png");
 			when (gfx.findUnitSkill ("US0" + n, "findImageForSpell")).thenReturn (skill);
 		}
@@ -847,7 +848,7 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final CityViewElement element = new CityViewElement ();
+		final CityViewElementGfx element = new CityViewElementGfx ();
 		element.setCityViewAlternativeImageFile ("CSE050.png");
 		when (gfx.findCitySpellEffect ("CSE050", "findImageForSpell")).thenReturn (element);
 		
@@ -902,7 +903,7 @@ public final class TestSpellClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		for (int n = 50; n <= 51; n++)
 		{
-			final CityViewElement element = new CityViewElement ();
+			final CityViewElementGfx element = new CityViewElementGfx ();
 			if (n == 50)
 			{
 				// Prove alt image gets used in preference
@@ -982,13 +983,13 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final AnimationEx anim = new AnimationEx ();
+		final AnimationGfx anim = new AnimationGfx ();
 		for (int n = 1; n <= 3; n++)
 			anim.getFrame ().add ("BL15-frame" + n + ".png");
 		
 		when (gfx.findAnimation ("BL15-anim", "findImageForSpell")).thenReturn (anim);
 
-		final CityViewElement element = new CityViewElement ();
+		final CityViewElementGfx element = new CityViewElementGfx ();
 		element.setCityViewAnimation ("BL15-anim");
 		when (gfx.findBuilding ("BL15", "findImageForSpell")).thenReturn (element);
 		
@@ -1033,7 +1034,7 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final CombatAreaEffect cae = new CombatAreaEffect ();
+		final CombatAreaEffectGfx cae = new CombatAreaEffectGfx ();
 		cae.setCombatAreaEffectImageFile ("CAE050.png");
 		when (gfx.findCombatAreaEffect ("CAE050", "findImageForSpell")).thenReturn (cae);
 		
@@ -1088,7 +1089,7 @@ public final class TestSpellClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		for (int n = 50; n <= 51; n++)
 		{
-			final CombatAreaEffect cae = new CombatAreaEffect ();
+			final CombatAreaEffectGfx cae = new CombatAreaEffectGfx ();
 			cae.setCombatAreaEffectImageFile ("CAE0" + n + ".png");
 			when (gfx.findCombatAreaEffect ("CAE0" + n, "findImageForSpell")).thenReturn (cae);
 		}

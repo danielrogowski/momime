@@ -37,10 +37,10 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.v0_9_5.MomImeClientConfig;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.Shortcut;
 import momime.client.language.database.v0_9_5.ShortcutKey;
@@ -180,10 +180,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private BufferedImage topBarBackground;
 	
 	/** Overland map tileset */
-	private TileSetEx overlandMapTileSet;
+	private TileSetGfx overlandMapTileSet;
 
 	/** Animation to display for a spell being cast */
-	private AnimationEx overlandCastAnimation;
+	private AnimationGfx overlandCastAnimation;
 	
 	/** X coord to display overland cast animation at, in pixels */
 	private int overlandCastAnimationX;
@@ -1783,7 +1783,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @return Animation to display for a spell being cast
 	 */
-	public final AnimationEx getOverlandCastAnimation ()
+	public final AnimationGfx getOverlandCastAnimation ()
 	{
 		return overlandCastAnimation;
 	}
@@ -1791,7 +1791,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @param an Animation to display for a spell being cast
 	 */
-	public final void setOverlandCastAnimation (final AnimationEx an)
+	public final void setOverlandCastAnimation (final AnimationGfx an)
 	{
 		overlandCastAnimation = an;
 	}

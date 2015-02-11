@@ -10,7 +10,7 @@ import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
@@ -73,7 +73,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	private MapCoordinates2DEx moveTo;
 	
 	/** Need to know size of combat map tiles to figure out spacing of the move */
-	private TileSetEx combatMapTileSet;
+	private TileSetGfx combatMapTileSet;
 	
 	/** Current position of this unit on the combat map, in pixels */
 	private int currentX;

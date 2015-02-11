@@ -18,6 +18,7 @@ import javax.swing.WindowConstants;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.SpellGfx;
 import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.messages.process.AddBuildingMessageImpl;
@@ -175,7 +176,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		if (spellID != null)
 			try
 			{
-				final momime.client.graphics.database.v0_9_5.Spell spellGfx = getGraphicsDB ().findSpell (spellID, "MiniCityViewUI");
+				final SpellGfx spellGfx = getGraphicsDB ().findSpell (spellID, "MiniCityViewUI");
 				
 				// Play the right music
 				if (spellGfx.getSpellMusicFile () != null)

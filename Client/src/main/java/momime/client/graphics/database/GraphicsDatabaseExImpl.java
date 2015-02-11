@@ -50,64 +50,64 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	private final Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
 	
 	/** Map of pick IDs to pick objects */
-	private Map<String, Pick> picksMap;
+	private Map<String, PickGfx> picksMap;
 
 	/** Map of wizard IDs to wizard objects */
-	private Map<String, Wizard> wizardsMap;
+	private Map<String, WizardGfx> wizardsMap;
 
 	/** Map of production type IDs to production type objects */
-	private Map<String, ProductionTypeEx> productionTypesMap;
+	private Map<String, ProductionTypeGfx> productionTypesMap;
 	
 	/** Map of race IDs to race objects */
-	private Map<String, RaceEx> racesMap;
+	private Map<String, RaceGfx> racesMap;
 
 	/** Map of building IDs to city view elements */
-	private Map<String, CityViewElement> buildingsMap;
+	private Map<String, CityViewElementGfx> buildingsMap;
 
 	/** Map of city spell effect IDs to city view elements */
-	private Map<String, CityViewElement> citySpellEffectsMap;
+	private Map<String, CityViewElementGfx> citySpellEffectsMap;
 	
 	/** Map of spell IDs to spell objects */
-	private Map<String, Spell> spellsMap;
+	private Map<String, SpellGfx> spellsMap;
 	
 	/** Map of combat action IDs to combat action objects */
-	private Map<String, CombatAction> combatActionsMap;
+	private Map<String, CombatActionGfx> combatActionsMap;
 
 	/** Map of unit type IDs to unit type objects */
-	private Map<String, UnitTypeEx> unitTypesMap;
+	private Map<String, UnitTypeGfx> unitTypesMap;
 	
 	/** Map of unit attribute IDs to unit attribute objects */
-	private Map<String, UnitAttributeEx> unitAttributesMap;
+	private Map<String, UnitAttributeGfx> unitAttributesMap;
 	
 	/** Map of unit skill IDs to unit skill objects */
-	private Map<String, UnitSkill> unitSkillsMap;
+	private Map<String, UnitSkillGfx> unitSkillsMap;
 	
 	/** Map of unit IDs to unit objects */
-	private Map<String, UnitEx> unitsMap;
+	private Map<String, UnitGfx> unitsMap;
 
 	/** Map of ranged attack type IDs to ranged attack type objects */
-	private Map<String, RangedAttackTypeEx> rangedAttackTypesMap;
+	private Map<String, RangedAttackTypeGfx> rangedAttackTypesMap;
 	
 	/** Map of weapon grade numbers to weapon grade objects */
-	private Map<Integer, WeaponGrade> weaponGradesMap;
+	private Map<Integer, WeaponGradeGfx> weaponGradesMap;
 	
 	/** Map of scales to coordinates for each figure count */
-	private Map<Integer, CombatTileUnitRelativeScaleEx> combatTileUnitRelativeScalesMap;
+	private Map<Integer, CombatTileUnitRelativeScaleGfx> combatTileUnitRelativeScalesMap;
 	
 	/** Map of tileSet IDs to tileSet objects */
-	private Map<String, TileSetEx> tileSetsMap;
+	private Map<String, TileSetGfx> tileSetsMap;
 
 	/** Map of map feature IDs to map feature XML objects */
-	private Map<String, MapFeatureEx> mapFeaturesMap;
+	private Map<String, MapFeatureGfx> mapFeaturesMap;
 	
 	/** Map of combat area effect IDs to combat area effect XML objects */
-	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
+	private Map<String, CombatAreaEffectGfx> combatAreaEffectsMap;
 	
 	/** Map of animation IDs to animation objects */
-	private Map<String, AnimationEx> animationsMap;
+	private Map<String, AnimationGfx> animationsMap;
 	
 	/** Map of play list IDs to play list objects */
-	private Map<String, PlayList> playListsMap;
+	private Map<String, PlayListGfx> playListsMap;
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -126,135 +126,137 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		log.trace ("Entering buildMaps");
 		
 		// Create picks map
-		picksMap = new HashMap<String, Pick> ();
+		picksMap = new HashMap<String, PickGfx> ();
 		for (final Pick thisPick : getPick ())
-			picksMap.put (thisPick.getPickID (), thisPick);
+			picksMap.put (thisPick.getPickID (), (PickGfx) thisPick);
 
 		// Create wizards map
-		wizardsMap = new HashMap<String, Wizard> ();
+		wizardsMap = new HashMap<String, WizardGfx> ();
 		for (final Wizard thisWizard : getWizard ())
-			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+			wizardsMap.put (thisWizard.getWizardID (), (WizardGfx) thisWizard);
 
 		// Create production types map
-		productionTypesMap = new HashMap<String, ProductionTypeEx> ();
+		productionTypesMap = new HashMap<String, ProductionTypeGfx> ();
 		for (final ProductionType thisProductionType : getProductionType ())
 		{
-			final ProductionTypeEx ptex = (ProductionTypeEx) thisProductionType;
+			final ProductionTypeGfx ptex = (ProductionTypeGfx) thisProductionType;
 			ptex.buildMap ();
 			productionTypesMap.put (thisProductionType.getProductionTypeID (), ptex);
 		}
 		
 		// Create races map
-		racesMap = new HashMap<String, RaceEx> ();
+		racesMap = new HashMap<String, RaceGfx> ();
 		for (final Race thisRace : getRace ())
 		{
-			final RaceEx rex = (RaceEx) thisRace;
+			final RaceGfx rex = (RaceGfx) thisRace;
 			rex.buildMap ();
 			racesMap.put (rex.getRaceID (), rex);
 		}
 
 		// Create buildings and city spell effects maps
-		buildingsMap = new HashMap<String, CityViewElement> ();
-		citySpellEffectsMap = new HashMap<String, CityViewElement> ();
+		buildingsMap = new HashMap<String, CityViewElementGfx> ();
+		citySpellEffectsMap = new HashMap<String, CityViewElementGfx> ();
 		for (final CityViewElement thisElement : getCityViewElement ())
 		{
-			// CityViewElements may be buildings, spell effects or neither (e.g. landscape)
-			if (thisElement.getBuildingID () != null)
-				buildingsMap.put (thisElement.getBuildingID (), thisElement);
+			final CityViewElementGfx elem = (CityViewElementGfx) thisElement;
 			
-			if (thisElement.getCitySpellEffectID () != null)
-				citySpellEffectsMap.put (thisElement.getCitySpellEffectID (), thisElement);
+			// CityViewElements may be buildings, spell effects or neither (e.g. landscape)
+			if (elem.getBuildingID () != null)
+				buildingsMap.put (elem.getBuildingID (), elem);
+			
+			if (elem.getCitySpellEffectID () != null)
+				citySpellEffectsMap.put (elem.getCitySpellEffectID (), elem);
 		}
 
 		// Create spells map
-		spellsMap = new HashMap<String, Spell> ();
+		spellsMap = new HashMap<String, SpellGfx> ();
 		for (final Spell thisSpell : getSpell ())
-			spellsMap.put (thisSpell.getSpellID (), thisSpell);
+			spellsMap.put (thisSpell.getSpellID (), (SpellGfx) thisSpell);
 		
 		// Create combatActions map
-		combatActionsMap = new HashMap<String, CombatAction> ();
+		combatActionsMap = new HashMap<String, CombatActionGfx> ();
 		for (final CombatAction thisCombatAction : getCombatAction ())
-			combatActionsMap.put (thisCombatAction.getCombatActionID (), thisCombatAction);
+			combatActionsMap.put (thisCombatAction.getCombatActionID (), (CombatActionGfx) thisCombatAction);
 		
 		// Create unit types map
-		unitTypesMap = new HashMap<String, UnitTypeEx> ();
+		unitTypesMap = new HashMap<String, UnitTypeGfx> ();
 		for (final UnitType thisUnitType : getUnitType ())
 		{
-			final UnitTypeEx utex = (UnitTypeEx) thisUnitType;
+			final UnitTypeGfx utex = (UnitTypeGfx) thisUnitType;
 			utex.buildMap ();
 			unitTypesMap.put (utex.getUnitTypeID (), utex);
 		}
 		
 		// Create unit attributes map
-		unitAttributesMap = new HashMap<String, UnitAttributeEx> ();
+		unitAttributesMap = new HashMap<String, UnitAttributeGfx> ();
 		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
 		{
-			final UnitAttributeEx attrEx = (UnitAttributeEx) thisUnitAttribute;
+			final UnitAttributeGfx attrEx = (UnitAttributeGfx) thisUnitAttribute;
 			attrEx.buildMap ();
 			unitAttributesMap.put (attrEx.getUnitAttributeID (), attrEx);
 		}
 
 		// Create unit skills map
-		unitSkillsMap = new HashMap<String, UnitSkill> ();
+		unitSkillsMap = new HashMap<String, UnitSkillGfx> ();
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
-			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
+			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillGfx) thisUnitSkill);
 		
 		// Create units map
-		unitsMap = new HashMap<String, UnitEx> ();
+		unitsMap = new HashMap<String, UnitGfx> ();
 		for (final Unit thisUnit : getUnit ())
 		{
-			final UnitEx unitEx = (UnitEx) thisUnit;
-			unitEx.buildMap ();
-			unitsMap.put (unitEx.getUnitID (), unitEx);
+			final UnitGfx UnitGfx = (UnitGfx) thisUnit;
+			UnitGfx.buildMap ();
+			unitsMap.put (UnitGfx.getUnitID (), UnitGfx);
 		}
 
 		// Create ranged attack types map
-		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeEx> ();
+		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeGfx> ();
 		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
 		{
-			final RangedAttackTypeEx ratEx = (RangedAttackTypeEx) thisRangedAttackType;
+			final RangedAttackTypeGfx ratEx = (RangedAttackTypeGfx) thisRangedAttackType;
 			ratEx.buildMap ();
 			rangedAttackTypesMap.put (ratEx.getRangedAttackTypeID (), ratEx);
 		}
 		
 		// Create weapon grades map
-		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
+		weaponGradesMap = new HashMap<Integer, WeaponGradeGfx> ();
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
-			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), thisWeaponGrade);
+			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), (WeaponGradeGfx) thisWeaponGrade);
 		
 		// Create combat tile unit relative scales map
-		combatTileUnitRelativeScalesMap = new HashMap<Integer, CombatTileUnitRelativeScaleEx> ();
+		combatTileUnitRelativeScalesMap = new HashMap<Integer, CombatTileUnitRelativeScaleGfx> ();
 		for (final CombatTileUnitRelativeScale scale : getCombatTileUnitRelativeScale ())
 		{
-			final CombatTileUnitRelativeScaleEx scaleEx = (CombatTileUnitRelativeScaleEx) scale;
+			final CombatTileUnitRelativeScaleGfx scaleEx = (CombatTileUnitRelativeScaleGfx) scale;
 			scaleEx.buildMap ();
 			combatTileUnitRelativeScalesMap.put (scaleEx.getScale (), scaleEx);
 		}
 		
 		// Create animations map
-		animationsMap = new HashMap<String, AnimationEx> ();
+		animationsMap = new HashMap<String, AnimationGfx> ();
 		for (final Animation anim : getAnimation ())
-			animationsMap.put (anim.getAnimationID (), (AnimationEx) anim);
+			animationsMap.put (anim.getAnimationID (), (AnimationGfx) anim);
 		
 		// Create tile sets map
-		tileSetsMap = new HashMap<String, TileSetEx> ();
+		tileSetsMap = new HashMap<String, TileSetGfx> ();
 		for (final TileSet ts : getTileSet ())
-			tileSetsMap.put (ts.getTileSetID (), (TileSetEx) ts);
+			tileSetsMap.put (ts.getTileSetID (), (TileSetGfx) ts);
 
 		// Create map features map
-		mapFeaturesMap = new HashMap<String, MapFeatureEx> ();
+		mapFeaturesMap = new HashMap<String, MapFeatureGfx> ();
 		for (final MapFeature mf : getMapFeature ())
-			mapFeaturesMap.put (mf.getMapFeatureID (), (MapFeatureEx) mf);
+			mapFeaturesMap.put (mf.getMapFeatureID (), (MapFeatureGfx) mf);
 
 		// Create combat area effects map
-		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
+		combatAreaEffectsMap = new HashMap<String, CombatAreaEffectGfx> ();
 		for (final CombatAreaEffect cae : getCombatAreaEffect ())
-			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), cae);
+			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), (CombatAreaEffectGfx) cae);
 		
 		// Create play lists map
-		playListsMap = new HashMap<String, PlayList> ();
+		playListsMap = new HashMap<String, PlayListGfx> ();
 		for (final PlayList pl : getPlayList ())
-			playListsMap.put (pl.getPlayListID (), pl);
+			playListsMap.put (pl.getPlayListID (), (PlayListGfx) pl);
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -271,7 +273,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		// Check all animations have frames with consistent sizes
 		for (final Animation anim : getAnimation ())
 		{
-			final AnimationEx aex = (AnimationEx) anim;
+			final AnimationGfx aex = (AnimationGfx) anim;
 			aex.deriveAnimationWidthAndHeight ();
 		}
 		log.info ("All " + getAnimation ().size () + " animations passed consistency checks");		
@@ -279,17 +281,17 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		// Build all the smoothing rule bitmask maps, and determine the size of tiles in each set
 		for (final TileSet ts : getTileSet ())
 		{
-			final TileSetEx tsex = (TileSetEx) ts;
+			final TileSetGfx tsex = (TileSetGfx) ts;
 			tsex.buildMaps ();
 			tsex.deriveAnimationFrameCountAndSpeed (this);
 			tsex.deriveTileWidthAndHeight (this);
 		}
-		final TileSetEx overlandMapTileSet = findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "consistencyChecks");
+		final TileSetGfx overlandMapTileSet = findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "consistencyChecks");
 
 		// Ensure all map features match the size of the overland map tiles
 		for (final MapFeature mf : getMapFeature ())
 		{
-			final MapFeatureEx mfex = (MapFeatureEx) mf;
+			final MapFeatureGfx mfex = (MapFeatureGfx) mf;
 			mfex.checkWidthAndHeight (overlandMapTileSet);
 		}
 		log.info ("All " + getMapFeature ().size () + " map features passed consistency checks");
@@ -309,7 +311,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 				final int thisHeight;
 				if (thisBuilding.getCityViewAnimation () != null)
 				{
-					final AnimationEx anim = findAnimation (thisBuilding.getCityViewAnimation (), "consistencyChecks");
+					final AnimationGfx anim = findAnimation (thisBuilding.getCityViewAnimation (), "consistencyChecks");
 					thisWidth = anim.getAnimationWidth ();
 					thisHeight = anim.getAnimationHeight ();
 				}
@@ -352,9 +354,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the pickID doesn't exist
 	 */
 	@Override
-	public final Pick findPick (final String pickID, final String caller) throws RecordNotFoundException
+	public final PickGfx findPick (final String pickID, final String caller) throws RecordNotFoundException
 	{
-		final Pick found = picksMap.get (pickID);
+		final PickGfx found = picksMap.get (pickID);
 		if (found == null)
 			throw new RecordNotFoundException (Pick.class, pickID, caller);
 
@@ -368,9 +370,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the wizardID doesn't exist
 	 */
 	@Override
-	public final Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException
+	public final WizardGfx findWizard (final String wizardID, final String caller) throws RecordNotFoundException
 	{
-		final Wizard found = wizardsMap.get (wizardID);
+		final WizardGfx found = wizardsMap.get (wizardID);
 		if (found == null)
 			throw new RecordNotFoundException (Wizard.class, wizardID, caller);
 
@@ -384,9 +386,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
 	 */
 	@Override
-	public final ProductionTypeEx findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
+	public final ProductionTypeGfx findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
 	{
-		final ProductionTypeEx found = productionTypesMap.get (productionTypeID);
+		final ProductionTypeGfx found = productionTypesMap.get (productionTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (ProductionType.class, productionTypeID, caller);
 
@@ -400,9 +402,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the raceID doesn't exist
 	 */
 	@Override
-	public final RaceEx findRace (final String raceID, final String caller) throws RecordNotFoundException
+	public final RaceGfx findRace (final String raceID, final String caller) throws RecordNotFoundException
 	{
-		final RaceEx found = racesMap.get (raceID);
+		final RaceGfx found = racesMap.get (raceID);
 		if (found == null)
 			throw new RecordNotFoundException (Race.class, raceID, caller);
 
@@ -416,11 +418,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Override
-	public final CityViewElement findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
+	public final CityViewElementGfx findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
 	{
-		final CityViewElement found = buildingsMap.get (buildingID);
+		final CityViewElementGfx found = buildingsMap.get (buildingID);
 		if (found == null)
-			throw new RecordNotFoundException (CityViewElement.class, buildingID, caller);
+			throw new RecordNotFoundException (CityViewElementGfx.class, buildingID, caller);
 
 		return found;
 	}
@@ -431,7 +433,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @return City spell effect object, or null if not found (e.g. Pestilence has no image)
 	 */
 	@Override
-	public final CityViewElement findCitySpellEffect (final String citySpellEffectID, final String caller)
+	public final CityViewElementGfx findCitySpellEffect (final String citySpellEffectID, final String caller)
 	{
 		return citySpellEffectsMap.get (citySpellEffectID);
 	}
@@ -443,9 +445,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the spellID doesn't exist
 	 */
 	@Override
-	public final Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException
+	public final SpellGfx findSpell (final String spellID, final String caller) throws RecordNotFoundException
 	{
-		final Spell found = spellsMap.get (spellID);
+		final SpellGfx found = spellsMap.get (spellID);
 		if (found == null)
 			throw new RecordNotFoundException (Spell.class, spellID, caller);
 
@@ -459,9 +461,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the combatActionID doesn't exist
 	 */
 	@Override
-	public final CombatAction findCombatAction (final String combatActionID, final String caller) throws RecordNotFoundException
+	public final CombatActionGfx findCombatAction (final String combatActionID, final String caller) throws RecordNotFoundException
 	{
-		final CombatAction found = combatActionsMap.get (combatActionID);
+		final CombatActionGfx found = combatActionsMap.get (combatActionID);
 		if (found == null)
 			throw new RecordNotFoundException (CombatAction.class, combatActionID, caller);
 
@@ -475,9 +477,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
 	 */
 	@Override
-	public final UnitTypeEx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
+	public final UnitTypeGfx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
 	{
-		final UnitTypeEx found = unitTypesMap.get (unitTypeID);
+		final UnitTypeGfx found = unitTypesMap.get (unitTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
 
@@ -491,9 +493,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
 	 */
 	@Override
-	public final UnitAttributeEx findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException
+	public final UnitAttributeGfx findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException
 	{
-		final UnitAttributeEx found = unitAttributesMap.get (unitAttributeID);
+		final UnitAttributeGfx found = unitAttributesMap.get (unitAttributeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitAttribute.class, unitAttributeID, caller);
 
@@ -507,9 +509,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the unitSkillID doesn't exist
 	 */
 	@Override
-	public final UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException
+	public final UnitSkillGfx findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException
 	{
-		final UnitSkill found = unitSkillsMap.get (unitSkillID);
+		final UnitSkillGfx found = unitSkillsMap.get (unitSkillID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitSkill.class, unitSkillID, caller);
 
@@ -523,9 +525,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	@Override
-	public final UnitEx findUnit (final String unitID, final String caller) throws RecordNotFoundException
+	public final UnitGfx findUnit (final String unitID, final String caller) throws RecordNotFoundException
 	{
-		final UnitEx found = unitsMap.get (unitID);
+		final UnitGfx found = unitsMap.get (unitID);
 		if (found == null)
 			throw new RecordNotFoundException (Unit.class, unitID, caller);
 
@@ -539,9 +541,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the rangedAttackTypeID doesn't exist
 	 */
 	@Override
-	public final RangedAttackTypeEx findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException
+	public final RangedAttackTypeGfx findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException
 	{
-		final RangedAttackTypeEx found = rangedAttackTypesMap.get (rangedAttackTypeID);
+		final RangedAttackTypeGfx found = rangedAttackTypesMap.get (rangedAttackTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (RangedAttackType.class, rangedAttackTypeID, caller);
 
@@ -555,9 +557,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the weaponGradNumber doesn't exist
 	 */
 	@Override
-	public final WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException
+	public final WeaponGradeGfx findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException
 	{
-		final WeaponGrade found = weaponGradesMap.get (weaponGradeNumber);
+		final WeaponGradeGfx found = weaponGradesMap.get (weaponGradeNumber);
 		if (found == null)
 			throw new RecordNotFoundException (WeaponGrade.class, weaponGradeNumber, caller);
 
@@ -571,9 +573,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the scale doesn't exist
 	 */
 	@Override
-	public final CombatTileUnitRelativeScaleEx findCombatTileUnitRelativeScale (final int scale, final String caller) throws RecordNotFoundException
+	public final CombatTileUnitRelativeScaleGfx findCombatTileUnitRelativeScale (final int scale, final String caller) throws RecordNotFoundException
 	{
-		final CombatTileUnitRelativeScaleEx found = combatTileUnitRelativeScalesMap.get (scale);
+		final CombatTileUnitRelativeScaleGfx found = combatTileUnitRelativeScalesMap.get (scale);
 		if (found == null)
 			throw new RecordNotFoundException (CombatTileUnitRelativeScale.class, scale, caller);
 
@@ -587,9 +589,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the tileSetID doesn't exist
 	 */
 	@Override
-	public final TileSetEx findTileSet (final String tileSetID, final String caller) throws RecordNotFoundException
+	public final TileSetGfx findTileSet (final String tileSetID, final String caller) throws RecordNotFoundException
 	{
-		final TileSetEx found = tileSetsMap.get (tileSetID);
+		final TileSetGfx found = tileSetsMap.get (tileSetID);
 		if (found == null)
 			throw new RecordNotFoundException (TileSet.class, tileSetID, caller);
 
@@ -603,9 +605,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the mapFeatureID doesn't exist
 	 */
 	@Override
-	public final MapFeatureEx findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException
+	public final MapFeatureGfx findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException
 	{
-		final MapFeatureEx found = mapFeaturesMap.get (mapFeatureID);
+		final MapFeatureGfx found = mapFeaturesMap.get (mapFeatureID);
 		if (found == null)
 			throw new RecordNotFoundException (MapFeature.class, mapFeatureID, caller);
 
@@ -619,9 +621,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the combatAreaEffectID doesn't exist
 	 */
 	@Override
-	public final CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID, final String caller) throws RecordNotFoundException
+	public final CombatAreaEffectGfx findCombatAreaEffect (final String combatAreaEffectID, final String caller) throws RecordNotFoundException
 	{
-		final CombatAreaEffect found = combatAreaEffectsMap.get (combatAreaEffectID);
+		final CombatAreaEffectGfx found = combatAreaEffectsMap.get (combatAreaEffectID);
 		if (found == null)
 			throw new RecordNotFoundException (CombatAreaEffect.class, combatAreaEffectID, caller);
 
@@ -640,10 +642,10 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If no city size entries match the requested citySizeID
 	 */
 	@Override
-	public final CityImage findBestCityImage (final String citySizeID, final MapCoordinates3DEx cityLocation,
+	public final CityImageGfx findBestCityImage (final String citySizeID, final MapCoordinates3DEx cityLocation,
 		final List<MemoryBuilding> buildings, final String caller) throws RecordNotFoundException
 	{
-		CityImage bestMatch = null;
+		CityImageGfx bestMatch = null;
 		int bestMatchBuildingCount = 0;
 		
 		for (final CityImage image : getCityImage ())
@@ -665,7 +667,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 				// Is it a better match than we had already?
 				if ((buildingsMatch) && ((bestMatch == null) || (buildingCount > bestMatchBuildingCount)))
 				{
-					bestMatch = image;
+					bestMatch = (CityImageGfx) image;
 					bestMatchBuildingCount = buildingCount;
 				}
 			}
@@ -683,9 +685,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
 	@Override
-	public final AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException
+	public final AnimationGfx findAnimation (final String animationID, final String caller) throws RecordNotFoundException
 	{
-		final AnimationEx found = animationsMap.get (animationID);
+		final AnimationGfx found = animationsMap.get (animationID);
 		if (found == null)
 			throw new RecordNotFoundException (Animation.class, animationID, caller);
 
@@ -699,9 +701,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the playListID doesn't exist
 	 */
 	@Override
-	public final PlayList findPlayList (final String playListID, final String caller) throws RecordNotFoundException
+	public final PlayListGfx findPlayList (final String playListID, final String caller) throws RecordNotFoundException
 	{
-		final PlayList found = playListsMap.get (playListID);
+		final PlayListGfx found = playListsMap.get (playListID);
 		if (found == null)
 			throw new RecordNotFoundException (PlayList.class, playListID, caller);
 

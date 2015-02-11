@@ -8,11 +8,11 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
-import momime.client.graphics.database.v0_9_5.Spell;
+import momime.client.graphics.database.SpellGfx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.common.messages.MemoryUnit;
@@ -58,7 +58,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	private MemoryUnit unit;
 	
 	/** Animation to display, or null to process message instantly */
-	private AnimationEx anim;
+	private AnimationGfx anim;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -81,12 +81,12 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		anim = null;
 		if (getSummonedBySpellID () != null)
 		{
-			final Spell spell = getGraphicsDB ().findSpell (getSummonedBySpellID (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
+			final SpellGfx spell = getGraphicsDB ().findSpell (getSummonedBySpellID (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 			if (spell.getCombatCastAnimation () != null)
 			{
 				anim = getGraphicsDB ().findAnimation (spell.getCombatCastAnimation (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 				
-				final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
+				final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 				
 				final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();

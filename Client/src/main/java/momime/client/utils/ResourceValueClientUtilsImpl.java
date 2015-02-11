@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeEx;
+import momime.client.graphics.database.ProductionTypeGfx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitUpkeep;
 
@@ -72,7 +72,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 
 		if ((productionValue > 0) || (consumptionValue > 0))
 		{
-			final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (productionTypeID, "generateProductionImage");
+			final ProductionTypeGfx productionTypeImages = getGraphicsDB ().findProductionType (productionTypeID, "generateProductionImage");
 
 			// Get a list of all the images we need to draw, so we know how big to create the merged image
 			final List<BufferedImage> consumptionImages = new ArrayList<BufferedImage> ();
@@ -112,7 +112,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 			
 			for (final UnitUpkeep upkeep : upkeeps)
 			{
-				final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (upkeep.getProductionTypeID (), "generateUpkeepImage");
+				final ProductionTypeGfx productionTypeImages = getGraphicsDB ().findProductionType (upkeep.getProductionTypeID (), "generateUpkeepImage");
 
 				// Halve value or not?  This is so summoned units display half upkeep if we have the Channeler retort
 				int value = upkeep.getUpkeepValue ();
@@ -146,7 +146,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	 * @param amount The amount to represent with images
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	final void addProductionImages (final ProductionTypeEx productionTypeImages,
+	final void addProductionImages (final ProductionTypeGfx productionTypeImages,
 		final List<BufferedImage> productionTypeButtonImages, final int amount) throws IOException
 	{
 		if (amount != 0)
@@ -195,7 +195,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	 * @param productionTypeButtonImages The list to add to
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	final void addProductionHalfImage (final ProductionTypeEx productionTypeImages, final List<BufferedImage> productionTypeButtonImages) throws IOException
+	final void addProductionHalfImage (final ProductionTypeGfx productionTypeImages, final List<BufferedImage> productionTypeButtonImages) throws IOException
 	{
 		final String halfImageFilename = productionTypeImages.findProductionValueImageFile ("½");
 		if (halfImageFilename != null)

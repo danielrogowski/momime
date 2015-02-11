@@ -12,15 +12,17 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseExImpl;
 import momime.client.graphics.database.GraphicsDatabaseFactory;
 import momime.client.graphics.database.GraphicsDatabaseObjectFactory;
-import momime.client.graphics.database.MapFeatureEx;
-import momime.client.graphics.database.SmoothedTileTypeEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.MapFeatureGfx;
+import momime.client.graphics.database.PickGfx;
+import momime.client.graphics.database.SmoothedTileTypeGfx;
+import momime.client.graphics.database.TileSetGfx;
+import momime.client.graphics.database.WizardGfx;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
 import momime.common.database.CommonDatabaseConstants;
@@ -92,35 +94,51 @@ public final class ClientTestData
 		factory.setFactory (new GraphicsDatabaseFactory ()
 		{
 			@Override
-			public final SmoothedTileTypeEx createSmoothedTileType ()
+			public final SmoothedTileTypeGfx createSmoothedTileType ()
 			{
-				final SmoothedTileTypeEx tileType = new SmoothedTileTypeEx ();
+				final SmoothedTileTypeGfx tileType = new SmoothedTileTypeGfx ();
 				tileType.setRandomUtils (randomUtils);
 				return tileType;
 			}
 			
 			@Override
-			public final TileSetEx createTileSet ()
+			public final TileSetGfx createTileSet ()
 			{
-				final TileSetEx tileSet = new TileSetEx ();
+				final TileSetGfx tileSet = new TileSetGfx ();
 				tileSet.setUtils (utils);
 				return tileSet;
 			}
 			
 			@Override
-			public final MapFeatureEx createMapFeature ()
+			public final MapFeatureGfx createMapFeature ()
 			{
-				final MapFeatureEx mapFeature = new MapFeatureEx ();
+				final MapFeatureGfx mapFeature = new MapFeatureGfx ();
 				mapFeature.setUtils (utils);
 				return mapFeature;
 			}
 			
 			@Override
-			public final AnimationEx createAnimation ()
+			public final AnimationGfx createAnimation ()
 			{
-				final AnimationEx anim = new AnimationEx ();
+				final AnimationGfx anim = new AnimationGfx ();
 				anim.setUtils (utils);
 				return anim;
+			}
+
+			@Override
+			public final PickGfx createPick ()
+			{
+				final PickGfx pick = new PickGfx ();
+				pick.setRandomUtils (randomUtils);
+				return pick;
+			}
+
+			@Override
+			public final WizardGfx createWizard ()
+			{
+				final WizardGfx wizard = new WizardGfx ();
+				wizard.setRandomUtils (randomUtils);
+				return wizard;
 			}
 		});
 		

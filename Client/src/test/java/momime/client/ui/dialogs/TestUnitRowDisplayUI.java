@@ -12,7 +12,7 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitEx;
+import momime.client.graphics.database.UnitGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -71,7 +71,7 @@ public final class TestUnitRowDisplayUI
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final UnitEx unitGfx = new UnitEx ();
+		final UnitGfx unitGfx = new UnitGfx ();
 		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
 		when (gfx.findUnit ("UN176", "UnitRowDisplayButton")).thenReturn (unitGfx);
 		

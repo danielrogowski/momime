@@ -8,7 +8,9 @@ import java.util.List;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.SpellGfx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -55,7 +57,7 @@ public final class TestMiniCityViewUI
 		utils.useNimbusLookAndFeel ();
 
 		// Mock entries from the graphics XML
-		final momime.client.graphics.database.v0_9_5.Spell spellGfx = new momime.client.graphics.database.v0_9_5.Spell ();
+		final SpellGfx spellGfx = new SpellGfx ();
 		spellGfx.setSoundAndImageDelay (2);
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -114,13 +116,13 @@ public final class TestMiniCityViewUI
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		
 		// Display at least some landscape, plus the spell itself
-		final CityViewElement landscape = new CityViewElement ();
+		final CityViewElementGfx landscape = new CityViewElementGfx ();
 		landscape.setLocationX (0);
 		landscape.setLocationY (0);
 		landscape.setSizeMultiplier (2);
 		landscape.setCityViewImageFile ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		
-		final CityViewElement spellImage = new CityViewElement ();
+		final CityViewElementGfx spellImage = new CityViewElementGfx ();
 		spellImage.setLocationX (100);
 		spellImage.setLocationY (100);
 		spellImage.setSizeMultiplier (2);

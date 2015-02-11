@@ -13,7 +13,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
@@ -115,7 +115,7 @@ public final class AnimationControllerImpl implements AnimationController
 		else
 		{
 			// Find the animation in the graphics XML
-			final AnimationEx anim = getGraphicsDB ().findAnimation (animationID, "loadImageOrAnimationFrame");
+			final AnimationGfx anim = getGraphicsDB ().findAnimation (animationID, "loadImageOrAnimationFrame");
 			
 			// Adjust system timer for the frame rate of this animation
 			final double frameNumber = System.nanoTime () / (1000000000d / anim.getAnimationSpeed ());
@@ -297,7 +297,7 @@ public final class AnimationControllerImpl implements AnimationController
 	private final class AnimationFrameCounter implements ActionListener
 	{
 		/** The animation being displayed, so we don't have to keep re-finding it every frame */
-		public AnimationEx anim;
+		public AnimationGfx anim;
 		
 		/** Current frame number to display */
 		public int animationFrame;

@@ -21,10 +21,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
+import momime.client.graphics.database.CityViewElementGfx;
+import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.v0_9_5.BookImage;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.Pick;
@@ -542,7 +544,7 @@ public final class HelpUI extends MomClientFrameUI
 		pickID = id;
 		
 		// Look for any images for this pickID
-		final momime.client.graphics.database.v0_9_5.Pick pick = getGraphicsDB ().findPick (pickID, "showPickID");
+		final PickGfx pick = getGraphicsDB ().findPick (pickID, "showPickID");
 		if (pick.getBookImage ().size () > 0)
 		{
 			// Merge the images into one
@@ -638,7 +640,7 @@ public final class HelpUI extends MomClientFrameUI
 		clear ();
 		combatAreaEffectID = id;
 
-		final momime.client.graphics.database.v0_9_5.CombatAreaEffect cae = getGraphicsDB ().findCombatAreaEffect (combatAreaEffectID, "showCombatAreaEffectID");
+		final CombatAreaEffectGfx cae = getGraphicsDB ().findCombatAreaEffect (combatAreaEffectID, "showCombatAreaEffectID");
 		imageLabel.setIcon (new ImageIcon (getUtils ().loadImage (cae.getCombatAreaEffectImageFile ())));
 		imageLabel.setVisible (true);
 		
@@ -663,7 +665,7 @@ public final class HelpUI extends MomClientFrameUI
 		spellID = aSpellID;
 		castingPlayer = player;
 
-		final CityViewElement cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffectID, "showCitySpellEffectID");
+		final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffectID, "showCitySpellEffectID");
 		if (cityViewElement != null)
 		{
 			String imageFilename = null;
@@ -677,7 +679,7 @@ public final class HelpUI extends MomClientFrameUI
 				// the help scrolls and anywhere else this is used, but it complicates things enormously having to
 				// set up repaint timers, and there's only a handful of effects this actually affects
 				// e.g. Dark Rituals, Altar of Battle
-				final AnimationEx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
+				final AnimationGfx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
 				if (anim.getFrame ().size () > 0)
 					imageFilename = anim.getFrame ().get (0);
 			}

@@ -3,21 +3,35 @@ package momime.client.graphics.database;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.client.graphics.database.v0_9_5.Animation;
+import momime.client.graphics.database.v0_9_5.CityImage;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.v0_9_5.CombatAction;
+import momime.client.graphics.database.v0_9_5.CombatAreaEffect;
 import momime.client.graphics.database.v0_9_5.CombatTileFigurePositions;
 import momime.client.graphics.database.v0_9_5.CombatTileUnitRelativeScale;
+import momime.client.graphics.database.v0_9_5.FigurePositionsForFigureCount;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.ObjectFactory;
+import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.RangedAttackType;
+import momime.client.graphics.database.v0_9_5.RangedAttackTypeCombatImage;
+import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
+import momime.client.graphics.database.v0_9_5.Spell;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitAttribute;
 import momime.client.graphics.database.v0_9_5.UnitCombatAction;
+import momime.client.graphics.database.v0_9_5.UnitCombatImage;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.UnitType;
+import momime.client.graphics.database.v0_9_5.WeaponGrade;
+import momime.client.graphics.database.v0_9_5.Wizard;
 
 /**
  * Creates our custom extended GraphicsDatabase when it is unmarshalled with JAXB
@@ -43,7 +57,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final Race createRace ()
 	{
-		return new RaceEx ();
+		return new RaceGfx ();
 	}
 	
 	/**
@@ -70,7 +84,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final SmoothingSystem createSmoothingSystem ()
 	{
-		return new SmoothingSystemEx ();
+		return new SmoothingSystemGfx ();
 	}
 	
 	/**
@@ -97,7 +111,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final ProductionType createProductionType ()
 	{
-		return new ProductionTypeEx ();
+		return new ProductionTypeGfx ();
 	}
 	
 	/**
@@ -106,7 +120,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final UnitAttribute createUnitAttribute ()
 	{
-		return new UnitAttributeEx ();
+		return new UnitAttributeGfx ();
 	}
 	
 	/**
@@ -115,7 +129,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final RangedAttackType createRangedAttackType ()
 	{
-		return new RangedAttackTypeEx ();
+		return new RangedAttackTypeGfx ();
 	}
 	
 	/**
@@ -124,7 +138,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final UnitType createUnitType ()
 	{
-		return new UnitTypeEx ();
+		return new UnitTypeGfx ();
 	}
 
 	/**
@@ -133,7 +147,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final Unit createUnit ()
 	{
-		return new UnitEx ();
+		return new UnitGfx ();
 	}
 
 	/**
@@ -142,7 +156,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final CombatTileUnitRelativeScale createCombatTileUnitRelativeScale ()
 	{
-		return new CombatTileUnitRelativeScaleEx ();
+		return new CombatTileUnitRelativeScaleGfx ();
 	}
 
 	/**
@@ -151,7 +165,7 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final CombatTileFigurePositions createCombatTileFigurePositions ()
 	{
-		return new CombatTileFigurePositionsEx ();
+		return new CombatTileFigurePositionsGfx ();
 	}
 
 	/**
@@ -160,7 +174,124 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	@Override
 	public final UnitCombatAction createUnitCombatAction ()
 	{
-		return new UnitCombatActionEx ();
+		return new UnitCombatActionGfx ();
+	}
+	
+	/**
+	 * @return Custom extended Pick
+	 */
+	@Override
+	public final Pick createPick ()
+	{
+		return factory.createPick ();
+	}
+
+	/**
+	 * @return Custom extended Spell
+	 */
+	@Override
+	public final Spell createSpell ()
+	{
+		return new SpellGfx ();
+	}
+
+	/**
+	 * @return Custom extended Wizard
+	 */
+	@Override
+	public final Wizard createWizard ()
+	{
+		return factory.createWizard ();
+	}
+	
+	/**
+	 * @return Custom extended City view element
+	 */
+	@Override
+	public final CityViewElement createCityViewElement ()
+	{
+		return new CityViewElementGfx ();
+	}
+
+	/**
+	 * @return Custom extended Combat action
+	 */
+	@Override
+	public final CombatAction createCombatAction ()
+	{
+		return new CombatActionGfx ();
+	}
+	
+	/**
+	 * @return Custom extended Unit skill
+	 */
+	@Override
+	public final UnitSkill createUnitSkill ()
+	{
+		return new UnitSkillGfx ();
+	}
+	
+	/**
+	 * @return Custom extended Unit combat image
+	 */
+	@Override
+	public final UnitCombatImage createUnitCombatImage ()
+	{
+		return new UnitCombatImageGfx ();
+	}
+
+	/**
+	 * @return Custom extended RAT combat image
+	 */
+	@Override
+	public final RangedAttackTypeCombatImage createRangedAttackTypeCombatImage ()
+	{
+		return new RangedAttackTypeCombatImageGfx ();
+	}
+
+	/**
+	 * @return Custom extended Figure positions for Figure count
+	 */
+	@Override
+	public final FigurePositionsForFigureCount createFigurePositionsForFigureCount ()
+	{
+		return new FigurePositionsForFigureCountGfx ();
+	}
+
+	/**
+	 * @return Custom extended Combat area effect
+	 */
+	@Override
+	public final CombatAreaEffect createCombatAreaEffect ()
+	{
+		return new CombatAreaEffectGfx ();
+	}
+
+	/**
+	 * @return Custom extended Play list
+	 */
+	@Override
+	public final PlayList createPlayList ()
+	{
+		return new PlayListGfx ();
+	}
+
+	/**
+	 * @return Custom extended Smoothed tile
+	 */
+	@Override
+	public final SmoothedTile createSmoothedTile ()
+	{
+		return new SmoothedTileGfx ();
+	}
+
+	/**
+	 * @return Custom extended City image
+	 */
+	@Override
+	public final CityImage createCityImage ()
+	{
+		return new CityImageGfx ();
 	}
 
 	/**
@@ -169,6 +300,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final GraphicsDatabaseFactory getFactory ()
 	{
 		return factory;
+	}
+
+	/**
+	 * @return Custom extended Weapon grade
+	 */
+	@Override
+	public final WeaponGrade createWeaponGrade ()
+	{
+		return new WeaponGradeGfx ();
 	}
 
 	/**

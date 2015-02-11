@@ -1,6 +1,6 @@
 package momime.client.calculations;
 
-import momime.client.graphics.database.v0_9_5.UnitSkill;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
@@ -24,7 +24,7 @@ public interface ClientUnitCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If this unit has no skills which have movement graphics, or we can't find its experience level
 	 */
-	public UnitSkill findPreferredMovementSkillGraphics (final AvailableUnit unit)
+	public UnitSkillGfx findPreferredMovementSkillGraphics (final AvailableUnit unit)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

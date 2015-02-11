@@ -4,6 +4,7 @@ import java.util.List;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
@@ -47,7 +48,7 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	 * @throws MomException If this unit has no skills which have movement graphics, or we can't find its experience level
 	 */
 	@Override
-	public final UnitSkill findPreferredMovementSkillGraphics (final AvailableUnit unit)
+	public final UnitSkillGfx findPreferredMovementSkillGraphics (final AvailableUnit unit)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID ());
@@ -60,14 +61,14 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 			mergedSkills = unit.getUnitHasSkill ();
 		
 		// Check all movement skills
-		UnitSkill bestMatch = null;
+		UnitSkillGfx bestMatch = null;
 		for (final UnitSkill thisSkill : getGraphicsDB ().getUnitSkill ())
 			if (thisSkill.getMovementIconImagePreference () != null)
 				if ((bestMatch == null) || (thisSkill.getMovementIconImagePreference () < bestMatch.getMovementIconImagePreference ()))
 					if (getUnitUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
-						bestMatch = thisSkill;
+						bestMatch = (UnitSkillGfx) thisSkill;
 		
 		if (bestMatch == null)
 			throw new MomException ("Unit " + unit.getUnitID () + " has no skills which have movement graphics");
@@ -104,7 +105,7 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID () + ", " + isMoving);
 		
 		// This is pretty straightforward, findPreferredMovementSkillGraphics does most of the work for us
-		final UnitSkill movementSkill = findPreferredMovementSkillGraphics (unit);
+		final UnitSkillGfx movementSkill = findPreferredMovementSkillGraphics (unit);
 		final String combatActionID = isMoving ? movementSkill.getMoveActionID () : movementSkill.getStandActionID ();
 		
 		if (combatActionID == null)

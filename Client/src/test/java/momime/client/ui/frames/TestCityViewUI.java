@@ -13,14 +13,15 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeEx;
-import momime.client.graphics.database.RaceEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.ProductionTypeGfx;
+import momime.client.graphics.database.ProductionTypeImageGfx;
+import momime.client.graphics.database.RaceGfx;
+import momime.client.graphics.database.RacePopulationTaskGfx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
-import momime.client.graphics.database.v0_9_5.RacePopulationTask;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -31,11 +32,11 @@ import momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.MapSizeData;
-import momime.common.database.Building;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
@@ -73,7 +74,7 @@ public final class TestCityViewUI
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final RaceEx race = new RaceEx ();
+		final RaceGfx race = new RaceGfx ();
 		when (gfx.findRace ("RC01", "cityDataChanged")).thenReturn (race);
 		
 		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "/momime.client.graphics/races/barbarian/farmer.png"));
@@ -81,12 +82,12 @@ public final class TestCityViewUI
 		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "/momime.client.graphics/races/barbarian/rebel.png"));
 		race.buildMap ();
 		
-		final TileSetEx overlandMapTileSet = new TileSetEx ();
+		final TileSetGfx overlandMapTileSet = new TileSetGfx ();
 		overlandMapTileSet.setTileWidth (20);
 		overlandMapTileSet.setTileHeight (18);
 		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
 		
-		final ProductionTypeEx rations = new ProductionTypeEx ();
+		final ProductionTypeGfx rations = new ProductionTypeGfx ();
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("1", "/momime.client.graphics/production/rations/1.png"));
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("10", "/momime.client.graphics/production/rations/10.png"));
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/rations/-1.png"));
@@ -94,7 +95,7 @@ public final class TestCityViewUI
 		rations.buildMap ();
 		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "generateProductionImage")).thenReturn (rations);
 		
-		final ProductionTypeEx gold = new ProductionTypeEx ();
+		final ProductionTypeGfx gold = new ProductionTypeGfx ();
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("1", "/momime.client.graphics/production/gold/1.png"));
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("10", "/momime.client.graphics/production/gold/10.png"));
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/gold/-1.png"));
@@ -102,11 +103,11 @@ public final class TestCityViewUI
 		gold.buildMap ();
 		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "generateProductionImage")).thenReturn (gold);
 
-		final ProductionTypeEx food = new ProductionTypeEx ();
+		final ProductionTypeGfx food = new ProductionTypeGfx ();
 		food.buildMap ();
 		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "generateProductionImage")).thenReturn (food);
 		
-		final CityViewElement granaryGfx = new CityViewElement ();
+		final CityViewElementGfx granaryGfx = new CityViewElementGfx ();
 		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		when (gfx.findBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
 		
@@ -212,7 +213,7 @@ public final class TestCityViewUI
 		when (calc.calculateCityGrowthRate (terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, db)).thenReturn (cityGrowthBreakdown);
 		
 		// Display at least some landscape
-		final CityViewElement landscape = new CityViewElement ();
+		final CityViewElementGfx landscape = new CityViewElementGfx ();
 		landscape.setLocationX (0);
 		landscape.setLocationY (0);
 		landscape.setSizeMultiplier (2);
@@ -288,9 +289,9 @@ public final class TestCityViewUI
 	 * @param filename Filename to locate the image
 	 * @return New RacePopulationTask object
 	 */
-	private final RacePopulationTask createRacePopulationTaskImage (final String populationTaskID, final String filename)
+	private final RacePopulationTaskGfx createRacePopulationTaskImage (final String populationTaskID, final String filename)
 	{
-		final RacePopulationTask image = new RacePopulationTask ();
+		final RacePopulationTaskGfx image = new RacePopulationTaskGfx ();
 		image.setPopulationTaskID (populationTaskID);
 		image.setCivilianImageFile (filename);
 		return image;
@@ -303,9 +304,9 @@ public final class TestCityViewUI
 	 * @param filename Filename to locate the image
 	 * @return New ProductionTypeImage object
 	 */
-	private final ProductionTypeImage createProductionTypeImage (final String value, final String filename)
+	private final ProductionTypeImageGfx createProductionTypeImage (final String value, final String filename)
 	{
-		final ProductionTypeImage image = new ProductionTypeImage ();
+		final ProductionTypeImageGfx image = new ProductionTypeImageGfx ();
 		image.setProductionValue (value);
 		image.setProductionImageFile (filename);
 		return image;

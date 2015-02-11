@@ -13,11 +13,11 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
+import momime.client.graphics.database.ProductionTypeGfx;
+import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -97,22 +97,22 @@ public final class TestChangeConstructionUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from the graphics XML
-		final CityViewElement granary = new CityViewElement ();
+		final CityViewElementGfx granary = new CityViewElementGfx ();
 		granary.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		
-		final AnimationEx fightersGuildAnim = new AnimationEx ();
+		final AnimationGfx fightersGuildAnim = new AnimationGfx ();
 		fightersGuildAnim.setAnimationSpeed (4);
 		for (int n = 1; n <= 9; n++)
 			fightersGuildAnim.getFrame ().add ("/momime.client.graphics/cityView/buildings/BL05-frame" + n + ".png");
 		
-		final CityViewElement fightersGuild = new CityViewElement ();
+		final CityViewElementGfx fightersGuild = new CityViewElementGfx ();
 		fightersGuild.setCityViewAnimation ("FIGHTERS_GUILD");
 		
-		final ProductionTypeImage plusOneImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx plusOneImageContainer = new ProductionTypeImageGfx ();
 		plusOneImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
 		plusOneImageContainer.setProductionValue ("1");
 		
-		final ProductionTypeEx productionTypeImages = new ProductionTypeEx ();
+		final ProductionTypeGfx productionTypeImages = new ProductionTypeGfx ();
 		productionTypeImages.getProductionTypeImage ().add (plusOneImageContainer);
 		productionTypeImages.buildMap ();
 		

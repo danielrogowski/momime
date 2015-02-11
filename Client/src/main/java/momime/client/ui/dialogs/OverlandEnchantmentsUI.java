@@ -21,9 +21,10 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.SpellGfx;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
@@ -95,7 +96,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	private Timer timer;
 	
 	/** The swirling animation to fade images in and out */
-	private AnimationEx fadeAnim;
+	private AnimationGfx fadeAnim;
 	
 	/** Whether we've unblocked the message queue */
 	private boolean unblocked;
@@ -139,7 +140,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			(fadeAnim.getFrame ().size () - 1)), 0, -5*2);
 		
 		// Get the pic of the spell
-		final momime.client.graphics.database.v0_9_5.Spell spellGfx = getGraphicsDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI");
+		final SpellGfx spellGfx = getGraphicsDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI");
 		final BufferedImage unscaledSpellPic = getUtils ().loadImage (spellGfx.getOverlandEnchantmentImageFile ());
 		final Image spellPic = unscaledSpellPic.getScaledInstance (unscaledSpellPic.getWidth () * 2, unscaledSpellPic.getHeight () * 2, Image.SCALE_SMOOTH);
 

@@ -8,10 +8,11 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.SpellGfx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CityViewUI;
@@ -76,7 +77,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	private boolean animatedByOtherFrame;
 	
 	/** Animation to display; null to process message instantly, or if animation is being handled by another frame */
-	private AnimationEx anim;
+	private AnimationGfx anim;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -144,7 +145,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			}
 			
 			// Is there an animation to display for it?
-			final momime.client.graphics.database.v0_9_5.Spell spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
+			final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
 			
 			anim = null;
 			if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getUnitURN () != null))
@@ -157,7 +158,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				if (getMaintainedSpell ().isCastInCombat ())
 				{
 					// Show anim on CombatUI
-					final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+					final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
 					
 					final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 					final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
@@ -173,7 +174,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				else
 				{
 					// Show anim on OverlandMapUI
-					final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
+					final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
 
 					final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
 					final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();

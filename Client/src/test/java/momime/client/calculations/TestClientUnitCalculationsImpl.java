@@ -10,6 +10,7 @@ import java.util.List;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.MomException;
 import momime.common.messages.AvailableUnit;
@@ -37,7 +38,7 @@ public final class TestClientUnitCalculationsImpl
 		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillGfx skill = new UnitSkillGfx ();
 			skill.setUnitSkillID ("US0" + n);
 			
 			if ((n >= 2) || (n <= 4))
@@ -96,7 +97,7 @@ public final class TestClientUnitCalculationsImpl
 		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillGfx skill = new UnitSkillGfx ();
 			skill.setUnitSkillID ("US0" + n);
 			
 			if ((n >= 2) || (n <= 4))
@@ -153,7 +154,7 @@ public final class TestClientUnitCalculationsImpl
 	{
 		// Mock entries from the graphics XML
 		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
-		final UnitSkill skill = new UnitSkill ();
+		final UnitSkillGfx skill = new UnitSkillGfx ();
 		skill.setUnitSkillID ("US01");
 		skill.setMovementIconImagePreference (1);
 		skill.setStandActionID ("XXX");
@@ -205,7 +206,7 @@ public final class TestClientUnitCalculationsImpl
 	{
 		// Mock entries from the graphics XML
 		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
-		final UnitSkill skill = new UnitSkill ();
+		final UnitSkillGfx skill = new UnitSkillGfx ();
 		skill.setUnitSkillID ("US01");
 		skill.setMovementIconImagePreference (1);
 		skills.add (skill);

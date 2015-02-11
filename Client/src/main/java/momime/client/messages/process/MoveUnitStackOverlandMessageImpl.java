@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.utils.UnitClientUtils;
@@ -55,7 +55,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	private UnitClientUtils unitClientUtils;
 	
 	/** Overland map tile set */
-	private TileSetEx overlandMapTileSet;
+	private TileSetGfx overlandMapTileSet;
 	
 	/** Number of animation ticks */
 	private int tickCount;

@@ -4,7 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -56,7 +56,7 @@ public final class TestMainMenuUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Mock entries from the graphics XML
-		final AnimationEx title = new AnimationEx ();
+		final AnimationGfx title = new AnimationGfx ();
 		title.setAnimationSpeed (8);
 		for (int n = 1; n <= 20; n++)
 			title.getFrame ().add ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png");

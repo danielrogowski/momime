@@ -102,19 +102,27 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
-	<bean id="smoothedTileType" class="momime.client.graphics.database.SmoothedTileTypeEx" scope="prototype">
+	<bean id="smoothedTileTypeGfx" class="momime.client.graphics.database.SmoothedTileTypeGfx" scope="prototype">
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
-	<bean id="tileSet" class="momime.client.graphics.database.TileSetEx" scope="prototype">
+	<bean id="pickGfx" class="momime.client.graphics.database.PickGfx" scope="prototype">
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="wizardGfx" class="momime.client.graphics.database.WizardGfx" scope="prototype">
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="tileSetGfx" class="momime.client.graphics.database.TileSetGfx" scope="prototype">
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
-	<bean id="mapFeature" class="momime.client.graphics.database.MapFeatureEx" scope="prototype">
+	<bean id="mapFeatureGfx" class="momime.client.graphics.database.MapFeatureGfx" scope="prototype">
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
-	<bean id="animation" class="momime.client.graphics.database.AnimationEx" scope="prototype">
+	<bean id="animationGfx" class="momime.client.graphics.database.AnimationGfx" scope="prototype">
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
@@ -1174,7 +1182,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
-		<property name="randomUtils" ref="randomUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
@@ -1263,7 +1270,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
-		<property name="randomUtils" ref="randomUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="helpUI" ref="helpUI" />
 	</bean>

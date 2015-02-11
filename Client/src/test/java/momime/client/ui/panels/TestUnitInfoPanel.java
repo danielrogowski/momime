@@ -19,13 +19,13 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeEx;
-import momime.client.graphics.database.RangedAttackTypeEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
-import momime.client.graphics.database.v0_9_5.RangedAttackTypeWeaponGrade;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
+import momime.client.graphics.database.ProductionTypeGfx;
+import momime.client.graphics.database.ProductionTypeImageGfx;
+import momime.client.graphics.database.RangedAttackTypeGfx;
+import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -100,14 +100,14 @@ public final class TestUnitInfoPanel
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from the graphics XML
-		final CityViewElement granaryImage = new CityViewElement ();
+		final CityViewElementGfx granaryImage = new CityViewElementGfx ();
 		granaryImage.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		
-		final ProductionTypeImage goldImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx goldImageContainer = new ProductionTypeImageGfx ();
 		goldImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
 		goldImageContainer.setProductionValue ("1");
 		
-		final ProductionTypeEx goldImages = new ProductionTypeEx ();
+		final ProductionTypeGfx goldImages = new ProductionTypeGfx ();
 		goldImages.getProductionTypeImage ().add (goldImageContainer);
 		goldImages.buildMap ();
 		
@@ -242,29 +242,29 @@ public final class TestUnitInfoPanel
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final ProductionTypeImage goldImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx goldImageContainer = new ProductionTypeImageGfx ();
 		goldImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
 		goldImageContainer.setProductionValue ("1");
 		
-		final ProductionTypeEx goldImages = new ProductionTypeEx ();
+		final ProductionTypeGfx goldImages = new ProductionTypeGfx ();
 		goldImages.getProductionTypeImage ().add (goldImageContainer);
 		goldImages.buildMap ();
 		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (goldImages);
 
-		final ProductionTypeImage rationsImageContainer = new ProductionTypeImage ();
+		final ProductionTypeImageGfx rationsImageContainer = new ProductionTypeImageGfx ();
 		rationsImageContainer.setProductionImageFile ("/momime.client.graphics/production/rations/1.png");
 		rationsImageContainer.setProductionValue ("1");
 
-		final ProductionTypeEx rationsImages = new ProductionTypeEx ();
+		final ProductionTypeGfx rationsImages = new ProductionTypeGfx ();
 		rationsImages.getProductionTypeImage ().add (rationsImageContainer);
 		rationsImages.buildMap ();
 		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (rationsImages);
 		
-		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		final RangedAttackTypeGfx rat = new RangedAttackTypeGfx ();
 		int wepGradeNbr = 0;
 		for (final String weaponGrade : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
 		{
-			final RangedAttackTypeWeaponGrade ratWeaponGrade = new RangedAttackTypeWeaponGrade ();
+			final RangedAttackTypeWeaponGradeGfx ratWeaponGrade = new RangedAttackTypeWeaponGradeGfx ();
 			ratWeaponGrade.setWeaponGradeNumber (wepGradeNbr);
 			ratWeaponGrade.setUnitDisplayRangedImageFile ("/momime.client.graphics/rangedAttacks/arrow/icon" + weaponGrade + ".png");					
 			rat.getRangedAttackTypeWeaponGrade ().add (ratWeaponGrade);
@@ -278,7 +278,7 @@ public final class TestUnitInfoPanel
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillGfx skill = new UnitSkillGfx ();
 			skill.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
 			
 			when (gfx.findUnitSkill (eq ("US0" + n), anyString ())).thenReturn (skill);
@@ -391,7 +391,7 @@ public final class TestUnitInfoPanel
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
-		final UnitSkill movementSkill = new UnitSkill ();
+		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 		

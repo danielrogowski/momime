@@ -29,11 +29,11 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetEx;
-import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
+import momime.client.graphics.database.TileSetGfx;
+import momime.client.graphics.database.WizardGfx;
 import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.Shortcut;
 import momime.client.language.database.v0_9_5.ShortcutKey;
@@ -85,7 +85,6 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.JPanelWithConstantRepaints;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -141,9 +140,6 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Music player */
 	private AudioPlayer musicPlayer;
-	
-	/** Random utils */
-	private RandomUtils randomUtils;
 	
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
@@ -335,7 +331,7 @@ public final class CombatUI extends MomClientFrameUI
 	private ApplyDamageMessageImpl attackAnim;
 	
 	/** Combat tile set */
-	private TileSetEx combatMapTileSet;
+	private TileSetGfx combatMapTileSet;
 	
 	/** Combat tile that the mouse is currently over */
 	private MapCoordinates2DEx moveToLocation;
@@ -353,7 +349,7 @@ public final class CombatUI extends MomClientFrameUI
 	private Color flashColour = NO_FLASH_COLOUR;
 	
 	/** Animation to display for a spell being cast */
-	private AnimationEx combatCastAnimation;
+	private AnimationGfx combatCastAnimation;
 	
 	/** X coord to display combat cast animation at, in pixels */
 	private int combatCastAnimationX;
@@ -1042,16 +1038,16 @@ public final class CombatUI extends MomClientFrameUI
 			// Now we can start the right music; if they've got a custom photo then default to the standard (raiders) music
 			final MomPersistentPlayerPublicKnowledge otherPub = (MomPersistentPlayerPublicKnowledge) otherPlayer.getPersistentPlayerPublicKnowledge ();
 			final String otherPhotoID = (otherPub.getStandardPhotoID () != null) ? otherPub.getStandardPhotoID () : CommonDatabaseConstants.WIZARD_ID_RAIDERS;
-			final List<WizardCombatPlayList> possiblePlayLists = getGraphicsDB ().findWizard (otherPhotoID, "initNewCombat").getCombatPlayList ();
+			final WizardGfx wizardGfx = getGraphicsDB ().findWizard (otherPhotoID, "initNewCombat");
 			
 			// Pick a music track at random
 			try
 			{
-				if (possiblePlayLists.size () < 1)
+				if (wizardGfx.getCombatPlayList ().size () < 1)
 					throw new MomException ("Wizard " + otherPhotoID + " has no combat music defined");
 				
 				getMusicPlayer ().setShuffle (false);
-				getMusicPlayer ().playPlayList (possiblePlayLists.get (getRandomUtils ().nextInt (possiblePlayLists.size ())).getPlayListID ());
+				getMusicPlayer ().playPlayList (wizardGfx.chooseRandomCombatPlayListID ());
 			}
 			catch (final Exception e)
 			{
@@ -1757,22 +1753,6 @@ public final class CombatUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Random utils
-	 */
-	public final RandomUtils getRandomUtils ()
-	{
-		return randomUtils;
-	}
-
-	/**
-	 * @param utils Random utils
-	 */
-	public final void setRandomUtils (final RandomUtils utils)
-	{
-		randomUtils = utils;
-	}
-
-	/**
 	 * @return Wizard client utils
 	 */
 	public final WizardClientUtils getWizardClientUtils ()
@@ -2111,7 +2091,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Animation to display for a spell being cast
 	 */
-	public final AnimationEx getCombatCastAnimation ()
+	public final AnimationGfx getCombatCastAnimation ()
 	{
 		return combatCastAnimation;
 	}
@@ -2119,7 +2099,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param an Animation to display for a spell being cast
 	 */
-	public final void setCombatCastAnimation (final AnimationEx an)
+	public final void setCombatCastAnimation (final AnimationGfx an)
 	{
 		combatCastAnimation = an;
 	}

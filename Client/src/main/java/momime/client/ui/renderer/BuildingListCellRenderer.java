@@ -10,8 +10,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
@@ -80,7 +80,7 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 		imageLabel.setIcon (null);
 		try
 		{
-			final CityViewElement buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "BuildingListCellRenderer");
+			final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "BuildingListCellRenderer");
 			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 				buildingImage.getCityViewAnimation (), true);

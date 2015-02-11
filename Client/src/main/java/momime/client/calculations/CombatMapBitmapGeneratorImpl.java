@@ -8,14 +8,14 @@ import java.util.Map;
 
 import momime.client.MomClient;
 import momime.client.config.v0_9_5.MomImeClientConfig;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SmoothedTileTypeEx;
-import momime.client.graphics.database.TileSetEx;
-import momime.client.graphics.database.v0_9_5.SmoothedTile;
-import momime.common.database.RecordNotFoundException;
+import momime.client.graphics.database.SmoothedTileGfx;
+import momime.client.graphics.database.SmoothedTileTypeGfx;
+import momime.client.graphics.database.TileSetGfx;
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.utils.CombatMapUtils;
@@ -55,10 +55,10 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	private MomImeClientConfig clientConfig;
 	
 	/** Smoothed tile types to display at every map cell */
-	private Map<CombatMapLayerID, SmoothedTileTypeEx [] []> smoothedTileTypes;
+	private Map<CombatMapLayerID, SmoothedTileTypeGfx [] []> smoothedTileTypes;
 
 	/** Smoothed tiles to display at every map cell */
-	private Map<CombatMapLayerID, SmoothedTile [] []> smoothedTiles;
+	private Map<CombatMapLayerID, SmoothedTileGfx [] []> smoothedTiles;
 	
 	/**
 	 * Creates the smoothedTiles array as the correct size
@@ -68,14 +68,14 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	{
 		log.trace ("Entering afterJoinedSession");
 
-		smoothedTiles = new HashMap<CombatMapLayerID, SmoothedTile [] []> ();
-		smoothedTileTypes = new HashMap<CombatMapLayerID, SmoothedTileTypeEx [] []> ();
+		smoothedTiles = new HashMap<CombatMapLayerID, SmoothedTileGfx [] []> ();
+		smoothedTileTypes = new HashMap<CombatMapLayerID, SmoothedTileTypeGfx [] []> ();
 		
 		final CombatMapSizeData mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
 		{
-			smoothedTiles.put (layer, new SmoothedTile [mapSize.getHeight ()] [mapSize.getWidth ()]);
-			smoothedTileTypes.put (layer, new SmoothedTileTypeEx [mapSize.getHeight ()] [mapSize.getWidth ()]);
+			smoothedTiles.put (layer, new SmoothedTileGfx [mapSize.getHeight ()] [mapSize.getWidth ()]);
+			smoothedTileTypes.put (layer, new SmoothedTileTypeGfx [mapSize.getHeight ()] [mapSize.getWidth ()]);
 		}
 
 		log.trace ("Exiting afterJoinedSession");
@@ -101,13 +101,13 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
 		
 		// Choose the appropriate tile set
-		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "smoothMapTerrain");
+		final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "smoothMapTerrain");
 		
 		// Now check each map cell
 		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
 		{
-			final SmoothedTileTypeEx [] [] smoothedTileTypesLayer = smoothedTileTypes.get (layer);
-			final SmoothedTile [] [] smoothedTilesLayer = smoothedTiles.get (layer);
+			final SmoothedTileTypeGfx [] [] smoothedTileTypesLayer = smoothedTileTypes.get (layer);
+			final SmoothedTileGfx [] [] smoothedTilesLayer = smoothedTiles.get (layer);
 			
 			for (int y = 0; y < mapSize.getHeight (); y++) 
 				for (int x = 0; x < mapSize.getWidth (); x++)
@@ -122,7 +122,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 					}
 					else
 					{
-						final SmoothedTileTypeEx smoothedTileType = combatMapTileSet.findSmoothedTileType (tileTypeID, combatLocation.getZ (), combatTileTypeID);
+						final SmoothedTileTypeGfx smoothedTileType = combatMapTileSet.findSmoothedTileType (tileTypeID, combatLocation.getZ (), combatTileTypeID);
 						
 						// If this is ticked then fix the bitmask
 						// If a land based tile, want to assume grass in every direction (e.g. for mountains, draw a single mountain), so want 11111111
@@ -198,7 +198,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		final CombatMapSizeData mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		
 		// We need the tile set so we know how many animation frames there are
-		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "generateCombatMapBitmap");
+		final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "generateCombatMapBitmap");
 
 		// Create the set of empty bitmaps
 		final BufferedImage [] combatMapBitmaps = new BufferedImage [combatMapTileSet.getAnimationFrameCount ()];
@@ -211,15 +211,15 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		
 		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
 		{
-			final SmoothedTileTypeEx [] [] smoothedTileTypesLayer = smoothedTileTypes.get (layer);
-			final SmoothedTile [] [] smoothedTilesLayer = smoothedTiles.get (layer);
+			final SmoothedTileTypeGfx [] [] smoothedTileTypesLayer = smoothedTileTypes.get (layer);
+			final SmoothedTileGfx [] [] smoothedTilesLayer = smoothedTiles.get (layer);
 			
 			// Run through each tile
 			for (int x = 0; x < mapSize.getWidth (); x++)
 				for (int y = 0; y < mapSize.getHeight (); y++)
 				{
 					// Terrain
-					final SmoothedTile tile = smoothedTilesLayer [y] [x];
+					final SmoothedTileGfx tile = smoothedTilesLayer [y] [x];
 					if (tile != null)
 					{
 						if (tile.getTileFile () != null)
@@ -255,7 +255,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 								ypos = ypos + (smoothedTileTypesLayer [y] [x].getTileOffsetY () * 2);
 							
 							// Copy each animation frame over to each bitmap
-							final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateCombatMapBitmaps");
+							final AnimationGfx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateCombatMapBitmaps");
 							for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
 								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
@@ -281,7 +281,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	 * @return Left edge of tile in pixel coordinates
 	 */
 	@Override
-	public final int combatCoordinatesX (final int x, final int y, final TileSetEx combatMapTileSet)
+	public final int combatCoordinatesX (final int x, final int y, final TileSetGfx combatMapTileSet)
 	{
 		final int separationX = combatMapTileSet.getTileWidth () + 2;		// Because of the way the tiles slot together
 		
@@ -300,7 +300,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	 * @return Top edge of tile in pixel coordinates
 	 */
 	@Override
-	public final int combatCoordinatesY (final int x, final int y, final TileSetEx combatMapTileSet)
+	public final int combatCoordinatesY (final int x, final int y, final TileSetGfx combatMapTileSet)
 	{
 		final int separationY = combatMapTileSet.getTileHeight () / 2;
 

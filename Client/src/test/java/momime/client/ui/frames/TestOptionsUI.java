@@ -10,7 +10,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import momime.client.ClientTestData;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -82,7 +82,7 @@ public final class TestOptionsUI
 		anim.setUtils (utils);
 
 		// Config
-		final MomImeClientConfig config = new MomImeClientConfig ();
+		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
 		config.setCombatSmoothTerrain (true);
 		config.setOverlandSmoothTextures (true);
 		config.setDebugShowEdgesOfMap (true);
@@ -95,11 +95,11 @@ public final class TestOptionsUI
 		config.setPathToLanguageXmlFiles (path);
 		
 		// Decide a temp location to save updates to the config file
-		final String clientConfigLocation = File.createTempFile ("MoMIMEClientConfig", ".xml").getAbsolutePath ();
+		final String clientConfigLocation = File.createTempFile ("MomImeClientConfigEx", ".xml").getAbsolutePath ();
 		log.info ("Saving test updates to config file to \"" + clientConfigLocation + "\"");
 		
 		// Marshaller
-		final Marshaller marshaller = JAXBContext.newInstance (MomImeClientConfig.class).createMarshaller ();
+		final Marshaller marshaller = JAXBContext.newInstance (MomImeClientConfigEx.class).createMarshaller ();
 		marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		
 		// Unit animations

@@ -34,8 +34,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 	
+	<bean id="clientConfigFactory" class="momime.client.config.ClientConfigFactory" />		<!-- Creates MomImeClientConfigEx instead of MomImeClientConfig -->
+	
 	<bean id="clientConfigUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="clientConfigJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="clientConfigSchema" />
+	</bean>
+
+	<bean id="configureClientConfigUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="clientConfigUnmarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>com.sun.xml.bind.ObjectFactory</value>
+				<array>
+					<ref bean="clientConfigFactory" />
+				</array>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="clientConfig" class="momime.client.config.v0_9_5.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">

@@ -19,7 +19,7 @@ import javax.xml.validation.SchemaFactory;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarMemory;
@@ -74,7 +74,7 @@ public final class TestOverlandMapBitmapGeneratorImpl
 		final StoredOverlandMap container = (StoredOverlandMap) unmarshaller.unmarshal (xmlResource);
 		
 		// Config
-		final MomImeClientConfig config = new MomImeClientConfig ();
+		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
 		config.setOverlandSmoothTerrain (true);
 		
 		// Session description

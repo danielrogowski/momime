@@ -20,7 +20,7 @@ import javax.swing.WindowConstants;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.CombatActionGfx;
@@ -416,7 +416,7 @@ public final class TestUnitClientUtilsImpl
 		anim.setUtils (utils);
 		
 		// Config
-		final MomImeClientConfig config = new MomImeClientConfig (); 
+		final MomImeClientConfigEx config = new MomImeClientConfigEx (); 
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
@@ -521,7 +521,7 @@ public final class TestUnitClientUtilsImpl
 		when (unitUtils.getFullFigureCount (summonedSingleDef)).thenReturn (1);
 		
 		// Config
-		final MomImeClientConfig config = new MomImeClientConfig ();
+		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
 
 		// Regular unit (which just happens to only have 1 figure, e.g. a steam cannon)
 		final AvailableUnit regularUnit = new AvailableUnit ();

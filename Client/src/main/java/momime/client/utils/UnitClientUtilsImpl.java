@@ -11,7 +11,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.CombatTileFigurePositionsGfx;
 import momime.client.graphics.database.FigurePositionsForFigureCountGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -97,7 +97,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Client config, containing the scale setting */
-	private MomImeClientConfig clientConfig;
+	private MomImeClientConfigEx clientConfig;
 	
 	/** Sound effects player */
 	private AudioPlayer soundPlayer;
@@ -857,7 +857,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @return Client config, containing the scale setting
 	 */
-	public final MomImeClientConfig getClientConfig ()
+	public final MomImeClientConfigEx getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -865,7 +865,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * @param config Client config, containing the scale setting
 	 */
-	public final void setClientConfig (final MomImeClientConfig config)
+	public final void setClientConfig (final MomImeClientConfigEx config)
 	{
 		clientConfig = config;
 	}

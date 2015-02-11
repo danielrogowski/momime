@@ -26,7 +26,7 @@ import javax.xml.bind.Unmarshaller;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.LanguageChangeMaster;
@@ -96,7 +96,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	private UnitClientUtils unitClientUtils;
 	
 	/** Complete client config, so we can edit various settings */
-	private MomImeClientConfig clientConfig;
+	private MomImeClientConfigEx clientConfig;
 	
 	/** Marshaller for saving client config */
 	private Marshaller clientConfigMarshaller;
@@ -668,7 +668,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/**
 	 * @return Complete client config, so we can edit various settings
 	 */
-	public final MomImeClientConfig getClientConfig ()
+	public final MomImeClientConfigEx getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -676,7 +676,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/**
 	 * @param cfg Complete client config, so we can edit various settings
 	 */
-	public final void setClientConfig (final MomImeClientConfig cfg)
+	public final void setClientConfig (final MomImeClientConfigEx cfg)
 	{
 		clientConfig = cfg;
 	}

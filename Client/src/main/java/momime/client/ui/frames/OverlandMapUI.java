@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -145,7 +145,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private CoordinateSystemUtils coordinateSystemUtils;
 
 	/** Client config, containing various overland map settings */
-	private MomImeClientConfig clientConfig;
+	private MomImeClientConfigEx clientConfig;
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -1736,7 +1736,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @return Client config, containing various overland map settings
 	 */	
-	public final MomImeClientConfig getClientConfig ()
+	public final MomImeClientConfigEx getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -1744,7 +1744,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @param config Client config, containing various overland map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfig config)
+	public final void setClientConfig (final MomImeClientConfigEx config)
 	{
 		clientConfig = config;
 	}

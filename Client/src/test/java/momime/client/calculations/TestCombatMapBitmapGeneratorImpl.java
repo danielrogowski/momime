@@ -18,7 +18,7 @@ import javax.xml.validation.SchemaFactory;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.newgame.MapSizeData;
@@ -79,7 +79,7 @@ public final class TestCombatMapBitmapGeneratorImpl
 		final StoredCombatMap container = (StoredCombatMap) unmarshaller.unmarshal (xmlResource);
 		
 		// Config
-		final MomImeClientConfig config = new MomImeClientConfig ();
+		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
 		config.setCombatSmoothTerrain (true);
 		
 		// Session description

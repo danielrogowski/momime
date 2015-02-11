@@ -37,7 +37,7 @@ import javax.swing.event.ListSelectionListener;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.BuildingLang;
@@ -227,7 +227,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Client config, containing various combat map settings */
-	private MomImeClientConfig clientConfig;
+	private MomImeClientConfigEx clientConfig;
 	
 	/** Help text scroll */
 	private HelpUI helpUI;
@@ -1251,7 +1251,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @return Client config, containing various combat map settings
 	 */	
-	public final MomImeClientConfig getClientConfig ()
+	public final MomImeClientConfigEx getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -1259,7 +1259,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @param config Client config, containing various combat map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfig config)
+	public final void setClientConfig (final MomImeClientConfigEx config)
 	{
 		clientConfig = config;
 	}

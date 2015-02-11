@@ -12,7 +12,7 @@ import java.util.List;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
@@ -150,7 +150,7 @@ public final class TestOverlandMapUI
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "updateAmountPerTurn")).thenReturn (player1);
 		
 		// Config
-		final MomImeClientConfig config = new MomImeClientConfig (); 
+		final MomImeClientConfigEx config = new MomImeClientConfigEx (); 
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

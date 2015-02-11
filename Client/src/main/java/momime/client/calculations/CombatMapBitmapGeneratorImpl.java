@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import momime.client.MomClient;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -52,7 +52,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	private CombatMapUtils combatMapUtils;
 	
 	/** Client config, containing various combat map settings */
-	private MomImeClientConfig clientConfig;
+	private MomImeClientConfigEx clientConfig;
 	
 	/** Smoothed tile types to display at every map cell */
 	private Map<CombatMapLayerID, SmoothedTileTypeGfx [] []> smoothedTileTypes;
@@ -392,7 +392,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	/**
 	 * @return Client config, containing various combat map settings
 	 */	
-	public final MomImeClientConfig getClientConfig ()
+	public final MomImeClientConfigEx getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -400,7 +400,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	/**
 	 * @param config Client config, containing various combat map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfig config)
+	public final void setClientConfig (final MomImeClientConfigEx config)
 	{
 		clientConfig = config;
 	}

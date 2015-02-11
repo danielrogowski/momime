@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import momime.client.MomClient;
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.CityImageGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -62,7 +62,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** Client config, containing various overland map settings */
-	private MomImeClientConfig clientConfig;
+	private MomImeClientConfigEx clientConfig;
 	
 	/** Smoothed tiles to display at every map cell */
 	private SmoothedTileGfx [] [] [] smoothedTiles;
@@ -577,7 +577,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	/**
 	 * @return Client config, containing various overland map settings
 	 */	
-	public final MomImeClientConfig getClientConfig ()
+	public final MomImeClientConfigEx getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -585,7 +585,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	/**
 	 * @param config Client config, containing various overland map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfig config)
+	public final void setClientConfig (final MomImeClientConfigEx config)
 	{
 		clientConfig = config;
 	}

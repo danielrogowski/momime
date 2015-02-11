@@ -64,6 +64,10 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.WizardGfx;
+import momime.client.language.database.PickLang;
+import momime.client.language.database.PlaneLang;
+import momime.client.language.database.RaceLang;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
@@ -2879,7 +2883,7 @@ public final class NewGameUI extends MomClientFrameUI
 								msg.setTitleLanguageCategoryID ("frmCustomPicks");
 								msg.setTitleLanguageEntryID ("Title");
 								
-								final momime.client.language.database.v0_9_5.Pick pickLang = getLanguage ().findPick (pick.getPickID ());
+								final PickLang pickLang = getLanguage ().findPick (pick.getPickID ());
 								final String pickDescription = (pickLang == null) ? null : pickLang.getPickDescriptionSingular ();
 								
 								final String languageEntryID;
@@ -3681,7 +3685,7 @@ public final class NewGameUI extends MomClientFrameUI
 		else if (freeSpellsPanel.isVisible ())
 		{
 			// "Choose Life Spells" title
-			final momime.client.language.database.v0_9_5.Pick currentMagicRealm = getLanguage ().findPick (currentMagicRealmID);
+			final PickLang currentMagicRealm = getLanguage ().findPick (currentMagicRealmID);
 			final String magicRealmDescription = (currentMagicRealm == null) ? currentMagicRealmID : currentMagicRealm.getBookshelfDescription ();
 			title.setText (getLanguage ().findCategoryEntry ("frmChooseInitialSpells", "Title").replaceAll ("MAGIC_REALM", magicRealmDescription));
 
@@ -3852,7 +3856,7 @@ public final class NewGameUI extends MomClientFrameUI
 				if (pick.getQuantity () > 1)
 					desc.append (pick.getQuantity () + "x");
 
-				final momime.client.language.database.v0_9_5.Pick pickDesc = getLanguage ().findPick (pick.getPickID ());
+				final PickLang pickDesc = getLanguage ().findPick (pick.getPickID ());
 				final String thisPickText;
 				if (pickDesc == null)
 					thisPickText = pick.getPickID ();
@@ -3897,7 +3901,7 @@ public final class NewGameUI extends MomClientFrameUI
 		// Retort buttons
 		for (final Entry<String, ToggleAction> retort : retortButtonActions.entrySet ())
 		{
-			final momime.client.language.database.v0_9_5.Pick pick = getLanguage ().findPick (retort.getKey ());
+			final PickLang pick = getLanguage ().findPick (retort.getKey ());
 			final String pickDescription = (pick == null) ? null : pick.getPickDescriptionSingular ();
 			retort.getValue ().putValue (Action.NAME, (pickDescription != null) ? pickDescription : retort.getKey ());
 		}
@@ -3905,7 +3909,7 @@ public final class NewGameUI extends MomClientFrameUI
 		// Bookshelf titles
 		for (final Entry<String, JLabel> bookshelfTitle : bookshelfTitles.entrySet ())
 		{
-			final momime.client.language.database.v0_9_5.Pick pick = getLanguage ().findPick (bookshelfTitle.getKey ());
+			final PickLang pick = getLanguage ().findPick (bookshelfTitle.getKey ());
 			final String pickDescription = (pick == null) ? null : pick.getBookshelfDescription ();
 			bookshelfTitle.getValue ().setText ((pickDescription != null) ? pickDescription : bookshelfTitle.getKey ());
 		}
@@ -3913,14 +3917,14 @@ public final class NewGameUI extends MomClientFrameUI
 		// Race plane titles
 		for (final Entry<Integer, JLabel> planeLabel : racePlanes.entrySet ())
 		{
-			final momime.client.language.database.v0_9_5.Plane plane = getLanguage ().findPlane (planeLabel.getKey ());
+			final PlaneLang plane = getLanguage ().findPlane (planeLabel.getKey ());
 			planeLabel.getValue ().setText ((plane == null) ? planeLabel.getKey ().toString () : plane.getPlaneRacesTitle ());
 		}
 		
 		// Choose race buttons
 		for (final Entry<Race, Action> raceAction : raceButtonActions.entrySet ())
 		{
-			final momime.client.language.database.v0_9_5.Race race = getLanguage ().findRace (raceAction.getKey ().getRaceID ());
+			final RaceLang race = getLanguage ().findRace (raceAction.getKey ().getRaceID ());
 			raceAction.getValue ().putValue (Action.NAME, (race == null) ? raceAction.getKey ().getRaceID () : race.getRaceName ());
 		}
 
@@ -3995,7 +3999,7 @@ public final class NewGameUI extends MomClientFrameUI
 		// Names of every spell
 		for (final Entry<Spell, ToggleAction> spellAction : freeSpellActions.entrySet ())
 		{
-			final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (spellAction.getKey ().getSpellID ());
+			final SpellLang spell = getLanguage ().findSpell (spellAction.getKey ().getSpellID ());
 			spellAction.getValue ().putValue (Action.NAME, (spell == null) ? spellAction.getKey ().getSpellID () : spell.getSpellName ());			
 		}
 

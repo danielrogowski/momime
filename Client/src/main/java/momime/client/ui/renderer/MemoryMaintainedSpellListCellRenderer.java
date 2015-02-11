@@ -8,9 +8,9 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import momime.client.MomClient;
+import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -40,7 +40,7 @@ public final class MemoryMaintainedSpellListCellRenderer extends JLabel implemen
 		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Get city spell effect name
-		final CitySpellEffect effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
+		final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
 		final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
 		setText ((effectName != null) ? effectName : spell.getCitySpellEffectID ());
 		

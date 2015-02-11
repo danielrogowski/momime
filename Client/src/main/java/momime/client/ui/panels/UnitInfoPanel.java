@@ -40,7 +40,9 @@ import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.BuildingLang;
+import momime.client.language.database.SpellLang;
+import momime.client.language.database.UnitAttributeLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.HelpUI;
@@ -614,7 +616,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						msg.setTitleLanguageCategoryID ("SpellCasting");
 						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
 
-						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+						final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
 						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 						
 						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
@@ -905,7 +907,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Unit attribute labels
 		for (final Entry<String, JLabel> unitAttr : unitAttributeLabels.entrySet ())
 		{
-			final momime.client.language.database.v0_9_5.UnitAttribute unitAttrLang = getLanguage ().findUnitAttribute (unitAttr.getKey ());
+			final UnitAttributeLang unitAttrLang = getLanguage ().findUnitAttribute (unitAttr.getKey ());
 			unitAttr.getValue ().setText ((unitAttrLang != null) ? unitAttrLang.getUnitAttributeDescription () : unitAttr.getKey ());
 		}
 		
@@ -926,7 +928,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Labels if showing a building
 		if (building != null)
 		{
-			final momime.client.language.database.v0_9_5.Building buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
+			final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
 			currentlyConstructingName.setText ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
 			currentlyConstructingDescription.setText ((buildingLang != null) ? buildingLang.getBuildingHelpText () : null);
 			currentlyConstructingAllows.setText (getClientCityCalculations ().describeWhatBuildingAllows (building.getBuildingID (), (MapCoordinates3DEx) building.getCityLocation ()));

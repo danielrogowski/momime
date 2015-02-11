@@ -2,36 +2,19 @@ package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
-import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
 import momime.client.language.database.v0_9_5.Hero;
 import momime.client.language.database.v0_9_5.LandProportion;
 import momime.client.language.database.v0_9_5.LanguageEntry;
-import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
-import momime.client.language.database.v0_9_5.Pick;
-import momime.client.language.database.v0_9_5.PickType;
-import momime.client.language.database.v0_9_5.Plane;
-import momime.client.language.database.v0_9_5.PopulationTask;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.RangedAttackType;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.ShortcutKey;
-import momime.client.language.database.v0_9_5.Spell;
-import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
-import momime.client.language.database.v0_9_5.TileType;
-import momime.client.language.database.v0_9_5.Unit;
-import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSetting;
-import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.client.language.database.v0_9_5.Wizard;
 import momime.common.database.SpellBookSectionID;
 
@@ -51,7 +34,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Plane newPlane = new Plane ();
+			final PlaneLang newPlane = new PlaneLang ();
 			newPlane.setPlaneNumber(n);
 			newPlane.setPlaneDescription ("PLDesc0" + n);
 			lang.getPlane ().add (newPlane);
@@ -72,7 +55,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final ProductionType newProductionType = new ProductionType ();
+			final ProductionTypeLang newProductionType = new ProductionTypeLang ();
 			newProductionType.setProductionTypeID ("RE0" + n);
 			newProductionType.setProductionTypeDescription ("REDesc0" + n);
 			lang.getProductionType ().add (newProductionType);
@@ -93,7 +76,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapFeature newMapFeature = new MapFeature ();
+			final MapFeatureLang newMapFeature = new MapFeatureLang ();
 			newMapFeature.setMapFeatureID ("MF0" + n);
 			newMapFeature.setMapFeatureDescription ("MFDesc0" + n);
 			lang.getMapFeature ().add (newMapFeature);
@@ -114,7 +97,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileType newTileType = new TileType ();
+			final TileTypeLang newTileType = new TileTypeLang ();
 			newTileType.setTileTypeID ("TT0" + n);
 			newTileType.setTileTypeDescription ("TTDesc0" + n);
 			lang.getTileType ().add (newTileType);
@@ -135,7 +118,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final PickType newPickType = new PickType ();
+			final PickTypeLang newPickType = new PickTypeLang ();
 			newPickType.setPickTypeID ("PT0" + n);
 			newPickType.setPickTypeDescriptionSingular ("PTDesc0" + n);
 			lang.getPickType ().add (newPickType);
@@ -156,7 +139,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick newPick = new Pick ();
+			final PickLang newPick = new PickLang ();
 			newPick.setPickID ("MB0" + n);
 			newPick.setPickDescriptionSingular ("MBDesc0" + n);
 			lang.getPick ().add (newPick);
@@ -198,7 +181,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final PopulationTask newPopulationTask = new PopulationTask ();
+			final PopulationTaskLang newPopulationTask = new PopulationTaskLang ();
 			newPopulationTask.setPopulationTaskID ("PT0" + n);
 			newPopulationTask.setPopulationTaskSingular ("PTSingle0" + n);
 			lang.getPopulationTask ().add (newPopulationTask);
@@ -219,7 +202,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Race newRace = new Race ();
+			final RaceLang newRace = new RaceLang ();
 			newRace.setRaceID ("RC0" + n);
 			newRace.setRaceName ("RCDesc0" + n);
 			lang.getRace ().add (newRace);
@@ -240,7 +223,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Building newBuilding = new Building ();
+			final BuildingLang newBuilding = new BuildingLang ();
 			newBuilding.setBuildingID ("BL0" + n);
 			newBuilding.setBuildingName ("BLDesc0" + n);
 			lang.getBuilding ().add (newBuilding);
@@ -261,7 +244,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitTypeEx newUnitType = new UnitTypeEx ();
+			final UnitTypeLang newUnitType = new UnitTypeLang ();
 			newUnitType.setUnitTypeID ("UT0" + n);
 			newUnitType.setUnitTypeExperienced ("UTDesc0" + n);		// There's no "description" field, so just using any other text field to test with
 			lang.getUnitType ().add (newUnitType);
@@ -282,7 +265,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitAttribute newUnitAttribute = new UnitAttribute ();
+			final UnitAttributeLang newUnitAttribute = new UnitAttributeLang ();
 			newUnitAttribute.setUnitAttributeID ("UA0" + n);
 			newUnitAttribute.setUnitAttributeDescription ("UADesc0" + n);
 			lang.getUnitAttribute ().add (newUnitAttribute);
@@ -303,7 +286,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSkill newUnitSkill = new UnitSkill ();
+			final UnitSkillLang newUnitSkill = new UnitSkillLang ();
 			newUnitSkill.setUnitSkillID ("US0" + n);
 			newUnitSkill.setUnitSkillDescription ("USDesc0" + n);
 			lang.getUnitSkill ().add (newUnitSkill);
@@ -345,7 +328,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Unit newUnit = new Unit ();
+			final UnitLang newUnit = new UnitLang ();
 			newUnit.setUnitID ("UN00" + n);
 			newUnit.setUnitName ("UNDesc0" + n);
 			lang.getUnit ().add (newUnit);
@@ -408,7 +391,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CitySpellEffect newCitySpellEffect = new CitySpellEffect ();
+			final CitySpellEffectLang newCitySpellEffect = new CitySpellEffectLang ();
 			newCitySpellEffect.setCitySpellEffectID ("CSE00" + n);
 			newCitySpellEffect.setCitySpellEffectName ("CSEDesc0" + n);
 			lang.getCitySpellEffect ().add (newCitySpellEffect);
@@ -429,7 +412,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			final CombatAreaEffectLang newCombatAreaEffect = new CombatAreaEffectLang ();
 			newCombatAreaEffect.setCombatAreaEffectID ("CAE00" + n);
 			newCombatAreaEffect.setCombatAreaEffectDescription ("CAEDesc0" + n);
 			lang.getCombatAreaEffect ().add (newCombatAreaEffect);
@@ -471,7 +454,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final SpellBookSection newSection = new SpellBookSection ();
+			final SpellBookSectionLang newSection = new SpellBookSectionLang ();
 			newSection.setSpellBookSectionID (SpellBookSectionID.fromValue ("SC0" + n));
 			newSection.setSpellBookSectionName ("SCDesc0" + n);
 			lang.getSpellBookSection ().add (newSection);
@@ -492,7 +475,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Spell newSpell = new Spell ();
+			final SpellLang newSpell = new SpellLang ();
 			newSpell.setSpellID ("MB0" + n);
 			newSpell.setSpellDescription ("MBDesc0" + n);
 			lang.getSpell ().add (newSpell);
@@ -697,7 +680,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 2; n++)
 		{
-			final ShortcutKey newKey = new ShortcutKey ();
+			final ShortcutKeyLang newKey = new ShortcutKeyLang ();
 			newKey.setNormalKey (new Integer (n).toString ());
 			newKey.setShortcut ((n == 1) ? Shortcut.SPELLBOOK : Shortcut.OVERLAND_MOVE_DONE);
 			lang.getShortcutKey ().add (newKey);

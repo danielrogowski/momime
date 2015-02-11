@@ -19,7 +19,7 @@ import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.SpellLang;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
@@ -77,7 +77,7 @@ public final class TestOverlandEnchantmentsUI
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("SpellCasting", "OurOverlandEnchantment")).thenReturn ("You have completed casting...");
 		
-		final Spell spellLang = new Spell ();
+		final SpellLang spellLang = new SpellLang ();
 		spellLang.setSpellName ("Just Cause");
 		when (lang.findSpell ("SP001")).thenReturn (spellLang);
 		

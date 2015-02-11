@@ -41,9 +41,10 @@ import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
-import momime.client.language.database.v0_9_5.Building;
+import momime.client.language.database.BuildingLang;
+import momime.client.language.database.ShortcutKeyLang;
+import momime.client.language.database.SpellLang;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.messages.process.MoveUnitStackOverlandMessageImpl;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -920,7 +921,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 									}
 									else if (validTarget.getCityLanguageEntryID () != null)
 									{
-										final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+										final SpellLang spellLang = getLanguage ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
 										final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 										
 										String buildingName;
@@ -928,7 +929,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 											buildingName = "";
 										else
 										{
-											final Building buildingLang = getLanguage ().findBuilding (spell.getBuildingID ());
+											final BuildingLang buildingLang = getLanguage ().findBuilding (spell.getBuildingID ());
 											buildingName = (buildingLang != null) ? buildingLang.getBuildingName () : null;
 											if (buildingName == null)
 												buildingName = "";
@@ -1132,7 +1133,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		for (final Object shortcut : contentPane.getActionMap ().keys ())
 			if (shortcut instanceof Shortcut)
 			{
-				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
 				if (shortcutKey != null)
 				{
 					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);

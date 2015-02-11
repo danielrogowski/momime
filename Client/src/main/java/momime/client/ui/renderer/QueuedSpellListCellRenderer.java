@@ -11,7 +11,8 @@ import javax.swing.ListCellRenderer;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellLang;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -78,7 +79,7 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 		rightLabel.setForeground (getForeground ());
 		
 		// Get spell name
-		final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spellID);
+		final SpellLang spellLang = getLanguage ().findSpell (spellID);
 		final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 		leftLabel.setText ((spellName != null) ? spellName : spellID);
 		
@@ -92,7 +93,7 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 			final Spell spell = getClient ().getClientDB ().findSpell (spellID, "QueuedSpellListCellRenderer");
 			final int castingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
-			final ProductionType manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+			final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 			String suffix = (manaProduction == null) ? null : manaProduction.getProductionTypeSuffix ();
 			suffix = (suffix == null) ? "" : (" " + suffix);
 			

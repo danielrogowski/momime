@@ -25,8 +25,8 @@ import momime.client.graphics.database.UnitGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.UnitAttribute;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.UnitAttributeLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
@@ -82,7 +82,7 @@ public final class TestSpellClientUtilsImpl
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
 		
-		final ProductionType mana = new ProductionType ();
+		final ProductionTypeLang mana = new ProductionTypeLang ();
 		mana.setProductionTypeDescription ("Mana");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
 		
@@ -125,7 +125,7 @@ public final class TestSpellClientUtilsImpl
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
 		
-		final ProductionType mana = new ProductionType ();
+		final ProductionTypeLang mana = new ProductionTypeLang ();
 		mana.setProductionTypeDescription ("Mana");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
 		
@@ -168,11 +168,11 @@ public final class TestSpellClientUtilsImpl
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
 		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
 		
-		final ProductionType mana = new ProductionType ();
+		final ProductionTypeLang mana = new ProductionTypeLang ();
 		mana.setProductionTypeDescription ("Mana");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
 
-		final ProductionType gold = new ProductionType ();
+		final ProductionTypeLang gold = new ProductionTypeLang ();
 		gold.setProductionTypeDescription ("Gold");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (gold);
 		
@@ -273,7 +273,7 @@ public final class TestSpellClientUtilsImpl
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmHelp", "SpellBookNoSavingThrowModifier")).thenReturn ("Saves against UNIT_ATTRIBUTE");
 		
-		final UnitAttribute attr = new UnitAttribute ();
+		final UnitAttributeLang attr = new UnitAttributeLang ();
 		attr.setUnitAttributeDescription ("Resistance");
 		when (lang.findUnitAttribute ("UA01")).thenReturn (attr);
 		
@@ -306,7 +306,7 @@ public final class TestSpellClientUtilsImpl
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmHelp", "SpellBookSingleSavingThrowModifier")).thenReturn ("Saves against UNIT_ATTRIBUTE at SAVING_THROW_MODIFIER");
 		
-		final UnitAttribute attr = new UnitAttribute ();
+		final UnitAttributeLang attr = new UnitAttributeLang ();
 		attr.setUnitAttributeDescription ("Resistance");
 		when (lang.findUnitAttribute ("UA01")).thenReturn (attr);
 		
@@ -341,7 +341,7 @@ public final class TestSpellClientUtilsImpl
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmHelp", "SpellBookMultipleSavingThrowModifiers")).thenReturn ("Saves against UNIT_ATTRIBUTE from SAVING_THROW_MODIFIER_MINIMUM to SAVING_THROW_MODIFIER_MAXIMUM");
 		
-		final UnitAttribute attr = new UnitAttribute ();
+		final UnitAttributeLang attr = new UnitAttributeLang ();
 		attr.setUnitAttributeDescription ("Resistance");
 		when (lang.findUnitAttribute ("UA01")).thenReturn (attr);
 		

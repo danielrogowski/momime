@@ -2,25 +2,8 @@ package momime.client.language.database;
 
 import java.util.List;
 
-import momime.client.language.database.v0_9_5.Building;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
-import momime.client.language.database.v0_9_5.CombatAreaEffect;
 import momime.client.language.database.v0_9_5.KnownServer;
-import momime.client.language.database.v0_9_5.MapFeature;
-import momime.client.language.database.v0_9_5.Pick;
-import momime.client.language.database.v0_9_5.PickType;
-import momime.client.language.database.v0_9_5.Plane;
-import momime.client.language.database.v0_9_5.PopulationTask;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.ShortcutKey;
-import momime.client.language.database.v0_9_5.Spell;
-import momime.client.language.database.v0_9_5.SpellBookSection;
-import momime.client.language.database.v0_9_5.TileType;
-import momime.client.language.database.v0_9_5.Unit;
-import momime.client.language.database.v0_9_5.UnitAttribute;
-import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.common.database.SpellBookSectionID;
 
 /**
@@ -32,37 +15,37 @@ public interface LanguageDatabaseEx
 	 * @param planeNumber Plane number to search for
 	 * @return Plane descriptions object; or null if not found
 	 */
-	public Plane findPlane (final int planeNumber);
+	public PlaneLang findPlane (final int planeNumber);
 
 	/**
 	 * @param productionTypeID Production type ID to search for
 	 * @return Production type descriptions object; or null if not found
 	 */
-	public ProductionType findProductionType (final String productionTypeID);
+	public ProductionTypeLang findProductionType (final String productionTypeID);
 
 	/**
 	 * @param mapFeatureID Map feature ID to search for
 	 * @return Map feature descriptions object; or null if not found
 	 */
-	public MapFeature findMapFeature (final String mapFeatureID);
+	public MapFeatureLang findMapFeature (final String mapFeatureID);
 
 	/**
 	 * @param tileTypeID Tile type ID to search for
 	 * @return Tile type descriptions object; or null if not found
 	 */
-	public TileType findTileType (final String tileTypeID);
+	public TileTypeLang findTileType (final String tileTypeID);
 
 	/**
 	 * @param pickTypeID Pick type ID to search for
 	 * @return Pick type descriptions object; or null if not found
 	 */
-	public PickType findPickType (final String pickTypeID);
+	public PickTypeLang findPickType (final String pickTypeID);
 	
 	/**
 	 * @param pickID Pick ID to search for
 	 * @return Pick descriptions object; or null if not found
 	 */
-	public Pick findPick (final String pickID);
+	public PickLang findPick (final String pickID);
 	
 	/**
 	 * @param wizardID Wizard ID to search for
@@ -74,37 +57,37 @@ public interface LanguageDatabaseEx
 	 * @param populationTaskID Population task ID to search for
 	 * @return Population task descriptions object; or null if not found
 	 */
-	public PopulationTask findPopulationTask (final String populationTaskID);
+	public PopulationTaskLang findPopulationTask (final String populationTaskID);
 	
 	/**
 	 * @param raceID Race ID to search for
 	 * @return Race descriptions object; or null if not found
 	 */
-	public Race findRace (final String raceID);
+	public RaceLang findRace (final String raceID);
 
 	/**
 	 * @param buildingID Building ID to search for
 	 * @return Building descriptions object; or null if not found
 	 */
-	public Building findBuilding (final String buildingID);
+	public BuildingLang findBuilding (final String buildingID);
 	
 	/**
 	 * @param unitTypeID Unit type ID to search for
 	 * @return Unit type descriptions object; or null if not found
 	 */
-	public UnitTypeEx findUnitType (final String unitTypeID);
+	public UnitTypeLang findUnitType (final String unitTypeID);
 	
 	/**
 	 * @param unitAttributeID Unit attribute ID to search for
 	 * @return Unit attribute descriptions object; or null if not found
 	 */
-	public UnitAttribute findUnitAttribute (final String unitAttributeID);
+	public UnitAttributeLang findUnitAttribute (final String unitAttributeID);
 
 	/**
 	 * @param unitSkillID Unit skill ID to search for
 	 * @return Unit skill descriptions object; or null if not found
 	 */
-	public UnitSkill findUnitSkill (final String unitSkillID);
+	public UnitSkillLang findUnitSkill (final String unitSkillID);
 	
 	/**
 	 * @param rangedAttackTypeID Ranged attack type ID to search for
@@ -116,7 +99,7 @@ public interface LanguageDatabaseEx
 	 * @param unitID Unit ID to search for
 	 * @return Unit descriptions object; or null if not found
 	 */
-	public Unit findUnit (final String unitID);
+	public UnitLang findUnit (final String unitID);
 
 	/**
 	 * @param heroNameID Hero name ID to search for
@@ -134,13 +117,13 @@ public interface LanguageDatabaseEx
 	 * @param citySpellEffectID City spell effect ID to search for
 	 * @return City spell effect descriptions object; or null if not found
 	 */
-	public CitySpellEffect findCitySpellEffect (final String citySpellEffectID);
+	public CitySpellEffectLang findCitySpellEffect (final String citySpellEffectID);
 	
 	/**
 	 * @param combatAreaEffectID Combat area effect ID to search for
 	 * @return Combat area effect descriptions object; or null if not found
 	 */
-	public CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID);
+	public CombatAreaEffectLang findCombatAreaEffect (final String combatAreaEffectID);
 	
 	/**
 	 * @param spellRankID Spell rank ID to search for
@@ -152,13 +135,13 @@ public interface LanguageDatabaseEx
 	 * @param spellBookSectionID Spell book section ID to search for
 	 * @return Spell book section descriptions object; or null if not found
 	 */
-	public SpellBookSection findSpellBookSection (final SpellBookSectionID spellBookSectionID);
+	public SpellBookSectionLang findSpellBookSection (final SpellBookSectionID spellBookSectionID);
 	
 	/**
 	 * @param spellID Spell ID to search for
 	 * @return Spell descriptions object; or null if not found
 	 */
-	public Spell findSpell (final String spellID);
+	public SpellLang findSpell (final String spellID);
 	
 	/**
 	 * @param mapSizeID Map size ID to search for
@@ -218,5 +201,5 @@ public interface LanguageDatabaseEx
 	 * @param shortcut Game shortcut that we're looking to see if there is a key defined for it
 	 * @return Details of the key that should activate this shortcut, or null if none is defined
 	 */
-	public ShortcutKey findShortcutKey (final Shortcut shortcut);
+	public ShortcutKeyLang findShortcutKey (final Shortcut shortcut);
 }

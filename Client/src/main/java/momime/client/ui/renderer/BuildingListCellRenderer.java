@@ -12,6 +12,7 @@ import javax.swing.ListCellRenderer;
 
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
@@ -67,7 +68,7 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	public final Component getListCellRendererComponent (final JList<? extends Building> list, final Building building, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Look up the name of the building
-		final momime.client.language.database.v0_9_5.Building buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
+		final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
 		textLabel.setText ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
 		textLabel.setFont (getFont ());
 		

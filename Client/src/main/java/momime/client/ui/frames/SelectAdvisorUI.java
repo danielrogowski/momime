@@ -15,8 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import momime.client.language.database.ShortcutKeyLang;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
@@ -293,7 +293,7 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		for (final Object shortcut : contentPane.getActionMap ().keys ())
 			if (shortcut instanceof Shortcut)
 			{
-				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
 				if (shortcutKey != null)
 				{
 					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);

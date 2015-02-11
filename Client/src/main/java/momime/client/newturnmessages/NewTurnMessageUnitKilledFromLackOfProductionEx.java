@@ -5,19 +5,19 @@ import java.awt.Font;
 import java.awt.Image;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.UnitUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A unit was killed off because we couldn't afford the rations, gold and/or mana to pay for it
@@ -97,7 +97,7 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	@Override
 	public final String getText ()
 	{
-		final ProductionType productionType = getLanguage ().findProductionType (getProductionTypeID ());
+		final ProductionTypeLang productionType = getLanguage ().findProductionType (getProductionTypeID ());
 		String text = (productionType != null) ? productionType.getUnitKilledFromLackOfProduction () : null;
 		if (text == null)
 			text = "Unit lost from lack of " + getProductionTypeID ();

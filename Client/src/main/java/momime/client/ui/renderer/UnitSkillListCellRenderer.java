@@ -13,6 +13,7 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.UnitHasSkill;
@@ -72,7 +73,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	public final Component getListCellRendererComponent (final JList<? extends UnitHasSkill> list, final UnitHasSkill value, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Look up the name of the skill
-		final momime.client.language.database.v0_9_5.UnitSkill skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());
+		final UnitSkillLang skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());
 		if (skillLang == null)
 			setText (value.getUnitSkillID ());
 		else

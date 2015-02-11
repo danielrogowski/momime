@@ -25,7 +25,7 @@ import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.SpellGfx;
-import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.SpellLang;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
@@ -315,7 +315,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// Spell name
 		if (animationFrame >= fadeAnim.getFrame ().size () + PAUSE_FRAMES)
 		{
-			final Spell spellLang = getLanguage ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID ());
+			final SpellLang spellLang = getLanguage ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID ());
 			final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 			spellText.setText ((spellName != null) ? spellName : getAddSpellMessage ().getMaintainedSpell ().getSpellID ());			
 		}

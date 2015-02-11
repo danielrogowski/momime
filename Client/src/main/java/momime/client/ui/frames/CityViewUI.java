@@ -40,11 +40,11 @@ import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceGfx;
-import momime.client.language.database.v0_9_5.Building;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.Race;
-import momime.client.language.database.v0_9_5.Unit;
+import momime.client.language.database.BuildingLang;
+import momime.client.language.database.CitySpellEffectLang;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.RaceLang;
+import momime.client.language.database.UnitLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -317,7 +317,7 @@ public final class CityViewUI extends MomClientFrameUI
 					if (cityData.getCurrentlyConstructingBuildingID () != null)
 					{
 						productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "rushBuyAction").getProductionCost ();
-						final Building building = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+						final BuildingLang building = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
 						text = text.replaceAll ("A_UNIT_NAME", (building != null) ? building.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
 					}
 
@@ -402,7 +402,7 @@ public final class CityViewUI extends MomClientFrameUI
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
 							(CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 					
-					final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
+					final ProductionTypeLang productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
 					final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
 					
 					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
@@ -601,7 +601,7 @@ public final class CityViewUI extends MomClientFrameUI
 						msg.setTitleLanguageCategoryID ("SpellCasting");
 						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
 
-						final CitySpellEffect effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
+						final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
 						final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
 						
 						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
@@ -795,7 +795,7 @@ public final class CityViewUI extends MomClientFrameUI
 							if (prerequisiteBuildingID != null)
 							{
 								languageEntryID = "CannotSellRequiredByAnother";
-								final Building prerequisiteBuilding = getLanguage ().findBuilding (prerequisiteBuildingID);
+								final BuildingLang prerequisiteBuilding = getLanguage ().findBuilding (prerequisiteBuildingID);
 								prerequisiteBuildingName = (prerequisiteBuilding != null) ? prerequisiteBuilding.getBuildingName () : prerequisiteBuildingID;
 							}
 							else
@@ -811,12 +811,12 @@ public final class CityViewUI extends MomClientFrameUI
 									languageEntryID = "SellPromptPrerequisite";
 									if (cityData.getCurrentlyConstructingBuildingID () != null)
 									{
-										final Building currentConstruction = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+										final BuildingLang currentConstruction = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
 										prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ();
 									}
 									else if (cityData.getCurrentlyConstructingUnitID () != null)
 									{
-										final Unit currentConstruction = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
+										final UnitLang currentConstruction = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
 										prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getUnitName () : cityData.getCurrentlyConstructingUnitID ();
 									}
 								}
@@ -826,7 +826,7 @@ public final class CityViewUI extends MomClientFrameUI
 						}
 						
 						// Work out the text for the message box
-						final Building building = getLanguage ().findBuilding (buildingID);
+						final BuildingLang building = getLanguage ().findBuilding (buildingID);
 						String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", languageEntryID).replaceAll
 							("BUILDING_NAME", (building != null) ? building.getBuildingName () : buildingID).replaceAll
 							("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
@@ -1120,7 +1120,7 @@ public final class CityViewUI extends MomClientFrameUI
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
 									(thisProduction.getProductionTypeID ());
 								
-							final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
+							final ProductionTypeLang productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
 							final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
 								
 							final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
@@ -1213,7 +1213,7 @@ public final class CityViewUI extends MomClientFrameUI
 			cityNameLabel.setText (cityName);
 			getFrame ().setTitle (cityName);
 			
-			final Race race = getLanguage ().findRace (cityData.getCityRaceID ());
+			final RaceLang race = getLanguage ().findRace (cityData.getCityRaceID ());
 			raceLabel.setText ((race == null) ? cityData.getCityRaceID () : race.getRaceName ());
 			
 			try

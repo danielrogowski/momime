@@ -5,20 +5,20 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.client.MomClient;
+import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.replacer.CityGrowthRateLanguageVariableReplacer;
 import momime.client.language.replacer.CityProductionLanguageVariableReplacer;
 import momime.client.language.replacer.CityUnrestLanguageVariableReplacer;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.BuildingPrerequisite;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitPrerequisite;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
@@ -468,7 +468,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 							if (allows.length () > 0)
 								allows.append (", ");
 						
-							final Building buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
+							final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
 							allows.append ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
 						}
 					}

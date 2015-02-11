@@ -8,8 +8,8 @@ import java.io.IOException;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.MapFeature;
-import momime.client.language.database.v0_9_5.TileType;
+import momime.client.language.database.MapFeatureLang;
+import momime.client.language.database.TileTypeLang;
 import momime.client.messages.ClientMemoryGridCellUtils;
 import momime.client.newturnmessages.NewTurnMessageClickable;
 import momime.client.ui.MomUIConstants;
@@ -211,7 +211,7 @@ public final class ScheduledCombatMessageCombat implements ScheduledCombatMessag
 				// Tile types (nodes)
 				if ((mc.getTerrainData ().getTileTypeID () != null) && (getClient ().getClientDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "ScheduledCombatMessageCombat").getMagicRealmID () != null))
 				{
-					final TileType tileType = getLanguage ().findTileType (mc.getTerrainData ().getTileTypeID ());
+					final TileTypeLang tileType = getLanguage ().findTileType (mc.getTerrainData ().getTileTypeID ());
 					if ((tileType != null) && (tileType.getTileTypeShowAsFeature () != null))
 						nodeLairTowerName = tileType.getTileTypeShowAsFeature ();
 				}
@@ -219,7 +219,7 @@ public final class ScheduledCombatMessageCombat implements ScheduledCombatMessag
 				// Map features (lairs and towers)
 				else if ((mc.getTerrainData ().getMapFeatureID () != null) && (getClient ().getClientDB ().findMapFeature (mc.getTerrainData ().getMapFeatureID (), "ScheduledCombatMessageCombat").isAnyMagicRealmsDefined ()))
 				{
-					final MapFeature mapFeature = getLanguage ().findMapFeature (mc.getTerrainData ().getMapFeatureID ());
+					final MapFeatureLang mapFeature = getLanguage ().findMapFeature (mc.getTerrainData ().getMapFeatureID ());
 					if ((mapFeature != null) && (mapFeature.getMapFeatureDescription () != null))
 						nodeLairTowerName = mapFeature.getMapFeatureDescription (); 
 				}

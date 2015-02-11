@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * Tests the UnitTypeEx class
  */
-public final class TestUnitTypeEx
+public final class TestUnitTypeLang
 {
 	/**
 	 * Tests the findExperienceLevelName method
@@ -17,7 +17,7 @@ public final class TestUnitTypeEx
 	public final void testFindExperienceLevelName ()
 	{
 		// Create some dummy entries
-		final UnitTypeEx unitType = new UnitTypeEx ();
+		final UnitTypeLang unitType = new UnitTypeLang ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final ExperienceLevel expLvl = new ExperienceLevel ();

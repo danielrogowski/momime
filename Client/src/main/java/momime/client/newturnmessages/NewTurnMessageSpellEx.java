@@ -8,7 +8,7 @@ import java.io.IOException;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.SpellBookUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -109,7 +109,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	@Override
 	public final String getText ()
 	{
-		final Spell spellLang = getLanguage ().findSpell (getSpellID ());
+		final SpellLang spellLang = getLanguage ().findSpell (getSpellID ());
 		final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 		
 		// Text varies according to the message type
@@ -127,7 +127,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 						languageEntryID = "ResearchChosen";
 					
 					final String newSpellID = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null) ? "" : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ();
-					final momime.client.language.database.v0_9_5.Spell newSpell = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null) ? null : getLanguage ().findSpell
+					final SpellLang newSpell = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null) ? null : getLanguage ().findSpell
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 					final String newSpellName = (newSpell != null) ? newSpell.getSpellName () : null;
 					

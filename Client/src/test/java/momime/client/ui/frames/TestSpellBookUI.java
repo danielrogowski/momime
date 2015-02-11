@@ -15,8 +15,9 @@ import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
@@ -57,32 +58,32 @@ public final class TestSpellBookUI
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmSpellBook", "Title")).thenReturn ("Spells");
 		
-		final ProductionType research = new ProductionType ();
+		final ProductionTypeLang research = new ProductionTypeLang ();
 		research.setProductionTypeSuffix ("RP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (research);
 		
-		final ProductionType mana = new ProductionType ();
+		final ProductionTypeLang mana = new ProductionTypeLang ();
 		mana.setProductionTypeSuffix ("MP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
 		
 		for (int n = 1; n < 8; n++)
 		{
-			final SpellBookSection section = new SpellBookSection ();
+			final SpellBookSectionLang section = new SpellBookSectionLang ();
 			section.setSpellBookSectionName ("Spell book section " + (n+1));
 			when (lang.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + n))).thenReturn (section);
 		}
 
-		final SpellBookSection sectionResearch = new SpellBookSection ();
+		final SpellBookSectionLang sectionResearch = new SpellBookSectionLang ();
 		sectionResearch.setSpellBookSectionName ("Researchable spells");
 		when (lang.findSpellBookSection (SpellBookSectionID.RESEARCHABLE_NOW)).thenReturn (sectionResearch);
 		
-		final SpellBookSection sectionUnknown = new SpellBookSection ();
+		final SpellBookSectionLang sectionUnknown = new SpellBookSectionLang ();
 		sectionUnknown.setSpellBookSectionName ("Unknown spells");
 		when (lang.findSpellBookSection (SpellBookSectionID.RESEARCHABLE)).thenReturn (sectionUnknown);
 		
 		for (int n = 0; n < 100; n++)
 		{
-			final momime.client.language.database.v0_9_5.Spell spell = new momime.client.language.database.v0_9_5.Spell ();
+			final SpellLang spell = new SpellLang ();
 			String spellID = new Integer (n).toString ();
 			if (n < 10)
 				spellID = "0" + spellID;

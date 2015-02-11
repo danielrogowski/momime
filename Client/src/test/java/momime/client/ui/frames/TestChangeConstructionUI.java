@@ -19,6 +19,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeGfx;
 import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
@@ -77,11 +78,11 @@ public final class TestChangeConstructionUI
 		when (lang.findCategoryEntry ("frmChangeConstruction", "OK")).thenReturn ("OK");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cancel")).thenReturn ("Cancel");
 
-		final momime.client.language.database.v0_9_5.Building granaryName = new momime.client.language.database.v0_9_5.Building ();
+		final BuildingLang granaryName = new BuildingLang ();
 		granaryName.setBuildingName ("Granary");
 		when (lang.findBuilding ("BL04")).thenReturn (granaryName);
 		
-		final momime.client.language.database.v0_9_5.Building fightersGuildName = new momime.client.language.database.v0_9_5.Building ();
+		final BuildingLang fightersGuildName = new BuildingLang ();
 		fightersGuildName.setBuildingName ("Fighters' Guild");
 		when (lang.findBuilding ("BL05")).thenReturn (fightersGuildName);
 		

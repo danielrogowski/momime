@@ -25,7 +25,7 @@ import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.RaceLang;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer;
@@ -128,7 +128,7 @@ public final class TestCityViewUI
 		when (lang.findCategoryEntry ("frmCity", "MaxCitySize")).thenReturn ("maximum MAX_CITY_SIZE");
 		when (lang.findCategoryEntry ("frmCity", "PopulationAndGrowth")).thenReturn ("Population: POPULATION (GROWTH_RATE)");
 
-		final Race raceName = new Race ();
+		final RaceLang raceName = new RaceLang ();
 		raceName.setRaceName ("Barbarian");
 		when (lang.findRace ("RC01")).thenReturn (raceName);
 				

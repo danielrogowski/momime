@@ -1,9 +1,9 @@
 package momime.client.ui.frames;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import momime.client.MomClient;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -72,12 +72,12 @@ public final class TestAlchemyUI
 		when (lang.findCategoryEntry ("frmAlchemy", "Cancel")).thenReturn ("Cancel");
 		when (lang.findCategoryEntry ("frmAlchemy", "Conversion")).thenReturn ("Transmute FROM_PRODUCTION_TYPE to TO_PRODUCTION_TYPE");
 
-		final ProductionType goldProduction = new ProductionType ();
+		final ProductionTypeLang goldProduction = new ProductionTypeLang ();
 		goldProduction.setProductionTypeDescription ("Gold");
 		goldProduction.setProductionTypeSuffix ("GP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
 		
-		final ProductionType manaProduction = new ProductionType ();
+		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
 		manaProduction.setProductionTypeDescription ("Mana");
 		manaProduction.setProductionTypeSuffix ("MP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);

@@ -17,10 +17,10 @@ import javax.swing.JTextArea;
 import momime.client.MomClient;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Building;
-import momime.client.language.database.v0_9_5.Unit;
+import momime.client.language.database.UnitLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
@@ -144,7 +144,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
-		final Unit oldUnit = getLanguage ().findUnit (getUnitID ());
+		final UnitLang oldUnit = getLanguage ().findUnit (getUnitID ());
 		constructionCompletedLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages", "ConstructionCompleted").replaceAll
 			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
 			("OLD_CONSTRUCTION", (oldUnit != null) ? oldUnit.getUnitName () : getUnitID ()));
@@ -153,13 +153,13 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 		
 		if (cityData.getCurrentlyConstructingBuildingID () != null)
 		{
-			final Building newBuilding = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+			final BuildingLang newBuilding = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
 			text = text.replaceAll ("NEW_CONSTRUCTION", (newBuilding != null) ? newBuilding.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
 		}
 
 		if (cityData.getCurrentlyConstructingUnitID () != null)
 		{
-			final Unit newUnit = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
+			final UnitLang newUnit = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
 			text = text.replaceAll ("NEW_CONSTRUCTION", (newUnit != null) ? newUnit.getUnitName () : cityData.getCurrentlyConstructingUnitID ());
 		}
 		

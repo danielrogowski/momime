@@ -37,7 +37,8 @@ import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.graphics.database.UnitTypeGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.RaceLang;
+import momime.client.language.database.UnitLang;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
@@ -100,7 +101,7 @@ public final class TestUnitClientUtilsImpl
 		for (final String unitName : new String [] {"Bard", "Trireme", "Swordsmen", "Longbowmen", "Magic Spirit", "Hell Hounds"})
 		{
 			n++;
-			final momime.client.language.database.v0_9_5.Unit unitLang = new momime.client.language.database.v0_9_5.Unit ();
+			final UnitLang unitLang = new UnitLang ();
 			unitLang.setUnitName (unitName);
 			
 			if ((n == 2) || (n == 5))
@@ -109,7 +110,7 @@ public final class TestUnitClientUtilsImpl
 			when (lang.findUnit ("UN00" + n)).thenReturn (unitLang);
 		}
 		
-		final Race race = new Race ();
+		final RaceLang race = new RaceLang ();
 		race.setRaceName ("Orc");
 		when (lang.findRace ("RC01")).thenReturn (race);
 		

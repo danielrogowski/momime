@@ -7,7 +7,7 @@ import java.awt.Image;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Unit;
+import momime.client.language.database.UnitLang;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.NewTurnMessageNode;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -83,10 +83,10 @@ public final class NewTurnMessageNodeEx extends NewTurnMessageNode
 			languageEntryID = languageEntryID + "LastTurn";
 		
 		// Find the unit(s) and other player involved
-		final Unit ourUnit = getLanguage ().findUnit (getUnitID ());
+		final UnitLang ourUnit = getLanguage ().findUnit (getUnitID ());
 		final String ourUnitName = (ourUnit != null) ? ourUnit.getUnitName () : null;
 
-		final Unit otherUnit = (getOtherUnitID () != null) ? getLanguage ().findUnit (getOtherUnitID ()) : null;
+		final UnitLang otherUnit = (getOtherUnitID () != null) ? getLanguage ().findUnit (getOtherUnitID ()) : null;
 		final String otherUnitName = (otherUnit != null) ? otherUnit.getUnitName () : null;
 		
 		// Look up text and do replacements

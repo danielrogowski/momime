@@ -17,13 +17,14 @@ import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.CitySpellEffectLang;
+import momime.client.language.database.CombatAreaEffectLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
-import momime.client.language.database.v0_9_5.CombatAreaEffect;
-import momime.client.language.database.v0_9_5.Pick;
-import momime.client.language.database.v0_9_5.UnitAttribute;
-import momime.client.language.database.v0_9_5.UnitSkill;
+import momime.client.language.database.PickLang;
+import momime.client.language.database.SpellLang;
+import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.SpellClientUtils;
@@ -61,7 +62,7 @@ public final class TestHelpUI
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmHelp", "Title")).thenReturn ("Help");
 		
-		final Pick retort = new Pick ();
+		final PickLang retort = new PickLang ();
 		retort.setPickDescriptionSingular ("Alchemy");
 		retort.setPickHelpText ("Allows the wizard to change gold into mana and mana into gold in a 1 to 1 ratio, instead of loosing ½ in the exchange process." +
 			System.lineSeparator () + System.lineSeparator () +
@@ -70,17 +71,17 @@ public final class TestHelpUI
 			"The Alchemy retort is the only way that Gnolls, Klackons, Lizardmen or Trolls can build units with magic weapons, since these races cannot build Alchemists' Guilds.");
 		when (lang.findPick ("RT01")).thenReturn (retort);
 		
-		final Pick book = new Pick ();
+		final PickLang book = new PickLang ();
 		book.setPickDescriptionSingular ("Life Book");
 		book.setPickHelpText ("Life spells focus on healing, protections and inspirational enchantments, and planar travel.  Life magic forcefully opposes the forces of death and mildly resists the forces of chaos.");
 		when (lang.findPick ("MB01")).thenReturn (book);
 		
-		final UnitSkill unitSkill = new UnitSkill ();
+		final UnitSkillLang unitSkill = new UnitSkillLang ();
 		unitSkill.setUnitSkillDescription ("PFTitle");
 		unitSkill.setUnitSkillHelpText ("PFText");
 		when (lang.findUnitSkill ("US020")).thenReturn (unitSkill);
 		
-		final UnitAttribute unitAttribute = new UnitAttribute ();
+		final UnitAttributeLang unitAttribute = new UnitAttributeLang ();
 		unitAttribute.setUnitAttributeDescription ("Melee");
 		unitAttribute.setUnitAttributeHelpText ("Each icon represents one chance that each figure has to strike a blow in a hand to hand attack.  The base chance that each sword icon will score a hit is 30%, although this can be modified by the attacker's + to Hit attribute." +
 			System.lineSeparator () + System.lineSeparator () +
@@ -102,7 +103,7 @@ public final class TestHelpUI
 			"A darkened icon represents a minus, for example from a curse type spell.");
 		when (lang.findUnitAttribute ("UA01")).thenReturn (unitAttribute);
 		
-		final CombatAreaEffect cae = new CombatAreaEffect ();
+		final CombatAreaEffectLang cae = new CombatAreaEffectLang ();
 		cae.setCombatAreaEffectDescription ("Counter Magic");
 		cae.setCombatAreaEffectHelpText ("Creates a standing dispel magic spell over the entire battlefield." +
 			System.lineSeparator () + System.lineSeparator () +
@@ -111,14 +112,14 @@ public final class TestHelpUI
 			"Every spell cast by the enemy drains the magic power (strength) of the counter magic spell by 5 mana points and, therefore, lessens its effectiveness against subsequent spells.");
 		when (lang.findCombatAreaEffect ("CSE048")).thenReturn (cae);
 		
-		final CitySpellEffect citySpellEffect = new CitySpellEffect ();
+		final CitySpellEffectLang citySpellEffect = new CitySpellEffectLang ();
 		citySpellEffect.setCitySpellEffectName ("Chaos Rift");
 		citySpellEffect.setCitySpellEffectHelpText ("Opens a great magical vortex over an enemy city." +
 			System.lineSeparator () + System.lineSeparator () +
 			"Each turn, units inside the city sustain five strength 8 Lightning Bolt attacks, and there is a 5% chance of a building being destroyed.");
 		when (lang.findCitySpellEffect ("SE110")).thenReturn (citySpellEffect);
 		
-		final momime.client.language.database.v0_9_5.Spell spell = new momime.client.language.database.v0_9_5.Spell ();
+		final SpellLang spell = new SpellLang ();
 		spell.setSpellName ("Counter Magic");
 		spell.setSpellDescription ("All enemy spell cast in combat must resist being dispelled while this spell is in effect.");
 		spell.setSpellHelpText ("Creates a reserve of counter magic power which resists all spells cast by an opponent wizard as if you had cast an equally-strong dispel magic." +

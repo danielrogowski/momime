@@ -16,8 +16,11 @@ import momime.client.database.MapFeature;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.language.database.MapFeatureLang;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
+import momime.client.language.database.TileTypeLang;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
@@ -90,42 +93,42 @@ public final class TestOverlandMapRightHandPanel
 		when (lang.findCategoryEntry ("frmSurveyor", "FeatureProvidesSpellProtection")).thenReturn ("Protects against spells");
 		when (lang.findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity")).thenReturn ("Cities cannot be built" + System.lineSeparator () + "within CITY_SEPARATION squares" + System.lineSeparator () + "of another city");
 		
-		final ProductionType goldProduction = new ProductionType ();
+		final ProductionTypeLang goldProduction = new ProductionTypeLang ();
 		goldProduction.setProductionTypeDescription ("Gold");
 		goldProduction.setProductionTypeSuffix ("GP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
 		
-		final ProductionType rationsProduction = new ProductionType ();
+		final ProductionTypeLang rationsProduction = new ProductionTypeLang ();
 		rationsProduction.setProductionTypeDescription ("Rations");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (rationsProduction);
 		
-		final ProductionType foodProduction = new ProductionType ();
+		final ProductionTypeLang foodProduction = new ProductionTypeLang ();
 		foodProduction.setProductionTypeDescription ("Food");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)).thenReturn (foodProduction);
 		
-		final ProductionType productionProduction = new ProductionType ();
+		final ProductionTypeLang productionProduction = new ProductionTypeLang ();
 		productionProduction.setProductionTypeDescription ("Production");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (productionProduction);
 		
-		final ProductionType manaProduction = new ProductionType ();
+		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
 		manaProduction.setProductionTypeDescription ("Mana");
 		manaProduction.setProductionTypeSuffix ("MP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
 		
-		final SpellBookSection section = new SpellBookSection ();
+		final SpellBookSectionLang section = new SpellBookSectionLang ();
 		section.setSpellTargetPrompt ("Select a friendly city to cast your SPELL_NAME spell on");
 		when (lang.findSpellBookSection (SpellBookSectionID.CITY_ENCHANTMENTS)).thenReturn (section);
 		
-		final momime.client.language.database.v0_9_5.Spell spellLang = new momime.client.language.database.v0_9_5.Spell ();
+		final SpellLang spellLang = new SpellLang ();
 		spellLang.setSpellName ("Heavenly Light");
 		when (lang.findSpell ("SP001")).thenReturn (spellLang);
 		
-		final momime.client.language.database.v0_9_5.TileType tileTypeLang = new momime.client.language.database.v0_9_5.TileType ();
+		final TileTypeLang tileTypeLang = new TileTypeLang ();
 		tileTypeLang.setTileTypeDescription ("The tile type");
 		tileTypeLang.setTileTypeCannotBuildCityDescription ("Can't build city (tile)");
 		when (lang.findTileType ("TT01")).thenReturn (tileTypeLang);
 		
-		final momime.client.language.database.v0_9_5.MapFeature mapFeatureLang = new momime.client.language.database.v0_9_5.MapFeature ();
+		final MapFeatureLang mapFeatureLang = new MapFeatureLang ();
 		mapFeatureLang.setMapFeatureDescription ("The map feature");
 		mapFeatureLang.setMapFeatureMagicWeaponsDescription ("Builds +1 Magic Weapons");
 		when (lang.findMapFeature ("MF01")).thenReturn (mapFeatureLang);

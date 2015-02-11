@@ -19,8 +19,8 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.SpellGfx;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
-import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.CitySpellEffectLang;
+import momime.client.language.database.SpellLang;
 import momime.client.messages.process.AddBuildingMessageImpl;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.MomUIConstants;
@@ -313,13 +313,13 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			final String useSpellName;
 			if (citySpellEffectID != null)
 			{
-				final CitySpellEffect effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
+				final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
 				final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
 				useSpellName = (effectName != null) ? effectName : citySpellEffectID;
 			}
 			else
 			{
-				final Spell spell = getLanguage ().findSpell (spellID);
+				final SpellLang spell = getLanguage ().findSpell (spellID);
 				final String spellName = (spell != null) ? spell.getSpellName () : null;
 				useSpellName = (spellName != null) ? spellName : spellID;
 			}

@@ -4,7 +4,7 @@ import java.util.List;
 
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.PickLang;
 import momime.client.utils.TextUtils;
 
 import org.apache.commons.logging.Log;
@@ -42,7 +42,7 @@ public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageV
 		if (pickIDs != null)
 			for (final String pickID : pickIDs)
 			{
-				final Pick pick = getLanguage ().findPick (pickID);
+				final PickLang pick = getLanguage ().findPick (pickID);
 				final String pickDesc = (pick == null) ? pickID : pick.getPickDescriptionSingular ();
 			
 				if (retortList.length () > 0)

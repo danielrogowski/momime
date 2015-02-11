@@ -16,8 +16,8 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.UnitAttribute;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.UnitAttributeLang;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -86,7 +86,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 			else
 				upkeepList = upkeepList + ", ";
 			
-			final ProductionType productionType = getLanguage ().findProductionType (upkeep.getProductionTypeID ());
+			final ProductionTypeLang productionType = getLanguage ().findProductionType (upkeep.getProductionTypeID ());
 			final String productionTypeDescription = (productionType == null) ? null : productionType.getProductionTypeDescription ();
 			
 			// Channeler?
@@ -143,7 +143,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 			result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookNoSavingThrow");
 		else
 		{
-			final UnitAttribute unitAttribute = getLanguage ().findUnitAttribute (unitAttributeID);
+			final UnitAttributeLang unitAttribute = getLanguage ().findUnitAttribute (unitAttributeID);
 			final String unitAttributeDescription = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeDescription ();
 			if (savingThrowModifiers.size () == 0)
 				result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookNoSavingThrowModifier").replaceAll

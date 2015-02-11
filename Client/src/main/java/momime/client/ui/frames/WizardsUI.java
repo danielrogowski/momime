@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
+import momime.client.language.database.PickLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.utils.WizardClientUtils;
@@ -341,7 +342,7 @@ public final class WizardsUI extends MomClientFrameUI
 				if (pick.getQuantity () > 1)
 					desc.append (pick.getQuantity () + "x");
 				
-				final momime.client.language.database.v0_9_5.Pick pickDesc = getLanguage ().findPick (pick.getPickID ());
+				final PickLang pickDesc = getLanguage ().findPick (pick.getPickID ());
 				final String thisPickText;
 				if (pickDesc == null)
 					thisPickText = pick.getPickID ();

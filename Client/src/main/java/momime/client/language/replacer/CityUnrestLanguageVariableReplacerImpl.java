@@ -1,6 +1,6 @@
 package momime.client.language.replacer;
 
-import momime.client.language.database.v0_9_5.Building;
+import momime.client.language.database.BuildingLang;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
 
@@ -84,7 +84,7 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				
 			// Dependant on current building
 			case "BUILDING_NAME":
-				final Building building = getLanguage ().findBuilding (getCurrentBuilding ().getBuildingID ());
+				final BuildingLang building = getLanguage ().findBuilding (getCurrentBuilding ().getBuildingID ());
 				text = (building == null) ? getCurrentBuilding ().getBuildingID () : building.getBuildingName ();
 				break;
 

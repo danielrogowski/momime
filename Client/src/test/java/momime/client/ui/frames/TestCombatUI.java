@@ -29,6 +29,7 @@ import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MapFeatureLang;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
@@ -102,7 +103,7 @@ public final class TestCombatUI
 		
 		when (lang.findWizardName (CommonDatabaseConstants.WIZARD_ID_MONSTERS)).thenReturn ("Rampaging Monsters");
 		
-		final momime.client.language.database.v0_9_5.MapFeature mapFeatureLang = new momime.client.language.database.v0_9_5.MapFeature ();
+		final MapFeatureLang mapFeatureLang = new MapFeatureLang ();
 		mapFeatureLang.setMapFeatureDescription ("Abandoned Keep");
 		when (lang.findMapFeature ("MF01")).thenReturn (mapFeatureLang);
 

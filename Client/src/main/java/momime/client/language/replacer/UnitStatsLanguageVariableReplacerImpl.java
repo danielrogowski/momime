@@ -5,7 +5,7 @@ import java.io.IOException;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.UnitTypeEx;
+import momime.client.language.database.UnitTypeLang;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitCalculations;
@@ -111,7 +111,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				{
 					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getUnitMagicRealm ();
 					final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
-					final UnitTypeEx unitType = getLanguage ().findUnitType (unitTypeID);
+					final UnitTypeLang unitType = getLanguage ().findUnitType (unitTypeID);
 					if (unitType == null)
 						text = null;
 					else

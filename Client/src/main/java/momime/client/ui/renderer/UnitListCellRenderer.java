@@ -17,6 +17,7 @@ import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.UnitLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.common.messages.AvailableUnit;
@@ -103,7 +104,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 		}
 		
 		// Look up the name of the unit
-		final momime.client.language.database.v0_9_5.Unit unitLang = getLanguage ().findUnit (unit.getUnitID ());
+		final UnitLang unitLang = getLanguage ().findUnit (unit.getUnitID ());
 		textLabel.setText ((unitLang != null) ? unitLang.getUnitName () : unit.getUnitID ());
 		textLabel.setFont (getFont ());
 		

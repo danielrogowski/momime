@@ -16,7 +16,8 @@ import momime.client.graphics.database.UnitGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.components.UIComponentFactory;
@@ -79,11 +80,11 @@ public final class TestUnitRowDisplayUI
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmUnitRowDisplay", "Cancel")).thenReturn ("Cancel");
 		
-		final SpellBookSection section = new SpellBookSection ();
+		final SpellBookSectionLang section = new SpellBookSectionLang ();
 		section.setSpellTargetPrompt ("Select a friendly unit as the target for your SPELL_NAME spell.");
 		when (lang.findSpellBookSection (SpellBookSectionID.UNIT_ENCHANTMENTS)).thenReturn (section);
 		
-		final momime.client.language.database.v0_9_5.Spell spellLang = new momime.client.language.database.v0_9_5.Spell ();
+		final SpellLang spellLang = new SpellLang ();
 		spellLang.setSpellName ("Endurance");
 		when (lang.findSpell ("SP001")).thenReturn (spellLang);
 		

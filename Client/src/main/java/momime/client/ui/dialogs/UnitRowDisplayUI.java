@@ -19,7 +19,8 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -34,9 +35,9 @@ import momime.common.database.UnitHasSkill;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitAttributeComponent;
 import momime.common.utils.UnitAttributePositiveNegative;
-import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -206,7 +207,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 						}
 						else if (validTarget.getUnitLanguageEntryID () != null)
 						{
-							final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
+							final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
 							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 							
 							final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
@@ -292,11 +293,11 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 		try
 		{
 			// Work out the title prompt to use
-			final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
+			final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
 			final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 			
 			final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpell ().getSpellID (), "UnitRowDisplayUI");
-			final SpellBookSection section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
+			final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
 			final String target = (section != null) ? section.getSpellTargetPrompt () : null;
 			
 			title.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :

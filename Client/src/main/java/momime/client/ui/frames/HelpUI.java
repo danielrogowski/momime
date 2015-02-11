@@ -27,13 +27,14 @@ import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.v0_9_5.BookImage;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
-import momime.client.language.database.v0_9_5.CombatAreaEffect;
-import momime.client.language.database.v0_9_5.Pick;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.SpellBookSection;
-import momime.client.language.database.v0_9_5.UnitAttribute;
-import momime.client.language.database.v0_9_5.UnitSkill;
+import momime.client.language.database.CitySpellEffectLang;
+import momime.client.language.database.CombatAreaEffectLang;
+import momime.client.language.database.PickLang;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
+import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellClientUtils;
@@ -310,7 +311,7 @@ public final class HelpUI extends MomClientFrameUI
 		
 		if (pickID != null)
 		{
-			final Pick pick = getLanguage ().findPick (pickID);
+			final PickLang pick = getLanguage ().findPick (pickID);
 			final String pickTitle = (pick == null) ? null : pick.getPickDescriptionSingular ();
 			final String pickHelpText = (pick == null) ? null : pick.getPickHelpText ();
 			title.setText ((pickTitle != null) ? pickTitle : pickID);
@@ -320,7 +321,7 @@ public final class HelpUI extends MomClientFrameUI
 		{
 			getUnitStatsReplacer ().setUnit (unit);
 			
-			final UnitSkill unitSkill = getLanguage ().findUnitSkill (unitSkillID);
+			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (unitSkillID);
 			final String unitSkillTitle = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
 			final String unitSkillHelpText = (unitSkill == null) ? null : unitSkill.getUnitSkillHelpText ();
 			title.setText ((unitSkillTitle != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillTitle) : unitSkillID);
@@ -351,7 +352,7 @@ public final class HelpUI extends MomClientFrameUI
 		}
 		else if (citySpellEffectID != null)
 		{
-			final CitySpellEffect effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
+			final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
 			final String effectTitle = (effect == null) ? null : effect.getCitySpellEffectName ();
 			final String effectHelpText = (effect == null) ? null : effect.getCitySpellEffectHelpText ();
 			title.setText ((effectTitle != null) ? effectTitle : citySpellEffectID);
@@ -371,7 +372,7 @@ public final class HelpUI extends MomClientFrameUI
 		}
 		else if (unitAttributeID != null)
 		{
-			final UnitAttribute unitAttribute = getLanguage ().findUnitAttribute (unitAttributeID);
+			final UnitAttributeLang unitAttribute = getLanguage ().findUnitAttribute (unitAttributeID);
 			final String unitAttributeTitle = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeDescription ();
 			final String unitAttributeHelpText = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeHelpText ();
 			title.setText ((unitAttributeTitle != null) ? unitAttributeTitle : unitAttributeID);
@@ -379,7 +380,7 @@ public final class HelpUI extends MomClientFrameUI
 		}
 		else if (combatAreaEffectID != null)
 		{
-			final CombatAreaEffect cae = getLanguage ().findCombatAreaEffect (combatAreaEffectID);
+			final CombatAreaEffectLang cae = getLanguage ().findCombatAreaEffect (combatAreaEffectID);
 			final String caeTitle = (cae == null) ? null : cae.getCombatAreaEffectDescription ();
 			final String caeHelpText = (cae == null) ? null : cae.getCombatAreaEffectHelpText ();
 			title.setText ((caeTitle != null) ? caeTitle : combatAreaEffectID);
@@ -387,7 +388,7 @@ public final class HelpUI extends MomClientFrameUI
 		}
 		else if (spellID != null)
 		{
-			final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (spellID);
+			final SpellLang spell = getLanguage ().findSpell (spellID);
 			final String spellTitle = (spell == null) ? null : spell.getSpellName ();
 			final String spellHelpText = (spell == null) ? null : spell.getSpellHelpText ();
 			title.setText ((spellTitle != null) ? spellTitle : spellID);
@@ -402,7 +403,7 @@ public final class HelpUI extends MomClientFrameUI
 				// Spell book section
 				if (spellDef.getSpellBookSectionID () != null)
 				{
-					final SpellBookSection section = getLanguage ().findSpellBookSection (spellDef.getSpellBookSectionID ());
+					final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spellDef.getSpellBookSectionID ());
 					final String sectionName = (section == null) ? null : section.getSpellBookSectionName ();
 					text.append (getLanguage ().findCategoryEntry ("frmHelp", "SpellBookSection").replaceAll
 						("SPELL_BOOK_SECTION", (sectionName != null) ? sectionName : spellDef.getSpellBookSectionID ().toString ()));
@@ -411,7 +412,7 @@ public final class HelpUI extends MomClientFrameUI
 				// Research cost
 				if (spellDef.getResearchCost () != null)
 				{
-					final ProductionType research = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+					final ProductionTypeLang research = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 					final String researchSuffix = (research == null) ? null : research.getProductionTypeSuffix ();
 					if ((castingPlayer == null) || (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())))
 						
@@ -442,7 +443,7 @@ public final class HelpUI extends MomClientFrameUI
 				final MomPersistentPlayerPublicKnowledge castingPub = (castingPlayer == null) ? null :
 					(MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
 
-				final ProductionType mana = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+				final ProductionTypeLang mana = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 				final String manaSuffix = (mana == null) ? null : mana.getProductionTypeSuffix ();
 				
 				if (getSpellUtils ().spellCanBeCastIn (spellDef, SpellCastType.OVERLAND))

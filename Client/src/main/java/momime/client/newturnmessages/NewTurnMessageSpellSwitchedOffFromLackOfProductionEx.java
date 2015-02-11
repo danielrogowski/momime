@@ -6,8 +6,8 @@ import java.awt.Image;
 
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
 
@@ -50,12 +50,12 @@ public final class NewTurnMessageSpellSwitchedOffFromLackOfProductionEx extends 
 	@Override
 	public final String getText ()
 	{
-		final ProductionType productionType = getLanguage ().findProductionType (getProductionTypeID ());
+		final ProductionTypeLang productionType = getLanguage ().findProductionType (getProductionTypeID ());
 		String text = (productionType != null) ? productionType.getSpellSwitchedOffFromLackOfProduction () : null;
 		if (text == null)
 			text = "Spell lost from lack of " + getProductionTypeID ();
 		
-		final Spell spell = getLanguage ().findSpell (getSpellID ());
+		final SpellLang spell = getLanguage ().findSpell (getSpellID ());
 		final String spellName = (spell != null) ? spell.getSpellName () : null;
 
 		return text.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getSpellID ());

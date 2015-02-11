@@ -5,10 +5,10 @@ import java.awt.Font;
 import java.awt.Image;
 
 import momime.client.MomClient;
+import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Building;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.NewTurnMessageBuildingSoldFromLackOfProduction;
 import momime.common.messages.OverlandMapCityData;
@@ -55,12 +55,12 @@ public final class NewTurnMessageBuildingSoldFromLackOfProductionEx extends NewT
 	@Override
 	public final String getText ()
 	{
-		final ProductionType productionType = getLanguage ().findProductionType (getProductionTypeID ());
+		final ProductionTypeLang productionType = getLanguage ().findProductionType (getProductionTypeID ());
 		String text = (productionType != null) ? productionType.getBuildingSoldFromLackOfProduction () : null;
 		if (text == null)
 			text = "Building lost from lack of " + getProductionTypeID ();
 		
-		final Building building = getLanguage ().findBuilding (getBuildingID ());
+		final BuildingLang building = getLanguage ().findBuilding (getBuildingID ());
 		final String buildingName = (building != null) ? building.getBuildingName () : null;
 
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get

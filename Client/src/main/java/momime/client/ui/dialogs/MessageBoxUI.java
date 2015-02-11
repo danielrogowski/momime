@@ -17,12 +17,14 @@ import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.language.database.ShortcutKeyLang;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.NewTurnMessagesUI;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.DismissUnitMessage;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
@@ -30,8 +32,6 @@ import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.RushBuyMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -335,7 +335,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		for (final Object shortcut : contentPane.getActionMap ().keys ())
 			if (shortcut instanceof Shortcut)
 			{
-				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
 				if (shortcutKey != null)
 				{
 					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);

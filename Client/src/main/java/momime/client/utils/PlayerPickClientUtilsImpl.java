@@ -6,7 +6,8 @@ import java.util.Map.Entry;
 
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.PickType;
+import momime.client.language.database.PickLang;
+import momime.client.language.database.PickTypeLang;
 import momime.common.database.Pick;
 import momime.common.database.PickPrerequisite;
 
@@ -43,7 +44,7 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 			if (req.getPrerequisiteID () != null)
 			{
 				// Pre-requisite for a specific type of book, e.g. 4 life books, so just add this directly to the output
-				final momime.client.language.database.v0_9_5.Pick pickLang = getLanguage ().findPick (req.getPrerequisiteID ());
+				final PickLang pickLang = getLanguage ().findPick (req.getPrerequisiteID ());
 				
 				final String pickDesc;
 				if (pickLang == null)
@@ -77,7 +78,7 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 		// Now generate text for the values in the generic map
 		for (final Entry<String, Map<Integer, Integer>> pickType : genericPrerequisites.entrySet ())
 		{
-			final PickType pickTypeLang = getLanguage ().findPickType (pickType.getKey ());
+			final PickTypeLang pickTypeLang = getLanguage ().findPickType (pickType.getKey ());
 			for (final Entry<Integer, Integer> counts : pickType.getValue ().entrySet ())
 			{
 				// This is the number of books that we need (e.g. pairs)

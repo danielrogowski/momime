@@ -35,8 +35,9 @@ import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.dialogs.MessageBoxUI;
@@ -505,7 +506,7 @@ public final class SpellBookUI extends MomClientFrameUI
 											{
 												// We've either just not allowed to switch at all, or can switch but will lose research towards the old spell, so either way
 												// we've got to display a message about it, and won't be sending any message now
-												final momime.client.language.database.v0_9_5.Spell oldSpellLang = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+												final SpellLang oldSpellLang = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 												final String oldSpellName = (oldSpellLang != null) ? oldSpellLang.getSpellName () : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ();
 												final boolean lose = getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH;
 
@@ -770,12 +771,12 @@ public final class SpellBookUI extends MomClientFrameUI
 		// This can be called before we've ever opened the spell book, so none of the components exist
 		if (contentPane != null)
 		{
-			final ProductionType manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+			final ProductionTypeLang manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 			String manaSuffix = (manaProductionType == null) ? null : manaProductionType.getProductionTypeSuffix ();
 			if (manaSuffix == null)
 				manaSuffix = "";
 			
-			final ProductionType researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+			final ProductionTypeLang researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 			String researchSuffix = (researchProductionType == null) ? null : researchProductionType.getProductionTypeSuffix ();
 			if (researchSuffix == null)
 				researchSuffix = "";
@@ -796,7 +797,7 @@ public final class SpellBookUI extends MomClientFrameUI
 						// Write section heading?
 						if (page.isFirstPageOfSection ())
 						{
-							final SpellBookSection spellBookSection = getLanguage ().findSpellBookSection (page.getSectionID ());
+							final SpellBookSectionLang spellBookSection = getLanguage ().findSpellBookSection (page.getSectionID ());
 							final String sectionHeading = (spellBookSection == null) ? null : spellBookSection.getSpellBookSectionName ();
 							sectionHeadings [x].setText ((sectionHeading == null) ? page.getSectionID ().toString () : sectionHeading);
 						}
@@ -848,7 +849,7 @@ public final class SpellBookUI extends MomClientFrameUI
 								}
 								else
 								{
-									final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+									final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
 									final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
 									final String spellDescription = (spellLang == null) ? null : spellLang.getSpellDescription ();
 									

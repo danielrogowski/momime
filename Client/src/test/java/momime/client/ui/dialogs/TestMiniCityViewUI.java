@@ -13,9 +13,9 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.SpellGfx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
@@ -68,7 +68,7 @@ public final class TestMiniCityViewUI
 		when (lang.findCitySizeName ("CS01")).thenReturn ("Test City of CITY_NAME");
 		when (lang.findCategoryEntry ("SpellCasting", "YouHaveCast")).thenReturn ("You have cast SPELL_NAME");
 		
-		final CitySpellEffect effectLang = new CitySpellEffect ();
+		final CitySpellEffectLang effectLang = new CitySpellEffectLang ();
 		effectLang.setCitySpellEffectName ("Dark Rituals");
 		when (lang.findCitySpellEffect ("CSE001")).thenReturn (effectLang);
 

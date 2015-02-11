@@ -24,11 +24,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import momime.client.MomClient;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 
@@ -330,8 +330,8 @@ public final class AlchemyUI extends MomClientFrameUI
 	{
 		log.trace ("Entering directionChanged: " + fromProductionTypeID + " -> " + toProductionTypeID);
 		
-		final ProductionType fromProductionType	= getLanguage ().findProductionType (fromProductionTypeID);
-		final ProductionType toProductionType		= getLanguage ().findProductionType (toProductionTypeID);
+		final ProductionTypeLang fromProductionType	= getLanguage ().findProductionType (fromProductionTypeID);
+		final ProductionTypeLang toProductionType		= getLanguage ().findProductionType (toProductionTypeID);
 		
 		conversionLabel.setText (getLanguage ().findCategoryEntry ("frmAlchemy", "Conversion").replaceAll
 			("FROM_PRODUCTION_TYPE", (fromProductionType != null) ? fromProductionType.getProductionTypeDescription () : fromProductionTypeID).replaceAll
@@ -426,11 +426,11 @@ public final class AlchemyUI extends MomClientFrameUI
 			String goldText = new Integer (goldValue).toString ();
 			String manaText = new Integer (manaValue).toString ();
 
-			final ProductionType goldProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+			final ProductionTypeLang goldProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 			if ((goldProduction != null) && (goldProduction.getProductionTypeSuffix () != null))
 				goldText = goldText + " " + goldProduction.getProductionTypeSuffix ();
 
-			final ProductionType manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+			final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 			if ((manaProduction != null) && (manaProduction.getProductionTypeSuffix () != null))
 				manaText = manaText + " " + manaProduction.getProductionTypeSuffix ();
 		

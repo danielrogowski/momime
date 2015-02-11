@@ -9,7 +9,7 @@ import momime.client.language.database.v0_9_5.UnitType;
 /**
  * Adds a map over the experience levels, so we can find their names faster
  */
-public final class UnitTypeEx extends UnitType
+public final class UnitTypeLang extends UnitType
 {
 	/** Map of experience level numbers to names */
 	private Map<Integer, String> experienceLevelNamesMap;

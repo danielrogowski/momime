@@ -34,11 +34,12 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.WizardGfx;
-import momime.client.language.database.v0_9_5.MapFeature;
+import momime.client.language.database.MapFeatureLang;
+import momime.client.language.database.ShortcutKeyLang;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
+import momime.client.language.database.TileTypeLang;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.ShortcutKey;
-import momime.client.language.database.v0_9_5.SpellBookSection;
-import momime.client.language.database.v0_9_5.TileType;
 import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;
@@ -884,7 +885,7 @@ public final class CombatUI extends MomClientFrameUI
 								// If we can't target on this unit, tell the player why not
 								else if (validTarget.getUnitLanguageEntryID () != null)
 								{
-									final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
+									final SpellLang spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
 									final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 									
 									final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
@@ -1268,7 +1269,7 @@ public final class CombatUI extends MomClientFrameUI
 						// Tile types (nodes)
 						if ((mc.getTerrainData ().getTileTypeID () != null) && (getClient ().getClientDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "CombatUI").getMagicRealmID () != null))
 						{
-							final TileType tileType = getLanguage ().findTileType (mc.getTerrainData ().getTileTypeID ());
+							final TileTypeLang tileType = getLanguage ().findTileType (mc.getTerrainData ().getTileTypeID ());
 							if ((tileType != null) && (tileType.getTileTypeShowAsFeature () != null))
 								defPlayerName = tileType.getTileTypeShowAsFeature ();
 						}
@@ -1276,7 +1277,7 @@ public final class CombatUI extends MomClientFrameUI
 						// Map features (lairs and towers)
 						else if ((mc.getTerrainData ().getMapFeatureID () != null) && (getClient ().getClientDB ().findMapFeature (mc.getTerrainData ().getMapFeatureID (), "CombatUI").isAnyMagicRealmsDefined ()))
 						{
-							final MapFeature mapFeature = getLanguage ().findMapFeature (mc.getTerrainData ().getMapFeatureID ());
+							final MapFeatureLang mapFeature = getLanguage ().findMapFeature (mc.getTerrainData ().getMapFeatureID ());
 							if ((mapFeature != null) && (mapFeature.getMapFeatureDescription () != null))
 								defPlayerName = mapFeature.getMapFeatureDescription (); 
 						}
@@ -1297,7 +1298,7 @@ public final class CombatUI extends MomClientFrameUI
 			for (final Object shortcut : contentPane.getActionMap ().keys ())
 				if (shortcut instanceof Shortcut)
 				{
-					final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+					final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
 					if (shortcutKey != null)
 					{
 						final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
@@ -1519,10 +1520,10 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		
 		// Set up prompt
-		final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
+		final SpellLang spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
 		final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 		
-		final SpellBookSection section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
+		final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
 		final String target = (section != null) ? section.getSpellTargetPrompt () : null;
 		
 		spellPrompt.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :

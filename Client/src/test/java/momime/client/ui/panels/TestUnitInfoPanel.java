@@ -27,8 +27,11 @@ import momime.client.graphics.database.RangedAttackTypeGfx;
 import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
@@ -84,7 +87,7 @@ public final class TestUnitInfoPanel
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "BuildingURN")).thenReturn ("Building URN");
 
-		final momime.client.language.database.v0_9_5.Building granaryName = new momime.client.language.database.v0_9_5.Building ();
+		final BuildingLang granaryName = new BuildingLang ();
 		granaryName.setBuildingName ("Granary");
 		granaryName.setBuildingHelpText ("This is the long description of what a Granary does");
 		when (lang.findBuilding ("BL01")).thenReturn (granaryName);
@@ -218,7 +221,7 @@ public final class TestUnitInfoPanel
 		int unitAttrNo = 0;
 		for (final String unitAttributeDesc : new String [] {"Melee", "Ranged", "+ to Hit", "Defence", "Resistance", "Hit Points", "+ to Block"})
 		{
-			final momime.client.language.database.v0_9_5.UnitAttribute unitAttrLang = new momime.client.language.database.v0_9_5.UnitAttribute ();
+			final UnitAttributeLang unitAttrLang = new UnitAttributeLang ();
 			unitAttrLang.setUnitAttributeDescription (unitAttributeDesc);
 
 			unitAttrNo++;
@@ -227,7 +230,7 @@ public final class TestUnitInfoPanel
 
 		for (int n = 1; n <= 5; n++)
 		{
-			final momime.client.language.database.v0_9_5.UnitSkill skill = new momime.client.language.database.v0_9_5.UnitSkill ();
+			final UnitSkillLang skill = new UnitSkillLang ();
 			skill.setUnitSkillDescription ("Name of skill US0" + n);
 			
 			when (lang.findUnitSkill ("US0" + n)).thenReturn (skill);

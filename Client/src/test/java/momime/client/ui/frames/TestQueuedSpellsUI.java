@@ -12,7 +12,8 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.QueuedSpellListCellRenderer;
 import momime.common.database.CommonDatabaseConstants;
@@ -55,12 +56,12 @@ public final class TestQueuedSpellsUI
 
 		for (int n = 1; n <= 5; n++)
 		{
-			final momime.client.language.database.v0_9_5.Spell spellLang = new momime.client.language.database.v0_9_5.Spell ();
+			final SpellLang spellLang = new SpellLang ();
 			spellLang.setSpellName ("Spell SP00" + n);
 			when (lang.findSpell ("SP00" + n)).thenReturn (spellLang);
 		}
 		
-		final ProductionType manaProduction = new ProductionType ();
+		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
 		manaProduction.setProductionTypeSuffix ("MP");
 		
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);

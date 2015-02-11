@@ -50,49 +50,49 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	private final Log log = LogFactory.getLog (LanguageDatabaseExImpl.class);
 	
 	/** Map of plane IDs to plane objects */
-	private Map<Integer, Plane> planesMap;
+	private Map<Integer, PlaneLang> planesMap;
 
 	/** Map of production type IDs to production type objects */
-	private Map<String, ProductionType> productionTypesMap;
+	private Map<String, ProductionTypeLang> productionTypesMap;
 
 	/** Map of map feature IDs to map feature objects */
-	private Map<String, MapFeature> mapFeaturesMap;
+	private Map<String, MapFeatureLang> mapFeaturesMap;
 
 	/** Map of tile type IDs to tile type objects */
-	private Map<String, TileType> tileTypesMap;
+	private Map<String, TileTypeLang> tileTypesMap;
 	
 	/** Map of pick type IDs to pick type objects */
-	private Map<String, PickType> pickTypesMap;
+	private Map<String, PickTypeLang> pickTypesMap;
 	
 	/** Map of pick IDs to pick objects */
-	private Map<String, Pick> picksMap;
+	private Map<String, PickLang> picksMap;
 
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
 
 	/** Map of population task IDs to population task objects */
-	private Map<String, PopulationTask> populationTasksMap;
+	private Map<String, PopulationTaskLang> populationTasksMap;
 	
 	/** Map of race IDs to race objects */
-	private Map<String, Race> racesMap;
+	private Map<String, RaceLang> racesMap;
 	
 	/** Map of building IDs to building objects */
-	private Map<String, Building> buildingsMap;
+	private Map<String, BuildingLang> buildingsMap;
 
 	/** Map of unit type IDs to unit type objects */
-	private Map<String, UnitTypeEx> unitTypesMap;
+	private Map<String, UnitTypeLang> unitTypesMap;
 	
 	/** Map of unit attribute IDs to unit attribute objects */
-	private Map<String, UnitAttribute> unitAttributesMap;
+	private Map<String, UnitAttributeLang> unitAttributesMap;
 	
 	/** Map of unit skill IDs to unit skill objects */
-	private Map<String, UnitSkill> unitSkillsMap;
+	private Map<String, UnitSkillLang> unitSkillsMap;
 	
 	/** Map of ranged attack type IDs to unit skill objects */
 	private Map<String, RangedAttackType> rangedAttackTypesMap;
 	
 	/** Map of unit IDs to unit objects */
-	private Map<String, Unit> unitsMap;
+	private Map<String, UnitLang> unitsMap;
 
 	/** Map of hero name IDs to hero name objects */
 	private Map<String, Hero> heroNamesMap;
@@ -101,19 +101,19 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	private Map<String, CitySize> citySizesMap;
 
 	/** Map of city spell effect IDs to unit objects */
-	private Map<String, CitySpellEffect> citySpellEffectsMap;
+	private Map<String, CitySpellEffectLang> citySpellEffectsMap;
 	
 	/** Map of combat area effect IDs to unit objects */
-	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
+	private Map<String, CombatAreaEffectLang> combatAreaEffectsMap;
 
 	/** Map of spell rank IDs to spell rank objects */
 	private Map<String, SpellRank> spellRanksMap;
 	
 	/** Map of spell book section IDs to spell book section objects */
-	private Map<SpellBookSectionID, SpellBookSection> spellBookSectionsMap;
+	private Map<SpellBookSectionID, SpellBookSectionLang> spellBookSectionsMap;
 
 	/** Map of spell IDs to spell objects */
-	private Map<String, Spell> spellsMap;
+	private Map<String, SpellLang> spellsMap;
 	
 	/** Map of map size IDs to map size objects */
 	private Map<String, MapSize> mapSizesMap;
@@ -140,7 +140,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	private Map<String, LanguageCategoryEx> categoriesMap;
 	
 	/** Map of shortcuts to shortcut keys objects */
-	private Map<Shortcut, ShortcutKey> shortcutsMap;
+	private Map<Shortcut, ShortcutKeyLang> shortcutsMap;
 
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -150,34 +150,34 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		log.trace ("Entering buildMaps");
 		
 		// Create planes map
-		planesMap = new HashMap<Integer, Plane> ();
+		planesMap = new HashMap<Integer, PlaneLang> ();
 		for (final Plane thisPlane : getPlane ())
-			planesMap.put (thisPlane.getPlaneNumber (), thisPlane);
+			planesMap.put (thisPlane.getPlaneNumber (), (PlaneLang) thisPlane);
 
 		// Create production types map
-		productionTypesMap = new HashMap<String, ProductionType> ();
+		productionTypesMap = new HashMap<String, ProductionTypeLang> ();
 		for (final ProductionType thisProductionType : getProductionType ())
-			productionTypesMap.put (thisProductionType.getProductionTypeID (), thisProductionType);
+			productionTypesMap.put (thisProductionType.getProductionTypeID (), (ProductionTypeLang) thisProductionType);
 
 		// Create map features map
-		mapFeaturesMap = new HashMap<String, MapFeature> ();
+		mapFeaturesMap = new HashMap<String, MapFeatureLang> ();
 		for (final MapFeature thisMapFeature : getMapFeature ())
-			mapFeaturesMap.put (thisMapFeature.getMapFeatureID (), thisMapFeature);
+			mapFeaturesMap.put (thisMapFeature.getMapFeatureID (), (MapFeatureLang) thisMapFeature);
 		
 		// Create tile types map
-		tileTypesMap = new HashMap<String, TileType> ();
+		tileTypesMap = new HashMap<String, TileTypeLang> ();
 		for (final TileType thisTileType : getTileType ())
-			tileTypesMap.put (thisTileType.getTileTypeID (), thisTileType);
+			tileTypesMap.put (thisTileType.getTileTypeID (), (TileTypeLang) thisTileType);
 		
 		// Create pick types map
-		pickTypesMap = new HashMap<String, PickType> ();
+		pickTypesMap = new HashMap<String, PickTypeLang> ();
 		for (final PickType thisPickType : getPickType ())
-			pickTypesMap.put (thisPickType.getPickTypeID (), thisPickType);
+			pickTypesMap.put (thisPickType.getPickTypeID (), (PickTypeLang) thisPickType);
 		
 		// Create picks map
-		picksMap = new HashMap<String, Pick> ();
+		picksMap = new HashMap<String, PickLang> ();
 		for (final Pick thisPick : getPick ())
-			picksMap.put (thisPick.getPickID (), thisPick);
+			picksMap.put (thisPick.getPickID (), (PickLang) thisPick);
 
 		// Create wizards map
 		wizardsMap = new HashMap<String, Wizard> ();
@@ -185,38 +185,38 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
 
 		// Create population tasks map
-		populationTasksMap = new HashMap<String, PopulationTask> ();
+		populationTasksMap = new HashMap<String, PopulationTaskLang> ();
 		for (final PopulationTask thisPopulationTask : getPopulationTask ())
-			populationTasksMap.put (thisPopulationTask.getPopulationTaskID (), thisPopulationTask);
+			populationTasksMap.put (thisPopulationTask.getPopulationTaskID (), (PopulationTaskLang) thisPopulationTask);
 		
 		// Create races map
-		racesMap = new HashMap<String, Race> ();
+		racesMap = new HashMap<String, RaceLang> ();
 		for (final Race thisRace : getRace ())
-			racesMap.put (thisRace.getRaceID (), thisRace);
+			racesMap.put (thisRace.getRaceID (), (RaceLang) thisRace);
 		
 		// Create buildings map
-		buildingsMap = new HashMap<String, Building> ();
+		buildingsMap = new HashMap<String, BuildingLang> ();
 		for (final Building thisBuilding : getBuilding ())
-			buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
+			buildingsMap.put (thisBuilding.getBuildingID (), (BuildingLang) thisBuilding);
 
 		// Create unit types map
-		unitTypesMap = new HashMap<String, UnitTypeEx> ();
+		unitTypesMap = new HashMap<String, UnitTypeLang> ();
 		for (final UnitType thisUnitType : getUnitType ())
 		{
-			final UnitTypeEx utex = (UnitTypeEx) thisUnitType;
+			final UnitTypeLang utex = (UnitTypeLang) thisUnitType;
 			utex.buildMap ();
 			unitTypesMap.put (utex.getUnitTypeID (), utex);
 		}
 		
 		// Create unit attributes map
-		unitAttributesMap = new HashMap<String, UnitAttribute> ();
+		unitAttributesMap = new HashMap<String, UnitAttributeLang> ();
 		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
-			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), thisUnitAttribute);
+			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), (UnitAttributeLang) thisUnitAttribute);
 
 		// Create unit skills map
-		unitSkillsMap = new HashMap<String, UnitSkill> ();
+		unitSkillsMap = new HashMap<String, UnitSkillLang> ();
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
-			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
+			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillLang) thisUnitSkill);
 
 		// Create ranged attack types map
 		rangedAttackTypesMap = new HashMap<String, RangedAttackType> ();
@@ -224,9 +224,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), thisRangedAttackType);
 		
 		// Create units map
-		unitsMap = new HashMap<String, Unit> ();
+		unitsMap = new HashMap<String, UnitLang> ();
 		for (final Unit thisUnit : getUnit ())
-			unitsMap.put (thisUnit.getUnitID (), thisUnit);
+			unitsMap.put (thisUnit.getUnitID (), (UnitLang) thisUnit);
 		
 		// Create hero names map
 		heroNamesMap = new HashMap<String, Hero> ();
@@ -239,14 +239,14 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			citySizesMap.put (thisCitySize.getCitySizeID (), thisCitySize);
 
 		// Create city spell effects map
-		citySpellEffectsMap = new HashMap<String, CitySpellEffect> ();
+		citySpellEffectsMap = new HashMap<String, CitySpellEffectLang> ();
 		for (final CitySpellEffect effect : getCitySpellEffect ())
-			citySpellEffectsMap.put (effect.getCitySpellEffectID (), effect);
+			citySpellEffectsMap.put (effect.getCitySpellEffectID (), (CitySpellEffectLang) effect);
 		
 		// Create combat area effects map
-		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
+		combatAreaEffectsMap = new HashMap<String, CombatAreaEffectLang> ();
 		for (final CombatAreaEffect cae : getCombatAreaEffect ())
-			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), cae);
+			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), (CombatAreaEffectLang) cae);
 		
 		// Create spell ranks map
 		spellRanksMap = new HashMap<String, SpellRank> ();
@@ -254,14 +254,14 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			spellRanksMap.put (thisSpellRank.getSpellRankID (), thisSpellRank);
 
 		// Create spell book sections map
-		spellBookSectionsMap = new HashMap<SpellBookSectionID, SpellBookSection> ();
+		spellBookSectionsMap = new HashMap<SpellBookSectionID, SpellBookSectionLang> ();
 		for (final SpellBookSection thisSection : getSpellBookSection ())
-			spellBookSectionsMap.put (thisSection.getSpellBookSectionID (), thisSection);
+			spellBookSectionsMap.put (thisSection.getSpellBookSectionID (), (SpellBookSectionLang) thisSection);
 		
 		// Create spells map
-		spellsMap = new HashMap<String, Spell> ();
+		spellsMap = new HashMap<String, SpellLang> ();
 		for (final Spell thisSpell : getSpell ())
-			spellsMap.put (thisSpell.getSpellID (), thisSpell);
+			spellsMap.put (thisSpell.getSpellID (), (SpellLang) thisSpell);
 		
 		// Create map sizes map
 		mapSizesMap = new HashMap<String, MapSize> ();
@@ -308,9 +308,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		}
 		
 		// Create shortcuts map
-		shortcutsMap = new HashMap<Shortcut, ShortcutKey> ();
+		shortcutsMap = new HashMap<Shortcut, ShortcutKeyLang> ();
 		for (final ShortcutKey thisShortcut : getShortcutKey ())
-			shortcutsMap.put (thisShortcut.getShortcut (), thisShortcut);
+			shortcutsMap.put (thisShortcut.getShortcut (), (ShortcutKeyLang) thisShortcut);
 
 		log.trace ("Exiting buildMaps");
 	}	
@@ -320,7 +320,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Plane descriptions object; or null if not found
 	 */
 	@Override
-	public final Plane findPlane (final int planeNumber)
+	public final PlaneLang findPlane (final int planeNumber)
 	{
 		return planesMap.get (planeNumber);
 	}
@@ -330,7 +330,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Production type descriptions object; or null if not found
 	 */
 	@Override
-	public final ProductionType findProductionType (final String productionTypeID)
+	public final ProductionTypeLang findProductionType (final String productionTypeID)
 	{
 		return productionTypesMap.get (productionTypeID);
 	}
@@ -340,7 +340,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Map feature descriptions object; or null if not found
 	 */
 	@Override
-	public final MapFeature findMapFeature (final String mapFeatureID)
+	public final MapFeatureLang findMapFeature (final String mapFeatureID)
 	{
 		return mapFeaturesMap.get (mapFeatureID);
 	}
@@ -350,7 +350,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Tile type descriptions object; or null if not found
 	 */
 	@Override
-	public final TileType findTileType (final String tileTypeID)
+	public final TileTypeLang findTileType (final String tileTypeID)
 	{
 		return tileTypesMap.get (tileTypeID);
 	}
@@ -360,7 +360,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Pick type descriptions object; or null if not found
 	 */
 	@Override
-	public final PickType findPickType (final String pickTypeID)
+	public final PickTypeLang findPickType (final String pickTypeID)
 	{
 		return pickTypesMap.get (pickTypeID);
 	}
@@ -370,7 +370,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Pick descriptions object; or null if not found
 	 */
 	@Override
-	public final Pick findPick (final String pickID)
+	public final PickLang findPick (final String pickID)
 	{
 		return picksMap.get (pickID);
 	}
@@ -392,7 +392,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Population task descriptions object; or null if not found
 	 */
 	@Override
-	public final PopulationTask findPopulationTask (final String populationTaskID)
+	public final PopulationTaskLang findPopulationTask (final String populationTaskID)
 	{
 		return populationTasksMap.get (populationTaskID);
 	}
@@ -402,7 +402,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Race descriptions object; or null if not found
 	 */
 	@Override
-	public final Race findRace (final String raceID)
+	public final RaceLang findRace (final String raceID)
 	{
 		return racesMap.get (raceID);
 	}
@@ -412,7 +412,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Building descriptions object; or null if not found
 	 */
 	@Override
-	public final Building findBuilding (final String buildingID)
+	public final BuildingLang findBuilding (final String buildingID)
 	{
 		return buildingsMap.get (buildingID);
 	}
@@ -422,7 +422,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Unit type descriptions object; or null if not found
 	 */
 	@Override
-	public final UnitTypeEx findUnitType (final String unitTypeID)
+	public final UnitTypeLang findUnitType (final String unitTypeID)
 	{
 		return unitTypesMap.get (unitTypeID);
 	}
@@ -432,7 +432,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Unit attribute descriptions object; or null if not found
 	 */
 	@Override
-	public final UnitAttribute findUnitAttribute (final String unitAttributeID)
+	public final UnitAttributeLang findUnitAttribute (final String unitAttributeID)
 	{
 		return unitAttributesMap.get (unitAttributeID);
 	}
@@ -442,7 +442,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Unit skill descriptions object; or null if not found
 	 */
 	@Override
-	public final UnitSkill findUnitSkill (final String unitSkillID)
+	public final UnitSkillLang findUnitSkill (final String unitSkillID)
 	{
 		return unitSkillsMap.get (unitSkillID);
 	}
@@ -464,7 +464,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Unit descriptions object; or null if not found
 	 */
 	@Override
-	public final Unit findUnit (final String unitID)
+	public final UnitLang findUnit (final String unitID)
 	{
 		return unitsMap.get (unitID);
 	}
@@ -498,7 +498,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return City spell effect descriptions object; or null if not found
 	 */
 	@Override
-	public final CitySpellEffect findCitySpellEffect (final String citySpellEffectID)
+	public final CitySpellEffectLang findCitySpellEffect (final String citySpellEffectID)
 	{
 		return citySpellEffectsMap.get (citySpellEffectID);
 	}
@@ -508,7 +508,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Combat area effect descriptions object; or null if not found
 	 */
 	@Override
-	public final CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID)
+	public final CombatAreaEffectLang findCombatAreaEffect (final String combatAreaEffectID)
 	{
 		return combatAreaEffectsMap.get (combatAreaEffectID);
 	}
@@ -530,7 +530,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Spell book section descriptions object; or null if not found
 	 */
 	@Override
-	public final SpellBookSection findSpellBookSection (final SpellBookSectionID spellBookSectionID)
+	public final SpellBookSectionLang findSpellBookSection (final SpellBookSectionID spellBookSectionID)
 	{
 		return spellBookSectionsMap.get (spellBookSectionID);
 	}
@@ -540,7 +540,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Spell descriptions object; or null if not found
 	 */
 	@Override
-	public final Spell findSpell (final String spellID)
+	public final SpellLang findSpell (final String spellID)
 	{
 		return spellsMap.get (spellID);
 	}
@@ -647,7 +647,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Details of the key that should activate this shortcut, or null if none is defined
 	 */
 	@Override
-	public final ShortcutKey findShortcutKey (final Shortcut shortcut)
+	public final ShortcutKeyLang findShortcutKey (final Shortcut shortcut)
 	{
 		return shortcutsMap.get (shortcut);
 	}

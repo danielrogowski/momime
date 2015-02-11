@@ -23,6 +23,10 @@ import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.PickLang;
+import momime.client.language.database.PlaneLang;
+import momime.client.language.database.RaceLang;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.DifficultyLevel;
@@ -283,7 +287,7 @@ public final class TestNewGameUI
 			final PickGfx pickGfx = new PickGfx ();
 			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
 
-			final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
+			final PickLang pickLang = new PickLang ();
 			pickLang.setPickDescriptionSingular ("Retort " + pick.getPickID ());
 			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
 		}
@@ -304,7 +308,7 @@ public final class TestNewGameUI
 			pickGfx.setPickBookshelfTitleColour ("FF" + colourNo + "0" + colourNo + "0");
 			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
 
-			final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
+			final PickLang pickLang = new PickLang ();
 			pickLang.setBookshelfDescription (magicRealmName);
 			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
 			
@@ -342,7 +346,7 @@ public final class TestNewGameUI
 				spell.setSpellID ("SP0" + rank + spellNo);
 				spells.add (spell);
 				
-				final momime.client.language.database.v0_9_5.Spell spellLang = new momime.client.language.database.v0_9_5.Spell ();
+				final SpellLang spellLang = new SpellLang ();
 				spellLang.setSpellName ("Spell " + spell.getSpellID ());
 				when (lang.findSpell (spell.getSpellID ())).thenReturn (spellLang);
 			}
@@ -378,7 +382,7 @@ public final class TestNewGameUI
 			
 			when (db.findPlane (n, "NewGameUI.showRacePanel")).thenReturn (plane);
 			
-			final momime.client.language.database.v0_9_5.Plane planeLang = new momime.client.language.database.v0_9_5.Plane ();
+			final PlaneLang planeLang = new PlaneLang ();
 			planeLang.setPlaneRacesTitle ("Plane " + n + " races");
 			when (lang.findPlane (n)).thenReturn (planeLang);
 		}
@@ -394,7 +398,7 @@ public final class TestNewGameUI
 				race.setNativePlane (plane);
 				races.add (race);
 				
-				final momime.client.language.database.v0_9_5.Race raceLang = new momime.client.language.database.v0_9_5.Race ();
+				final RaceLang raceLang = new RaceLang ();
 				raceLang.setRaceName ("Race " + race.getRaceID ());
 				when (lang.findRace (race.getRaceID ())).thenReturn (raceLang);
 			}

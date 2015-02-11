@@ -9,7 +9,7 @@ import java.util.List;
 
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.PickLang;
 
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public final class TestBreakdownLanguageVariableReplacerImpl
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickLang pick = new PickLang ();
 			pick.setPickDescriptionSingular ("Retort " + n);
 			
 			when (lang.findPick ("RT0" + n)).thenReturn (pick);

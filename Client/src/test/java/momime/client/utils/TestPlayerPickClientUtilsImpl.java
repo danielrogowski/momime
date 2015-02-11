@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.PickLang;
+import momime.client.language.database.PickTypeLang;
 import momime.common.database.Pick;
 import momime.common.database.PickPrerequisite;
 
@@ -41,7 +43,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
+		final PickLang pickLang = new PickLang ();
 		pickLang.setPickDescriptionSingular ("Life Book");
 		when (lang.findPick ("MB01")).thenReturn (pickLang);
 		
@@ -73,7 +75,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		final momime.client.language.database.v0_9_5.Pick pickLang = new momime.client.language.database.v0_9_5.Pick ();
+		final PickLang pickLang = new PickLang ();
 		pickLang.setPickDescriptionPlural ("Life Books");
 		when (lang.findPick ("MB01")).thenReturn (pickLang);
 		
@@ -105,15 +107,15 @@ public final class TestPlayerPickClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		final momime.client.language.database.v0_9_5.Pick chaos = new momime.client.language.database.v0_9_5.Pick ();
+		final PickLang chaos = new PickLang ();
 		chaos.setPickDescriptionSingular ("Chaos Book");
 		when (lang.findPick ("MB03")).thenReturn (chaos);
 		
-		final momime.client.language.database.v0_9_5.Pick nature = new momime.client.language.database.v0_9_5.Pick ();
+		final PickLang nature = new PickLang ();
 		nature.setPickDescriptionSingular ("Nature Book");
 		when (lang.findPick ("MB04")).thenReturn (nature);
 		
-		final momime.client.language.database.v0_9_5.Pick sorcery = new momime.client.language.database.v0_9_5.Pick ();
+		final PickLang sorcery = new PickLang ();
 		sorcery.setPickDescriptionSingular ("Sorcery Book");
 		when (lang.findPick ("MB05")).thenReturn (sorcery);
 		
@@ -147,7 +149,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		final momime.client.language.database.v0_9_5.PickType pickTypeLang = new momime.client.language.database.v0_9_5.PickType ();
+		final PickTypeLang pickTypeLang = new PickTypeLang ();
 		pickTypeLang.setPickTypeDescriptionSingular ("Spell Book");
 		pickTypeLang.setPickTypePrerequisiteSingular ("PICK_TYPE in any Realm of Magic");
 		when (lang.findPickType ("B")).thenReturn (pickTypeLang);
@@ -181,7 +183,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		final momime.client.language.database.v0_9_5.PickType pickTypeLang = new momime.client.language.database.v0_9_5.PickType ();
+		final PickTypeLang pickTypeLang = new PickTypeLang ();
 		pickTypeLang.setPickTypeDescriptionPlural ("Spell Books");
 		pickTypeLang.setPickTypePrerequisiteSingular ("PICK_TYPE in any Realm of Magic");
 		when (lang.findPickType ("B")).thenReturn (pickTypeLang);
@@ -215,7 +217,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		final momime.client.language.database.v0_9_5.PickType pickTypeLang = new momime.client.language.database.v0_9_5.PickType ();
+		final PickTypeLang pickTypeLang = new PickTypeLang ();
 		pickTypeLang.setPickTypeDescriptionSingular ("Spell Book");
 		pickTypeLang.setPickTypePrerequisitePlural ("PICK_TYPE in any REPETITIONS Realms of Magic");
 		when (lang.findPickType ("B")).thenReturn (pickTypeLang);
@@ -250,7 +252,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		final momime.client.language.database.v0_9_5.PickType pickTypeLang = new momime.client.language.database.v0_9_5.PickType ();
+		final PickTypeLang pickTypeLang = new PickTypeLang ();
 		pickTypeLang.setPickTypeDescriptionPlural ("Spell Books");
 		pickTypeLang.setPickTypePrerequisitePlural ("PICK_TYPE in any REPETITIONS Realms of Magic");
 		when (lang.findPickType ("B")).thenReturn (pickTypeLang);

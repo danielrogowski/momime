@@ -29,9 +29,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 
 import momime.client.MomClient;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.ShortcutKeyLang;
+import momime.client.language.database.SpellLang;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.ShortcutKey;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
@@ -42,11 +43,11 @@ import momime.client.utils.TextUtils;
 import momime.common.calculations.SkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
-import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 
@@ -534,7 +535,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 						}
 						else if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 						{
-							final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+							final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
 							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 							
 							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
@@ -593,7 +594,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		for (final Object shortcut : contentPane.getActionMap ().keys ())
 			if (shortcut instanceof Shortcut)
 			{
-				final ShortcutKey shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
 				if (shortcutKey != null)
 				{
 					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
@@ -635,15 +636,15 @@ public final class MagicSlidersUI extends MomClientFrameUI
 					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 				// Update the per turn labels
-				final ProductionType manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+				final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 				manaPerTurn.setString (getTextUtils ().intToStrCommas (manaPerTurnValue) + " " +
 					((manaProduction != null) ? manaProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA));
 		
-				final ProductionType researchProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+				final ProductionTypeLang researchProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
 				researchPerTurn.setString (getTextUtils ().intToStrCommas (researchPerTurnValue) + " " +
 					((researchProduction != null) ? researchProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH));
 		
-				final ProductionType skillProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+				final ProductionTypeLang skillProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 				skillPerTurn.setString (getTextUtils ().intToStrCommas (skillPerTurnValue) + " " +
 					((skillProduction != null) ? skillProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT));
 
@@ -669,7 +670,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				}
 				else
 				{
-					final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+					final SpellLang spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 					final String spellName = (spell != null) ? spell.getSpellName () : null;
 					currentlyResearching.setText ((spellName != null) ? spellName : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 				
@@ -691,7 +692,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				}
 				else
 				{
-					final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0));
+					final SpellLang spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0));
 					final String spellName = (spell != null) ? spell.getSpellName () : null;
 					currentlyCasting.setText ((spellName != null) ? spellName : getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0));
 

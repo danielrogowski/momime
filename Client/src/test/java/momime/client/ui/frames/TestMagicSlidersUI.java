@@ -12,7 +12,8 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
@@ -20,8 +21,8 @@ import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
+import momime.common.database.newgame.SpellSettingData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -77,23 +78,23 @@ public final class TestMagicSlidersUI
 		when (lang.findCategoryEntry ("frmMagicSliders", "OK")).thenReturn ("OK");
 		when (lang.findCategoryEntry ("frmMagicSliders", "Apply")).thenReturn ("Apply");
 		
-		final ProductionType manaProduction = new ProductionType ();
+		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
 		manaProduction.setProductionTypeSuffix ("MP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
 		
-		final ProductionType researchProduction = new ProductionType ();
+		final ProductionTypeLang researchProduction = new ProductionTypeLang ();
 		researchProduction.setProductionTypeSuffix ("RP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (researchProduction);
 		
-		final ProductionType skillProduction = new ProductionType ();
+		final ProductionTypeLang skillProduction = new ProductionTypeLang ();
 		skillProduction.setProductionTypeSuffix ("SP");
 		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)).thenReturn (skillProduction);
 		
-		final momime.client.language.database.v0_9_5.Spell spellLang1 = new momime.client.language.database.v0_9_5.Spell ();
+		final SpellLang spellLang1 = new SpellLang ();
 		spellLang1.setSpellName ("Great Unsummoning");		// This was the longest spell name I could find!
 		when (lang.findSpell ("SP001")).thenReturn (spellLang1);
 		
-		final momime.client.language.database.v0_9_5.Spell spellLang2 = new momime.client.language.database.v0_9_5.Spell ();
+		final SpellLang spellLang2 = new SpellLang ();
 		spellLang2.setSpellName ("Spell Binding");
 		when (lang.findSpell ("SP002")).thenReturn (spellLang2);
 		

@@ -32,7 +32,11 @@ import javax.swing.Timer;
 import momime.client.MomClient;
 import momime.client.database.MapFeature;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.language.database.MapFeatureLang;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.SpellBookSectionLang;
+import momime.client.language.database.SpellLang;
+import momime.client.language.database.TileTypeLang;
 import momime.client.newturnmessages.NewTurnMessageMustBeAnswered;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
@@ -951,11 +955,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		if (getTargetSpell () != null)
 			try
 			{
-				final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
+				final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
 				final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 				
 				final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpell ().getSpellID (), "OverlandMapRightHandPanel");
-				final SpellBookSection section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
+				final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
 				final String target = (section != null) ? section.getSpellTargetPrompt () : null;
 				
 				targetSpellText.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
@@ -994,7 +998,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID));
 		
-			final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
+			final ProductionTypeLang productionType = getLanguage ().findProductionType (productionTypeID);
 			if ((productionType != null) && (productionType.getProductionTypeSuffix () != null))
 				amountStored = amountStored + " " + productionType.getProductionTypeSuffix ();
 			
@@ -1022,7 +1026,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
-			final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
+			final ProductionTypeLang productionType = getLanguage ().findProductionType (productionTypeID);
 			final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
 				pub.getPick (), productionTypeID, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
@@ -1110,7 +1114,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Note terrainData can be null here if surveying an area that we've never seen or that is totally off the map
 		final OverlandMapTerrainData terrainData = (mc == null) ? null : mc.getTerrainData ();
 		final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData);
-		final momime.client.language.database.v0_9_5.TileType tileTypeLang = getLanguage ().findTileType (tileTypeID);
+		final TileTypeLang tileTypeLang = getLanguage ().findTileType (tileTypeID);
 
 		// Text about building a city can be set in a bunch of places
 		String cityInfo = null;
@@ -1156,7 +1160,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				surveyorTileTypeFood.setText (null);
 			else
 			{
-				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+				final ProductionTypeLang productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
 				
 				surveyorTileTypeFood.setText (getTextUtils ().halfIntToStr (tileType.getDoubleFood ()) + " " +
@@ -1167,7 +1171,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				surveyorTileTypeProduction.setText (null);
 			else
 			{
-				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+				final ProductionTypeLang productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
 				
 				surveyorTileTypeProduction.setText ("+" + tileType.getProductionBonus ().toString () + "% " +
@@ -1178,7 +1182,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				surveyorTileTypeGold.setText (null);
 			else
 			{
-				final momime.client.language.database.v0_9_5.ProductionType productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+				final ProductionTypeLang productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
 				
 				surveyorTileTypeGold.setText ("+" + tileType.getGoldBonus ().toString () + "% " +
@@ -1198,7 +1202,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			
 			if (terrainData.getMapFeatureID () != null)
 			{
-				final momime.client.language.database.v0_9_5.MapFeature mapFeatureLang = getLanguage ().findMapFeature (terrainData.getMapFeatureID ());
+				final MapFeatureLang mapFeatureLang = getLanguage ().findMapFeature (terrainData.getMapFeatureID ());
 				final String mapFeatureDescription = (mapFeatureLang != null) ? mapFeatureLang.getMapFeatureDescription () : null;
 				surveyorMapFeature.setText ((mapFeatureDescription != null) ? mapFeatureDescription : terrainData.getMapFeatureID ());
 				
@@ -1209,7 +1213,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					{
 						final ProductionType productionType = getClient ().getClientDB ().findProductionType (mapFeatureProduction.getProductionTypeID (), "surveyorLocationOrLanguageChanged");
 						
-						final momime.client.language.database.v0_9_5.ProductionType productionTypeLang = getLanguage ().findProductionType (mapFeatureProduction.getProductionTypeID ());
+						final ProductionTypeLang productionTypeLang = getLanguage ().findProductionType (mapFeatureProduction.getProductionTypeID ());
 						final String productionTypeDescription = (productionTypeLang != null) ? productionTypeLang.getProductionTypeDescription () : null;
 						
 						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubleAmount ()) +
@@ -1342,7 +1346,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						resourceIconFilenames.add (getGraphicsDB ().findProductionType
 							(productionType.getProductionTypeID (), "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
 						
-						final momime.client.language.database.v0_9_5.ProductionType productionTypeLang = getLanguage ().findProductionType (productionType.getProductionTypeID ());
+						final ProductionTypeLang productionTypeLang = getLanguage ().findProductionType (productionType.getProductionTypeID ());
 						final String msg = (productionTypeLang == null) ? null : productionTypeLang.getCannotEndTurnDueToLackOfProduction ();
 						text.append (BULLET_POINT + ((msg != null) ? msg : productionType.getProductionTypeID ()) + System.lineSeparator ()); 
 					}

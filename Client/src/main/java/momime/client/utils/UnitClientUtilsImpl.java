@@ -24,7 +24,8 @@ import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.graphics.database.UnitTypeGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.RaceLang;
+import momime.client.language.database.UnitLang;
 import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.components.HideableComponent;
@@ -124,7 +125,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		if (unitName == null)
 		{
 			// Find the name in the language XML
-			final momime.client.language.database.v0_9_5.Unit unitLang = getLanguage ().findUnit (unit.getUnitID ());
+			final UnitLang unitLang = getLanguage ().findUnit (unit.getUnitID ());
 			unitName = (unitLang != null) ? unitLang.getUnitName () : unit.getUnitID ();
 			
 			// If we just want the simple name with no race prefix, then we're done
@@ -134,7 +135,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitName");
 				if ((unitInfo.isIncludeRaceInUnitName () != null) && (unitInfo.isIncludeRaceInUnitName ()))
 				{
-					final Race race = getLanguage ().findRace (unitInfo.getUnitRaceID ());
+					final RaceLang race = getLanguage ().findRace (unitInfo.getUnitRaceID ());
 					unitName = ((race != null) ? race.getRaceName () : unitInfo.getUnitRaceID ()) + " " + unitName;
 				}
 				

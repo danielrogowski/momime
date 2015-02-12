@@ -5,7 +5,6 @@ import java.util.List;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
@@ -62,13 +61,13 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		
 		// Check all movement skills
 		UnitSkillGfx bestMatch = null;
-		for (final UnitSkill thisSkill : getGraphicsDB ().getUnitSkill ())
+		for (final UnitSkillGfx thisSkill : getGraphicsDB ().getUnitSkills ())
 			if (thisSkill.getMovementIconImagePreference () != null)
 				if ((bestMatch == null) || (thisSkill.getMovementIconImagePreference () < bestMatch.getMovementIconImagePreference ()))
 					if (getUnitUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
-						bestMatch = (UnitSkillGfx) thisSkill;
+						bestMatch = thisSkill;
 		
 		if (bestMatch == null)
 			throw new MomException ("Unit " + unit.getUnitID () + " has no skills which have movement graphics");

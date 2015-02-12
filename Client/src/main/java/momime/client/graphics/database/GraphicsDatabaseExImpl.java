@@ -503,6 +503,16 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 	
 	/**
+	 * @return List of all unit skill graphics
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitSkillGfx> getUnitSkills ()
+	{
+		return (List<UnitSkillGfx>) (List<?>) getUnitSkill ();
+	}
+	
+	/**
 	 * @param unitSkillID Unit skill ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit skill object
@@ -677,6 +687,16 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			
 		return bestMatch;
 	}
+	
+	/**
+	 * @return List of all city view elemenets (backgrounds, buildings, spell effects and so on)
+	 */
+	@Override
+    @SuppressWarnings ("unchecked")
+	public final List<CityViewElementGfx> getCityViewElements ()
+    {
+    	return (List<CityViewElementGfx>) (List<?>) getCityViewElement ();
+    }
 	
 	/**
 	 * @param animationID Animation ID to search for

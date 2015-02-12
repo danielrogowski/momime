@@ -1,5 +1,7 @@
 package momime.client.graphics.database;
 
+import java.util.List;
+
 import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.common.database.RecordNotFoundException;
@@ -34,6 +36,15 @@ public final class PickGfx extends Pick
 		final String filename = getBookImage ().get (getRandomUtils ().nextInt (getBookImage ().size ())).getBookImageFile ();
 		log.trace ("Exiting chooseRandomBookImageFilename = " + filename);
 		return filename;
+	}
+	
+	/**
+	 * @return List of all possible images for displaying this pick
+	 */
+	@SuppressWarnings ("unchecked")
+	public final List<BookImageGfx> getBookImages ()
+	{
+		return (List<BookImageGfx>) (List<?>) getBookImage ();
 	}
 	
 	/**

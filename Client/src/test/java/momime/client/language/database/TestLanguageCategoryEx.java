@@ -2,7 +2,6 @@ package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import momime.client.language.database.v0_9_5.LanguageEntry;
 
 import org.junit.Test;
 
@@ -21,7 +20,7 @@ public final class TestLanguageCategoryEx
 		final LanguageCategoryEx cat = new LanguageCategoryEx ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final LanguageEntry entry = new LanguageEntry ();
+			final LanguageEntryEx entry = new LanguageEntryEx ();
 			entry.setLanguageEntryID ("E" + n);
 			entry.setLanguageEntryText ("Blah" + n);
 			

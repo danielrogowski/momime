@@ -11,7 +11,6 @@ import momime.client.MomClient;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.SpellGfx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -129,10 +128,10 @@ public final class TestMiniCityViewUI
 		spellImage.setCityViewImageFile ("/momime.client.graphics/cityView/spellEffects/SE163-frame1.png");
 		spellImage.setCitySpellEffectID ("CSE001");
 		
-		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
+		final List<CityViewElementGfx> elements = new ArrayList<CityViewElementGfx> ();
 		elements.add (landscape);
 		elements.add (spellImage);
-		when (gfx.getCityViewElement ()).thenReturn (elements);
+		when (gfx.getCityViewElements ()).thenReturn (elements);
 		
 		// Set up spell
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();

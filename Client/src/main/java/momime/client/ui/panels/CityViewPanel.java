@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import momime.client.MomClient;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.utils.AnimationController;
 import momime.client.utils.OverlandMapClientUtils;
 import momime.common.MomException;
@@ -94,8 +93,8 @@ public final class CityViewPanel extends JPanel
 		// Match the exact selection logic of the draw routine, so we find only the necessary animations
 		String elementSetsDone = "";
 		
-		for (final CityViewElement element : getGraphicsDB ().getCityViewElement ())
-			if (drawElement ((CityViewElementGfx) element, elementSetsDone))
+		for (final CityViewElementGfx element : getGraphicsDB ().getCityViewElements ())
+			if (drawElement (element, elementSetsDone))
 			{
 				// Register it, if its an animation
 				getAnim ().registerRepaintTrigger (element.getCityViewAnimation (), this);
@@ -149,10 +148,10 @@ public final class CityViewPanel extends JPanel
 							String elementSetsDoneClick = "";
 							buildingID = null;
 					
-							final Iterator<CityViewElement> iter = getGraphicsDB ().getCityViewElement ().iterator ();
+							final Iterator<CityViewElementGfx> iter = getGraphicsDB ().getCityViewElements ().iterator ();
 							while ((!found) && (iter.hasNext ()))
 							{
-								final CityViewElementGfx element = (CityViewElementGfx) iter.next ();
+								final CityViewElementGfx element = iter.next ();
 	
 								if (drawElement (element, elementSetsDoneClick))
 								{
@@ -226,8 +225,8 @@ public final class CityViewPanel extends JPanel
 	{
 		String elementSetsDone = "";
 		
-		for (final CityViewElement element : getGraphicsDB ().getCityViewElement ())
-			if (drawElement ((CityViewElementGfx) element, elementSetsDone))
+		for (final CityViewElementGfx element : getGraphicsDB ().getCityViewElements ())
+			if (drawElement (element, elementSetsDone))
 			{
 				// Draw it
 				try

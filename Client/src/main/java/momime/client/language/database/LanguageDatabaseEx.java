@@ -2,7 +2,6 @@ package momime.client.language.database;
 
 import java.util.List;
 
-import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.language.database.v0_9_5.Shortcut;
 import momime.common.database.SpellBookSectionID;
 
@@ -195,7 +194,7 @@ public interface LanguageDatabaseEx
 	/**
 	 * @return List of all known servers
 	 */
-	public List<KnownServer> getKnownServer ();
+	public List<KnownServerLang> getKnownServers ();
 	
 	/**
 	 * @param shortcut Game shortcut that we're looking to see if there is a key defined for it

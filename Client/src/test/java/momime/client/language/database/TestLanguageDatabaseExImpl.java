@@ -2,20 +2,7 @@ package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import momime.client.language.database.v0_9_5.CitySize;
-import momime.client.language.database.v0_9_5.DifficultyLevel;
-import momime.client.language.database.v0_9_5.FogOfWarSetting;
-import momime.client.language.database.v0_9_5.Hero;
-import momime.client.language.database.v0_9_5.LandProportion;
-import momime.client.language.database.v0_9_5.LanguageEntry;
-import momime.client.language.database.v0_9_5.MapSize;
-import momime.client.language.database.v0_9_5.NodeStrength;
-import momime.client.language.database.v0_9_5.RangedAttackType;
 import momime.client.language.database.v0_9_5.Shortcut;
-import momime.client.language.database.v0_9_5.SpellRank;
-import momime.client.language.database.v0_9_5.SpellSetting;
-import momime.client.language.database.v0_9_5.UnitSetting;
-import momime.client.language.database.v0_9_5.Wizard;
 import momime.common.database.SpellBookSectionID;
 
 import org.junit.Test;
@@ -160,7 +147,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Wizard newWizard = new Wizard ();
+			final WizardLang newWizard = new WizardLang ();
 			newWizard.setWizardID ("WZ0" + n);
 			newWizard.setWizardName ("WZDesc0" + n);
 			lang.getWizard ().add (newWizard);
@@ -307,7 +294,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final RangedAttackType newRangedAttackType = new RangedAttackType ();
+			final RangedAttackTypeLang newRangedAttackType = new RangedAttackTypeLang ();
 			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
 			newRangedAttackType.setRangedAttackTypeDescription ("RATDesc0" + n);
 			lang.getRangedAttackType ().add (newRangedAttackType);
@@ -349,7 +336,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Hero newHeroName = new Hero ();
+			final HeroLang newHeroName = new HeroLang ();
 			newHeroName.setHeroNameID ("HN0" + n);
 			newHeroName.setHeroName ("HNDesc0" + n);
 			lang.getHero ().add (newHeroName);
@@ -370,7 +357,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CitySize newCitySize = new CitySize ();
+			final CitySizeLang newCitySize = new CitySizeLang ();
 			newCitySize.setCitySizeID ("CS0" + n);
 			newCitySize.setCitySizeName ("CSDesc0" + n);
 			lang.getCitySize ().add (newCitySize);
@@ -433,7 +420,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final SpellRank newSpellRank = new SpellRank ();
+			final SpellRankLang newSpellRank = new SpellRankLang ();
 			newSpellRank.setSpellRankID ("SR0" + n);
 			newSpellRank.setSpellRankDescription ("SRDesc0" + n);
 			lang.getSpellRank ().add (newSpellRank);
@@ -496,7 +483,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapSize newMapSize = new MapSize ();
+			final MapSizeLang newMapSize = new MapSizeLang ();
 			newMapSize.setMapSizeID ("MS0" + n);
 			newMapSize.setMapSizeDescription ("MSDesc0" + n);
 			lang.getMapSize ().add (newMapSize);
@@ -517,7 +504,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final LandProportion newLandProportion = new LandProportion ();
+			final LandProportionLang newLandProportion = new LandProportionLang ();
 			newLandProportion.setLandProportionID ("LP0" + n);
 			newLandProportion.setLandProportionDescription ("LPDesc0" + n);
 			lang.getLandProportion ().add (newLandProportion);
@@ -538,7 +525,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final NodeStrength newNodeStrength = new NodeStrength ();
+			final NodeStrengthLang newNodeStrength = new NodeStrengthLang ();
 			newNodeStrength.setNodeStrengthID ("NS0" + n);
 			newNodeStrength.setNodeStrengthDescription ("NSDesc0" + n);
 			lang.getNodeStrength ().add (newNodeStrength);
@@ -559,7 +546,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final DifficultyLevel newDifficultyLevel = new DifficultyLevel ();
+			final DifficultyLevelLang newDifficultyLevel = new DifficultyLevelLang ();
 			newDifficultyLevel.setDifficultyLevelID ("DL0" + n);
 			newDifficultyLevel.setDifficultyLevelDescription ("DLDesc0" + n);
 			lang.getDifficultyLevel ().add (newDifficultyLevel);
@@ -580,7 +567,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final FogOfWarSetting newFogOfWarSetting = new FogOfWarSetting ();
+			final FogOfWarSettingLang newFogOfWarSetting = new FogOfWarSettingLang ();
 			newFogOfWarSetting.setFogOfWarSettingID ("FS0" + n);
 			newFogOfWarSetting.setFogOfWarSettingDescription ("FSDesc0" + n);
 			lang.getFogOfWarSetting ().add (newFogOfWarSetting);
@@ -601,7 +588,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSetting newUnitSetting = new UnitSetting ();
+			final UnitSettingLang newUnitSetting = new UnitSettingLang ();
 			newUnitSetting.setUnitSettingID ("US0" + n);
 			newUnitSetting.setUnitSettingDescription ("USDesc0" + n);
 			lang.getUnitSetting ().add (newUnitSetting);
@@ -622,7 +609,7 @@ public final class TestLanguageDatabaseExImpl
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final SpellSetting newSpellSetting = new SpellSetting ();
+			final SpellSettingLang newSpellSetting = new SpellSettingLang ();
 			newSpellSetting.setSpellSettingID ("SS0" + n);
 			newSpellSetting.setSpellSettingDescription ("SSDesc0" + n);
 			lang.getSpellSetting ().add (newSpellSetting);
@@ -650,7 +637,7 @@ public final class TestLanguageDatabaseExImpl
 			
 			for (int entryNo = 1; entryNo <= 3; entryNo++)
 			{
-				final LanguageEntry entry = new LanguageEntry ();
+				final LanguageEntryEx entry = new LanguageEntryEx ();
 				entry.setLanguageEntryID ("C" + catNo + "E" + entryNo);
 				entry.setLanguageEntryText ("Blah" + catNo + entryNo);
 				cat.getLanguageEntry ().add (entry);

@@ -3,8 +3,6 @@ package momime.client.graphics.database;
 import java.awt.Dimension;
 import java.util.List;
 
-import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
 
@@ -97,7 +95,7 @@ public interface GraphicsDatabaseEx
 	/**
 	 * @return List of all unit skill graphics
 	 */
-	public List<UnitSkill> getUnitSkill ();
+	public List<UnitSkillGfx> getUnitSkills ();
 	
 	/**
 	 * @param unitSkillID Unit skill ID to search for
@@ -180,7 +178,7 @@ public interface GraphicsDatabaseEx
 	/**
 	 * @return List of all city view elemenets (backgrounds, buildings, spell effects and so on)
 	 */
-    public List<CityViewElement> getCityViewElement ();
+    public List<CityViewElementGfx> getCityViewElements ();
 	
 	/**
 	 * @param animationID Animation ID to search for

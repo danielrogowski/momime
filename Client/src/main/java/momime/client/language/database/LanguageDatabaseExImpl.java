@@ -1,6 +1,7 @@
 package momime.client.language.database;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import momime.client.language.database.v0_9_5.Building;
@@ -642,6 +643,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		return (entry == null) ? (languageCategoryID + "/" + languageEntryID) : entry;
 	}
 
+	/**
+	 * @return List of all known servers
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<KnownServerLang> getKnownServers ()
+	{
+		return (List<KnownServerLang>) (List<?>) getKnownServer ();
+	}
+	
 	/**
 	 * @param shortcut Game shortcut that we're looking to see if there is a key defined for it
 	 * @return Details of the key that should activate this shortcut, or null if none is defined

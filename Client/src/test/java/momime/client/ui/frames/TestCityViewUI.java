@@ -21,7 +21,6 @@ import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.client.graphics.database.RaceGfx;
 import momime.client.graphics.database.RacePopulationTaskGfx;
 import momime.client.graphics.database.TileSetGfx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -219,9 +218,9 @@ public final class TestCityViewUI
 		landscape.setSizeMultiplier (2);
 		landscape.setCityViewImageFile ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		
-		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
+		final List<CityViewElementGfx> elements = new ArrayList<CityViewElementGfx> ();
 		elements.add (landscape);
-		when (gfx.getCityViewElement ()).thenReturn (elements);
+		when (gfx.getCityViewElements ()).thenReturn (elements);
 
 		// Set up animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();

@@ -11,7 +11,6 @@ import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.MomException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -35,7 +34,7 @@ public final class TestClientUnitCalculationsImpl
 	public final void testFindPreferredMovementSkillGraphics_Found () throws Exception
 	{
 		// Mock entries from the graphics XML
-		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
 		for (int n = 1; n <= 5; n++)
 		{
 			final UnitSkillGfx skill = new UnitSkillGfx ();
@@ -48,7 +47,7 @@ public final class TestClientUnitCalculationsImpl
 		}
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkill ()).thenReturn (skills);
+		when (gfx.getUnitSkills ()).thenReturn (skills);
 		
 		// Mock things accessed from MomClient
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -94,7 +93,7 @@ public final class TestClientUnitCalculationsImpl
 	public final void testFindPreferredMovementSkillGraphics_NotFound () throws Exception
 	{
 		// Mock entries from the graphics XML
-		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
 		for (int n = 1; n <= 5; n++)
 		{
 			final UnitSkillGfx skill = new UnitSkillGfx ();
@@ -107,7 +106,7 @@ public final class TestClientUnitCalculationsImpl
 		}
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkill ()).thenReturn (skills);
+		when (gfx.getUnitSkills ()).thenReturn (skills);
 		
 		// Mock things accessed from MomClient
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -153,7 +152,7 @@ public final class TestClientUnitCalculationsImpl
 	public final void testDetermineCombatActionID_Defined () throws Exception
 	{
 		// Mock entries from the graphics XML
-		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
 		final UnitSkillGfx skill = new UnitSkillGfx ();
 		skill.setUnitSkillID ("US01");
 		skill.setMovementIconImagePreference (1);
@@ -162,7 +161,7 @@ public final class TestClientUnitCalculationsImpl
 		skills.add (skill);
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkill ()).thenReturn (skills);
+		when (gfx.getUnitSkills ()).thenReturn (skills);
 
 		// Mock things accessed from MomClient
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -205,14 +204,14 @@ public final class TestClientUnitCalculationsImpl
 	public final void testDetermineCombatActionID_Undefined () throws Exception
 	{
 		// Mock entries from the graphics XML
-		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
 		final UnitSkillGfx skill = new UnitSkillGfx ();
 		skill.setUnitSkillID ("US01");
 		skill.setMovementIconImagePreference (1);
 		skills.add (skill);
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkill ()).thenReturn (skills);
+		when (gfx.getUnitSkills ()).thenReturn (skills);
 
 		// Mock things accessed from MomClient
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();

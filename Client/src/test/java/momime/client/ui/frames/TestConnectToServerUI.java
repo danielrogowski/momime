@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.KnownServerLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.ui.fonts.CreateFontsForTests;
 
 import org.junit.Test;
@@ -45,18 +45,18 @@ public final class TestConnectToServerUI
 		when (lang.findCategoryEntry ("frmConnectToServer", "Cancel")).thenReturn ("Cancel");
 		when (lang.findCategoryEntry ("frmConnectToServer", "OK")).thenReturn ("OK");
 		
-		final KnownServer localhost = new KnownServer ();
+		final KnownServerLang localhost = new KnownServerLang ();
 		localhost.setKnownServerDescription ("localhost");
 		localhost.setKnownServerIP ("127.0.0.1");
 
-		final KnownServer another = new KnownServer ();
+		final KnownServerLang another = new KnownServerLang ();
 		another.setKnownServerDescription ("Some other host");
 		another.setKnownServerIP ("123.45.67.89");
 		
-		final List<KnownServer> servers = new ArrayList<KnownServer> ();
+		final List<KnownServerLang> servers = new ArrayList<KnownServerLang> ();
 		servers.add (localhost);
 		servers.add (another);
-		when (lang.getKnownServer ()).thenReturn (servers);
+		when (lang.getKnownServers ()).thenReturn (servers);
 
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);

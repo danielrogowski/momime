@@ -22,11 +22,11 @@ import javax.swing.JTextPane;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
+import momime.client.graphics.database.BookImageGfx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
-import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.CombatAreaEffectLang;
 import momime.client.language.database.PickLang;
@@ -551,7 +551,7 @@ public final class HelpUI extends MomClientFrameUI
 			// Merge the images into one
 			int totalWidth = 0;
 			int maxHeight = 0;
-			for (final BookImage bookImage : pick.getBookImage ())
+			for (final BookImageGfx bookImage : pick.getBookImages ())
 			{
 				final BufferedImage image = getUtils ().loadImage (bookImage.getBookImageFile ());
 				totalWidth = totalWidth + image.getWidth ();
@@ -563,7 +563,7 @@ public final class HelpUI extends MomClientFrameUI
 			try
 			{
 				int x = 0;
-				for (final BookImage bookImage : pick.getBookImage ())
+				for (final BookImageGfx bookImage : pick.getBookImages ())
 				{
 					final BufferedImage image = getUtils ().loadImage (bookImage.getBookImageFile ());
 					g.drawImage (image, x, maxHeight - image.getHeight (), null);

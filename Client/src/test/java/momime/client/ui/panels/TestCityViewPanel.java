@@ -13,7 +13,6 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.OverlandMapClientUtils;
 import momime.common.database.CommonDatabaseConstants;
@@ -116,7 +115,7 @@ public final class TestCityViewPanel
 		setElement.setPlaneNumber (0);
 		setElement.setCityViewElementSetID ("X");		// Matches criteria, but we matched an earlier "X" already so this doesn't get displayed
 		
-		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
+		final List<CityViewElementGfx> elements = new ArrayList<CityViewElementGfx> ();
 		elements.add (landscape);
 		elements.add (sky);
 		elements.add (summoningCircle);
@@ -126,7 +125,7 @@ public final class TestCityViewPanel
 		elements.add (ocean);
 		elements.add (river);
 		elements.add (setElement);
-		when (gfx.getCityViewElement ()).thenReturn (elements);
+		when (gfx.getCityViewElements ()).thenReturn (elements);
 		
 		// Mock what is in this city
 		final MapSizeData mapSize = ClientTestData.createMapSizeData ();

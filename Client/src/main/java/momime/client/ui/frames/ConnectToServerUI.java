@@ -28,7 +28,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.client.language.database.v0_9_5.KnownServer;
+import momime.client.language.database.KnownServerLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 
@@ -226,7 +226,7 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		
 		// Server list
 		int gridy = 3;
-		for (final KnownServer server : getLanguage ().getKnownServer ())
+		for (final KnownServerLang server : getLanguage ().getKnownServers ())
 		{
 			final Action serverAction = new AbstractAction (server.getKnownServerDescription () + " (" + server.getKnownServerIP () + ")")
 			{

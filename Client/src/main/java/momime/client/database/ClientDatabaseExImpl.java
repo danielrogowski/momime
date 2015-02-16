@@ -1,27 +1,26 @@
 package momime.client.database;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import momime.client.database.ClientDatabase;
-import momime.client.database.MapFeature;
-import momime.client.database.Wizard;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Building;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileType;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
 import momime.common.database.Race;
 import momime.common.database.RangedAttackType;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.TaxRate;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
+import momime.common.database.UnitAttribute;
 import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitType;
@@ -250,6 +249,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 	
 	/**
+	 * @return Complete list of all planes in game
+	 */
+	@Override
+	public final List<Plane> getPlanes ()
+	{
+		return getPlane ();
+	}
+	
+	/**
 	 * @param planeNumber Plane number to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Plane object
@@ -265,6 +273,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all map features in game
+	 */
+	@Override
+	public final List<MapFeature> getMapFeatures ()
+	{
+		return getMapFeature ();
+	}
+	
 	/**
 	 * @param mapFeatureID Map feature ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -282,6 +299,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 
 	/**
+	 * @return Complete list of all tile types in game
+	 */
+	@Override
+	public final List<TileType> getTileTypes ()
+	{
+		return getTileType ();
+	}
+	
+	/**
 	 * @param tileTypeID Tile type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Tile type object
@@ -298,6 +324,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 
 	/**
+	 * @return Complete list of all production types in game
+	 */
+	@Override
+	public final List<ProductionType> getProductionTypes ()
+	{
+		return getProductionType ();
+	}
+	
+	/**
 	 * @param productionTypeID Production type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Production type object
@@ -311,6 +346,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 			throw new RecordNotFoundException (ProductionType.class, productionTypeID, caller);
 
 		return found;
+	}
+	
+	/**
+	 * @return Complete list of all pick types in game
+	 */
+	@Override
+	public final List<PickType> getPickTypes ()
+	{
+		return getPickType ();
 	}
 
 	/**
@@ -330,6 +374,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 
 	/**
+	 * @return Complete list of all picks in game
+	 */
+	@Override
+	public final List<Pick> getPicks ()
+	{
+		return getPick ();
+	}
+	
+	/**
 	 * @param pickID Pick ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Pick object
@@ -345,6 +398,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all wizards in game
+	 */
+	@Override
+	public final List<Wizard> getWizards ()
+	{
+		return getWizard ();
+	}
+	
 	/**
 	 * @param wizardID Wizard ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -394,6 +456,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 
 	/**
+	 * @return Complete list of all units in game
+	 */
+	@Override
+	public final List<Unit> getUnits ()
+	{
+		return getUnit ();
+	}
+	
+	/**
 	 * @param unitID Unit ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit object
@@ -409,6 +480,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all unit skills in game
+	 */
+	@Override
+	public final List<UnitSkill> getUnitSkills ()
+	{
+		return getUnitSkill ();
+	}
+	
 	/**
 	 * @param unitSkillID Unit skill ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -458,6 +538,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 	
 	/**
+	 * @return Complete list of all races in game
+	 */
+	@Override
+	public final List<Race> getRaces ()
+	{
+		return getRace ();
+	}
+	
+	/**
 	 * @param raceID Race ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Race object
@@ -490,6 +579,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 
 	/**
+	 * @return Complete list of all buildings in game
+	 */
+	@Override
+	public final List<Building> getBuildings ()
+	{
+		return getBuilding ();
+	}
+	
+	/**
 	 * @param buildingID Building ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Building object
@@ -505,6 +603,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all spells in game
+	 */
+	@Override
+	public final List<Spell> getSpells ()
+	{
+		return getSpell ();
+	}
+	
 	/**
 	 * @param spellID Spell ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -569,6 +676,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all unit attributes in game
+	 */
+	@Override
+	public final List<UnitAttribute> getUnitAttributes ()
+	{
+		return getUnitAttribute ();
+	}
+	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database
 	 */

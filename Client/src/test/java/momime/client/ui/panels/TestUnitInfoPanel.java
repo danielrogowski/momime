@@ -312,7 +312,7 @@ public final class TestUnitInfoPanel
 			attr.setUnitAttributeID ("UA0" + n);
 			unitAttributes.add (attr);
 		}
-		doReturn (unitAttributes).when (db).getUnitAttribute ();
+		doReturn (unitAttributes).when (db).getUnitAttributes ();
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);

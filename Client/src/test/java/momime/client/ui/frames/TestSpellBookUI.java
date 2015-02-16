@@ -155,7 +155,7 @@ public final class TestSpellBookUI
 			when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
 			when (spellUtils.getReducedCombatCastingCost (spell, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
 		}
-		doReturn (spells).when (db).getSpell ();
+		doReturn (spells).when (db).getSpells ();
 		
 		// Research statuses - we know 0 of SP000 - SP009, 1 of SP010 - SP019 and so on
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();

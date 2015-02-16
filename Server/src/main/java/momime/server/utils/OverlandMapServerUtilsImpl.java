@@ -24,10 +24,10 @@ import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.UnitUtils;
+import momime.server.database.CityNameContainerSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.CityNameContainer;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Race;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -130,7 +130,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
 		continentalRace.setCoordinateSystem (sys);
 
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sys.getWidth (); x++)
 				for (int y = 0; y < sys.getHeight (); y++)
 				{
@@ -158,7 +158,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @return Auto generated city name
 	 */
 	@Override
-	public final String generateCityName (final MomGeneralServerKnowledge gsk, final Race race)
+	public final String generateCityName (final MomGeneralServerKnowledge gsk, final RaceSvr race)
 	{
 		final List<String> possibleChoices = new ArrayList<String> ();
 
@@ -170,7 +170,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		{
 			// Test each name to see if it has been used before
 			possibleChoices.clear ();
-			for (final CityNameContainer thisCache : race.getCityName ())
+			for (final CityNameContainerSvr thisCache : race.getCityNames ())
 			{
 				String thisName = thisCache.getCityName ();
 				if (numeral > 1)
@@ -280,7 +280,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			// Resolve the node ownership out across the full area, updating the true map as well as players' memory of who can see each cell and informing the clients too
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-					for (final Plane plane : db.getPlane ())
+					for (final PlaneSvr plane : db.getPlanes ())
 					{
 						final ServerGridCell aura = (ServerGridCell) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 						if (attackingSpirit.getUnitLocation ().equals (aura.getAuraFromNode ()))
@@ -318,7 +318,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		int total = 0;
 		for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
 			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
-				for (final Plane plane : db.getPlane ())
+				for (final PlaneSvr plane : db.getPlanes ())
 				{
 					final OverlandMapCityData cityData = map.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == playerID) &&

@@ -166,8 +166,8 @@ public final class TestChangeConstructionUI
 		}
 		
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		doReturn (buildings).when (db).getBuilding ();
-		doReturn (units).when (db).getUnit ();
+		doReturn (buildings).when (db).getBuildings ();
+		doReturn (units).when (db).getUnits ();
 		when (db.findRace ("RC01", "updateWhatCanBeConstructed")).thenReturn (race);
 		
 		// City data

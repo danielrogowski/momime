@@ -4,7 +4,6 @@ import java.util.List;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TaxRate;
 
 /**
  * Adds client-side specific extensions to the common database lookup class
@@ -24,12 +23,7 @@ public interface ClientDatabaseEx extends CommonDatabase
 	 * @return Complete list of all wizards in game
 	 */
 	@Override
-	public List<Wizard> getWizard ();
-	
-	/**
-	 * @return Complete list of all tax rates in game
-	 */
-	public List<TaxRate> getTaxRate ();
+	public List<Wizard> getWizards ();
 	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database

@@ -105,10 +105,10 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		else
 		{
 			// Proceed with calculation
-			final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
-			final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
-			final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
-			final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
 			getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getZ (),
 				sender.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
@@ -117,7 +117,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 
 			// The client only needs to know which areas they can reach, and which they can reach in one turn - not the actual distances or any of the other stuff that gets generated
 			final MapVolumeOfOverlandMoveType movementTypesVolume = new MapVolumeOfOverlandMoveType ();
-			for (int plane = 0; plane < mom.getServerDB ().getPlane ().size (); plane++)
+			for (int plane = 0; plane < mom.getServerDB ().getPlanes ().size (); plane++)
 			{
 				final MapAreaOfOverlandMoveType movementTypesPlane = new MapAreaOfOverlandMoveType ();
 				for (int y = 0; y < mom.getSessionDescription ().getMapSize ().getHeight (); y++)

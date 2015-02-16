@@ -9,7 +9,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Wizard;
+import momime.server.database.WizardSvr;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
@@ -106,7 +106,7 @@ public interface PlayerPickServerUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
-	public List<Wizard> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db);
+	public List<WizardSvr> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db);
 
 	/**
 	 * Checks which plane a wizard with a certain selection of picks should start on

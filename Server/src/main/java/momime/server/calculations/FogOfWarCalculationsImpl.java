@@ -7,8 +7,8 @@ import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Plane;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
@@ -76,7 +76,7 @@ public final class FogOfWarCalculationsImpl implements FogOfWarCalculations
 			(trueTerrain.getPlane ().get (location.getZ ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ()))
 		{
 			canSee = false;
-			final Iterator<Plane> planeIter = db.getPlane ().iterator ();
+			final Iterator<PlaneSvr> planeIter = db.getPlanes ().iterator ();
 			while ((!canSee) && (planeIter.hasNext ()))
 			{
 				final int thisPlane = planeIter.next ().getPlaneNumber ();

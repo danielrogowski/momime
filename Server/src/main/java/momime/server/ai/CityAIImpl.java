@@ -8,9 +8,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
@@ -28,11 +28,11 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
+import momime.server.database.BuildingSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.AiBuildingTypeID;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Race;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;
@@ -185,7 +185,7 @@ public final class CityAIImpl implements CityAI
 		// of times for how many workers there are in the city that we could convert to farmers
 		final List<MapCoordinates3DEx> workerCoordinates = new ArrayList<MapCoordinates3DEx> ();
 
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -260,7 +260,7 @@ public final class CityAIImpl implements CityAI
 		// Then take off how many rations cities are producing even if they have zero optional farmers set
 		// e.g. a size 1 city with a granary next to a wild game resource will produce +3 rations even with no farmers,
 		// or a size 1 city with no resources must be a farmer, but he only eats 1 of the 2 rations he produces so this also gives +1
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -296,7 +296,7 @@ public final class CityAIImpl implements CityAI
 		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up other production cities");
 
 		// Update each player's memorised view of this city with the new number of optional farmers, if they can see it
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -333,7 +333,7 @@ public final class CityAIImpl implements CityAI
 		log.trace ("Entering decideWhatToBuild: " + cityLocation);
 
 		// Convert list of buildings that our race can't build into a string list, so its easier to search
-		final Race race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");
+		final RaceSvr race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");
 		final List<String> raceCannotBuild = new ArrayList<String> ();
 		for (final RaceCannotBuild cannotBuild : race.getRaceCannotBuild ())
 			raceCannotBuild.add (cannotBuild.getCannotBuildBuildingID ());
@@ -366,8 +366,8 @@ public final class CityAIImpl implements CityAI
 			// b) we already have, or
 			// c) our race cannot build
 			// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
-			final List<Building> buildingOptions = new ArrayList<Building> ();
-			for (final Building building : db.getBuilding ())
+			final List<BuildingSvr> buildingOptions = new ArrayList<BuildingSvr> ();
+			for (final BuildingSvr building : db.getBuildings ())
 				if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, building.getBuildingID ()) == null) &&
 					(getServerCityCalculations ().canEventuallyConstructBuilding (trueTerrain, trueBuildings, cityLocation, building, sd.getMapSize (), db)))
 
@@ -381,7 +381,7 @@ public final class CityAIImpl implements CityAI
 			int buildingIndex = 0;
 			while ((!decided) && (buildingIndex < buildingOptions.size ()))
 			{
-				final Building thisBuilding = buildingOptions.get (buildingIndex);
+				final BuildingSvr thisBuilding = buildingOptions.get (buildingIndex);
 
 				if (getMemoryBuildingUtils ().meetsBuildingRequirements (trueBuildings, cityLocation, thisBuilding))
 				{
@@ -397,7 +397,7 @@ public final class CityAIImpl implements CityAI
 					// canEventuallyConstructBuilding () above already checked all this over the entire prerequisite tree, so all we need to do is add them
 					for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
 					{
-						final Building buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
+						final BuildingSvr buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
 						if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
 							buildingOptions.add (buildingPrereq);
 					}

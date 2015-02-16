@@ -13,7 +13,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.v0_9_5.Building;
+import momime.server.database.BuildingSvr;
 import momime.server.process.CityProcessing;
 
 import org.apache.commons.logging.Log;
@@ -66,7 +66,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
-		Building building = null;
+		BuildingSvr building = null;
 		int goldFromSellingBuilding = 0;
 		if (getBuildingURN () != null)
 		{

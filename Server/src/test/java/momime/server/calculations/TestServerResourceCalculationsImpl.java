@@ -15,8 +15,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RoundingDirectionID;
@@ -52,11 +52,11 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
+import momime.server.database.BuildingSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
@@ -86,20 +86,20 @@ public final class TestServerResourceCalculationsImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
 		final UnitUpkeep shadowDemonsUpkeep = new UnitUpkeep ();
 		shadowDemonsUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
-		final Unit shadowDemonsDef = new Unit ();
+		final UnitSvr shadowDemonsDef = new UnitSvr ();
 		shadowDemonsDef.getUnitUpkeep ().add (shadowDemonsUpkeep);
 		when (db.findUnit ("UN172", "recalculateAmountsPerTurn")).thenReturn (shadowDemonsDef);
 
@@ -109,7 +109,7 @@ public final class TestServerResourceCalculationsImpl
 		final UnitUpkeep warlocksGold = new UnitUpkeep ();
 		warlocksGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		
-		final Unit warlocksDef = new Unit ();
+		final UnitSvr warlocksDef = new UnitSvr ();
 		warlocksDef.getUnitUpkeep ().add (warlocksGold);
 		warlocksDef.getUnitUpkeep ().add (warlocksRations);
 		when (db.findUnit ("UN065", "recalculateAmountsPerTurn")).thenReturn (warlocksDef);
@@ -118,7 +118,7 @@ public final class TestServerResourceCalculationsImpl
 		crusadeUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		crusadeUpkeep.setUpkeepValue (10);
 		
-		final Spell crusadeDef = new Spell ();
+		final SpellSvr crusadeDef = new SpellSvr ();
 		crusadeDef.getSpellUpkeep ().add (crusadeUpkeep);
 		when (db.findSpell ("SP158", "recalculateAmountsPerTurn")).thenReturn (crusadeDef);
 		
@@ -392,21 +392,21 @@ public final class TestServerResourceCalculationsImpl
 		final UnitUpkeep gargoylesUpkeep = new UnitUpkeep ();
 		gargoylesUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
-		final Unit gargoylesDef = new Unit ();
+		final UnitSvr gargoylesDef = new UnitSvr ();
 		gargoylesDef.getUnitUpkeep ().add (gargoylesUpkeep);
 		when (db.findUnit ("UN157", "listConsumersOfProductionType")).thenReturn (gargoylesDef);
 		
-		final Building wizardsGuildDef = new Building ();
+		final BuildingSvr wizardsGuildDef = new BuildingSvr ();
 		when (db.findBuilding ("BL21", "listConsumersOfProductionType")).thenReturn (wizardsGuildDef);
 		
-		final Spell entangleDef = new Spell ();
+		final SpellSvr entangleDef = new SpellSvr ();
 		when (db.findSpell ("SP033", "listConsumersOfProductionType")).thenReturn (entangleDef);
 		
 		final SpellUpkeep natureAwarenessUpkeep = new SpellUpkeep ();
 		natureAwarenessUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		natureAwarenessUpkeep.setUpkeepValue (7);
 		
-		final Spell natureAwarenessDef = new Spell ();
+		final SpellSvr natureAwarenessDef = new SpellSvr ();
 		natureAwarenessDef.getSpellUpkeep ().add (natureAwarenessUpkeep);
 		when (db.findSpell ("SP034", "listConsumersOfProductionType")).thenReturn (natureAwarenessDef);
 		

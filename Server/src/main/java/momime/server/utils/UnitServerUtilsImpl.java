@@ -26,8 +26,8 @@ import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Unit;
-import momime.server.database.v0_9_5.UnitSkill;
+import momime.server.database.UnitSkillSvr;
+import momime.server.database.UnitSvr;
 import momime.server.messages.ServerMemoryGridCellUtils;
 
 import org.apache.commons.logging.Log;
@@ -104,7 +104,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	{
 		log.trace ("Entering generateHeroNameAndRandomSkills: " + unit.getUnitID ());
 
-		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "generateHeroNameAndRandomSkills");
+		final UnitSvr unitDefinition = db.findUnit (unit.getUnitID (), "generateHeroNameAndRandomSkills");
 
 		// Pick a name at random
 		if (unitDefinition.getHeroName ().size () == 0)
@@ -122,7 +122,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			{
 				// Get a list of all valid choices
 				final List<String> skillChoices = new ArrayList<String> ();
-				for (final UnitSkill thisSkill : db.getUnitSkill ())
+				for (final UnitSkillSvr thisSkill : db.getUnitSkills ())
 				{
 					// We can spot hero skills since they'll have at least one of these values filled in
 					if ( ( (thisSkill.getHeroSkillTypeID () != null) && (!thisSkill.getHeroSkillTypeID ().equals (""))) || ( (thisSkill.isOnlyIfHaveAlready () != null) && (thisSkill.isOnlyIfHaveAlready ())) || ( (thisSkill.getMaxOccurrences () != null) && (thisSkill.getMaxOccurrences () > 0)))

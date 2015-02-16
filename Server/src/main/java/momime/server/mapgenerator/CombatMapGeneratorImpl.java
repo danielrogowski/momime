@@ -15,11 +15,11 @@ import momime.common.messages.MomCombatTileLayer;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.server.database.CombatMapElementSvr;
+import momime.server.database.CombatTileTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.CombatMapElement;
-import momime.server.database.v0_9_5.CombatTileType;
-import momime.server.database.v0_9_5.TileType;
+import momime.server.database.TileTypeSvr;
 import momime.server.messages.v0_9_5.ServerGridCell;
 
 import org.apache.commons.logging.Log;
@@ -70,7 +70,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		
 		// What tileType is the map cell we're generating a combat map for?
 		final ServerGridCell mc = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
-		final TileType tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
+		final TileTypeSvr tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
 
 		// Start map generation, this initializes all the map cells
 		final MapAreaOfCombatTiles map = setAllToGrass (combatMapCoordinateSystem);
@@ -256,7 +256,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
 		
 		// Check each element
-		for (final CombatMapElement element : db.getCombatMapElement ())
+		for (final CombatMapElementSvr element : db.getCombatMapElements ())
 		{
 			// Check conditions
 			final String tileTypeID;
@@ -294,7 +294,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				// Place combat tile
 				if (element.getCombatTileTypeID () != null)
 				{
-					final CombatTileType ctt = db.findCombatTileType (element.getCombatTileTypeID (), "placeCombatMapElements");
+					final CombatTileTypeSvr ctt = db.findCombatTileType (element.getCombatTileTypeID (), "placeCombatMapElements");
 					getCombatMapUtils ().setCombatTileTypeForLayer (combatTile, ctt.getCombatMapLayer (), element.getCombatTileTypeID ());
 				}
 				

@@ -3,29 +3,6 @@ package momime.server.database;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import momime.common.database.RecordNotFoundException;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.CityNameContainer;
-import momime.server.database.v0_9_5.CitySize;
-import momime.server.database.v0_9_5.CombatAreaEffect;
-import momime.server.database.v0_9_5.CombatTileBorder;
-import momime.server.database.v0_9_5.CombatTileType;
-import momime.server.database.v0_9_5.MapFeature;
-import momime.server.database.v0_9_5.Pick;
-import momime.server.database.v0_9_5.PickType;
-import momime.server.database.v0_9_5.PickTypeCountContainer;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.ProductionType;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.RangedAttackType;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.Unit;
-import momime.server.database.v0_9_5.UnitMagicRealm;
-import momime.server.database.v0_9_5.UnitSkill;
-import momime.server.database.v0_9_5.UnitType;
-import momime.server.database.v0_9_5.WeaponGrade;
-import momime.server.database.v0_9_5.Wizard;
-import momime.server.database.v0_9_5.WizardPickCount;
 
 import org.junit.Test;
 
@@ -46,7 +23,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CitySize newCitySize = new CitySize ();
+			final CitySizeSvr newCitySize = new CitySizeSvr ();
 			newCitySize.setCitySizeID ("CS0" + n);
 			db.getCitySize ().add (newCitySize);
 		}
@@ -66,7 +43,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CitySize newCitySize = new CitySize ();
+			final CitySizeSvr newCitySize = new CitySizeSvr ();
 			newCitySize.setCitySizeID ("CS0" + n);
 			db.getCitySize ().add (newCitySize);
 		}
@@ -86,7 +63,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 0; n < 2; n++)
 		{
-			final Plane newPlane = new Plane ();
+			final PlaneSvr newPlane = new PlaneSvr ();
 			newPlane.setPlaneNumber (n);
 			newPlane.setPlaneDescription ("Plane " + n);
 
@@ -108,7 +85,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 0; n < 2; n++)
 		{
-			final Plane newPlane = new Plane ();
+			final PlaneSvr newPlane = new PlaneSvr ();
 			newPlane.setPlaneNumber (n);
 			newPlane.setPlaneDescription ("Plane " + n);
 
@@ -130,7 +107,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapFeature newMapFeature = new MapFeature ();
+			final MapFeatureSvr newMapFeature = new MapFeatureSvr ();
 			newMapFeature.setMapFeatureID ("MF0" + n);
 			newMapFeature.setCityQualityEstimate (n * 10);
 			db.getMapFeature ().add (newMapFeature);
@@ -152,7 +129,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapFeature newMapFeature = new MapFeature ();
+			final MapFeatureSvr newMapFeature = new MapFeatureSvr ();
 			newMapFeature.setMapFeatureID ("MF0" + n);
 			db.getMapFeature ().add (newMapFeature);
 		}
@@ -172,7 +149,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileType newTileType = new TileType ();
+			final TileTypeSvr newTileType = new TileTypeSvr ();
 			newTileType.setTileTypeID ("TT0" + n);
 			db.getTileType ().add (newTileType);
 		}
@@ -192,7 +169,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileType newTileType = new TileType ();
+			final TileTypeSvr newTileType = new TileTypeSvr ();
 			newTileType.setTileTypeID ("TT0" + n);
 			db.getTileType ().add (newTileType);
 		}
@@ -212,7 +189,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final ProductionType newProductionType = new ProductionType ();
+			final ProductionTypeSvr newProductionType = new ProductionTypeSvr ();
 			newProductionType.setProductionTypeID ("RE0" + n);
 			newProductionType.setProductionTypeDescription ("ProductionType " + n);
 
@@ -235,7 +212,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final ProductionType newProductionType = new ProductionType ();
+			final ProductionTypeSvr newProductionType = new ProductionTypeSvr ();
 			newProductionType.setProductionTypeID ("RE0" + n);
 			newProductionType.setProductionTypeDescription ("ProductionType " + n);
 
@@ -257,10 +234,10 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final PickType newPickType = new PickType ();
+			final PickTypeSvr newPickType = new PickTypeSvr ();
 			newPickType.setPickTypeID ("PT0" + n);
 
-			final PickTypeCountContainer container = new PickTypeCountContainer ();
+			final PickTypeCountContainerSvr container = new PickTypeCountContainerSvr ();
 			container.setCount (n);
 			newPickType.getPickTypeCount ().add (container);
 
@@ -284,7 +261,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final PickType newPickType = new PickType ();
+			final PickTypeSvr newPickType = new PickTypeSvr ();
 			newPickType.setPickTypeID ("PT0" + n);
 			db.getPickType ().add (newPickType);
 		}
@@ -304,7 +281,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick newPick = new Pick ();
+			final PickSvr newPick = new PickSvr ();
 			newPick.setPickID ("MB0" + n);
 			newPick.setPickInitialSkill (2);
 			db.getPick ().add (newPick);
@@ -326,7 +303,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick newPick = new Pick ();
+			final PickSvr newPick = new PickSvr ();
 			newPick.setPickID ("MB0" + n);
 			db.getPick ().add (newPick);
 		}
@@ -346,10 +323,10 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Wizard newWizard = new Wizard ();
+			final WizardSvr newWizard = new WizardSvr ();
 			newWizard.setWizardID ("WZ0" + n);
 
-			final WizardPickCount pick = new WizardPickCount ();
+			final WizardPickCountSvr pick = new WizardPickCountSvr ();
 			pick.setPickCount (10 + n);
 			newWizard.getWizardPickCount ().add (pick);
 
@@ -373,7 +350,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Wizard newWizard = new Wizard ();
+			final WizardSvr newWizard = new WizardSvr ();
 			newWizard.setWizardID ("WZ0" + n);
 			db.getWizard ().add (newWizard);
 		}
@@ -393,7 +370,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitType newUnitType = new UnitType ();
+			final UnitTypeSvr newUnitType = new UnitTypeSvr ();
 			newUnitType.setUnitTypeID ("T" + n);		// Real values are N, H, S
 			db.getUnitType ().add (newUnitType);
 		}
@@ -413,7 +390,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitType newUnitType = new UnitType ();
+			final UnitTypeSvr newUnitType = new UnitTypeSvr ();
 			newUnitType.setUnitTypeID ("T" + n);		// Real values are N, H, S
 			db.getUnitType ().add (newUnitType);
 		}
@@ -434,7 +411,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
+			final UnitMagicRealmSvr newUnitMagicRealm = new UnitMagicRealmSvr ();
 			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
 			db.getUnitMagicRealm ().add (newUnitMagicRealm);
 		}
@@ -454,7 +431,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
+			final UnitMagicRealmSvr newUnitMagicRealm = new UnitMagicRealmSvr ();
 			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
 			db.getUnitMagicRealm ().add (newUnitMagicRealm);
 		}
@@ -474,7 +451,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Unit newUnit = new Unit ();
+			final UnitSvr newUnit = new UnitSvr ();
 			newUnit.setUnitID ("UN00" + n);
 			newUnit.setUnitName ("Unit name " + n);
 
@@ -497,7 +474,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Unit newUnit = new Unit ();
+			final UnitSvr newUnit = new UnitSvr ();
 			newUnit.setUnitID ("UN00" + n);
 			db.getUnit ().add (newUnit);
 		}
@@ -517,7 +494,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSkill newUnitSkill = new UnitSkill ();
+			final UnitSkillSvr newUnitSkill = new UnitSkillSvr ();
 			newUnitSkill.setUnitSkillID ("US00" + n);
 			newUnitSkill.setUnitSkillScoutingRange (n);
 
@@ -539,7 +516,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSkill newUnitSkill = new UnitSkill ();
+			final UnitSkillSvr newUnitSkill = new UnitSkillSvr ();
 			newUnitSkill.setUnitSkillID ("US00" + n);
 			newUnitSkill.setUnitSkillScoutingRange (n);
 
@@ -561,7 +538,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			final WeaponGradeSvr newWeaponGrade = new WeaponGradeSvr ();
 			newWeaponGrade.setWeaponGradeNumber (n);
 			db.getWeaponGrade ().add (newWeaponGrade);
 		}
@@ -581,7 +558,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			final WeaponGradeSvr newWeaponGrade = new WeaponGradeSvr ();
 			newWeaponGrade.setWeaponGradeNumber (n);
 			db.getWeaponGrade ().add (newWeaponGrade);
 		}
@@ -601,7 +578,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final RangedAttackType newRangedAttackType = new RangedAttackType ();
+			final RangedAttackTypeSvr newRangedAttackType = new RangedAttackTypeSvr ();
 			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
 			db.getRangedAttackType ().add (newRangedAttackType);
 		}
@@ -621,7 +598,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final RangedAttackType newRangedAttackType = new RangedAttackType ();
+			final RangedAttackTypeSvr newRangedAttackType = new RangedAttackTypeSvr ();
 			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
 			db.getRangedAttackType ().add (newRangedAttackType);
 		}
@@ -641,10 +618,10 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Race newRace = new Race ();
+			final RaceSvr newRace = new RaceSvr ();
 			newRace.setRaceID ("RC0" + n);
 
-			final CityNameContainer cityName = new CityNameContainer ();
+			final CityNameContainerSvr cityName = new CityNameContainerSvr ();
 			cityName.setCityName ("Blah");
 			newRace.getCityName ().add (cityName);
 
@@ -668,7 +645,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Race newRace = new Race ();
+			final RaceSvr newRace = new RaceSvr ();
 			newRace.setRaceID ("RC0" + n);
 			db.getRace ().add (newRace);
 		}
@@ -688,7 +665,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Building newBuilding = new Building ();
+			final BuildingSvr newBuilding = new BuildingSvr ();
 			newBuilding.setBuildingID ("BL0" + n);
 			newBuilding.setBuildingScoutingRange (n);
 			db.getBuilding ().add (newBuilding);
@@ -709,7 +686,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Building newBuilding = new Building ();
+			final BuildingSvr newBuilding = new BuildingSvr ();
 			newBuilding.setBuildingID ("BL0" + n);
 			newBuilding.setBuildingScoutingRange (n);
 			db.getBuilding ().add (newBuilding);
@@ -730,7 +707,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Spell newSpell = new Spell ();
+			final SpellSvr newSpell = new SpellSvr ();
 			newSpell.setSpellID ("SP00" + n);
 			newSpell.setAiResearchOrder (n);
 			db.getSpell ().add (newSpell);
@@ -752,7 +729,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Spell newSpell = new Spell ();
+			final SpellSvr newSpell = new SpellSvr ();
 			newSpell.setSpellID ("SP00" + n);
 			db.getSpell ().add (newSpell);
 		}
@@ -772,7 +749,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			final CombatAreaEffectSvr newCombatAreaEffect = new CombatAreaEffectSvr ();
 			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
 			db.getCombatAreaEffect ().add (newCombatAreaEffect);
 		}
@@ -792,7 +769,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			final CombatAreaEffectSvr newCombatAreaEffect = new CombatAreaEffectSvr ();
 			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
 			db.getCombatAreaEffect ().add (newCombatAreaEffect);
 		}
@@ -812,7 +789,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileType newCombatTileType = new CombatTileType ();
+			final CombatTileTypeSvr newCombatTileType = new CombatTileTypeSvr ();
 			newCombatTileType.setCombatTileTypeID ("CTL0" + n);
 			db.getCombatTileType ().add (newCombatTileType);
 		}
@@ -832,7 +809,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileType newCombatTileType = new CombatTileType ();
+			final CombatTileTypeSvr newCombatTileType = new CombatTileTypeSvr ();
 			newCombatTileType.setCombatTileTypeID ("CTL0" + n);
 			db.getCombatTileType ().add (newCombatTileType);
 		}
@@ -852,7 +829,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileBorder newCombatTileBorder = new CombatTileBorder ();
+			final CombatTileBorderSvr newCombatTileBorder = new CombatTileBorderSvr ();
 			newCombatTileBorder.setCombatTileBorderID ("CTB0" + n);
 			db.getCombatTileBorder ().add (newCombatTileBorder);
 		}
@@ -872,7 +849,7 @@ public final class TestServerDatabaseExImpl
 		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileBorder newCombatTileBorder = new CombatTileBorder ();
+			final CombatTileBorderSvr newCombatTileBorder = new CombatTileBorderSvr ();
 			newCombatTileBorder.setCombatTileBorderID ("CTB0" + n);
 			db.getCombatTileBorder ().add (newCombatTileBorder);
 		}

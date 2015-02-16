@@ -45,10 +45,10 @@ import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
+import momime.server.database.MapFeatureMagicRealmSvr;
+import momime.server.database.MapFeatureSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.MapFeature;
-import momime.server.database.v0_9_5.MapFeatureMagicRealm;
-import momime.server.database.v0_9_5.Plane;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import org.junit.Test;
@@ -1250,7 +1250,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Map feature is something irrelevant, like gems
-		final MapFeature mapFeature = new MapFeature ();
+		final MapFeatureSvr mapFeature = new MapFeatureSvr ();
 		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
@@ -1461,8 +1461,8 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Map feature is one that may contain monsters
-		final MapFeature mapFeature = new MapFeature ();
-		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
+		final MapFeatureSvr mapFeature = new MapFeatureSvr ();
+		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealmSvr ());
 		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
@@ -1587,19 +1587,19 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Server database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
 		// Map feature is one that may contain monsters
-		final MapFeature mapFeature = new MapFeature ();
-		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
+		final MapFeatureSvr mapFeature = new MapFeatureSvr ();
+		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealmSvr ());
 		when (db.findMapFeature (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description

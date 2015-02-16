@@ -22,11 +22,11 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.calculations.ServerCityCalculations;
+import momime.server.database.BuildingSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
@@ -93,11 +93,11 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		else
 		{
 			// Check if we're constructing a building or a unit
-			Building building = null;
+			BuildingSvr building = null;
 			if (buildingID != null)
 				building = db.findBuilding (buildingID, "validateCityConstruction");
 
-			Unit unit = null;
+			UnitSvr unit = null;
 			if (unitID != null)
 				unit = db.findUnit (unitID, "validateCityConstruction");
 
@@ -108,7 +108,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 					msg = "The city already has the type of building you're trying to build - change ignored.";
 				else
 				{
-					final Race race = db.findRace (cityData.getCityRaceID (), "validateCityConstruction");
+					final RaceSvr race = db.findRace (cityData.getCityRaceID (), "validateCityConstruction");
 
 					// Check that the race inhabiting the city can build this building
 					boolean cannotBuild = false;
@@ -207,7 +207,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		// Add the city on the server
 		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) settler.getUnitLocation ();
 		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-		final Unit settlerUnit = db.findUnit (settler.getUnitID (), "buildCityFromSettler");
+		final UnitSvr settlerUnit = db.findUnit (settler.getUnitID (), "buildCityFromSettler");
 		
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (player.getPlayerDescription ().getPlayerID ());
@@ -255,7 +255,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		for (final MemoryBuilding thisBuilding : buildings)
 			if (cityLocation.equals (thisBuilding.getCityLocation ()))
 			{
-				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "totalCostOfBuildingsAtLocation");
+				final BuildingSvr building = db.findBuilding (thisBuilding.getBuildingID (), "totalCostOfBuildingsAtLocation");
 				if (building.getProductionCost () != null)
 					total = total + building.getProductionCost ();
 			}

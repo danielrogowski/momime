@@ -424,7 +424,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final Dimension attrValuePanelSize = new Dimension (289, 15);
 		
 		int y = 0;
-		for (final UnitAttribute attr : getClient ().getClientDB ().getUnitAttribute ())
+		for (final UnitAttribute attr : getClient ().getClientDB ().getUnitAttributes ())
 		{
 			// Label
 			final JLabel attrLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());

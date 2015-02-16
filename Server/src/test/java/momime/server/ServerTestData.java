@@ -33,18 +33,18 @@ import momime.common.messages.MapVolumeOfStrings;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.server.database.DifficultyLevelSvr;
+import momime.server.database.FogOfWarSettingSvr;
+import momime.server.database.LandProportionSvr;
+import momime.server.database.MapSizeSvr;
+import momime.server.database.NodeStrengthSvr;
 import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseExImpl;
 import momime.server.database.ServerDatabaseFactory;
-import momime.server.database.v0_9_5.DifficultyLevel;
-import momime.server.database.v0_9_5.FogOfWarSetting;
-import momime.server.database.v0_9_5.LandProportion;
-import momime.server.database.v0_9_5.MapSize;
-import momime.server.database.v0_9_5.NodeStrength;
+import momime.server.database.SpellSettingSvr;
+import momime.server.database.UnitSettingSvr;
 import momime.server.database.v0_9_5.ServerDatabase;
-import momime.server.database.v0_9_5.SpellSetting;
-import momime.server.database.v0_9_5.UnitSetting;
 import momime.server.messages.v0_9_5.ServerGridCell;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -121,27 +121,27 @@ public final class ServerTestData
 	{
 		final MomSessionDescription sd = new MomSessionDescription ();
 
-		for (final MapSize mapSize : db.getMapSize ())
+		for (final MapSizeSvr mapSize : db.getMapSizes ())
 			if (mapSize.getMapSizeID ().equals (mapSizeID))
 				sd.setMapSize (mapSize);
 		if (sd.getMapSize () == null)
-			throw new RecordNotFoundException (MapSize.class.getName (), mapSizeID, "createMomSessionDescription");
+			throw new RecordNotFoundException (MapSizeSvr.class.getName (), mapSizeID, "createMomSessionDescription");
 
 		sd.setCombatMapSize (createCombatMapSizeData ());
 		
-		for (final LandProportion landProportion : db.getLandProportion ())
+		for (final LandProportionSvr landProportion : db.getLandProportions ())
 			if (landProportion.getLandProportionID ().equals (landProportionID))
 				sd.setLandProportion (landProportion);
 		if (sd.getLandProportion () == null)
-			throw new RecordNotFoundException (LandProportion.class.getName (), landProportionID, "createMomSessionDescription");
+			throw new RecordNotFoundException (LandProportionSvr.class.getName (), landProportionID, "createMomSessionDescription");
 
-		for (final NodeStrength nodeStrength : db.getNodeStrength ())
+		for (final NodeStrengthSvr nodeStrength : db.getNodeStrengths ())
 			if (nodeStrength.getNodeStrengthID ().equals (nodeStrengthID))
 				sd.setNodeStrength (nodeStrength);
 		if (sd.getNodeStrength () == null)
-			throw new RecordNotFoundException (NodeStrength.class.getName (), nodeStrengthID, "createMomSessionDescription");
+			throw new RecordNotFoundException (NodeStrengthSvr.class.getName (), nodeStrengthID, "createMomSessionDescription");
 
-		for (final DifficultyLevel difficultyLevel : db.getDifficultyLevel ())
+		for (final DifficultyLevelSvr difficultyLevel : db.getDifficultyLevels ())
 			if (difficultyLevel.getDifficultyLevelID ().equals (difficultyLevelID))
 			{
 				sd.setDifficultyLevel (difficultyLevel);
@@ -152,25 +152,25 @@ public final class ServerTestData
 						sd.getDifficultyLevelNodeStrength ().add (nodeStrength);
 			}
 		if (sd.getDifficultyLevel () == null)
-			throw new RecordNotFoundException (DifficultyLevel.class.getName (), difficultyLevelID, "createMomSessionDescription");
+			throw new RecordNotFoundException (DifficultyLevelSvr.class.getName (), difficultyLevelID, "createMomSessionDescription");
 
-		for (final FogOfWarSetting fogOfWarSetting : db.getFogOfWarSetting ())
+		for (final FogOfWarSettingSvr fogOfWarSetting : db.getFogOfWarSettings ())
 			if (fogOfWarSetting.getFogOfWarSettingID ().equals (fogOfWarSettingID))
 				sd.setFogOfWarSetting (fogOfWarSetting);
 		if (sd.getFogOfWarSetting () == null)
-			throw new RecordNotFoundException (FogOfWarSetting.class.getName (), fogOfWarSettingID, "createMomSessionDescription");
+			throw new RecordNotFoundException (FogOfWarSettingSvr.class.getName (), fogOfWarSettingID, "createMomSessionDescription");
 
-		for (final UnitSetting unitSetting : db.getUnitSetting ())
+		for (final UnitSettingSvr unitSetting : db.getUnitSettings ())
 			if (unitSetting.getUnitSettingID ().equals (unitSettingID))
 				sd.setUnitSetting (unitSetting);
 		if (sd.getUnitSetting () == null)
-			throw new RecordNotFoundException (UnitSetting.class.getName (), unitSettingID, "createMomSessionDescription");
+			throw new RecordNotFoundException (UnitSettingSvr.class.getName (), unitSettingID, "createMomSessionDescription");
 
-		for (final SpellSetting spellSetting : db.getSpellSetting ())
+		for (final SpellSettingSvr spellSetting : db.getSpellSettings ())
 			if (spellSetting.getSpellSettingID ().equals (spellSettingID))
 				sd.setSpellSetting (spellSetting);
 		if (sd.getSpellSetting () == null)
-			throw new RecordNotFoundException (SpellSetting.class.getName (), spellSettingID, "createMomSessionDescription");
+			throw new RecordNotFoundException (SpellSettingSvr.class.getName (), spellSettingID, "createMomSessionDescription");
 
 		return sd;
 	}

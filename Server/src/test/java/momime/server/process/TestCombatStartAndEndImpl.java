@@ -51,10 +51,10 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.MapFeatureSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.MapFeature;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.TileType;
+import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -86,7 +86,7 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setMagicRealmID (null);		// <-- so although we're attacking monsters, they're rampaging ones on the overland map, so createDefenders = false
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
@@ -230,7 +230,7 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
@@ -374,11 +374,11 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
-		final MapFeature mf = new MapFeature ();
+		final MapFeatureSvr mf = new MapFeatureSvr ();
 		mf.getMapFeatureMagicRealm ().add (null);		// Doesn't matter what's here, just that its a non-empty list
 		when (db.findMapFeature (eq ("MF01"), anyString ())).thenReturn (mf);
 		
@@ -557,7 +557,7 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// General server knowledge
@@ -859,10 +859,10 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
-		final MapFeature mf = new MapFeature ();
+		final MapFeatureSvr mf = new MapFeatureSvr ();
 		mf.getMapFeatureMagicRealm ().add (null);		// Doesn't matter what's here, just that its a non-empty list
 		when (db.findMapFeature (eq ("MF01"), anyString ())).thenReturn (mf);
 		
@@ -1002,10 +1002,10 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
-		final MapFeature mf = new MapFeature ();
+		final MapFeatureSvr mf = new MapFeatureSvr ();
 		mf.getMapFeatureMagicRealm ().add (null);		// Doesn't matter what's here, just that its a non-empty list
 		when (db.findMapFeature (eq ("MF01"), anyString ())).thenReturn (mf);
 		
@@ -1137,22 +1137,22 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
-		final MapFeature mf = new MapFeature ();
+		final MapFeatureSvr mf = new MapFeatureSvr ();
 		mf.getMapFeatureMagicRealm ().add (null);		// Doesn't matter what's here, just that its a non-empty list
 		when (db.findMapFeature (eq (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY), anyString ())).thenReturn (mf);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
 		// General server knowledge
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -1292,7 +1292,7 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// General server knowledge
@@ -1493,7 +1493,7 @@ public final class TestCombatStartAndEndImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// General server knowledge

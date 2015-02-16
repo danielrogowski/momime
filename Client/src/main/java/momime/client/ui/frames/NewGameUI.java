@@ -2656,7 +2656,7 @@ public final class NewGameUI extends MomClientFrameUI
 		// The two panels use the same button arrangement, so do both at once
 		// First list all the wizards, we need to know up front how many there are so we can arrange the buttons properly
 		final List<Wizard> wizards = new ArrayList<Wizard> ();
-		for (final Wizard wizard : getClient ().getClientDB ().getWizard ())
+		for (final Wizard wizard : getClient ().getClientDB ().getWizards ())
 			if ((!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
 				
@@ -2825,7 +2825,7 @@ public final class NewGameUI extends MomClientFrameUI
 		// CUSTOM PICKS PANEL (for custom wizards)
 		// First we need to count how many bookshelves we need
 		int bookshelfCount = 0;
-		for (final Pick pick : getClient ().getClientDB ().getPick ())
+		for (final Pick pick : getClient ().getClientDB ().getPicks ())
 		{
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
 			if (pickGfx.getBookImage ().size () > 0)
@@ -2833,7 +2833,7 @@ public final class NewGameUI extends MomClientFrameUI
 		}
 		
 		int retortNo = 0;
-		for (final Pick pick : getClient ().getClientDB ().getPick ())
+		for (final Pick pick : getClient ().getClientDB ().getPicks ())
 		{
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
 			if (pickGfx.getBookImage ().size () == 0)
@@ -2913,7 +2913,7 @@ public final class NewGameUI extends MomClientFrameUI
 		}
 
 		int bookshelfNo = 0;
-		for (final Pick pick : getClient ().getClientDB ().getPick ())
+		for (final Pick pick : getClient ().getClientDB ().getPicks ())
 		{
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
 			if (pickGfx.getBookImage ().size () > 0)
@@ -3010,7 +3010,7 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// RACE SELECTION PANEL
 		int gridy = 2;
-		for (final Plane plane : getClient ().getClientDB ().getPlane ())
+		for (final Plane plane : getClient ().getClientDB ().getPlanes ())
 		{
 			final JLabel planeLabel = getUtils ().createLabel (MomUIConstants.SILVER, getLargeFont ());
 			racePanel.add (planeLabel, getUtils ().createConstraintsNoFill (0, gridy, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
@@ -3020,7 +3020,7 @@ public final class NewGameUI extends MomClientFrameUI
 			gridy++;
 			
 			// Then search for races native to this plane
-			for (final Race race : getClient ().getClientDB ().getRace ())
+			for (final Race race : getClient ().getClientDB ().getRaces ())
 				if (race.getNativePlane () == plane.getPlaneNumber ())
 				{
 					final Action raceButtonAction = new AbstractAction ()
@@ -3187,7 +3187,7 @@ public final class NewGameUI extends MomClientFrameUI
 		
 			// See if there's any other spell ranks for this magic realm that we don't get free spells for
 			// i.e. for any of the 5 magic realms in the default MoM setup, this will give SR01, SR02, SR03, SR04 but not SR05
-			for (final Spell spell : getClient ().getClientDB ().getSpell ())
+			for (final Spell spell : getClient ().getClientDB ().getSpells ())
 				if ((magicRealmID.equals (spell.getSpellRealm ())) && (!spellRankIDs.contains (spell.getSpellRank ())))
 				{
 					spellRankIDs.add (spell.getSpellRank ());
@@ -3221,7 +3221,7 @@ public final class NewGameUI extends MomClientFrameUI
 			
 			// All the spells at this rank
 			final List<Spell> spellsAtThisRank = new ArrayList<Spell> ();
-			for (final Spell spell : getClient ().getClientDB ().getSpell ())
+			for (final Spell spell : getClient ().getClientDB ().getSpells ())
 				if ((magicRealmID.equals (spell.getSpellRealm ())) && (rank.getSpellRankID ().equals (spell.getSpellRank ())))
 					spellsAtThisRank.add (spell);
 			

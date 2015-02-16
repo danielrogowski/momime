@@ -116,7 +116,7 @@ public final class TestUnitRowDisplayUI
 			unitAttributes.add (attrDef);
 		}
 		
-		doReturn (unitAttributes).when (db).getUnitAttribute ();
+		doReturn (unitAttributes).when (db).getUnitAttributes ();
 		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();

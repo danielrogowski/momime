@@ -379,7 +379,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		
 		// Which buildings can we construct?
 		buildingsItems.clear ();
-		for (final Building thisBuilding : getClient ().getClientDB ().getBuilding ())
+		for (final Building thisBuilding : getClient ().getClientDB ().getBuildings ())
 			
 			// If we don't have this building already
 			if ((getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
@@ -416,7 +416,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		
 		// Which units can we construct?
 		unitsItems.clear ();
-		for (final Unit thisUnit : getClient ().getClientDB ().getUnit ())
+		for (final Unit thisUnit : getClient ().getClientDB ().getUnits ())
 			
 			// If its a regular unit
 			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&

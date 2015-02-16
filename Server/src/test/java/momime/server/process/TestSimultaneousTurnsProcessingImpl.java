@@ -28,10 +28,10 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.TileTypeSvr;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
@@ -64,25 +64,25 @@ public final class TestSimultaneousTurnsProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Unit normalUnitDef = new Unit ();
+		final UnitSvr normalUnitDef = new UnitSvr ();
 		normalUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "processSpecialOrders-d")).thenReturn (normalUnitDef);
 		
-		final Unit heroUnitDef = new Unit ();
+		final UnitSvr heroUnitDef = new UnitSvr ();
 		heroUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN002", "processSpecialOrders-d")).thenReturn (heroUnitDef);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setCanBuildCity (true);
 		when (db.findTileType ("TT01", "processSpecialOrders-t")).thenReturn (tt);
 		

@@ -35,9 +35,9 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Plane;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -188,7 +188,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
 				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
 		{
-			for (final Plane plane : db.getPlane ())
+			for (final PlaneSvr plane : db.getPlanes ())
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 						canSee (priv.getFogOfWar (), x, y, plane.getPlaneNumber ());
@@ -200,7 +200,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null) != null);
 
 			// Check what areas we can see because we have cities there
-			for (final Plane plane : db.getPlane ())
+			for (final PlaneSvr plane : db.getPlanes ())
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					{
@@ -245,7 +245,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
-						for (final Plane plane : db.getPlane ())
+						for (final PlaneSvr plane : db.getPlanes ())
 							canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
 					}
 					else
@@ -363,7 +363,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			msg = null;
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -537,7 +537,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
-					for (final Plane plane : db.getPlane ())
+					for (final PlaneSvr plane : db.getPlanes ())
 						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
@@ -589,7 +589,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
-					for (final Plane plane : db.getPlane ())
+					for (final PlaneSvr plane : db.getPlanes ())
 						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
@@ -765,7 +765,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 		// Lastly send the client details of the changes in the fog of war area itself
 		// Also sets the values on the server back normal
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{

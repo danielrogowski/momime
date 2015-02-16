@@ -13,8 +13,8 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Plane;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;
@@ -65,7 +65,7 @@ public final class MomAIImpl implements MomAI
 		// Note we do this EVERY TURN - we don't wait for the previous building to complete - this allows the AI player to change their mind
 		// e.g. if a city has minimal defence and has a university almost built and then a
 		// group of halbardiers show up 2 squares away, you're going to want to stuff the university and rush buy the best unit you can afford
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{

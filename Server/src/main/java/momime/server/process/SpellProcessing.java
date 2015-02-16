@@ -12,7 +12,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -40,7 +40,7 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void castOverlandNow (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final Spell spell,
+	public void castOverlandNow (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final SpellSvr spell,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
@@ -65,7 +65,7 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void castCombatNow (final PlayerServerDetails player, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+	public void castCombatNow (final PlayerServerDetails player, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;

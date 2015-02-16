@@ -17,9 +17,9 @@ import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.v0_9_5.MapFeature;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.TileType;
+import momime.server.database.MapFeatureSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
@@ -101,7 +101,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		}
 		
 		// Sell buildings
-		for (final Plane plane : mom.getServerDB ().getPlane ())
+		for (final PlaneSvr plane : mom.getServerDB ().getPlanes ())
 			for (int x = 0; x < mom.getSessionDescription ().getMapSize ().getWidth (); x++)
 				for (int y = 0; y < mom.getSessionDescription ().getMapSize ().getHeight (); y++)
 				{
@@ -139,8 +139,8 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			// Find where the settler is
 			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(settler.getUnitLocation ().getZ ()).getRow ().get (settler.getUnitLocation ().getY ()).getCell ().get (settler.getUnitLocation ().getX ());
-			final TileType tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "processSpecialOrders-t");
-			final MapFeature mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
+			final TileTypeSvr tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "processSpecialOrders-t");
+			final MapFeatureSvr mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
 				(tc.getTerrainData ().getMapFeatureID (), "processSpecialOrders-f");
 			
 			final PlayerServerDetails settlerOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), settler.getOwningPlayerID (), "processSpecialOrders-s");

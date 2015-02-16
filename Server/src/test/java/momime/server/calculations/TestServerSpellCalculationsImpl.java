@@ -13,7 +13,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public final class TestServerSpellCalculationsImpl
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
-		for (final Spell spell : db.getSpell ())
+		for (final SpellSvr spell : db.getSpells ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());
@@ -164,7 +164,7 @@ public final class TestServerSpellCalculationsImpl
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
-		for (final Spell spell : db.getSpell ())
+		for (final SpellSvr spell : db.getSpells ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());

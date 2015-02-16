@@ -8,8 +8,8 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.server.database.BuildingSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Building;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -107,7 +107,7 @@ public interface ServerCityCalculations
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or one of the buildings involved
 	 */
 	public boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final MapCoordinates3DEx cityLocation, final Building building,
+		final MapCoordinates3DEx cityLocation, final BuildingSvr building,
 		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
 }

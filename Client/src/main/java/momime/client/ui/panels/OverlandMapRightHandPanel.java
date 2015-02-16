@@ -1310,7 +1310,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateProductionTypesStoppingUsFromEndingTurn");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
-			for (final ProductionType productionType : getClient ().getClientDB ().getProductionType ())
+			for (final ProductionType productionType : getClient ().getClientDB ().getProductionTypes ())
 				if (productionType.getEnforceProduction () != null)
 				{
 					int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),

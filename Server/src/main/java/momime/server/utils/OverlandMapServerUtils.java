@@ -12,8 +12,8 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitCombatSideID;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Race;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.map.CoordinateSystem;
@@ -48,7 +48,7 @@ public interface OverlandMapServerUtils
 	 * @param race The race who is creating a new city
 	 * @return Auto generated city name
 	 */
-	public String generateCityName (final MomGeneralServerKnowledge gsk, final Race race);
+	public String generateCityName (final MomGeneralServerKnowledge gsk, final RaceSvr race);
 
 	/**
 	 * A spirit attempts to capture a node

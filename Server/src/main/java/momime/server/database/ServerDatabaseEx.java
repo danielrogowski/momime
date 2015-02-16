@@ -5,37 +5,6 @@ import java.util.List;
 import momime.common.database.CommonDatabase;
 import momime.common.database.NewGameDefaults;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TaxRate;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.CitySize;
-import momime.server.database.v0_9_5.CombatAreaEffect;
-import momime.server.database.v0_9_5.CombatMapElement;
-import momime.server.database.v0_9_5.CombatTileBorder;
-import momime.server.database.v0_9_5.CombatTileType;
-import momime.server.database.v0_9_5.DifficultyLevel;
-import momime.server.database.v0_9_5.FogOfWarSetting;
-import momime.server.database.v0_9_5.LandProportion;
-import momime.server.database.v0_9_5.MapFeature;
-import momime.server.database.v0_9_5.MapSize;
-import momime.server.database.v0_9_5.MovementRateRule;
-import momime.server.database.v0_9_5.NodeStrength;
-import momime.server.database.v0_9_5.Pick;
-import momime.server.database.v0_9_5.PickType;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.ProductionType;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.RangedAttackType;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.SpellSetting;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.Unit;
-import momime.server.database.v0_9_5.UnitAttribute;
-import momime.server.database.v0_9_5.UnitMagicRealm;
-import momime.server.database.v0_9_5.UnitSetting;
-import momime.server.database.v0_9_5.UnitSkill;
-import momime.server.database.v0_9_5.UnitType;
-import momime.server.database.v0_9_5.WeaponGrade;
-import momime.server.database.v0_9_5.Wizard;
 
 /**
  * Describes operations that we need to support over the server XML file
@@ -52,13 +21,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @return Complete list of all planes in game
 	 */
 	@Override
-	public List<Plane> getPlane ();
+	public List<PlaneSvr> getPlanes ();
 	
 	/**
 	 * @return Complete list of all map features in game
 	 */
 	@Override
-	public List<MapFeature> getMapFeature ();
+	public List<MapFeatureSvr> getMapFeatures ();
 
 	/**
 	 * @param mapFeatureID Map feature ID to search for
@@ -67,13 +36,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the mapFeatureID doesn't exist
 	 */
 	@Override
-	public MapFeature findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException;
+	public MapFeatureSvr findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all tile types in game
 	 */
 	@Override
-	public List<TileType> getTileType ();
+	public List<TileTypeSvr> getTileTypes ();
 	
 	/**
 	 * @param tileTypeID Tile type ID to search for
@@ -82,13 +51,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the tileTypeID doesn't exist
 	 */
 	@Override
-	public TileType findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException;
+	public TileTypeSvr findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all production types in game
 	 */
 	@Override
-	public List<ProductionType> getProductionType ();
+	public List<ProductionTypeSvr> getProductionTypes ();
 	
 	/**
 	 * @param productionTypeID Production type ID to search for
@@ -97,13 +66,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
 	 */
 	@Override
-	public ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException;
+	public ProductionTypeSvr findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all pick types in game
 	 */
 	@Override
-	public List<PickType> getPickType ();
+	public List<PickTypeSvr> getPickTypes ();
 	
 	/**
 	 * @param pickTypeID Pick type ID to search for
@@ -112,7 +81,7 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the pickTypeID doesn't exist
 	 */
 	@Override
-	public PickType findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException;
+	public PickTypeSvr findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param pickID Pick ID to search for
@@ -121,13 +90,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the pickID doesn't exist
 	 */
 	@Override
-	public Pick findPick (final String pickID, final String caller) throws RecordNotFoundException;
+	public PickSvr findPick (final String pickID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all wizards in game
 	 */
 	@Override
-	public List<Wizard> getWizard ();
+	public List<WizardSvr> getWizards ();
 	
 	/**
 	 * @param wizardID Wizard ID to search for
@@ -136,13 +105,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the wizardID doesn't exist
 	 */
 	@Override
-	public Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException;
+	public WizardSvr findWizard (final String wizardID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all units in game
 	 */
 	@Override
-	public List<Unit> getUnit ();
+	public List<UnitSvr> getUnits ();
 	
 	/**
 	 * @param unitID Unit ID to search for
@@ -151,13 +120,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	@Override
-	public Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException;
+	public UnitSvr findUnit (final String unitID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all unit skills in game
 	 */
 	@Override
-	public List<UnitSkill> getUnitSkill ();
+	public List<UnitSkillSvr> getUnitSkills ();
 	
 	/**
 	 * @param unitSkillID Unit skill ID to search for
@@ -166,13 +135,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the unitSkillID doesn't exist
 	 */
 	@Override
-	public UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException;
+	public UnitSkillSvr findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all races in game
 	 */
 	@Override
-	public List<Race> getRace ();
+	public List<RaceSvr> getRaces ();
 	
 	/**
 	 * @param raceID Race ID to search for
@@ -181,13 +150,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the raceID doesn't exist
 	 */
 	@Override
-	public Race findRace (final String raceID, final String caller) throws RecordNotFoundException;
+	public RaceSvr findRace (final String raceID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @return Complete list of all buildings in game
 	 */
 	@Override
-	public List<Building> getBuilding ();
+	public List<BuildingSvr> getBuildings ();
 	
 	/**
 	 * @param buildingID Building ID to search for
@@ -196,13 +165,13 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Override
-	public Building findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
+	public BuildingSvr findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @return Complete list of all spells in game
 	 */
 	@Override
-	public List<Spell> getSpell ();
+	public List<SpellSvr> getSpells ();
 	
 	/**
 	 * @param spellID Spell ID to search for
@@ -211,7 +180,7 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the spellID doesn't exist
 	 */
 	@Override
-	public Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException;
+	public SpellSvr findSpell (final String spellID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @param combatTileTypeID Combat tile type ID to search for
@@ -220,109 +189,102 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @throws RecordNotFoundException If the combat tile type ID doesn't exist
 	 */
 	@Override
-	public CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException;
+	public CombatTileTypeSvr findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException;
 	
-	// New methods that aren't overrides from CommonDatabase
-
 	/**
 	 * @return Complete list of all picks in game
 	 */
 	@Override
-	public List<Pick> getPick ();
+	public List<PickSvr> getPicks ();
 
-	/**
-	 * @return Complete list of all tax rates in game
-	 */
-	public List<TaxRate> getTaxRate ();
-	
 	/**
 	 * @return Complete list of all city sizes in game
 	 */
-	public List<CitySize> getCitySize ();
+	public List<CitySizeSvr> getCitySizes ();
 
 	/**
 	 * @return Complete list of all unit magic realms in game
 	 */
-	public List<UnitMagicRealm> getUnitMagicRealm ();
+	public List<UnitMagicRealmSvr> getUnitMagicRealms ();
 
 	/**
 	 * @return Complete list of all unit types in game
 	 */
-	public List<UnitType> getUnitType ();
+	public List<UnitTypeSvr> getUnitTypes ();
 	
 	/**
 	 * @return Complete list of all unit attributes in game
 	 */
 	@Override
-	public List<UnitAttribute> getUnitAttribute ();
+	public List<UnitAttributeSvr> getUnitAttributes ();
 
 	/**
 	 * @return Complete list of all ranged attack types in game
 	 */
-	public List<RangedAttackType> getRangedAttackType ();
+	public List<RangedAttackTypeSvr> getRangedAttackTypes ();
 
 	/**
 	 * @return Complete list of all weapon grades in game
 	 */
-	public List<WeaponGrade> getWeaponGrade ();
+	public List<WeaponGradeSvr> getWeaponGrades ();
 
 	/**
 	 * @return Complete list of all movement rate rules in game
 	 */
-	public List<MovementRateRule> getMovementRateRule ();
+	public List<MovementRateRuleSvr> getMovementRateRules ();
 
 	/**
 	 * @return Complete list of all combat map elements in game
 	 */
-	public List<CombatMapElement> getCombatMapElement ();
+	public List<CombatMapElementSvr> getCombatMapElements ();
 
 	/**
 	 * @return Complete list of all CAEs in game
 	 */
-	public List<CombatAreaEffect> getCombatAreaEffect ();
+	public List<CombatAreaEffectSvr> getCombatAreaEffects ();
 
 	/**
 	 * @return Complete list of all combat tile types in game
 	 */
-	public List<CombatTileType> getCombatTileType ();
+	public List<CombatTileTypeSvr> getCombatTileTypes ();
 
 	/**
 	 * @return Complete list of all combat tile borders in game
 	 */
-	public List<CombatTileBorder> getCombatTileBorder ();
+	public List<CombatTileBorderSvr> getCombatTileBorders ();
 	
 	/**
 	 * @return Complete list of all pre-defined map sizes
 	 */
-	public List<MapSize> getMapSize ();
+	public List<MapSizeSvr> getMapSizes ();
 
 	/**
 	 * @return Complete list of all pre-defined land proportions
 	 */
-	public List<LandProportion> getLandProportion ();
+	public List<LandProportionSvr> getLandProportions ();
 
 	/**
 	 * @return Complete list of all pre-defined node strengths
 	 */
-	public List<NodeStrength> getNodeStrength ();
+	public List<NodeStrengthSvr> getNodeStrengths ();
 
 	/**
 	 * @return Complete list of all pre-defined difficulty levels
 	 */
-	public List<DifficultyLevel> getDifficultyLevel ();
+	public List<DifficultyLevelSvr> getDifficultyLevels ();
 
 	/**
 	 * @return Complete list of all pre-defined fog of war settings
 	 */
-	public List<FogOfWarSetting> getFogOfWarSetting ();
+	public List<FogOfWarSettingSvr> getFogOfWarSettings ();
 
 	/**
 	 * @return Complete list of all pre-defined unit settings
 	 */
-	public List<UnitSetting> getUnitSetting ();
+	public List<UnitSettingSvr> getUnitSettings ();
 
 	/**
 	 * @return Complete list of all pre-defined spell settings
 	 */
-	public List<SpellSetting> getSpellSetting ();
+	public List<SpellSettingSvr> getSpellSettings ();
 }

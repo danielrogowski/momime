@@ -39,11 +39,11 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
+import momime.server.database.CityNameContainerSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.CityNameContainer;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.TileType;
+import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -76,10 +76,10 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testSetContinentalRace () throws Exception
 	{
 		// Mock some tile types
-		final TileType grass = new TileType ();
+		final TileTypeSvr grass = new TileTypeSvr ();
 		grass.setIsLand (true);
 		
-		final TileType ocean = new TileType ();
+		final TileTypeSvr ocean = new TileTypeSvr ();
 		ocean.setIsLand (false);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -134,10 +134,10 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testDecideAllContinentalRaces () throws Exception
 	{
 		// Mock some tile types
-		final TileType grass = new TileType ();
+		final TileTypeSvr grass = new TileTypeSvr ();
 		grass.setIsLand (true);
 		
-		final TileType ocean = new TileType ();
+		final TileTypeSvr ocean = new TileTypeSvr ();
 		ocean.setIsLand (false);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -146,15 +146,15 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.findTileType ("G", "decideAllContinentalRaces")).thenReturn (grass);
 		when (db.findTileType ("O", "decideAllContinentalRaces")).thenReturn (ocean);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
 		// Map and coordinate system
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -218,10 +218,10 @@ public final class TestOverlandMapServerUtilsImpl
 		// If we have 4 possible names
 		final String names [] = new String [] {"Hanna", "Emily", "Mara", "Rose"};
 
-		final Race race = new Race ();
+		final RaceSvr race = new RaceSvr ();
 		for (final String thisName : names)
 		{
-			final CityNameContainer cont = new CityNameContainer ();
+			final CityNameContainerSvr cont = new CityNameContainerSvr ();
 			cont.setCityName (thisName);
 			race.getCityName ().add (cont);
 		}
@@ -266,16 +266,16 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testAttemptToMeldWithNode_Undefended_HumanAttacking () throws Exception
 	{
 		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
 		final FogOfWarSettingData settings = new FogOfWarSettingData ();
@@ -367,16 +367,16 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testAttemptToMeldWithNode_Undefended_AIAttacking () throws Exception
 	{
 		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
 		final FogOfWarSettingData settings = new FogOfWarSettingData ();
@@ -462,16 +462,16 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testAttemptToMeldWithNode_Successful_HumanAttacking () throws Exception
 	{
 		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
 		final FogOfWarSettingData settings = new FogOfWarSettingData ();
@@ -597,16 +597,16 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testAttemptToMeldWithNode_Failed_HumanAttacking () throws Exception
 	{
 		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
 		final FogOfWarSettingData settings = new FogOfWarSettingData ();
@@ -713,16 +713,16 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testTotalPlayerPopulation () throws Exception
 	{
 		// Mock planes
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
 		// Map
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();

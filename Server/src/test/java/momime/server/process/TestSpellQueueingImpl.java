@@ -35,8 +35,8 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.SpellCastType;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
@@ -45,7 +45,7 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
 
@@ -70,7 +70,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_Unavailable () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -119,7 +119,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastCombatOnlySpellOverland () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -171,7 +171,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastOverlandOnlySpellInCombat () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -226,7 +226,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_TargetOverlandSpell () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -288,7 +288,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastUnitEnchantmentInCombatWithoutTarget () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -344,7 +344,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastSummontInCombatWithoutTarget () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -400,7 +400,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_QueueOverlandSpell () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -470,7 +470,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastOverlandSpellInstantly () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -560,7 +560,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastCombatSpellButWipedOut () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -639,7 +639,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastAnotherCombatSpell () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -730,7 +730,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastCombatWeArentInvolvedIn () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -826,7 +826,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastCombatWhileBanished () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -935,7 +935,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastCombatInsufficientCastingSkill () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1048,7 +1048,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CastCombatInsufficientMana () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1161,7 +1161,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CombatEnchantment () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1276,7 +1276,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_UnitEnchantmentInCombat_TargetNotFound () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1394,7 +1394,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_UnitEnchantmentInCombat_InvalidTarget () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1519,7 +1519,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_UnitEnchantmentInCombat () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1646,7 +1646,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CombatSummon_OnTopOfOtherUnit () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1767,7 +1767,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CombatSummon_MaxUnits () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1896,7 +1896,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CombatSummon_Impassable () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -2032,7 +2032,7 @@ public final class TestSpellQueueingImpl
 	public final void testRequestCastSpell_CombatSummon () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -2248,7 +2248,7 @@ public final class TestSpellQueueingImpl
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		when (db.findSpell ("SP001", "progressOverlandCasting")).thenReturn (spell);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -2319,7 +2319,7 @@ public final class TestSpellQueueingImpl
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		when (db.findSpell ("SP001", "progressOverlandCasting")).thenReturn (spell);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -2398,7 +2398,7 @@ public final class TestSpellQueueingImpl
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		when (db.findSpell ("SP001", "progressOverlandCasting")).thenReturn (spell);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);

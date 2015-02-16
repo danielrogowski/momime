@@ -13,8 +13,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
@@ -51,12 +51,12 @@ import momime.server.ServerTestData;
 import momime.server.ai.CityAI;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.BuildingSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -100,56 +100,56 @@ public final class TestCityProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
-		final Race race1 = new Race ();
-		final Race race2 = new Race ();
-		final Race race3 = new Race ();
-		final Race race4 = new Race ();
+		final RaceSvr race1 = new RaceSvr ();
+		final RaceSvr race2 = new RaceSvr ();
+		final RaceSvr race3 = new RaceSvr ();
+		final RaceSvr race4 = new RaceSvr ();
 		when (db.findRace ("RC01", "createStartingCities")).thenReturn (race1);
 		when (db.findRace ("RC02", "createStartingCities")).thenReturn (race2);
 		when (db.findRace ("RC03", "createStartingCities")).thenReturn (race3);
 		when (db.findRace ("RC04", "createStartingCities")).thenReturn (race4);
 		
 		// Units free at the start of game for each race
-		final List<Unit> units = new ArrayList<Unit> ();
+		final List<UnitSvr> units = new ArrayList<UnitSvr> ();
 		for (int race = 1; race <= 4; race++)
 		{
-			final Unit unit = new Unit ();
+			final UnitSvr unit = new UnitSvr ();
 			unit.setUnitID ("UN00" + race);
 			unit.setFreeAtStartCount (2);
 			unit.setUnitRaceID ("RC0" + race);
 			units.add (unit);
 		}
 		
-		when (db.getUnit ()).thenReturn (units);
+		when (db.getUnits ()).thenReturn (units);
 		
 		// Buildings free at the start of the game
-		final Building wizardBuilding = new Building ();
+		final BuildingSvr wizardBuilding = new BuildingSvr ();
 		wizardBuilding.setBuildingID ("BL01");
 		wizardBuilding.setInWizardsStartingCities (true);
 
-		final Building smallRaiderBuilding = new Building ();
+		final BuildingSvr smallRaiderBuilding = new BuildingSvr ();
 		smallRaiderBuilding.setBuildingID ("BL02");
 		smallRaiderBuilding.setInRaidersStartingCitiesWithPopulationAtLeast (2);
 		
-		final Building bigRaiderBuilding = new Building ();
+		final BuildingSvr bigRaiderBuilding = new BuildingSvr ();
 		bigRaiderBuilding.setBuildingID ("BL03");
 		bigRaiderBuilding.setInRaidersStartingCitiesWithPopulationAtLeast (7);
 
-		final List<Building> buildings = new ArrayList<Building> ();
+		final List<BuildingSvr> buildings = new ArrayList<BuildingSvr> ();
 		buildings.add (wizardBuilding);
 		buildings.add (smallRaiderBuilding);
 		buildings.add (bigRaiderBuilding);
-		when (db.getBuilding ()).thenReturn (buildings);
+		when (db.getBuildings ()).thenReturn (buildings);
 		
 		// Session description
 		final MapSizeData sys = ServerTestData.createMapSizeData ();
@@ -404,26 +404,26 @@ public final class TestCityProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
-		final Building building = new Building ();
+		final BuildingSvr building = new BuildingSvr ();
 		building.setBuildingID ("BL01");
 		building.setProductionCost (1000);
 		when (db.findBuilding ("BL01", "growCitiesAndProgressConstructionProjects")).thenReturn (building);
-		when (db.findUnit ("BL01", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (Unit.class, null, null));
+		when (db.findUnit ("BL01", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitSvr.class, null, null));
 		
-		final Unit unit = new Unit ();
+		final UnitSvr unit = new UnitSvr ();
 		unit.setUnitID ("UN001");
 		unit.setProductionCost (100);
-		when (db.findBuilding ("UN001", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (Unit.class, null, null));
+		when (db.findBuilding ("UN001", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitSvr.class, null, null));
 		when (db.findUnit ("UN001", "growCitiesAndProgressConstructionProjects")).thenReturn (unit);				
 		
 		// Session description
@@ -669,7 +669,7 @@ public final class TestCityProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Building granaryDef = new Building ();
+		final BuildingSvr granaryDef = new BuildingSvr ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -765,7 +765,7 @@ public final class TestCityProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Building granaryDef = new Building ();
+		final BuildingSvr granaryDef = new BuildingSvr ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -861,7 +861,7 @@ public final class TestCityProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Building granaryDef = new Building ();
+		final BuildingSvr granaryDef = new BuildingSvr ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -957,7 +957,7 @@ public final class TestCityProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Building granaryDef = new Building ();
+		final BuildingSvr granaryDef = new BuildingSvr ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -1033,15 +1033,15 @@ public final class TestCityProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
 		final TaxRate taxRate = new TaxRate ();
 		when (db.findTaxRate ("TR03", "changeTaxRate")).thenReturn (taxRate);

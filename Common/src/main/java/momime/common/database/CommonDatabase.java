@@ -33,7 +33,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all planes in game
 	 */
-	public List<? extends Plane> getPlane ();
+	public List<? extends Plane> getPlanes ();
 
 	/**
 	 * @param planeNumber Plane number to search for
@@ -46,7 +46,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all map features in game
 	 */
-	public List<? extends MapFeature> getMapFeature ();
+	public List<? extends MapFeature> getMapFeatures ();
 
 	/**
 	 * @param mapFeatureID Map feature ID to search for
@@ -59,7 +59,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all tile types in game
 	 */
-	public List<? extends TileType> getTileType ();
+	public List<? extends TileType> getTileTypes ();
 
 	/**
 	 * @param tileTypeID Tile type ID to search for
@@ -72,7 +72,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all production types in game
 	 */
-	public List<? extends ProductionType> getProductionType ();
+	public List<? extends ProductionType> getProductionTypes ();
 
 	/**
 	 * @param productionTypeID Production type ID to search for
@@ -85,7 +85,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all pick types in game
 	 */
-	public List<? extends PickType> getPickType ();
+	public List<? extends PickType> getPickTypes ();
 
 	/**
 	 * @param pickTypeID Pick type ID to search for
@@ -98,7 +98,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all picks in game
 	 */
-	public List<? extends Pick> getPick ();
+	public List<? extends Pick> getPicks ();
 	
 	/**
 	 * @param pickID Pick ID to search for
@@ -111,7 +111,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all wizards in game
 	 */
-	public List<? extends Wizard> getWizard ();
+	public List<? extends Wizard> getWizards ();
 
 	/**
 	 * @param wizardID Wizard ID to search for
@@ -140,7 +140,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all units in game
 	 */
-	public List<? extends Unit> getUnit ();
+	public List<? extends Unit> getUnits ();
 
 	/**
 	 * @param unitID Unit ID to search for
@@ -153,7 +153,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all unit skills in game
 	 */
-	public List<? extends UnitSkill> getUnitSkill ();
+	public List<? extends UnitSkill> getUnitSkills ();
 
 	/**
 	 * @param unitSkillID Unit skill ID to search for
@@ -166,7 +166,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all unit attributes in game
 	 */
-	public List<? extends UnitAttribute> getUnitAttribute ();
+	public List<? extends UnitAttribute> getUnitAttributes ();
 	
 	/**
 	 * @param weaponGradeNumber Weapon grade number to search for
@@ -187,7 +187,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all races in game
 	 */
-	public List<? extends Race> getRace ();
+	public List<? extends Race> getRaces ();
 
 	/**
 	 * @param raceID Race ID to search for
@@ -197,6 +197,11 @@ public interface CommonDatabase
 	 */
 	public Race findRace (final String raceID, final String caller) throws RecordNotFoundException;
 
+	/**
+	 * @return Complete list of all tax rates in game
+	 */
+	public List<TaxRate> getTaxRate ();
+	
 	/**
 	 * @param taxRateID Tax rate ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -208,7 +213,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all buildings in game
 	 */
-	public List<? extends Building> getBuilding ();
+	public List<? extends Building> getBuildings ();
 
 	/**
 	 * @param buildingID Building ID to search for
@@ -221,7 +226,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all spells in game
 	 */
-	public List<? extends Spell> getSpell ();
+	public List<? extends Spell> getSpells ();
 
 	/**
 	 * @param spellID Spell ID to search for

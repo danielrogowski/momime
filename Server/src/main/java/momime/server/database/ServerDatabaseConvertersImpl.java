@@ -23,32 +23,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.WizardPick;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.CombatAreaEffect;
-import momime.server.database.v0_9_5.CombatTileBorder;
-import momime.server.database.v0_9_5.CombatTileType;
-import momime.server.database.v0_9_5.DifficultyLevel;
-import momime.server.database.v0_9_5.FogOfWarSetting;
-import momime.server.database.v0_9_5.LandProportion;
-import momime.server.database.v0_9_5.MapSize;
-import momime.server.database.v0_9_5.NodeStrength;
-import momime.server.database.v0_9_5.Pick;
-import momime.server.database.v0_9_5.PickType;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.ProductionType;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.RangedAttackType;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.SpellSetting;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.Unit;
-import momime.server.database.v0_9_5.UnitAttribute;
-import momime.server.database.v0_9_5.UnitMagicRealm;
-import momime.server.database.v0_9_5.UnitSetting;
-import momime.server.database.v0_9_5.UnitSkill;
-import momime.server.database.v0_9_5.UnitType;
-import momime.server.database.v0_9_5.WeaponGrade;
-import momime.server.database.v0_9_5.WizardPickCount;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,25 +50,25 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		dest.setDbName (dbName);
 		dest.setNewGameDefaults (src.getNewGameDefaults ());
 
-		for (final MapSize mapSize : src.getMapSize ())
+		for (final MapSizeSvr mapSize : src.getMapSizes ())
 			dest.getMapSize ().add (mapSize);
 
-		for (final LandProportion landProportion : src.getLandProportion ())
+		for (final LandProportionSvr landProportion : src.getLandProportions ())
 			dest.getLandProportion ().add (landProportion);
 
-		for (final NodeStrength nodeStrength : src.getNodeStrength ())
+		for (final NodeStrengthSvr nodeStrength : src.getNodeStrengths ())
 			dest.getNodeStrength ().add (nodeStrength);
 
-		for (final DifficultyLevel difficultyLevel : src.getDifficultyLevel ())
+		for (final DifficultyLevelSvr difficultyLevel : src.getDifficultyLevels ())
 			dest.getDifficultyLevel ().add (difficultyLevel);
 
-		for (final FogOfWarSetting fogOfWarSetting : src.getFogOfWarSetting ())
+		for (final FogOfWarSettingSvr fogOfWarSetting : src.getFogOfWarSettings ())
 			dest.getFogOfWarSetting ().add (fogOfWarSetting);
 
-		for (final UnitSetting unitSetting : src.getUnitSetting ())
+		for (final UnitSettingSvr unitSetting : src.getUnitSettings ())
 			dest.getUnitSetting ().add (unitSetting);
 
-		for (final SpellSetting spellSetting : src.getSpellSetting ())
+		for (final SpellSettingSvr spellSetting : src.getSpellSettings ())
 			dest.getSpellSetting ().add (spellSetting);
 
 		return dest;
@@ -211,65 +185,65 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 
 		final ClientDatabase dest = new ClientDatabase ();
 
-		for (final Plane plane : src.getPlane ())
+		for (final PlaneSvr plane : src.getPlanes ())
 			dest.getPlane ().add (plane);
 
-		for (final ProductionType productionType : src.getProductionType ())
+		for (final ProductionTypeSvr productionType : src.getProductionTypes ())
 			dest.getProductionType ().add (productionType);
 
-		for (final TileType tileType : src.getTileType ())
+		for (final TileTypeSvr tileType : src.getTileTypes ())
 			dest.getTileType ().add (tileType);
 
-		for (final PickType pickType : src.getPickType ())
+		for (final PickTypeSvr pickType : src.getPickTypes ())
 			dest.getPickType ().add (pickType);
 
-		for (final Pick pick : src.getPick ())
+		for (final PickSvr pick : src.getPicks ())
 			dest.getPick ().add (pick);
 
-		for (final Race race : src.getRace ())
+		for (final RaceSvr race : src.getRaces ())
 			dest.getRace ().add (race);
 
 		for (final TaxRate taxRate : src.getTaxRate ())
 			dest.getTaxRate ().add (taxRate);
 
-		for (final Building building : src.getBuilding ())
+		for (final BuildingSvr building : src.getBuildings ())
 			dest.getBuilding ().add (building);
 
-		for (final UnitAttribute unitAttribute : src.getUnitAttribute ())
+		for (final UnitAttributeSvr unitAttribute : src.getUnitAttributes ())
 			dest.getUnitAttribute ().add (unitAttribute);
 
-		for (final UnitType unitType : src.getUnitType ())
+		for (final UnitTypeSvr unitType : src.getUnitTypes ())
 			dest.getUnitType ().add (unitType);
 
-		for (final UnitSkill unitSkill : src.getUnitSkill ())
+		for (final UnitSkillSvr unitSkill : src.getUnitSkills ())
 			dest.getUnitSkill ().add (unitSkill);
 
-		for (final RangedAttackType rangedAttackType : src.getRangedAttackType ())
+		for (final RangedAttackTypeSvr rangedAttackType : src.getRangedAttackTypes ())
 			dest.getRangedAttackType ().add (rangedAttackType);
 
-		for (final Unit unit : src.getUnit ())
+		for (final UnitSvr unit : src.getUnits ())
 			dest.getUnit ().add (unit);
 
-		for (final WeaponGrade weaponGrade : src.getWeaponGrade ())
+		for (final WeaponGradeSvr weaponGrade : src.getWeaponGrades ())
 			dest.getWeaponGrade ().add (weaponGrade);
 
-		for (final CombatAreaEffect combatAreaEffect : src.getCombatAreaEffect ())
+		for (final CombatAreaEffectSvr combatAreaEffect : src.getCombatAreaEffects ())
 			dest.getCombatAreaEffect ().add (combatAreaEffect);
 
-		for (final Spell spell : src.getSpell ())
+		for (final SpellSvr spell : src.getSpells ())
 			dest.getSpell ().add (spell);
 
-		for (final UnitMagicRealm unitMagicRealm : src.getUnitMagicRealm ())
+		for (final UnitMagicRealmSvr unitMagicRealm : src.getUnitMagicRealms ())
 			dest.getUnitMagicRealm ().add (unitMagicRealm);
 
-		for (final CombatTileType combatTileType : src.getCombatTileType ())
+		for (final CombatTileTypeSvr combatTileType : src.getCombatTileTypes ())
 			dest.getCombatTileType ().add (combatTileType);
 
-		for (final CombatTileBorder combatTileBorder : src.getCombatTileBorder ())
+		for (final CombatTileBorderSvr combatTileBorder : src.getCombatTileBorders ())
 			dest.getCombatTileBorder ().add (combatTileBorder);
 
 	    // Derive client-side only flag for map features
-		for (final momime.server.database.v0_9_5.MapFeature srcMapFeature : src.getMapFeature ())
+		for (final MapFeatureSvr srcMapFeature : src.getMapFeatures ())
 		{
 			final momime.client.database.MapFeature destMapFeature = new momime.client.database.MapFeature ();
 
@@ -288,7 +262,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		}
 
 	    // Select correct number of picks for wizards
-		for (final momime.server.database.v0_9_5.Wizard srcWizard : src.getWizard ())
+		for (final WizardSvr srcWizard : src.getWizards ())
 		{
 			final momime.client.database.Wizard destWizard = new momime.client.database.Wizard ();
 
@@ -297,11 +271,11 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			if ((!srcWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!srcWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
 			{
-				final Iterator<WizardPickCount> iter = srcWizard.getWizardPickCount ().iterator ();
+				final Iterator<WizardPickCountSvr> iter = srcWizard.getWizardPickCounts ().iterator ();
 				boolean found = false;
 				while ((!found) && (iter.hasNext ()))
 				{
-					final WizardPickCount pickCount = iter.next ();
+					final WizardPickCountSvr pickCount = iter.next ();
 					if (pickCount.getPickCount () == humanSpellPicks)
 					{
 						found = true;
@@ -311,7 +285,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 				}
 
 				if (!found)
-					throw new RecordNotFoundException (WizardPickCount.class, srcWizard.getWizardID () + "-" + humanSpellPicks, "buildClientDatabase");
+					throw new RecordNotFoundException (WizardPickCountSvr.class, srcWizard.getWizardID () + "-" + humanSpellPicks, "buildClientDatabase");
 			}
 
 			dest.getWizard ().add (destWizard);

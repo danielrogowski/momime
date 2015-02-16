@@ -37,11 +37,11 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.database.HeroNameSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.HeroName;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.Unit;
-import momime.server.database.v0_9_5.UnitSkill;
+import momime.server.database.TileTypeSvr;
+import momime.server.database.UnitSkillSvr;
+import momime.server.database.UnitSvr;
 
 import org.junit.Test;
 
@@ -70,7 +70,7 @@ public final class TestUnitServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Initialize skills method returns the unit definition
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setDoubleMovement (123);
 
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -99,10 +99,10 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_NoExtras () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -136,12 +136,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_OnePick () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setHeroRandomPickCount (1);
 		unitDef.setHeroRandomPickType ("F");
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -150,15 +150,15 @@ public final class TestUnitServerUtilsImpl
 		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Mock possible skill choices, 3 fighter picks and 2 mage picks
-		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillSvr> possibleSkills = new ArrayList<UnitSkillSvr> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillSvr skill = new UnitSkillSvr ();
 			skill.setUnitSkillID ("HS0" + n);
 			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
 			possibleSkills.add (skill);
 		}		
-		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		when (db.getUnitSkills ()).thenReturn (possibleSkills);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
@@ -196,12 +196,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_OnePick_OnlyIfHaveAlready () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setHeroRandomPickCount (1);
 		unitDef.setHeroRandomPickType ("F");
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -210,16 +210,16 @@ public final class TestUnitServerUtilsImpl
 		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Mock possible skill choices, 3 fighter picks and 2 mage picks
-		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillSvr> possibleSkills = new ArrayList<UnitSkillSvr> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillSvr skill = new UnitSkillSvr ();
 			skill.setUnitSkillID ("HS0" + n);
 			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
 			skill.setOnlyIfHaveAlready (n==3);
 			possibleSkills.add (skill);
 		}		
-		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		when (db.getUnitSkills ()).thenReturn (possibleSkills);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
@@ -257,12 +257,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_NoChoices () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setHeroRandomPickCount (1);
 		unitDef.setHeroRandomPickType ("F");
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -271,16 +271,16 @@ public final class TestUnitServerUtilsImpl
 		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Mock possible skill choices, 3 fighter picks and 2 mage picks
-		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillSvr> possibleSkills = new ArrayList<UnitSkillSvr> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillSvr skill = new UnitSkillSvr ();
 			skill.setUnitSkillID ("HS0" + n);
 			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
 			skill.setOnlyIfHaveAlready (n <= 3);
 			possibleSkills.add (skill);
 		}		
-		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		when (db.getUnitSkills ()).thenReturn (possibleSkills);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
@@ -311,12 +311,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_SkillNotTypeSpecific () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setHeroRandomPickCount (1);
 		unitDef.setHeroRandomPickType ("F");
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -325,16 +325,16 @@ public final class TestUnitServerUtilsImpl
 		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Mock possible skill choices, 3 fighter picks and 2 mage picks
-		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillSvr> possibleSkills = new ArrayList<UnitSkillSvr> ();
 		for (int n = 1; n <= 6; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillSvr skill = new UnitSkillSvr ();
 			skill.setUnitSkillID ("HS0" + n);
 			skill.setHeroSkillTypeID ((n <= 3) ? "F" : null);
 			skill.setMaxOccurrences (10);
 			possibleSkills.add (skill);
 		}		
-		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		when (db.getUnitSkills ()).thenReturn (possibleSkills);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
@@ -371,12 +371,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_HeroNotTypeSpecific () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setHeroRandomPickCount (1);
 		unitDef.setHeroRandomPickType (null);	// <---
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -385,15 +385,15 @@ public final class TestUnitServerUtilsImpl
 		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Mock possible skill choices, 3 fighter picks and 2 mage picks
-		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillSvr> possibleSkills = new ArrayList<UnitSkillSvr> ();
 		for (int n = 1; n <= 6; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillSvr skill = new UnitSkillSvr ();
 			skill.setUnitSkillID ("HS0" + n);
 			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
 			possibleSkills.add (skill);
 		}		
-		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		when (db.getUnitSkills ()).thenReturn (possibleSkills);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
@@ -430,12 +430,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_Uncapped () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setHeroRandomPickCount (5);
 		unitDef.setHeroRandomPickType ("M");
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -444,15 +444,15 @@ public final class TestUnitServerUtilsImpl
 		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Mock possible skill choices, 3 fighter picks and 2 mage picks
-		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillSvr> possibleSkills = new ArrayList<UnitSkillSvr> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillSvr skill = new UnitSkillSvr ();
 			skill.setUnitSkillID ("HS0" + n);
 			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
 			possibleSkills.add (skill);
 		}		
-		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		when (db.getUnitSkills ()).thenReturn (possibleSkills);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
@@ -493,12 +493,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testGenerateHeroNameAndRandomSkills_Capped () throws Exception
 	{
 		// Mock unit detalis
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setHeroRandomPickCount (5);
 		unitDef.setHeroRandomPickType ("M");
 		for (int n = 1; n <= 5; n++)
 		{
-			final HeroName name = new HeroName ();
+			final HeroNameSvr name = new HeroNameSvr ();
 			name.setHeroNameID ("UN001_HN0" + n);
 			unitDef.getHeroName ().add (name);
 		}
@@ -507,10 +507,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Mock possible skill choices, 3 fighter picks and 2 mage picks
-		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillSvr> possibleSkills = new ArrayList<UnitSkillSvr> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkill skill = new UnitSkill ();
+			final UnitSkillSvr skill = new UnitSkillSvr ();
 			skill.setUnitSkillID ("HS0" + n);
 			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
 			
@@ -519,7 +519,7 @@ public final class TestUnitServerUtilsImpl
 			
 			possibleSkills.add (skill);
 		}		
-		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		when (db.getUnitSkills ()).thenReturn (possibleSkills);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
@@ -653,7 +653,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -704,7 +704,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere_EnemyUnit () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -759,7 +759,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere_StackOf8 () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -815,7 +815,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere_StackOf9 () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -871,7 +871,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere_Node () throws Exception
 	{
 		// We ARE trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setMagicRealmID ("A");		// <---
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -923,7 +923,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere_Impassable () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -974,7 +974,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere_OurCity () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -1031,7 +1031,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testCanUnitBeAddedHere_EnemyCity () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -1088,7 +1088,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testFindNearestLocationWhereUnitCanBeAdded_City () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -1152,12 +1152,12 @@ public final class TestUnitServerUtilsImpl
 	public final void testFindNearestLocationWhereUnitCanBeAdded_Bumped () throws Exception
 	{
 		// Two tile types are clear, the middle one is a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
-		final TileType tt2 = new TileType ();
+		final TileTypeSvr tt2 = new TileTypeSvr ();
 		tt2.setMagicRealmID ("A");
 
-		final TileType tt3 = new TileType ();
+		final TileTypeSvr tt3 = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
@@ -1238,7 +1238,7 @@ public final class TestUnitServerUtilsImpl
 	public final void testFindNearestLocationWhereUnitCanBeAdded_NoRoom () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);

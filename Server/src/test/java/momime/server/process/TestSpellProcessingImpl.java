@@ -40,8 +40,8 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -80,7 +80,7 @@ public final class TestSpellProcessingImpl
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// Isn't researched yet
@@ -149,7 +149,7 @@ public final class TestSpellProcessingImpl
 		players.add (player3);
 
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// It grants one of 5 possible effects
@@ -247,7 +247,7 @@ public final class TestSpellProcessingImpl
 		players.add (player3);
 
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// We know the spell
@@ -291,7 +291,7 @@ public final class TestSpellProcessingImpl
 	public final void testCastOverlandNow_Summon_Creature () throws Exception
 	{
 		// Mock database
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setUnitMagicRealm ("LT01");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -329,7 +329,7 @@ public final class TestSpellProcessingImpl
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// It only summons 1 kind of unit
@@ -421,13 +421,13 @@ public final class TestSpellProcessingImpl
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// Lets say there's 9 possible heroes we could get
 		for (int n = 1; n <= 9; n++)
 		{
-			final Unit unitDef = new Unit ();
+			final UnitSvr unitDef = new UnitSvr ();
 			unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 			when (db.findUnit ("UN00" + n, "castOverlandNow")).thenReturn (unitDef);
 			
@@ -507,7 +507,7 @@ public final class TestSpellProcessingImpl
 	public final void testCastOverlandNow_Summoning_NoCircle () throws Exception
 	{
 		// Mock database
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setUnitMagicRealm ("LT01");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -540,7 +540,7 @@ public final class TestSpellProcessingImpl
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (null);		// <---
 
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// It only summons 1 kind of unit
@@ -601,7 +601,7 @@ public final class TestSpellProcessingImpl
 		players.add (player3);
 
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// We know the spell
@@ -640,7 +640,7 @@ public final class TestSpellProcessingImpl
 	public final void testCastCombatNow_NotParticipating () throws Exception
 	{
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
 		// Combat location
@@ -687,7 +687,7 @@ public final class TestSpellProcessingImpl
 		gsk.setTrueMap (trueMap);
 		
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
@@ -788,7 +788,7 @@ public final class TestSpellProcessingImpl
 		targetUnit.setUnitURN (101);
 		
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
@@ -871,7 +871,7 @@ public final class TestSpellProcessingImpl
 	public final void testCastCombatNow_Summoning () throws Exception
 	{
 		// Database, session description and so on
-		final Unit unitDef = new Unit ();
+		final UnitSvr unitDef = new UnitSvr ();
 		unitDef.setDoubleMovement (98);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -891,7 +891,7 @@ public final class TestSpellProcessingImpl
 		gsk.setTrueMap (trueMap);
 		
 		// Spell to cast
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
@@ -996,7 +996,7 @@ public final class TestSpellProcessingImpl
 	public final void testSwitchOffSpell_UnitEnchantment () throws Exception
 	{
 		// Mock database
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "switchOffSpell")).thenReturn (spell);
@@ -1058,7 +1058,7 @@ public final class TestSpellProcessingImpl
 	public final void testSwitchOffSpell_OverlandEnchantment () throws Exception
 	{
 		// Mock database - spell grants 5 effects
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		for (int n = 1; n <= 5; n++)
 		{
 			final SpellHasCombatEffect effect = new SpellHasCombatEffect ();

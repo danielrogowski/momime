@@ -10,7 +10,7 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +39,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @return ID of chosen spell to research
 	 * @throws MomException If the list was empty
 	 */
-	final Spell chooseSpellToResearchAI (final List<Spell> spells, final int aiPlayerID)
+	final SpellSvr chooseSpellToResearchAI (final List<SpellSvr> spells, final int aiPlayerID)
 		throws MomException
 	{
 		log.trace ("Entering chooseSpellToResearchAI: Player ID " + aiPlayerID);
@@ -48,9 +48,9 @@ public final class SpellAIImpl implements SpellAI
 
 		// Check each spell in the list to find the the best research order, 1 being the best, 9 being the worst, and make a list of spells with this research order
 		int bestResearchOrder = Integer.MAX_VALUE;
-		final List<Spell> spellsWithBestResearchOrder = new ArrayList<Spell> ();
+		final List<SpellSvr> spellsWithBestResearchOrder = new ArrayList<SpellSvr> ();
 
-		for (final Spell spell : spells)
+		for (final SpellSvr spell : spells)
 		{
 			if (spell.getAiResearchOrder () != null)
 			{
@@ -76,7 +76,7 @@ public final class SpellAIImpl implements SpellAI
 			throw new MomException ("chooseSpellToResearchAI: No appropriate spells to pick from list of " + spells.size ());
 
 		// Pick one at random
-		final Spell chosenSpell = spellsWithBestResearchOrder.get (getRandomUtils ().nextInt (spellsWithBestResearchOrder.size ()));
+		final SpellSvr chosenSpell = spellsWithBestResearchOrder.get (getRandomUtils ().nextInt (spellsWithBestResearchOrder.size ()));
 
 		log.trace ("Exiting chooseSpellToResearchAI = " + chosenSpell.getSpellID ());
 		return chosenSpell;
@@ -101,11 +101,11 @@ public final class SpellAIImpl implements SpellAI
 
 		if (researchableSpells.size () >= 0)
 		{
-			final List<Spell> researchableServerSpells = new ArrayList<Spell> ();
+			final List<SpellSvr> researchableServerSpells = new ArrayList<SpellSvr> ();
 			for (final momime.common.database.Spell spell : researchableSpells)
-				researchableServerSpells.add ((Spell) spell);
+				researchableServerSpells.add ((SpellSvr) spell);
 
-			final Spell chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerID ());
+			final SpellSvr chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerID ());
 			priv.setSpellIDBeingResearched (chosenSpell.getSpellID ());
 		}
 
@@ -132,12 +132,12 @@ public final class SpellAIImpl implements SpellAI
 
 		// Get candidate spells
 		final List<momime.common.database.Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
-		final List<Spell> spellList = new ArrayList<Spell> ();
+		final List<SpellSvr> spellList = new ArrayList<SpellSvr> ();
 		for (final momime.common.database.Spell thisSpell : commonSpellList)
-			spellList.add ((Spell) thisSpell);
+			spellList.add ((SpellSvr) thisSpell);
 
 		// Choose a spell
-		final Spell chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerID);
+		final SpellSvr chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerID);
 
 		// Return spell research status; calling routine sets it to available
 		final SpellResearchStatus chosenSpellStatus = getSpellUtils ().findSpellResearchStatus (spells, chosenSpell.getSpellID ());

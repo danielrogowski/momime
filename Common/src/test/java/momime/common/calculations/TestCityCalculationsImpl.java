@@ -1939,7 +1939,7 @@ public final class TestCityCalculationsImpl
 		final List<Building> buildings = new ArrayList<Building> ();
 		buildings.add (granary);
 		buildings.add (farmersMarket);
-		doReturn (buildings).when (db).getBuilding ();
+		doReturn (buildings).when (db).getBuildings ();
 		
 		// Session description
 		final MapSizeData mapSize = GenerateTestData.createMapSizeData ();

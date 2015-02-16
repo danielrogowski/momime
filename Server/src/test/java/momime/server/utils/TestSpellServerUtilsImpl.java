@@ -10,7 +10,7 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 
 import org.junit.Test;
 
@@ -94,7 +94,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_ResearchingSame () throws Exception
 	{
 		// Spell details
-		final Spell spell = new Spell ();
+		final SpellSvr spell = new SpellSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "validateResearch")).thenReturn (spell);
@@ -131,7 +131,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchDisallowed () throws Exception
 	{
 		// Spell details
-		final Spell oldSpell = new Spell ();
+		final SpellSvr oldSpell = new SpellSvr ();
 		oldSpell.setResearchCost (80);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -174,7 +174,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchFreely () throws Exception
 	{
 		// Spell details
-		final Spell oldSpell = new Spell ();
+		final SpellSvr oldSpell = new SpellSvr ();
 		oldSpell.setResearchCost (80);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -217,7 +217,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchButLose () throws Exception
 	{
 		// Spell details
-		final Spell oldSpell = new Spell ();
+		final SpellSvr oldSpell = new SpellSvr ();
 		oldSpell.setResearchCost (80);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -260,7 +260,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchAfterStarted () throws Exception
 	{
 		// Spell details
-		final Spell oldSpell = new Spell ();
+		final SpellSvr oldSpell = new SpellSvr ();
 		oldSpell.setResearchCost (80);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -303,7 +303,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchBeforeStarted () throws Exception
 	{
 		// Spell details
-		final Spell oldSpell = new Spell ();
+		final SpellSvr oldSpell = new SpellSvr ();
 		oldSpell.setResearchCost (80);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);

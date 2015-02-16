@@ -1040,7 +1040,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		}
 
 		// Production from and Maintenance of buildings
-		for (final Building thisBuilding : db.getBuilding ())
+		for (final Building thisBuilding : db.getBuildings ())
 			
 			// If calculatePotential is true, assume we've built everything
 			// We only really need to count the granary and farmers' market, but easier just to include everything than to specifically discount these
@@ -1050,7 +1050,7 @@ public final class CityCalculationsImpl implements CityCalculations
 				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))
 				{
 					// Wizard's fortress produces mana according to how many books were chosen at the start of the game...
-					for (final PickType thisPickType : db.getPickType ())
+					for (final PickType thisPickType : db.getPickTypes ())
 						addProductionFromFortressPickType (productionValues, thisPickType, getPlayerPickUtils ().countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db));
 
 					// ...and according to which plane it is on

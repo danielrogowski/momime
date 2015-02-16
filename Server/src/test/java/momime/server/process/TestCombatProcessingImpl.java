@@ -49,8 +49,8 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.ai.CombatAI;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.TileTypeSvr;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -216,19 +216,19 @@ public final class TestCombatProcessingImpl
 	public final void testCalculateUnitCombatClass () throws Exception
 	{
 		// Mock database
-		final Unit dwarfHeroDef = new Unit ();
+		final UnitSvr dwarfHeroDef = new UnitSvr ();
 		dwarfHeroDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final Unit spearmenDef = new Unit ();
+		final UnitSvr spearmenDef = new UnitSvr ();
 		spearmenDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final Unit archerHeroDef = new Unit ();
+		final UnitSvr archerHeroDef = new UnitSvr ();
 		archerHeroDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final Unit bowmenDef = new Unit ();
+		final UnitSvr bowmenDef = new UnitSvr ();
 		bowmenDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final Unit settlersDef = new Unit ();
+		final UnitSvr settlersDef = new UnitSvr ();
 		settlersDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1036,13 +1036,13 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitSvr longbowmen = new UnitSvr ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final Unit hero = new Unit ();
+		final UnitSvr hero = new UnitSvr ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final Unit phantomWarriors = new Unit ();
+		final UnitSvr phantomWarriors = new UnitSvr ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1235,16 +1235,16 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitSvr longbowmen = new UnitSvr ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final Unit hero = new Unit ();
+		final UnitSvr hero = new UnitSvr ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final Unit phantomWarriors = new Unit ();
+		final UnitSvr phantomWarriors = new UnitSvr ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1428,17 +1428,17 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitSvr longbowmen = new UnitSvr ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final Unit hero = new Unit ();
+		final UnitSvr hero = new UnitSvr ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final Unit phantomWarriors = new Unit ();
+		final UnitSvr phantomWarriors = new UnitSvr ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1621,13 +1621,13 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitSvr longbowmen = new UnitSvr ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final Unit hero = new Unit ();
+		final UnitSvr hero = new UnitSvr ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final Unit phantomWarriors = new Unit ();
+		final UnitSvr phantomWarriors = new UnitSvr ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1772,13 +1772,13 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitSvr longbowmen = new UnitSvr ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final Unit hero = new Unit ();
+		final UnitSvr hero = new UnitSvr ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final Unit phantomWarriors = new Unit ();
+		final UnitSvr phantomWarriors = new UnitSvr ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -2827,7 +2827,7 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Overland map
@@ -2978,7 +2978,7 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Overland map
@@ -3129,7 +3129,7 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
@@ -3282,7 +3282,7 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final TileType tt = new TileType ();
+		final TileTypeSvr tt = new TileTypeSvr ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
@@ -3762,7 +3762,7 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final Unit unit = new Unit ();
+		final UnitSvr unit = new UnitSvr ();
 		unit.setDoubleMovement (6);
 		when (db.findUnit ("UN001", "okToMoveUnitInCombat")).thenReturn (unit);
 		

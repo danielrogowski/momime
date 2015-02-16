@@ -49,11 +49,11 @@ import momime.server.ai.CityAI;
 import momime.server.ai.MomAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
+import momime.server.database.PickFreeSpellSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.PickFreeSpell;
-import momime.server.database.v0_9_5.Unit;
-import momime.server.database.v0_9_5.Wizard;
-import momime.server.database.v0_9_5.WizardPickCount;
+import momime.server.database.UnitSvr;
+import momime.server.database.WizardPickCountSvr;
+import momime.server.database.WizardSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
@@ -159,7 +159,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Check if not specified
 		boolean valid;
-		Wizard wizard = null;
+		WizardSvr wizard = null;
 		if (!PlayerKnowledgeUtils.hasWizardBeenChosen (wizardID))
 			valid = false;
 		
@@ -225,17 +225,17 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					else
 						desiredPickCount = sd.getDifficultyLevel ().getAiSpellPicks ();
 
-					WizardPickCount pickCount = null;
-					final Iterator<WizardPickCount> iter = wizard.getWizardPickCount ().iterator ();
+					WizardPickCountSvr pickCount = null;
+					final Iterator<WizardPickCountSvr> iter = wizard.getWizardPickCounts ().iterator ();
 					while ((pickCount == null) && (iter.hasNext ()))
 					{
-						final WizardPickCount thisPickCount = iter.next ();
+						final WizardPickCountSvr thisPickCount = iter.next ();
 						if (thisPickCount.getPickCount () == desiredPickCount)
 							pickCount = thisPickCount;
 					}
 
 					if (pickCount == null)
-						throw new RecordNotFoundException (WizardPickCount.class, wizardID + "-" + desiredPickCount, "chooseWizard");
+						throw new RecordNotFoundException (WizardPickCountSvr.class, wizardID + "-" + desiredPickCount, "chooseWizard");
 
 					// Read pre-defined wizard's list of picks from the DB and send them to the player
 					// We'll send them to everyone else when the game starts
@@ -331,7 +331,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @param wizard Wizard this AI player is playing
 	 * @return Player description created for this AI player
 	 */
-	private final PlayerDescription createAiPlayerDescription (final Wizard wizard)
+	private final PlayerDescription createAiPlayerDescription (final WizardSvr wizard)
 	{
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerName (wizard.getWizardID () + "-" + wizard.getWizardName ());
@@ -357,7 +357,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	{
 		log.trace ("Entering createHeroes");
 
-		for (final Unit thisUnit : db.getUnit ())
+		for (final UnitSvr thisUnit : db.getUnits ())
 			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 
 				// Add this hero for all players, even raiders, just not the monsters
@@ -397,14 +397,14 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if (mom.getSessionDescription ().getAiPlayerCount () > 0)
 			{
 				// Get list of wizard IDs for AI players to choose from
-				final List<Wizard> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getPlayers (), mom.getServerDB ());
+				final List<WizardSvr> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getPlayers (), mom.getServerDB ());
 				for (int aiPlayerNo = 0; aiPlayerNo < mom.getSessionDescription ().getAiPlayerCount (); aiPlayerNo++)
 				{
 					// Pick a random wizard for this AI player
 					if (availableWizards.size () == 0)
 						throw new MomException ("Not enough Wizards defined for number of AI players");
 
-					final Wizard chosenWizard = availableWizards.get (getRandomUtils ().nextInt (availableWizards.size ()));
+					final WizardSvr chosenWizard = availableWizards.get (getRandomUtils ().nextInt (availableWizards.size ()));
 					availableWizards.remove (chosenWizard);
 
 					// Add AI player
@@ -474,7 +474,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// Grant any free spells the player gets from the picks they've chosen (i.e. Enchant Item & Create Artifact from Artificer)
 				final List<String> freeSpellIDs = new ArrayList<String> ();
 				for (final PlayerPick pick : ppk.getPick ())
-					for (final PickFreeSpell freeSpell : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpell ())
+					for (final PickFreeSpellSvr freeSpell : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpells ())
 						freeSpellIDs.add (freeSpell.getFreeSpellID ());
 
 				if (freeSpellIDs.size () > 0)

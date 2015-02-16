@@ -441,7 +441,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
 		
 			// Buildings
-			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuilding ())
+			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuildings ())
 			
 				// Don't list buildings we already have
 				if (getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()) == null)
@@ -478,7 +478,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			final AvailableUnit dummyUnit = new AvailableUnit ();
 			
 			// Units
-			for (final momime.common.database.Unit unit : getClient ().getClientDB ().getUnit ())
+			for (final momime.common.database.Unit unit : getClient ().getClientDB ().getUnits ())
 			
 				// Check that the unit is the right race for this city or is a generic non-race specific unit, like a Trireme
 				if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (unit.getUnitMagicRealm ())) &&

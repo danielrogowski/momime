@@ -13,7 +13,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 import momime.server.utils.SpellServerUtils;
 
 import org.apache.commons.logging.Log;
@@ -70,7 +70,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 			if ((mom.getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH) && (priv.getSpellIDBeingResearched () != null))
 			{
 				// Lose on server
-				final Spell spellPreviouslyBeingResearched = mom.getServerDB ().findSpell (priv.getSpellIDBeingResearched (), "RequestResearchSpellMessageImpl");
+				final SpellSvr spellPreviouslyBeingResearched = mom.getServerDB ().findSpell (priv.getSpellIDBeingResearched (), "RequestResearchSpellMessageImpl");
 				final SpellResearchStatus spellPreviouslyBeingResearchedStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched ());
 
 				spellPreviouslyBeingResearchedStatus.setRemainingResearchCost (spellPreviouslyBeingResearched.getResearchCost ());

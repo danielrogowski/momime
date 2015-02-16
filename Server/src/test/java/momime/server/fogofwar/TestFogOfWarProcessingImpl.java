@@ -28,10 +28,10 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -147,21 +147,21 @@ public final class TestFogOfWarProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 		
-		final Spell naturesEyeDef = new Spell ();
+		final SpellSvr naturesEyeDef = new SpellSvr ();
 		naturesEyeDef.setSpellScoutingRange (5);
 		when (db.findSpell ("SP012", "markVisibleArea")).thenReturn (naturesEyeDef);
 
-		final Spell curseDef = new Spell ();
+		final SpellSvr curseDef = new SpellSvr ();
 		when (db.findSpell ("SP110", "markVisibleArea")).thenReturn (curseDef);
 		
 		// Map
@@ -256,7 +256,7 @@ public final class TestFogOfWarProcessingImpl
 		trueMap.getUnit ().add (unitThree);
 
 		// Unit in a tower
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 		{
 			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 			terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
@@ -311,7 +311,7 @@ public final class TestFogOfWarProcessingImpl
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/markVisibleArea.xlsx"));
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -330,7 +330,7 @@ public final class TestFogOfWarProcessingImpl
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -347,7 +347,7 @@ public final class TestFogOfWarProcessingImpl
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));

@@ -23,11 +23,11 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.database.MovementRateRuleSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.MovementRateRule;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.TileType;
+import momime.server.database.TileTypeSvr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -225,10 +225,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		// We basically run down the movement rate rules and stop as soon as we find the first applicable one
 		// Terrain is impassable if we check every movement rule and none of them are applicable
 		Integer doubleMovement = null;
-		final Iterator<MovementRateRule> rules = db.getMovementRateRule ().iterator ();
+		final Iterator<MovementRateRuleSvr> rules = db.getMovementRateRules ().iterator ();
 		while ((doubleMovement == null) && (rules.hasNext ()))
 		{
-			final MovementRateRule thisRule = rules.next ();
+			final MovementRateRuleSvr thisRule = rules.next ();
 
 			// All 3 parts are optional
 			if (((thisRule.getTileTypeID () == null) || (thisRule.getTileTypeID ().equals (tileTypeID))) &&
@@ -258,7 +258,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 		// Go through each tile type
 		final Map<String, Integer> movementRates = new HashMap<String, Integer> ();
-		for (final TileType tileType : db.getTileType ())
+		for (final TileTypeSvr tileType : db.getTileTypes ())
 			if (!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN))
 			{
 				Integer worstMovementRate = 0;
@@ -452,8 +452,8 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getMapSize ());
 
 		// Now we can work out the movement cost of entering every tile, taking into account the tiles we can't enter because we'll have too many units there
-		final Integer [] [] [] doubleMovementToEnterTile = new Integer [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		for (final Plane plane : db.getPlane ())
+		final Integer [] [] [] doubleMovementToEnterTile = new Integer [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -473,7 +473,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (startPlane).getRow ().get (startY).getCell ().get (startX).getTerrainData ();
 		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 		{
-			for (final Plane plane : db.getPlane ())
+			for (final PlaneSvr plane : db.getPlanes ())
 				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (),
 					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 					doubleMovementToEnterTile, sd.getMapSize (), db);

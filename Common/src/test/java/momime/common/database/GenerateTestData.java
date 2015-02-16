@@ -1300,7 +1300,7 @@ public final class GenerateTestData
 		for (final ProductionType productionType : productionTypes)
 			when (db.findProductionType (eq (productionType.getProductionTypeID ()), anyString ())).thenReturn (productionType);
 
-		doReturn (pickTypes).when (db).getPickType ();
+		doReturn (pickTypes).when (db).getPickTypes ();
 		for (final PickType pickType : pickTypes)
 			when (db.findPickType (eq (pickType.getPickTypeID ()), anyString ())).thenReturn (pickType);
 
@@ -1316,7 +1316,7 @@ public final class GenerateTestData
 		for (final Unit unit : units)
 			when (db.findUnit (eq (unit.getUnitID ()), anyString ())).thenReturn (unit);
 
-		doReturn (unitSkills).when (db).getUnitSkill ();
+		doReturn (unitSkills).when (db).getUnitSkills ();
 		for (final UnitSkill unitSkill : unitSkills)
 			when (db.findUnitSkill (eq (unitSkill.getUnitSkillID ()), anyString ())).thenReturn (unitSkill);
 
@@ -1332,11 +1332,11 @@ public final class GenerateTestData
 		for (final TaxRate taxRate : taxRates)
 			when (db.findTaxRate (eq (taxRate.getTaxRateID ()), anyString ())).thenReturn (taxRate);
 
-		doReturn (buildings).when (db).getBuilding ();
+		doReturn (buildings).when (db).getBuildings ();
 		for (final Building building : buildings)
 			when (db.findBuilding (eq (building.getBuildingID ()), anyString ())).thenReturn (building);
 
-		doReturn (spells).when (db).getSpell ();
+		doReturn (spells).when (db).getSpells ();
 		for (final Spell spell : spells)
 			when (db.findSpell (eq (spell.getSpellID ()), anyString ())).thenReturn (spell);
 

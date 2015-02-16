@@ -6,8 +6,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
@@ -36,11 +36,11 @@ import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.BuildingSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -152,7 +152,7 @@ public final class CityProcessingImpl implements CityProcessing
 					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), db);
 				else
 					// Raiders just pick a random plane
-					plane = db.getPlane ().get (getRandomUtils ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
+					plane = db.getPlanes ().get (getRandomUtils ().nextInt (db.getPlanes ().size ())).getPlaneNumber ();
 
 				// Pick location
 				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, db);
@@ -218,14 +218,14 @@ public final class CityProcessingImpl implements CityProcessing
 				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
 				{
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
-					for (final Building thisBuilding : db.getBuilding ())
+					for (final BuildingSvr thisBuilding : db.getBuildings ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
 							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
 				}
 				else
 				{
 					// Raiders buildings' depend on the city size
-					for (final Building thisBuilding : db.getBuilding ())
+					for (final BuildingSvr thisBuilding : db.getBuildings ())
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
 							
@@ -233,7 +233,7 @@ public final class CityProcessingImpl implements CityProcessing
 				}
 
 				// Add starting units
-				for (final Unit thisUnit : db.getUnit ())
+				for (final UnitSvr thisUnit : db.getUnits ())
 					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
@@ -268,7 +268,7 @@ public final class CityProcessingImpl implements CityProcessing
 	{
 		log.trace ("Entering growCitiesAndProgressConstructionProjects: Player ID " + onlyOnePlayerID);
 
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -290,7 +290,7 @@ public final class CityProcessingImpl implements CityProcessing
 						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
 						{
 							// Check if we're constructing a building or a unit
-							Building building = null;
+							BuildingSvr building = null;
 							Integer productionCost = null;
 							if (cityData.getCurrentlyConstructingBuildingID () != null)
 							{
@@ -298,7 +298,7 @@ public final class CityProcessingImpl implements CityProcessing
 								productionCost = building.getProductionCost ();
 							}
 
-							Unit unit = null;
+							UnitSvr unit = null;
 							if (cityData.getCurrentlyConstructingUnitID () != null)
 							{
 								unit = db.findUnit (cityData.getCurrentlyConstructingUnitID (), "growCitiesAndProgressConstructionProjects");
@@ -515,7 +515,7 @@ public final class CityProcessingImpl implements CityProcessing
 			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURN, voluntarySale, sd, db);
 
 			// Give gold from selling it
-			final Building building = db.findBuilding (buildingID, "sellBuilding");
+			final BuildingSvr building = db.findBuilding (buildingID, "sellBuilding");
 			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD,
 				getMemoryBuildingUtils ().goldFromSellingBuilding (building));
 
@@ -588,7 +588,7 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// Recalc stats for all cities based on the new tax rate
 			final FogOfWarMemory trueMap = mom.getGeneralServerKnowledge ().getTrueMap ();
-			for (final Plane plane : mom.getServerDB ().getPlane ())
+			for (final PlaneSvr plane : mom.getServerDB ().getPlanes ())
 				for (int x = 0; x < mom.getSessionDescription ().getMapSize ().getWidth (); x++)
 					for (int y = 0; y < mom.getSessionDescription ().getMapSize ().getHeight (); y++)
 					{

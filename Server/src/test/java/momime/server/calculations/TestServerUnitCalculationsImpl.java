@@ -27,12 +27,12 @@ import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
+import momime.server.database.MovementRateRuleSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.MovementRateRule;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.UnitSkill;
+import momime.server.database.TileTypeSvr;
+import momime.server.database.UnitSkillSvr;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -57,12 +57,12 @@ public final class TestServerUnitCalculationsImpl
 	public final void testCalculateUnitScoutingRange () throws Exception
 	{
 		// Mock database
-		final UnitSkill flightSkill = new UnitSkill ();
+		final UnitSkillSvr flightSkill = new UnitSkillSvr ();
 		flightSkill.setUnitSkillScoutingRange (2);
 		
-		final UnitSkill otherSkill = new UnitSkill ();
+		final UnitSkillSvr otherSkill = new UnitSkillSvr ();
 
-		final UnitSkill longSightSkill = new UnitSkill ();
+		final UnitSkillSvr longSightSkill = new UnitSkillSvr ();
 		longSightSkill.setUnitSkillScoutingRange (4);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -438,34 +438,34 @@ public final class TestServerUnitCalculationsImpl
 		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		final List<MovementRateRuleSvr> rules = new ArrayList<MovementRateRuleSvr> ();
 		for (int n = 1; n <= 2; n++)
 		{
-			final MovementRateRule pathfindingRule = new MovementRateRule ();
+			final MovementRateRuleSvr pathfindingRule = new MovementRateRuleSvr ();
 			pathfindingRule.setTileTypeID ("TT0" + n);
 			pathfindingRule.setUnitStackSkillID ("US003");
 			pathfindingRule.setDoubleMovement (1);
 			rules.add (pathfindingRule);
 		}
 		
-		final MovementRateRule flyingRule = new MovementRateRule ();
+		final MovementRateRuleSvr flyingRule = new MovementRateRuleSvr ();
 		flyingRule.setUnitSkillID ("US002");
 		flyingRule.setDoubleMovement (2);
 		rules.add (flyingRule);
 
-		final MovementRateRule hillsRule = new MovementRateRule ();
+		final MovementRateRuleSvr hillsRule = new MovementRateRuleSvr ();
 		hillsRule.setUnitSkillID ("US001");
 		hillsRule.setTileTypeID ("TT01");
 		hillsRule.setDoubleMovement (4);
 		rules.add (hillsRule);
 		
-		final MovementRateRule mountainsRule = new MovementRateRule ();
+		final MovementRateRuleSvr mountainsRule = new MovementRateRuleSvr ();
 		mountainsRule.setUnitSkillID ("US001");
 		mountainsRule.setTileTypeID ("TT02");
 		mountainsRule.setDoubleMovement (6);
 		rules.add (mountainsRule);
 		
-		when (db.getMovementRateRule ()).thenReturn (rules);
+		when (db.getMovementRateRules ()).thenReturn (rules);
 		
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -531,45 +531,45 @@ public final class TestServerUnitCalculationsImpl
 		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		final List<MovementRateRuleSvr> rules = new ArrayList<MovementRateRuleSvr> ();
 		for (int n = 1; n <= 2; n++)
 		{
-			final MovementRateRule pathfindingRule = new MovementRateRule ();
+			final MovementRateRuleSvr pathfindingRule = new MovementRateRuleSvr ();
 			pathfindingRule.setTileTypeID ("TT0" + n);
 			pathfindingRule.setUnitStackSkillID ("US003");
 			pathfindingRule.setDoubleMovement (1);
 			rules.add (pathfindingRule);
 		}
 		
-		final MovementRateRule flyingRule = new MovementRateRule ();
+		final MovementRateRuleSvr flyingRule = new MovementRateRuleSvr ();
 		flyingRule.setUnitSkillID ("US002");
 		flyingRule.setDoubleMovement (2);
 		rules.add (flyingRule);
 
-		final MovementRateRule hillsRule = new MovementRateRule ();
+		final MovementRateRuleSvr hillsRule = new MovementRateRuleSvr ();
 		hillsRule.setUnitSkillID ("US001");
 		hillsRule.setTileTypeID ("TT01");
 		hillsRule.setDoubleMovement (4);
 		rules.add (hillsRule);
 		
-		final MovementRateRule mountainsRule = new MovementRateRule ();
+		final MovementRateRuleSvr mountainsRule = new MovementRateRuleSvr ();
 		mountainsRule.setUnitSkillID ("US001");
 		mountainsRule.setTileTypeID ("TT02");
 		mountainsRule.setDoubleMovement (6);
 		rules.add (mountainsRule);
 		
-		when (db.getMovementRateRule ()).thenReturn (rules);
+		when (db.getMovementRateRules ()).thenReturn (rules);
 		
 		// All possible tile types
-		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		final List<TileTypeSvr> tileTypes = new ArrayList<TileTypeSvr> ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileType thisTileType = new TileType ();
+			final TileTypeSvr thisTileType = new TileTypeSvr ();
 			thisTileType.setTileTypeID ("TT0" + n);
 			tileTypes.add (thisTileType);
 		}
 		
-		when (db.getTileType ()).thenReturn (tileTypes);
+		when (db.getTileTypes ()).thenReturn (tileTypes);
 
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -651,10 +651,10 @@ public final class TestServerUnitCalculationsImpl
 		map.setMap (terrain);
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
 		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
@@ -737,7 +737,7 @@ public final class TestServerUnitCalculationsImpl
 		int accessibleTilesDistances = 0;
 		int accessibleTilesDirections = 0;
 
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -780,7 +780,7 @@ public final class TestServerUnitCalculationsImpl
 		map.setMap (terrain);
 
 		// Add tower
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			terrain.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (10).getCell ().get (20).getTerrainData ().setMapFeatureID
 				(CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 
@@ -807,10 +807,10 @@ public final class TestServerUnitCalculationsImpl
 		}
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
 		// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
@@ -912,7 +912,7 @@ public final class TestServerUnitCalculationsImpl
 		assertTrue (canMoveToInOneTurn [1] [13] [23]);
 
 		// Check all the movement distances on both planes
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -937,7 +937,7 @@ public final class TestServerUnitCalculationsImpl
 		int accessibleTilesDistances = 0;
 		int accessibleTilesDirections = 0;
 
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{

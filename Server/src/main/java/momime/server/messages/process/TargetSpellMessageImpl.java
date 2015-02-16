@@ -24,7 +24,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;
@@ -88,7 +88,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), getSpellID ());
-		final Spell spell = mom.getServerDB ().findSpell (getSpellID (), "TargetSpellMessageImpl");
+		final SpellSvr spell = mom.getServerDB ().findSpell (getSpellID (), "TargetSpellMessageImpl");
 		
 		// Do all the checks
 		final String error;
@@ -115,7 +115,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else if ((getCityLocation ().getX () < 0) || (getCityLocation ().getY () < 0) || (getCityLocation ().getZ () < 0) ||
 					(getCityLocation ().getX () >= mom.getSessionDescription ().getMapSize ().getWidth ()) ||
 					(getCityLocation ().getY () >= mom.getSessionDescription ().getMapSize ().getHeight ()) ||
-					(getCityLocation ().getZ () >= mom.getServerDB ().getPlane ().size ()))
+					(getCityLocation ().getZ () >= mom.getServerDB ().getPlanes ().size ()))
 					
 					error = "The coordinates you are trying to aim a city spell at are off the edge of the map";
 				else

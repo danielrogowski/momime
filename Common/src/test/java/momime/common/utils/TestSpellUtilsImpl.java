@@ -53,7 +53,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -75,7 +75,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -414,7 +414,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -453,7 +453,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -466,7 +466,7 @@ public final class TestSpellUtilsImpl
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (2, utils.getSpellsForStatus (statuses, SpellResearchStatusID.AVAILABLE, db).size ());
-		assertEquals (db.getSpell ().size () - 2, utils.getSpellsForStatus (statuses, SpellResearchStatusID.UNAVAILABLE, db).size ());
+		assertEquals (db.getSpells ().size () - 2, utils.getSpellsForStatus (statuses, SpellResearchStatusID.UNAVAILABLE, db).size ());
 	}
 
 	/**
@@ -480,7 +480,7 @@ public final class TestSpellUtilsImpl
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -504,7 +504,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -537,7 +537,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -568,7 +568,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -595,9 +595,9 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 
-		assertEquals (2, utils.getSpellRanksForMagicRealm (db.getSpell (), GenerateTestData.NATURE_BOOK).size ());
-		assertEquals (1, utils.getSpellRanksForMagicRealm (db.getSpell (), GenerateTestData.CHAOS_BOOK).size ());
-		assertEquals (1, utils.getSpellRanksForMagicRealm (db.getSpell (), null).size ());
+		assertEquals (2, utils.getSpellRanksForMagicRealm (db.getSpells (), GenerateTestData.NATURE_BOOK).size ());
+		assertEquals (1, utils.getSpellRanksForMagicRealm (db.getSpells (), GenerateTestData.CHAOS_BOOK).size ());
+		assertEquals (1, utils.getSpellRanksForMagicRealm (db.getSpells (), null).size ());
 	}
 
 	/**
@@ -611,7 +611,7 @@ public final class TestSpellUtilsImpl
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpell ())
+		for (final Spell thisSpell : db.getSpells ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());

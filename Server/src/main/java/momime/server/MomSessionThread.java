@@ -21,7 +21,7 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.ui.MomServerUI;
@@ -160,7 +160,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
 		// Initialize all spell research statuses
-		for (final Spell spell : getServerDB ().getSpell ())
+		for (final SpellSvr spell : getServerDB ().getSpells ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());
@@ -198,7 +198,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 
 		// Create and initialize fog of war area
 		final MapVolumeOfFogOfWarStates fogOfWar = new MapVolumeOfFogOfWarStates ();
-		for (int plane = 0; plane < db.getPlane ().size (); plane++)
+		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
 		{
 			final MapAreaOfFogOfWarStates fogOfWarPlane = new MapAreaOfFogOfWarStates ();
 			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)
@@ -220,7 +220,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		// but the terrain and city data elements will remain null until we actually see it.
 		// This is just because it would make the code overly complex to have null checks everywhere this gets accessed.
 		final MapVolumeOfMemoryGridCells fogOfWarMap = new MapVolumeOfMemoryGridCells ();
-		for (int plane = 0; plane < db.getPlane ().size (); plane++)
+		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
 		{
 			final MapAreaOfMemoryGridCells fogOfWarPlane = new MapAreaOfMemoryGridCells ();
 			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)

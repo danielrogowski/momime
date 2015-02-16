@@ -17,10 +17,10 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.server.database.BuildingSvr;
+import momime.server.database.CitySizeSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.CitySize;
-import momime.server.database.v0_9_5.Race;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -138,10 +138,10 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 
 		// First work out the Size ID - There should only be one entry in the DB which matches
 		boolean found = false;
-		final Iterator<CitySize> iter = db.getCitySize ().iterator ();
+		final Iterator<CitySizeSvr> iter = db.getCitySizes ().iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
-			final CitySize thisSize = iter.next ();
+			final CitySizeSvr thisSize = iter.next ();
 
 			// 0 indicates that there is no minimum/maximum
 			if (((thisSize.getCitySizeMinimum () == null) || (cityData.getCityPopulation () >= thisSize.getCitySizeMinimum ())) &&
@@ -260,7 +260,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	 */
 	@Override
 	public final boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final MapCoordinates3DEx cityLocation, final Building building,
+		final MapCoordinates3DEx cityLocation, final BuildingSvr building,
 		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
@@ -268,7 +268,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 
 		// Need to get the city race
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-		final Race race = db.findRace (cityData.getCityRaceID (), "canEventuallyConstructBuilding");
+		final RaceSvr race = db.findRace (cityData.getCityRaceID (), "canEventuallyConstructBuilding");
 
 		// Check any direct blocks to us constructing this building
 		boolean passes = getCityCalculations ().buildingPassesTileTypeRequirements (map, cityLocation, building, overlandMapCoordinateSystem);
@@ -281,7 +281,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final Iterator<BuildingPrerequisite> recursiveIter = building.getBuildingPrerequisite ().iterator ();
 		while ((passes) && (recursiveIter.hasNext ()))
 		{
-			final Building thisBuilding = db.findBuilding (recursiveIter.next ().getPrerequisiteID (), "canEventuallyConstructBuilding");
+			final BuildingSvr thisBuilding = db.findBuilding (recursiveIter.next ().getPrerequisiteID (), "canEventuallyConstructBuilding");
 
 			// Don't check it is we've already got it - its possible, for example, for a sawmill to be built and then us lose the only forest tile, so while
 			// we don't have the prerequisites for it anymore, we still have the building

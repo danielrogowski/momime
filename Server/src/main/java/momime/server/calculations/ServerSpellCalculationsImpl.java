@@ -11,11 +11,11 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
+import momime.server.database.PickSvr;
+import momime.server.database.PickTypeCountContainerSvr;
+import momime.server.database.PickTypeGrantsSpellsSvr;
+import momime.server.database.PickTypeSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Pick;
-import momime.server.database.v0_9_5.PickType;
-import momime.server.database.v0_9_5.PickTypeCountContainer;
-import momime.server.database.v0_9_5.PickTypeGrantsSpells;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,22 +62,22 @@ public final class ServerSpellCalculationsImpl implements ServerSpellCalculation
 
 		for (final PlayerPick thisPick : picks)
 		{
-			final Pick pickRecord = db.findPick (thisPick.getPickID (), "randomizeResearchableSpells");
-			final PickType pickTypeRecord = db.findPickType (pickRecord.getPickType (), "randomizeResearchableSpells");
+			final PickSvr pickRecord = db.findPick (thisPick.getPickID (), "randomizeResearchableSpells");
+			final PickTypeSvr pickTypeRecord = db.findPickType (pickRecord.getPickType (), "randomizeResearchableSpells");
 
 			// Look for an entry for the quantity of this pick that we have - failing to find this is fine,
 			// it just means that this number of this pick type doesn't give us anything e.g. its a retort, not a number of books
-			PickTypeCountContainer spellCounts = null;
-			final Iterator<PickTypeCountContainer> iter = pickTypeRecord.getPickTypeCount ().iterator ();
+			PickTypeCountContainerSvr spellCounts = null;
+			final Iterator<PickTypeCountContainerSvr> iter = pickTypeRecord.getPickTypeCounts ().iterator ();
 			while ((spellCounts == null) && (iter.hasNext ()))
 			{
-				final PickTypeCountContainer thisSpellCounts = iter.next ();
+				final PickTypeCountContainerSvr thisSpellCounts = iter.next ();
 				if (thisSpellCounts.getCount () == thisPick.getQuantity ())
 					spellCounts = thisSpellCounts;
 			}
 
 			if (spellCounts != null)
-				for (final PickTypeGrantsSpells thisRank : spellCounts.getSpellCount ())
+				for (final PickTypeGrantsSpellsSvr thisRank : spellCounts.getSpellCounts ())
 				{
 					// Take off how many spells of this realm/rank we already know, or are already in our spell book waiting to be researched
 					// This should allow this routine to be used again when we gain a new spell book

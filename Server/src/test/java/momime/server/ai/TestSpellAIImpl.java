@@ -13,7 +13,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 
 import org.junit.Test;
 
@@ -42,9 +42,9 @@ public final class TestSpellAIImpl
 		ai.setRandomUtils (random);
 
 		// List the 2nd 10 earth spells, two of these have research order 1, so the routine should pick either of them
-		final List<Spell> spells = new ArrayList<Spell> ();
+		final List<SpellSvr> spells = new ArrayList<SpellSvr> ();
 		for (int n = 10; n < 20; n++)
-			spells.add (db.getSpell ().get (n));
+			spells.add (db.getSpells ().get (n));
 
 		assertEquals ("SP020", ai.chooseSpellToResearchAI (spells, -1).getSpellID ());
 	}
@@ -57,7 +57,7 @@ public final class TestSpellAIImpl
 	public final void testChooseSpellToResearchAI_EmptyList () throws MomException
 	{
 		final SpellAIImpl ai = new SpellAIImpl ();
-		ai.chooseSpellToResearchAI (new ArrayList<Spell> (), -1);
+		ai.chooseSpellToResearchAI (new ArrayList<SpellSvr> (), -1);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public final class TestSpellAIImpl
 
 		// Player knows no spells yet
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
-		for (final Spell spell : db.getSpell ())
+		for (final SpellSvr spell : db.getSpells ())
 		{
 			final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 			researchStatus.setSpellID (spell.getSpellID ());

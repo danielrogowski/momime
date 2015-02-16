@@ -34,8 +34,8 @@ import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -113,7 +113,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castOverlandNow (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final Spell spell,
+	public final void castOverlandNow (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final SpellSvr spell,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -160,7 +160,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				for (final SummonedUnit possibleSummonedUnit : spell.getSummonedUnit ())
 				{
 					// Check whether we can summon this unit If its a hero, this depends on whether we've summoned the hero before, or if he's dead
-					final Unit possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "castOverlandNow");
+					final UnitSvr possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "castOverlandNow");
 					final boolean addToList;
 					if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 					{
@@ -277,7 +277,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castCombatNow (final PlayerServerDetails player, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+	public final void castCombatNow (final PlayerServerDetails player, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
@@ -429,7 +429,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		// Any secondary effects we also need to switch off?
 		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffSpell");
-		final Spell spell = db.findSpell (trueSpell.getSpellID (), "switchOffSpell");
+		final SpellSvr spell = db.findSpell (trueSpell.getSpellID (), "switchOffSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), trueSpell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);

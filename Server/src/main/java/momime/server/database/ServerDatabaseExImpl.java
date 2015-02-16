@@ -1,6 +1,7 @@
 package momime.server.database;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import momime.common.database.RecordNotFoundException;
@@ -45,22 +46,22 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	private Map<Integer, Plane> planesMap;
 
 	/** Map of map feature IDs to map feature XML objects */
-	private Map<String, MapFeature> mapFeaturesMap;
+	private Map<String, MapFeatureSvr> mapFeaturesMap;
 
 	/** Map of tile type IDs to file type XML objects */
-	private Map<String, TileType> tileTypesMap;
+	private Map<String, TileTypeSvr> tileTypesMap;
 
 	/** Map of production type IDs to production type XML objects */
-	private Map<String, ProductionType> productionTypesMap;
+	private Map<String, ProductionTypeSvr> productionTypesMap;
 
 	/** Map of pick type IDs to pick XML objects */
-	private Map<String, PickType> pickTypesMap;
+	private Map<String, PickTypeSvr> pickTypesMap;
 
 	/** Map of pick IDs to pick XML objects */
-	private Map<String, Pick> picksMap;
+	private Map<String, PickSvr> picksMap;
 
 	/** Map of wizard IDs to wizard XML objects */
-	private Map<String, Wizard> wizardsMap;
+	private Map<String, WizardSvr> wizardsMap;
 
 	/** Map of unit type IDs to unit type XML objects */
 	private Map<String, UnitType> unitTypesMap;
@@ -69,10 +70,10 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	private Map<String, UnitMagicRealm> unitMagicRealmsMap;
 
 	/** Map of unit IDs to unit XML objects */
-	private Map<String, Unit> unitsMap;
+	private Map<String, UnitSvr> unitsMap;
 
 	/** Map of unit skill IDs to unit skill XML objects */
-	private Map<String, UnitSkill> unitSkillsMap;
+	private Map<String, UnitSkillSvr> unitSkillsMap;
 
 	/** Map of weapon grade numbers to weapon grade XML objects */
 	private Map<Integer, WeaponGrade> weaponGradesMap;
@@ -81,22 +82,22 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	private Map<String, RangedAttackType> rangedAttackTypesMap;
 	
 	/** Map of race IDs to race XML objects */
-	private Map<String, Race> racesMap;
+	private Map<String, RaceSvr> racesMap;
 
 	/** Map of tax rate IDs to tax rate XML objects */
 	private Map<String, TaxRate> taxRatesMap;
 
 	/** Map of building IDs to building XML objects */
-	private Map<String, Building> buildingsMap;
+	private Map<String, BuildingSvr> buildingsMap;
 
 	/** Map of spell IDs to spell XML objects */
-	private Map<String, Spell> spellsMap;
+	private Map<String, SpellSvr> spellsMap;
 
 	/** Map of combat area effect IDs to combat area effect objects */
 	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
 	
 	/** Map of combat tile type IDs to combat tile type objects */
-	private Map<String, CombatTileType> combatTileTypesMap;
+	private Map<String, CombatTileTypeSvr> combatTileTypesMap;
 
 	/** Map of combat tile border IDs to combat tile border objects */
 	private Map<String, CombatTileBorder> combatTileBordersMap;
@@ -119,34 +120,34 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			planesMap.put (thisPlane.getPlaneNumber (), thisPlane);
 
 		// Create map features map
-		mapFeaturesMap = new HashMap<String, MapFeature> ();
-		for (final MapFeature thismapFeature : getMapFeature ())
-			mapFeaturesMap.put (thismapFeature.getMapFeatureID (), thismapFeature);
+		mapFeaturesMap = new HashMap<String, MapFeatureSvr> ();
+		for (final MapFeature thisMapFeature : getMapFeature ())
+			mapFeaturesMap.put (thisMapFeature.getMapFeatureID (), (MapFeatureSvr) thisMapFeature);
 
 		// Create tile types map
-		tileTypesMap = new HashMap<String, TileType> ();
-		for (final TileType thistileType : getTileType ())
-			tileTypesMap.put (thistileType.getTileTypeID (), thistileType);
+		tileTypesMap = new HashMap<String, TileTypeSvr> ();
+		for (final TileType thisTileType : getTileType ())
+			tileTypesMap.put (thisTileType.getTileTypeID (), (TileTypeSvr) thisTileType);
 
 		// Create production types map
-		productionTypesMap = new HashMap<String, ProductionType> ();
-		for (final ProductionType thisproductionType : getProductionType ())
-			productionTypesMap.put (thisproductionType.getProductionTypeID (), thisproductionType);
+		productionTypesMap = new HashMap<String, ProductionTypeSvr> ();
+		for (final ProductionType thisProductionType : getProductionType ())
+			productionTypesMap.put (thisProductionType.getProductionTypeID (), (ProductionTypeSvr) thisProductionType);
 
 		// Create pick types map
-		pickTypesMap = new HashMap<String, PickType> ();
+		pickTypesMap = new HashMap<String, PickTypeSvr> ();
 		for (final PickType thisPickType : getPickType ())
-			pickTypesMap.put (thisPickType.getPickTypeID (), thisPickType);
+			pickTypesMap.put (thisPickType.getPickTypeID (), (PickTypeSvr) thisPickType);
 
 		// Create picks map
-		picksMap = new HashMap<String, Pick> ();
+		picksMap = new HashMap<String, PickSvr> ();
 		for (final Pick thisPick : getPick ())
-			picksMap.put (thisPick.getPickID (), thisPick);
+			picksMap.put (thisPick.getPickID (), (PickSvr) thisPick);
 
 		// Create wizards map
-		wizardsMap = new HashMap<String, Wizard> ();
+		wizardsMap = new HashMap<String, WizardSvr> ();
 		for (final Wizard thisWizard : getWizard ())
-			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+			wizardsMap.put (thisWizard.getWizardID (), (WizardSvr) thisWizard);
 
 		// Create unit types map
 		unitTypesMap = new HashMap<String, UnitType> ();
@@ -159,14 +160,14 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			unitMagicRealmsMap.put (thisUnitMagicRealm.getUnitMagicRealmID (), thisUnitMagicRealm);
 
 		// Create units map
-		unitsMap = new HashMap<String, Unit> ();
+		unitsMap = new HashMap<String, UnitSvr> ();
 		for (final Unit thisUnit : getUnit ())
-			unitsMap.put (thisUnit.getUnitID (), thisUnit);
+			unitsMap.put (thisUnit.getUnitID (), (UnitSvr) thisUnit);
 
 		// Create unit skills map
-		unitSkillsMap = new HashMap<String, UnitSkill> ();
+		unitSkillsMap = new HashMap<String, UnitSkillSvr> ();
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
-			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
+			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillSvr) thisUnitSkill);
 
 		// Create weaponGrades map
 		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
@@ -179,9 +180,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), thisRangedAttackType);
 		
 		// Create races map
-		racesMap = new HashMap<String, Race> ();
+		racesMap = new HashMap<String, RaceSvr> ();
 		for (final Race thisRace : getRace ())
-			racesMap.put (thisRace.getRaceID (), thisRace);
+			racesMap.put (thisRace.getRaceID (), (RaceSvr) thisRace);
 
 		// Create tax rates map
 		taxRatesMap = new HashMap<String, TaxRate> ();
@@ -189,14 +190,14 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			taxRatesMap.put (thisTaxRate.getTaxRateID (), thisTaxRate);
 
 		// Create buildings map
-		buildingsMap = new HashMap<String, Building> ();
+		buildingsMap = new HashMap<String, BuildingSvr> ();
 		for (final Building thisBuilding : getBuilding ())
-			buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
+			buildingsMap.put (thisBuilding.getBuildingID (), (BuildingSvr) thisBuilding);
 
 		// Create spells map
-		spellsMap = new HashMap<String, Spell> ();
+		spellsMap = new HashMap<String, SpellSvr> ();
 		for (final Spell thisSpell : getSpell ())
-			spellsMap.put (thisSpell.getSpellID (), thisSpell);
+			spellsMap.put (thisSpell.getSpellID (), (SpellSvr) thisSpell);
 
 		// Create combat area effects map
 		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
@@ -204,9 +205,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			combatAreaEffectsMap.put (thisCombatAreaEffect.getCombatAreaEffectID (), thisCombatAreaEffect);
 
 		// Combat tile types map
-		combatTileTypesMap = new HashMap<String, CombatTileType> ();
+		combatTileTypesMap = new HashMap<String, CombatTileTypeSvr> ();
 		for (final CombatTileType thisCombatTileType : getCombatTileType ())
-			combatTileTypesMap.put (thisCombatTileType.getCombatTileTypeID (), thisCombatTileType);
+			combatTileTypesMap.put (thisCombatTileType.getCombatTileTypeID (), (CombatTileTypeSvr) thisCombatTileType);
 
 		// Combat tile borders map
 		combatTileBordersMap = new HashMap<String, CombatTileBorder> ();
@@ -216,6 +217,16 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		log.trace ("Exiting buildMaps");
 	}
 
+	/**
+	 * @return Complete list of all city sizes in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<CitySizeSvr> getCitySizes ()
+	{
+		return (List<CitySizeSvr>) (List<?>) getCitySize ();
+	}
+	
 	/**
 	 * @param citySizeID City size ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -231,6 +242,16 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all planes in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<PlaneSvr> getPlanes ()
+	{
+		return (List<PlaneSvr>) (List<?>) getPlane ();
+	}
+	
 	/**
 	 * @param planeNumber Plane number to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -248,15 +269,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all map features in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<MapFeatureSvr> getMapFeatures ()
+	{
+		return (List<MapFeatureSvr>) (List<?>) getMapFeature ();
+	}
+	
+	/**
 	 * @param mapFeatureID Map feature ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Map feature object
 	 * @throws RecordNotFoundException If the mapFeatureID doesn't exist
 	 */
 	@Override
-	public final MapFeature findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException
+	public final MapFeatureSvr findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException
 	{
-		final MapFeature found = mapFeaturesMap.get (mapFeatureID);
+		final MapFeatureSvr found = mapFeaturesMap.get (mapFeatureID);
 		if (found == null)
 			throw new RecordNotFoundException (MapFeature.class, mapFeatureID, caller);
 
@@ -264,15 +295,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all tile types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<TileTypeSvr> getTileTypes ()
+	{
+		return (List<TileTypeSvr>) (List<?>) getTileType ();
+	}
+	
+	/**
 	 * @param tileTypeID Tile type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Tile type object
 	 * @throws RecordNotFoundException If the tileTypeID doesn't exist
 	 */
 	@Override
-	public final TileType findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException
+	public final TileTypeSvr findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException
 	{
-		final TileType found = tileTypesMap.get (tileTypeID);
+		final TileTypeSvr found = tileTypesMap.get (tileTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (TileType.class, tileTypeID, caller);
 
@@ -280,15 +321,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all production types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<ProductionTypeSvr> getProductionTypes ()
+	{
+		return (List<ProductionTypeSvr>) (List<?>) getProductionType ();
+	}
+	
+	/**
 	 * @param productionTypeID Production type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Production type object
 	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
 	 */
 	@Override
-	public final ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
+	public final ProductionTypeSvr findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
 	{
-		final ProductionType found = productionTypesMap.get (productionTypeID);
+		final ProductionTypeSvr found = productionTypesMap.get (productionTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (ProductionType.class, productionTypeID, caller);
 
@@ -296,15 +347,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all pick types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<PickTypeSvr> getPickTypes ()
+	{
+		return (List<PickTypeSvr>) (List<?>) getPickType ();
+	}
+	
+	/**
 	 * @param pickTypeID Pick type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return PickType object
 	 * @throws RecordNotFoundException If the pickTypeID doesn't exist
 	 */
 	@Override
-	public final PickType findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException
+	public final PickTypeSvr findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException
 	{
-		final PickType found = pickTypesMap.get (pickTypeID);
+		final PickTypeSvr found = pickTypesMap.get (pickTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (PickType.class, pickTypeID, caller);
 
@@ -312,15 +373,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all picks in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<PickSvr> getPicks ()
+	{
+		return (List<PickSvr>) (List<?>) getPick ();
+	}
+	
+	/**
 	 * @param pickID Pick ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Pick object
 	 * @throws RecordNotFoundException If the pickID doesn't exist
 	 */
 	@Override
-	public final Pick findPick (final String pickID, final String caller) throws RecordNotFoundException
+	public final PickSvr findPick (final String pickID, final String caller) throws RecordNotFoundException
 	{
-		final Pick found = picksMap.get (pickID);
+		final PickSvr found = picksMap.get (pickID);
 		if (found == null)
 			throw new RecordNotFoundException (Pick.class, pickID, caller);
 
@@ -328,21 +399,41 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all wizards in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<WizardSvr> getWizards ()
+	{
+		return (List<WizardSvr>) (List<?>) getWizard ();
+	}
+	
+	/**
 	 * @param wizardID Wizard ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Wizard object
 	 * @throws RecordNotFoundException If the wizardID doesn't exist
 	 */
 	@Override
-	public final Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException
+	public final WizardSvr findWizard (final String wizardID, final String caller) throws RecordNotFoundException
 	{
-		final Wizard found = wizardsMap.get (wizardID);
+		final WizardSvr found = wizardsMap.get (wizardID);
 		if (found == null)
 			throw new RecordNotFoundException (Wizard.class, wizardID, caller);
 
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all unit types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitTypeSvr> getUnitTypes ()
+	{
+		return (List<UnitTypeSvr>) (List<?>) getUnitType ();
+	}
+	
 	/**
 	 * @param unitTypeID Unit type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -360,6 +451,16 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all unit magic realms in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitMagicRealmSvr> getUnitMagicRealms ()
+	{
+		return (List<UnitMagicRealmSvr>) (List<?>) getUnitMagicRealm ();
+	}
+	
+	/**
 	 * @param unitMagicRealmID Unit magic realm ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit magic realm object
@@ -376,15 +477,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all units in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitSvr> getUnits ()
+	{
+		return (List<UnitSvr>) (List<?>) getUnit ();
+	}
+	
+	/**
 	 * @param unitID Unit ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit object
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	@Override
-	public final Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException
+	public final UnitSvr findUnit (final String unitID, final String caller) throws RecordNotFoundException
 	{
-		final Unit found = unitsMap.get (unitID);
+		final UnitSvr found = unitsMap.get (unitID);
 		if (found == null)
 			throw new RecordNotFoundException (Unit.class, unitID, caller);
 
@@ -392,21 +503,41 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all unit skills in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitSkillSvr> getUnitSkills ()
+	{
+		return (List<UnitSkillSvr>) (List<?>) getUnitSkill ();
+	}
+	
+	/**
 	 * @param unitSkillID Unit skill ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit skill object
 	 * @throws RecordNotFoundException If the unitSkillID doesn't exist
 	 */
 	@Override
-	public final UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException
+	public final UnitSkillSvr findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException
 	{
-		final UnitSkill found = unitSkillsMap.get (unitSkillID);
+		final UnitSkillSvr found = unitSkillsMap.get (unitSkillID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitSkill.class, unitSkillID, caller);
 
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all weapon grades in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<WeaponGradeSvr> getWeaponGrades ()
+	{
+		return (List<WeaponGradeSvr>) (List<?>) getWeaponGrade ();
+	}
+	
 	/**
 	 * @param weaponGradeNumber Weapon grade number to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -424,6 +555,16 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all ranged attack types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<RangedAttackTypeSvr> getRangedAttackTypes ()
+	{
+		return (List<RangedAttackTypeSvr>) (List<?>) getRangedAttackType ();
+	}
+	
+	/**
 	 * @param rangedAttackTypeID RAT ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return RAT object
@@ -440,15 +581,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 	
 	/**
+	 * @return Complete list of all races in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<RaceSvr> getRaces ()
+	{
+		return (List<RaceSvr>) (List<?>) getRace ();
+	}
+	
+	/**
 	 * @param raceID Race ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Race object
 	 * @throws RecordNotFoundException If the raceID doesn't exist
 	 */
 	@Override
-	public final Race findRace (final String raceID, final String caller) throws RecordNotFoundException
+	public final RaceSvr findRace (final String raceID, final String caller) throws RecordNotFoundException
 	{
-		final Race found = racesMap.get (raceID);
+		final RaceSvr found = racesMap.get (raceID);
 		if (found == null)
 			throw new RecordNotFoundException (Race.class, raceID, caller);
 
@@ -472,15 +623,25 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all buildings in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<BuildingSvr> getBuildings ()
+	{
+		return (List<BuildingSvr>) (List<?>) getBuilding ();
+	}
+	
+	/**
 	 * @param buildingID Building ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Building object
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Override
-	public final Building findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
+	public final BuildingSvr findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
 	{
-		final Building found = buildingsMap.get (buildingID);
+		final BuildingSvr found = buildingsMap.get (buildingID);
 		if (found == null)
 			throw new RecordNotFoundException (Building.class, buildingID, caller);
 
@@ -488,21 +649,41 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all spells in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<SpellSvr> getSpells ()
+	{
+		return (List<SpellSvr>) (List<?>) getSpell ();
+	}
+	
+	/**
 	 * @param spellID Spell ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Spell object
 	 * @throws RecordNotFoundException If the spellID doesn't exist
 	 */
 	@Override
-	public final Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException
+	public final SpellSvr findSpell (final String spellID, final String caller) throws RecordNotFoundException
 	{
-		final Spell found = spellsMap.get (spellID);
+		final SpellSvr found = spellsMap.get (spellID);
 		if (found == null)
 			throw new RecordNotFoundException (Spell.class, spellID, caller);
 
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all CAEs in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<CombatAreaEffectSvr> getCombatAreaEffects ()
+	{
+		return (List<CombatAreaEffectSvr>) (List<?>) getCombatAreaEffect ();
+	}
+	
 	/**
 	 * @param combatAreaEffectID Combat area effect ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -520,21 +701,41 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all combat tile types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<CombatTileTypeSvr> getCombatTileTypes ()
+	{
+		return (List<CombatTileTypeSvr>) (List<?>) getCombatTileType ();
+	}
+	
+	/**
 	 * @param combatTileTypeID Combat tile type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return CombatTileType object
 	 * @throws RecordNotFoundException If the combat tile type ID doesn't exist
 	 */
 	@Override
-	public final CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException
+	public final CombatTileTypeSvr findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException
 	{
-		final CombatTileType found = combatTileTypesMap.get (combatTileTypeID);
+		final CombatTileTypeSvr found = combatTileTypesMap.get (combatTileTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (CombatTileType.class, combatTileTypeID, caller);
 
 		return found;
 	}
 
+	/**
+	 * @return Complete list of all combat tile borders in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<CombatTileBorderSvr> getCombatTileBorders ()
+	{
+		return (List<CombatTileBorderSvr>) (List<?>) getCombatTileBorder ();
+	}
+	
 	/**
 	 * @param combatTileBorderID Combat tile border ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -549,5 +750,105 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			throw new RecordNotFoundException (CombatTileBorder.class, combatTileBorderID, caller);
 
 		return found;
+	}
+
+	/**
+	 * @return Complete list of all unit attributes in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitAttributeSvr> getUnitAttributes ()
+	{
+		return (List<UnitAttributeSvr>) (List<?>) getUnitAttribute ();
+	}
+	
+	/**
+	 * @return Complete list of all movement rate rules in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<MovementRateRuleSvr> getMovementRateRules ()
+	{
+		return (List<MovementRateRuleSvr>) (List<?>) getMovementRateRule ();
+	}
+	
+	/**
+	 * @return Complete list of all combat map elements in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<CombatMapElementSvr> getCombatMapElements ()
+	{
+		return (List<CombatMapElementSvr>) (List<?>) getCombatMapElement ();
+	}
+
+	/**
+	 * @return Complete list of all pre-defined map sizes
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<MapSizeSvr> getMapSizes ()
+	{
+		return (List<MapSizeSvr>) (List<?>) getMapSize ();
+	}
+	
+	/**
+	 * @return Complete list of all pre-defined land proportions
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<LandProportionSvr> getLandProportions ()
+	{
+		return (List<LandProportionSvr>) (List<?>) getLandProportion ();
+	}
+
+	/**
+	 * @return Complete list of all pre-defined node strengths
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<NodeStrengthSvr> getNodeStrengths ()
+	{
+		return (List<NodeStrengthSvr>) (List<?>) getNodeStrength ();
+	}
+	
+	/**
+	 * @return Complete list of all pre-defined difficulty levels
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<DifficultyLevelSvr> getDifficultyLevels ()
+	{
+		return (List<DifficultyLevelSvr>) (List<?>) getDifficultyLevel ();
+	}
+
+	/**
+	 * @return Complete list of all pre-defined fog of war settings
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<FogOfWarSettingSvr> getFogOfWarSettings ()
+	{
+		return (List<FogOfWarSettingSvr>) (List<?>) getFogOfWarSetting ();
+	}
+	
+	/**
+	 * @return Complete list of all pre-defined unit settings
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitSettingSvr> getUnitSettings ()
+	{
+		return (List<UnitSettingSvr>) (List<?>) getUnitSetting ();
+	}
+	
+	/**
+	 * @return Complete list of all pre-defined spell settings
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<SpellSettingSvr> getSpellSettings ()
+	{
+		return (List<SpellSettingSvr>) (List<?>) getSpellSetting ();
 	}
 }

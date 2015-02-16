@@ -241,7 +241,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			// There's space on the form for up to 6 unit attributes
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
 			{
-				final String unitAttributeID = getClient ().getClientDB ().getUnitAttribute ().get (attrNo-1).getUnitAttributeID ();
+				final String unitAttributeID = getClient ().getClientDB ().getUnitAttributes ().get (attrNo-1).getUnitAttributeID ();
 				final int attrValue = getUnitUtils ().getModifiedAttributeValue (unit, unitAttributeID, UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());

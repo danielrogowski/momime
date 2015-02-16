@@ -705,7 +705,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		
 		// Get a list of all spells we know, and all spells we can research now; grouped by section
 		final Map<SpellBookSectionID, List<Spell>> sections = new HashMap<SpellBookSectionID, List<Spell>> ();
-		for (final Spell spell : getClient ().getClientDB ().getSpell ())
+		for (final Spell spell : getClient ().getClientDB ().getSpells ())
 		{
 			final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ());
 			final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);

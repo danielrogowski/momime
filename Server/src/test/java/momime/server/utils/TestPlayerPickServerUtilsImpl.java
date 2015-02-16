@@ -24,15 +24,15 @@ import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.ai.SpellAI;
+import momime.server.database.PickSvr;
+import momime.server.database.PickTypeCountContainerSvr;
+import momime.server.database.PickTypeGrantsSpellsSvr;
+import momime.server.database.PickTypeSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Pick;
-import momime.server.database.v0_9_5.PickType;
-import momime.server.database.v0_9_5.PickTypeCountContainer;
-import momime.server.database.v0_9_5.PickTypeGrantsSpells;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.Wizard;
+import momime.server.database.SpellSvr;
+import momime.server.database.WizardSvr;
 
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		for (int n = 1; n <= 5; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickSvr pick = new PickSvr ();
 			pick.setPickID ("MB0" + n);
 			pick.setPickInitialSkill (2);
 			when (db.findPick ("MB0" + n, "getTotalInitialSkill")).thenReturn (pick);
@@ -64,7 +64,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 2; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickSvr pick = new PickSvr ();
 			pick.setPickID ("RT0" + n);
 			if (n == 2)
 				pick.setPickInitialSkill (10);
@@ -212,7 +212,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickSvr pick = new PickSvr ();
 			pick.setPickID ("MB0" + n);
 			pick.setPickCost (n);
 			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
@@ -259,7 +259,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickSvr pick = new PickSvr ();
 			pick.setPickID ("MB0" + n);
 			pick.setPickCost (n);
 			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
@@ -308,7 +308,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickSvr pick = new PickSvr ();
 			pick.setPickID ("MB0" + n);
 			pick.setPickCost (n);
 			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
@@ -352,7 +352,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickSvr pick = new PickSvr ();
 			pick.setPickID ("MB0" + n);
 			pick.setPickCost (n);
 			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
@@ -401,7 +401,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		for (int n = 1; n <= 3; n++)
 		{
-			final Pick pick = new Pick ();
+			final PickSvr pick = new PickSvr ();
 			pick.setPickID ("MB0" + n);
 			pick.setPickCost (n);
 			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
@@ -447,10 +447,10 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testCountFreeSpellsLeftToChoose_None () throws RecordNotFoundException
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
@@ -488,26 +488,26 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testCountFreeSpellsLeftToChoose () throws RecordNotFoundException
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer elevenPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr elevenPicks = new PickTypeCountContainerSvr ();
 		elevenPicks.setCount (11);
 		pickType.getPickTypeCount ().add (elevenPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (10);
 		elevenPicks.getSpellCount ().add (common);
 
-		final PickTypeGrantsSpells uncommon = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr uncommon = new PickTypeGrantsSpellsSvr ();
 		uncommon.setSpellRank ("SR02");
 		uncommon.setSpellsFreeAtStart (2);
 		elevenPicks.getSpellCount ().add (uncommon);
 
-		final PickTypeGrantsSpells rare = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr rare = new PickTypeGrantsSpellsSvr ();
 		rare.setSpellRank ("SR03");
 		rare.setSpellsFreeAtStart (1);
 		elevenPicks.getSpellCount ().add (rare);
@@ -567,19 +567,19 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_Human () throws Exception
 	{
 		// Mock the two types of pick and pick type details
-		final Pick pick1 = new Pick ();
+		final PickSvr pick1 = new PickSvr ();
 		pick1.setPickType ("X");
 
-		final Pick pick2 = new Pick ();
+		final PickSvr pick2 = new PickSvr ();
 		pick2.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -642,19 +642,19 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_AllChosen () throws Exception
 	{
 		// Mock the two types of pick and pick type details
-		final Pick pick1 = new Pick ();
+		final PickSvr pick1 = new PickSvr ();
 		pick1.setPickType ("X");
 
-		final Pick pick2 = new Pick ();
+		final PickSvr pick2 = new PickSvr ();
 		pick2.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -715,19 +715,19 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_AI () throws Exception
 	{
 		// Mock the two types of pick and pick type details
-		final Pick pick1 = new Pick ();
+		final PickSvr pick1 = new PickSvr ();
 		pick1.setPickType ("X");
 
-		final Pick pick2 = new Pick ();
+		final PickSvr pick2 = new PickSvr ();
 		pick2.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -802,16 +802,16 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateInitialSpellSelection () throws Exception
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -822,7 +822,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final Spell spell = new Spell ();
+			final SpellSvr spell = new SpellSvr ();
 			spell.setSpellRealm ("MB01");
 			spell.setSpellRank ("SR01");
 			
@@ -868,16 +868,16 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateInitialSpellSelection_NoBooks () throws Exception
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -888,7 +888,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final Spell spell = new Spell ();
+			final SpellSvr spell = new SpellSvr ();
 			spell.setSpellRealm ("MB01");
 			spell.setSpellRank ("SR01");
 			
@@ -934,10 +934,10 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateInitialSpellSelection_NotEnoughBooks () throws Exception
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();		// <--- Didn't set 6 picks to actually give any free spells
+		final PickTypeSvr pickType = new PickTypeSvr ();		// <--- Didn't set 6 picks to actually give any free spells
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
@@ -945,7 +945,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final Spell spell = new Spell ();
+			final SpellSvr spell = new SpellSvr ();
 			spell.setSpellRealm ("MB01");
 			spell.setSpellRank ("SR01");
 			
@@ -991,16 +991,16 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateInitialSpellSelection_AlreadyChosen () throws Exception
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -1011,7 +1011,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final Spell spell = new Spell ();
+			final SpellSvr spell = new SpellSvr ();
 			spell.setSpellRealm ("MB01");
 			spell.setSpellRank ("SR01");
 			
@@ -1062,16 +1062,16 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateInitialSpellSelection_TooMany () throws Exception
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (2);		// <---
 		sixPicks.getSpellCount ().add (common);
@@ -1082,7 +1082,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final Spell spell = new Spell ();
+			final SpellSvr spell = new SpellSvr ();
 			spell.setSpellRealm ("MB01");
 			spell.setSpellRank ("SR01");
 			
@@ -1128,16 +1128,16 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateInitialSpellSelection_WrongRank () throws Exception
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -1148,7 +1148,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final Spell spell = new Spell ();
+			final SpellSvr spell = new SpellSvr ();
 			spell.setSpellRealm ("MB01");
 			spell.setSpellRank ((n == 3) ? "SR02" : "SR01");		// <---
 			
@@ -1194,16 +1194,16 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateInitialSpellSelection_WrongRealm () throws Exception
 	{
 		// Mock the pick and pick type details
-		final Pick pick = new Pick ();
+		final PickSvr pick = new PickSvr ();
 		pick.setPickType ("X");
 		
-		final PickType pickType = new PickType ();
+		final PickTypeSvr pickType = new PickTypeSvr ();
 		
-		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		final PickTypeCountContainerSvr sixPicks = new PickTypeCountContainerSvr ();
 		sixPicks.setCount (6);
 		pickType.getPickTypeCount ().add (sixPicks);
 		
-		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		final PickTypeGrantsSpellsSvr common = new PickTypeGrantsSpellsSvr ();
 		common.setSpellRank ("SR01");
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
@@ -1214,7 +1214,7 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final Spell spell = new Spell ();
+			final SpellSvr spell = new SpellSvr ();
 			spell.setSpellRealm ((n == 3) ? "MB02" : "MB01");		// <---
 			spell.setSpellRank ("SR01");
 			
@@ -1285,11 +1285,11 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateRaceChoice_MyrranWithRetort () throws Exception
 	{
 		// Mock race details
-		final Race race = new Race ();
+		final RaceSvr race = new RaceSvr ();
 		race.setNativePlane (1);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1325,11 +1325,11 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateRaceChoice_MyrranWithoutRetort () throws Exception
 	{
 		// Mock race details
-		final Race race = new Race ();
+		final RaceSvr race = new RaceSvr ();
 		race.setNativePlane (1);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1364,11 +1364,11 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateRaceChoice_ArcanusWithRetort () throws Exception
 	{
 		// Mock race details
-		final Race race = new Race ();
+		final RaceSvr race = new RaceSvr ();
 		race.setNativePlane (0);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1404,11 +1404,11 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testValidateRaceChoice_ArcanusWithoutRetort () throws Exception
 	{
 		// Mock race details
-		final Race race = new Race ();
+		final RaceSvr race = new RaceSvr ();
 		race.setNativePlane (0);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1639,16 +1639,16 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testListWizardsForAIPlayers () throws Exception
 	{
 		// Mock 9 wizards in DB
-		final List<Wizard> availableWizards = new ArrayList<Wizard> ();
+		final List<WizardSvr> availableWizards = new ArrayList<WizardSvr> ();
 		for (int n = 1; n <= 9; n++)
 		{
-			final Wizard wizard = new Wizard ();
+			final WizardSvr wizard = new WizardSvr ();
 			wizard.setWizardID ("WZ0" + n);
 			availableWizards.add (wizard);
 		}
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getWizard ()).thenReturn (availableWizards);
+		when (db.getWizards ()).thenReturn (availableWizards);
 
 		// Create human players using 2 wizards
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1669,7 +1669,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Run test
-		final List<Wizard> wizardIDs = utils.listWizardsForAIPlayers (players, db);
+		final List<WizardSvr> wizardIDs = utils.listWizardsForAIPlayers (players, db);
 		assertEquals (7, wizardIDs.size ());
 		assertEquals ("WZ01", wizardIDs.get (0).getWizardID ());
 		assertEquals ("WZ03", wizardIDs.get (1).getWizardID ());
@@ -1688,17 +1688,17 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testStartingPlaneForWizard_Arcanus () throws Exception
 	{
 		// Set up pick details
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 
 		// Picks we have
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
@@ -1720,17 +1720,17 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testStartingPlaneForWizard_Myrran () throws Exception
 	{
 		// Set up pick details
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
+		final PlaneSvr arcanus = new PlaneSvr ();
+		final PlaneSvr myrror = new PlaneSvr ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		myrror.setPlaneNumber (1);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
+		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getPlane ()).thenReturn (planes);
+		when (db.getPlanes ()).thenReturn (planes);
 
 		// Picks we have
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
@@ -1754,17 +1754,17 @@ public final class TestPlayerPickServerUtilsImpl
 	public final void testChooseRandomRaceForPlane () throws Exception
 	{
 		// Mock some races, 6 on arcanus, 3 on myrror
-		final List<Race> races = new ArrayList<Race> ();
+		final List<RaceSvr> races = new ArrayList<RaceSvr> ();
 		for (int n = 1; n <= 9; n++)
 		{
-			final Race race = new Race ();
+			final RaceSvr race = new RaceSvr ();
 			race.setRaceID ("RC0" + n);
 			race.setNativePlane ((n <= 6) ? 0 : 1);
 			races.add (race);
 		}
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getRace ()).thenReturn (races);
+		when (db.getRaces ()).thenReturn (races);
 			
 		// Fix results
 		final RandomUtils random = mock (RandomUtils.class);

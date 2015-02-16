@@ -20,15 +20,15 @@ import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.ai.SpellAI;
+import momime.server.database.PickSvr;
+import momime.server.database.PickTypeCountContainerSvr;
+import momime.server.database.PickTypeGrantsSpellsSvr;
+import momime.server.database.PickTypeSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Pick;
-import momime.server.database.v0_9_5.PickType;
-import momime.server.database.v0_9_5.PickTypeCountContainer;
-import momime.server.database.v0_9_5.PickTypeGrantsSpells;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.Race;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.Wizard;
+import momime.server.database.SpellSvr;
+import momime.server.database.WizardSvr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,7 +70,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		int total = 0;
 		for (final PlayerPick thisPick : picks)
 		{
-			final Pick thisPickRecord = db.findPick (thisPick.getPickID (), "getTotalInitialSkill");
+			final PickSvr thisPickRecord = db.findPick (thisPick.getPickID (), "getTotalInitialSkill");
 			if (thisPickRecord.getPickInitialSkill () != null)
 				total = total + (thisPickRecord.getPickInitialSkill () * thisPick.getQuantity ());
 		}
@@ -164,7 +164,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			{
 				for (final WizardPick thisPick : picks)
 				{
-					final Pick pick = db.findPick (thisPick.getPick (), "validateCustomPicks");
+					final PickSvr pick = db.findPick (thisPick.getPick (), "validateCustomPicks");
 					totalPickCost = totalPickCost + (thisPick.getQuantity () * pick.getPickCost ());
 				}
 
@@ -200,14 +200,14 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// What type of pick is it - a book or retort?
-		final PickType pickType = db.findPickType (db.findPick (pick.getPickID (), "countFreeSpellsLeftToChoose").getPickType (), "countFreeSpellsLeftToChoose");
+		final PickTypeSvr pickType = db.findPickType (db.findPick (pick.getPickID (), "countFreeSpellsLeftToChoose").getPickType (), "countFreeSpellsLeftToChoose");
 
 		// Find the entry for how many of this number book we have
-		PickTypeCountContainer pickTypeCount = null;
-		final Iterator<PickTypeCountContainer> pickTypeCountIterator = pickType.getPickTypeCount ().iterator ();
+		PickTypeCountContainerSvr pickTypeCount = null;
+		final Iterator<PickTypeCountContainerSvr> pickTypeCountIterator = pickType.getPickTypeCounts ().iterator ();
 		while ((pickTypeCount == null) && (pickTypeCountIterator.hasNext ()))
 		{
-			final PickTypeCountContainer thisPickTypeCount = pickTypeCountIterator.next ();
+			final PickTypeCountContainerSvr thisPickTypeCount = pickTypeCountIterator.next ();
 			if (thisPickTypeCount.getCount () == pick.getQuantity ())
 				pickTypeCount = thisPickTypeCount;
 		}
@@ -222,7 +222,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			msg = new ChooseInitialSpellsNowMessage ();
 			msg.setMagicRealmID (pick.getPickID ());
 
-			for (final PickTypeGrantsSpells thisSpellRank : pickTypeCount.getSpellCount ())
+			for (final PickTypeGrantsSpellsSvr thisSpellRank : pickTypeCount.getSpellCounts ())
 			{
 				final int freeSpellsAlreadySelected = getSpellUtils ().getSpellsForRealmRankStatus (priv.getSpellResearchStatus (),
 					pick.getPickID (), thisSpellRank.getSpellRank (), SpellResearchStatusID.AVAILABLE, db).size ();
@@ -348,7 +348,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				final Iterator<String> spellsIterator = spellIDs.iterator ();
 				while ((msg == null) && (spellsIterator.hasNext ()))
 				{
-					final Spell thisSpell = db.findSpell (spellsIterator.next (), "validateInitialSpellSelection");
+					final SpellSvr thisSpell = db.findSpell (spellsIterator.next (), "validateInitialSpellSelection");
 					if (!pickID.equals (thisSpell.getSpellRealm ()))
 						msg = "You are trying to choose free spells that don't match the magic realm specified";
 
@@ -391,7 +391,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
-		Race race = null;
+		RaceSvr race = null;
 		try
 		{
 			race = db.findRace (raceID, "validateRaceChoice");
@@ -473,13 +473,13 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
 	@Override
-	public final List<Wizard> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+	public final List<WizardSvr> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db)
 	{
 		log.trace ("Entering listWizardsForAIPlayers: " + players.size ());
 
 		// First get a list of all the available wizards
-		final List<Wizard> availableWizards = new ArrayList<Wizard> ();
-		for (final Wizard thisWizard : db.getWizard ())
+		final List<WizardSvr> availableWizards = new ArrayList<WizardSvr> ();
+		for (final WizardSvr thisWizard : db.getWizards ())
 			if ((!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
 				(findPlayerUsingStandardPhoto (players, thisWizard.getWizardID ()) == null))
@@ -505,7 +505,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		int bestMatchPrerequisiteCount = 0;
 
 		// Check each plane
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 		{
 			// Meet whatever pre-requisites are defined?
 			if ((plane.getPrerequisitePickToChooseNativeRace () == null) || (getPlayerPickUtils ().getQuantityOfPick (picks, plane.getPrerequisitePickToChooseNativeRace ()) > 0))
@@ -542,7 +542,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 		final List<String> possibleRaces = new ArrayList<String> ();
 
-		for (final Race thisRace : db.getRace ())
+		for (final RaceSvr thisRace : db.getRaces ())
 			if (thisRace.getNativePlane () == planeNumber)
 				possibleRaces.add (thisRace.getRaceID ());
 

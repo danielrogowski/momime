@@ -708,7 +708,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			((component == UnitAttributeComponent.HERO_SKILLS) || (component == UnitAttributeComponent.ALL)))
 			
 			// Read down all the skills defined in the database looking for skills that grant a bonus to the attribute we're calculating
-			for (final UnitSkill skillDef : db.getUnitSkill ())
+			for (final UnitSkill skillDef : db.getUnitSkills ())
 				if (unitAttributeID.equals (skillDef.getAddsToAttributeID ()))
 				{
 					// Now see if the unit has that skill

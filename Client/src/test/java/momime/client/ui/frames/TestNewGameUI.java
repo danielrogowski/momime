@@ -254,7 +254,7 @@ public final class TestNewGameUI
 			wizard.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
 			wizards.add (wizard);
 		}
-		when (db.getWizard ()).thenReturn (wizards);
+		when (db.getWizards ()).thenReturn (wizards);
 		
 		for (int n = 1; n <= 14; n++)
 		{
@@ -320,7 +320,7 @@ public final class TestNewGameUI
 			}
 		}
 		
-		doReturn (picks).when (db).getPick ();
+		doReturn (picks).when (db).getPicks ();
 		
 		// Don't allow picking both life + death books
 		for (int n = 1; n <= 2; n++)
@@ -351,7 +351,7 @@ public final class TestNewGameUI
 				when (lang.findSpell (spell.getSpellID ())).thenReturn (spellLang);
 			}
 		
-		doReturn (spells).when (db).getSpell ();
+		doReturn (spells).when (db).getSpells ();
 		
 		// RACE SELECTION PANEL
 		when (lang.findCategoryEntry ("frmChooseRace", "Title")).thenReturn ("Choose Race");
@@ -387,7 +387,7 @@ public final class TestNewGameUI
 			when (lang.findPlane (n)).thenReturn (planeLang);
 		}
 		
-		doReturn (planes).when (db).getPlane ();
+		doReturn (planes).when (db).getPlanes ();
 		
 		final List<Race> races = new ArrayList<Race> ();
 		for (int plane = 0; plane < 2; plane++)
@@ -403,7 +403,7 @@ public final class TestNewGameUI
 				when (lang.findRace (race.getRaceID ())).thenReturn (raceLang);
 			}
 		
-		doReturn (races).when (db).getRace ();
+		doReturn (races).when (db).getRaces ();
 
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Title")).thenReturn ("Waiting for other Players to Join");

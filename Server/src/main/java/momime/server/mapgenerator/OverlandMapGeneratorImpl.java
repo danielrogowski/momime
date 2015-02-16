@@ -24,14 +24,14 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.server.database.MapFeatureMagicRealmSvr;
+import momime.server.database.MapFeatureSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.MapFeature;
-import momime.server.database.v0_9_5.MapFeatureMagicRealm;
-import momime.server.database.v0_9_5.TileType;
-import momime.server.database.v0_9_5.TileTypeAreaEffect;
-import momime.server.database.v0_9_5.TileTypeFeatureChance;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.TileTypeAreaEffectSvr;
+import momime.server.database.TileTypeFeatureChanceSvr;
+import momime.server.database.TileTypeSvr;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -468,7 +468,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		setAllToWater ();
 
 		final double landTileCountTimes100 = sd.getMapSize ().getWidth () * sd.getMapSize ().getHeight () * sd.getLandProportion ().getPercentageOfMapIsLand ();
-		for (int plane = 0; plane < db.getPlane ().size (); plane++)
+		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
 		{
 			// Generate height-based scenery
 			final HeightMapGenerator heightMap = new HeightMapGenerator (sd.getMapSize (), sd.getMapSize ().getZoneWidth (), sd.getMapSize ().getZoneHeight (),
@@ -497,7 +497,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		// Special rules for Towes of Wizardy
 		placeTowersOfWizardry ();
 
-		for (int plane = 0; plane < db.getPlane ().size (); plane++)
+		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
 		{
 			// Generate shore tiles and extend them into rivers
 			final int [] [] shoreTileNumbers = determineShoreTileNumbers (ServerDatabaseValues.TILE_TYPE_OCEAN, ServerDatabaseValues.TILE_TYPE_SHORE, plane);
@@ -1210,7 +1210,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 					// The cache lists the chances of getting each type of feature on this tile type.
 					// Tiles that can never get any features, like ocean, have nothing listed.
-					final List<TileTypeFeatureChance> featureChances = db.findTileType (terrainData.getTileTypeID (), "placeTerrainFeatures").getTileTypeFeatureChance ();
+					final List<TileTypeFeatureChanceSvr> featureChances = db.findTileType (terrainData.getTileTypeID (), "placeTerrainFeatures").getTileTypeFeatureChances ();
 					if (featureChances.size () > 0)
 					{					
 						// Make sure we check there are no features already placed, since we will have towers of wizardry at this stage
@@ -1218,7 +1218,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						{
 							// Total up all the chances listed for this type of tile
 							int totalChance = 0;
-							for (final TileTypeFeatureChance thisFeature : featureChances)
+							for (final TileTypeFeatureChanceSvr thisFeature : featureChances)
 								if (thisFeature.getPlaneNumber () == plane.getPlaneNumber ())
 									totalChance = totalChance + thisFeature.getFeatureChance ();
 	
@@ -1232,7 +1232,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 								String feature = null;
 								while ((feature == null) && (featureNo < featureChances.size ()))
 								{
-									final TileTypeFeatureChance thisFeature = featureChances.get (featureNo);
+									final TileTypeFeatureChanceSvr thisFeature = featureChances.get (featureNo);
 									if (thisFeature.getPlaneNumber () == plane.getPlaneNumber ())
 									{
 										if (totalChance < thisFeature.getFeatureChance ())
@@ -1470,7 +1470,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 		// List all candidates
 		final List<String> nodeTileTypeIDs = new ArrayList<String> ();
-		for (final TileType thisTileType : db.getTileType ())
+		for (final TileTypeSvr thisTileType : db.getTileTypes ())
 			if (thisTileType.getMagicRealmID () != null)
 				nodeTileTypeIDs.add (thisTileType.getTileTypeID ());
 
@@ -1493,7 +1493,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 		// List all candidates
 		final List<String> lairMapFeatureIDs = new ArrayList<String> ();
-		for (final MapFeature thisFeature : db.getMapFeature ())
+		for (final MapFeatureSvr thisFeature : db.getMapFeatures ())
 			if ((thisFeature.getMapFeatureMagicRealm ().size () > 0) &&
 				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY)) &&
 				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)))
@@ -1578,12 +1578,12 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
 					final ServerGridCell thisCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
-					final TileType thisTileType = db.findTileType (thisCell.getTerrainData ().getTileTypeID (), "generateInitialCombatAreaEffects");
+					final TileTypeSvr thisTileType = db.findTileType (thisCell.getTerrainData ().getTileTypeID (), "generateInitialCombatAreaEffects");
 
 					// Check for area effects from the terrain, e.g. node dispelling effect
 					if (thisTileType.getTileTypeAreaEffect ().size () > 0)
 					{
-						for (final TileTypeAreaEffect thisEffect : thisTileType.getTileTypeAreaEffect ())
+						for (final TileTypeAreaEffectSvr thisEffect : thisTileType.getTileTypeAreaEffects ())
 							getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients
 								(gsk, thisEffect.getCombatAreaEffectID (), null, null, new MapCoordinates3DEx (x, y, plane), null, db, sd);
 					}
@@ -1592,9 +1592,9 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					else if (thisCell.getAuraFromNode () != null)
 					{
 						final ServerGridCell nodeCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (thisCell.getAuraFromNode ().getZ ()).getRow ().get (thisCell.getAuraFromNode ().getY ()).getCell ().get (thisCell.getAuraFromNode ().getX ());
-						final TileType nodeTileType = db.findTileType (nodeCell.getTerrainData ().getTileTypeID (), "generateInitialCombatAreaEffects");
+						final TileTypeSvr nodeTileType = db.findTileType (nodeCell.getTerrainData ().getTileTypeID (), "generateInitialCombatAreaEffects");
 
-						for (final TileTypeAreaEffect thisEffect : nodeTileType.getTileTypeAreaEffect ())
+						for (final TileTypeAreaEffectSvr thisEffect : nodeTileType.getTileTypeAreaEffects ())
 
 							// It must specify that this effect extends out across the node aura
 							if ((thisEffect.isExtendAcrossNodeAura () != null) && (thisEffect.isExtendAcrossNodeAura ()))
@@ -1611,11 +1611,11 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * @param monsterBudget Maximum cost of monster
 	 * @return Most expensive monster of the requested type, or null if the cheapest monster of this type is still more expensive than our budget
 	 */
-	final Unit findMostExpensiveMonster (final String magicRealmLifeformTypeID, final int monsterBudget)
+	final UnitSvr findMostExpensiveMonster (final String magicRealmLifeformTypeID, final int monsterBudget)
 	{
-		Unit bestMatch = null;
+		UnitSvr bestMatch = null;
 
-		for (final Unit thisUnit : db.getUnit ())
+		for (final UnitSvr thisUnit : db.getUnits ())
 			if (magicRealmLifeformTypeID.equals (thisUnit.getUnitMagicRealm ()))
 				if ((thisUnit.getProductionCost () != null) && (thisUnit.getProductionCost () <= monsterBudget) && (thisUnit.getProductionCost () > 0) &&
 					((bestMatch == null) || (thisUnit.getProductionCost () > bestMatch.getProductionCost ())))
@@ -1653,7 +1653,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 		// Deal with main monsters
 		final int mainMonsterBudget = monstersStrength / (getRandomUtils ().nextInt (4) + 1);
-		final Unit mainMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, mainMonsterBudget);
+		final UnitSvr mainMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, mainMonsterBudget);
 
 		int mainMonsterCount = 0;
 		if (mainMonster != null)
@@ -1672,7 +1672,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 		// Deal with secondary monsters
 		final int secondaryMonsterBudget = monstersStrength / (getRandomUtils ().nextInt (sd.getUnitSetting ().getUnitsPerMapCell () + 1 - mainMonsterCount) + 1);
-		final Unit secondaryMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, secondaryMonsterBudget);
+		final UnitSvr secondaryMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, secondaryMonsterBudget);
 
 		if (secondaryMonster != null)
 		{
@@ -1705,7 +1705,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		log.trace ("Entering fillNodesLairsAndTowersWithMonsters: Player ID " + monsterPlayer.getPlayerDescription ().getPlayerID ());
 
 		// Validate the right planes are listed in the session description
-		if (sd.getDifficultyLevel ().getDifficultyLevelPlane ().size () != db.getPlane ().size ())
+		if (sd.getDifficultyLevel ().getDifficultyLevelPlane ().size () != db.getPlanes ().size ())
 			throw new MomException ("fillNodesLairsAndTowersWithMonsters: Incorrect number of Difficulty Level Planes listed in session description");
 
 		{
@@ -1722,7 +1722,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		}
 
 		// Validate the right difficulty level - node strengths are listed in the session description
-		if (sd.getDifficultyLevelNodeStrength ().size () != db.getPlane ().size ())
+		if (sd.getDifficultyLevelNodeStrength ().size () != db.getPlanes ().size ())
 			throw new MomException ("fillNodesLairsAndTowersWithMonsters: Incorrect number of Difficulty Level Node Strengths listed in session description");
 
 		{
@@ -1761,11 +1761,11 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					if ((thisCell.getTerrainData ().getMapFeatureID () != null) &&
 						((!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (thisCell.getTerrainData ())) || (plane.getPlaneNumber () == 0)))
 					{
-						final MapFeature feature = db.findMapFeature (thisCell.getTerrainData ().getMapFeatureID (), "fillNodesLairsAndTowersWithMonsters");
+						final MapFeatureSvr feature = db.findMapFeature (thisCell.getTerrainData ().getMapFeatureID (), "fillNodesLairsAndTowersWithMonsters");
 
 						// Total up all the chances listed for this type of tile
 						int totalChance = 0;
-						for (final MapFeatureMagicRealm thisMagicRealm : feature.getMapFeatureMagicRealm ())
+						for (final MapFeatureMagicRealmSvr thisMagicRealm : feature.getMapFeatureMagicRealms ())
 							totalChance = totalChance + thisMagicRealm.getFeatureChance ();
 
 						if (totalChance > 0)
@@ -1774,12 +1774,12 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 							totalChance = getRandomUtils ().nextInt (totalChance);
 
 							// Get the feature ID of the feature we picked
-							final Iterator<MapFeatureMagicRealm> magicRealmIterator = feature.getMapFeatureMagicRealm ().iterator ();
+							final Iterator<MapFeatureMagicRealmSvr> magicRealmIterator = feature.getMapFeatureMagicRealms ().iterator ();
 							String magicRealmID = null;
 
 							while ((magicRealmID == null) && (magicRealmIterator.hasNext ()))
 							{
-								final MapFeatureMagicRealm thisMagicRealm = magicRealmIterator.next ();
+								final MapFeatureMagicRealmSvr thisMagicRealm = magicRealmIterator.next ();
 
 								if (totalChance < thisMagicRealm.getFeatureChance ())
 									magicRealmID = thisMagicRealm.getMagicRealm ();
@@ -1813,7 +1813,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					// Check tile type - this covers nodes
 					else
 					{
-						final TileType tileType = db.findTileType (thisCell.getTerrainData ().getTileTypeID (), "fillNodesLairsAndTowersWithMonsters");
+						final TileTypeSvr tileType = db.findTileType (thisCell.getTerrainData ().getTileTypeID (), "fillNodesLairsAndTowersWithMonsters");
 						if (tileType.getMagicRealmID () != null)
 							fillSingleLairOrTowerWithMonsters (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()), tileType.getMagicRealmID (),
 								nodeStrength.getMonstersMinimum (), nodeStrength.getMonstersMaximum (),

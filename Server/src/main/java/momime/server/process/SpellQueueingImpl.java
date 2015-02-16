@@ -26,15 +26,15 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.SpellCastType;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
 
@@ -119,7 +119,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		
 		// Find the spell in the player's search list
-		final Spell spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
+		final SpellSvr spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 		
 		// Do validation checks
@@ -345,7 +345,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		while ((priv.getQueuedSpellID ().size () > 0) && (trans.getOverlandCastingSkillRemainingThisTurn () > 0) && (manaRemaining > 0))
 		{
 			// How much to put towards this spell?
-			final Spell spell = db.findSpell (priv.getQueuedSpellID ().get (0), "progressOverlandCasting");
+			final SpellSvr spell = db.findSpell (priv.getQueuedSpellID ().get (0), "progressOverlandCasting");
 			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), sd.getSpellSetting (), db);
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());
 			final int manaAmount = Math.min (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (), manaRemaining), leftToCast);

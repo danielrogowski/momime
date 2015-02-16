@@ -21,8 +21,8 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.v0_9_5.MapFeature;
-import momime.server.database.v0_9_5.TileType;
+import momime.server.database.MapFeatureSvr;
+import momime.server.database.TileTypeSvr;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
@@ -101,8 +101,8 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		// Get map cell
 		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(getMapLocation ().getZ ()).getRow ().get (getMapLocation ().getY ()).getCell ().get (getMapLocation ().getX ());
-		final TileType tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "SpecialOrderButtonMessageImpl");
-		final MapFeature mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
+		final TileTypeSvr tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "SpecialOrderButtonMessageImpl");
+		final MapFeatureSvr mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
 			(tc.getTerrainData ().getMapFeatureID (), "SpecialOrderButtonMessageImpl");
 		
 		// Process through all the units

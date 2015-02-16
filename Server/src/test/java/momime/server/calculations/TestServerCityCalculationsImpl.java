@@ -26,11 +26,11 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.ServerTestData;
+import momime.server.database.BuildingSvr;
+import momime.server.database.CitySizeSvr;
+import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.CitySize;
-import momime.server.database.v0_9_5.Race;
 
 import org.junit.Test;
 
@@ -112,26 +112,26 @@ public final class TestServerCityCalculationsImpl
 	public final void testCalculateCitySizeIDAndMinimumFarmers () throws Exception
 	{
 		// Mock database
-		final CitySize smallCity = new CitySize ();
+		final CitySizeSvr smallCity = new CitySizeSvr ();
 		smallCity.setCitySizeID ("CS01");
 		smallCity.setCitySizeMaximum (3999);
 		
-		final CitySize mediumCity = new CitySize ();
+		final CitySizeSvr mediumCity = new CitySizeSvr ();
 		mediumCity.setCitySizeID ("CS02");
 		mediumCity.setCitySizeMinimum (4000);
 		mediumCity.setCitySizeMaximum (6999);
 		
-		final CitySize largeCity = new CitySize ();
+		final CitySizeSvr largeCity = new CitySizeSvr ();
 		largeCity.setCitySizeID ("CS03");
 		largeCity.setCitySizeMinimum (7000);
 		
-		final List<CitySize> citySizes = new ArrayList<CitySize> ();
+		final List<CitySizeSvr> citySizes = new ArrayList<CitySizeSvr> ();
 		citySizes.add (smallCity);
 		citySizes.add (mediumCity);
 		citySizes.add (largeCity);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getCitySize ()).thenReturn (citySizes);
+		when (db.getCitySizes ()).thenReturn (citySizes);
 		
 		final RacePopulationTaskProduction highMenRations = new RacePopulationTaskProduction ();
 		highMenRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
@@ -141,7 +141,7 @@ public final class TestServerCityCalculationsImpl
 		highMenFarmers.getRacePopulationTaskProduction ().add (highMenRations);
 		highMenFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final Race highMen = new Race ();
+		final RaceSvr highMen = new RaceSvr ();
 		highMen.getRacePopulationTask ().add (highMenFarmers);
 		when (db.findRace ("RC05", "calculateDoubleFarmingRate")).thenReturn (highMen);
 
@@ -153,7 +153,7 @@ public final class TestServerCityCalculationsImpl
 		halflingFarmers.getRacePopulationTaskProduction ().add (halflingRations);
 		halflingFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final Race halfling = new Race ();
+		final RaceSvr halfling = new RaceSvr ();
 		halfling.getRacePopulationTask ().add (halflingFarmers);
 		when (db.findRace ("RC03", "calculateDoubleFarmingRate")).thenReturn (halfling);
 
@@ -383,7 +383,7 @@ public final class TestServerCityCalculationsImpl
 		
 		// Orcs can build absolutely everything
 		cityData.setCityRaceID ("RC09");
-		for (final Building building : db.getBuilding ())
+		for (final BuildingSvr building : db.getBuildings ())
 			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
 				(!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)))
 

@@ -7,7 +7,7 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Spell;
+import momime.server.database.SpellSvr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +45,7 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 		final SpellResearchStatus spellWeWantToResearch = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 
 		// Find the spell that was previously being researched
-		final Spell spellPreviouslyBeingResearched;
+		final SpellSvr spellPreviouslyBeingResearched;
 		final SpellResearchStatus spellPreviouslyBeingResearchedStatus;
 
 		if (priv.getSpellIDBeingResearched () == null)

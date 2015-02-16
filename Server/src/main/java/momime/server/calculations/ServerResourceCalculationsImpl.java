@@ -40,12 +40,12 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.database.BuildingSvr;
+import momime.server.database.PlaneSvr;
+import momime.server.database.ProductionTypeSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.Plane;
-import momime.server.database.v0_9_5.ProductionType;
-import momime.server.database.v0_9_5.Spell;
-import momime.server.database.v0_9_5.Unit;
+import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 import momime.server.process.SpellQueueing;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
@@ -129,7 +129,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
 			{
-				final Unit unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
+				final UnitSvr unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
 				for (final UnitUpkeep upkeep : unitDetails.getUnitUpkeep ())
 					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), players, db));
 			}
@@ -138,7 +138,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
 			if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
 			{
-				final Spell spellDetails = db.findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
+				final SpellSvr spellDetails = db.findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
 
 				// Note we deal with Channeler retort halving spell maintenance below, so there is no
 				// getModifiedUpkeepValue method for spells, we can just use the values right out of the database
@@ -156,7 +156,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// In practice this is mostly irrelevant since *nothing* actually generates mana directly - it only generates magic power that can be converted into mana
 
 		// Calculates production and consumption from all cities on the map
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -176,7 +176,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 		// Counts up how many node aura squares each player gets
 		int nodeAuraSquares = 0;
-		for (final Plane plane : db.getPlane ())
+		for (final PlaneSvr plane : db.getPlanes ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -266,7 +266,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 			if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 			{
-				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
+				final BuildingSvr building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
 				final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);
 				if (consumptionAmount > 0)
 				{
@@ -284,7 +284,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
 			if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
 			{
-				final Spell spell = db.findSpell (thisSpell.getSpellID (), "listConsumersOfProductionType");
+				final SpellSvr spell = db.findSpell (thisSpell.getSpellID (), "listConsumersOfProductionType");
 
 				boolean found = false;
 				final Iterator<SpellUpkeep> upkeepIter = spell.getSpellUpkeep ().iterator ();
@@ -334,10 +334,10 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 		// Search through different types of production looking for ones matching the required enforce type
 		boolean found = false;
-		final Iterator<ProductionType> productionTypeIter = mom.getServerDB ().getProductionType ().iterator ();
+		final Iterator<ProductionTypeSvr> productionTypeIter = mom.getServerDB ().getProductionTypes ().iterator ();
 		while ((!found) && (productionTypeIter.hasNext ()))
 		{
-			final ProductionType productionType = productionTypeIter.next ();
+			final ProductionTypeSvr productionType = productionTypeIter.next ();
 			if (enforceType.equals (productionType.getEnforceProduction ()))
 			{
 				// Check how much of this type of production the player has
@@ -405,7 +405,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// Note that we can't simply go down the list of production types in the resource list because of the way Magic Power splits into
 		// Mana/Research/Skill Improvement - so its entirely possible that we're supposed to accumulate some Mana even though there is
 		// no pre-existing entry for Mana in this player's resource list
-		for (final ProductionType productionType : db.getProductionType ())
+		for (final ProductionTypeSvr productionType : db.getProductionTypes ())
 			if (productionType.getAccumulatesInto () != null)
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();

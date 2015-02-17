@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -77,6 +80,18 @@ public final class CombatEndedUI extends MomClientDialogUI
 		
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/combatEnded/you" + (weWon ? "Won" : "Lost") + ".png");
 		final BufferedImage footer = getUtils ().loadImage ("/momime.client.graphics/ui/combatEnded/footer.png");
+		final BufferedImage closeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/closeButtonNormal.png");
+		final BufferedImage closeButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/closeButtonPressed.png");
+		
+		// Actions
+		final Action closeAction = new AbstractAction ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				getDialog ().dispose ();
+			}
+		};
 		
 		// Initialize the dialog
 		final CombatEndedUI ui = this;
@@ -128,16 +143,24 @@ public final class CombatEndedUI extends MomClientDialogUI
 		mainText = getUtils ().createWrappingLabel (MomUIConstants.DARK_BROWN, getSmallFont ());
 		contentPane.add (mainText, "frmCombatEndedText");
 
+		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
+			"frmCombatEndedClose");
+		
 		// Lock frame size
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
 		getDialog ().setUndecorated (true);
-		setCloseOnClick (true);
 
+		final int bottomRollerBottom = getCombatEndedLayout ().getFormHeight () - 19;	// Just because this is copied from the close button on the NTM UI
 		getDialog ().setShape (new Polygon
-			(new int [] {0, 2, 3, 6, 199, 202, 203, 206, 205, 205, 206, 206, 203, 202, 199, 6, 3, 2, 0, 2, 5, 9, 9, 5, 2, 0},
-			new int [] {6, 3, 2, 0, 0, 2, 3, 11, 17, 189, 193, 200, 207, 208, 210, 210, 208, 207, 204, 192, 189, 186, 23, 21, 18, 14},
-			26));		
+			(new int [] {0, 2, 3, 6, 199, 202, 203, 206, 205, 205, 206, 206, 203, 202, 199,
+				158, 161, 161, 158, 158, 162, 142, 140, 140, 143, 143, 140,		// centre row of numbers is the close button
+				6, 3, 2, 0, 2, 5, 9, 9, 5, 2, 0},
+				
+			new int [] {6, 3, 2, 0, 0, 2, 3, 11, 17, 189, 193, 200, 207, 208, 210,
+				bottomRollerBottom - 6, bottomRollerBottom - 3, bottomRollerBottom + 2, bottomRollerBottom + 5, getCombatEndedLayout ().getFormHeight () - 7, getCombatEndedLayout ().getFormHeight (), getCombatEndedLayout ().getFormHeight (), getCombatEndedLayout ().getFormHeight () - 7, bottomRollerBottom + 5, bottomRollerBottom + 2, bottomRollerBottom - 3, bottomRollerBottom - 6, 
+				210, 208, 207, 204, 192, 189, 186, 23, 21, 18, 14},
+			38));
 		
 		log.trace ("Exiting init");
 	}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
 	<formWidth>206</formWidth>
-	<formHeight>210</formHeight>
+	<formHeight>235</formHeight>
 	<component name="frmCombatEndedBottomScroll">
 		<left>0</left>
 		<top>187</top>
@@ -19,6 +19,12 @@
 		<top>103</top>
 		<width>184</width>
 		<height>83</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatEndedClose">
+		<left>141</left>
+		<top>210</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

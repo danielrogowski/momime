@@ -67,7 +67,7 @@ import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.process.CombatProcessing;
 import momime.server.process.CombatScheduler;
 import momime.server.utils.UnitServerUtils;
@@ -385,7 +385,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
+	public final MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation, final MapCoordinates3DEx combatLocation,
 		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
@@ -694,7 +694,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
+	public final void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
@@ -863,7 +863,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
+	public final void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException
@@ -1005,7 +1005,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
+	public final void addBuildingOnServerAndClients (final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
 		final MapCoordinates3DEx cityLocation, final String firstBuildingID, final String secondBuildingID,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final ServerDatabaseEx db)

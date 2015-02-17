@@ -11,7 +11,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -39,7 +39,7 @@ public interface CityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**
@@ -57,7 +57,7 @@ public interface CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 

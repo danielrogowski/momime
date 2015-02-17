@@ -29,8 +29,8 @@ import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -158,7 +158,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @return Auto generated city name
 	 */
 	@Override
-	public final String generateCityName (final MomGeneralServerKnowledge gsk, final RaceSvr race)
+	public final String generateCityName (final MomGeneralServerKnowledgeEx gsk, final RaceSvr race)
 	{
 		final List<String> possibleChoices = new ArrayList<String> ();
 
@@ -215,7 +215,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		log.trace ("Entering attemptToMeldWithNode: " +
 			attackingSpirit.getUnitID () + ", Player ID " + attackingSpirit.getOwningPlayerID () + ", Unit URN " + attackingSpirit.getUnitURN ());
 
-		final ServerGridCell tc = (ServerGridCell) trueMap.getMap ().getPlane ().get
+		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
 			(attackingSpirit.getUnitLocation ().getZ ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());
 		
 		// Succeed?
@@ -282,7 +282,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					for (final PlaneSvr plane : db.getPlanes ())
 					{
-						final ServerGridCell aura = (ServerGridCell) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
+						final ServerGridCellEx aura = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 						if (attackingSpirit.getUnitLocation ().equals (aura.getAuraFromNode ()))
 						{
 							// Update true map

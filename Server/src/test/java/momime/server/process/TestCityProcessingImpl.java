@@ -58,8 +58,8 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
@@ -171,7 +171,7 @@ public final class TestCityProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players
@@ -308,7 +308,7 @@ public final class TestCityProcessingImpl
 		proc.createStartingCities (players, gsk, sd, db);
 		
 		// Check human city
-		final ServerGridCell humanCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx humanCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		final OverlandMapCityData humanCity = humanCell.getCityData ();
 		assertNotNull (humanCity);
 		assertEquals (humanPd.getPlayerID (), humanCity.getCityOwnerID ());
@@ -322,7 +322,7 @@ public final class TestCityProcessingImpl
 		assertNull (humanCity.getCurrentlyConstructingUnitID ());
 		
 		// Check AI city
-		final ServerGridCell aiCell = (ServerGridCell) trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (40);
+		final ServerGridCellEx aiCell = (ServerGridCellEx) trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (40);
 		final OverlandMapCityData aiCity = aiCell.getCityData ();
 		assertNotNull (aiCity);
 		assertEquals (aiPd.getPlayerID (), aiCity.getCityOwnerID ());
@@ -336,7 +336,7 @@ public final class TestCityProcessingImpl
 		assertNull (aiCity.getCurrentlyConstructingUnitID ());
 		
 		// Check raiders arcanus city
-		final ServerGridCell raidersArcanusCell = (ServerGridCell) trueTerrain.getPlane ().get (0).getRow ().get (27).getCell ().get (7);
+		final ServerGridCellEx raidersArcanusCell = (ServerGridCellEx) trueTerrain.getPlane ().get (0).getRow ().get (27).getCell ().get (7);
 		final OverlandMapCityData raidersArcanusCity = raidersArcanusCell.getCityData ();
 		assertNotNull (raidersArcanusCity);
 		assertEquals (raidersPd.getPlayerID (), raidersArcanusCity.getCityOwnerID ());
@@ -350,7 +350,7 @@ public final class TestCityProcessingImpl
 		assertNull (raidersArcanusCity.getCurrentlyConstructingUnitID ());
 		
 		// Check raiders myrror city		
-		final ServerGridCell raidersMyrrorCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (13).getCell ().get (23);
+		final ServerGridCellEx raidersMyrrorCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (13).getCell ().get (23);
 		final OverlandMapCityData raidersMyrrorCity = raidersMyrrorCell.getCityData ();
 		assertNotNull (raidersMyrrorCity);
 		assertEquals (raidersPd.getPlayerID (), raidersMyrrorCity.getCityOwnerID ());
@@ -439,7 +439,7 @@ public final class TestCityProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players
@@ -519,7 +519,7 @@ public final class TestCityProcessingImpl
 		// Raiders player is constructing a unit, and will finish it now 
 		final MapCoordinates3DEx raidersLocation = new MapCoordinates3DEx (7, 27, 0);
 
-		final ServerGridCell raidersCell = (ServerGridCell) trueTerrain.getPlane ().get (0).getRow ().get (27).getCell ().get (7);
+		final ServerGridCellEx raidersCell = (ServerGridCellEx) trueTerrain.getPlane ().get (0).getRow ().get (27).getCell ().get (7);
 		final OverlandMapCityData raidersCity = new OverlandMapCityData ();
 		raidersCity.setCityOwnerID (raidersPd.getPlayerID ());
 		raidersCity.setCityPopulation (8700);
@@ -1057,7 +1057,7 @@ public final class TestCityProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Player

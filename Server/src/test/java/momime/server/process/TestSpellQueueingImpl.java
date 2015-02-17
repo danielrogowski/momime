@@ -46,8 +46,8 @@ import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 
 import org.junit.Test;
 
@@ -481,7 +481,7 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// Session variables
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -573,7 +573,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -652,7 +652,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -697,7 +697,7 @@ public final class TestSpellQueueingImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -748,7 +748,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -845,7 +845,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -891,7 +891,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -954,7 +954,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1000,7 +1000,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1067,7 +1067,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1113,7 +1113,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1180,7 +1180,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1226,7 +1226,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1295,7 +1295,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1341,7 +1341,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1413,7 +1413,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1459,7 +1459,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1538,7 +1538,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1584,7 +1584,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1665,7 +1665,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1711,7 +1711,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1791,7 +1791,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1837,7 +1837,7 @@ public final class TestSpellQueueingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1920,7 +1920,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1967,7 +1967,7 @@ public final class TestSpellQueueingImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		gc.setCombatMap (ServerTestData.createCombatMap ());
 		
 		// Two sides in combat
@@ -2056,7 +2056,7 @@ public final class TestSpellQueueingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -2103,7 +2103,7 @@ public final class TestSpellQueueingImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		gc.setCombatMap (ServerTestData.createCombatMap ());
 		
 		// Two sides in combat
@@ -2178,7 +2178,7 @@ public final class TestSpellQueueingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2225,7 +2225,7 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2296,7 +2296,7 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2375,7 +2375,7 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();

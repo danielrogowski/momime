@@ -29,7 +29,7 @@ import momime.server.ServerTestData;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -96,7 +96,7 @@ public final class TestDamageProcessorImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
@@ -235,7 +235,7 @@ public final class TestDamageProcessorImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system

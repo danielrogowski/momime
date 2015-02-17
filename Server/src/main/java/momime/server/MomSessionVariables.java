@@ -8,8 +8,8 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import org.apache.commons.logging.Log;
 
@@ -34,7 +34,7 @@ public interface MomSessionVariables
 	/**
 	 * @return Server general knowledge, typecasted to MoM specific type
 	 */
-	public MomGeneralServerKnowledge getGeneralServerKnowledge ();
+	public MomGeneralServerKnowledgeEx getGeneralServerKnowledge ();
 	
 	/**
 	 * @return Public knowledge structure, typecasted to MoM specific type

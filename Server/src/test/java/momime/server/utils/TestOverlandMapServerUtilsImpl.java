@@ -45,8 +45,8 @@ import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 
 import org.junit.Test;
 
@@ -227,7 +227,7 @@ public final class TestOverlandMapServerUtilsImpl
 		}
 
 		// But 2 of them is already used
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.getUsedCityName ().add ("Hanna");
 		gsk.getUsedCityName ().add ("Emily");
 		
@@ -295,13 +295,13 @@ public final class TestOverlandMapServerUtilsImpl
 		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
-		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx nodeCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		final OverlandMapTerrainData nodeData = new OverlandMapTerrainData ();
 		nodeCell.setTerrainData (nodeData);
 		
 		// Node aura - its a small node, the centre tile and the one map square to the right of it :)
 		nodeCell.setAuraFromNode (nodeLocation);
-		final ServerGridCell adjacentCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
+		final ServerGridCellEx adjacentCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
 		final OverlandMapTerrainData adjacentData = new OverlandMapTerrainData ();
 		adjacentCell.setTerrainData (adjacentData);
 		adjacentCell.setAuraFromNode (nodeLocation);		
@@ -396,13 +396,13 @@ public final class TestOverlandMapServerUtilsImpl
 		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
-		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx nodeCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		final OverlandMapTerrainData nodeData = new OverlandMapTerrainData ();
 		nodeCell.setTerrainData (nodeData);
 		
 		// Node aura - its a small node, the centre tile and the one map square to the right of it :)
 		nodeCell.setAuraFromNode (nodeLocation);
-		final ServerGridCell adjacentCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
+		final ServerGridCellEx adjacentCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
 		final OverlandMapTerrainData adjacentData = new OverlandMapTerrainData ();
 		adjacentCell.setTerrainData (adjacentData);
 		adjacentCell.setAuraFromNode (nodeLocation);		
@@ -491,7 +491,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
-		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx nodeCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		final OverlandMapTerrainData nodeData = new OverlandMapTerrainData ();
 		nodeData.setNodeOwnerID (3);
 		nodeCell.setNodeSpiritUnitID ("MS");
@@ -499,7 +499,7 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		// Node aura - its a small node, the centre tile and the one map square to the right of it :)
 		nodeCell.setAuraFromNode (nodeLocation);
-		final ServerGridCell adjacentCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
+		final ServerGridCellEx adjacentCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
 		final OverlandMapTerrainData adjacentData = new OverlandMapTerrainData ();
 		adjacentData.setNodeOwnerID (3);
 		adjacentCell.setNodeSpiritUnitID ("MS");
@@ -626,7 +626,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
-		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx nodeCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		final OverlandMapTerrainData nodeData = new OverlandMapTerrainData ();
 		nodeData.setNodeOwnerID (3);
 		nodeCell.setNodeSpiritUnitID ("MS");
@@ -634,7 +634,7 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		// Node aura - its a small node, the centre tile and the one map square to the right of it :)
 		nodeCell.setAuraFromNode (nodeLocation);
-		final ServerGridCell adjacentCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
+		final ServerGridCellEx adjacentCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
 		final OverlandMapTerrainData adjacentData = new OverlandMapTerrainData ();
 		adjacentData.setNodeOwnerID (3);
 		adjacentCell.setNodeSpiritUnitID ("MS");

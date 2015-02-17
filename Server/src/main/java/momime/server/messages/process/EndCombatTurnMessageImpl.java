@@ -7,7 +7,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatProcessing;
 
 import org.apache.commons.logging.Log;
@@ -47,7 +47,7 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
 		
 		if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))

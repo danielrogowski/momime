@@ -43,8 +43,8 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
@@ -114,7 +114,7 @@ public final class TestSpellProcessingImpl
 		// Maintained spell list
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Human player
@@ -212,7 +212,7 @@ public final class TestSpellProcessingImpl
 		// Maintained spell list
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Human player
@@ -302,7 +302,7 @@ public final class TestSpellProcessingImpl
 
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Human player, who is also the one casting the spell
@@ -394,7 +394,7 @@ public final class TestSpellProcessingImpl
 
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Human player, who is also the one casting the spell
@@ -518,7 +518,7 @@ public final class TestSpellProcessingImpl
 
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Human player, who is also the one casting the spell
@@ -583,7 +583,7 @@ public final class TestSpellProcessingImpl
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
 		// Human player
@@ -683,7 +683,7 @@ public final class TestSpellProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Spell to cast
@@ -702,7 +702,7 @@ public final class TestSpellProcessingImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
 		gc.setCombatAttackerCastingSkillRemaining (45);
 
 		// Players involved
@@ -780,7 +780,7 @@ public final class TestSpellProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Unit we're casting it on
@@ -803,7 +803,7 @@ public final class TestSpellProcessingImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
 		gc.setCombatAttackerCastingSkillRemaining (45);
 
 		// Players involved
@@ -887,7 +887,7 @@ public final class TestSpellProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Spell to cast
@@ -906,7 +906,7 @@ public final class TestSpellProcessingImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
 		gc.setCombatAttackerCastingSkillRemaining (45);
 
 		// Players involved

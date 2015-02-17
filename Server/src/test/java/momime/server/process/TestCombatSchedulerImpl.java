@@ -20,7 +20,7 @@ import momime.common.messages.servertoclient.UpdateOtherScheduledCombatsMessage;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import org.junit.Test;
 
@@ -176,7 +176,7 @@ public final class TestCombatSchedulerImpl
 	public final void testProcessEndOfScheduledCombat_NoMoreCombats () throws Exception
 	{
 		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -235,7 +235,7 @@ public final class TestCombatSchedulerImpl
 	public final void testProcessEndOfScheduledCombat_SomeMoreCombats () throws Exception
 	{
 		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();

@@ -42,8 +42,8 @@ import momime.server.ai.CombatAI;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.ServerMemoryGridCellUtils;
-import momime.server.messages.v0_9_5.ServerGridCell;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -603,7 +603,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	{
 		log.trace ("Entering progressCombat: " + combatLocation + ", " + initialFirstTurn + ", " + initialAutoControlHumanPlayer);
 
-		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 		// These get modified by the loop
@@ -969,7 +969,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
 		
 		// Get the grid cell, so we can access the combat map
-		final ServerGridCell combatCell = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx combatCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		// Ranged attacks always reduce movement remaining to zero and never result in the unit actually moving.

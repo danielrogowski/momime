@@ -9,7 +9,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomScheduledCombat;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -32,7 +32,7 @@ public interface CombatScheduler
 	 * @param attackingPlayer Player owning the attacking units
 	 * @param attackingUnitURNs Which specific units are attacking (may not be everybody standing at in attackingFrom)
 	 */
-	public void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledge gsk,
+	public void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledgeEx gsk,
 		final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs);
 	

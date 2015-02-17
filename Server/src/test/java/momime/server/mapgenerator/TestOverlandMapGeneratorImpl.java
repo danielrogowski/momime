@@ -53,8 +53,8 @@ import momime.server.database.TileTypeFeatureChanceSvr;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.unittests.mapstorage.StoredOverlandMap;
 
 import org.junit.Test;
@@ -87,7 +87,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -104,7 +104,7 @@ public final class TestOverlandMapGeneratorImpl
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 				{
-					final ServerGridCell serverCell = (ServerGridCell) cell;
+					final ServerGridCellEx serverCell = (ServerGridCellEx) cell;
 					count++;
 					assertNotNull (serverCell);
 					assertNotNull (serverCell.getTerrainData ());
@@ -133,7 +133,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Mock random number generator
@@ -185,7 +185,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Use real random number generator
@@ -212,8 +212,8 @@ public final class TestOverlandMapGeneratorImpl
 		for (int x = 0; x < mapSize.getWidth (); x++)
 			for (int y = 0; y < mapSize.getHeight (); y++)
 			{
-				final ServerGridCell arcanusCell = (ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x);
-				final ServerGridCell myrrorCell = (ServerGridCell) fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x);
+				final ServerGridCellEx arcanusCell = (ServerGridCellEx) fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x);
+				final ServerGridCellEx myrrorCell = (ServerGridCellEx) fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x);
 				
 				if (arcanusCell.getTerrainData ().getMapFeatureID () == null)
 				{
@@ -264,7 +264,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Use real random number generator
@@ -300,8 +300,8 @@ public final class TestOverlandMapGeneratorImpl
 		for (int x = 0; x < mapSize.getWidth (); x++)
 			for (int y = 0; y < mapSize.getHeight (); y++)
 			{
-				final ServerGridCell arcanusCell = (ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x);
-				final ServerGridCell myrrorCell = (ServerGridCell) fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x);
+				final ServerGridCellEx arcanusCell = (ServerGridCellEx) fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x);
+				final ServerGridCellEx myrrorCell = (ServerGridCellEx) fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x);
 				
 				if (arcanusCell.getTerrainData ().getMapFeatureID () == null)
 				{
@@ -351,7 +351,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Use real random number generator
@@ -439,7 +439,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -533,7 +533,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Mock random number generator
@@ -623,7 +623,7 @@ public final class TestOverlandMapGeneratorImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -637,17 +637,17 @@ public final class TestOverlandMapGeneratorImpl
 		assertTrue (mapGen.placeNodeRings (7, 20, 10, 0, null));
 		
 		// If the centre ring is blocked then its an immediate fail, even though there's 7 free spaces in the radius 1 ring
-		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
 		assertFalse (mapGen.placeNodeRings (7, 20, 10, 0, null));
 		
 		// Unblock the centre ring again, and block 2 cells in the radius 1 ring, so there's still enough space, just
-		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).setAuraFromNode (null);
-		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
-		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).setAuraFromNode (null);
+		((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
 		assertTrue (mapGen.placeNodeRings (7, 20, 10, 0, null));
 		
 		// Block 3rd cell in the radius 1 ring and it fails, even though if it expanded two 2 rings there's plenty of space
-		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
 		assertFalse (mapGen.placeNodeRings (7, 20, 10, 0, null));
 	}
 
@@ -669,7 +669,7 @@ public final class TestOverlandMapGeneratorImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -681,23 +681,23 @@ public final class TestOverlandMapGeneratorImpl
 
 		// Block 2 cells in the radius 1 ring so when we place 7 node auras, there's only exactly the right number of cells left
 		// Unblock the centre ring again, and block 2 cells in the radius 1 ring, so there's still enough space, just
-		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
-		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
 		
 		// Run method
 		final MapCoordinates3DEx coords = new MapCoordinates3DEx (20, 10, 0);
 		assertTrue (mapGen.placeNodeRings (7, 20, 10, 0, coords));
 		
 		// Check results
-		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (19)).getAuraFromNode ());
-		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (20)).getAuraFromNode ());
-		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (21)).getAuraFromNode ());
-		// assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).getAuraFromNode ());
-		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).getAuraFromNode ());
-		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (21)).getAuraFromNode ());
-		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (19)).getAuraFromNode ());
-		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20)).getAuraFromNode ());
-		// assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (19)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (20)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (21)).getAuraFromNode ());
+		// assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (21)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (19)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20)).getAuraFromNode ());
+		// assertEquals (coords, ((ServerGridCellEx) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).getAuraFromNode ());
 	}
 
 	/**
@@ -757,7 +757,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -788,7 +788,7 @@ public final class TestOverlandMapGeneratorImpl
 			for (final MapRowOfMemoryGridCells row : fow.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 				{
-					final ServerGridCell serverCell = (ServerGridCell) cell;
+					final ServerGridCellEx serverCell = (ServerGridCellEx) cell;
 					
 					// Check actual nodes
 					if (serverCell.getTerrainData ().getTileTypeID ().startsWith ("NT0"))
@@ -938,7 +938,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -970,7 +970,7 @@ public final class TestOverlandMapGeneratorImpl
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 				{
-					final ServerGridCell serverCell = (ServerGridCell) cell;
+					final ServerGridCellEx serverCell = (ServerGridCellEx) cell;
 					if ((serverCell.getTerrainData ().getMapFeatureID () != null) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("X")))
 					{
 						// Lair was placed here
@@ -1008,7 +1008,7 @@ public final class TestOverlandMapGeneratorImpl
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 				{
-					final ServerGridCell serverCell = (ServerGridCell) cell;
+					final ServerGridCellEx serverCell = (ServerGridCellEx) cell;
 					if ((serverCell.getTerrainData ().getMapFeatureID () != null) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("X")))
 					{
 						// Lair was placed here
@@ -1049,7 +1049,7 @@ public final class TestOverlandMapGeneratorImpl
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 				{
-					final ServerGridCell serverCell = (ServerGridCell) cell;
+					final ServerGridCellEx serverCell = (ServerGridCellEx) cell;
 					if ((serverCell.getTerrainData ().getMapFeatureID () != null) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("X")))
 					{
 						// Lair was placed here
@@ -1136,7 +1136,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 
 		// Set up object to test
@@ -1238,7 +1238,7 @@ public final class TestOverlandMapGeneratorImpl
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -1255,11 +1255,11 @@ public final class TestOverlandMapGeneratorImpl
 		mapGen.setAllToWater ();
 		fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (20).getTerrainData ().setTileTypeID ("TT01");
 		for (int x = 19; x <= 21; x++)
-			((ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (x)).setAuraFromNode (new MapCoordinates3DEx (20, 10, 0));
+			((ServerGridCellEx) fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (x)).setAuraFromNode (new MapCoordinates3DEx (20, 10, 0));
 
 		fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (40).getTerrainData ().setTileTypeID ("TT02");
 		for (int x = 39; x <= 41; x++)
-			((ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (x)).setAuraFromNode (new MapCoordinates3DEx (40, 10, 0));
+			((ServerGridCellEx) fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (x)).setAuraFromNode (new MapCoordinates3DEx (40, 10, 0));
 		
 		// Run method
 		mapGen.generateInitialCombatAreaEffects ();
@@ -1349,7 +1349,7 @@ public final class TestOverlandMapGeneratorImpl
 		final PlayerServerDetails monsterPlayer = new PlayerServerDetails (null, null, null, null, null); 
 		
 		// Map storage
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		
 		// Mock random number generator
 		final RandomUtils random = mock (RandomUtils.class);

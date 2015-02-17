@@ -52,8 +52,8 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 
 import org.junit.Test;
 
@@ -651,7 +651,7 @@ public final class TestCombatProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -688,7 +688,7 @@ public final class TestCombatProcessingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
 		// Players in combat
@@ -740,7 +740,7 @@ public final class TestCombatProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -778,7 +778,7 @@ public final class TestCombatProcessingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
 		// Players in combat
@@ -844,7 +844,7 @@ public final class TestCombatProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -882,7 +882,7 @@ public final class TestCombatProcessingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
 		// Players in combat
@@ -951,7 +951,7 @@ public final class TestCombatProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -986,7 +986,7 @@ public final class TestCombatProcessingImpl
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
 		// Players in combat, after a few turns the attacker wins
@@ -3455,7 +3455,7 @@ public final class TestCombatProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Human attacker
@@ -3503,7 +3503,7 @@ public final class TestCombatProcessingImpl
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
-		final ServerGridCell combatCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx combatCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		combatCell.setCombatMap (combatMap);
 		
 		// True unit
@@ -3615,7 +3615,7 @@ public final class TestCombatProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Human attacker
@@ -3663,7 +3663,7 @@ public final class TestCombatProcessingImpl
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
-		final ServerGridCell combatCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx combatCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		combatCell.setCombatMap (combatMap);
 		
 		// True unit
@@ -3773,7 +3773,7 @@ public final class TestCombatProcessingImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Human attacker
@@ -3821,7 +3821,7 @@ public final class TestCombatProcessingImpl
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
-		final ServerGridCell combatCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		final ServerGridCellEx combatCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		combatCell.setCombatMap (combatMap);
 		
 		// True unit

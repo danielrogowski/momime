@@ -20,7 +20,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -87,7 +87,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
+	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation, final MapCoordinates3DEx combatLocation,
 		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
@@ -181,7 +181,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
+	public void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
@@ -249,7 +249,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
+	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException;
@@ -302,7 +302,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
+	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
 		final MapCoordinates3DEx cityLocation, final String firstBuildingID, final String secondBuildingID,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final ServerDatabaseEx db)

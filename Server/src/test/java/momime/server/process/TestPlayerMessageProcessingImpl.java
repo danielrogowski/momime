@@ -26,7 +26,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -310,7 +310,7 @@ public final class TestPlayerMessageProcessingImpl
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players
@@ -386,7 +386,7 @@ public final class TestPlayerMessageProcessingImpl
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players

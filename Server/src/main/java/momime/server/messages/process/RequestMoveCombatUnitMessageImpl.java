@@ -14,7 +14,7 @@ import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatProcessing;
 
 import org.apache.commons.logging.Log;
@@ -89,7 +89,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		
 		if (error == null)
 		{
-			final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
 
 			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

@@ -20,7 +20,7 @@ import momime.server.database.CombatTileTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.ServerGridCellEx;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,7 +69,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		log.trace ("Entering generateCombatMap: " + combatMapLocation);
 		
 		// What tileType is the map cell we're generating a combat map for?
-		final ServerGridCell mc = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
+		final ServerGridCellEx mc = (ServerGridCellEx) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
 		final TileTypeSvr tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
 
 		// Start map generation, this initializes all the map cells

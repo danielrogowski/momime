@@ -31,8 +31,8 @@ import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
-import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 
@@ -163,7 +163,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				(mom.getGeneralServerKnowledge ().getScheduledCombat (), scheduledCombatURN, "startCombat").isWalkInWithoutAFight ();
 		
 		// Record the scheduled combat ID
-		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		tc.setScheduledCombatURN (scheduledCombatURN);
 		
@@ -279,7 +279,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	{
 		log.trace ("Entering combatEnded: " + combatLocation);
 		
-		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		// If we're walking into a city that we don't already own (its possible we're moving into our own city if this is a "walk in without a fight")

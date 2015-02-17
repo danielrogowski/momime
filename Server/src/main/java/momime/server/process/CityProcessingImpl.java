@@ -42,8 +42,8 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
@@ -121,7 +121,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering createStartingCities");
@@ -159,7 +159,7 @@ public final class CityProcessingImpl implements CityProcessing
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 
-				final ServerGridCell cityCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+				final ServerGridCellEx cityCell = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 				final OverlandMapCityData city = new OverlandMapCityData ();
 				cityCell.setCityData (city);
 
@@ -262,7 +262,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -272,7 +272,7 @@ public final class CityProcessingImpl implements CityProcessing
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
-					final ServerGridCell mc = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
+					final ServerGridCellEx mc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final OverlandMapCityData cityData = mc.getCityData ();
 					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () > 0) &&
 						((onlyOnePlayerID == 0) | (onlyOnePlayerID == cityData.getCityOwnerID ())))

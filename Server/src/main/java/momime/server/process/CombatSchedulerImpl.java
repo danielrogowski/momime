@@ -16,7 +16,7 @@ import momime.common.messages.servertoclient.ShowListAndOtherScheduledCombatsMes
 import momime.common.messages.servertoclient.UpdateOtherScheduledCombatsMessage;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,7 +56,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	 * @param attackingUnitURNs Which specific units are attacking (may not be everybody standing at in attackingFrom)
 	 */
 	@Override
-	public final void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledge gsk,
+	public final void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledgeEx gsk,
 		final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs)
 	{

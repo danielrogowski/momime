@@ -56,7 +56,7 @@ import momime.server.database.WizardPickCountSvr;
 import momime.server.database.WizardSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -351,7 +351,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	private final void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
+	private final void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{

@@ -22,7 +22,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatProcessing;
 
 import org.apache.commons.logging.Log;
@@ -306,7 +306,7 @@ public final class CombatAIImpl implements CombatAI
 		log.trace ("Entering aiCombatTurn: Player ID + " + currentPlayer.getPlayerDescription ().getPlayerID ());
 		
 		// Get the combat terrain
-		final ServerGridCell serverGridCell = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx serverGridCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		final MapAreaOfCombatTiles combatMap = serverGridCell.getCombatMap ();

@@ -49,7 +49,7 @@ import momime.server.database.MapFeatureMagicRealmSvr;
 import momime.server.database.MapFeatureSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import org.junit.Test;
 
@@ -661,7 +661,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -793,7 +793,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

@@ -45,7 +45,7 @@ import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.SpellSettingSvr;
 import momime.server.database.UnitSettingSvr;
 import momime.server.database.v0_9_5.ServerDatabase;
-import momime.server.messages.v0_9_5.ServerGridCell;
+import momime.server.knowledge.ServerGridCellEx;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -297,7 +297,7 @@ public final class ServerTestData
 			{
 				final MapRowOfMemoryGridCells row = new MapRowOfMemoryGridCells ();
 				for (int x = 0; x < sys.getWidth (); x++)
-					row.getCell ().add (new ServerGridCell ());
+					row.getCell ().add (new ServerGridCellEx ());
 
 				area.getRow ().add (row);
 			}
@@ -327,7 +327,7 @@ public final class ServerTestData
 				final MapRowOfMemoryGridCells row = new MapRowOfMemoryGridCells ();
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
-					final ServerGridCell mc = new ServerGridCell ();
+					final ServerGridCellEx mc = new ServerGridCellEx ();
 
 					// Look for data in Excel sheet
 					final Cell cell = workbook.getSheetAt (plane).getRow (y + 1).getCell (x + 1);

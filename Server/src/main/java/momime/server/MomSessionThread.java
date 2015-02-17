@@ -22,8 +22,8 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
-import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.MomServerUIHolder;
 
@@ -91,16 +91,16 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server general knowledge, typecasted to MoM specific type
 	 */
 	@Override
-	public final MomGeneralServerKnowledge getGeneralServerKnowledge ()
+	public final MomGeneralServerKnowledgeEx getGeneralServerKnowledge ()
 	{
-		return (MomGeneralServerKnowledge) super.getGeneralServerKnowledge ();
+		return (MomGeneralServerKnowledgeEx) super.getGeneralServerKnowledge ();
 	}
 
 	/**
 	 * Spring seems to need this to be able to set the property - odd, since the MP demo works without this
 	 * @param gsk Server knowledge structure, typecasted to MoM specific type
 	 */
-	public final void setGeneralServerKnowledge (final MomGeneralServerKnowledge gsk)
+	public final void setGeneralServerKnowledge (final MomGeneralServerKnowledgeEx gsk)
 	{
 		super.setGeneralServerKnowledge (gsk);
 	}

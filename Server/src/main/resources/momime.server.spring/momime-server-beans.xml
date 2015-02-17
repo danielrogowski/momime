@@ -621,7 +621,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="trueMap" class="momime.common.messages.FogOfWarMemory" scope="prototype" />
 
-	<bean id="gsk" class="momime.server.messages.v0_9_5.MomGeneralServerKnowledge" scope="prototype">
+	<bean id="gsk" class="momime.server.knowledge.MomGeneralServerKnowledgeEx" scope="prototype">
 		<property name="trueMap" ref="trueMap" />
 		<property name="nextFreeUnitURN" value="1" />
 		<property name="nextFreeBuildingURN" value="1" />

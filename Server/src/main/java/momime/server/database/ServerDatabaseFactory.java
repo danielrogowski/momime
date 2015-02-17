@@ -19,6 +19,7 @@ import momime.server.database.v0_9_5.MovementRateRule;
 import momime.server.database.v0_9_5.NodeStrength;
 import momime.server.database.v0_9_5.ObjectFactory;
 import momime.server.database.v0_9_5.Pick;
+import momime.server.database.v0_9_5.PickFreeSpell;
 import momime.server.database.v0_9_5.PickType;
 import momime.server.database.v0_9_5.PickTypeCountContainer;
 import momime.server.database.v0_9_5.PickTypeGrantsSpells;
@@ -388,5 +389,14 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	public final MapFeatureMagicRealm createMapFeatureMagicRealm ()
 	{
 		return new MapFeatureMagicRealmSvr ();
+	}
+
+	/**
+	 * @return Custom extended PickFreeSpell
+	 */
+	@Override
+	public final PickFreeSpell createPickFreeSpell ()
+	{
+		return new PickFreeSpellSvr ();
 	}
 }

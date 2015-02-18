@@ -28,6 +28,7 @@ import momime.client.language.database.PlaneLang;
 import momime.client.language.database.RaceLang;
 import momime.client.language.database.SpellLang;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.FogOfWarSetting;
@@ -522,6 +523,7 @@ public final class TestNewGameUI
 		game.setWizardClientUtils (wizardClientUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
+		game.setTextUtils (new TextUtilsImpl ());
 		game.setNewGameLayoutMain (mainLayout);
 		game.setNewGameLayoutNew (newLayout);
 		game.setNewGameLayoutMapSize (mapSizeLayout);

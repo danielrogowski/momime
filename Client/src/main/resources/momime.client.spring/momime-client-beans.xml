@@ -767,7 +767,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
-	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl" />
+	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl">
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
 
 	<bean id="unitClientUtils" class="momime.client.utils.UnitClientUtilsImpl">
 		<property name="client" ref="client" />
@@ -878,6 +880,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="playerPickClientUtils" class="momime.client.utils.PlayerPickClientUtilsImpl">
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
 	<!-- Language variable replacers -->
@@ -903,6 +906,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 	
 	<!-- Fonts
@@ -1055,6 +1062,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 
 	<bean id="surveyorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1287,6 +1295,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="helpUI" ref="helpUI" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
 	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

@@ -925,7 +925,11 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 	</unitSkill>
 	<unitSkill unitSkillID="US098">
 		<unitSkillDescription>EXPERIENCE_LEVEL_NAME (SKILL_VALUE_US098 ep)</unitSkillDescription>
-		<unitSkillHelpText>EXPERIENCE_ATTRIBUTE_BONUSES  This unit currently has SKILL_VALUE_US098 experience, enough to reach EXPERIENCE_NATURAL_LEVEL_NAME levelEXPERIENCE_LEVEL_BOOST.  EXPERIENCE_NEXT_LEVEL.</unitSkillHelpText>
+		<unitSkillHelpText>EXPERIENCE_ATTRIBUTE_BONUSES
+
+This unit currently has SKILL_VALUE_US098 experience, enough to reach EXPERIENCE_NATURAL_LEVEL_NAME levelEXPERIENCE_LEVEL_BOOST.
+
+EXPERIENCE_NEXT_LEVEL.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US122">
 		<unitSkillDescription>Undead</unitSkillDescription>
@@ -4368,6 +4372,11 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<knownServerDescription>Implode's MoM IME Server</knownServerDescription>
 		<knownServerIP>momime.no-ip.org</knownServerIP>
 	</knownServer>
+	<languageCategory languageCategoryID="Simple">
+		<languageEntry languageEntryID="And">
+			<languageEntryText>and</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="XsdBoolean">
 		<languageEntry languageEntryID="false">
 			<languageEntryText>No</languageEntryText>
@@ -6197,6 +6206,15 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="SpellUpkeepRange">
 			<languageEntryText>Upkeep: Between LOWEST_UPKEEP and HIGHEST_UPKEEP per turn, depending on the unit summoned</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ExperienceLevelBoost">
+			<languageEntryText>, however the wizard having BONUS_LIST boosts this up to EXPERIENCE_LEVEL_NAME level</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ExperienceForNextLevelWithoutBoost">
+			<languageEntryText>It will require EXPERIENCE_REQUIRED more experience points for this unit to achieve the level of NEXT_EXPERIENCE_NATURAL_LEVEL_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost">
+			<languageEntryText>It will require EXPERIENCE_REQUIRED more experience points for this unit to achieve the level of NEXT_EXPERIENCE_NATURAL_LEVEL_NAME naturally, which with the wizard having BONUS_LIST will push the unit up to NEXT_EXPERIENCE_LEVEL_NAME</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">

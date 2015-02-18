@@ -51,7 +51,7 @@ public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageV
 				retortList.append (pickDesc);
 			}
 
-		final String s = retortList.toString ();
+		final String s = getTextUtils ().replaceFinalCommaByAnd (retortList.toString ());
 		log.trace ("Entering listPickDescriptions = " + s);
 		return s;
 	}

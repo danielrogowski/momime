@@ -35,4 +35,10 @@ public interface TextUtils
 	 * @return Number right-shifted dp times, so e.g. insertDecimalPoint (45, 3) = "0.045"
 	 */
 	public String insertDecimalPoint (final int n, final int dp);
+
+	/**
+	 * @param s Comma-space delimited list "like, this, example"
+	 * @return Input string, with final space converted to an and, "like, this and example"
+	 */
+	public String replaceFinalCommaByAnd (final String s);
 }

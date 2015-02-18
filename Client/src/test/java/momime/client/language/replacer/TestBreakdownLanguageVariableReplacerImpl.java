@@ -10,6 +10,7 @@ import java.util.List;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.PickLang;
+import momime.client.utils.TextUtilsImpl;
 
 import org.junit.Test;
 
@@ -26,6 +27,8 @@ public final class TestBreakdownLanguageVariableReplacerImpl
 	{
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("Simple", "And")).thenReturn ("and");
+		
 		for (int n = 1; n <= 3; n++)
 		{
 			final PickLang pick = new PickLang ();
@@ -38,8 +41,12 @@ public final class TestBreakdownLanguageVariableReplacerImpl
 		langHolder.setLanguage (lang);
 
 		// Set up object to test
+		final TextUtilsImpl textUtils = new TextUtilsImpl ();
+		textUtils.setLanguageHolder (langHolder);
+		
 		final DummyLanguageVariableReplacer replacer = new DummyLanguageVariableReplacer ();
 		replacer.setLanguageHolder (langHolder);
+		replacer.setTextUtils (textUtils);
 		
 		// Set up some sample lists of pick IDs
 		final List<String> singlePickID = new ArrayList<String> ();
@@ -54,7 +61,7 @@ public final class TestBreakdownLanguageVariableReplacerImpl
 		assertEquals ("", replacer.listPickDescriptions (null));
 		assertEquals ("", replacer.listPickDescriptions (new ArrayList<String> ()));
 		assertEquals ("Retort 2", replacer.listPickDescriptions (singlePickID));
-		assertEquals ("Retort 1, Retort 2, Retort 3", replacer.listPickDescriptions (multiplePickIDs));
+		assertEquals ("Retort 1, Retort 2 and Retort 3", replacer.listPickDescriptions (multiplePickIDs));
 	}
 
 	/**

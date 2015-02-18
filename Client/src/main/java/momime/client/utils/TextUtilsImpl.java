@@ -2,6 +2,9 @@ package momime.client.utils;
 
 import java.text.DecimalFormat;
 
+import momime.client.language.database.LanguageDatabaseEx;
+import momime.client.language.database.LanguageDatabaseHolder;
+
 /**
  * Utils for manipulating text strings, typically related to formatting text for display in the UI
  */
@@ -13,6 +16,9 @@ public final class TextUtilsImpl implements TextUtils
 	/** Format used by the intToStrCommas method */
 	private final static DecimalFormat commas = new DecimalFormat ("#,###");
 
+	/** Language database holder */
+	private LanguageDatabaseHolder languageHolder;
+	
 	/**
 	 * @param n Number to convert
 	 * @return Number with digit grouping, e.g. 1,234,567
@@ -80,5 +86,52 @@ public final class TextUtilsImpl implements TextUtils
 		
 		final int l = s.length () - dp;
 		return s.substring (0, l) + "." + s.substring (l);
+	}
+
+	/**
+	 * @param s Comma-space delimited list "like, this, example"
+	 * @return Input string, with final space converted to an and, "like, this and example"
+	 */
+	@Override
+	public final String replaceFinalCommaByAnd (final String s)
+	{
+		final String result;
+		if (s == null)
+			result = null;
+		else
+		{
+			final int pos = s.lastIndexOf (", ");
+			if (pos < 0)
+				result = s;
+			else
+				result = s.substring (0, pos) + " " + getLanguage ().findCategoryEntry ("Simple", "And") + s.substring (pos + 1);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * @return Language database holder
+	 */
+	public final LanguageDatabaseHolder getLanguageHolder ()
+	{
+		return languageHolder;
+	}
+	
+	/**
+	 * @param holder Language database holder
+	 */
+	public final void setLanguageHolder (final LanguageDatabaseHolder holder)
+	{
+		languageHolder = holder;
+	}
+
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return Language database
+	 */
+	public final LanguageDatabaseEx getLanguage ()
+	{
+		return languageHolder.getLanguage ();
 	}
 }

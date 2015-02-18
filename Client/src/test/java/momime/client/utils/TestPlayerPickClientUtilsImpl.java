@@ -61,6 +61,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
 		assertEquals ("1 Life Book", utils.describePickPreRequisites (pick));
@@ -93,6 +94,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
 		assertEquals ("4 Life Books", utils.describePickPreRequisites (pick));
@@ -106,6 +108,7 @@ public final class TestPlayerPickClientUtilsImpl
 	{
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("Simple", "And")).thenReturn ("and"); 
 
 		final PickLang chaos = new PickLang ();
 		chaos.setPickDescriptionSingular ("Chaos Book");
@@ -133,11 +136,15 @@ public final class TestPlayerPickClientUtilsImpl
 		}
 		
 		// Set up object to test
+		final TextUtilsImpl textUtils = new TextUtilsImpl ();
+		textUtils.setLanguageHolder (langHolder);
+		
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setTextUtils (textUtils);
 
 		// Run method
-		assertEquals ("1 Chaos Book, 1 Nature Book, 1 Sorcery Book", utils.describePickPreRequisites (pick));
+		assertEquals ("1 Chaos Book, 1 Nature Book and 1 Sorcery Book", utils.describePickPreRequisites (pick));
 	}
 
 	/**
@@ -168,6 +175,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
 		assertEquals ("1 Spell Book in any Realm of Magic", utils.describePickPreRequisites (pick));
@@ -202,6 +210,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
 		assertEquals ("4 Spell Books in any Realm of Magic", utils.describePickPreRequisites (pick));
@@ -238,6 +247,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
 		assertEquals ("1 Spell Book in any 2 Realms of Magic", utils.describePickPreRequisites (pick));
@@ -273,6 +283,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
 		assertEquals ("2 Spell Books in any 3 Realms of Magic", utils.describePickPreRequisites (pick));

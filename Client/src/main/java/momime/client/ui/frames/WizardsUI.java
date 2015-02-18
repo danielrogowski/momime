@@ -30,6 +30,7 @@ import momime.client.graphics.database.PickGfx;
 import momime.client.language.database.PickLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
@@ -82,6 +83,9 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Help text scroll */
 	private HelpUI helpUI;
+	
+	/** Text utils */
+	private TextUtils textUtils;
 	
 	/** List of gem images */
 	private List<JLabel> gems;
@@ -357,7 +361,7 @@ public final class WizardsUI extends MomClientFrameUI
 				desc.append (thisPickText);
 			}
 		}
-		retorts.setText (desc.toString ());
+		retorts.setText (getTextUtils ().replaceFinalCommaByAnd (desc.toString ()));
 
 		log.trace ("Exiting updateRetortsFromPicks = " + result);
 		return result;
@@ -536,5 +540,21 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setHelpUI (final HelpUI ui)
 	{
 		helpUI = ui;
+	}
+
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
 	}
 }

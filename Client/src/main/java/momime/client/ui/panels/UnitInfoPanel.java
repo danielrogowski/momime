@@ -610,31 +610,32 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						null, null, memoryUnit.getUnitURN (), skill.getUnitSkillID (), null, null);
 					
-					try
-					{
-						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("SpellCasting");
-						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
-
-						final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-						
-						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
-							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-						else
+					if (spell != null)
+						try
 						{
-							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-							msg.setSwitchOffSpell (spell);
+							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+							msg.setTitleLanguageCategoryID ("SpellCasting");
+							msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+	
+							final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
+							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+							
+							if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+								msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
+									("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+							else
+							{
+								msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+									("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+								msg.setSwitchOffSpell (spell);
+							}
+	
+							msg.setVisible (true);
 						}
-
-						msg.setVisible (true);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
 				}
 			}
 		});

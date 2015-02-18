@@ -1,6 +1,11 @@
 package momime.client.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import momime.client.language.database.LanguageDatabaseEx;
+import momime.client.language.database.LanguageDatabaseHolder;
 
 import org.junit.Test;
 
@@ -102,5 +107,30 @@ public final class TestTextUtilsImpl
 		assertEquals ("12.345", utils.insertDecimalPoint (12345, 3));
 		assertEquals ("123.45", utils.insertDecimalPoint (12345, 2));
 		assertEquals ("1234.5", utils.insertDecimalPoint (12345, 1));
+	}
+	
+	/**
+	 * Tests the replaceFinalCommaByAnd method
+	 */
+	@Test
+	public final void testReplaceFinalCommaByAnd ()
+	{
+		// Mock entry from language XML
+		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("Simple", "And")).thenReturn ("and"); 
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguage (lang);
+		
+		// Set up object to test
+		final TextUtilsImpl utils = new TextUtilsImpl ();
+		utils.setLanguageHolder (langHolder);
+		
+		// Run tests
+		assertNull (utils.replaceFinalCommaByAnd (null));
+		assertEquals ("bah", utils.replaceFinalCommaByAnd ("bah"));
+		assertEquals ("bah,hum", utils.replaceFinalCommaByAnd ("bah,hum"));
+		assertEquals ("bah and hum", utils.replaceFinalCommaByAnd ("bah, hum"));
+		assertEquals ("bah, hum and bug", utils.replaceFinalCommaByAnd ("bah, hum, bug"));
 	}
 }

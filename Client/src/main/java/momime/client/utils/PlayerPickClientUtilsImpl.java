@@ -25,6 +25,9 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
+	/** Text utils */
+	private TextUtils textUtils;
+	
 	/**
 	 * @param pick Pick we want pre-requisites for
 	 * @return Description of the pre-requisites for this pick (e.g. "2 Spell Books in any 3 Realms of Magic"), or null if it has no pre-requisites
@@ -109,7 +112,7 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 			}
 		}
 		
-		final String text = (result.length () == 0) ? null : result.toString ();
+		final String text = (result.length () == 0) ? null : getTextUtils ().replaceFinalCommaByAnd (result.toString ());
 		log.trace ("Exiting describePickPreRequisites = " + text);
 		return text;
 	}
@@ -137,5 +140,21 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 	public final LanguageDatabaseEx getLanguage ()
 	{
 		return languageHolder.getLanguage ();
+	}
+
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
 	}
 }

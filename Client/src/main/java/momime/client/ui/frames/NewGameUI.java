@@ -73,6 +73,7 @@ import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.utils.PlayerPickClientUtils;
+import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -239,6 +240,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Client-side pick utils */
 	private PlayerPickClientUtils playerPickClientUtils;
+	
+	/** Text utils */
+	private TextUtils textUtils;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -3871,7 +3875,7 @@ public final class NewGameUI extends MomClientFrameUI
 				desc.append (thisPickText);
 			}
 		}
-		retorts.setText (desc.toString ());
+		retorts.setText (getTextUtils ().replaceFinalCommaByAnd (desc.toString ()));
 
 		log.trace ("Exiting updateRetortsFromPicks = " + result);
 		return result;
@@ -4734,6 +4738,22 @@ public final class NewGameUI extends MomClientFrameUI
 		playerPickClientUtils = util;
 	}
 
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
+	}
+	
 	/**
 	 * @return XML layout of the main form
 	 */

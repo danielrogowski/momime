@@ -19126,6 +19126,9 @@
 		<locationY>9</locationY>
 		<combatTileTypeID>CRL01</combatTileTypeID>
 	</combatMapElement>
+	<languageCategory languageCategoryID="Simple">
+		<languageEntry languageEntryID="And" />
+	</languageCategory>
 	<languageCategory languageCategoryID="XsdBoolean">
 		<languageEntry languageEntryID="false" />
 		<languageEntry languageEntryID="true" />
@@ -19816,5 +19819,8 @@
 		<languageEntry languageEntryID="SpellUpkeepWithChanneler" />
 		<languageEntry languageEntryID="SpellUpkeepFixed" />
 		<languageEntry languageEntryID="SpellUpkeepRange" />
+		<languageEntry languageEntryID="ExperienceLevelBoost" />
+		<languageEntry languageEntryID="ExperienceForNextLevelWithoutBoost" />
+		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>

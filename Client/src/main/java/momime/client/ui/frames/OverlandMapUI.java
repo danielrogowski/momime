@@ -44,7 +44,7 @@ import momime.client.graphics.database.TileSetGfx;
 import momime.client.language.database.BuildingLang;
 import momime.client.language.database.ShortcutKeyLang;
 import momime.client.language.database.SpellLang;
-import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_6.Shortcut;
 import momime.client.messages.process.MoveUnitStackOverlandMessageImpl;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;

@@ -18,7 +18,7 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.language.database.ShortcutKeyLang;
-import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_6.Shortcut;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;

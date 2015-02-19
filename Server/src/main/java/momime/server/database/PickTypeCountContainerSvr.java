@@ -2,7 +2,7 @@ package momime.server.database;
 
 import java.util.List;
 
-import momime.server.database.v0_9_5.PickTypeCountContainer;
+import momime.server.database.v0_9_6.PickTypeCountContainer;
 
 /**
  * Just for typecasting the list of free spells

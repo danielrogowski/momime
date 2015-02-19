@@ -2,7 +2,7 @@ package momime.server.database;
 
 import java.util.List;
 
-import momime.server.database.v0_9_5.MapFeature;
+import momime.server.database.v0_9_6.MapFeature;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

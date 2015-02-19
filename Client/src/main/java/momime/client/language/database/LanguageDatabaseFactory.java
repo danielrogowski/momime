@@ -2,28 +2,28 @@ package momime.client.language.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import momime.client.language.database.v0_9_5.Building;
-import momime.client.language.database.v0_9_5.CitySpellEffect;
-import momime.client.language.database.v0_9_5.CombatAreaEffect;
-import momime.client.language.database.v0_9_5.KnownServer;
-import momime.client.language.database.v0_9_5.LanguageCategory;
-import momime.client.language.database.v0_9_5.LanguageDatabase;
-import momime.client.language.database.v0_9_5.MapFeature;
-import momime.client.language.database.v0_9_5.ObjectFactory;
-import momime.client.language.database.v0_9_5.Pick;
-import momime.client.language.database.v0_9_5.PickType;
-import momime.client.language.database.v0_9_5.Plane;
-import momime.client.language.database.v0_9_5.PopulationTask;
-import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.Race;
-import momime.client.language.database.v0_9_5.ShortcutKey;
-import momime.client.language.database.v0_9_5.Spell;
-import momime.client.language.database.v0_9_5.SpellBookSection;
-import momime.client.language.database.v0_9_5.TileType;
-import momime.client.language.database.v0_9_5.Unit;
-import momime.client.language.database.v0_9_5.UnitAttribute;
-import momime.client.language.database.v0_9_5.UnitSkill;
-import momime.client.language.database.v0_9_5.UnitType;
+import momime.client.language.database.v0_9_6.Building;
+import momime.client.language.database.v0_9_6.CitySpellEffect;
+import momime.client.language.database.v0_9_6.CombatAreaEffect;
+import momime.client.language.database.v0_9_6.KnownServer;
+import momime.client.language.database.v0_9_6.LanguageCategory;
+import momime.client.language.database.v0_9_6.LanguageDatabase;
+import momime.client.language.database.v0_9_6.MapFeature;
+import momime.client.language.database.v0_9_6.ObjectFactory;
+import momime.client.language.database.v0_9_6.Pick;
+import momime.client.language.database.v0_9_6.PickType;
+import momime.client.language.database.v0_9_6.Plane;
+import momime.client.language.database.v0_9_6.PopulationTask;
+import momime.client.language.database.v0_9_6.ProductionType;
+import momime.client.language.database.v0_9_6.Race;
+import momime.client.language.database.v0_9_6.ShortcutKey;
+import momime.client.language.database.v0_9_6.Spell;
+import momime.client.language.database.v0_9_6.SpellBookSection;
+import momime.client.language.database.v0_9_6.TileType;
+import momime.client.language.database.v0_9_6.Unit;
+import momime.client.language.database.v0_9_6.UnitAttribute;
+import momime.client.language.database.v0_9_6.UnitSkill;
+import momime.client.language.database.v0_9_6.UnitType;
 
 
 /**

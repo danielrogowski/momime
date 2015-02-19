@@ -29,7 +29,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="clientConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.client.config.v0_9_5.MomImeClientConfig</value>
+    			<value>momime.client.config.v0_9_6.MomImeClientConfig</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -53,7 +53,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		</property>
 	</bean>
 
-	<bean id="clientConfig" class="momime.client.config.v0_9_5.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">
+	<bean id="clientConfig" class="momime.client.config.v0_9_6.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">
 		<constructor-arg value="${configDir}MoMIMEClientConfig.xml" />
 	</bean>
 
@@ -81,7 +81,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="graphicsDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.client.graphics.database.v0_9_5.GraphicsDatabase</value>
+    			<value>momime.client.graphics.database.v0_9_6.GraphicsDatabase</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -150,7 +150,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="languageDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.client.language.database.v0_9_5.LanguageDatabase</value>
+    			<value>momime.client.language.database.v0_9_6.LanguageDatabase</value>
     		</list>
    		</constructor-arg>
 	</bean>

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import momime.client.language.database.ShortcutKeyLang;
-import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_6.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;

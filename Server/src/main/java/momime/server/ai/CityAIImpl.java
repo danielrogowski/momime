@@ -32,7 +32,7 @@ import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_5.AiBuildingTypeID;
+import momime.server.database.v0_9_6.AiBuildingTypeID;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;

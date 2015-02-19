@@ -21,7 +21,7 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.config.v0_9_5.UnitCombatScale;
+import momime.client.config.v0_9_6.UnitCombatScale;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.CombatActionGfx;
 import momime.client.graphics.database.ExperienceLevelGfx;

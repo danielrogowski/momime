@@ -1,9 +1,9 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
-	xmlns:momimecommon="http://momime/common/database" xmlns:momimesvr="http://momime/server/database/v0_9_5" 
+	xmlns:momimecommon="http://momime/common/database" xmlns:momimesvr="http://momime/server/database/v0_9_6" 
 	xmlns:momimedummy="http://momime/unittests/dummy" targetNamespace="http://momime/unittests/dummy">
 	
 	<xsd:import namespace="http://momime/common/database"/>
-	<xsd:import namespace="http://momime/server/database/v0_9_5"/>
+	<xsd:import namespace="http://momime/server/database/v0_9_6"/>
 
 	<!-- Dummy XSD containing at least one reference to the common and server XSDs, just enough to prove that the imports get resolved -->
 	

@@ -1,6 +1,6 @@
 package momime.server.database;
 
-import momime.server.database.v0_9_5.UnitSkill;
+import momime.server.database.v0_9_6.UnitSkill;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

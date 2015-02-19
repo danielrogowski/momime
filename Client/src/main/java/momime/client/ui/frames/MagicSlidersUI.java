@@ -32,7 +32,7 @@ import momime.client.MomClient;
 import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.database.ShortcutKeyLang;
 import momime.client.language.database.SpellLang;
-import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_6.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;

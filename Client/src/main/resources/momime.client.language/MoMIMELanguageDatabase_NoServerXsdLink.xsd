@@ -1,7 +1,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
 	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
 	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" 
-	xmlns:momimelang="http://momime/client/language/database/v0_9_5" targetNamespace="http://momime/client/language/database/v0_9_5">
+	xmlns:momimelang="http://momime/client/language/database/v0_9_6" targetNamespace="http://momime/client/language/database/v0_9_6">
 	
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
 	<xsd:import namespace="http://momime/common/database/newgame"/>

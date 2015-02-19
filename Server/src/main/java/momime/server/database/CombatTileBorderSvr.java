@@ -1,6 +1,6 @@
 package momime.server.database;
 
-import momime.server.database.v0_9_5.CombatTileBorder;
+import momime.server.database.v0_9_6.CombatTileBorder;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

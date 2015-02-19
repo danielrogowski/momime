@@ -37,7 +37,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="serverConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.server.config.v0_9_5.MomImeServerConfig</value>
+    			<value>momime.server.config.v0_9_6.MomImeServerConfig</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -46,7 +46,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="schema" ref="serverConfigSchema" />
 	</bean>
 	
-	<bean id="serverConfig" class="momime.server.config.v0_9_5.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
+	<bean id="serverConfig" class="momime.server.config.v0_9_6.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
 		<constructor-arg value="${configDir}MoMIMEServerConfig.xml" />
 	</bean>
 	
@@ -59,7 +59,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="serverDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.server.database.v0_9_5.ServerDatabase</value>
+    			<value>momime.server.database.v0_9_6.ServerDatabase</value>
     		</list>
    		</constructor-arg>
 	</bean>

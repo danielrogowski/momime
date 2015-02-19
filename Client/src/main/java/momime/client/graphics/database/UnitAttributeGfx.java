@@ -3,8 +3,8 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_5.UnitAttribute;
-import momime.client.graphics.database.v0_9_5.UnitAttributeWeaponGrade;
+import momime.client.graphics.database.v0_9_6.UnitAttribute;
+import momime.client.graphics.database.v0_9_6.UnitAttributeWeaponGrade;
 import momime.common.database.RecordNotFoundException;
 
 /**

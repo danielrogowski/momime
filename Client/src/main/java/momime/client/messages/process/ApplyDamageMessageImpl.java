@@ -14,7 +14,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeCombatImageGfx;
 import momime.client.graphics.database.RangedAttackTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
-import momime.client.graphics.database.v0_9_5.RangedAttackTypeActionID;
+import momime.client.graphics.database.v0_9_6.RangedAttackTypeActionID;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;

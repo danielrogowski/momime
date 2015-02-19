@@ -1,6 +1,6 @@
 package momime.client.graphics.database;
 
-import momime.client.graphics.database.v0_9_5.UnitSkill;
+import momime.client.graphics.database.v0_9_6.UnitSkill;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

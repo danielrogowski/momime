@@ -39,7 +39,7 @@ import momime.client.language.database.ShortcutKeyLang;
 import momime.client.language.database.SpellBookSectionLang;
 import momime.client.language.database.SpellLang;
 import momime.client.language.database.TileTypeLang;
-import momime.client.language.database.v0_9_5.Shortcut;
+import momime.client.language.database.v0_9_6.Shortcut;
 import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;

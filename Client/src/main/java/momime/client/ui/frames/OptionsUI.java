@@ -27,7 +27,7 @@ import javax.xml.bind.Unmarshaller;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.config.v0_9_5.UnitCombatScale;
+import momime.client.config.v0_9_6.UnitCombatScale;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.LanguageVariableUI;

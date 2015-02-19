@@ -25,7 +25,7 @@ import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
-import momime.server.database.v0_9_5.ServerDatabase;
+import momime.server.database.v0_9_6.ServerDatabase;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;

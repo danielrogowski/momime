@@ -1,6 +1,6 @@
 package momime.client.config;
 
-import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.v0_9_6.MomImeClientConfig;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

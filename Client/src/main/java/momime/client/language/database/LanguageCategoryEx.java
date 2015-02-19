@@ -3,8 +3,8 @@ package momime.client.language.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.language.database.v0_9_5.LanguageCategory;
-import momime.client.language.database.v0_9_5.LanguageEntry;
+import momime.client.language.database.v0_9_6.LanguageCategory;
+import momime.client.language.database.v0_9_6.LanguageEntry;
 
 /**
  * Adds a map over the entries, so we can search for entry keys faster

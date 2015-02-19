@@ -3,8 +3,8 @@ package momime.client.language.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.language.database.v0_9_5.ExperienceLevel;
-import momime.client.language.database.v0_9_5.UnitType;
+import momime.client.language.database.v0_9_6.ExperienceLevel;
+import momime.client.language.database.v0_9_6.UnitType;
 
 /**
  * Adds a map over the experience levels, so we can find their names faster

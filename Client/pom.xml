@@ -394,7 +394,7 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
-			<version>0.9.5.5-SNAPSHOT</version>
+			<version>0.9.5.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.common</groupId>

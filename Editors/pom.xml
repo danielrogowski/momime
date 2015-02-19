@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-editors</artifactId>
-	<version>0.9.5.5-SNAPSHOT</version>
+	<version>0.9.5.5</version>
 	<name>momimeEditors</name>
 	<description>MoM IME Editors</description>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEEditors/trunk</connection>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEEditors/tags/momime-editors-0.9.5.5</connection>
 	</scm>
 
 	<parent>

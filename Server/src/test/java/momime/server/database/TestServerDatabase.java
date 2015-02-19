@@ -109,7 +109,7 @@ public final class TestServerDatabase
 		assertEquals ("Failed to load correct number of node strength planes",				2,					serverDB.getNodeStrength ().get (0).getNodeStrengthPlane ().size ());
 		assertEquals ("Failed to load correct number of difficulty level node strengths",	6,					serverDB.getDifficultyLevel ().get (0).getDifficultyLevelNodeStrength ().size ());
 		assertEquals ("Failed to load correct number of difficulty level planes",				2,					serverDB.getDifficultyLevel ().get (0).getDifficultyLevelPlane ().size ());
-		assertEquals ("Failed to load correct number of language text entries",				2,					serverDB.getLanguageCategory ().get (0).getLanguageEntry ().size ());
+		assertEquals ("Failed to load correct number of language text entries",				2,					serverDB.getLanguageCategory ().get (1).getLanguageEntry ().size ());
 
 		// Third level entities
 		assertEquals ("Failed to load correct number of pick type spell counts",				3,					serverDB.getPickType ().get (0).getPickTypeCount ().get (1).getSpellCount ().size ());

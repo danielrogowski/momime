@@ -36,7 +36,7 @@ Here's some quick notes on how to get a game up and running in case some parts a
     go through their wizard and race choices before the game will start.
 
  9) Afer the game starts up I hope it should be self explanatory to anyone used to the original MoM.
-    A lot of features aren't implemented yet, e.g. keyboard shortcuts, and on the "Info" menu the
+    A lot of features aren't implemented yet, e.g. on the "Info" menu the
     only Advisors that work so far are the Apprentice, Surveyor and Tax Collector.
 
 NB. All the windows in the client can be moved around by dragging an empty piece of the window

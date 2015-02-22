@@ -136,18 +136,26 @@ public final class TestCombatStartAndEndImpl
 		
 		// Session utils
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat")).thenReturn (defendingPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "startCombat-A")).thenReturn (attackingPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat-D")).thenReturn (defendingPlayer);
 		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		for (int n = 1; n <= 2; n++)
+		{
 			attackingUnitURNs.add (n);
+			
+			final MemoryUnit attackingUnit = new MemoryUnit ();
+			attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
+			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+		}
 		
 		// Defender has a unit (otherwise there's no defender)
 		final MemoryUnit defendingUnit = new MemoryUnit ();
 		defendingUnit.setOwningPlayerID (defendingPd.getPlayerID ());
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (defendingUnit);
 
 		// Attacking and defending locations
@@ -189,7 +197,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());
@@ -280,18 +288,26 @@ public final class TestCombatStartAndEndImpl
 		
 		// Session utils
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat")).thenReturn (defendingPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "startCombat-A")).thenReturn (attackingPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat-D")).thenReturn (defendingPlayer);
 		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		for (int n = 1; n <= 2; n++)
+		{
 			attackingUnitURNs.add (n);
+
+			final MemoryUnit attackingUnit = new MemoryUnit ();
+			attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
+			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+		}
 		
 		// Defender has a unit (otherwise there's no defender)
 		final MemoryUnit defendingUnit = new MemoryUnit ();
 		defendingUnit.setOwningPlayerID (defendingPd.getPlayerID ());
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (defendingUnit);
 
 		// Attacking and defending locations
@@ -333,7 +349,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());
@@ -417,7 +433,13 @@ public final class TestCombatStartAndEndImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (attackingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "startCombat-A")).thenReturn (attackingPlayer);
+		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+
 		final List<MemoryUnit> advancingUnits = new ArrayList<MemoryUnit> ();
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		for (int n = 1; n <= 3; n++)
@@ -428,6 +450,7 @@ public final class TestCombatStartAndEndImpl
 			tu.setUnitURN (n);
 			tu.setStatus (UnitStatusID.ALIVE);
 			tu.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
+			tu.setOwningPlayerID (attackingPd.getPlayerID ());
 			
 			if (n < 3)
 			{
@@ -437,10 +460,11 @@ public final class TestCombatStartAndEndImpl
 			}
 			
 			trueMap.getUnit ().add (tu);
+			
+			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (tu);
 		}
 		
 		// There are no defending units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (null);
 
 		// Attacking and defending locations
@@ -490,9 +514,10 @@ public final class TestCombatStartAndEndImpl
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());
@@ -603,15 +628,23 @@ public final class TestCombatStartAndEndImpl
 		
 		// Session utils
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "startCombat-A")).thenReturn (attackingPlayer);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat-CD")).thenReturn (defendingPlayer);
 		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		for (int n = 1; n <= 2; n++)
+		{
 			attackingUnitURNs.add (n);
+
+			final MemoryUnit attackingUnit = new MemoryUnit ();
+			attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
+			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+		}
 		
 		// No defending units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (null);
 
 		// Attacking and defending locations
@@ -659,7 +692,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());

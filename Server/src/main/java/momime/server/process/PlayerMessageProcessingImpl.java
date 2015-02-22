@@ -990,6 +990,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
+	@Override
 	public final void processSimultaneousTurnsMovement (final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{

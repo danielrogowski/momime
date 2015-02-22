@@ -491,10 +491,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
-		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">

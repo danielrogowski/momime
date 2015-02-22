@@ -114,9 +114,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Scheduled combat utils */
 	private ScheduledCombatUtils scheduledCombatUtils; 
 	
-	/** Simultaneous turns combat scheduler */
-	private CombatScheduler combatScheduler;
-	
 	/** Map generator */
 	private CombatMapGenerator combatMapGenerator;
 	
@@ -126,14 +123,16 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
+	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
 	 *
 	 * @param defendingLocation Location where defending units are standing
 	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
-	 * @param scheduledCombatURN Scheduled combat URN, if simultaneous turns game; null for one-at-a-time games
-	 * @param attackingPlayer Player who is attacking
-	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind
+	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind; mandatory
+	 * @param defendingUnitURNs Which of the defender's unit stack are defending - used for simultaneous turns games; optional, null = all units in defendingLocation
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -143,16 +142,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 */
 	@Override
 	public final void startCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs, final MomSessionVariables mom)
+		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering startCombat: " + defendingLocation + ", " + attackingFrom + ", " + scheduledCombatURN +
-			", Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID ());
-		
-		// We need to inform all players that the attacker is involved in a combat.
-		// We deal with the defender (if its a real human/human combat) within StartCombat
-		if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (attackingPlayer.getPlayerDescription ().isHuman ()))
-			getCombatScheduler ().informClientsOfPlayerBusyInCombat (attackingPlayer, mom.getPlayers (), true);
+		log.trace ("Entering startCombat: " + defendingLocation + ", " + attackingFrom);
 		
 		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 0-1
 		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
@@ -161,32 +154,31 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (defendingLocation.getX (), defendingLocation.getY (),
 			Math.max (defendingLocation.getZ (), attackingFrom.getZ ()));
 		
-		// If this is a scheduled combat then check it out... WalkInWithoutAFight may be switched on, in which case we want to move rather than setting up a combat
-		boolean walkInWithoutAFight = false;
-		if (scheduledCombatURN != null)
-			walkInWithoutAFight = getScheduledCombatUtils ().findScheduledCombatURN
-				(mom.getGeneralServerKnowledge ().getScheduledCombat (), scheduledCombatURN, "startCombat").isWalkInWithoutAFight ();
-		
-		// Record the scheduled combat ID
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		tc.setScheduledCombatURN (scheduledCombatURN);
+		
+		// The attacker is easy to find from the first attackingUnitURN
+		if ((attackingUnitURNs == null) || (attackingUnitURNs.size () == 0))
+			throw new MomException ("startCombat given null or empty list of attackingUnitURNs");
+		
+		final MemoryUnit firstAttackingUnit = getUnitUtils ().findUnitURN (attackingUnitURNs.get (0), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "startCombat-A");
+		final PlayerServerDetails attackingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
+			(mom.getPlayers (), firstAttackingUnit.getOwningPlayerID (), "startCombat-A");
 		
 		// Find out who we're attacking - if an empty city, we can get null here
-		final MemoryUnit firstDefendingUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-			defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getZ (), 0);
-		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID
-			(mom.getPlayers (), firstDefendingUnit.getOwningPlayerID (), "startCombat");
+		final MemoryUnit firstDefendingUnit;
+		if ((defendingUnitURNs != null) && (defendingUnitURNs.size () > 0))
+			firstDefendingUnit = getUnitUtils ().findUnitURN (defendingUnitURNs.get (0), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "startCombat-D");
+		else
+			firstDefendingUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+				defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getZ (), 0);
 		
-		// If there is a real defender, we need to inform all players that they're involved in a combat
-		// We dealt with informing about the attacker in InitiateCombat
-		if ((defendingPlayer != null) && (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS))
-			getCombatScheduler ().informClientsOfPlayerBusyInCombat (defendingPlayer, mom.getPlayers (), true);
-
+		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID
+			(mom.getPlayers (), firstDefendingUnit.getOwningPlayerID (), "startCombat-D");
+		
 		// Start off the message to the client
 		final StartCombatMessage startCombatMessage = new StartCombatMessage ();
 		startCombatMessage.setCombatLocation (combatLocation);
-		startCombatMessage.setScheduledCombatURN (scheduledCombatURN);
 		
 		// Generate the combat scenery
 		tc.setCombatMap (getCombatMapGenerator ().generateCombatMap (mom.getSessionDescription ().getCombatMapSize (),
@@ -200,7 +192,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		log.debug ("Positioning defenders at " + defendingLocation);
 		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), defendingLocation,
 			COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y, COMBAT_SETUP_DEFENDER_ROWS, COMBAT_SETUP_DEFENDER_FACING,
-			UnitCombatSideID.DEFENDER, null, tc.getCombatMap (), mom);
+			UnitCombatSideID.DEFENDER, defendingUnitURNs, tc.getCombatMap (), mom);
 				
 		log.debug ("Positioning attackers at " + defendingLocation);
 		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), attackingFrom,
@@ -208,24 +200,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
 		
 		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
-		if ((walkInWithoutAFight) || (defendingPlayer == null))
+		if (defendingPlayer == null)
 		{
 			log.debug ("Combat ending before it starts");
 			
-			// There's a few situations to deal with here:
-			// If "walk in without a fight" is on, then we have other units already at that location, so there definitely no defender.
-			// The other way we can get to this block of code is if there's no defending units - this includes that we may be walking into
-			// an enemy city with no defence, and for this situation we need to set the player correctly so we notify the player that they've lost their city.
-			// It should be impossible to initiate a combat against your own city, since the "walk in without a fight" check is done first.
-			if (walkInWithoutAFight)
-				defendingPlayer = null;
-			
-			else if ((tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != null))
+			// If attacking an enemy city with no defence, set the player correctly so we notify the player that they've lost their city.
+			if ((tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != null))
 				defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "startCombat-CD");
-				
-			else
-				// It'll be null anyway, but just to be certain...
-				defendingPlayer = null;
 				
 			combatEnded (combatLocation, attackingPlayer, defendingPlayer, attackingPlayer,	// <-- who won
 				null, mom);
@@ -473,14 +454,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			getFogOfWarMidTurnChanges ().removeCombatAreaEffectsFromLocalisedSpells
 				(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
-			// Handle clearing up and removing the scheduled combat
-			if (tc.getScheduledCombatURN () != null)
-			{
-				log.debug ("Tidying up scheduled combat");
-				getCombatScheduler ().processEndOfScheduledCombat (tc.getScheduledCombatURN (), winningPlayer, mom);
-				tc.setScheduledCombatURN (null);
-			}
-			
 			// Assuming both sides may have taken losses, could have gained/lost a city, etc. etc., best to just recalculate production for both
 			// DefendingPlayer may still be nil
 			getServerResourceCalculations ().recalculateGlobalProductionValues (attackingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
@@ -490,11 +463,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
 			{
-				// If this is a simultaneous turns game, we need to inform all players that these two players are no longer in combat
-				getCombatScheduler ().informClientsOfPlayerBusyInCombat (attackingPlayer, mom.getPlayers (), false);
-				
-				if (defendingPlayer != null)
-					getCombatScheduler ().informClientsOfPlayerBusyInCombat (defendingPlayer, mom.getPlayers (), false);
+				// In simultaneous turns games, this routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
+				getPlayerMessageProcessing ().processSimultaneousTurnsMovement (mom);
 			}
 			else
 			{
@@ -703,22 +673,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	{
 		scheduledCombatUtils = utils;
 	}
-	
-	/**
-	 * @return Simultaneous turns combat scheduler
-	 */
-	public final CombatScheduler getCombatScheduler ()
-	{
-		return combatScheduler;
-	}
-
-	/**
-	 * @param scheduler Simultaneous turns combat scheduler
-	 */
-	public final void setCombatScheduler (final CombatScheduler scheduler)
-	{
-		combatScheduler = scheduler;
-	}
 
 	/**
 	 * @return Map generator
@@ -766,5 +720,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

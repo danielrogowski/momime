@@ -117,15 +117,9 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 		}
 		else
 		{
-			// The attacking player isn't necessarily the sender; if a human-vs-human combat then we're processing the message from
-			// whoever was second to click on the combat; that might be the attacker or defender.
-			// Also don't rely on comparing and picking either sender or ohp, because if the attacker is an AI player, they're neither of these.
-			final PlayerServerDetails attackingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
-				(mom.getPlayers (), combat.getAttackingPlayerID (), "RequestStartScheduledCombatMessageImpl");
-			
 			// Actually start the combat (Or pop up the 'found node/lair/tower' window if applicable)
 			getCombatStartAndEnd ().startCombat ((MapCoordinates3DEx) combat.getDefendingLocation (), (MapCoordinates3DEx) combat.getAttackingFrom (),
-				getScheduledCombatURN (), attackingPlayer, combat.getAttackingUnitURN (), mom);
+				combat.getAttackingUnitURN (), null, mom);
 		}
 	
 		log.trace ("Exiting process");

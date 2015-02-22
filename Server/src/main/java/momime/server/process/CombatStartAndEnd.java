@@ -24,9 +24,8 @@ public interface CombatStartAndEnd
 	 *
 	 * @param defendingLocation Location where defending units are standing
 	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
-	 * @param scheduledCombatURN Scheduled combat URN, if simultaneous turns game; null for one-at-a-time games
-	 * @param attackingPlayer Player who is attacking
-	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind
+	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind; mandatory
+	 * @param defendingUnitURNs Which of the defender's unit stack are defending - used for simultaneous turns games; optional, null = all units in defendingLocation
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -35,7 +34,7 @@ public interface CombatStartAndEnd
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void startCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs, final MomSessionVariables mom)
+		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**

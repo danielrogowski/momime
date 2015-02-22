@@ -2004,7 +2004,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 			else
 			{
-				getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, null, unitStackOwner, attackingUnitURNs, mom);
+				getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, attackingUnitURNs, null, mom);
 			}
 		}
 

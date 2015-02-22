@@ -35,6 +35,7 @@ import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
+import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
@@ -903,27 +904,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					// Erase all pending movements on the clients, since we're about to process movement
 					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new ErasePendingMovementsMessage ());
 					
-					// Clear out list of combats, before movement generates more
-					mom.getGeneralServerKnowledge ().getScheduledCombat ().clear ();
-
-					// Continue the player's movement
-					continueMovement (0, mom);
-					
-					// Special orders - e.g. settlers building cities.
-					// This can generate messages about spirits capturing nodes.
-					// We want to send these now, even though we may be just about to run the EndPhase to keep consistency between whether
-					// they are considered part of the previous or new turn depending on whether there's any combats or not
-					// (Since if there are combats, there's no way to get messages generated
-					// here sent with the message block generated in the EndPhase)
-					getSimultaneousTurnsProcessing ().processSpecialOrders (mom);
-					sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
-					
-					// Tell each player about the combats they are involved in.
-					// If there are no combats whatsoever then jump straight to the end phase.
-					if (mom.getGeneralServerKnowledge ().getScheduledCombat ().size () == 0)
-						endPhase (mom, 0);
-					else
-						getCombatScheduler ().sendScheduledCombats (mom.getPlayers (), mom.getGeneralServerKnowledge ().getScheduledCombat (), false);
+					// Process all movements and combats
+					processSimultaneousTurnsMovement (mom);
 				}				
 				break;
 				
@@ -987,6 +969,182 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 
 		log.trace ("Exiting continueMovement");				
+	}
+
+	/**
+	 * Processes PendingMovements at the end of a simultaneous turns game.
+	 * 
+	 * This routine will end when either we find a combat that needs to be played (in which case it ends with a call to startCombat)
+	 * or when the only PendingMovements remaining are unit stacks that have no movement left (in which case it ends with a call to endPhase).
+	 * 
+	 * It must be able to carry on where it left off, so e.g. it is called the first time, and ends when it finds a combat that a human player needs
+	 * to do, then the end of combatEnded will call it again, and it must be able to continue processing remaining movements.
+	 * 
+	 * Combats just between AI players still cause this routine to exit out, because combatEnded being triggered results in this routine
+	 * being called again, so it will start another execution and continue where it left off, and the original invocation will exit out. 
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final void processSimultaneousTurnsMovement (final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+	{
+		log.trace ("Entering processSimultaneousTurnsMovement");
+
+		// Process non combat moves
+		while (findAndProcessOneCellPendingMovement (mom));
+		
+		// >>>>> Everything below here is "If no combat was initiated"... when that part is written		
+		
+		// Any pending movements remaining at this point must be unit stacks that ran out of movement before they
+		// reached their destination - so we resend these pending moves to the client so the arrows display correctly
+		// and it won't ask the player for where to move those units.
+		for (final PlayerServerDetails player : mom.getPlayers ())
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+				final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
+				while (iter.hasNext ())
+				{
+					final PendingMovement thisMove = iter.next ();
+
+					// Find each of the units
+					final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+					for (final Integer unitURN : thisMove.getUnitURN ())
+						unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement"));
+					
+					// We're at a different location now, and know more about the map than when the path was calculated, so need to recalculate it
+					final List<Integer> path = getFogOfWarMidTurnChanges ().determineMovementPath (unitStack, player,
+						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), mom);
+					
+					// In the process we might now find that the location has become unreachable, because of what we've learned about the map
+					if (path == null)
+						iter.remove ();
+					else
+					{
+						// Use the updated path
+						thisMove.getPath ().clear ();
+						thisMove.getPath ().addAll (path);
+						
+						// Send it to the client
+						final PendingMovementMessage msg = new PendingMovementMessage ();
+						msg.setPendingMovement (thisMove);
+						player.getConnection ().sendMessageToClient (msg);
+					}
+				}
+			}
+
+		// Special orders - e.g. settlers building cities.
+		// This can generate messages about spirits capturing nodes.
+		// We want to send these now, even though we may be just about to run the EndPhase to keep consistency between whether
+		// they are considered part of the previous or new turn depending on whether there's any combats or not
+		// (Since if there are combats, there's no way to get messages generated
+		// here sent with the message block generated in the EndPhase)
+		getSimultaneousTurnsProcessing ().processSpecialOrders (mom);
+		sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
+
+		// End this turn and start the next one
+		endPhase (mom, 0);
+		
+		log.trace ("Exiting processSimultaneousTurnsMovement");
+	}
+	
+
+	/**
+	 * Searches all pending movements across all players, making a list of all those where the first cell being
+	 * moved to is free and clear, or occupied by ourselves (even if subsequent moves result in a combat).
+	 * Then chooses one at random and processes the move.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we found a move to do
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	final boolean findAndProcessOneCellPendingMovement (final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+	{
+		log.trace ("Entering findAndProcessOneCellPendingMovement");
+
+		// Go through all pending movements for all players
+		final List<OneCellPendingMovement> moves = new ArrayList<OneCellPendingMovement> ();
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+			final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
+			while (iter.hasNext ())
+			{
+				final PendingMovement thisMove = iter.next ();
+				
+				// Loop finding each unit, and in process ensure they all have movement remaining
+				int doubleMovementRemaining = Integer.MAX_VALUE;
+				int doubleMovementTotal = Integer.MAX_VALUE;
+				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+				for (final Integer unitURN : thisMove.getUnitURN ())
+				{
+					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement");
+					
+					unitStack.add (thisUnit);
+					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
+						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+					
+					final int unitDoubleMovementTotal = mom.getServerDB ().findUnit (thisUnit.getUnitID (), "findAndProcessOneCellPendingMovement").getDoubleMovement ();
+					if (unitDoubleMovementTotal < doubleMovementTotal)
+						doubleMovementTotal = unitDoubleMovementTotal;
+				}
+				
+				// Any pending movements where the unit stack is out of movement, just leave them in the list until next turn
+				if (doubleMovementRemaining > 0)
+				{
+					// Does this unit stack have a valid single cell non-combat move?
+					final OneCellPendingMovement oneCell = getFogOfWarMidTurnChanges ().determineOneCellPendingMovement
+						(unitStack, player, thisMove, doubleMovementRemaining, mom);
+					
+					// Is the destination unreachable?  If so just remove the pending movement altogether
+					if (oneCell == null)
+						iter.remove ();
+					
+					// Does it initiate a combat?  If so then leave the pending movement (don't remove it) and we'll deal with it later
+					else if (!oneCell.isCombatInitiated ())
+						for (int n = 0; n < doubleMovementTotal; n++)
+							moves.add (oneCell);
+				}
+			}
+		}
+		
+		final boolean found = (moves.size () > 0);
+		if (found)
+		{
+			// Pick a random movement to do
+			final OneCellPendingMovement oneCell = moves.get (getRandomUtils ().nextInt (moves.size ()));
+			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+			for (final Integer unitURN : oneCell.getPendingMovement ().getUnitURN ())
+				unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement"));
+			
+			// Execute the move
+			getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, oneCell.getUnitStackOwner (),
+				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getOneStep (), false, mom);
+			
+			// If they got to their destination, remove the pending move completely
+			if (oneCell.getOneStep ().equals (oneCell.getPendingMovement ().getMoveTo ()))
+			{
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) oneCell.getUnitStackOwner ().getTransientPlayerPrivateKnowledge ();
+				trans.getPendingMovement ().remove (oneCell.getPendingMovement ());
+			}
+			
+			// Otherwise update the pending movement with the new start position
+			else
+				oneCell.getPendingMovement ().setMoveFrom (oneCell.getOneStep ());
+		}
+		
+		log.trace ("Exiting findAndProcessOneCellPendingMovement = " + found);
+		return found;
 	}
 	
 	/**

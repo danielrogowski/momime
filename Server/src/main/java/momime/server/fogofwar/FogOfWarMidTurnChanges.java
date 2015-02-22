@@ -15,12 +15,14 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.PendingMovement;
 import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.process.OneCellPendingMovement;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -480,4 +482,38 @@ public interface FogOfWarMidTurnChanges
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
+
+	/**
+	 * This follows the same logic as moveUnitStack, except that it only works out what the first cell of movement will be,
+	 * and doesn't actually perform the movement.
+	 * 
+	 * @param unitStack The units we want to move (true unit versions)
+	 * @param unitStackOwner The player who owns the units
+	 * @param pendingMovement The pending move we're determining one step of
+	 * @param doubleMovementRemaining The lowest movement remaining of any unit in the stack
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
+	 */
+	public OneCellPendingMovement determineOneCellPendingMovement (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+		final PendingMovement pendingMovement,  final int doubleMovementRemaining, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException;
+
+	/**
+	 * This follows the same logic as moveUnitStack, except that it only works out what the movement path will be,
+	 * and doesn't actually perform the movement.
+	 * 
+	 * @param unitStack The units we want to move (true unit versions)
+	 * @param unitStackOwner The player who owns the units
+	 * @param moveFrom Location to move from
+	 * @param moveTo Location to move to
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
+	 */
+	public List<Integer> determineMovementPath (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException;
 }

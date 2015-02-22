@@ -70,6 +70,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.process.CombatProcessing;
 import momime.server.process.CombatScheduler;
+import momime.server.process.OneCellPendingMovement;
 import momime.server.utils.UnitServerUtils;
 
 import org.apache.commons.logging.Log;
@@ -2008,6 +2009,136 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 
 		log.trace ("Exiting moveUnitStack");
+	}
+	
+	/**
+	 * This follows the same logic as moveUnitStack, except that it only works out what the first cell of movement will be,
+	 * and doesn't actually perform the movement.
+	 * 
+	 * @param unitStack The units we want to move (true unit versions)
+	 * @param unitStackOwner The player who owns the units
+	 * @param pendingMovement The pending move we're determining one step of
+	 * @param doubleMovementRemaining The lowest movement remaining of any unit in the stack
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
+	 */
+	@Override
+	public final OneCellPendingMovement determineOneCellPendingMovement (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+		final PendingMovement pendingMovement,  final int doubleMovementRemaining, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException
+	{
+		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) pendingMovement.getMoveFrom ();
+		final MapCoordinates3DEx moveTo = (MapCoordinates3DEx) pendingMovement.getMoveTo ();
+		
+		log.trace ("Entering determineOneCellPendingMovement: " + unitStack.size () + ", Player ID " +
+			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom.toString () + ", " + moveTo.toString ());
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
+
+		// Find distances and route from our start point to every location on the map
+		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+
+		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
+			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
+
+		// Is there a route to where we want to go?
+		final OneCellPendingMovement result;
+		if (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] < 0)
+			result = null;
+		else
+		{
+			// Get the direction to make our 1 move in
+			final int movementDirection = determineMovementDirection (moveFrom, moveTo, movementDirections, mom.getSessionDescription ().getMapSize ());
+
+			// Work out where this moves us to
+			final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom);
+			getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getMapSize (), oneStep, movementDirection);
+
+			final MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
+
+			// Does this initiate a combat?
+			final boolean combatInitiated = movingHereResultsInAttack [oneStep.getZ ()] [oneStep.getY ()] [oneStep.getX ()];
+
+			// Adjust move to plane if moving onto or off of a tower
+			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
+				oneStep.setZ (0);
+			else
+				oneStep.setZ (moveTo.getZ ());
+
+			// Set up result
+			result = new OneCellPendingMovement (unitStackOwner, pendingMovement, oneStep, combatInitiated);
+		}
+		
+		log.trace ("Exiting determineOneCellPendingMovement = " + result); 
+		return result;
+	}
+	
+	/**
+	 * This follows the same logic as moveUnitStack, except that it only works out what the movement path will be,
+	 * and doesn't actually perform the movement.
+	 * 
+	 * @param unitStack The units we want to move (true unit versions)
+	 * @param unitStackOwner The player who owns the units
+	 * @param moveFrom Location to move from
+	 * @param moveTo Location to move to
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
+	 */
+	@Override
+	public final List<Integer> determineMovementPath (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException
+	{
+		log.trace ("Entering determineMovementPath: " + unitStack.size () + ", Player ID " +
+			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom.toString () + ", " + moveTo.toString ());
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
+		
+		// We do this at the end of simultaneous turns movement, when all units stacks have used up all movement, so we know this
+		final int doubleMovementRemaining = 0;
+		
+		// Find distances and route from our start point to every location on the map
+		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+
+		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
+			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
+
+		// Is there a route to where we want to go?
+		final List<Integer> result;
+		if (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] < 0)
+			result = null;
+		else
+		{
+			// Record the movement path
+			result = new ArrayList<Integer> ();
+
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
+			while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
+			{
+				final int direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
+				result.add (direction);
+	
+				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getMapSize (), coords, getCoordinateSystemUtils ().normalizeDirection
+					(mom.getSessionDescription ().getMapSize ().getCoordinateSystemType (), direction + 4)))
+					
+					throw new MomException ("determineMovementPath: Server map tracing moved to a cell off the map");
+			}
+		}
+		
+		return result;
 	}
 
 	/**

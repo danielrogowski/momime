@@ -28,7 +28,6 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
-import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
@@ -70,98 +69,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestCombatProcessingImpl
 {
-	/**
-	 * Tests the initiateCombat method, with one unit stack attacking another on the open map, in a one-at-a-time turns game
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testInitiateCombat () throws Exception
-	{
-		// Attacking player
-		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
-		attackingPd.setPlayerID (3);
-		
-		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
-
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		
-		// Locations
-		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
-		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);		
-
-		// The subset of units who're in "attackingFrom" who are actually attacking
-		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
-		
-		// Set up object to test
-		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
-		
-		final CombatProcessingImpl proc = new CombatProcessingImpl ();
-		proc.setCombatStartAndEnd (combatStartAndEnd);
-		
-		// Call method
-		proc.initiateCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
-		
-		// Check results
-		verify (combatStartAndEnd, times (1)).startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
-	}
-
-	/**
-	 * Tests the initiateCombat method, with one unit stack attacking another on the open map, in a simultaneous turns game
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testInitiateCombat_Simultaneous () throws Exception
-	{
-		// Attacking player
-		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
-		attackingPd.setPlayerID (3);
-		
-		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
-		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setTurnSystem (TurnSystem.SIMULTANEOUS);		// <---
-
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getPlayers ()).thenReturn (players);
-		
-		// Locations
-		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
-		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);		
-
-		// The subset of units who're in "attackingFrom" who are actually attacking
-		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
-		
-		// Set up object to test
-		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
-		final CombatScheduler combatScheduler = mock (CombatScheduler.class);
-		
-		final CombatProcessingImpl proc = new CombatProcessingImpl ();
-		proc.setCombatStartAndEnd (combatStartAndEnd);
-		proc.setCombatScheduler (combatScheduler);
-		
-		// Call method
-		proc.initiateCombat (defendingLocation, attackingFrom, 55, attackingPlayer, attackingUnitURNs, mom);
-		
-		// Check results
-		verify (combatScheduler, times (1)).informClientsOfPlayerBusyInCombat (attackingPlayer, players, true);
-		verify (combatStartAndEnd, times (1)).startCombat (defendingLocation, attackingFrom, 55, attackingPlayer, attackingUnitURNs, mom);
-	}
-
 	/**
 	 * Tests the determineMaxUnitsInRow method
 	 * This does a mock setup for a defender in a city with city walls (see layout pattern in the comments of the main method)

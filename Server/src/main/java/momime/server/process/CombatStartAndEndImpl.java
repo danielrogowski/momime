@@ -149,6 +149,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		log.trace ("Entering startCombat: " + defendingLocation + ", " + attackingFrom + ", " + scheduledCombatURN +
 			", Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID ());
 		
+		// We need to inform all players that the attacker is involved in a combat.
+		// We deal with the defender (if its a real human/human combat) within StartCombat
+		if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (attackingPlayer.getPlayerDescription ().isHuman ()))
+			getCombatScheduler ().informClientsOfPlayerBusyInCombat (attackingPlayer, mom.getPlayers (), true);
+		
 		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 0-1
 		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
 		// Any tower combats to/from Arcanus will be 0-0, and should appear on Arcanus only

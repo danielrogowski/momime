@@ -30,29 +30,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public interface CombatProcessing
 {
 	/**
-	 * Sets up a potential combat on the server.  If we're attacking an enemy unit stack or city, then all this does is calls StartCombat.
-	 * If we're attacking a node/lair/tower, then this handles scouting the node/lair/tower, sending to the client the details
-	 * of what monster we scouted, and StartCombat is only called when/if they click "Yes" they want to attack.
-	 * This is declared separately so it can be used immediately from MoveUnitStack in one-at-a-time games, or from requesting scheduled combats in Simultaneous turns games.
-	 *
-	 * @param defendingLocation Location where defending units are standing
-	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
-	 * @param scheduledCombatURN Scheduled combat URN, if simultaneous turns game; null for one-at-a-time games
-	 * @param attackingPlayer Player who is attacking
-	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws JAXBException If there is a problem converting the object into XML
-	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void initiateCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
-		final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
-
-	/**
 	 * Sets units into combat (e.g. sets their combatLocation to put them into combat, and sets their position, heading and side within that combat)
 	 * and adds the info to the StartCombatMessage to inform the the two clients involved to do the same.
 	 * One call does units on one side (attacking or defending) of the combat.

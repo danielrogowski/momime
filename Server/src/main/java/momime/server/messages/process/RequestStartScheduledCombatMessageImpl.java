@@ -12,7 +12,7 @@ import momime.common.messages.servertoclient.PlayerCombatRequestStatusMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
-import momime.server.process.CombatProcessing;
+import momime.server.process.CombatStartAndEnd;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,8 +38,8 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 
-	/** Combat processing */
-	private CombatProcessing combatProcessing;
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -124,7 +124,7 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 				(mom.getPlayers (), combat.getAttackingPlayerID (), "RequestStartScheduledCombatMessageImpl");
 			
 			// Actually start the combat (Or pop up the 'found node/lair/tower' window if applicable)
-			getCombatProcessing ().initiateCombat ((MapCoordinates3DEx) combat.getDefendingLocation (), (MapCoordinates3DEx) combat.getAttackingFrom (),
+			getCombatStartAndEnd ().startCombat ((MapCoordinates3DEx) combat.getDefendingLocation (), (MapCoordinates3DEx) combat.getAttackingFrom (),
 				getScheduledCombatURN (), attackingPlayer, combat.getAttackingUnitURN (), mom);
 		}
 	
@@ -164,18 +164,18 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 	}
 
 	/**
-	 * @return Combat processing
+	 * @return Starting and ending combats
 	 */
-	public final CombatProcessing getCombatProcessing ()
+	public final CombatStartAndEnd getCombatStartAndEnd ()
 	{
-		return combatProcessing;
+		return combatStartAndEnd;
 	}
 
 	/**
-	 * @param proc Combat processing
+	 * @param cse Starting and ending combats
 	 */
-	public final void setCombatProcessing (final CombatProcessing proc)
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
-		combatProcessing = proc;
+		combatStartAndEnd = cse;
 	}
 }

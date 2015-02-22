@@ -68,8 +68,8 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
-import momime.server.process.CombatProcessing;
 import momime.server.process.CombatScheduler;
+import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
 import momime.server.utils.UnitServerUtils;
 
@@ -134,8 +134,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
 	
-	/** Combat processing */
-	private CombatProcessing combatProcessing;
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
 	
 	/** Simultaneous turns combat scheduler */
 	private CombatScheduler combatScheduler;
@@ -2004,7 +2004,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 			else
 			{
-				getCombatProcessing ().initiateCombat (defendingLocation, moveFrom, null, unitStackOwner, attackingUnitURNs, mom);
+				getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, null, unitStackOwner, attackingUnitURNs, mom);
 			}
 		}
 
@@ -2366,19 +2366,19 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 
 	/**
-	 * @return Combat processing
+	 * @return Starting and ending combats
 	 */
-	public final CombatProcessing getCombatProcessing ()
+	public final CombatStartAndEnd getCombatStartAndEnd ()
 	{
-		return combatProcessing;
+		return combatStartAndEnd;
 	}
 
 	/**
-	 * @param proc Combat processing
+	 * @param cse Starting and ending combats
 	 */
-	public final void setCombatProcessing (final CombatProcessing proc)
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
-		combatProcessing = proc;
+		combatStartAndEnd = cse;
 	}
 
 	/**

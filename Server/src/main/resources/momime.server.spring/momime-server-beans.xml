@@ -252,7 +252,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="requestStartScheduledCombatMessage" class="momime.server.messages.process.RequestStartScheduledCombatMessageImpl" scope="prototype">
 		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
-		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
@@ -507,7 +507,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatAI" ref="combatAI" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
@@ -587,7 +586,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
-		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />

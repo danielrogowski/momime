@@ -22,7 +22,6 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
@@ -94,51 +93,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
-	/** Starting and ending combats */
-	private CombatStartAndEnd combatStartAndEnd;
-	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
-	/**
-	 * Sets up a potential combat on the server.  If we're attacking an enemy unit stack or city, then all this does is calls StartCombat.
-	 * If we're attacking a node/lair/tower, then this handles scouting the node/lair/tower, sending to the client the details
-	 * of what monster we scouted, and StartCombat is only called when/if they click "Yes" they want to attack.
-	 * This is declared separately so it can be used immediately from MoveUnitStack in one-at-a-time games, or from requesting scheduled combats in Simultaneous turns games.
-	 * 
-	 * This could probably be removed now, and have everything directly call startCombat
-	 *
-	 * @param defendingLocation Location where defending units are standing
-	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
-	 * @param scheduledCombatURN Scheduled combat URN, if simultaneous turns game; null for one-at-a-time games
-	 * @param attackingPlayer Player who is attacking
-	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws JAXBException If there is a problem converting the object into XML
-	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	@Override
-	public final void initiateCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
-	{
-		log.trace ("Entering initiateCombat: " + defendingLocation + ", " + attackingFrom + ", " + scheduledCombatURN +
-			", Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID ());
-		
-		// We need to inform all players that the attacker is involved in a combat.
-		// We deal with the defender (if its a real human/human combat) within StartCombat
-		if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (attackingPlayer.getPlayerDescription ().isHuman ()))
-			getCombatScheduler ().informClientsOfPlayerBusyInCombat (attackingPlayer, mom.getPlayers (), true);
-		
-		// Start right away
-		getCombatStartAndEnd ().startCombat (defendingLocation, attackingFrom, scheduledCombatURN, attackingPlayer, attackingUnitURNs, mom);
-
-		log.trace ("Exiting initiateCombat");
-	}
-		
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
 	 * city wall corners and the main feature (node, temple, tower of wizardry, etc. on the defender side).
@@ -1217,22 +1174,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
-	}
-
-	/**
-	 * @return Starting and ending combats
-	 */
-	public final CombatStartAndEnd getCombatStartAndEnd ()
-	{
-		return combatStartAndEnd;
-	}
-
-	/**
-	 * @param cse Starting and ending combats
-	 */
-	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
-	{
-		combatStartAndEnd = cse;
 	}
 
 	/**

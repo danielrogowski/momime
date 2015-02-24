@@ -131,8 +131,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** Simultaneous turns processing */
 	private SimultaneousTurnsProcessing simultaneousTurnsProcessing;
 	
-	/** Simultaneous turns combat scheduler */
-	private CombatScheduler combatScheduler;
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -998,63 +998,66 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Process non combat moves
 		while (findAndProcessOneCellPendingMovement (mom));
-		
-		// >>>>> Everything below here is "If no combat was initiated"... when that part is written		
-		
-		// Any pending movements remaining at this point must be unit stacks that ran out of movement before they
-		// reached their destination - so we resend these pending moves to the client so the arrows display correctly
-		// and it won't ask the player for where to move those units.
-		for (final PlayerServerDetails player : mom.getPlayers ())
-			if (player.getPlayerDescription ().isHuman ())
-			{
-				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-				final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
-				while (iter.hasNext ())
-				{
-					final PendingMovement thisMove = iter.next ();
 
-					// Find each of the units
-					final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-					for (final Integer unitURN : thisMove.getUnitURN ())
-						unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement"));
-					
-					// We're at a different location now, and know more about the map than when the path was calculated, so need to recalculate it
-					final List<Integer> path = getFogOfWarMidTurnChanges ().determineMovementPath (unitStack, player,
-						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), mom);
-					
-					// In the process we might now find that the location has become unreachable, because of what we've learned about the map
-					if (path == null)
-						iter.remove ();
-					else
+		// Is there a combat to process?
+		if (!findAndProcessOneCombat (mom))
+		{
+			// No more combats - so end the turn
+			
+			// Any pending movements remaining at this point must be unit stacks that ran out of movement before they
+			// reached their destination - so we resend these pending moves to the client so the arrows display correctly
+			// and it won't ask the player for where to move those units.
+			for (final PlayerServerDetails player : mom.getPlayers ())
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+					final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
+					while (iter.hasNext ())
 					{
-						// Use the updated path
-						thisMove.getPath ().clear ();
-						thisMove.getPath ().addAll (path);
+						final PendingMovement thisMove = iter.next ();
+	
+						// Find each of the units
+						final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+						for (final Integer unitURN : thisMove.getUnitURN ())
+							unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement"));
 						
-						// Send it to the client
-						final PendingMovementMessage msg = new PendingMovementMessage ();
-						msg.setPendingMovement (thisMove);
-						player.getConnection ().sendMessageToClient (msg);
+						// We're at a different location now, and know more about the map than when the path was calculated, so need to recalculate it
+						final List<Integer> path = getFogOfWarMidTurnChanges ().determineMovementPath (unitStack, player,
+							(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), mom);
+						
+						// In the process we might now find that the location has become unreachable, because of what we've learned about the map
+						if (path == null)
+							iter.remove ();
+						else
+						{
+							// Use the updated path
+							thisMove.getPath ().clear ();
+							thisMove.getPath ().addAll (path);
+							
+							// Send it to the client
+							final PendingMovementMessage msg = new PendingMovementMessage ();
+							msg.setPendingMovement (thisMove);
+							player.getConnection ().sendMessageToClient (msg);
+						}
 					}
 				}
-			}
-
-		// Special orders - e.g. settlers building cities.
-		// This can generate messages about spirits capturing nodes.
-		// We want to send these now, even though we may be just about to run the EndPhase to keep consistency between whether
-		// they are considered part of the previous or new turn depending on whether there's any combats or not
-		// (Since if there are combats, there's no way to get messages generated
-		// here sent with the message block generated in the EndPhase)
-		getSimultaneousTurnsProcessing ().processSpecialOrders (mom);
-		sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
-
-		// End this turn and start the next one
-		endPhase (mom, 0);
+	
+			// Special orders - e.g. settlers building cities.
+			// This can generate messages about spirits capturing nodes.
+			// We want to send these now, even though we may be just about to run the EndPhase to keep consistency between whether
+			// they are considered part of the previous or new turn depending on whether there's any combats or not
+			// (Since if there are combats, there's no way to get messages generated
+			// here sent with the message block generated in the EndPhase)
+			getSimultaneousTurnsProcessing ().processSpecialOrders (mom);
+			sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
+	
+			// End this turn and start the next one
+			endPhase (mom, 0);
+		}
 		
 		log.trace ("Exiting processSimultaneousTurnsMovement");
 	}
 	
-
 	/**
 	 * Searches all pending movements across all players, making a list of all those where the first cell being
 	 * moved to is free and clear, or occupied by ourselves (even if subsequent moves result in a combat).
@@ -1145,6 +1148,101 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		}
 		
 		log.trace ("Exiting findAndProcessOneCellPendingMovement = " + found);
+		return found;
+	}
+
+	/**
+	 * Searches all pending movements across all players, making a list all of them (which at this stage are assumed to be combats).
+	 * Then chooses one at random and initiates the combat.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we found a combat to do
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	final boolean findAndProcessOneCombat (final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+	{
+		log.trace ("Entering findAndProcessOneCombat");
+
+		// Go through all pending movements for all players
+		final List<OneCellPendingMovement> combats = new ArrayList<OneCellPendingMovement> ();
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+			final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
+			while (iter.hasNext ())
+			{
+				final PendingMovement thisMove = iter.next ();
+				
+				// Loop finding each unit, and in process ensure they all have movement remaining
+				int doubleMovementRemaining = Integer.MAX_VALUE;
+				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+				for (final Integer unitURN : thisMove.getUnitURN ())
+				{
+					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCombat");
+					
+					unitStack.add (thisUnit);
+					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
+						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+				}
+				
+				// Any pending movements where the unit stack is out of movement, just leave them in the list until next turn
+				if (doubleMovementRemaining > 0)
+				{
+					// Does this unit stack have a valid single cell non-combat move?
+					final OneCellPendingMovement oneCell = getFogOfWarMidTurnChanges ().determineOneCellPendingMovement
+						(unitStack, player, thisMove, doubleMovementRemaining, mom);
+					
+					// Is the destination unreachable?  If so these should have been dealt with by findAndProcessOneCellPendingMovement
+					if (oneCell == null)
+						throw new MomException ("findAndProcessOneCombat found a PendingMovement with an unreachable destination");
+					
+					// If this doesn't initiate a combat, then these should have been dealt with by findAndProcessOneCellPendingMovement
+					if (!oneCell.isCombatInitiated ())
+						throw new MomException ("findAndProcessOneCombat found a PendingMovement with movement remaining that isn't a combat");
+
+					// Add the combat to the list
+					combats.add (oneCell);
+				}
+			}
+		}
+		
+		final boolean found = (combats.size () > 0);
+		if (found)
+		{
+			// Pick a random combat to do
+			final OneCellPendingMovement oneCell = combats.get (getRandomUtils ().nextInt (combats.size ()));
+			
+			// The defenders are all units in the destination cell who are not ours, and not part of their own combat which hasn't taken place yet
+			// (in that case we assume those units already left the destination cell and are midway between it and wherever they are attacking)
+			final List<Integer> defendingUnitURNs = new ArrayList<Integer> ();
+			for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+				if ((oneCell.getOneStep ().equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
+					(tu.getOwningPlayerID () != oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID ().intValue ()))
+					defendingUnitURNs.add (tu.getUnitURN ());
+
+			for (final PlayerServerDetails player : mom.getPlayers ())
+			{
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+				for (final PendingMovement pendingMove : trans.getPendingMovement ())
+					defendingUnitURNs.removeAll (pendingMove.getUnitURN ());
+			}
+			
+			// Remove the pending move completely
+			// This needs to get moved into combatEnded, since for border conflicts, we don't know which pending movement to remove until the combat completes
+			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) oneCell.getUnitStackOwner ().getTransientPlayerPrivateKnowledge ();
+			trans.getPendingMovement ().remove (oneCell.getPendingMovement ());
+			
+			// Execute the combat
+			getCombatStartAndEnd ().startCombat (oneCell.getOneStep (),
+				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), defendingUnitURNs, mom);
+		}
+		
+		log.trace ("Exiting findAndProcessOneCombat = " + found);
 		return found;
 	}
 	
@@ -1421,21 +1519,20 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	}
 	
 	/**
-	 * @return Simultaneous turns combat scheduler
+	 * @return Starting and ending combats
 	 */
-	public final CombatScheduler getCombatScheduler ()
+	public final CombatStartAndEnd getCombatStartAndEnd ()
 	{
-		return combatScheduler;
+		return combatStartAndEnd;
 	}
 
 	/**
-	 * @param scheduler Simultaneous turns combat scheduler
+	 * @param cse Starting and ending combats
 	 */
-	public final void setCombatScheduler (final CombatScheduler scheduler)
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
-		combatScheduler = scheduler;
+		combatStartAndEnd = cse;
 	}
-	
 	
 	/**
 	 * @return Random number generator

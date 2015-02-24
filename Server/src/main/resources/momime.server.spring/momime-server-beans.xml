@@ -421,7 +421,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityAI" ref="cityAI" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
-		<property name="combatScheduler" ref="combatScheduler" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>

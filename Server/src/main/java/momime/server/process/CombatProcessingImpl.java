@@ -78,9 +78,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** FOW duplication utils */
 	private FogOfWarDuplication fogOfWarDuplication;
 	
-	/** Simultaneous turns combat scheduler */
-	private CombatScheduler combatScheduler;
-	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
 	
@@ -1096,22 +1093,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 		fogOfWarDuplication = dup;
 	}
 	
-	/**
-	 * @return Simultaneous turns combat scheduler
-	 */
-	public final CombatScheduler getCombatScheduler ()
-	{
-		return combatScheduler;
-	}
-
-	/**
-	 * @param scheduler Simultaneous turns combat scheduler
-	 */
-	public final void setCombatScheduler (final CombatScheduler scheduler)
-	{
-		combatScheduler = scheduler;
-	}
-
 	/**
 	 * @return Combat map utils
 	 */

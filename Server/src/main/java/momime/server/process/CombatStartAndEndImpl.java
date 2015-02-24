@@ -24,7 +24,6 @@ import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.ScheduledCombatUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerCityCalculations;
@@ -111,9 +110,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
 
-	/** Scheduled combat utils */
-	private ScheduledCombatUtils scheduledCombatUtils; 
-	
 	/** Map generator */
 	private CombatMapGenerator combatMapGenerator;
 	
@@ -290,7 +286,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setCombatLocation (combatLocation);
 			msg.setWinningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 			msg.setCaptureCityDecisionID (captureCityDecision);
-			msg.setScheduledCombatURN (tc.getScheduledCombatURN ());
 			
 			// Deal with the attacking player swiping gold from a city they just took - we do this first so we can send it with the CombatEnded message
 			final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -656,22 +651,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
-	}
-
-	/**
-	 * @return Scheduled combat utils
-	 */
-	public final ScheduledCombatUtils getScheduledCombatUtils ()
-	{
-		return scheduledCombatUtils;
-	}
-
-	/**
-	 * @param utils Scheduled combat utils
-	 */
-	public final void setScheduledCombatUtils (final ScheduledCombatUtils utils)
-	{
-		scheduledCombatUtils = utils;
 	}
 
 	/**

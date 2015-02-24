@@ -521,7 +521,6 @@ details of all the units in the combat and the terrain, so is probably the most 
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTerrain" type="momimemsgs:mapAreaOfCombatTiles" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPlacement" type="momimestoc:startCombatMessageUnit" />
 					</xsd:sequence>
@@ -613,7 +612,6 @@ Either attackSkillID or attackAttributeID will be filled in, but not both:
 Will be null if combat wasn't at a city, or if it was a city combat and the defender won.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
-						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="goldSwiped" type="momimenewgame:undoubledProductionValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="goldFromRazing" type="momimenewgame:undoubledProductionValue" />
 					</xsd:sequence>
@@ -622,96 +620,6 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 		</xsd:complexType>
 	</xsd:element>
 	
-<!-- Scheduled combats -->
-
-	<xsd:element name="addScheduledCombatMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to client to notify them of a combat they need to play out at the end of a simultaneous turns game.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatData" type="momimemsgs:momScheduledCombatData" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="updateOtherScheduledCombatsMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Notifies clients about how many combats they *aren't* involved in.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatCount" type="momimestoc:combatCount" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="showListAndOtherScheduledCombatsMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Notifies clients about how many combats they *aren't* involved in, and instructs
-them that all scheduled combats have now been sent so they can show the list.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatCount" type="momimestoc:combatCount" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="playerCombatRequestStatusMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to inform clients whether players are are busy fighting a combat or have
-requested a particular combat (in either situation, we can't request to play a combat against them).</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="currentlyPlayingCombat" type="xsd:boolean" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="requestedScheduledCombatURN" type="momimemsgs:scheduledCombatURN">
-						    <xsd:annotation>
-    							<xsd:documentation>Only included if player has requested to play a particular combat against another human player, but it hasn't actually started.
-Players initially start with currentlyPlayingCombat = false, requestedScheduledCombatURN = null - if they request to attack a human player
-they'll then go to currentlyPlayingCombat = false, requestedScheduledCombatURN = (nbr) - then if the player accepts to play the combat now they'll
-go to currentlyPlayingCombat = true, requestedScheduledCombatURN = null (note requested requestedScheduledCombatURN is null again - effectively the instant the combat
-starts, it is no longer "scheduled" and its scheduledCombatURN no longer has any meaning).  Combats against AI players skip the middle step.</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="scheduledCombatWalkInWithoutAFightMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to tell client that a combat isn't a combat anymore (that player
-already captured the target square in another combat) and they can just walk in without a fight if they wish to.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="askForCaptureCityDecisionMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to players who capture a city, so they show the "Capture or Raze" form (the decision will be blank at this point).</xsd:documentation>

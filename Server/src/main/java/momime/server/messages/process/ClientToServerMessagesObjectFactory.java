@@ -27,14 +27,12 @@ import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
-import momime.common.messages.clienttoserver.RequestStartScheduledCombatMessage;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
 import momime.common.messages.clienttoserver.RushBuyMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
-import momime.common.messages.clienttoserver.UnrequestStartScheduledCombatMessage;
 import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 
@@ -335,24 +333,6 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 	public final CaptureCityDecisionMessage createCaptureCityDecisionMessage ()
 	{
 		return getFactory ().createCaptureCityDecisionMessage ();
-	}
-
-	/**
-	 * @return Newly created UnrequestStartScheduledCombatMessage
-	 */
-	@Override
-	public final UnrequestStartScheduledCombatMessage createUnrequestStartScheduledCombatMessage ()
-	{
-		return getFactory ().createUnrequestStartScheduledCombatMessage ();
-	}
-
-	/**
-	 * @return Newly created RequestStartScheduledCombatMessage
-	 */
-	@Override
-	public final RequestStartScheduledCombatMessage createRequestStartScheduledCombatMessage ()
-	{
-		return getFactory ().createRequestStartScheduledCombatMessage ();
 	}
 
 	/**

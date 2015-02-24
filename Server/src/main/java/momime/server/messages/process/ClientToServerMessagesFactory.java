@@ -133,22 +133,12 @@ public interface ClientToServerMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public UnrequestStartScheduledCombatMessageImpl createUnrequestStartScheduledCombatMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public TargetSpellMessageImpl createTargetSpellMessage ();
 
 	/**
 	 * @return Newly created message
 	 */
 	public RequestCastSpellMessageImpl createRequestCastSpellMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public RequestStartScheduledCombatMessageImpl createRequestStartScheduledCombatMessage ();
 
 	/**
 	 * @return Newly created message

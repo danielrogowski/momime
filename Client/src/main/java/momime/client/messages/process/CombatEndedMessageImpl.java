@@ -9,16 +9,12 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.OverlandMapProcessing;
-import momime.client.scheduledcombatmessages.ScheduledCombatMessageProcessing;
 import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.client.ui.frames.ScheduledCombatsUI;
 import momime.client.ui.frames.SpellBookUI;
 import momime.client.utils.AnimationController;
-import momime.common.messages.MomScheduledCombat;
 import momime.common.messages.servertoclient.CombatEndedMessage;
-import momime.common.utils.ScheduledCombatUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,17 +47,8 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	/** Spell book */
 	private SpellBookUI spellBookUI;
 	
-	/** Scheduled combat utils */
-	private ScheduledCombatUtils scheduledCombatUtils; 
-	
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Scheduled combats list */
-	private ScheduledCombatsUI scheduledCombatsUI;
-	
-	/** Scheduled combat message processing */
-	private ScheduledCombatMessageProcessing scheduledCombatMessageProcessing;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -95,17 +82,6 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 		
 		// Switch spell book to showing overland spells
 		getSpellBookUI ().languageOrPageChanged ();
-		
-		// Remove scheduled combat
-		if (getScheduledCombatURN () != null)
-		{
-			final MomScheduledCombat combat = getScheduledCombatUtils ().findScheduledCombatURN (getClient ().getOurTransientPlayerPrivateKnowledge ().getScheduledCombat (),
-				getScheduledCombatURN (), "CombatEndedMessageImpl");
-			getClient ().getOurTransientPlayerPrivateKnowledge ().getScheduledCombat ().remove (combat);
-			
-			getScheduledCombatsUI ().setCombatMessages (getScheduledCombatMessageProcessing ().sortAndAddCategories ());
-			getScheduledCombatsUI ().setVisible (true);
-		}
 		
 		// Go back to the overland music
 		try
@@ -221,22 +197,6 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	}
 
 	/**
-	 * @return Scheduled combat utils
-	 */
-	public final ScheduledCombatUtils getScheduledCombatUtils ()
-	{
-		return scheduledCombatUtils;
-	}
-
-	/**
-	 * @param utils Scheduled combat utils
-	 */
-	public final void setScheduledCombatUtils (final ScheduledCombatUtils utils)
-	{
-		scheduledCombatUtils = utils;
-	}
-
-	/**
 	 * @return Multiplayer client
 	 */
 	public final MomClient getClient ()
@@ -250,37 +210,5 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Scheduled combats list
-	 */
-	public final ScheduledCombatsUI getScheduledCombatsUI ()
-	{
-		return scheduledCombatsUI;
-	}
-
-	/**
-	 * @param ui Scheduled combats list
-	 */
-	public final void setScheduledCombatsUI (final ScheduledCombatsUI ui)
-	{
-		scheduledCombatsUI = ui;
-	}
-
-	/**
-	 * @return Scheduled combat message processing
-	 */
-	public final ScheduledCombatMessageProcessing getScheduledCombatMessageProcessing ()
-	{
-		return scheduledCombatMessageProcessing;
-	}
-
-	/**
-	 * @param proc Scheduled combat message processing
-	 */
-	public final void setScheduledCombatMessageProcessing (final ScheduledCombatMessageProcessing proc)
-	{
-		scheduledCombatMessageProcessing = proc;
 	}
 }

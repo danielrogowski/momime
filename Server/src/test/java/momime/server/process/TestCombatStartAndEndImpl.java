@@ -209,7 +209,6 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (StartCombatMessage.class.getName (), attackingMsgs.getMessages ().get (0).getClass ().getName ());
 		final StartCombatMessage msg = (StartCombatMessage) attackingMsgs.getMessages ().get (0);
 		assertEquals (defendingLocation, msg.getCombatLocation ());
-		assertNull (msg.getScheduledCombatURN ());
 		assertSame (tc.getCombatMap (), msg.getCombatTerrain ());
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
@@ -361,7 +360,6 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (StartCombatMessage.class.getName (), attackingMsgs.getMessages ().get (0).getClass ().getName ());
 		final StartCombatMessage msg = (StartCombatMessage) attackingMsgs.getMessages ().get (0);
 		assertEquals (defendingLocation, msg.getCombatLocation ());
-		assertNull (msg.getScheduledCombatURN ());
 		assertSame (tc.getCombatMap (), msg.getCombatTerrain ());
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
@@ -532,7 +530,6 @@ public final class TestCombatStartAndEndImpl
 	    assertEquals (defendingLocation, msg.getCombatLocation ());
 	    assertEquals (attackingPd.getPlayerID ().intValue (), msg.getWinningPlayerID ());
 	    assertNull (msg.getCaptureCityDecisionID ());
-	    assertNull (msg.getScheduledCombatURN ());
 	    assertNull (msg.getGoldSwiped ());
 	    assertNull (msg.getGoldFromRazing ());
 		
@@ -861,7 +858,6 @@ public final class TestCombatStartAndEndImpl
 	    assertEquals (combatLocation, msg1.getCombatLocation ());
 	    assertEquals (defendingPd.getPlayerID ().intValue (), msg1.getWinningPlayerID ());
 	    assertNull (msg1.getCaptureCityDecisionID ());
-	    assertNull (msg1.getScheduledCombatURN ());
 	    assertNull (msg1.getGoldSwiped ());
 	    assertNull (msg1.getGoldFromRazing ());
 		
@@ -1000,7 +996,6 @@ public final class TestCombatStartAndEndImpl
 	    assertEquals (combatLocation, msg1.getCombatLocation ());
 	    assertEquals (attackingPd.getPlayerID ().intValue (), msg1.getWinningPlayerID ());
 	    assertNull (msg1.getCaptureCityDecisionID ());
-	    assertNull (msg1.getScheduledCombatURN ());
 	    assertNull (msg1.getGoldSwiped ());
 	    assertNull (msg1.getGoldFromRazing ());
 		
@@ -1137,7 +1132,6 @@ public final class TestCombatStartAndEndImpl
 	    assertEquals (combatLocation, msg1.getCombatLocation ());
 	    assertEquals (attackingPd.getPlayerID ().intValue (), msg1.getWinningPlayerID ());
 	    assertNull (msg1.getCaptureCityDecisionID ());
-	    assertNull (msg1.getScheduledCombatURN ());
 	    assertNull (msg1.getGoldSwiped ());
 	    assertNull (msg1.getGoldFromRazing ());
 		
@@ -1288,7 +1282,6 @@ public final class TestCombatStartAndEndImpl
 	    assertEquals (combatLocation, msg1.getCombatLocation ());
 	    assertEquals (attackingPd.getPlayerID ().intValue (), msg1.getWinningPlayerID ());
 	    assertNull (msg1.getCaptureCityDecisionID ());
-	    assertNull (msg1.getScheduledCombatURN ());
 	    assertNull (msg1.getGoldSwiped ());
 	    assertNull (msg1.getGoldFromRazing ());
 		
@@ -1473,7 +1466,6 @@ public final class TestCombatStartAndEndImpl
 	    assertEquals (combatLocation, msg1.getCombatLocation ());
 	    assertEquals (attackingPd.getPlayerID ().intValue (), msg1.getWinningPlayerID ());
 	    assertEquals (CaptureCityDecisionID.CAPTURE, msg1.getCaptureCityDecisionID ());
-	    assertNull (msg1.getScheduledCombatURN ());
 	    assertEquals (goldSwiped, msg1.getGoldSwiped ().intValue ());
 	    assertNull (msg1.getGoldFromRazing ());
 		
@@ -1679,7 +1671,6 @@ public final class TestCombatStartAndEndImpl
 	    assertEquals (combatLocation, msg1.getCombatLocation ());
 	    assertEquals (attackingPd.getPlayerID ().intValue (), msg1.getWinningPlayerID ());
 	    assertEquals (CaptureCityDecisionID.RAZE, msg1.getCaptureCityDecisionID ());
-	    assertNull (msg1.getScheduledCombatURN ());
 	    assertEquals (goldSwiped, msg1.getGoldSwiped ().intValue ());
 	    assertEquals (567, msg1.getGoldFromRazing ().intValue ());
 		

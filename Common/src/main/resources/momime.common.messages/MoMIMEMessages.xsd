@@ -306,7 +306,6 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 			<xsd:extension base="mps:transientPlayerPrivateKnowledge">
 		        <xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="overlandCastingSkillRemainingThisTurn" type="momimecommon:spellCastingCost" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="scheduledCombat" type="momimemsgs:momScheduledCombat" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pendingMovement" type="momimemsgs:pendingMovement" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="newTurnMessage" type="momimemsgs:newTurnMessageData">
 					    <xsd:annotation>
@@ -391,7 +390,6 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		        <xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="movementAllocatedForTurnNumber" type="momimemsgs:turnNumber" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="currentlyPlayingCombat" type="xsd:boolean" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatUrnRequested" type="momimemsgs:scheduledCombatURN" />
 					
 					<xsd:element minOccurs="0" maxOccurs="1" name="flagColour" type="momimecommon:colour">
 					    <xsd:annotation>
@@ -573,34 +571,6 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="borderID" type="momimecommon:combatTileBorderID" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileLayer" type="momimemsgs:momCombatTileLayer" />
         </xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="momScheduledCombatData">
-		<xsd:annotation>
-			<xsd:documentation>Data common to stored scheduled combats and the add message.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="map:mapCoordinates3D" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="map:mapCoordinates3D" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defendingPlayerID" type="mps:playerID" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="attackingPlayerID" type="mps:playerID" />
-			<xsd:element minOccurs="1" maxOccurs="unbounded" name="attackingUnitURN" type="momimemsgs:unitURN" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	<xsd:complexType name="momScheduledCombat">
-	    <xsd:annotation>
-    		<xsd:documentation>Stores details about one scheduled combat that the player is involved in - players don't know about
-combats that they aren't involved in, only a count of how many there are.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimemsgs:momScheduledCombatData">
-				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="walkInWithoutAFight" type="xsd:boolean" />
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="pendingMovement">
@@ -1073,15 +1043,6 @@ constructed/summoned, bump it to the outlying squares, or we could fail to place
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
-	<xsd:simpleType name="scheduledCombatURN">
-	    <xsd:annotation>
-    		<xsd:documentation>Unique identifier allocated to each scheduled combat queued up in one simultaneous turn.
-Numbers are reset back to 1 again on each new turn.
-Not used for one-player-at-a-time games since combats in those all happen instantly.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-	
 	<xsd:simpleType name="magicPowerDistributionRatio">
 	    <xsd:annotation>
     		<xsd:documentation>Value 0..240 indicating the proportion of magic power to divert into mana/research/skill improvement.</xsd:documentation>

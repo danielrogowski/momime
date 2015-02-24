@@ -68,7 +68,6 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
-import momime.server.process.CombatScheduler;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
 import momime.server.utils.UnitServerUtils;
@@ -137,9 +136,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
 	
-	/** Simultaneous turns combat scheduler */
-	private CombatScheduler combatScheduler;
-
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
@@ -1967,29 +1963,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			else
 				towerPlane = moveTo.getZ ();
 			
-			// Find a defending unit
-			final MemoryUnit defUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), moveTo.getX (), moveTo.getY (), towerPlane, 0);
-			final PlayerServerDetails defPlayer = (defUnit == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), defUnit.getOwningPlayerID (), "moveUnitStack-DP");
-			
-			// Do we need to send a unit ID and/or player with the combat setup?
-			final PlayerServerDetails playerBeingAttacked;
-			if (defUnit != null)
-			{
-				// Player unit stack or defended city
-				playerBeingAttacked = defPlayer;
-			}
-			else
-			{
-				// We're attacking *something* or typeOfCombatInitiated would not have been set to YES, yet there's no units, so it must be an unoccupied city
-				// in which case the defending player is the city owner
-				if ((tc.getCityData () == null) || (tc.getCityData ().getCityOwnerID () == null) || (tc.getCityData ().getCityPopulation () == null) ||
-					(tc.getCityData ().getCityPopulation () <= 0))
-					
-					throw new MomException ("moveUnitStack has combat set to yes but isn't attacking an empty city");
-				
-				playerBeingAttacked = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "moveUnitStack-CO");
-			}
-			
 			// Scheduled the combat or start it immediately
 			final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), towerPlane);
 
@@ -1998,14 +1971,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				attackingUnitURNs.add (tu.getUnitURN ());
 
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-			{
-				getCombatScheduler ().addScheduledCombatGeneratedURN (mom.getGeneralServerKnowledge (),
-					defendingLocation, moveFrom, playerBeingAttacked, unitStackOwner, attackingUnitURNs);
-			}
-			else
-			{
-				getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, attackingUnitURNs, null, mom);
-			}
+				throw new MomException ("moveUnitStack found a combat in a simultaneous turns game, which should be handled outside of here");
+			
+			// Start a one-player-at-a-time combat
+			getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, attackingUnitURNs, null, mom);
 		}
 
 		log.trace ("Exiting moveUnitStack");
@@ -2379,22 +2348,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
 		combatStartAndEnd = cse;
-	}
-
-	/**
-	 * @return Simultaneous turns combat scheduler
-	 */
-	public final CombatScheduler getCombatScheduler ()
-	{
-		return combatScheduler;
-	}
-
-	/**
-	 * @param scheduler Simultaneous turns combat scheduler
-	 */
-	public final void setCombatScheduler (final CombatScheduler scheduler)
-	{
-		combatScheduler = scheduler;
 	}
 
 	/**

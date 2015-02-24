@@ -423,39 +423,6 @@ Auto switched on or not - this makes it easier to allow the player to switch Aut
 		</xsd:complexType>
 	</xsd:element>
 
-<!--  Scheduled combats -->
-	
-	<xsd:element name="requestStartScheduledCombatMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Client sends this to request to play a particular scheduled combat</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:clientToServerMessage">
-		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
-		        	</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="unrequestStartScheduledCombatMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Client sends this if they've requested to play a particular scheduled combat against another human player,
-and they've got fed up waiting and want to cancel the request</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:clientToServerMessage">
-		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN" />
-		        	</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	
 <!-- Magic -->
 
 	<xsd:element name="updateMagicPowerDistributionMessage">

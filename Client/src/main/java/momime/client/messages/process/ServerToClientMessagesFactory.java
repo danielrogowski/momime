@@ -38,11 +38,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public PlayerCombatRequestStatusMessageImpl createPlayerCombatRequestStatusMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public FullSpellListMessageImpl createFullSpellListMessage ();
 
 	/**
@@ -98,11 +93,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public ScheduledCombatWalkInWithoutAFightMessageImpl createScheduledCombatWalkInWithoutAFightMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public MoveUnitStackOverlandMessageImpl createMoveUnitStackOverlandMessage ();
 
 	/**
@@ -143,11 +133,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public ShowListAndOtherScheduledCombatsMessageImpl createShowListAndOtherScheduledCombatsMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public SetCombatPlayerMessageImpl createSetCombatPlayerMessage ();
 
 	/**
@@ -173,17 +158,7 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public UpdateOtherScheduledCombatsMessageImpl createUpdateOtherScheduledCombatsMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public YourRaceIsOkMessageImpl createYourRaceIsOkMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public AddScheduledCombatMessageImpl createAddScheduledCombatMessage ();
 
 	/**
 	 * @return Newly created message

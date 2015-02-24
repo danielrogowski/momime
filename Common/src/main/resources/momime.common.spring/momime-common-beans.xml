@@ -44,14 +44,12 @@
     			<value>momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestResearchSpellMessage</value>
-    			<value>momime.common.messages.clienttoserver.RequestStartScheduledCombatMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage</value>
     			<value>momime.common.messages.clienttoserver.RushBuyMessage</value>
     			<value>momime.common.messages.clienttoserver.SellBuildingMessage</value>
     			<value>momime.common.messages.clienttoserver.SpecialOrderButtonMessage</value>
     			<value>momime.common.messages.clienttoserver.TargetSpellMessage</value>
-    			<value>momime.common.messages.clienttoserver.UnrequestStartScheduledCombatMessage</value>
     			<value>momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage</value>
     			<value>momime.common.messages.clienttoserver.UploadCustomPhotoMessage</value>
     		</list>
@@ -88,7 +86,6 @@
 
 				<!-- MoM multiplayer messages -->
     			<value>momime.common.messages.servertoclient.AddNewTurnMessagesMessage</value>
-    			<value>momime.common.messages.servertoclient.AddScheduledCombatMessage</value>
     			<value>momime.common.messages.servertoclient.ApplyDamageMessage</value>
     			<value>momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage</value>
     			<value>momime.common.messages.servertoclient.BroadcastChatMessage</value>
@@ -110,16 +107,13 @@
     			<value>momime.common.messages.servertoclient.OverlandMovementTypesMessage</value>
     			<value>momime.common.messages.servertoclient.PendingMovementMessage</value>
     			<value>momime.common.messages.servertoclient.PendingSaleMessage</value>
-    			<value>momime.common.messages.servertoclient.PlayerCombatRequestStatusMessage</value>
     			<value>momime.common.messages.servertoclient.RemoveQueuedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.ReplacePicksMessage</value>
-    			<value>momime.common.messages.servertoclient.ScheduledCombatWalkInWithoutAFightMessage</value>
     			<value>momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage</value>
     			<value>momime.common.messages.servertoclient.SetCombatPlayerMessage</value>
     			<value>momime.common.messages.servertoclient.SetCurrentPlayerMessage</value>
     			<value>momime.common.messages.servertoclient.SetSpecialOrderMessage</value>
     			<value>momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage</value>
-    			<value>momime.common.messages.servertoclient.ShowListAndOtherScheduledCombatsMessage</value>
     			<value>momime.common.messages.servertoclient.SpellResearchChangedMessage</value>
     			<value>momime.common.messages.servertoclient.StartCombatMessage</value>
     			<value>momime.common.messages.servertoclient.StartGameMessage</value>
@@ -128,7 +122,6 @@
     			<value>momime.common.messages.servertoclient.TextPopupMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateGlobalEconomyMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage</value>
-    			<value>momime.common.messages.servertoclient.UpdateOtherScheduledCombatsMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateProductionSoFarMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage</value>
@@ -215,10 +208,6 @@
 	</bean>
 
 	<bean id="pendingMovementUtils" class="momime.common.utils.PendingMovementUtilsImpl" />
-
-	<bean id="scheduledCombatUtils" class="momime.common.utils.ScheduledCombatUtilsImpl">
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
-	</bean>
 
 	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
 	

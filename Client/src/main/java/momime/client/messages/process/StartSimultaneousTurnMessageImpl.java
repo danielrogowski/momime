@@ -11,7 +11,6 @@ import momime.client.newturnmessages.NewTurnMessageStatus;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
-import momime.client.ui.frames.ScheduledCombatsUI;
 import momime.common.calculations.CityCalculations;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.utils.UnitUtils;
@@ -47,9 +46,6 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
-	/** Scheduled combats list */
-	private ScheduledCombatsUI scheduledCombatsUI;
-	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -66,9 +62,6 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 		// Update turn number
 		getClient ().getGeneralPublicKnowledge ().setTurnNumber (getTurnNumber ());
 		getOverlandMapUI ().updateTurnLabelText ();
-		
-		// Starting the next turn is how the server tells us that all combats for the previous turn have been completed
-		getScheduledCombatsUI ().setVisible (false);
 		
 		// Allow selling buildings
 		getCityCalculations ().blankBuildingsSoldThisTurn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), 0);
@@ -189,22 +182,6 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
-	}
-
-	/**
-	 * @return Scheduled combats list
-	 */
-	public final ScheduledCombatsUI getScheduledCombatsUI ()
-	{
-		return scheduledCombatsUI;
-	}
-
-	/**
-	 * @param ui Scheduled combats list
-	 */
-	public final void setScheduledCombatsUI (final ScheduledCombatsUI ui)
-	{
-		scheduledCombatsUI = ui;
 	}
 
 	/**

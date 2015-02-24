@@ -6,7 +6,6 @@ import momime.common.messages.servertoclient.AddBuildingMessage;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
-import momime.common.messages.servertoclient.AddScheduledCombatMessage;
 import momime.common.messages.servertoclient.AddUnitMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
@@ -34,16 +33,13 @@ import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.OverlandMovementTypesMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
-import momime.common.messages.servertoclient.PlayerCombatRequestStatusMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
-import momime.common.messages.servertoclient.ScheduledCombatWalkInWithoutAFightMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
-import momime.common.messages.servertoclient.ShowListAndOtherScheduledCombatsMessage;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
@@ -55,7 +51,6 @@ import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
-import momime.common.messages.servertoclient.UpdateOtherScheduledCombatsMessage;
 import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage;
 import momime.common.messages.servertoclient.UpdateProductionSoFarMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
@@ -128,15 +123,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final PendingMovementMessage createPendingMovementMessage ()
 	{
 		return getFactory ().createPendingMovementMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final PlayerCombatRequestStatusMessage createPlayerCombatRequestStatusMessage ()
-	{
-		return getFactory ().createPlayerCombatRequestStatusMessage ();
 	}
 
 	/**
@@ -242,15 +228,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final ScheduledCombatWalkInWithoutAFightMessage createScheduledCombatWalkInWithoutAFightMessage ()
-	{
-		return getFactory ().createScheduledCombatWalkInWithoutAFightMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
 	public final MoveUnitStackOverlandMessage createMoveUnitStackOverlandMessage ()
 	{
 		return getFactory ().createMoveUnitStackOverlandMessage ();
@@ -323,15 +300,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final ShowListAndOtherScheduledCombatsMessage createShowListAndOtherScheduledCombatsMessage ()
-	{
-		return getFactory ().createShowListAndOtherScheduledCombatsMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
 	public final SetCombatPlayerMessage createSetCombatPlayerMessage ()
 	{
 		return getFactory ().createSetCombatPlayerMessage ();
@@ -377,27 +345,9 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final UpdateOtherScheduledCombatsMessage createUpdateOtherScheduledCombatsMessage ()
-	{
-		return getFactory ().createUpdateOtherScheduledCombatsMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
 	public final YourRaceIsOkMessage createYourRaceIsOkMessage ()
 	{
 		return getFactory ().createYourRaceIsOkMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final AddScheduledCombatMessage createAddScheduledCombatMessage ()
-	{
-		return getFactory ().createAddScheduledCombatMessage ();
 	}
 
 	/**

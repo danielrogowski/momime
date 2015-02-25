@@ -1974,7 +1974,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				throw new MomException ("moveUnitStack found a combat in a simultaneous turns game, which should be handled outside of here");
 			
 			// Start a one-player-at-a-time combat
-			getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, attackingUnitURNs, null, mom);
+			getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, attackingUnitURNs, null, null, null, mom);
 		}
 
 		log.trace ("Exiting moveUnitStack");

@@ -14,6 +14,8 @@ import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
@@ -129,6 +131,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
 	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind; mandatory
 	 * @param defendingUnitURNs Which of the defender's unit stack are defending - used for simultaneous turns games; optional, null = all units in defendingLocation
+	 * @param attackerPendingMovement In simultaneous turns games, the PendingMovement the attacker made which caused the combat currently taking place at this location
+	 * @param defenderPendingMovement In simultaneous turns games, the PendingMovement the defender made which caused the combat currently taking place at this location (border conflicts/counterattacks only)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -138,7 +142,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 */
 	@Override
 	public final void startCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs, final MomSessionVariables mom)
+		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs,
+		final PendingMovement attackerPendingMovement, final PendingMovement defenderPendingMovement, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering startCombat: " + defendingLocation + ", " + attackingFrom);
@@ -152,6 +157,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		
+		// Record the pending movement(s)
+		tc.setCombatAttackerPendingMovement (attackerPendingMovement);
+		tc.setCombatDefenderPendingMovement (defenderPendingMovement);
 		
 		// The attacker is easy to find from the first attackingUnitURN
 		if ((attackingUnitURNs == null) || (attackingUnitURNs.size () == 0))
@@ -458,7 +467,18 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
 			{
-				// In simultaneous turns games, this routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
+				// Clean up the PendingMovement(s) that caused this combat
+				if (tc.getCombatAttackerPendingMovement () == null)
+					throw new MomException ("Simultaneous turns combat ended, but CombatAttackerPendingMovement is null");
+				
+				// NB. PendingMovements of the side who was wiped out will already have been removed from the list as the last unit died
+				// (see killUnitOnServerAndClients) so we may actually have nothing to remove here
+				final MomTransientPlayerPrivateKnowledge atkTrans = (MomTransientPlayerPrivateKnowledge) attackingPlayer.getTransientPlayerPrivateKnowledge ();
+				atkTrans.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
+				
+				tc.setCombatAttackerPendingMovement (null);
+				
+				// This routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
 				getPlayerMessageProcessing ().processSimultaneousTurnsMovement (mom);
 			}
 			else

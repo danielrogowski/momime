@@ -197,7 +197,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());
@@ -348,7 +348,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());
@@ -515,7 +515,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());
@@ -689,7 +689,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, mom);
+		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
 		
 		// Check that a map got generated
 		assertNotNull (tc.getCombatMap ());

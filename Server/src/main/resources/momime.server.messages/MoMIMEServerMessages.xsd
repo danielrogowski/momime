@@ -53,14 +53,6 @@
     														the client only sees who owns each square of node aura but cannot tell which node it comes from.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="lairWeak" type="xsd:boolean" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="nodeLairTowerPowerProportion" type="xsd:double">
-						<xsd:annotation>
-							<xsd:documentation>Stores the random roll between 0..1 for where between min and max the various stats of a node/lair/tower are.
-															e.g. for nodes, this keeps the size of the aura, the strength of the defending monsters,
-															and the quality of treasure reward all at the same level.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="nodeSpiritUnitID" type="momimecommon:unitID">
 					    <xsd:annotation>
     						<xsd:documentation>Records whether it was a magic spirit or guardian spirit that captured this node.  Guardian spirits are harder to
@@ -73,26 +65,6 @@
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="combatCurrentPlayer" type="mps:playerID">
-					    <xsd:annotation>
-    						<xsd:documentation>Who's turn it is in the combat currently taking place at this location.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="spellCastThisCombatTurn" type="xsd:boolean">
-					    <xsd:annotation>
-    						<xsd:documentation>Whether combatCurrentPlayer has cast a spell yet during this combat turn (can only cast 1 spell per combat turn).</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="combatDefenderCastingSkillRemaining" type="momimecommon:spellCastingCost">
-					    <xsd:annotation>
-    						<xsd:documentation>How much casting skill the defender has left available for the duration of this combat.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="combatAttackerCastingSkillRemaining" type="momimecommon:spellCastingCost">
-					    <xsd:annotation>
-    						<xsd:documentation>How much casting skill the attacker has left available for the duration of this combat.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
 		        </xsd:sequence>
 	        </xsd:extension>
 		</xsd:complexContent>

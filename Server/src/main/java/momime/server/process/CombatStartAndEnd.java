@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.PendingMovement;
 import momime.server.MomSessionVariables;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -26,6 +27,8 @@ public interface CombatStartAndEnd
 	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
 	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind; mandatory
 	 * @param defendingUnitURNs Which of the defender's unit stack are defending - used for simultaneous turns games; optional, null = all units in defendingLocation
+	 * @param attackerPendingMovement In simultaneous turns games, the PendingMovement the attacker made which caused the combat currently taking place at this location
+	 * @param defenderPendingMovement In simultaneous turns games, the PendingMovement the defender made which caused the combat currently taking place at this location (border conflicts/counterattacks only)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -34,7 +37,8 @@ public interface CombatStartAndEnd
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void startCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs, final MomSessionVariables mom)
+		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs,
+		final PendingMovement attackerPendingMovement, final PendingMovement defenderPendingMovement, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**

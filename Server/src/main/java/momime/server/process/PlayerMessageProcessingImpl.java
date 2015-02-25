@@ -1232,14 +1232,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					defendingUnitURNs.removeAll (pendingMove.getUnitURN ());
 			}
 			
-			// Remove the pending move completely
-			// This needs to get moved into combatEnded, since for border conflicts, we don't know which pending movement to remove until the combat completes
-			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) oneCell.getUnitStackOwner ().getTransientPlayerPrivateKnowledge ();
-			trans.getPendingMovement ().remove (oneCell.getPendingMovement ());
-			
 			// Execute the combat
 			getCombatStartAndEnd ().startCombat (oneCell.getOneStep (),
-				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), defendingUnitURNs, mom);
+				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), defendingUnitURNs,
+				oneCell.getPendingMovement (), null, mom);
 		}
 		
 		log.trace ("Exiting findAndProcessOneCombat = " + found);

@@ -19,6 +19,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -1003,6 +1004,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		if (!findAndProcessOneCombat (mom))
 		{
 			// No more combats - so end the turn
+			log.debug ("No more combats, so ending turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
 			
 			// Any pending movements remaining at this point must be unit stacks that ran out of movement before they
 			// reached their destination - so we resend these pending moves to the client so the arrows display correctly
@@ -1127,6 +1129,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		{
 			// Pick a random movement to do
 			final OneCellPendingMovement oneCell = moves.get (getRandomUtils ().nextInt (moves.size ()));
+			log.debug ("Randomly chose move to do for player ID " + oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
+				" from " + oneCell.getPendingMovement ().getMoveFrom () + " to " + oneCell.getPendingMovement ().getMoveTo () +
+				", stepping to " + oneCell.getOneStep ());
+			
 			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 			for (final Integer unitURN : oneCell.getPendingMovement ().getUnitURN ())
 				unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement"));
@@ -1214,28 +1220,102 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final boolean found = (combats.size () > 0);
 		if (found)
 		{
-			// Pick a random combat to do
-			final OneCellPendingMovement oneCell = combats.get (getRandomUtils ().nextInt (combats.size ()));
-			
-			// The defenders are all units in the destination cell who are not ours, and not part of their own combat which hasn't taken place yet
-			// (in that case we assume those units already left the destination cell and are midway between it and wherever they are attacking)
-			final List<Integer> defendingUnitURNs = new ArrayList<Integer> ();
-			for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-				if ((oneCell.getOneStep ().equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
-					(tu.getOwningPlayerID () != oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID ().intValue ()))
-					defendingUnitURNs.add (tu.getUnitURN ());
-
-			for (final PlayerServerDetails player : mom.getPlayers ())
+			// Now we've got a list of all outstanding combats, check to see if any of them are border conflicts/counterattacks
+			// i.e. we find two PendingMovements that match up where A is moving to B and B is moving to A and the players are different.
+			final List<BorderConflict> borderConflicts = new ArrayList<BorderConflict> ();
+			for (int n = 0; n < combats.size () - 1; n++)
 			{
-				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-				for (final PendingMovement pendingMove : trans.getPendingMovement ())
-					defendingUnitURNs.removeAll (pendingMove.getUnitURN ());
+				final OneCellPendingMovement firstMove = combats.get (n);
+				for (int m = n + 1; m < combats.size (); m++)
+				{
+					final OneCellPendingMovement secondMove = combats.get (m);
+					if ((firstMove.getUnitStackOwner () != secondMove.getUnitStackOwner ()) &&
+						(firstMove.getPendingMovement ().getMoveFrom ().equals (secondMove.getOneStep ())) && 
+						(secondMove.getPendingMovement ().getMoveFrom ().equals (firstMove.getOneStep ())))
+						borderConflicts.add (new BorderConflict (firstMove, secondMove));
+				}
 			}
 			
-			// Execute the combat
-			getCombatStartAndEnd ().startCombat (oneCell.getOneStep (),
-				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), defendingUnitURNs,
-				oneCell.getPendingMovement (), null, mom);
+			if (borderConflicts.size () > 0)
+			{
+				// Pick a random border conflict to do
+				final BorderConflict borderConflict = borderConflicts.get (getRandomUtils ().nextInt (borderConflicts.size ()));
+				log.debug ("Randomly chose border conflict to do between player ID " + borderConflict.getFirstMove ().getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
+					" at location " + borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom () +
+					" and player ID " + borderConflict.getSecondMove ().getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
+					" at location " + borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ());
+
+				// Get the two map cells
+				final OverlandMapCityData firstMoveFromCity = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom ().getZ ()).getRow ().get
+					(borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom ().getY ()).getCell ().get
+					(borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom ().getX ()).getCityData ();
+				
+				final OverlandMapCityData secondMoveFromCity = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ().getZ ()).getRow ().get
+					(borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ().getY ()).getCell ().get
+					(borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ().getX ()).getCityData ();
+				
+				// Choose who will be "attacker" and "defender"
+				// If one is a city, force them to be attacker so the city doesn't feature in the combat, otherwise choose random
+				final OneCellPendingMovement attackerMove;
+				final OneCellPendingMovement defenderMove;
+				
+				if ((firstMoveFromCity != null) && (firstMoveFromCity.getCityPopulation () != null) && (firstMoveFromCity.getCityPopulation () > 0))
+				{
+					attackerMove = borderConflict.getFirstMove ();
+					defenderMove = borderConflict.getSecondMove ();
+				}
+				else if ((secondMoveFromCity != null) && (secondMoveFromCity.getCityPopulation () != null) && (secondMoveFromCity.getCityPopulation () > 0))
+				{
+					attackerMove = borderConflict.getSecondMove ();
+					defenderMove = borderConflict.getFirstMove ();
+				}
+				else if (getRandomUtils ().nextBoolean ())
+				{
+					attackerMove = borderConflict.getFirstMove ();
+					defenderMove = borderConflict.getSecondMove ();
+				}
+				else
+				{
+					attackerMove = borderConflict.getSecondMove ();
+					defenderMove = borderConflict.getFirstMove ();
+				}
+				
+				// Execute the combat
+				getCombatStartAndEnd ().startCombat ((MapCoordinates3DEx) defenderMove.getPendingMovement ().getMoveFrom (),
+					(MapCoordinates3DEx) attackerMove.getPendingMovement ().getMoveFrom (),
+					attackerMove.getPendingMovement ().getUnitURN (), defenderMove.getPendingMovement ().getUnitURN (),
+					attackerMove.getPendingMovement (), defenderMove.getPendingMovement (), mom);
+			}
+			else
+			{
+				// Pick a random regular combat to do
+				final OneCellPendingMovement oneCell = combats.get (getRandomUtils ().nextInt (combats.size ()));
+				log.debug ("Randomly chose combat to do for player ID " + oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
+					" from " + oneCell.getPendingMovement ().getMoveFrom () + " to " + oneCell.getPendingMovement ().getMoveTo () +
+					", stepping to " + oneCell.getOneStep ());
+				
+				// The defenders are all units in the destination cell who are not ours, and not part of their own combat which hasn't taken place yet
+				// (in that case we assume those units already left the destination cell and are midway between it and wherever they are attacking)
+				final List<Integer> defendingUnitURNs = new ArrayList<Integer> ();
+				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((oneCell.getOneStep ().equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
+						(tu.getOwningPlayerID () != oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID ().intValue ()))
+						defendingUnitURNs.add (tu.getUnitURN ());
+	
+				for (final PlayerServerDetails player : mom.getPlayers ())
+				{
+					final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+					for (final PendingMovement pendingMove : trans.getPendingMovement ())
+						defendingUnitURNs.removeAll (pendingMove.getUnitURN ());
+				}
+				
+				// Execute the combat
+				getCombatStartAndEnd ().startCombat (oneCell.getOneStep (),
+					(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), defendingUnitURNs,
+					oneCell.getPendingMovement (), null, mom);
+			}
 		}
 		
 		log.trace ("Exiting findAndProcessOneCombat = " + found);

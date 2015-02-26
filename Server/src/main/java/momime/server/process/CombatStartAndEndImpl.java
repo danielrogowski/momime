@@ -345,8 +345,17 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			
+			// If its a border conflict, then we don't actually care who won - one side will already have been wiped out, and hence their
+			// PendingMovement will have been removed, leaving the winner's PendingMovement still to be processed, and the main
+			// processSimultaneousTurnsMovement method will figure out what to do about that (i.e. whether its a move or another combat)
+			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) &&
+				(tc.getCombatAttackerPendingMovement () != null) && (tc.getCombatDefenderPendingMovement () != null))
+			{
+				log.debug ("Border conflict, so don't care who won");
+			}
+				
 			// If the attacker won then advance their units to the target square
-			if (winningPlayer == attackingPlayer)
+			else if (winningPlayer == attackingPlayer)
 			{
 				log.debug ("Attacker won");
 				
@@ -471,12 +480,18 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (tc.getCombatAttackerPendingMovement () == null)
 					throw new MomException ("Simultaneous turns combat ended, but CombatAttackerPendingMovement is null");
 				
-				// NB. PendingMovements of the side who was wiped out will already have been removed from the list as the last unit died
-				// (see killUnitOnServerAndClients) so we may actually have nothing to remove here
-				final MomTransientPlayerPrivateKnowledge atkTrans = (MomTransientPlayerPrivateKnowledge) attackingPlayer.getTransientPlayerPrivateKnowledge ();
-				atkTrans.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
-				
+				// If its a border conflict, do not clean up the PendingMovement - the unit stack didn't advance yet and still needs to do so
+				// so only clear the ref to the pending movements from the grid cell
+				if (tc.getCombatDefenderPendingMovement () == null)
+				{
+					// NB. PendingMovements of the side who was wiped out will already have been removed from the list as the last unit died
+					// (see killUnitOnServerAndClients) so we may actually have nothing to remove here
+					final MomTransientPlayerPrivateKnowledge atkTrans = (MomTransientPlayerPrivateKnowledge) attackingPlayer.getTransientPlayerPrivateKnowledge ();
+					atkTrans.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
+				}
+
 				tc.setCombatAttackerPendingMovement (null);
+				tc.setCombatDefenderPendingMovement (null);
 				
 				// This routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
 				getPlayerMessageProcessing ().processSimultaneousTurnsMovement (mom);

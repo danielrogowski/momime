@@ -49,7 +49,7 @@ public interface CombatStartAndEnd
 	 * 
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param attackingPlayer Player who is attacking
-	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
+	 * @param defendingPlayer Player who is defending - there should be no situations anymore where this can be passed in as null
 	 * @param winningPlayer Player who won
 	 * @param captureCityDecision If taken a city and winner has decided whether to raze or capture it then is passed in here; null = player hasn't decided yet (see comment above)
 	 * @param mom Allows accessing server knowledge structures, player list and so on

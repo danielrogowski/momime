@@ -858,4 +858,44 @@ public final class TestServerDatabaseExImpl
 
 		assertNull (db.findCombatTileBorder ("CTB04", "testFindCombatTileBorder_NotExists"));
 	}
+	
+	/**
+	 * Tests the findCitySpellEffect method to find a citySpellEffect ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindCitySpellEffect_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CitySpellEffectSvr newCitySpellEffect = new CitySpellEffectSvr ();
+			newCitySpellEffect.setCitySpellEffectID ("SE00" + n);
+			db.getCitySpellEffect ().add (newCitySpellEffect);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("SE002", db.findCitySpellEffect ("SE002", "testFindCitySpellEffect_Exists").getCitySpellEffectID ());
+	}
+
+	/**
+	 * Tests the findCitySpellEffect method to find a citySpellEffect ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCitySpellEffect_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CitySpellEffectSvr newCitySpellEffect = new CitySpellEffectSvr ();
+			newCitySpellEffect.setCitySpellEffectID ("SE00" + n);
+			db.getCitySpellEffect ().add (newCitySpellEffect);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findCitySpellEffect ("SE004", "testFindCitySpellEffect_NotExists"));
+	}
 }

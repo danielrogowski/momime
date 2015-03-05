@@ -205,7 +205,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				maintainedSpell.setCitySpellEffectID (citySpellEffectID);
 				
 				// Add spell on clients (they don't have a blank version of it before now)
-				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (maintainedSpell,
+				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ());
 			}
 			else

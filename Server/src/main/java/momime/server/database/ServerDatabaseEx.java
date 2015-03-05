@@ -190,6 +190,14 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 */
 	@Override
 	public CombatTileTypeSvr findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param citySpellEffectID City spell effect ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return CitySpellEffect object
+	 * @throws RecordNotFoundException If the city spell effect ID doesn't exist
+	 */
+	public CitySpellEffectSvr findCitySpellEffect (final String citySpellEffectID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Complete list of all picks in game

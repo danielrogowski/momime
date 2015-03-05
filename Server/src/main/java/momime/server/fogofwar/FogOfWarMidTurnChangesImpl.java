@@ -65,6 +65,7 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.database.CitySpellEffectSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
@@ -626,6 +627,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 *
 	 * Spells in this "cast-but-not-targetted" state exist on the server but not in player's memory or on clients, so when their target has been set, this method is then called
 	 *
+	 * @param gsk Server knowledge structure
 	 * @param trueSpell True spell to add
 	 * @param players List of players in the session
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
@@ -638,7 +640,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+	public final void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledgeEx gsk,
+		final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -661,6 +664,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					if (player.getPlayerDescription ().isHuman ())
 						player.getConnection ().sendMessageToClient (msg);
 			}
+		}
+		
+		// Does the spell generate a CAE? e.g. Heavenly Light and Cloud of Shadow; if so then add it
+		if (trueSpell.getCitySpellEffectID () != null)
+		{
+			final CitySpellEffectSvr citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "addExistingTrueMaintainedSpellToClients");
+			if (citySpellEffect.getCombatAreaEffectID () != null)
+				addCombatAreaEffectOnServerAndClients (gsk, citySpellEffect.getCombatAreaEffectID (), trueSpell.getSpellID (), trueSpell.getCastingPlayerID (),
+					(MapCoordinates3DEx) trueSpell.getCityLocation (), players, db, sd);
 		}
 
 		// The new spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
@@ -721,7 +733,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Then let the other routine deal with updating player memory and the clients
 		if (players != null)
-			addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap (), db, sd);
+			addExistingTrueMaintainedSpellToClients (gsk, trueSpell, players, gsk.getTrueMap (), db, sd);
 
 		log.trace ("Exiting addMaintainedSpellOnServerAndClients");
 	}
@@ -768,6 +780,20 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// Update on client
 				if (player.getPlayerDescription ().isHuman ())
 					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+		
+		// Does the spell generate a CAE? e.g. Heavenly Light and Cloud of Shadow; if so then remove it
+		if (trueSpell.getCitySpellEffectID () != null)
+		{
+			final CitySpellEffectSvr citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "switchOffMaintainedSpellOnServerAndClients");
+			if (citySpellEffect.getCombatAreaEffectID () != null)
+			{
+				final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+					(trueMap.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
+				
+				if (trueCAE != null)
+					removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, db, sd);
 			}
 		}
 
@@ -973,13 +999,29 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	{
 		log.trace ("Entering removeCombatAreaEffectsFromLocalisedSpells: " + mapLocation);
 		
+		// Make a list of all CAEs caused by permanent city spells at this location, to make sure we don't remove them, e.g. Heavenly Light and Cloud of Darkness
+		final List<MemoryCombatAreaEffect> keepCAEs = new ArrayList<MemoryCombatAreaEffect> (); 
+		for (final MemoryMaintainedSpell trueSpell : trueMap.getMaintainedSpell ())
+			if ((mapLocation.equals (trueSpell.getCityLocation ())) && (trueSpell.getCitySpellEffectID () != null))
+			{
+				final CitySpellEffectSvr citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "removeCombatAreaEffectsFromLocalisedSpells");
+				if (citySpellEffect.getCombatAreaEffectID () != null)
+				{
+					final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+						(trueMap.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
+						
+					if (trueCAE != null)
+						keepCAEs.add (trueCAE);
+				}
+			}
+		
 		// Better copy the list of CAEs, since we'll be removing them as we go along
 		final List<MemoryCombatAreaEffect> copyOftrueCAEs = new ArrayList<MemoryCombatAreaEffect> ();
 		copyOftrueCAEs.addAll (trueMap.getCombatAreaEffect ());
 	
 		// CAE must be localised at this combat location (so we don't remove global enchantments like Crusade) and must be owned by a player (so we don't remove node auras)
 		for (final MemoryCombatAreaEffect trueCAE : copyOftrueCAEs)
-			if ((mapLocation.equals (trueCAE.getMapLocation ())) && (trueCAE.getCastingPlayerID () != null))
+			if ((!keepCAEs.contains (trueCAE)) && (mapLocation.equals (trueCAE.getMapLocation ())) && (trueCAE.getCastingPlayerID () != null))
 				removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, db, sd);
 		
 		log.trace ("Exiting removeCombatAreaEffectsFromLocalisedSpells");

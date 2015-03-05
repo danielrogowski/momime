@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 import momime.server.database.v0_9_6.Building;
 import momime.server.database.v0_9_6.CityNameContainer;
 import momime.server.database.v0_9_6.CitySize;
+import momime.server.database.v0_9_6.CitySpellEffect;
 import momime.server.database.v0_9_6.CombatAreaEffect;
 import momime.server.database.v0_9_6.CombatMapElement;
 import momime.server.database.v0_9_6.CombatTileBorder;
@@ -398,5 +399,14 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	public final PickFreeSpell createPickFreeSpell ()
 	{
 		return new PickFreeSpellSvr ();
+	}
+
+	/**
+	 * @return Custom extended CitySpellEffect
+	 */
+	@Override
+	public final CitySpellEffect createCitySpellEffect ()
+	{
+		return new CitySpellEffectSvr ();
 	}
 }

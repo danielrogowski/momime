@@ -544,12 +544,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">

@@ -713,6 +713,12 @@
 			<xsd:selector xpath="combatMapElement" />
 			<xsd:field xpath="combatTileBorderID" />
 		</xsd:keyref>
+
+		<!-- CAEs from Heavenly Light and Cloud of Shadow, new for 0.9.6 -->
+		<xsd:keyref refer="momimesvr:combatAreaEffectPK" name="citySpellEffectFKcombatAreaEffect">
+			<xsd:selector xpath="citySpellEffect" />
+			<xsd:field xpath="combatAreaEffectID" />
+		</xsd:keyref>
 	</xsd:element>
 		
 <!-- Complex types -->
@@ -1255,6 +1261,13 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="citySpellEffectName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" nxe:label="CAE" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>combatAreaEffectDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element >
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />
 	</xsd:complexType>

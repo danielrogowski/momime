@@ -14425,7 +14425,7 @@
 		<combatAreaEffectDescription>Chaos Surge</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE128">
-		<combatAreaAffectsPlayers>B</combatAreaAffectsPlayers>
+		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectAttributeBonus>
 			<effectMagicRealm>LT01</effectMagicRealm>
 			<unitAttributeID>UA01</unitAttributeID>
@@ -14606,7 +14606,7 @@
 		<combatAreaEffectDescription>Terror</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE169">
-		<combatAreaAffectsPlayers>B</combatAreaAffectsPlayers>
+		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectAttributeBonus>
 			<effectMagicRealm>LT02</effectMagicRealm>
 			<unitAttributeID>UA01</unitAttributeID>
@@ -17586,6 +17586,7 @@
 	</citySpellEffect>
 	<citySpellEffect citySpellEffectID="SE139">
 		<citySpellEffectName>Heavenly Light</citySpellEffectName>
+		<combatAreaEffectID>CSE128</combatAreaEffectID>
 	</citySpellEffect>
 	<citySpellEffect citySpellEffectID="SE145">
 		<citySpellEffectName>Prosperity</citySpellEffectName>
@@ -17616,6 +17617,7 @@
 	</citySpellEffect>
 	<citySpellEffect citySpellEffectID="SE185">
 		<citySpellEffectName>Cloud of Shadow</citySpellEffectName>
+		<combatAreaEffectID>CSE169</combatAreaEffectID>
 	</citySpellEffect>
 	<citySpellEffect citySpellEffectID="SE189">
 		<citySpellEffectName>Famine</citySpellEffectName>
@@ -19799,7 +19801,7 @@
 		<languageEntry languageEntryID="NotInvolved" />
 		<languageEntry languageEntryID="ClickBusy" />
 		<languageEntry languageEntryID="ClickWaiting" />
-	</languageCategory>	
+	</languageCategory>
 	<languageCategory languageCategoryID="frmHelp">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="SpellBookSection" />

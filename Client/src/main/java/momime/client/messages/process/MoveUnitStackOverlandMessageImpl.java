@@ -11,6 +11,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.UnitClientUtils;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.KillUnitActionID;
@@ -216,7 +217,15 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 			if (isFreeAfterMoving ())
 				getUnitClientUtils ().killUnit (thisUnitURN, KillUnitActionID.FREE, null);
 			else
+			{
 				u.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getMoveTo ()));
+				
+				// If we've got a unit info screen for this unit, force it to redraw, because the attributes may be affected as
+				// the unit moves around the map in and out of CAEs that affect it
+				final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (thisUnitURN);
+				if (unitInfo != null)
+					unitInfo.getUnitInfoPanel ().getPanel ().repaint ();
+			}
 		}
 		
 		getOverlandMapUI ().setUnitStackMoving (null);

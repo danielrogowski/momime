@@ -10,8 +10,10 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.Spell;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
+import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +37,9 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** Whether adding this CAE is showing an animation or not */
 	private boolean animated;
@@ -135,6 +140,11 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 		
 		// Make sure the combat screen isn't showing any colour
 		getCombatUI ().setFlashColour (CombatUI.NO_FLASH_COLOUR);
+		
+		// If any open unit info screen are affected by this CAE, then redraw their attributes
+		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
+			if (getUnitUtils ().doesCombatAreaEffectApplyToUnit (unitInfo.getUnit (), getMemoryCombatAreaEffect (), getClient ().getClientDB ()))
+				unitInfo.getUnitInfoPanel ().getPanel ().repaint ();
 
 		log.trace ("Exiting finish");
 	}
@@ -185,5 +195,21 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

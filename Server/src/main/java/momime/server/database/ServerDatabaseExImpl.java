@@ -8,6 +8,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.server.database.v0_9_6.Building;
 import momime.server.database.v0_9_6.CitySize;
+import momime.server.database.v0_9_6.CitySpellEffect;
 import momime.server.database.v0_9_6.CombatAreaEffect;
 import momime.server.database.v0_9_6.CombatTileBorder;
 import momime.server.database.v0_9_6.CombatTileType;
@@ -101,6 +102,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 
 	/** Map of combat tile border IDs to combat tile border objects */
 	private Map<String, CombatTileBorder> combatTileBordersMap;
+	
+	/** Map of city spell effect IDs to city spell effect objects */
+	private Map<String, CitySpellEffectSvr> citySpellEffectsMap;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -213,6 +217,11 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		combatTileBordersMap = new HashMap<String, CombatTileBorder> ();
 		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
 			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
+		
+		// City spell effects map
+		citySpellEffectsMap = new HashMap<String, CitySpellEffectSvr> ();
+		for (final CitySpellEffect thisCitySpellEffect : getCitySpellEffect ())
+			citySpellEffectsMap.put (thisCitySpellEffect.getCitySpellEffectID (), (CitySpellEffectSvr) thisCitySpellEffect);
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -748,6 +757,22 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		final CombatTileBorder found = combatTileBordersMap.get (combatTileBorderID);
 		if (found == null)
 			throw new RecordNotFoundException (CombatTileBorder.class, combatTileBorderID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param citySpellEffectID City spell effect ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return CitySpellEffect object
+	 * @throws RecordNotFoundException If the city spell effect ID doesn't exist
+	 */
+	@Override
+	public final CitySpellEffectSvr findCitySpellEffect (final String citySpellEffectID, final String caller) throws RecordNotFoundException
+	{
+		final CitySpellEffectSvr found = citySpellEffectsMap.get (citySpellEffectID);
+		if (found == null)
+			throw new RecordNotFoundException (CitySpellEffect.class, citySpellEffectID, caller);
 
 		return found;
 	}

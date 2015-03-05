@@ -150,6 +150,7 @@ public interface FogOfWarMidTurnChanges
 	 *
 	 * Spells in this "cast-but-not-targetted" state exist on the server but not in player's memory or on clients, so when their target has been set, this method is then called
 	 *
+	 * @param gsk Server knowledge structure
 	 * @param trueSpell True spell to add
 	 * @param players List of players in the session
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
@@ -161,7 +162,8 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+	public void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledgeEx gsk,
+		final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 

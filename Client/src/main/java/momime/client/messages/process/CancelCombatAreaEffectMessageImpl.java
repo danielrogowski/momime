@@ -7,8 +7,11 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.UnitInfoUI;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +35,9 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -41,6 +47,10 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		log.trace ("Entering start: CAE URN " + getCombatAreaEffectURN ());
+		
+		// Grab the CAE before we remove it
+		final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (getCombatAreaEffectURN (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), "CancelCombatAreaEffectMessageImpl");
 
 		// Remove it
 		getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (getCombatAreaEffectURN (),
@@ -49,6 +59,11 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 		// If there's a combat in progress, the icon for this CAE might need to be added to it
 		if (getCombatUI ().isVisible ())
 			getCombatUI ().generateCombatAreaEffectIcons ();
+		
+		// If any open unit info screen are affected by this CAE, then redraw their attributes
+		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
+			if (getUnitUtils ().doesCombatAreaEffectApplyToUnit (unitInfo.getUnit (), cae, getClient ().getClientDB ()))
+				unitInfo.getUnitInfoPanel ().getPanel ().repaint ();
 		
 		log.trace ("Exiting start");
 	}
@@ -99,5 +114,21 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

@@ -18,8 +18,8 @@ import com.ndg.swing.filefilters.ExtensionFileFilter;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
+import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
  * Grid for displaying and editing spell names and descriptions
@@ -142,8 +142,9 @@ public final class SpellGrid extends MoMLanguageEditorGridWithImport
 								spellElement.addContent (helpTextElement);
 
 								// Be careful about where we add it
-								final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-									(getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_SPELL);
+								final int insertionPoint = getMdiEditor ().getXmlDocuments ().determineElementInsertionPoint
+									(new ComplexTypeReference (getMdiEditor ().getXmlDocuments ().get (0), getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition ()),
+									getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_SPELL);
 								getContainer ().addContent (insertionPoint, spellElement);
 							}
 						}

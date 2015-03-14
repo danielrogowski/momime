@@ -22,8 +22,8 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
+import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
  * Grid for displaying and editing unit names
@@ -164,8 +164,9 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 				unitElement.addContent (nameElement);
 
 				// Be careful about where we add it
-				final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-					(getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
+				final int insertionPoint = getMdiEditor ().getXmlDocuments ().determineElementInsertionPoint
+					(new ComplexTypeReference (getMdiEditor ().getXmlDocuments ().get (0), getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition ()),
+					getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
 				getContainer ().addContent (insertionPoint, unitElement);
 
 				// Position back to name offset location

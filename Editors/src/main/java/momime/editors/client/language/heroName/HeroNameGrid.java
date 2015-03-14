@@ -23,8 +23,8 @@ import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
 import com.ndg.xml.JdomUtils;
+import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
  * Grid for displaying and editing hero names
@@ -143,8 +143,9 @@ public final class HeroNameGrid extends MoMLanguageEditorGridWithImport
 					heroElement.addContent (heroNameElement);
 
 					// Be careful about where we add it
-					final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-							(getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
+					final int insertionPoint = getMdiEditor ().getXmlDocuments ().determineElementInsertionPoint
+						(new ComplexTypeReference (getMdiEditor ().getXmlDocuments ().get (0), getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition ()),
+						getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
 					getContainer ().addContent (insertionPoint, heroElement);
 				}
 			

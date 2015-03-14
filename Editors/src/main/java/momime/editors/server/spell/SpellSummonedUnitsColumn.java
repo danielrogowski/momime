@@ -1,7 +1,6 @@
 package momime.editors.server.spell;
 
 import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.table.TableRowSorter;
 import javax.xml.namespace.QName;
@@ -12,10 +11,10 @@ import org.jdom.Element;
 
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.constants.XsdConstants;
-import com.ndg.xmleditor.editor.XmlDocument;
+import com.ndg.xmleditor.doc.ListOfXmlDocuments;
 import com.ndg.xmleditor.grid.XmlTableModel;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
-import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
+import com.ndg.xmleditor.schema.ComplexTypeEx;
 
 /**
  * Special column listing out all the units that a spell can summon
@@ -27,7 +26,7 @@ public final class SpellSummonedUnitsColumn extends XmlGridColumn
 	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
 	 * @param aXmlDocuments A list of the main XML document being edited, plus any referenced documents
 	 */
-	public SpellSummonedUnitsColumn (final TopLevelComplexTypeEx aTypeDefinition, final List <XmlDocument> aXmlDocuments)
+	public SpellSummonedUnitsColumn (final ComplexTypeEx aTypeDefinition, final ListOfXmlDocuments aXmlDocuments)
 	{
 		super (aTypeDefinition, aXmlDocuments);
 	}

@@ -17,10 +17,10 @@ import org.jdom.Attribute;
 import org.jdom.Element;
 
 import com.ndg.xml.JdomUtils;
-import com.ndg.xmleditor.editor.XmlDocument;
+import com.ndg.xmleditor.doc.ComplexTypeReference;
+import com.ndg.xmleditor.doc.XmlDocument;
 import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.editor.XmlEditorMain;
-import com.ndg.xmleditor.editor.XmlEditorUtils;
 import com.ndg.xmleditor.schema.ComplexTypeEx;
 import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
 
@@ -53,7 +53,7 @@ public final class LanguageEditorMain extends XmlEditorMain
 			{
 				try
 				{
-					final XmlDocument serverXml = XmlEditorUtils.findDocumentWithNamespaceURI (getXmlDocuments (), ServerDatabaseConstants.SERVER_XSD_NAMESPACE_URI);
+					final XmlDocument serverXml = getXmlDocuments ().findDocumentWithNamespaceURI (ServerDatabaseConstants.SERVER_XSD_NAMESPACE_URI);
 
 					String valuesAdded = form.checkNode (serverXml.getXml (),
 						getXmlDocuments ().get (0).getXml (), getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition ());
@@ -127,7 +127,8 @@ public final class LanguageEditorMain extends XmlEditorMain
 					languageNode = new Element (entityName);
 					languageNode.setAttribute (serverAttribute.getName (), serverAttribute.getValue ());
 
-					final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint (containerTypeDefinition, languageContainer, entityName);
+					final int insertionPoint = getXmlDocuments ().determineElementInsertionPoint
+						(new ComplexTypeReference (getXmlDocuments ().get (0), containerTypeDefinition), languageContainer, entityName);
 					languageContainer.addContent (insertionPoint, languageNode);
 
 					result = result + System.lineSeparator () + entityName + " was missing key \"" + serverAttribute.getValue () + "\"";

@@ -3,7 +3,6 @@ package momime.editors.client.graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -12,10 +11,10 @@ import javax.xml.namespace.QName;
 
 import org.jdom.Element;
 
-import com.ndg.xmleditor.editor.XmlDocument;
+import com.ndg.xmleditor.doc.ListOfXmlDocuments;
 import com.ndg.xmleditor.grid.XmlTableModel;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
-import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
+import com.ndg.xmleditor.schema.ComplexTypeEx;
 
 /**
  * Column that displays an image from the classpath
@@ -31,7 +30,7 @@ public final class ImageColumn extends XmlGridColumn
 	 * @param aXmlDocuments A list of the main XML document being edited, plus any referenced documents
 	 * @param aFilenameElement The element containing the filename of the image to display
 	 */
-	public ImageColumn (final TopLevelComplexTypeEx aTypeDefinition, final List <XmlDocument> aXmlDocuments, final String aFilenameElement)
+	public ImageColumn (final ComplexTypeEx aTypeDefinition, final ListOfXmlDocuments aXmlDocuments, final String aFilenameElement)
 	{
 		super (aTypeDefinition, aXmlDocuments);
 		filenameElement = aFilenameElement;

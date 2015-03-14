@@ -1,7 +1,6 @@
 package momime.editors.server.pickTypeCount;
 
 import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.table.TableRowSorter;
 import javax.xml.namespace.QName;
@@ -12,10 +11,10 @@ import org.jdom.Element;
 
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.constants.XsdConstants;
-import com.ndg.xmleditor.editor.XmlDocument;
+import com.ndg.xmleditor.doc.ListOfXmlDocuments;
 import com.ndg.xmleditor.grid.XmlTableModel;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
-import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
+import com.ndg.xmleditor.schema.ComplexTypeEx;
 
 /**
  * Special column which shows how many spells we get available or for free in our spell book by choosing a certain number of spell books at the start of the game
@@ -40,7 +39,7 @@ public final class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	 * @param aColumnHeading The title to display in the header above this column
 	 * @param aFieldTag The XML tag for the field containing the quantity we want to display
 	 */
-	public SpellsFromPickTypeCountColumn (final TopLevelComplexTypeEx aTypeDefinition, final List <XmlDocument> aXmlDocuments, final String aColumnHeading, final String aFieldTag)
+	public SpellsFromPickTypeCountColumn (final ComplexTypeEx aTypeDefinition, final ListOfXmlDocuments aXmlDocuments, final String aColumnHeading, final String aFieldTag)
 	{
 		super (aTypeDefinition, aXmlDocuments);
 

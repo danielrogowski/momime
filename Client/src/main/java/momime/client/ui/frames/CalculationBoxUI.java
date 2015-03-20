@@ -2,9 +2,6 @@ package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,12 +14,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
+import momime.client.ui.MomUIConstants;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import momime.client.ui.MomUIConstants;
-
-import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Frame which displays a long calculation with an OK button
@@ -32,6 +30,9 @@ public final class CalculationBoxUI extends MomClientFrameUI
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CalculationBoxUI.class);
 
+	/** XML layout */
+	private XmlLayoutContainerEx calculationBoxLayout;
+	
 	/** Small font */
 	private Font smallFont;
 	
@@ -58,9 +59,6 @@ public final class CalculationBoxUI extends MomClientFrameUI
 	
 	/** Fixed text that isn't lanuage variant; null if message is language variable */
 	private String text;
-	
-	/** Typical inset used on this screen layout */
-	private final static int INSET = 8;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -102,17 +100,13 @@ public final class CalculationBoxUI extends MomClientFrameUI
 		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		
 		// Set up layout
-		contentPane.setLayout (new GridBagLayout ());
-		
-		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, 1, 1, new Insets (INSET, INSET, 3, INSET));
-		constraints.weightx = 1;
-		constraints.weighty = 1;
+		contentPane.setLayout (new XmlLayoutManager (getCalculationBoxLayout ()));
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (getUtils ().createTransparentScrollPane (messageText), constraints);
+		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmCalculationBoxText");
 
 		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, INSET, 9, INSET), GridBagConstraintsNoFill.CENTRE));
+			buttonNormal, buttonPressed, buttonNormal), "frmCalculationBoxOK");
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -143,6 +137,22 @@ public final class CalculationBoxUI extends MomClientFrameUI
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "OK"));
 	}
 
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getCalculationBoxLayout ()
+	{
+		return calculationBoxLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setCalculationBoxLayout (final XmlLayoutContainerEx layout)
+	{
+		calculationBoxLayout = layout;
+	}
+	
 	/**
 	 * @return Small font
 	 */

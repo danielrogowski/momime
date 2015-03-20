@@ -32,6 +32,12 @@ public final class CreateFontsForTests
 	/** Small font */
 	private static Font smallFont;
 
+	/** TTF upon which tiny font is based */
+	private static Font tinyFontTTF;
+	
+	/** Tiny font */
+	private static Font tinyFont;
+
 	/**
 	 * @return TTF upon which medium+large fonts are based
 	 * @throws IOException If the resource cannot be located
@@ -95,5 +101,31 @@ public final class CreateFontsForTests
 			smallFont = getSmallFontTTF ().deriveFont (10.0f);
 		
 		return smallFont;
+	}
+
+	/**
+	 * @return TTF upon which tiny font is based
+	 * @throws IOException If the resource cannot be located
+	 * @throws FontFormatException If the format of the .ttf file is invalid
+	 */
+	private final static Font getTinyFontTTF () throws IOException, FontFormatException
+	{
+		if (tinyFontTTF == null)
+			tinyFontTTF = fontFactory.loadFont ("/momime.client.ui.fonts/DreamOrphanage.ttf");
+		
+		return tinyFontTTF;
+	}
+	
+	/**
+	 * @return Tiny font
+	 * @throws IOException If the resource cannot be located
+	 * @throws FontFormatException If the format of the .ttf file is invalid
+	 */
+	public final static Font getTinyFont () throws IOException, FontFormatException
+	{
+		if (tinyFont == null)
+			tinyFont = getTinyFontTTF ().deriveFont (11.0f);
+		
+		return tinyFont;
 	}
 }

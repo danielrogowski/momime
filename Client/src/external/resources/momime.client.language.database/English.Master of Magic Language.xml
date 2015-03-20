@@ -5715,19 +5715,20 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Damage calculations</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="AttackStatistics">
-			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack - Attack strength ATTACK_STRENGTH x ATTACKER_FIGURES figures = potential POTENTIAL_DAMAGE damage
-        x CHANCE_TO_HIT% chance to hit = average AVERAGE_DAMAGE damage - Actual damage = ACTUAL_DAMAGE</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making ATTACK_TYPE attack (average AVERAGE_DAMAGE hits) scores ACTUAL_DAMAGE hits.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceStatistics">
-			<languageEntryText>DEFENDER_NAME taking ACTUAL_DAMAGE hits - Each of DEFENDER_FIGURES figures has defence DEFENCE_STRENGTH
-        x CHANCE_TO_DEFEND% chance to block = average AVERAGE_BLOCK hits blocked - Actual hits blocked by each figure = ACTUAL_BLOCK</languageEntryText>
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME taking ACTUAL_DAMAGE hits (average AVERAGE_BLOCK blocks) blocks ACTUAL_BLOCK hits.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="MeleeAttack">
-			<languageEntryText>ATTACKER_NAME making Melee attack against DEFENDER_NAME with simultaneous counterattack</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making Melee attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RangedAttack">
-			<languageEntryText>ATTACKER_NAME making Ranged attack against DEFENDER_NAME with no counterattack</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making Ranged attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">

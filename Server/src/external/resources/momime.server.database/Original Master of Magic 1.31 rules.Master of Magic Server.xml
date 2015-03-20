@@ -19641,6 +19641,7 @@
 		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
+		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="AttackStatistics" />
 		<languageEntry languageEntryID="DefenceStatistics" />
 		<languageEntry languageEntryID="MeleeAttack" />

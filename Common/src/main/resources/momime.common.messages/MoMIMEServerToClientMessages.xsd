@@ -589,7 +589,7 @@ Either attackSkillID or attackAttributeID will be filled in, but not both:
 						<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageDamage" type="momimecommon:unitAttributeValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageBlock" type="momimecommon:unitAttributeValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="actualDamage" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="actualBlockedHits" type="momimecommon:description" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="actualBlockedHits" type="momimecommon:unitAttributeValue" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

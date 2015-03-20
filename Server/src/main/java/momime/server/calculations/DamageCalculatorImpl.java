@@ -136,7 +136,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		int defendingFiguresRemaining = damageCalculationMsg.getDefenderFigures ();
 		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
 		int hitsLeftToApply = actualDamage;
-		final StringBuffer actualBlockedHits = new StringBuffer ();
 		
 		while ((defendingFiguresRemaining > 0) && (hitsLeftToApply > 0))
 		{
@@ -148,10 +147,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			
 			hitsLeftToApply = hitsLeftToApply - thisBlockedHits;
 			
-			if (actualBlockedHits.length () > 0)
-				actualBlockedHits.append (",");
-			
-			actualBlockedHits.append (thisBlockedHits);
+			damageCalculationMsg.getActualBlockedHits ().add (thisBlockedHits);
 			
 			// If any damage was not blocked by shields then it goes to health
 			if (hitsLeftToApply > 0)
@@ -170,7 +166,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			}
 		}
 		
-		damageCalculationMsg.setActualBlockedHits (actualBlockedHits.toString ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
 		log.trace ("Exiting calculateDamage = " + totalHits);

@@ -190,6 +190,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Help text scroll */
 	private HelpUI helpUI;
 	
+	/** UI for displaying damage calculations */
+	private DamageCalculationsUI damageCalculationsUI;
+	
 	/** Spell book action */
 	private Action spellAction;
 	
@@ -472,6 +475,14 @@ public final class CombatUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getDamageCalculationsUI ().setVisible (!getDamageCalculationsUI ().isVisible ());
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -2071,6 +2082,22 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setHelpUI (final HelpUI ui)
 	{
 		helpUI = ui;
+	}
+
+	/**
+	 * @return UI for displaying damage calculations
+	 */
+	public final DamageCalculationsUI getDamageCalculationsUI ()
+	{
+		return damageCalculationsUI;
+	}
+
+	/**
+	 * @param ui UI for displaying damage calculations
+	 */
+	public final void setDamageCalculationsUI (final DamageCalculationsUI ui)
+	{
+		damageCalculationsUI = ui;
 	}
 	
 	/**

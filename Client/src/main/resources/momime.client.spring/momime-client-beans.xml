@@ -479,7 +479,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
-	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
+	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+	
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
@@ -856,13 +862,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
+
+	<bean id="damageCalculationVariableReplacer" class="momime.client.language.replacer.DamageCalculationVariableReplacerImpl">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+	</bean>	
 	
 	<!-- Fonts
 		Having to use same font for medium and large sizes, because I can't find anywhere a decent
 		Old English / Blackletter style font with sufficient foreign char support -->
 	
 	<bean id="fontFactory" class="momime.client.ui.fonts.FontFactoryImpl" />
-	
+
 	<bean id="mediumFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
 		<constructor-arg value="/momime.client.ui.fonts/KingthingsPetrock.ttf" />
 	</bean>
@@ -881,6 +894,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="smallFont" class="java.awt.Font" factory-bean="smallFontTTF" factory-method="deriveFont">
 		<constructor-arg value="10.0" />
+	</bean>
+
+	<bean id="tinyFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
+		<constructor-arg value="/momime.client.ui.fonts/DreamOrphanage.ttf" />
+	</bean>
+
+	<bean id="tinyFont" class="java.awt.Font" factory-bean="tinyFontTTF" factory-method="deriveFont">
+		<constructor-arg value="11.0" />
 	</bean>
 	
 	<!-- UI components -->
@@ -1166,6 +1187,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="helpUI" ref="helpUI" />
+		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1286,6 +1308,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
+	<bean id="damageCalculationsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/DamageCalculationsUI.xml" />
+	</bean>
+
+	<bean id="damageCalculationsUI" class="momime.client.ui.frames.DamageCalculationsUI">
+		<property name="damageCalculationsLayout" ref="damageCalculationsLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="tinyFont" ref="tinyFont" />
+		<property name="damageCalculationVariableReplacer" ref="damageCalculationVariableReplacer" />
+	</bean>
+	
 	<!-- Prototype UI components -->
 
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
@@ -1373,8 +1409,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
+
+	<bean id="calculationBoxLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CalculationBoxUI.xml" />
+	</bean>
 	
 	<bean id="calculationBoxUI" class="momime.client.ui.frames.CalculationBoxUI" scope="prototype">
+		<property name="calculationBoxLayout" ref="calculationBoxLayout" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />

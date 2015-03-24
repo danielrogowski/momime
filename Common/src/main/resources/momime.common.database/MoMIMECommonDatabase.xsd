@@ -1402,6 +1402,22 @@ However we still need to record negative skill modification values, e.g. True Li
 		<xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
+	<xsd:simpleType name="unitCombatSideID">
+	    <xsd:annotation>
+    		<xsd:documentation>Keeps track of which side of combat a unit is on; null if they aren't involved in a combat at the moment'</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Defender</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFENDER" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Attacker</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACKER" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 <!-- Datatypes not needed directly here, but used both in server and other XSDs -->
 	
 	<xsd:simpleType name="spellCount">

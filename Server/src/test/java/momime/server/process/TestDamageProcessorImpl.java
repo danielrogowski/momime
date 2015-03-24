@@ -13,6 +13,7 @@ import java.util.List;
 
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.UnitCombatSideID;
 import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.CombatMapSizeData;
@@ -20,7 +21,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;

@@ -210,6 +210,9 @@ public final class TestDamageCalculatorImpl
 		assertEquals (4, msg.getDefenceStrength ().intValue ());
 		assertEquals (5, msg.getChanceToDefend ().intValue ());
 		assertEquals (20, msg.getTenTimesAverageBlock ().intValue ());		// 4 shields * 0.5 chance = 2.0 average blocked
-		assertEquals ("1,2", msg.getActualBlockedHits ());		// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
+		
+		assertEquals (2, msg.getActualBlockedHits ().size ());		// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
+		assertEquals (1, msg.getActualBlockedHits ().get (0).intValue ());
+		assertEquals (2, msg.getActualBlockedHits ().get (1).intValue ());
 	}
 }

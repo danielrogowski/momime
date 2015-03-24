@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
-import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 
 import org.junit.Test;

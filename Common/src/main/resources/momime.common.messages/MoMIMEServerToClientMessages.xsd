@@ -486,7 +486,7 @@ For taking units out of combat, all the values will be omitted except for the un
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatHeading" type="map:mapDirection" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="summonedBySpellID" type="momimecommon:spellID">
 						    <xsd:annotation>
     							<xsd:documentation>non-blank only when msg is being sent as a result of a new unit being summoned directly into combat
@@ -507,7 +507,7 @@ For taking units out of combat, all the values will be omitted except for the un
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatHeading" type="map:mapDirection" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

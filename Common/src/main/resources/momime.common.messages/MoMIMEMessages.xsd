@@ -635,7 +635,7 @@ until it is dead and disappears, then from the second, and so on).</xsd:document
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatHeading" type="map:mapDirection" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="doubleCombatMovesLeft" type="momimecommon:doubleMovement" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -923,22 +923,6 @@ are removed from the list immediately without going to DEAD, since heroes can ne
 				<xsd:documentation>Killed by lack of production - Used on the client, so for units killed
 through lack of production, we can still look up their name to show it on the new turn messages.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="KILLED_BY_LACK_OF_PRODUCTION" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="unitCombatSideID">
-	    <xsd:annotation>
-    		<xsd:documentation>Keeps track of which side of combat a unit is on; null if they aren't involved in a combat at the moment'</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="D"><xsd:annotation>
-				<xsd:documentation>Defender</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFENDER" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="A"><xsd:annotation>
-				<xsd:documentation>Attacker</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACKER" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

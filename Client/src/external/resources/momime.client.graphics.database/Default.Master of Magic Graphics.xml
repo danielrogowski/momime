@@ -39997,6 +39997,9 @@
 		<standActionID>STAND</standActionID>
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
+	<unitSkill unitSkillID="SC005">
+		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC005-icon.png</unitSkillImageFile>
+	</unitSkill>
 	<unitSkill unitSkillID="SC046">
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC046-icon.png</unitSkillImageFile>
 	</unitSkill>
@@ -40023,6 +40026,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SC165">
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC165-icon.png</unitSkillImageFile>
+	</unitSkill>
+	<unitSkill unitSkillID="SC172">
+		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC172-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<weaponGrade weaponGradeNumber="0" />
 	<weaponGrade weaponGradeNumber="1">
@@ -40523,6 +40529,9 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CAE06">
 		<combatAreaEffectImageFile>/momime.client.graphics/combat/effects/CAE06.png</combatAreaEffectImageFile>
+	</combatAreaEffect>
+	<combatAreaEffect combatAreaEffectID="CSE033">
+		<combatAreaEffectImageFile>/momime.client.graphics/combat/effects/CSE033.png</combatAreaEffectImageFile>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE035">
 		<combatAreaEffectImageFile>/momime.client.graphics/combat/effects/CSE035.png</combatAreaEffectImageFile>

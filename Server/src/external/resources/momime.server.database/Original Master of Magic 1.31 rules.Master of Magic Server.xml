@@ -6732,12 +6732,10 @@
 		<unitSkillDescription>Movement: Swimming</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="USX04">
-		<unitSkillNotYetWorking>Has no effect in combat</unitSkillNotYetWorking>
 		<unitSkillDescription>Movement: Flying</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
 	<unitSkill unitSkillID="US000">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Movement: Teleporting</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US001">
@@ -6747,201 +6745,155 @@
 		<unitSkillDescription>Movement: Mountaineer</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US004">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Plane Shift</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US005">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Poison</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US006">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Fire</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US007">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Stoning</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US008">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Weapon</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US009">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Missiles</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US010">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Illusions</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US011">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Cold</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US012">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Magic</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US014">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Large Shield</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US015">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Wall Crusher</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US016">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Healer</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US017">
-		<unitSkillNotYetWorking>AI will not yet use</unitSkillNotYetWorking>
 		<unitSkillDescription>Create Outpost</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US018">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Invisibility</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US019">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Create Undead</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US020">
 		<unitSkillDescription>Movement: Path Finding</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US022">
-		<unitSkillNotYetWorking>Cannot yet move through walls</unitSkillNotYetWorking>
 		<unitSkillDescription>Movement: Non-corporeal</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US023">
-		<unitSkillNotYetWorking>Does not give min movement of 3</unitSkillNotYetWorking>
 		<unitSkillDescription>Movement: Wind Walking</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
 	<unitSkill unitSkillID="US024">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Regeneration</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US025">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Purify</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US026">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Stoning Gaze</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US028">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Armour Piercing</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US029">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>First Strike</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US030">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Poison Attack</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Life Stealing</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immolation</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Resistance to Others</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US034">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Holy Bonus</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US035">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Illusionary Attack</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US036">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Road Building</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US037">
 		<unitSkillDescription>Scouting</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US040">
-		<unitSkillNotYetWorking>AI will not yet use</unitSkillNotYetWorking>
 		<unitSkillDescription>Meld with Node</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US046">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Negate First Strike</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US047">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immunity: Death</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US051">
-		<unitSkillNotYetWorking>Works for providing mana for ranged attacks</unitSkillNotYetWorking>
 		<unitSkillDescription>Caster (unit version)</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US098">
 		<unitSkillDescription>Experience (granted based on unit type)</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US122">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<changesUnitToMagicRealm>LTU</changesUnitToMagicRealm>
 		<unitSkillDescription>Undead (killed by Ghouls/Life Steal)</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US123">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Lucky (Unit version)</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US125">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Long Range</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US126">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Thrown Weapons</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Death Gaze</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
 		<unitSkillDescription>Ranged Attack Ammo</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US133">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Lightning Breath</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Fire Breath</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US135">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Summon Demons</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US169">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Movement: Merging</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="HS01">
@@ -6960,7 +6912,6 @@
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS03">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Armsmaster</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
@@ -6973,13 +6924,11 @@
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS05">
-		<unitSkillNotYetWorking>Works for providing mana for ranged attacks</unitSkillNotYetWorking>
 		<unitSkillDescription>Caster</unitSkillDescription>
 		<heroSkillTypeID>M</heroSkillTypeID>
 		<onlyIfHaveAlready>true</onlyIfHaveAlready>
 	</unitSkill>
 	<unitSkill unitSkillID="HS06">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Charmed</unitSkillDescription>
 		<maxOccurrences>1</maxOccurrences>
 	</unitSkill>
@@ -6991,19 +6940,16 @@
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS08">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Leadership</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS09">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Legendary</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS10">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Lucky</unitSkillDescription>
 		<maxOccurrences>1</maxOccurrences>
 	</unitSkill>
@@ -7015,32 +6961,26 @@
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS12">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Noble</unitSkillDescription>
 		<maxOccurrences>1</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS13">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Prayermaster</unitSkillDescription>
 		<heroSkillTypeID>M</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS14">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Sage</unitSkillDescription>
 		<heroSkillTypeID>M</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="SS002">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Resist Elements</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS004">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Giant Strength</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS007">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Stone Skin</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS008">
@@ -7050,170 +6990,136 @@
 		<unitSkillDescription>Path Finding</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS021">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Elemental Armour</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS024">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Iron Skin</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS031">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Regeneration</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS041">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Resist Magic</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS044">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Guardian Wind</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS054">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Spell Lock</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS056">
-		<unitSkillNotYetWorking>Does not give min movement of 3, nor any effect in combat</unitSkillNotYetWorking>
 		<unitSkillDescription>Flight</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
 	<unitSkill unitSkillID="SS062">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Invisibility</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS063">
-		<unitSkillNotYetWorking>Does not give min movement of 3</unitSkillNotYetWorking>
 		<unitSkillDescription>Wind Walking</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
 	<unitSkill unitSkillID="SS069">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Magic Immunity</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS070">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Haste</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS086">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Eldritch Weapon</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093A">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Demon Skin Armour</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093B">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Fire Breath</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
-		<unitSkillNotYetWorking>Does not give min movement of 2, nor any effect in combat</unitSkillNotYetWorking>
 		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Flight</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
 	<unitSkill unitSkillID="SS094">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Flame Blade</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS099">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Immolation</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Bless</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS123">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Endurance</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS124">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Holy Weapon</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS126">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Holy Armour</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS130">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Heroism</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS131">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>True Sight</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS138">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Planar Travel</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS141">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Lionheart</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS143">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Invulnerability</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS144">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Righteousness</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS164">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Cloak of Fear</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS175">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Black Channels</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS179">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Beserk</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS181">
-		<unitSkillNotYetWorking>Cannot yet move through walls</unitSkillNotYetWorking>
 		<unitSkillDescription>Wraith Form</unitSkillDescription>
 	</unitSkill>
+	<unitSkill unitSkillID="SC005">
+		<unitSkillDescription>Web</unitSkillDescription>
+	</unitSkill>
 	<unitSkill unitSkillID="SC046">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Confusion</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC053">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Vertigo</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC067">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Mind Storm</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC088">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Shatter</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC089A">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Warp Creature - Half strength attacks</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC089B">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Warp Creature - Half strength defence</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC089C">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Warp Creature - Zero resistance</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC162">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Weakness</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC165">
-		<unitSkillNotYetWorking>Not yet working</unitSkillNotYetWorking>
 		<unitSkillDescription>Black Sleep</unitSkillDescription>
+	</unitSkill>
+	<unitSkill unitSkillID="SC172">
+		<unitSkillDescription>Possession</unitSkillDescription>
 	</unitSkill>
 	<rangedAttackType rangedAttackTypeID="RAT0A">
 		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
@@ -14290,6 +14196,10 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Sorcery Node Aura (+2 to various stats for Sorcery creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
+	<combatAreaEffect combatAreaEffectID="CSE033">
+		<combatAreaAffectsPlayers>O</combatAreaAffectsPlayers>
+		<combatAreaEffectDescription>Entangle</combatAreaEffectDescription>
+	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE035">
 		<combatAreaEffectDescription>Call Lightning</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -14884,6 +14794,8 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>100</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC07</spellBookSectionID>
+		<unitSpellEffect unitSkillID="SC005" />
 		<spellName>Web</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
 	</spell>
@@ -14948,8 +14860,11 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>300</researchCost>
 		<combatCastingCost>20</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Cracks Call</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
+		<attackSpellDamageType>C</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP012">
 		<spellRealm>MB04</spellRealm>
@@ -14970,8 +14885,11 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>400</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Ice Bolt</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>S</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP014">
 		<spellRealm>MB04</spellRealm>
@@ -15059,8 +14977,11 @@
 		<spellRank>SR03</spellRank>
 		<researchCost>960</researchCost>
 		<combatCastingCost>35</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Petrify</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
+		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP023">
 		<spellRealm>MB04</spellRealm>
@@ -15174,6 +15095,8 @@
 		<spellRank>SR04</spellRank>
 		<researchCost>2250</researchCost>
 		<combatCastingCost>50</combatCastingCost>
+		<spellBookSectionID>SC05</spellBookSectionID>
+		<spellHasCombatEffect combatAreaEffectID="CSE033" />
 		<spellName>Entangle</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
 	</spell>
@@ -15360,8 +15283,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>250</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Psionic Blast</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>I</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP051">
 		<spellRealm>MB05</spellRealm>
@@ -15513,8 +15439,11 @@
 		<spellRank>SR03</spellRank>
 		<researchCost>1120</researchCost>
 		<combatCastingCost>20</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Banish</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
+		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP065">
 		<spellRealm>MB05</spellRealm>
@@ -15686,8 +15615,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>20</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Warp Wood</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
+		<attackSpellDamageType>Z</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP082">
 		<spellRealm>MB03</spellRealm>
@@ -15702,8 +15634,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>60</researchCost>
 		<combatCastingCost>5</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Fire Bolt</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>S</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP084">
 		<spellRealm>MB03</spellRealm>
@@ -15798,8 +15733,11 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>300</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Lightning Bolt</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
+		<attackSpellDamageType>A</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP092">
 		<spellRealm>MB03</spellRealm>
@@ -15857,8 +15795,11 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>560</researchCost>
 		<combatCastingCost>15</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Fireball</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>M</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP097">
 		<spellRealm>MB03</spellRealm>
@@ -15907,8 +15848,11 @@
 		<spellRank>SR03</spellRank>
 		<researchCost>880</researchCost>
 		<combatCastingCost>35</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Warp Lightning</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
+		<attackSpellDamageType>A</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP102">
 		<spellRealm>MB03</spellRealm>
@@ -15935,8 +15879,11 @@
 		<spellRank>SR03</spellRank>
 		<researchCost>1120</researchCost>
 		<combatCastingCost>40</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Doom Bolt</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>D</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP105">
 		<spellRealm>MB03</spellRealm>
@@ -15979,8 +15926,11 @@
 		<spellRank>SR03</spellRank>
 		<researchCost>1600</researchCost>
 		<combatCastingCost>60</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>A</attackSpellCombatTarget>
 		<spellName>Flame Strike</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>M</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP110">
 		<spellRealm>MB03</spellRealm>
@@ -16010,8 +15960,11 @@
 		<spellRank>SR04</spellRank>
 		<researchCost>2000</researchCost>
 		<combatCastingCost>50</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Disintegrate</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>N</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP113">
 		<spellRealm>MB03</spellRealm>
@@ -16119,8 +16072,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>40</researchCost>
 		<combatCastingCost>5</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Star Fires</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
+		<attackSpellDamageType>S</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP123">
 		<spellRealm>MB01</spellRealm>
@@ -16261,8 +16217,11 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>450</researchCost>
 		<combatCastingCost>25</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Dispel Evil</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
+		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP135">
 		<spellRealm>MB01</spellRealm>
@@ -16444,8 +16403,11 @@
 		<spellRank>SR03</spellRank>
 		<researchCost>1700</researchCost>
 		<combatCastingCost>60</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>A</attackSpellCombatTarget>
 		<spellName>Holy Word</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
+		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP151">
 		<spellRealm>MB01</spellRealm>
@@ -16646,8 +16608,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>160</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Life Drain</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
+		<attackSpellDamageType>R</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP168">
 		<spellRealm>MB02</spellRealm>
@@ -16692,6 +16657,8 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>350</researchCost>
 		<combatCastingCost>30</combatCastingCost>
+		<spellBookSectionID>SC07</spellBookSectionID>
+		<unitSpellEffect unitSkillID="SC172" />
 		<spellName>Possession</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>
@@ -16914,8 +16881,11 @@
 		<spellRank>SR04</spellRank>
 		<researchCost>2000</researchCost>
 		<combatCastingCost>40</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Word of Death</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP193">
 		<spellRealm>MB02</spellRealm>
@@ -16932,8 +16902,11 @@
 		<spellRank>SR04</spellRank>
 		<researchCost>2500</researchCost>
 		<combatCastingCost>50</combatCastingCost>
+		<spellBookSectionID>SC08</spellBookSectionID>
+		<attackSpellCombatTarget>A</attackSpellCombatTarget>
 		<spellName>Death Spell</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
+		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP195">
 		<spellRealm>MB02</spellRealm>

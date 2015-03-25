@@ -1183,6 +1183,10 @@ EXPERIENCE_NEXT_LEVEL.</unitSkillHelpText>
 		<unitSkillDescription>Wraith Form</unitSkillDescription>
 		<unitSkillHelpText>Unit gains weapon immunity and an insubstantial wraith-like form (the unit is non-corporeal).  In addition, the unit may move on the overland map as if every land square was a road.</unitSkillHelpText>
 	</unitSkill>
+	<unitSkill unitSkillID="SC005">
+		<unitSkillDescription>Web</unitSkillDescription>
+		<unitSkillHelpText>Web entangles an enemy unit in a web which traps the unit where it stands.</unitSkillHelpText>
+	</unitSkill>
 	<unitSkill unitSkillID="SC046">
 		<unitSkillDescription>Confusion</unitSkillDescription>
 		<unitSkillHelpText>At the beginning of each turn, the effects of this spell will be determined randomly from this list: 1) unit stands confused, 2) unit moves randomly, 3) unit is controlled by opponent, and 4) no effect (unit is controlled by owner).</unitSkillHelpText>
@@ -1218,6 +1222,12 @@ EXPERIENCE_NEXT_LEVEL.</unitSkillHelpText>
 	<unitSkill unitSkillID="SC165">
 		<unitSkillDescription>Black Sleep</unitSkillDescription>
 		<unitSkillHelpText>Affected unit sleeps through the remainder of combat, providing a defenseless target for enemies.  If attacked by an enemy unit while in this condition, a sleeping unit takes the full force of the attack in damage (i.e. its shields are reduced to zero).</unitSkillHelpText>
+	</unitSkill>
+	<unitSkill unitSkillID="SC172">
+		<unitSkillDescription>Possession</unitSkillDescription>
+		<unitSkillHelpText>Possessed unit fights for the casting wizard until combat ends.
+
+Summoned creatures and heroes may not be possessed.</unitSkillHelpText>
 	</unitSkill>
 	<unitAttribute unitAttributeID="UA01">
 		<unitAttributeDescription>Melee</unitAttributeDescription>
@@ -2577,6 +2587,12 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 		<combatAreaEffectDescription>Sorcery Node Aura</combatAreaEffectDescription>
 		<combatAreaEffectHelpText>Being under the influence of a Sorcery node adds +2 attack, +2 defense and +2 resistance to all Sorcery creatures.</combatAreaEffectHelpText>
 	</combatAreaEffect>
+	<combatAreaEffect combatAreaEffectID="CSE033">
+		<combatAreaEffectDescription>Entangle</combatAreaEffectDescription>
+		<combatAreaEffectHelpText>Causes all non-flying, corporeal enemy creatures to suffer a loss of one movement point per turn.
+
+If a creature's movement points are zero, it may not attack or move the remainder of the combat; the creature can still strike back if attacked.</combatAreaEffectHelpText>
+	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE035">
 		<combatAreaEffectDescription>Call Lightning</combatAreaEffectDescription>
 		<combatAreaEffectHelpText>Calls down a powerful electrical storm from which deadly lightning bolts issue.
@@ -2724,6 +2740,10 @@ Only map squares protected by Heavenly Light are unaffected.</combatAreaEffectHe
 	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC07">
 		<spellBookSectionName>Unit Curses</spellBookSectionName>
+		<spellTargetPrompt>Select an enemy unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
+	</spellBookSection>
+	<spellBookSection spellBookSectionID="SC08">
+		<spellBookSectionName>Attack Spells</spellBookSectionName>
 		<spellTargetPrompt>Select an enemy unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
 	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC98">

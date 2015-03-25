@@ -600,7 +600,6 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of special icons that appear on the lower half of the unit info screen.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillNotYetWorking" type="momimecommon:description" nxe:label="Not yet working?" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="addsToAttributeID" type="momimecommon:unitAttributeID" nxe:label="Adds to Attribute" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="addsToAttributeDivisor" type="momimecommon:attributeDivisor" nxe:label="Attribute Divisor" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
@@ -875,6 +874,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellCombatTarget" type="momimecommon:attackSpellCombatTargetID" nxe:label="Atk Spell Combat Target" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:summonedUnit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCityEffect" type="momimecommon:spellHasCityEffect" />
@@ -1263,6 +1263,10 @@ about what a spell must be targetted on.  e.g. Unit enchantments must be targett
 				<xsd:documentation>Unit curses</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_CURSES"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC08"><xsd:annotation>
+				<xsd:documentation>Attack spells</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_SPELLS"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC98"><xsd:annotation>
 				<xsd:documentation>Researchable now - One of the 8 options for what to research next</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE_NOW"/></xsd:appinfo>
@@ -1404,7 +1408,7 @@ However we still need to record negative skill modification values, e.g. True Li
 	
 	<xsd:simpleType name="unitCombatSideID">
 	    <xsd:annotation>
-    		<xsd:documentation>Keeps track of which side of combat a unit is on; null if they aren't involved in a combat at the moment'</xsd:documentation>
+    		<xsd:documentation>Keeps track of which side of combat a unit is on; null if they aren't involved in a combat at the moment.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="D"><xsd:annotation>
@@ -1414,6 +1418,23 @@ However we still need to record negative skill modification values, e.g. True Li
 			<xsd:enumeration value="A"><xsd:annotation>
 				<xsd:documentation>Attacker</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACKER" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="attackSpellCombatTargetID">
+	    <xsd:annotation>
+			<xsd:documentation>For attack spells that can be used in combat, specifies whether the spell hits a
+single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strike)</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Caster chooses single enemy unit to aim spell at</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SINGLE_UNIT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Spell automatically hits all enemy units in combat (e.g. flame strike)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALL_UNITS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

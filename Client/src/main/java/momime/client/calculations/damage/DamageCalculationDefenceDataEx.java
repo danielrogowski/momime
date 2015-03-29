@@ -84,14 +84,14 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		return "          " + getLanguage ().findCategoryEntry ("CombatDamage", "DefenceStatistics").replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll
 			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
-			("DEFENDER_FIGURES", getDefenderFigures ().toString ()).replaceAll
+			("DEFENDER_FIGURES", new Integer (getDefenderFigures ()).toString ()).replaceAll
 			("DEFENCE_STRENGTH", getDefenceStrength ().toString ()).replaceAll
 			("CHANCE_TO_HIT", new Integer (getChanceToHit () * 10).toString ()).replaceAll
 			("CHANCE_TO_DEFEND", new Integer (getChanceToDefend () * 10).toString ()).replaceAll
 			("AVERAGE_DAMAGE", getTextUtils ().insertDecimalPoint (getTenTimesAverageDamage (), 1)).replaceAll
 			("ACTUAL_HITS", getActualHits ().toString ()).replaceAll
 			("AVERAGE_BLOCK", getTextUtils ().insertDecimalPoint (getTenTimesAverageBlock (), 1)).replaceAll
-			("FINAL_HITS", getFinalHits ().toString ());
+			("FINAL_HITS", new Integer (getFinalHits ()).toString ());
 	}
 
 	/**

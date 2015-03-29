@@ -188,7 +188,7 @@ public final class TestDamageCalculatorImpl
 	    assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
 	    assertEquals (6, data.getAttackerFigures ().intValue ());
 	    assertEquals (3, data.getAttackStrength ().intValue ());
-	    assertEquals (18, data.getPotentialHits ().intValue ());
+	    assertEquals (18, data.getPotentialHits ());
 	}
 	
 	/**
@@ -271,16 +271,16 @@ public final class TestDamageCalculatorImpl
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
 		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
-		assertEquals (33, data.getDefenderUnitURN ().intValue ());
+		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertEquals (4, data.getChanceToHit ().intValue ());
 		assertEquals (72, data.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
 		assertEquals (6, data.getActualHits ().intValue ());
 		
-		assertEquals (3, data.getDefenderFigures ().intValue ());
+		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (4, data.getDefenceStrength ().intValue ());
 		assertEquals (5, data.getChanceToDefend ().intValue ());
 		assertEquals (20, data.getTenTimesAverageBlock ().intValue ());			// 4 shields * 0.5 chance = 2.0 average blocked
-		assertEquals (3, data.getFinalHits ().intValue ());									// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
+		assertEquals (3, data.getFinalHits ());												// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
 	}
 }

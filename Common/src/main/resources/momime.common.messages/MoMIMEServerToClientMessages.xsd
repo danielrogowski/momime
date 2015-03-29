@@ -629,13 +629,19 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 
 	<xsd:complexType name="damageCalculationHeaderData">
 	    <xsd:annotation>
-    		<xsd:documentation>Header about how the source and target of an attack, before any attacks or counterattacks are rolled.</xsd:documentation>
+    		<xsd:documentation>Header about how the source and target of an attack, before any attacks or counterattacks are rolled.
+Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID will be filled in to denote what initiated the attack;
+or all 3 being blank indicates this is a counterattack in response to a melee attack.
+(Usually a counterattack won't have its own header, but there are situations where it can, e.g. in response to previous First Strike header).</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="momimestoc:damageCalculationData">
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -643,7 +649,9 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 	
 	<xsd:complexType name="damageCalculationAttackData">
 	    <xsd:annotation>
-    		<xsd:documentation>Breakdown about how a number of potential hits was calculated.</xsd:documentation>
+    		<xsd:documentation>Breakdown about how a number of potential hits was calculated.
+Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID will be filled in to denote what initiated the attack;
+or all 3 being blank indicates this is a counterattack in response to a melee attack.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="momimestoc:damageCalculationData">
@@ -651,9 +659,10 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerFigures" type="momimecommon:figureCount" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="potentialHits" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="1" maxOccurs="1" name="potentialHits" type="momimecommon:unitAttributeValue">
 					    <xsd:annotation>
     						<xsd:documentation>Figures * Melee/Ranged attack stat, i.e. maximum possible hits if every one hits and none get blocked.</xsd:documentation>
 						</xsd:annotation>
@@ -670,8 +679,8 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 		<xsd:complexContent>
 			<xsd:extension base="momimestoc:damageCalculationData">
 				<xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="defenderFigures" type="momimecommon:figureCount" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="defenderFigures" type="momimecommon:figureCount" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="defenceStrength" type="momimecommon:unitAttributeValue" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToHit" type="momimecommon:unitAttributeValue" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToDefend" type="momimecommon:unitAttributeValue" />
@@ -682,7 +691,7 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
     						<xsd:documentation>How many of potentialHits actually strike the unit, i.e. chanceToHit% chance per each hit of potentialDamage.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="finalHits" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="1" maxOccurs="1" name="finalHits" type="momimecommon:unitAttributeValue">
 					    <xsd:annotation>
     						<xsd:documentation>Final HP loss the defender suffers, after some of actualHits may have been blocked and hence do no damage.</xsd:documentation>
 						</xsd:annotation>
@@ -1202,6 +1211,10 @@ Used when units heal and gain experience at the start of a turn, and when units 
 	
 	<xsd:simpleType name="damageCalculationMessageTypeID">
 		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Header denoting what initiated the attack</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HEADER" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="A"><xsd:annotation>
 				<xsd:documentation>Attack data</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_DATA" /></xsd:appinfo>
@@ -1209,14 +1222,6 @@ Used when units heal and gain experience at the start of a turn, and when units 
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Defence data</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFENCE_DATA" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="M"><xsd:annotation>
-				<xsd:documentation>Melee attack</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="MELEE_ATTACK" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="R"><xsd:annotation>
-				<xsd:documentation>Ranged attack</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RANGED_ATTACK" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

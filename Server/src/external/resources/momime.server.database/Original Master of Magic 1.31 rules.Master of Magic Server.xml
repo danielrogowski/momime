@@ -19615,9 +19615,9 @@
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
 		<languageEntry languageEntryID="Title" />
-		<languageEntry languageEntryID="MeleeAttack" />
-		<languageEntry languageEntryID="RangedAttack" />
-		<languageEntry languageEntryID="AttackStatistics" />
+		<languageEntry languageEntryID="Header" />
+		<languageEntry languageEntryID="AttackWithUnit" />
+		<languageEntry languageEntryID="AttackWithoutUnit" />
 		<languageEntry languageEntryID="DefenceStatistics" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">

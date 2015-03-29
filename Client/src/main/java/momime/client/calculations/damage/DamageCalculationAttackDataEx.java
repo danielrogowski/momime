@@ -5,6 +5,7 @@ import java.io.IOException;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.SpellLang;
 import momime.client.language.database.UnitAttributeLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.utils.UnitClientUtils;
@@ -81,7 +82,13 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	{
 		// Either a unit skill ID or a unit attribute ID
 		final String attackType;
-		if (getAttackSkillID () != null)
+		if (getAttackSpellID () != null)
+		{
+			final SpellLang spell = getLanguage ().findSpell (getAttackSpellID ());
+			final String spellName = (spell == null) ? null : spell.getSpellName ();
+			attackType = (spellName != null) ? spellName : getAttackSpellID ();
+		}
+		else if (getAttackSkillID () != null)
 		{
 			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (getAttackSkillID ());
 			final String unitSkillDescription = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
@@ -95,12 +102,14 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		}
 
 		// Now work out the rest of the text
-		return "     " + getLanguage ().findCategoryEntry ("CombatDamage", "AttackStatistics").replaceAll
+		final String languageEntryID = ((getAttackerUnitURN () != null) && (getAttackerFigures () != null)) ? "AttackWithUnit" : "AttackWithoutUnit";
+		
+		return "     " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
 			("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
 			("ATTACKER_FIGURES", getAttackerFigures ().toString ()).replaceAll
 			("ATTACK_STRENGTH", getAttackStrength ().toString ()).replaceAll
-			("POTENTIAL_HITS", getPotentialHits ().toString ()).replaceAll
+			("POTENTIAL_HITS", new Integer (getPotentialHits ()).toString ()).replaceAll
 			("ATTACK_TYPE", attackType);
 	}
 

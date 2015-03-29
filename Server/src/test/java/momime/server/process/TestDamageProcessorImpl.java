@@ -180,7 +180,8 @@ public final class TestDamageProcessorImpl
 		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
-		assertEquals (DamageCalculationMessageTypeID.MELEE_ATTACK, data.getMessageType ());
+		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
+		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
 		
@@ -322,9 +323,10 @@ public final class TestDamageProcessorImpl
 		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
+		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
+		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, data.getAttackAttributeID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
-		assertEquals (DamageCalculationMessageTypeID.RANGED_ATTACK, data.getMessageType ());
 		
 		// Check units facing each other
 		assertEquals (7, attacker.getCombatHeading ().intValue ());

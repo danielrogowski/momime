@@ -82,11 +82,12 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
 		damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.HEADER);
 		
 		if (isRangedAttack)
-			damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.RANGED_ATTACK);
+			damageCalculationMsg.setAttackAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 		else
-			damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.MELEE_ATTACK);
+			damageCalculationMsg.setAttackAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 		
 		getDamageCalculator ().sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		

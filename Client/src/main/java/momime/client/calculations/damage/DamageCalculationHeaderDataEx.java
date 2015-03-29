@@ -5,12 +5,14 @@ import java.io.IOException;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.SpellLang;
+import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
-import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -90,12 +92,35 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 	@Override
 	public final String getText () throws IOException
 	{
-		final String languageEntryID = (getMessageType () == DamageCalculationMessageTypeID.MELEE_ATTACK) ? "MeleeAttack" : "RangedAttack";
-		return getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
+		// Either a unit skill ID or a unit attribute ID
+		final String attackType;
+		if (getAttackSpellID () != null)
+		{
+			final SpellLang spell = getLanguage ().findSpell (getAttackSpellID ());
+			final String spellName = (spell == null) ? null : spell.getSpellName ();
+			attackType = (spellName != null) ? spellName : getAttackSpellID ();
+		}
+		else if (getAttackSkillID () != null)
+		{
+			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (getAttackSkillID ());
+			final String unitSkillDescription = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
+			attackType = (unitSkillDescription != null) ? unitSkillDescription : getAttackSkillID ();
+		}
+		else
+		{
+			final UnitAttributeLang unitAttr = getLanguage ().findUnitAttribute (getAttackAttributeID ());
+			final String unitAttrDescription = (unitAttr == null) ? null : unitAttr.getUnitAttributeDescription ();
+			attackType = (unitAttrDescription != null) ? unitAttrDescription : getAttackAttributeID ();
+		}
+
+		// Now work out the rest of the text
+
+		return getLanguage ().findCategoryEntry ("CombatDamage", "Header").replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll
 			("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
-			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME));
+			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
+			("ATTACK_TYPE", attackType);
 	}
 	
 	/**

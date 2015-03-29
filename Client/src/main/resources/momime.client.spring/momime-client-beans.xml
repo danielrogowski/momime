@@ -480,10 +480,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
@@ -650,6 +647,36 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+
+	<!-- Create extended versions of damage calculations which include method to work out the text to display -->
+
+	<bean id="damageCalculationHeaderData" class="momime.client.calculations.damage.DamageCalculationHeaderDataEx" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+	
+	<bean id="damageCalculationAttackData" class="momime.client.calculations.damage.DamageCalculationAttackDataEx" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+	
+	<bean id="damageCalculationDefenceData" class="momime.client.calculations.damage.DamageCalculationDefenceDataEx" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
 	<!-- Version of the client -->
@@ -863,13 +890,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 
-	<bean id="damageCalculationVariableReplacer" class="momime.client.language.replacer.DamageCalculationVariableReplacerImpl">
-		<property name="languageHolder" ref="languageHolder" />
-		<property name="textUtils" ref="textUtils" />
-		<property name="unitClientUtils" ref="unitClientUtils" />
-		<property name="wizardClientUtils" ref="wizardClientUtils" />
-	</bean>	
-	
 	<!-- Fonts
 		Having to use same font for medium and large sizes, because I can't find anywhere a decent
 		Old English / Blackletter style font with sufficient foreign char support -->
@@ -1319,7 +1339,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="tinyFont" ref="tinyFont" />
-		<property name="damageCalculationVariableReplacer" ref="damageCalculationVariableReplacer" />
 	</bean>
 	
 	<!-- Prototype UI components -->

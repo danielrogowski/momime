@@ -746,7 +746,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			}
 		
 		log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat permanently freed " +
-			deadCount + " dead units and " + summonedCount + " summons, and told attacking client to free " + monstersCount + "monster defenders who''re still alive");
+			deadCount + " dead units and " + summonedCount + " summons, and told attacking client to free " + monstersCount + " monster defenders who''re still alive");
 		log.trace ("Exiting purgeDeadUnitsAndCombatSummonsFromCombat");
 	}
 

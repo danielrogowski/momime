@@ -13,9 +13,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.DamageCalculationMessage;
+import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -78,7 +79,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		log.trace ("Entering resolveAttack: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN ());
 
 		// We send this a couple of times for different parts of the calculation, so initialize it here
-		final DamageCalculationMessage damageCalculationMsg = new DamageCalculationMessage ();
+		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
 		damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		
@@ -99,22 +100,34 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final int damageToAttacker;
 		if (isRangedAttack)
 		{
-			damageToDefender = getDamageCalculator ().calculateDamage (attacker, defender, attackingPlayer, defendingPlayer,
-				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, damageCalculationMsg, mom.getPlayers (),
+			final AttackDamage potentialDamageToDefender = getDamageCalculator ().attackFromUnit
+				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+
+			damageToDefender = getDamageCalculator ().calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
+				potentialDamageToDefender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 			damageToAttacker = 0;
 			
 			getUnitCalculations ().decreaseRangedAttackAmmo (attacker);
 		}
 		else
 		{
-			damageToDefender = getDamageCalculator ().calculateDamage (attacker, defender, attackingPlayer, defendingPlayer,
-				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
+			final AttackDamage potentialDamageToDefender = getDamageCalculator ().attackFromUnit
+				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+
+			damageToDefender = getDamageCalculator ().calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
+				potentialDamageToDefender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+
+			final AttackDamage potentialDamageToAttacker = getDamageCalculator ().attackFromUnit
+				(defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 			
-			damageToAttacker = getDamageCalculator ().calculateDamage (defender, attacker, attackingPlayer, defendingPlayer,
-				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+			damageToAttacker = getDamageCalculator ().calculateSingleFigureDamage (attacker, attackingPlayer, defendingPlayer,
+				potentialDamageToAttacker, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 		}
 		
 		// Now apply damage

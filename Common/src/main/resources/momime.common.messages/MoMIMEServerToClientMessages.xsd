@@ -565,31 +565,13 @@ details of all the units in the combat and the terrain, so is probably the most 
 	
 	<xsd:element name="damageCalculationMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>Server telling the two players involved in a combat how damage was calculated.
-Either attackSkillID or attackAttributeID will be filled in, but not both:
-	attackSkillID will be filled in if the attack is is a special skill like First Strike, Fire Breath etc.
-	attackAttributeID will be filled in (UA01 or UA02) if the attack is a standard melee or ranged attack.</xsd:documentation>
+    		<xsd:documentation>Server sending breakdown values for one line to appear in the damage calculation window</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="messageType" type="momimestoc:damageCalculationMessageTypeID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackerFigures" type="momimecommon:figureCount" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="defenderFigures" type="momimecommon:figureCount" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="defenceStrength" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="potentialDamage" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="chanceToHit" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="chanceToDefend" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageDamage" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageBlock" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="actualDamage" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="actualBlockedHits" type="momimecommon:unitAttributeValue" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="breakdown" type="momimestoc:damageCalculationData" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -635,6 +617,80 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
+
+	<xsd:complexType name="damageCalculationData">
+	    <xsd:annotation>
+    		<xsd:documentation>Class used to store breakdown values for all messages that appear in the damage calculation window.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="messageType" type="momimestoc:damageCalculationMessageTypeID" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="damageCalculationHeaderData">
+	    <xsd:annotation>
+    		<xsd:documentation>Header about how the source and target of an attack, before any attacks or counterattacks are rolled.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimestoc:damageCalculationData">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+	
+	<xsd:complexType name="damageCalculationAttackData">
+	    <xsd:annotation>
+    		<xsd:documentation>Breakdown about how a number of potential hits was calculated.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimestoc:damageCalculationData">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackerFigures" type="momimecommon:figureCount" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitAttributeValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="potentialHits" type="momimecommon:unitAttributeValue">
+					    <xsd:annotation>
+    						<xsd:documentation>Figures * Melee/Ranged attack stat, i.e. maximum possible hits if every one hits and none get blocked.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="damageCalculationDefenceData">
+	    <xsd:annotation>
+    		<xsd:documentation>Breakdown about how damage from a number of potential hits was applied to a unit.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimestoc:damageCalculationData">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="defenderFigures" type="momimecommon:figureCount" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="defenceStrength" type="momimecommon:unitAttributeValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToHit" type="momimecommon:unitAttributeValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToDefend" type="momimecommon:unitAttributeValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageDamage" type="momimecommon:unitAttributeValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageBlock" type="momimecommon:unitAttributeValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="actualHits" type="momimecommon:unitAttributeValue">
+					    <xsd:annotation>
+    						<xsd:documentation>How many of potentialHits actually strike the unit, i.e. chanceToHit% chance per each hit of potentialDamage.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="finalHits" type="momimecommon:unitAttributeValue">
+					    <xsd:annotation>
+    						<xsd:documentation>Final HP loss the defender suffers, after some of actualHits may have been blocked and hence do no damage.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
 	
 <!-- Magic -->
 
@@ -1146,9 +1202,13 @@ Used when units heal and gain experience at the start of a turn, and when units 
 	
 	<xsd:simpleType name="damageCalculationMessageTypeID">
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="S"><xsd:annotation>
-				<xsd:documentation>Attack and defence statistics</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_AND_DEFENCE_STATISTICS" /></xsd:appinfo>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Attack data</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_DATA" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Defence data</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFENCE_DATA" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="M"><xsd:annotation>
 				<xsd:documentation>Melee attack</xsd:documentation>

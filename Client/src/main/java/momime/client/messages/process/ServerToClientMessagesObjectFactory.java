@@ -17,6 +17,9 @@ import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
 import momime.common.messages.servertoclient.ChosenWizardMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
+import momime.common.messages.servertoclient.DamageCalculationAttackData;
+import momime.common.messages.servertoclient.DamageCalculationDefenceData;
+import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
@@ -573,6 +576,33 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final UpdateUnitToAliveMessage createUpdateUnitToAliveMessage ()
 	{
 		return getFactory ().createUpdateUnitToAliveMessage ();
+	}
+
+	/**
+	 * @return Newly created damage calculation breakdown line
+	 */
+	@Override
+	public final DamageCalculationHeaderData createDamageCalculationHeaderData ()
+	{
+		return getFactory ().createDamageCalculationHeaderData ();
+	}
+
+	/**
+	 * @return Newly created damage calculation breakdown line
+	 */
+	@Override
+	public final DamageCalculationAttackData createDamageCalculationAttackData ()
+	{
+		return getFactory ().createDamageCalculationAttackData ();
+	}
+
+	/**
+	 * @return Newly created damage calculation breakdown line
+	 */
+	@Override
+	public final DamageCalculationDefenceData createDamageCalculationDefenceData ()
+	{
+		return getFactory ().createDamageCalculationDefenceData ();
 	}
 
 	/**

@@ -2,12 +2,14 @@ package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
 import momime.client.ClientTestData;
+import momime.client.calculations.damage.DamageCalculationText;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.replacer.DamageCalculationBreakdown;
-import momime.client.language.replacer.DamageCalculationVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
 
 import org.junit.Test;
@@ -48,8 +50,6 @@ public final class TestDamageCalculationsUI
 		layout.buildMaps ();
 
 		// Set up form
-		final DamageCalculationVariableReplacer replacer = mock (DamageCalculationVariableReplacer.class);
-		
 		final DamageCalculationsUI box = new DamageCalculationsUI ();
 		box.setDamageCalculationsLayout (layout);
 		box.setUtils (utils);
@@ -57,17 +57,26 @@ public final class TestDamageCalculationsUI
 		box.setLanguageChangeMaster (langMaster);
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		box.setTinyFont (CreateFontsForTests.getTinyFont ());
-		box.setDamageCalculationVariableReplacer (replacer);
 		
 		// Set up some dummy messages
 		for (int n = 1; n <= 130; n++)
 		{
-			final DamageCalculationBreakdown breakdown = new DamageCalculationBreakdown ();
-			breakdown.setLanguageEntryID ("E" + n);
-			box.addBreakdown (breakdown);
+			final int n2 = n;
+			final DamageCalculationText breakdown = new DamageCalculationText ()
+			{
+				@Override
+				public final void preProcess () throws IOException
+				{
+				}
+
+				@Override
+				public final String getText ()
+				{
+					return "Damage calculation breakdown line " + n2;
+				}
+			};
 			
-			when (lang.findCategoryEntry ("CombatDamage", "E" + n)).thenReturn ("T" + n);
-			when (replacer.replaceVariables ("T" + n)).thenReturn ("Damage calculation breakdown line " + n);
+			box.addBreakdown (breakdown);
 		}
 		
 		// Display form		

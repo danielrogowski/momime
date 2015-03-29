@@ -1,6 +1,7 @@
 package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -13,13 +14,15 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.DamageCalculationAttackData;
+import momime.common.messages.servertoclient.DamageCalculationData;
+import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.UnitAttributeComponent;
 import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
-import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 
 import org.junit.Test;
@@ -61,8 +64,8 @@ public final class TestDamageCalculatorImpl
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
 		
 		// Run test
-		final DamageCalculationMessage msg = new DamageCalculationMessage (); 
-		calc.sendDamageCalculationMessage (attackingPlayer, defendingPlayer, msg);
+		final DamageCalculationData data = new DamageCalculationData (); 
+		calc.sendDamageCalculationMessage (attackingPlayer, defendingPlayer, data);
 		
 		// Check results
 		assertEquals (0, attackingConn.getMessages ().size ());
@@ -97,26 +100,29 @@ public final class TestDamageCalculatorImpl
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
 		
 		// Run test
-		final DamageCalculationMessage msg = new DamageCalculationMessage (); 
-		calc.sendDamageCalculationMessage (attackingPlayer, defendingPlayer, msg);
+		final DamageCalculationData data = new DamageCalculationData (); 
+		calc.sendDamageCalculationMessage (attackingPlayer, defendingPlayer, data);
 
 		// Check results
 		assertEquals (1, attackingConn.getMessages ().size ());
-		assertSame (msg, attackingConn.getMessages ().get (0));
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (data, msg.getBreakdown ());
 		
 		assertEquals (1, defendingConn.getMessages ().size ());
 		assertSame (msg, defendingConn.getMessages ().get (0));
 	}
 	
 	/**
-	 * Tests the calculateDamage method
+	 * Tests the attackFromUnit method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateDamage () throws Exception
+	public final void testAttackFromUnit () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
 		// Set up other lists
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
@@ -128,8 +134,8 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
-		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
-		attackingPlayer.setConnection (attackingMsgs);
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
@@ -138,13 +144,10 @@ public final class TestDamageCalculatorImpl
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-		
-		// Set up units
+
+		// Set up unit
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (22);
-		
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
 		
 		// Set up attacker stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
@@ -158,7 +161,76 @@ public final class TestDamageCalculatorImpl
 		when (unitUtils.getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);	// ..with 40% chance to hit on each
 		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final AttackDamage dmg = calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, spells, combatAreaEffects, db);
+		
+		// Check results
+		assertEquals (18, dmg.getPotentialHits ());
+		assertEquals (1, dmg.getPlusToHit ());
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		
+		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
+	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
+	    assertNull (data.getAttackSkillID ());
+	    assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
+	    assertEquals (6, data.getAttackerFigures ().intValue ());
+	    assertEquals (3, data.getAttackStrength ().intValue ());
+	    assertEquals (18, data.getPotentialHits ().intValue ());
+	}
+	
+	/**
+	 * Tests the calculateSingleFigureDamage method (the internal version)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateSingleFigureDamage () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (4);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+		
 		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
 		
 		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
@@ -186,33 +258,29 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		final DamageCalculationMessage msg = new DamageCalculationMessage ();
-		assertEquals (3, calc.calculateDamage (attacker, defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			msg, players, spells, combatAreaEffects, db));
+		assertEquals (3, calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1),
+			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
-		assertEquals (1, attackingMsgs.getMessages ().size ());
-		assertSame (msg, attackingMsgs.getMessages ().get (0));
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.ATTACK_AND_DEFENCE_STATISTICS, msg.getMessageType ());
-		assertEquals (22, msg.getAttackerUnitURN ().intValue ());
-		assertEquals (33, msg.getDefenderUnitURN ().intValue ());
-		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, msg.getAttackAttributeID ());
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ().intValue ());
 		
-		assertEquals (6, msg.getAttackerFigures ().intValue ());
-		assertEquals (3, msg.getAttackStrength ().intValue ());
-		assertEquals (18, msg.getPotentialDamage ().intValue ());
-		assertEquals (4, msg.getChanceToHit ().intValue ());
-		assertEquals (72, msg.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
-		assertEquals (6, msg.getActualDamage ().intValue ());
+		assertEquals (4, data.getChanceToHit ().intValue ());
+		assertEquals (72, data.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
+		assertEquals (6, data.getActualHits ().intValue ());
 		
-		assertEquals (3, msg.getDefenderFigures ().intValue ());
-		assertEquals (4, msg.getDefenceStrength ().intValue ());
-		assertEquals (5, msg.getChanceToDefend ().intValue ());
-		assertEquals (20, msg.getTenTimesAverageBlock ().intValue ());		// 4 shields * 0.5 chance = 2.0 average blocked
-		
-		assertEquals (2, msg.getActualBlockedHits ().size ());		// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
-		assertEquals (1, msg.getActualBlockedHits ().get (0).intValue ());
-		assertEquals (2, msg.getActualBlockedHits ().get (1).intValue ());
+		assertEquals (3, data.getDefenderFigures ().intValue ());
+		assertEquals (4, data.getDefenceStrength ().intValue ());
+		assertEquals (5, data.getChanceToDefend ().intValue ());
+		assertEquals (20, data.getTenTimesAverageBlock ().intValue ());			// 4 shields * 0.5 chance = 2.0 average blocked
+		assertEquals (3, data.getFinalHits ().intValue ());									// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
 	}
 }

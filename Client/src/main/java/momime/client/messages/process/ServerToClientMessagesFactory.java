@@ -1,5 +1,9 @@
 package momime.client.messages.process;
 
+import momime.client.calculations.damage.DamageCalculationAttackDataEx;
+import momime.client.calculations.damage.DamageCalculationDefenceDataEx;
+import momime.client.calculations.damage.DamageCalculationHeaderDataEx;
+
 /**
  * Factory interface for creating every possible type of server to client message
  */
@@ -284,4 +288,19 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public UpdateUnitToAliveMessageImpl createUpdateUnitToAliveMessage ();
+
+	/**
+	 * @return Damage breakdown line with with injected dependencies
+	 */
+	public DamageCalculationHeaderDataEx createDamageCalculationHeaderData ();
+
+	/**
+	 * @return Damage breakdown line with with injected dependencies
+	 */
+	public DamageCalculationAttackDataEx createDamageCalculationAttackData ();
+
+	/**
+	 * @return Damage breakdown line with with injected dependencies
+	 */
+	public DamageCalculationDefenceDataEx createDamageCalculationDefenceData ();
 }

@@ -5738,17 +5738,17 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Damage calculations</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="AttackStatistics">
-			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making ATTACK_TYPE attack (average AVERAGE_DAMAGE hits) scores ACTUAL_DAMAGE hits.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceStatistics">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME taking ACTUAL_DAMAGE hits (average AVERAGE_BLOCK blocks) blocks ACTUAL_BLOCK hits.</languageEntryText>
-		</languageEntry>
 		<languageEntry languageEntryID="MeleeAttack">
 			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making Melee attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RangedAttack">
 			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making Ranged attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackStatistics">
+			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to ATTACKER_FIGURES x ATTACK_STRENGTH = POTENTIAL_HITS damage:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceStatistics">
+			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS unblocked hit(s) damage HP.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">

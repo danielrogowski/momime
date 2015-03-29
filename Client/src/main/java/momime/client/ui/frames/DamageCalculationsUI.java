@@ -19,8 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 
-import momime.client.language.replacer.DamageCalculationBreakdown;
-import momime.client.language.replacer.DamageCalculationVariableReplacer;
+import momime.client.calculations.damage.DamageCalculationText;
 import momime.client.ui.MomUIConstants;
 
 import org.apache.commons.logging.Log;
@@ -43,9 +42,6 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	/** XML layout */
 	private XmlLayoutContainerEx damageCalculationsLayout;
 	
-	/** Variable replacer */
-	private DamageCalculationVariableReplacer damageCalculationVariableReplacer;
-	
 	/** Tiny font */
 	private Font tinyFont;
 
@@ -62,7 +58,7 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	private JList<String> messagesList;
 
 	/** Language category ID to use for the title; null if title is not language-variable */
-	private List<DamageCalculationBreakdown> breakdowns = new ArrayList<DamageCalculationBreakdown> ();
+	private List<DamageCalculationText> breakdowns = new ArrayList<DamageCalculationText> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -138,12 +134,15 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 		
 		// Messages
 		messagesItems.clear ();
-		for (final DamageCalculationBreakdown breakdown : breakdowns)
-		{
-			getDamageCalculationVariableReplacer ().setBreakdown (breakdown);
-			messagesItems.addElement (breakdown.getIndent () + getDamageCalculationVariableReplacer ().replaceVariables
-				(getLanguage ().findCategoryEntry ("CombatDamage", breakdown.getLanguageEntryID ())));
-		}
+		for (final DamageCalculationText breakdown : breakdowns)
+			try
+			{
+				messagesItems.addElement (breakdown.getText ());
+			}
+			catch (final IOException e)
+			{
+				log.error (e, e);
+			}
 		
 		messagesList.ensureIndexIsVisible (messagesItems.size () - 1);
 		
@@ -154,9 +153,9 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	/**
 	 * @param breakdown Breakdown to add
 	 */
-	public final void addBreakdown (final DamageCalculationBreakdown breakdown)
+	public final void addBreakdown (final DamageCalculationText breakdown)
 	{
-		log.trace ("Entering addBreakdown: " + breakdown.getMessageType ());
+		log.trace ("Entering addBreakdown");
 		
 		// See if we need to remove the oldest entry
 		while (breakdowns.size () >= MAX_MESSAGES)
@@ -170,13 +169,15 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 		breakdowns.add (breakdown);
 
 		if (messagesItems != null)
-		{
-			getDamageCalculationVariableReplacer ().setBreakdown (breakdown);
-			messagesItems.addElement (breakdown.getIndent () + getDamageCalculationVariableReplacer ().replaceVariables
-				(getLanguage ().findCategoryEntry ("CombatDamage", breakdown.getLanguageEntryID ())));
-			
-			messagesList.ensureIndexIsVisible (messagesItems.size () - 1);
-		}
+			try
+			{
+				messagesItems.addElement (breakdown.getText ());			
+				messagesList.ensureIndexIsVisible (messagesItems.size () - 1);
+			}
+			catch (final IOException e)
+			{
+				log.error (e, e);
+			}
 
 		log.trace ("Exiting addBreakdown");
 	}
@@ -227,21 +228,5 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	public final void setSmallFont (final Font font)
 	{
 		smallFont = font;
-	}
-
-	/**
-	 * @return Variable replacer
-	 */
-	public final DamageCalculationVariableReplacer getDamageCalculationVariableReplacer ()
-	{
-		return damageCalculationVariableReplacer;
-	}
-
-	/**
-	 * @param replacer Variable replacer
-	 */
-	public final void setDamageCalculationVariableReplacer (final DamageCalculationVariableReplacer replacer)
-	{
-		damageCalculationVariableReplacer = replacer;
 	}
 }

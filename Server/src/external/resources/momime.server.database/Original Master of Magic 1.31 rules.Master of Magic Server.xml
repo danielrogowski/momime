@@ -19615,10 +19615,10 @@
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
 		<languageEntry languageEntryID="Title" />
-		<languageEntry languageEntryID="AttackStatistics" />
-		<languageEntry languageEntryID="DefenceStatistics" />
 		<languageEntry languageEntryID="MeleeAttack" />
 		<languageEntry languageEntryID="RangedAttack" />
+		<languageEntry languageEntryID="AttackStatistics" />
+		<languageEntry languageEntryID="DefenceStatistics" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">
 		<languageEntry languageEntryID="Title" />

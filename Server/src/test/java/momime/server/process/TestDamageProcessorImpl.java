@@ -13,6 +13,7 @@ import java.util.List;
 
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.messages.CaptureCityDecisionID;
@@ -22,10 +23,12 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.DamageCalculationMessage;
+import momime.common.messages.servertoclient.DamageCalculationData;
+import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
+import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -118,13 +121,26 @@ public final class TestDamageProcessorImpl
 		
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
-		when (calc.calculateDamage (eq (attacker), eq (defender), eq (attackingPlayer), eq (defendingPlayer),
-			any (String.class), any (DamageCalculationMessage.class), eq (players), eq (trueMap.getMaintainedSpell ()),
-			eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (5);		// Dmg to defender
+
+		final AttackDamage damageToDefender = new AttackDamage (8, 0);
 		
-		when (calc.calculateDamage (eq (defender), eq (attacker), eq (attackingPlayer), eq (defendingPlayer),
-			any (String.class), any (DamageCalculationMessage.class), eq (players), eq (trueMap.getMaintainedSpell ()),
-			eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2);		// Dmg to attacker
+		when (calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
+			trueMap.getCombatAreaEffect (), db)).thenReturn (damageToDefender);		// Dmg to defender
+
+		when (calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
+			damageToDefender, players, trueMap.getMaintainedSpell (),
+			trueMap.getCombatAreaEffect (), db)).thenReturn (5);		// Dmg to defender
+
+		final AttackDamage damageToAttacker = new AttackDamage (5, 1);
+		
+		when (calc.attackFromUnit (defender, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
+			trueMap.getCombatAreaEffect (), db)).thenReturn (damageToAttacker);		// Dmg to attacker
+
+		when (calc.calculateSingleFigureDamage (attacker, attackingPlayer, defendingPlayer,
+			damageToAttacker, players, trueMap.getMaintainedSpell (),
+			trueMap.getCombatAreaEffect (), db)).thenReturn (2);		// Dmg to attacker
 
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
@@ -158,12 +174,15 @@ public final class TestDamageProcessorImpl
 		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7, false, combatLocation, mom);
 		
 		// Check initial message was sent
-		final ArgumentCaptor<DamageCalculationMessage> msg = ArgumentCaptor.forClass (DamageCalculationMessage.class); 
+		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
 		
 		verify (calc, times (1)).sendDamageCalculationMessage (eq (attackingPlayer), eq (defendingPlayer), msg.capture ());
-		assertEquals (attacker.getUnitURN (), msg.getValue ().getAttackerUnitURN ().intValue ());
-		assertEquals (defender.getUnitURN (), msg.getValue ().getDefenderUnitURN ().intValue ());
-		assertEquals (DamageCalculationMessageTypeID.MELEE_ATTACK, msg.getValue ().getMessageType ());
+		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
+		
+		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
+		assertEquals (DamageCalculationMessageTypeID.MELEE_ATTACK, data.getMessageType ());
+		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
+		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
 		
 		// Check units facing each other
 		assertEquals (7, attacker.getCombatHeading ().intValue ());
@@ -257,14 +276,17 @@ public final class TestDamageProcessorImpl
 		
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
-		when (calc.calculateDamage (eq (attacker), eq (defender), eq (attackingPlayer), eq (defendingPlayer),
-			any (String.class), any (DamageCalculationMessage.class), eq (players), eq (trueMap.getMaintainedSpell ()),
-			eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (5);		// Dmg to defender
-			
-		when (calc.calculateDamage (eq (defender), eq (attacker), eq (attackingPlayer), eq (defendingPlayer),
-			any (String.class), any (DamageCalculationMessage.class), eq (players), eq (trueMap.getMaintainedSpell ()),
-			eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2);		// Dmg to attacker
 
+		final AttackDamage damageToDefender = new AttackDamage (8, 0);
+		
+		when (calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, players, trueMap.getMaintainedSpell (),
+			trueMap.getCombatAreaEffect (), db)).thenReturn (damageToDefender);		// Dmg to defender
+
+		when (calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
+			damageToDefender, players, trueMap.getMaintainedSpell (),
+			trueMap.getCombatAreaEffect (), db)).thenReturn (5);		// Dmg to defender
+		
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
@@ -294,12 +316,15 @@ public final class TestDamageProcessorImpl
 		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7, true, combatLocation, mom);
 		
 		// Check initial message was sent
-		final ArgumentCaptor<DamageCalculationMessage> msg = ArgumentCaptor.forClass (DamageCalculationMessage.class); 
+		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
 		
 		verify (calc, times (1)).sendDamageCalculationMessage (eq (attackingPlayer), eq (defendingPlayer), msg.capture ());
-		assertEquals (attacker.getUnitURN (), msg.getValue ().getAttackerUnitURN ().intValue ());
-		assertEquals (defender.getUnitURN (), msg.getValue ().getDefenderUnitURN ().intValue ());
-		assertEquals (DamageCalculationMessageTypeID.RANGED_ATTACK, msg.getValue ().getMessageType ());
+		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
+		
+		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
+		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
+		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
+		assertEquals (DamageCalculationMessageTypeID.RANGED_ATTACK, data.getMessageType ());
 		
 		// Check units facing each other
 		assertEquals (7, attacker.getCombatHeading ().intValue ());

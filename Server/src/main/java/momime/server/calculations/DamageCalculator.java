@@ -10,14 +10,19 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.DamageCalculationMessage;
+import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
- * Routines for making damage rolls to see how many HP a unit attacking another unit knocks off
+ * Routines for making all the different kinds of damage rolls to see how many HP a unit attacking another unit knocks off.
+ * This doesn't deal with actually applying the damage to the units, so that damage calculations for all combat actions in
+ * a single step can all be called in succession, added up and applied in one go.
+ * 
+ * e.g. attacker's melee and poison attacks, and defender's counterattack would be 3 calls to damage calc routines
+ * but the damage is all applied at once in DamageProcessorImpl.
  */
 public interface DamageCalculator
 {
@@ -30,18 +35,20 @@ public interface DamageCalculator
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void sendDamageCalculationMessage (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final DamageCalculationMessage msg)
+	public void sendDamageCalculationMessage (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final DamageCalculationData msg)
 		throws JAXBException, XMLStreamException;
-		
+	
 	/**
-	 * NB. This doesn't actually apply the damage, so that both the attack and counterattack damage can be calculated and applied at the same time
+	 * Calculates attack and defence rolls for "single figure" type damage, where the first figure defends then takes hits, then the
+	 * second figure defends and takes hits, so each figure defends and is then (maybe) killed off individually, until all damage is
+	 * absorbed or every figure is killed.
+	 * 
+	 * This version is used when the attack is being made by another unit.
 	 * 
 	 * @param attacker Unit making the attack
-	 * @param defender Unit being hit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackAttributeID The attribute being used to attack, i.e. UA01 (swords) or UA02 (ranged)
-	 * @param damageCalculationMsg Partially pre-filled damage calc message so that it can be reused
 	 * @param players Players list
 	 * @param spells Known spells
 	 * @param combatAreaEffects Known combat area effects
@@ -53,8 +60,33 @@ public interface DamageCalculator
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateDamage (final MemoryUnit attacker, final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final String attackAttributeID, final DamageCalculationMessage damageCalculationMsg, final List<PlayerServerDetails> players,
+	public AttackDamage attackFromUnit (final MemoryUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final String attackAttributeID, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * Rolls the number of actual hits and blocks for normal "single figure" type damage, where the first figure defends then takes hits, then the
+	 * second figure defends and takes hits, so each figure defends and is then (maybe) killed off individually, until all damage is
+	 * absorbed or every figure is killed.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public int calculateSingleFigureDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

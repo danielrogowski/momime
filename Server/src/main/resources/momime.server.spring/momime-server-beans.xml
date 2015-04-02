@@ -446,6 +446,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="damageProcessor" ref="damageProcessor" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

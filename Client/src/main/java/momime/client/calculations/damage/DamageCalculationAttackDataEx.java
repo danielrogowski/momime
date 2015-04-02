@@ -64,11 +64,17 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	{
 		log.trace ("Entering preProcess");
 		
-		setAttackerUnit (getUnitUtils ().findUnitURN (getAttackerUnitURN (),
-	    	getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "DamageCalculationAttackDataEx-au"));
-
-	    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
-	    	(getClient ().getPlayers (), getAttackerUnit ().getOwningPlayerID (), "DamageCalculationAttackDataEx-ap"));
+		if (getAttackerUnitURN () != null)
+		{
+			setAttackerUnit (getUnitUtils ().findUnitURN (getAttackerUnitURN (),
+		    	getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "DamageCalculationAttackDataEx-au"));
+	
+		    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
+		    	(getClient ().getPlayers (), getAttackerUnit ().getOwningPlayerID (), "DamageCalculationAttackDataEx-aup"));
+		}
+		else
+		    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
+			    (getClient ().getPlayers (), getAttackerPlayerID (), "DamageCalculationAttackDataEx-ap"));
 
 		log.trace ("Exiting preProcess");
 	}
@@ -104,13 +110,23 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		// Now work out the rest of the text
 		final String languageEntryID = ((getAttackerUnitURN () != null) && (getAttackerFigures () != null)) ? "AttackWithUnit" : "AttackWithoutUnit";
 		
-		return "     " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
+		String text = "     " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
-			("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
-			("ATTACKER_FIGURES", getAttackerFigures ().toString ()).replaceAll
-			("ATTACK_STRENGTH", getAttackStrength ().toString ()).replaceAll
-			("POTENTIAL_HITS", new Integer (getPotentialHits ()).toString ()).replaceAll
 			("ATTACK_TYPE", attackType);
+		
+		if (getAttackerUnit () != null)
+			text = text.replaceAll ("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME));
+		
+		if (getAttackerFigures () != null)
+			text = text.replaceAll ("ATTACKER_FIGURES", getAttackerFigures ().toString ());
+		
+		if (getAttackStrength () != null)
+			text = text.replaceAll ("ATTACK_STRENGTH", getAttackStrength ().toString ());
+		
+		if (getPotentialHits () != null)
+			text = text.replaceAll ("POTENTIAL_HITS", new Integer (getPotentialHits ()).toString ());
+		
+		return text;
 	}
 
 	/**

@@ -53,6 +53,7 @@ public interface SpellProcessing
 	 * @param spell Which spell they want to cast
 	 * @param reducedCombatCastingCost Skill cost of the spell, reduced by any book or retort bonuses the player may have
 	 * @param multipliedManaCost MP cost of the spell, reduced as above, then multiplied up according to the distance the combat is from the wizard's fortress
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
 	 * @param defendingPlayer Defending player in the combat
 	 * @param attackingPlayer Attacking player in the combat
@@ -66,7 +67,7 @@ public interface SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void castCombatNow (final PlayerServerDetails player, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
+		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
 	

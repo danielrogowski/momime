@@ -1007,14 +1007,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 				getDamageProcessor ().resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo),
 					attackingPlayer, defendingPlayer,
 					movementDirections [moveTo.getY ()] [moveTo.getX ()],
-					false, combatLocation, mom);
+					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 				break;
 				
 			case RANGED:
 				getDamageProcessor ().resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 					combatLocation, moveTo), attackingPlayer, defendingPlayer,
 					getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), (MapCoordinates2DEx) tu.getCombatPosition (), moveTo),
-					true, combatLocation, mom);
+					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 				break;
 				
 			case MOVE:

@@ -45,6 +45,7 @@ import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.AnimationController;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
@@ -192,6 +193,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** UI for displaying damage calculations */
 	private DamageCalculationsUI damageCalculationsUI;
+
+	/** Variable MP popup */
+	private VariableManaUI variableManaUI;	
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -864,10 +868,17 @@ public final class CombatUI extends MomClientFrameUI
 						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
 							getCombatLocation (), moveToLocation);
 						
+						final Spell spell = getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "CombatUI-targetSpell");
+						
+						// Build message
 						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
 						msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
 						msg.setCombatLocation (getCombatLocation ());
 						
+						// Does the spell have varying cost?
+						if (spell.getCombatMaxDamage () != null)
+							msg.setVariableDamage (getVariableManaUI ().getVariableDamage ());
+									
 						boolean isValidTarget = false;
 						if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 						{
@@ -2098,6 +2109,22 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setDamageCalculationsUI (final DamageCalculationsUI ui)
 	{
 		damageCalculationsUI = ui;
+	}
+
+	/**
+	 * @return Variable MP popup
+	 */
+	public VariableManaUI getVariableManaUI ()
+	{
+		return variableManaUI;
+	}
+
+	/**
+	 * @param ui Variable MP popup
+	 */
+	public final void setVariableManaUI (final VariableManaUI ui)
+	{
+		variableManaUI = ui;
 	}
 	
 	/**

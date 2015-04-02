@@ -1358,7 +1358,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * Informs clients who can see either unit of how much combat damage two units have taken - the two players in combat use this to show the animation of the attack.
 	 * If the damage is enough to kill off the unit, the client will take care of this - we don't need to send a separate KillUnitMessage.
 	 * 
-	 * @param tuAttacker Server's true memory of unit that made the attack
+	 * @param tuAttacker Server's true memory of unit that made the attack; or null if the attack isn't coming from a unit
 	 * @param tuDefender Server's true memory of unit that got hit
 	 * @param isRangedAttack True if ranged attack; False if melee
 	 * @param players List of players in the session
@@ -1376,7 +1376,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering sendCombatDamageToClients: Unit URN " + tuAttacker.getUnitURN () +
+		log.trace ("Entering sendCombatDamageToClients: Unit URN " + ((tuAttacker != null) ? new Integer (tuAttacker.getUnitURN ()).toString () : "N/A") +
 			", Unit URN " + tuDefender.getUnitURN ());
 
 		for (final PlayerServerDetails thisPlayer : players)
@@ -1393,7 +1393,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				msg = null;
 			
 			// Attacking unit
-			if (canSeeUnitMidTurn (tuAttacker, trueTerrain, thisPlayer, db, fogOfWarSettings))
+			if ((tuAttacker != null) && (canSeeUnitMidTurn (tuAttacker, trueTerrain, thisPlayer, db, fogOfWarSettings)))
 			{
 				// Update player's memory of attacker on server
 				final MemoryUnit muAttacker = getUnitUtils ().findUnitURN (tuAttacker.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-a");

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>298</formWidth>
+	<formHeight>76</formHeight>
+	<component name="frmEditStringOK">
+		<left>235</left>
+		<top>14</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmEditStringPrompt">
+		<left>22</left>
+		<top>12</top>
+		<width>211</width>
+		<height>20</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmEditStringText">
+		<left>27</left>
+		<top>40</top>
+		<width>244</width>
+		<height>20</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

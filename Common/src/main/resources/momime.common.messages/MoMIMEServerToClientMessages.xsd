@@ -638,6 +638,7 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 			<xsd:extension base="momimestoc:damageCalculationData">
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
@@ -657,14 +658,16 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 			<xsd:extension base="momimestoc:damageCalculationData">
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerFigures" type="momimecommon:figureCount" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="potentialHits" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="0" maxOccurs="1" name="potentialHits" type="momimecommon:unitAttributeValue">
 					    <xsd:annotation>
-    						<xsd:documentation>Figures * Melee/Ranged attack stat, i.e. maximum possible hits if every one hits and none get blocked.</xsd:documentation>
+    						<xsd:documentation>Figures * Melee/Ranged attack stat, i.e. maximum possible hits if every one hits and none get blocked.
+This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

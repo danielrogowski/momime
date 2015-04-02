@@ -21,6 +21,7 @@ import momime.common.utils.UnitAttributeComponent;
 import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.SpellSvr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -103,9 +104,11 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		log.trace ("Entering attackFromUnit: Unit URN " + attacker.getUnitURN () + ", " + attackAttributeID);
 		
+		// Start breakdown message
 		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_DATA);
 		damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
+		damageCalculationMsg.setAttackerPlayerID (attacker.getOwningPlayerID ());
 		damageCalculationMsg.setAttackAttributeID (attackAttributeID);
 
 		// How many potential hits can we make - See page 285 in the strategy guide
@@ -120,6 +123,41 @@ public final class DamageCalculatorImpl implements DamageCalculator
 
 		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit);
 		log.trace ("Exiting attackFromUnit = " + attackDamage);
+		return attackDamage;
+	}
+	
+	/**
+	 * Calculates the strength of an attack coming from a spell.
+	 *  
+	 * @param spell The spell being cast
+	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
+	 * @param castingPlayer The player casting the spell
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final AttackDamage attackFromSpell (final SpellSvr spell, final Integer variableDamage,
+		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer)
+		throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering attackFromSpell: Unit URN " + spell.getSpellID () + ", " + variableDamage);
+		
+		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
+		final Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage (); 
+		
+		// Start breakdown message
+		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_DATA);
+		damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+		damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
+		damageCalculationMsg.setPotentialHits (damage);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+
+		final AttackDamage attackDamage = new AttackDamage (damage, 0);
+		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
 	}
 	

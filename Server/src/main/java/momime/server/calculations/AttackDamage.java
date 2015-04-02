@@ -6,17 +6,17 @@ package momime.server.calculations;
  */
 public final class AttackDamage
 {
-	/** Potential maximum damage of the attack, if every hit hits and every defence fails */ 
-	private final int potentialHits;
+	/** Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood */ 
+	private final Integer potentialHits;
 	
 	/** Any bonus to the standard 30% hit rate */
 	private final int plusToHit;
 	
 	/**
-	 * @param aPotentialHits Potential maximum damage of the attack, if every hit hits and every defence fails
+	 * @param aPotentialHits Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood
 	 * @param aPlusToHit Any bonus to the standard 30% hit rate
 	 */
-	public AttackDamage (final int aPotentialHits, final int aPlusToHit)
+	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit)
 	{
 		super ();
 		potentialHits = aPotentialHits;
@@ -33,9 +33,9 @@ public final class AttackDamage
 	}
 
 	/**
-	 * @return Potential maximum damage of the attack, if every hit hits and every defence fails
+	 * @return Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood
 	 */ 
-	public final int getPotentialHits ()
+	public final Integer getPotentialHits ()
 	{
 		return potentialHits;
 	}

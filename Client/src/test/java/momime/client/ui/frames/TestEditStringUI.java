@@ -2,6 +2,7 @@ package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import momime.client.ClientTestData;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the EditStringUI class
@@ -37,8 +39,13 @@ public final class TestEditStringUI
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/EditStringUI.xml"));
+		layout.buildMaps ();
+		
 		// Set up form
 		final EditStringUI box = new EditStringUI ();
+		box.setEditStringLayout (layout);
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
@@ -75,8 +82,13 @@ public final class TestEditStringUI
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/EditStringUI.xml"));
+		layout.buildMaps ();
+		
 		// Set up form
 		final EditStringUI box = new EditStringUI ();
+		box.setEditStringLayout (layout);
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);

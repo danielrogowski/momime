@@ -14862,9 +14862,10 @@
 		<combatCastingCost>20</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>C</attackSpellDamageType>
+		<combatBaseDamage>25</combatBaseDamage>
 		<spellName>Cracks Call</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
-		<attackSpellDamageType>C</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP012">
 		<spellRealm>MB04</spellRealm>
@@ -14887,9 +14888,12 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>S</attackSpellDamageType>
+		<combatBaseDamage>5</combatBaseDamage>
+		<combatMaxDamage>45</combatMaxDamage>
+		<combatManaPerAdditionalDamagePoint>1</combatManaPerAdditionalDamagePoint>
 		<spellName>Ice Bolt</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>S</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP014">
 		<spellRealm>MB04</spellRealm>
@@ -14979,9 +14983,9 @@
 		<combatCastingCost>35</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>P</attackSpellDamageType>
 		<spellName>Petrify</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
-		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP023">
 		<spellRealm>MB04</spellRealm>
@@ -15285,9 +15289,12 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>I</attackSpellDamageType>
+		<combatBaseDamage>5</combatBaseDamage>
+		<combatMaxDamage>25</combatMaxDamage>
+		<combatManaPerAdditionalDamagePoint>2</combatManaPerAdditionalDamagePoint>
 		<spellName>Psionic Blast</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>I</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP051">
 		<spellRealm>MB05</spellRealm>
@@ -15441,9 +15448,12 @@
 		<combatCastingCost>20</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>P</attackSpellDamageType>
+		<combatBaseDamage>3</combatBaseDamage>
+		<combatMaxDamage>8</combatMaxDamage>
+		<combatManaPerAdditionalDamagePoint>15</combatManaPerAdditionalDamagePoint>
 		<spellName>Banish</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
-		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP065">
 		<spellRealm>MB05</spellRealm>
@@ -15617,9 +15627,9 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>Z</attackSpellDamageType>
 		<spellName>Warp Wood</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
-		<attackSpellDamageType>Z</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP082">
 		<spellRealm>MB03</spellRealm>
@@ -15636,9 +15646,12 @@
 		<combatCastingCost>5</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>S</attackSpellDamageType>
+		<combatBaseDamage>5</combatBaseDamage>
+		<combatMaxDamage>25</combatMaxDamage>
+		<combatManaPerAdditionalDamagePoint>1</combatManaPerAdditionalDamagePoint>
 		<spellName>Fire Bolt</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>S</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP084">
 		<spellRealm>MB03</spellRealm>
@@ -15735,9 +15748,12 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>A</attackSpellDamageType>
+		<combatBaseDamage>5</combatBaseDamage>
+		<combatMaxDamage>45</combatMaxDamage>
+		<combatManaPerAdditionalDamagePoint>1</combatManaPerAdditionalDamagePoint>
 		<spellName>Lightning Bolt</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
-		<attackSpellDamageType>A</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP092">
 		<spellRealm>MB03</spellRealm>
@@ -15797,9 +15813,12 @@
 		<combatCastingCost>15</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>M</attackSpellDamageType>
+		<combatBaseDamage>5</combatBaseDamage>
+		<combatMaxDamage>25</combatMaxDamage>
+		<combatManaPerAdditionalDamagePoint>3</combatManaPerAdditionalDamagePoint>
 		<spellName>Fireball</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>M</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP097">
 		<spellRealm>MB03</spellRealm>
@@ -15850,9 +15869,10 @@
 		<combatCastingCost>35</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>A</attackSpellDamageType>
+		<combatBaseDamage>10</combatBaseDamage>
 		<spellName>Warp Lightning</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
-		<attackSpellDamageType>A</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP102">
 		<spellRealm>MB03</spellRealm>
@@ -15881,9 +15901,10 @@
 		<combatCastingCost>40</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>D</attackSpellDamageType>
+		<combatBaseDamage>10</combatBaseDamage>
 		<spellName>Doom Bolt</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>D</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP105">
 		<spellRealm>MB03</spellRealm>
@@ -15928,9 +15949,10 @@
 		<combatCastingCost>60</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
+		<attackSpellDamageType>M</attackSpellDamageType>
+		<combatBaseDamage>15</combatBaseDamage>
 		<spellName>Flame Strike</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>M</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP110">
 		<spellRealm>MB03</spellRealm>
@@ -15962,9 +15984,9 @@
 		<combatCastingCost>50</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>N</attackSpellDamageType>
 		<spellName>Disintegrate</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>N</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP113">
 		<spellRealm>MB03</spellRealm>
@@ -16074,9 +16096,10 @@
 		<combatCastingCost>5</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>S</attackSpellDamageType>
+		<combatBaseDamage>15</combatBaseDamage>
 		<spellName>Star Fires</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
-		<attackSpellDamageType>S</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP123">
 		<spellRealm>MB01</spellRealm>
@@ -16219,9 +16242,10 @@
 		<combatCastingCost>25</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>P</attackSpellDamageType>
+		<combatBaseDamage>4</combatBaseDamage>
 		<spellName>Dispel Evil</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
-		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP135">
 		<spellRealm>MB01</spellRealm>
@@ -16405,9 +16429,10 @@
 		<combatCastingCost>60</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
+		<attackSpellDamageType>P</attackSpellDamageType>
+		<combatBaseDamage>2</combatBaseDamage>
 		<spellName>Holy Word</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
-		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP151">
 		<spellRealm>MB01</spellRealm>
@@ -16610,9 +16635,12 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>R</attackSpellDamageType>
+		<combatBaseDamage>0</combatBaseDamage>
+		<combatMaxDamage>8</combatMaxDamage>
+		<combatManaPerAdditionalDamagePoint>5</combatManaPerAdditionalDamagePoint>
 		<spellName>Life Drain</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
-		<attackSpellDamageType>R</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP168">
 		<spellRealm>MB02</spellRealm>
@@ -16883,9 +16911,10 @@
 		<combatCastingCost>40</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageType>P</attackSpellDamageType>
+		<combatBaseDamage>5</combatBaseDamage>
 		<spellName>Word of Death</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP193">
 		<spellRealm>MB02</spellRealm>
@@ -16904,9 +16933,10 @@
 		<combatCastingCost>50</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
+		<attackSpellDamageType>P</attackSpellDamageType>
+		<combatBaseDamage>2</combatBaseDamage>
 		<spellName>Death Spell</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<attackSpellDamageType>P</attackSpellDamageType>
 	</spell>
 	<spell spellID="SP195">
 		<spellRealm>MB02</spellRealm>
@@ -19598,6 +19628,11 @@
 		<languageEntry languageEntryID="SwitchOffSpell" />
 		<languageEntry languageEntryID="SwitchOffSpellNotOurs" />
 	</languageCategory>
+	<languageCategory languageCategoryID="VariableMana">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Damage" />
+		<languageEntry languageEntryID="Resistance" />
+	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="InvalidMagicRealmLifeformType" />
@@ -19615,7 +19650,8 @@
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
 		<languageEntry languageEntryID="Title" />
-		<languageEntry languageEntryID="Header" />
+		<languageEntry languageEntryID="HeaderWithAttackerUnit" />
+		<languageEntry languageEntryID="HeaderWithoutAttackerUnit" />
 		<languageEntry languageEntryID="AttackWithUnit" />
 		<languageEntry languageEntryID="AttackWithoutUnit" />
 		<languageEntry languageEntryID="DefenceStatistics" />
@@ -19800,3 +19836,4 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
+

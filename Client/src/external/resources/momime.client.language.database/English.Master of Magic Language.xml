@@ -5693,6 +5693,17 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>You didn't cast the SPELL_NAME spell and so cannot switch it off.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="VariableMana">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Additional Power</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Damage">
+			<languageEntryText>VALUE damage</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Resistance">
+			<languageEntryText>-VALUE resistance</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Target Spell</languageEntryText>
@@ -5738,14 +5749,17 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Damage calculations</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="Header">
+		<languageEntry languageEntryID="HeaderWithAttackerUnit">
 			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making ATTACK_TYPE attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="HeaderWithoutAttackerUnit">
+			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackWithUnit">
 			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to ATTACKER_FIGURES x ATTACK_STRENGTH = POTENTIAL_HITS damage:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackWithoutUnit">
-			<languageEntryText>ATTACKER_NAME's ATTACK_NAME hits for up to POTENTIAL_HITS damage:</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE hits for up to POTENTIAL_HITS damage:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceStatistics">
 			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS unblocked hit(s) damage HP.</languageEntryText>

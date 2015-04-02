@@ -41,9 +41,11 @@ import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.SpellSorter;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
+import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -110,6 +112,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Help text scroll */
 	private HelpUI helpUI;
+	
+	/** Variable MP popup */
+	private VariableManaUI variableManaUI;	
 	
 	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
 	private final static int SPELLS_PER_PAGE = 4;
@@ -586,10 +591,18 @@ public final class SpellBookUI extends MomClientFrameUI
 												msg.setVisible (true);
 											}
 											
+											// Is it a spell with variable MP cost so we need to pop up a window with a slider to choose how much to put into it?
+											else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null))
+											{
+												getVariableManaUI ().setSpellBeingTargetted (spell);
+												getVariableManaUI ().setVisible (true);
+											}
+											
 											// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
 											else if ((getCastType () == SpellCastType.COMBAT) &&
 												((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
-												(sectionID == SpellBookSectionID.SUMMONING)))
+												(sectionID == SpellBookSectionID.SUMMONING) ||
+												((sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 												
 												getCombatUI ().setSpellBeingTargetted (spell);
 											else
@@ -1143,6 +1156,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setHelpUI (final HelpUI ui)
 	{
 		helpUI = ui;
+	}
+
+	/**
+	 * @return Variable MP popup
+	 */
+	public VariableManaUI getVariableManaUI ()
+	{
+		return variableManaUI;
+	}
+
+	/**
+	 * @param ui Variable MP popup
+	 */
+	public final void setVariableManaUI (final VariableManaUI ui)
+	{
+		variableManaUI = ui;
 	}
 	
 	/**

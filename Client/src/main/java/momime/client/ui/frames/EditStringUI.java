@@ -2,8 +2,6 @@ package momime.client.ui.frames;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -27,7 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Frame which a prompt, text box, and takes some action when OK is clicked
@@ -36,6 +35,9 @@ public final class EditStringUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (EditStringUI.class);
+
+	/** XML layout */
+	private XmlLayoutContainerEx editStringLayout;
 	
 	/** Large font */
 	private Font largeFont;
@@ -78,9 +80,6 @@ public final class EditStringUI extends MomClientFrameUI
 	
 	/** The text field */
 	private JTextField textField;
-	
-	/** Typical inset used on this screen layout */
-	private final static int INSET = 3;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -151,19 +150,17 @@ public final class EditStringUI extends MomClientFrameUI
 		contentPane.setBorder (BorderFactory.createEmptyBorder (2, 19, 8, 19));
 		
 		// Set up layout
-		contentPane.setLayout (new GridBagLayout ());
+		contentPane.setLayout (new XmlLayoutManager (getEditStringLayout ()));
 		
 		promptLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		final GridBagConstraints promptConstraints = getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.WEST);
-		promptConstraints.weightx = 1;		// Push the OK button over to the right
-		contentPane.add (promptLabel, promptConstraints);
+		contentPane.add (promptLabel, "frmEditStringPrompt");
 
 		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getLargeFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+			buttonNormal, buttonPressed, buttonNormal), "frmEditStringOK");
 		
 		textField = getUtils ().createTransparentTextField (MomUIConstants.SILVER, getLargeFont (), new Dimension (244, 20));
 		textField.setText (text);
-		contentPane.add (textField, getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (textField, "frmEditStringText");
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -197,6 +194,22 @@ public final class EditStringUI extends MomClientFrameUI
 		log.trace ("Exiting languageChanged");
 	}
 
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getEditStringLayout ()
+	{
+		return editStringLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setEditStringLayout (final XmlLayoutContainerEx layout)
+	{
+		editStringLayout = layout;
+	}
+	
 	/**
 	 * @return Large font
 	 */

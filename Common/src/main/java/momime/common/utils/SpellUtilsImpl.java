@@ -149,7 +149,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		return getReducedCastingCostForCastingType (spell, SpellCastType.COMBAT, picks, spellSettings, db);
+		return getReducedCastingCost (spell, spell.getCombatCastingCost (), picks, spellSettings, db);
 	}
 
 	/**
@@ -165,12 +165,12 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		return getReducedCastingCostForCastingType (spell, SpellCastType.OVERLAND, picks, spellSettings, db);
+		return getReducedCastingCost (spell, spell.getOverlandCastingCost (), picks, spellSettings, db);
 	}
 
 	/**
 	 * @param spell Spell we want to cast
-	 * @param castType The context of the spell cast (overland or combat), determines base cost of spell
+	 * @param castingCost The casting cost of the spell (base, or possibly increased if a variable mana spell e.g. fire bolt)
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
@@ -178,25 +178,12 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	private final int getReducedCastingCostForCastingType (final Spell spell, final SpellCastType castType, final List<PlayerPick> picks,
+	@Override
+	public final int getReducedCastingCost (final Spell spell, final int castingCost, final List<PlayerPick> picks,
 		final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering getReducedCastingCostForCastingType: " + spell.getSpellID () + ", " + castType);
-
-		// Get the base cost, which is different depending on casting type
-		int baseCastingCost;
-		switch (castType)
-		{
-			case OVERLAND:
-				baseCastingCost = spell.getOverlandCastingCost ();
-				break;
-			case COMBAT:
-				baseCastingCost = spell.getCombatCastingCost ();
-				break;
-			default:
-				throw new MomException ("getReducedCastingCostForCastingType: Unexpected SpellCastType value for castType parameter.");
-		}
+		log.trace ("Entering getReducedCastingCostForCastingType: " + spell.getSpellID () + ", " + castingCost);
 
 		// What magic realm ID is this spell?
 		final String magicRealmID = spell.getSpellRealm ();
@@ -211,8 +198,8 @@ public final class SpellUtilsImpl implements SpellUtils
 		// Do the calculation Calculation function returns a percentage reduction
 		final double reduction = getSpellCalculations ().calculateCastingCostReduction (bookCount, spellSettings, spell, picks, db) / 100;
 
-		final int reductionAmount = (int) (reduction * baseCastingCost);
-		final int castingCostForCastingType = baseCastingCost - reductionAmount;
+		final int reductionAmount = (int) (reduction * castingCost);
+		final int castingCostForCastingType = castingCost - reductionAmount;
 
 		log.trace ("Exiting getReducedCastingCostForCastingType = " + castingCostForCastingType);
 		return castingCostForCastingType;

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>298</formWidth>
+	<formHeight>76</formHeight>
+	<component name="frmVariableManaOK">
+		<left>235</left>
+		<top>14</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmVariableManaLeft">
+		<left>22</left>
+		<top>12</top>
+		<width>111</width>
+		<height>20</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmVariableManaRight">
+		<left>135</left>
+		<top>12</top>
+		<width>98</width>
+		<height>20</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmVariableManaSlider">
+		<left>28</left>
+		<top>40</top>
+		<width>242</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

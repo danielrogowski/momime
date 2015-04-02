@@ -171,7 +171,8 @@ public final class TestDamageProcessorImpl
 		}
 		
 		// Run method
-		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7, false, combatLocation, mom);
+		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -182,6 +183,7 @@ public final class TestDamageProcessorImpl
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
 		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
+		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
 		
@@ -314,7 +316,8 @@ public final class TestDamageProcessorImpl
 		trueMap.getUnit ().add (survivingUnit);
 		
 		// Run method
-		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7, true, combatLocation, mom);
+		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -325,6 +328,7 @@ public final class TestDamageProcessorImpl
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
 		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, data.getAttackAttributeID ());
+		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
 		

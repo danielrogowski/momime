@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
@@ -99,6 +100,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
 	 * @param combatTargetLocation Which specific tile of the combat map the spell is being cast at, for cell-targetted spells like combat summons
 	 * @param combatTargetUnitURN Which specific unit within combat the spell is being cast at, for unit-targetted spells like Fire Bolt
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -109,7 +111,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	@Override
 	public final void requestCastSpell (final PlayerServerDetails player, final String spellID,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
-		final MomSessionVariables mom)
+		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering requestCastSpell: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
@@ -148,6 +150,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else
 			msg = null;
 		
+		// Casting cost is only relevant for validation if we're casting in combat - if overland,
+		// it can be as expensive spell as we like, its still valid, it'll just take ages to cast it
 		int reducedCombatCastingCost = Integer.MAX_VALUE;
 		int multipliedManaCost = Integer.MAX_VALUE;
 		MemoryUnit combatTargetUnit = null;
@@ -169,9 +173,13 @@ public final class SpellQueueingImpl implements SpellQueueing
 			
 			else
 			{
-				// Books/retorts can make spell cheaper to cast
-				reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
-					(spell, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+				// Work out unmodified casting cost
+				final int unmodifiedCombatCastingCost = (variableDamage == null) ? spell.getCombatCastingCost () :
+					spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
+				
+				// Apply books/retorts that make spell cheaper to cast
+				reducedCombatCastingCost = getSpellUtils ().getReducedCastingCost
+					(spell, unmodifiedCombatCastingCost, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 				
 				// What our remaining skill?
 				final int ourSkill;
@@ -216,7 +224,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 				// Do nothing - more serious message already generated
 			}
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
+				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
+				((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
 			{
 				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
 				// Verify that the chosen unit is a valid target for unit enchantments/curses (we checked above that a unit has chosen)
@@ -271,7 +280,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Cast combat spell
 			// Always cast instantly
 			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
-			getSpellProcessing ().castCombatNow (player, spell, reducedCombatCastingCost, multipliedManaCost, combatLocation,
+			getSpellProcessing ().castCombatNow (player, spell, reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				combatTargetUnit, combatTargetLocation, mom);
 		}

@@ -103,7 +103,7 @@ public final class TestSpellQueueingImpl
 		proc.setSpellUtils (spellUtils);
 
 		// Run test
-		proc.requestCastSpell (player, "SP001", null, null, null, mom);
+		proc.requestCastSpell (player, "SP001", null, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -155,7 +155,7 @@ public final class TestSpellQueueingImpl
 		proc.setSpellUtils (spellUtils);
 
 		// Run test
-		proc.requestCastSpell (player, "SP001", null, null, null, mom);
+		proc.requestCastSpell (player, "SP001", null, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -210,7 +210,7 @@ public final class TestSpellQueueingImpl
 		proc.setSpellUtils (spellUtils);
 
 		// Run test
-		proc.requestCastSpell (player, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (player, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -265,7 +265,7 @@ public final class TestSpellQueueingImpl
 		proc.setSpellUtils (spellUtils);
 
 		// Test providing a cell target
-		proc.requestCastSpell (player, "SP001", null, combatTargetLocation, null, mom);
+		proc.requestCastSpell (player, "SP001", null, combatTargetLocation, null, null, mom);
 		
 		assertEquals (1, msgs3.getMessages ().size ());
 		final TextPopupMessage msg = (TextPopupMessage) msgs3.getMessages ().get (0);
@@ -273,7 +273,7 @@ public final class TestSpellQueueingImpl
 		
 		// Test providing a unit target
 		msgs3.getMessages ().clear ();
-		proc.requestCastSpell (player, "SP001", null, null, 1, mom);
+		proc.requestCastSpell (player, "SP001", null, null, 1, null, mom);
 		
 		assertEquals (1, msgs3.getMessages ().size ());
 		final TextPopupMessage msg2 = (TextPopupMessage) msgs3.getMessages ().get (0);
@@ -328,7 +328,7 @@ public final class TestSpellQueueingImpl
 		proc.setSpellUtils (spellUtils);
 
 		// Run test
-		proc.requestCastSpell (player, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (player, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -384,7 +384,7 @@ public final class TestSpellQueueingImpl
 		proc.setSpellUtils (spellUtils);
 
 		// Run test
-		proc.requestCastSpell (player, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (player, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -451,7 +451,7 @@ public final class TestSpellQueueingImpl
 		proc.setResourceValueUtils (resourceValueUtils);
 
 		// Call method
-		proc.requestCastSpell (player, "SP001", null, null, null, mom);
+		proc.requestCastSpell (player, "SP001", null, null, null, null, mom);
 		
 		// Check results
 		assertEquals (1, priv.getQueuedSpellID ().size ());
@@ -536,7 +536,7 @@ public final class TestSpellQueueingImpl
 		proc.setServerResourceCalculations (serverResourceCalculations);
 
 		// Call method
-		proc.requestCastSpell (player, "SP001", null, null, null, mom);
+		proc.requestCastSpell (player, "SP001", null, null, null, null, mom);
 		
 		// Check it was cast
 		verify (spellProcessing, times (1)).castOverlandNow (gsk, player, spell, players, db, sd);
@@ -623,7 +623,7 @@ public final class TestSpellQueueingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -714,7 +714,7 @@ public final class TestSpellQueueingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -802,7 +802,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -810,7 +811,7 @@ public final class TestSpellQueueingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -900,7 +901,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (15);
 		
 		// Isn't a tower
@@ -919,7 +921,7 @@ public final class TestSpellQueueingImpl
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1009,7 +1011,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (15);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1032,7 +1035,7 @@ public final class TestSpellQueueingImpl
 		proc.setResourceValueUtils (resourceValueUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1122,7 +1125,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1145,7 +1149,7 @@ public final class TestSpellQueueingImpl
 		proc.setResourceValueUtils (resourceValueUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1235,7 +1239,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1261,10 +1266,10 @@ public final class TestSpellQueueingImpl
 		proc.setSpellProcessing (spellProcessing);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);
 		
 		// Check results
-		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, spell, 20, 30, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
+		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, spell, 20, 30, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
 	}
 
@@ -1350,7 +1355,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1378,7 +1384,7 @@ public final class TestSpellQueueingImpl
 		proc.setUnitUtils (unitUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, 101, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, 101, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1468,7 +1474,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1503,7 +1510,7 @@ public final class TestSpellQueueingImpl
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, 101, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, 101, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1593,7 +1600,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1631,10 +1639,10 @@ public final class TestSpellQueueingImpl
 		proc.setSpellProcessing (spellProcessing);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, 101, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, 101, null, mom);
 		
 		// Check results
-		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, spell, 20, 30, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
+		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, spell, 20, 30, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
 	}
 
@@ -1720,7 +1728,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1751,7 +1760,7 @@ public final class TestSpellQueueingImpl
 		proc.setUnitUtils (unitUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1846,7 +1855,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1880,7 +1890,7 @@ public final class TestSpellQueueingImpl
 		proc.setUnitUtils (unitUtils);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1977,7 +1987,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -2016,7 +2027,7 @@ public final class TestSpellQueueingImpl
 		proc.setUnitCalculations (unitCalc);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -2113,7 +2124,8 @@ public final class TestSpellQueueingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Casting cost
-		when (spellUtils.getReducedCombatCastingCost (spell, attackingPub.getPick (), settings, db)).thenReturn (20);
+		spell.setCombatCastingCost (20);
+		when (spellUtils.getReducedCastingCost (spell, 20, attackingPub.getPick (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -2157,10 +2169,10 @@ public final class TestSpellQueueingImpl
 		proc.setSpellProcessing (spellProcessing);
 
 		// Run test
-		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, mom);
+		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, combatTargetLocation, null, null, mom);
 		
 		// Check results
-		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, spell, 20, 30, combatLocation, defendingPlayer, attackingPlayer, null, combatTargetLocation, mom);
+		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, spell, 20, 30, null, combatLocation, defendingPlayer, attackingPlayer, null, combatTargetLocation, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
 	}
 

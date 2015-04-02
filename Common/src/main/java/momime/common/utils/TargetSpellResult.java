@@ -11,8 +11,8 @@ public enum TargetSpellResult
 	/** Can't cast a beneficial enchantment on an enemy city or unit */
 	ENCHANTING_ENEMY ("EnchantingEnemyUnit", "EnchantingEnemyCity"),
 	
-	/** Can't cast a curse on our own city or unit */
-	CURSING_OWN ("CursingOwnUnit", "CursingOwnCity"),
+	/** Can't cast a curse on our own city or unit, or target an attack spell like fire bolt on it */
+	CURSING_OR_ATTACKING_OWN ("CursingOwnUnit", "CursingOwnCity"),
 	
 	/** Spell has no spellEffectIDs defined at all */
 	NO_SPELL_EFFECT_IDS_DEFINED ("NoUnitSpellEffectIDsDefined", "NoCitySpellEffectIDsDefined"),

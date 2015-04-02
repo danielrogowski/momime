@@ -3656,7 +3656,8 @@ public final class TestCombatProcessingImpl
 		assertEquals (0, tu.getDoubleCombatMovesLeft ().intValue ());
 		
 		// Check the attack happened
-		verify (damageProcessor, times (1)).resolveAttack (tu, defender, attackingPlayer, defendingPlayer, 4, true, combatLocation, mom);
+		verify (damageProcessor, times (1)).resolveAttack (tu, defender, attackingPlayer, defendingPlayer, 4,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 	}
 
 	/**
@@ -3825,6 +3826,7 @@ public final class TestCombatProcessingImpl
 		assertEquals (1, tu.getDoubleCombatMovesLeft ().intValue ());
 
 		// Check the attack happened
-		verify (damageProcessor, times (1)).resolveAttack (tu, defender, attackingPlayer, defendingPlayer, 3, false, combatLocation, mom);
+		verify (damageProcessor, times (1)).resolveAttack (tu, defender, attackingPlayer, defendingPlayer, 3,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 	}
 }

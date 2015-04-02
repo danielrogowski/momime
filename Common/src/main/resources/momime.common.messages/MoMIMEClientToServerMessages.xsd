@@ -492,6 +492,12 @@ If in combat, and casting at a location (e.g. summoning), combatTargetLocation w
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetLocation" type="map:mapCoordinates2D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetUnitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="variableDamage" type="momimecommon:unitAttributeValue">
+						    <xsd:annotation>
+    							<xsd:documentation>For spells such as fire bolt where variable mana can be channeled into the spell to increase damage,
+this indicates the damage chosen when casting the spell, beteween baseDamage and maxDamage.  The MP cost can be inferred from this.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

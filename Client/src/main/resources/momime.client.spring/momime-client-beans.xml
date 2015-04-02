@@ -1167,6 +1167,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="helpUI" ref="helpUI" />
+		<property name="variableManaUI" ref="variableManaUI" />
 	</bean>
 
 	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1208,6 +1209,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
+		<property name="variableManaUI" ref="variableManaUI" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1341,6 +1343,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="tinyFont" ref="tinyFont" />
 	</bean>
 	
+	<bean id="variableManaLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/VariableManaUI.xml" />
+	</bean>
+	
+	<bean id="variableManaUI" class="momime.client.ui.dialogs.VariableManaUI">
+		<property name="variableManaLayout" ref="variableManaLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="combatUI" ref="combatUI" />
+	</bean>
+	
 	<!-- Prototype UI components -->
 
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
@@ -1440,8 +1459,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
+
+	<bean id="editStringLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/EditStringUI.xml" />
+	</bean>
 	
 	<bean id="editStringUI" class="momime.client.ui.frames.EditStringUI" scope="prototype">
+		<property name="editStringLayout" ref="editStringLayout" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />

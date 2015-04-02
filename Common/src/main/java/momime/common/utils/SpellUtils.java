@@ -78,6 +78,20 @@ public interface SpellUtils
 		throws MomException, RecordNotFoundException;
 
 	/**
+	 * @param spell Spell we want to cast
+	 * @param castingCost The casting cost of the spell (base, or possibly increased if a variable mana spell e.g. fire bolt)
+	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
+	 * @throws MomException If we find an invalid casting reduction type
+	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
+	 */
+	public int getReducedCastingCost (final Spell spell, final int castingCost, final List<PlayerPick> picks,
+		final SpellSettingData spellSettings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException;
+	
+	/**
 	 * Section this spell should appear in the spell book
 	 *
 	 * @param spell Spell we want the section for

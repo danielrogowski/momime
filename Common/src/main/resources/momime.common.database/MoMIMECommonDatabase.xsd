@@ -875,6 +875,10 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellCombatTarget" type="momimecommon:attackSpellCombatTargetID" nxe:label="Atk Spell Combat Target" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageType" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitAttributeValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitAttributeValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="MP per +1 dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:summonedUnit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCityEffect" type="momimecommon:spellHasCityEffect" />
@@ -1422,6 +1426,8 @@ However we still need to record negative skill modification values, e.g. True Li
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+<!-- Attack spells, proper attack resolution and immunities, new for 0.9.6 -->
+	
 	<xsd:simpleType name="attackSpellCombatTargetID">
 	    <xsd:annotation>
 			<xsd:documentation>For attack spells that can be used in combat, specifies whether the spell hits a
@@ -1435,6 +1441,54 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 			<xsd:enumeration value="A"><xsd:annotation>
 				<xsd:documentation>Spell automatically hits all enemy units in combat (e.g. flame strike)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ALL_UNITS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="damageTypeID">
+        <xsd:annotation>
+        	<xsd:documentation>Different types of damage that can be dealt by different skills, attacks and attack spells</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Single figure (normal attack where first figure defends and takes hits, then second figure defends and takes hits, and so on)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SINGLE_FIGURE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Armour piercing (same as S, but target's defence is halved)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ARMOUR_PIERCING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="I"><xsd:annotation>
+				<xsd:documentation>Illusionary (same as S, but target's defence is zeroed)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ILLUSIONARY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Multi figure (immolation attack where all figures are hit, regardless of how many actually die)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MULTI_FIGURE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>Resist or take damage equal to the amount the resistance roll was missed by (poison touch)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESIST_OR_TAKE_DAMAGE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Each figure must resist or die (petrify)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESIST_OR_DIE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Doom (constant damage)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DOOM" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Disintegrate if resistance 9 or less</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DISINTEGRATE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>Fixed % chance of whole unit dying completely (cracks call)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CHANCE_OF_DEATH" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Z"><xsd:annotation>
+				<xsd:documentation>Zeroes ammo remaining (warp wood)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ZEROES_AMMO" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

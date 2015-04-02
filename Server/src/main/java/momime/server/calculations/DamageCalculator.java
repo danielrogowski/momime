@@ -12,6 +12,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.SpellSvr;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -39,11 +40,7 @@ public interface DamageCalculator
 		throws JAXBException, XMLStreamException;
 	
 	/**
-	 * Calculates attack and defence rolls for "single figure" type damage, where the first figure defends then takes hits, then the
-	 * second figure defends and takes hits, so each figure defends and is then (maybe) killed off individually, until all damage is
-	 * absorbed or every figure is killed.
-	 * 
-	 * This version is used when the attack is being made by another unit.
+	 * Calculates the strength of an attack coming from a unit, i.e. a regular melee or ranged attack.
 	 * 
 	 * @param attacker Unit making the attack
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
@@ -65,6 +62,22 @@ public interface DamageCalculator
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
+	/**
+	 * Calculates the strength of an attack coming from a spell.
+	 *  
+	 * @param spell The spell being cast
+	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
+	 * @param castingPlayer The player casting the spell
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public AttackDamage attackFromSpell (final SpellSvr spell, final Integer variableDamage,
+		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer)
+		throws JAXBException, XMLStreamException;
+	
 	/**
 	 * Rolls the number of actual hits and blocks for normal "single figure" type damage, where the first figure defends then takes hits, then the
 	 * second figure defends and takes hits, so each figure defends and is then (maybe) killed off individually, until all damage is

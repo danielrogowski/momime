@@ -1036,7 +1036,7 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 					<xsd:element minOccurs="0" maxOccurs="1" name="onlyIfHaveAlready" type="xsd:boolean" nxe:label="Only if have already?" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="maxOccurrences" type="momimesvr:heroSkillMaxOccurrences" nxe:label="Max. Occurrences" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="damageType" type="momimesvr:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1148,7 +1148,6 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 					<xsd:element minOccurs="1" maxOccurs="1" name="spellName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="aiResearchOrder" type="momimesvr:aiResearchOrder" nxe:label="AI Research Order" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="spellScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageType" type="momimesvr:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1564,56 +1563,6 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 
 	<xsd:simpleType name="combatMapCoordinate">
 		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-
-<!-- Attack resolution, new for 0.9.6 -->
-
-	<xsd:simpleType name="damageTypeID">
-        <xsd:annotation>
-        	<xsd:documentation>Different types of damage that can be dealt by different skills, attacks and attack spells</xsd:documentation>
-        </xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="S"><xsd:annotation>
-				<xsd:documentation>Single figure (normal attack where first figure defends and takes hits, then second figure defends and takes hits, and so on)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="SINGLE_FIGURE" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="A"><xsd:annotation>
-				<xsd:documentation>Armour piercing (same as S, but target's defence is halved)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ARMOUR_PIERCING" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="I"><xsd:annotation>
-				<xsd:documentation>Illusionary (same as S, but target's defence is zeroed)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ILLUSIONARY" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="M"><xsd:annotation>
-				<xsd:documentation>Multi figure (immolation attack where all figures are hit, regardless of how many actually die)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="MULTI_FIGURE" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="R"><xsd:annotation>
-				<xsd:documentation>Resist or take damage equal to the amount the resistance roll was missed by (poison touch)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RESIST_OR_TAKE_DAMAGE" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="P"><xsd:annotation>
-				<xsd:documentation>Each figure must resist or die (petrify)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RESIST_OR_DIE" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="D"><xsd:annotation>
-				<xsd:documentation>Doom (constant damage)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="DOOM" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="N"><xsd:annotation>
-				<xsd:documentation>Disintegrate if resistance 9 or less</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="DISINTEGRATE" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="C"><xsd:annotation>
-				<xsd:documentation>Fixed % chance of whole unit dying completely (cracks call)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="CHANCE_OF_DEATH" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="Z"><xsd:annotation>
-				<xsd:documentation>Zeroes ammo remaining (warp wood)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ZEROES_AMMO" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
 	</xsd:simpleType>
 
 </xsd:schema>

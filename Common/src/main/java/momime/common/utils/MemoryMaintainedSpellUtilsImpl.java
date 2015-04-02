@@ -275,17 +275,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) && (unit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.ENCHANTING_ENEMY; 
 
-    	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) && (unit.getOwningPlayerID () == castingPlayerID))
-    		result = TargetSpellResult.CURSING_OWN;
+    	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) || (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)) &&
+    				(unit.getOwningPlayerID () == castingPlayerID))
+    				result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
     	else
     	{
     		// Now check unitSpellEffectIDs
+    		final boolean unitSpellEffectRequired = (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+    			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES);
+    		
     		final List<String> unitSpellEffectIDs = listUnitSpellEffectsNotYetCastOnUnit (spells, spell, castingPlayerID, unit.getUnitURN ());
-    		if (unitSpellEffectIDs == null)
+    		if ((unitSpellEffectRequired) && (unitSpellEffectIDs == null))
     			result = TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED;
     		
-    		else if (unitSpellEffectIDs.size () == 0)
+    		else if ((unitSpellEffectRequired) && (unitSpellEffectIDs.size () == 0))
     			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
     		else if (getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell,
@@ -335,7 +339,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		result = TargetSpellResult.ENCHANTING_ENEMY; 
 
     	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) && (cityData.getCityOwnerID () == castingPlayerID))
-    		result = TargetSpellResult.CURSING_OWN;
+    		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
     	// Is it a spell that creates a building?
     	else if (spell.getBuildingID () != null)

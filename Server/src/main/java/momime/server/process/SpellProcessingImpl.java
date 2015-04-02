@@ -97,6 +97,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
+	/** Damage processor */
+	private DamageProcessor damageProcessor;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -264,6 +267,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param spell Which spell they want to cast
 	 * @param reducedCombatCastingCost Skill cost of the spell, reduced by any book or retort bonuses the player may have
 	 * @param multipliedManaCost MP cost of the spell, reduced as above, then multiplied up according to the distance the combat is from the wizard's fortress
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
 	 * @param defendingPlayer Defending player in the combat
 	 * @param attackingPlayer Attacking player in the combat
@@ -278,7 +282,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 */
 	@Override
 	public final void castCombatNow (final PlayerServerDetails player, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
+		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
@@ -361,6 +365,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Make sure we remove it after combat
 				tu.setWasSummonedInCombat (true);
 			}
+		}
+		
+		// Attack spells
+		else if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
+		{
+			getDamageProcessor ().resolveAttack (null, targetUnit, attackingPlayer, defendingPlayer,
+				null, null, spell, variableDamage, player, combatLocation, mom);
 		}
 		
 		else
@@ -644,5 +655,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Damage processor
+	 */
+	public final DamageProcessor getDamageProcessor ()
+	{
+		return damageProcessor;
+	}
+
+	/**
+	 * @param proc Damage processor
+	 */
+	public final void setDamageProcessor (final DamageProcessor proc)
+	{
+		damageProcessor = proc;
 	}
 }

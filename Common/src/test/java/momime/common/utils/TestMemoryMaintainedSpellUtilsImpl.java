@@ -623,7 +623,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Cursing own uint
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
 		unit.setOwningPlayerID (1);
-		assertEquals (TargetSpellResult.CURSING_OWN, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
 		
 		// Spell has no effects defined
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
@@ -717,7 +717,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (22, 20, 0), map, buildings, db));
 		
 		// Wrong owner
-		assertEquals (TargetSpellResult.CURSING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
 		assertEquals (TargetSpellResult.ENCHANTING_ENEMY, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, buildings, db));
 		
 		// No spell effects defined

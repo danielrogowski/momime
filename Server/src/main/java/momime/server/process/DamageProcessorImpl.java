@@ -18,6 +18,7 @@ import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
+import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;
@@ -56,12 +57,15 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * If a close combat attack, also resolves the defender retaliating.
 	 * Also checks to see if the attack results in either side being wiped out, in which case ends the combat.
 	 * 
-	 * @param attacker Unit making the attack
+	 * @param attacker Unit making the attack; or null if the attack isn't coming from a unit
 	 * @param defender Unit being hit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender
-	 * @param isRangedAttack True for ranged attacks; false for close combat attacks
+	 * @param attackAttributeID The attribute being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
+	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
+	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
+	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
 	 * @param combatLocation Where the combat is taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -72,74 +76,94 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 */
 	@Override
 	public final void resolveAttack (final MemoryUnit attacker, final MemoryUnit defender,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final int attackerDirection, final boolean isRangedAttack,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackAttributeID,
+		final SpellSvr spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering resolveAttack: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN ());
+		log.trace ("Entering resolveAttack: Unit URN " + ((attacker != null) ? new Integer (attacker.getUnitURN ()).toString () : "N/A") + ", Unit URN " + defender.getUnitURN ());
 
 		// We send this a couple of times for different parts of the calculation, so initialize it here
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
-		damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.HEADER);
+		damageCalculationMsg.setAttackAttributeID (attackAttributeID);
 		
-		if (isRangedAttack)
-			damageCalculationMsg.setAttackAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		if (spell != null)
+			damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
+
+		if (attacker != null)
+		{
+			damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
+			damageCalculationMsg.setAttackerPlayerID (attacker.getOwningPlayerID ());
+		}
 		else
-			damageCalculationMsg.setAttackAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+			damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 		
 		getDamageCalculator ().sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
 		// Make the units face each other
-		attacker.setCombatHeading (attackerDirection);
-		defender.setCombatHeading (getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType (), attackerDirection + 4));
-		
-		// Both attack simultaneously, before damage is applied
-		// Defender only retaliates against close combat attacks, not ranged attacks
-		final int damageToDefender;
-		final int damageToAttacker;
-		if (isRangedAttack)
+		if (attackerDirection != null)
 		{
-			final AttackDamage potentialDamageToDefender = getDamageCalculator ().attackFromUnit
+			attacker.setCombatHeading (attackerDirection);
+			defender.setCombatHeading (getCoordinateSystemUtils ().normalizeDirection
+				(mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType (), attackerDirection + 4));
+		}
+		
+		// Work out potential damage from the attack and counterattack)
+		final AttackDamage potentialDamageToDefender;
+		final AttackDamage potentialDamageToAttacker;
+		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackAttributeID))
+		{
+			potentialDamageToDefender = getDamageCalculator ().attackFromUnit
 				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 
-			damageToDefender = getDamageCalculator ().calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
-				potentialDamageToDefender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-			damageToAttacker = 0;
-			
+			potentialDamageToAttacker = null;
 			getUnitCalculations ().decreaseRangedAttackAmmo (attacker);
 		}
-		else
+		else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (attackAttributeID))
 		{
-			final AttackDamage potentialDamageToDefender = getDamageCalculator ().attackFromUnit
+			potentialDamageToDefender = getDamageCalculator ().attackFromUnit
 				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 
-			damageToDefender = getDamageCalculator ().calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
-				potentialDamageToDefender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-
-			final AttackDamage potentialDamageToAttacker = getDamageCalculator ().attackFromUnit
+			potentialDamageToAttacker = getDamageCalculator ().attackFromUnit
 				(defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-			
-			damageToAttacker = getDamageCalculator ().calculateSingleFigureDamage (attacker, attackingPlayer, defendingPlayer,
-				potentialDamageToAttacker, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 		}
+		else if (spell != null)
+		{
+			potentialDamageToDefender = getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer);
+			potentialDamageToAttacker = null;
+		}
+		else
+			throw new MomException ("resolveAttack doesn't know how to process an attack from attribute " + attackAttributeID);
+		
+		// Work out how much of the damage gets through
+		final int damageToDefender = (potentialDamageToDefender == null) ? 0 : getDamageCalculator ().calculateSingleFigureDamage
+			(defender, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+
+		final int damageToAttacker = (potentialDamageToAttacker == null) ? 0 : getDamageCalculator ().calculateSingleFigureDamage
+			(attacker, attackingPlayer, defendingPlayer, potentialDamageToAttacker,
+			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 		
 		// Now apply damage
-		defender.setDamageTaken (defender.getDamageTaken () + damageToDefender);
-		attacker.setDamageTaken (attacker.getDamageTaken () + damageToAttacker);
+		if (defender != null)
+			defender.setDamageTaken (defender.getDamageTaken () + damageToDefender);
+		
+		if (attacker != null)
+			attacker.setDamageTaken (attacker.getDamageTaken () + damageToAttacker);
 		
 		// Update damage taken in player's memory on server, and on all clients who can see the unit.
 		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but
 		// can see the units fighting (who will update the damage immediately).
 		// This also sends the number of combat movement points the attacker has left.
-		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, defender, isRangedAttack,
+		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, defender,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackAttributeID),
 			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose
@@ -147,7 +171,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// We have to know this, because if both units die at the same time, the defender wins the combat.
 		final MemoryUnit attackingPlayerUnit;
 		final MemoryUnit defendingPlayerUnit;
-		if (attacker.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ())
+		if (defender.getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ())
 		{
 			attackingPlayerUnit = attacker;
 			defendingPlayerUnit = defender;
@@ -164,8 +188,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 		boolean combatEnded = false;
 		PlayerServerDetails winningPlayer = null;
 		
-		if (getUnitCalculations ().calculateAliveFigureCount (attackingPlayerUnit, mom.getPlayers (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == 0)
+		if ((attackingPlayerUnit != null) && (getUnitCalculations ().calculateAliveFigureCount (attackingPlayerUnit, mom.getPlayers (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == 0))
 		{
 			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
@@ -182,8 +206,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 			}
 		}
 
-		if (getUnitCalculations ().calculateAliveFigureCount (defendingPlayerUnit, mom.getPlayers (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == 0)
+		if ((defendingPlayerUnit != null) && (getUnitCalculations ().calculateAliveFigureCount (defendingPlayerUnit, mom.getPlayers (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == 0))
 		{
 			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());

@@ -148,6 +148,7 @@ public final class TestDamageCalculatorImpl
 		// Set up unit
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (22);
+		attacker.setOwningPlayerID (attackingPD.getPlayerID ());
 		
 		// Set up attacker stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
@@ -171,7 +172,7 @@ public final class TestDamageCalculatorImpl
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, spells, combatAreaEffects, db);
 		
 		// Check results
-		assertEquals (18, dmg.getPotentialHits ());
+		assertEquals (18, dmg.getPotentialHits ().intValue ());
 		assertEquals (1, dmg.getPlusToHit ());
 
 		// Check the message that got sent to the attacker
@@ -184,11 +185,12 @@ public final class TestDamageCalculatorImpl
 		
 		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
 	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
+	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertNull (data.getAttackSkillID ());
 	    assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
 	    assertEquals (6, data.getAttackerFigures ().intValue ());
 	    assertEquals (3, data.getAttackStrength ().intValue ());
-	    assertEquals (18, data.getPotentialHits ());
+	    assertEquals (18, data.getPotentialHits ().intValue ());
 	}
 	
 	/**

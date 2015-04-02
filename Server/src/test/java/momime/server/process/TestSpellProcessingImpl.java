@@ -660,7 +660,7 @@ public final class TestSpellProcessingImpl
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 
 		// Run test
-		proc.castCombatNow (castingPlayer, spell, 10, 20, combatLocation, defendingPlayer, attackingPlayer, null, null, null);
+		proc.castCombatNow (castingPlayer, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, null);
 	}
 	
 	/**
@@ -744,7 +744,7 @@ public final class TestSpellProcessingImpl
 		proc.setServerResourceCalculations (serverResourceCalc);
 
 		// Run test
-		proc.castCombatNow (castingPlayer, spell, 10, 20, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
+		proc.castCombatNow (castingPlayer, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
 		
 		// Prove right effect was added
 		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), combatLocation, players, db, sd);
@@ -846,7 +846,7 @@ public final class TestSpellProcessingImpl
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 
 		// Run test
-		proc.castCombatNow (castingPlayer, spell, 10, 20, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
+		proc.castCombatNow (castingPlayer, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
 		
 		// Prove right effect was added
 		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, attackingPd.getPlayerID (), "SP001", targetUnit.getUnitURN (),
@@ -967,7 +967,7 @@ public final class TestSpellProcessingImpl
 		proc.setCombatProcessing (combatProcessing);
 		
 		// Run test
-		proc.castCombatNow (castingPlayer, spell, 10, 20, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);
+		proc.castCombatNow (castingPlayer, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);
 		
 		// Prove unit was summoned
 		verify (combatProcessing, times (1)).setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, summonedUnit, combatLocation, combatLocation,

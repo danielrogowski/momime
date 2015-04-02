@@ -34,6 +34,7 @@ public interface SpellQueueing
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
 	 * @param combatTargetLocation Which specific tile of the combat map the spell is being cast at, for cell-targetted spells like combat summons
 	 * @param combatTargetUnitURN Which specific unit within combat the spell is being cast at, for unit-targetted spells like Fire Bolt
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -43,7 +44,7 @@ public interface SpellQueueing
 	 */
 	public void requestCastSpell (final PlayerServerDetails player, final String spellID,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
-		final MomSessionVariables mom)
+		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**

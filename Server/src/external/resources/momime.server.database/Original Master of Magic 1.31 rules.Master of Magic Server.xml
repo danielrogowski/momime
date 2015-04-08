@@ -19654,7 +19654,9 @@
 		<languageEntry languageEntryID="HeaderWithoutAttackerUnit" />
 		<languageEntry languageEntryID="AttackWithUnit" />
 		<languageEntry languageEntryID="AttackWithoutUnit" />
-		<languageEntry languageEntryID="DefenceStatistics" />
+		<languageEntry languageEntryID="DefenceStatisticsBase" />
+		<languageEntry languageEntryID="DefenceStatisticsModified" />
+		<languageEntry languageEntryID="DefenceStatisticsAutomatic" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">
 		<languageEntry languageEntryID="Title" />

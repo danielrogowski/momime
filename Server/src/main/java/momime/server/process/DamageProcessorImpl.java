@@ -9,6 +9,7 @@ import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
@@ -110,16 +111,14 @@ public final class DamageProcessorImpl implements DamageProcessor
 				(mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType (), attackerDirection + 4));
 		}
 		
-		// Work out potential damage from the attack and counterattack)
+		// Work out potential damage from the attack
 		final AttackDamage potentialDamageToDefender;
-		final AttackDamage potentialDamageToAttacker;
 		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackAttributeID))
 		{
 			potentialDamageToDefender = getDamageCalculator ().attackFromUnit
 				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 
-			potentialDamageToAttacker = null;
 			getUnitCalculations ().decreaseRangedAttackAmmo (attacker);
 		}
 		else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (attackAttributeID))
@@ -127,29 +126,80 @@ public final class DamageProcessorImpl implements DamageProcessor
 			potentialDamageToDefender = getDamageCalculator ().attackFromUnit
 				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-
-			potentialDamageToAttacker = getDamageCalculator ().attackFromUnit
-				(defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 		}
 		else if (spell != null)
 		{
 			potentialDamageToDefender = getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer);
-			potentialDamageToAttacker = null;
 		}
 		else
 			throw new MomException ("resolveAttack doesn't know how to process an attack from attribute " + attackAttributeID);
 		
 		// Work out how much of the damage gets through
-		final int damageToDefender = (potentialDamageToDefender == null) ? 0 : getDamageCalculator ().calculateSingleFigureDamage
-			(defender, attackingPlayer, defendingPlayer, potentialDamageToDefender,
-			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+		final int damageToDefender;
+		if (potentialDamageToDefender == null)
+			damageToDefender = 0;
+		else
+			switch (potentialDamageToDefender.getDamageType ())
+			{
+				case SINGLE_FIGURE:
+					damageToDefender = getDamageCalculator ().calculateSingleFigureDamage
+						(defender, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+					break;
+					
+				case ARMOUR_PIERCING:
+					damageToDefender = getDamageCalculator ().calculateArmourPiercingDamage
+						(defender, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+					break;
+					
+				case ILLUSIONARY:
+					damageToDefender = getDamageCalculator ().calculateIllusionaryDamage
+						(defender, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+					break;
+					
+				case DOOM:
+					damageToDefender = getDamageCalculator ().calculateDoomDamage
+						(defender, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+					break;
+					
+				default:
+					throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamageToDefender.getDamageType () +
+						" to the defender, which it does not know how to deal with yet");
+			}
 
-		final int damageToAttacker = (potentialDamageToAttacker == null) ? 0 : getDamageCalculator ().calculateSingleFigureDamage
-			(attacker, attackingPlayer, defendingPlayer, potentialDamageToAttacker,
-			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+		// Work out potential damage from the counterattack
+		final AttackDamage potentialDamageToAttacker;
+		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (attackAttributeID))
+		{
+			potentialDamageToAttacker = getDamageCalculator ().attackFromUnit
+				(defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+		}
+		else
+			potentialDamageToAttacker = null;
+		
+		// Work out how much of the damage gets through
+		final int damageToAttacker;
+		if (potentialDamageToAttacker == null)
+			damageToAttacker = 0;
+		else
+		{
+			if (potentialDamageToAttacker.getDamageType () != DamageTypeID.SINGLE_FIGURE)
+				throw new MomException ("resolveAttack trying to deal counterattack damage of type " + potentialDamageToAttacker.getDamageType () +
+					" back to the attacker, but only single figure damage counterattacks are supported");
+			
+			damageToAttacker = getDamageCalculator ().calculateSingleFigureDamage
+				(attacker, attackingPlayer, defendingPlayer, potentialDamageToAttacker,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+		}
 		
 		// Now apply damage
 		if (defender != null)

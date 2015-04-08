@@ -11,6 +11,7 @@ import java.util.List;
 
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageTypeID;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -260,7 +261,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1),
+		assertEquals (3, calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE),
 			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
@@ -280,7 +281,8 @@ public final class TestDamageCalculatorImpl
 		assertEquals (6, data.getActualHits ().intValue ());
 		
 		assertEquals (3, data.getDefenderFigures ());
-		assertEquals (4, data.getDefenceStrength ().intValue ());
+		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
+		assertEquals (4, data.getModifiedDefenceStrength ().intValue ());
 		assertEquals (5, data.getChanceToDefend ().intValue ());
 		assertEquals (20, data.getTenTimesAverageBlock ().intValue ());			// 4 shields * 0.5 chance = 2.0 average blocked
 		assertEquals (3, data.getFinalHits ());												// 1st figure blocked 1 hit, 2nd figure blocked 2 hits

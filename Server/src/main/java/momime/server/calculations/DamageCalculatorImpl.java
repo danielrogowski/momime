@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -121,7 +122,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int plusToHit = getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 
-		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit);
+		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE);
 		log.trace ("Exiting attackFromUnit = " + attackDamage);
 		return attackDamage;
 	}
@@ -156,7 +157,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setPotentialHits (damage);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
-		final AttackDamage attackDamage = new AttackDamage (damage, 0);
+		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType ());
 		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
 	}
@@ -189,12 +190,122 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		log.trace ("Entering calculateSingleFigureDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
 		
+		final int defenderDefenceStrength = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, DamageTypeID.SINGLE_FIGURE,
+			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
+		
+		log.trace ("Exiting calculateSingleFigureDamage = " + totalHits);
+		return totalHits;
+	}
+	
+	/**
+	 * Rolls the number of actual hits and blocks for "armour piercing" type damage, as per single figure
+	 * damage except that the defender's defence stat is halved.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateArmourPiercingDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateArmourPiercingDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		final int defenderDefenceStrength = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength / 2, DamageTypeID.ARMOUR_PIERCING,
+			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
+		
+		log.trace ("Exiting calculateArmourPiercingDamage = " + totalHits);
+		return totalHits;
+	}
+
+	/**
+	 * Rolls the number of actual hits for "illusionary" type damage, as per single figure
+	 * damage except that the defender gets no defence rolls at all.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateIllusionaryDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateIllusionaryDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		final int totalHits = calculateSingleFigureDamageInternal (defender, 0, DamageTypeID.ILLUSIONARY,
+			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
+		
+		log.trace ("Exiting calculateIllusionaryDamage = " + totalHits);
+		return totalHits;
+	}
+	
+	/**
+	 * Internal method that takes the defender's defence value as an input, so it can be used for single figure, armour piercing and illusionary damage.
+	 * 
+	 * @param defender Unit being hit
+	 * @param defenderDefenceStrength Value of defence stat for the defender unit
+	 * @param damageType The type of damage being dealt
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	private final int calculateSingleFigureDamageInternal (final MemoryUnit defender, final int defenderDefenceStrength, final DamageTypeID damageType,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateSingleFigureDamageInternal: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage + " of type " + damageType);
+		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setChanceToHit (3 + attackDamage.getPlusToHit ());
 		damageCalculationMsg.setTenTimesAverageDamage (attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit ());
+		damageCalculationMsg.setDamageType (damageType);
 		
 		// How many actually hit
 		int actualDamage = 0;
@@ -206,29 +317,111 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
-		damageCalculationMsg.setDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
+		damageCalculationMsg.setUnmodifiedDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setModifiedDefenceStrength (defenderDefenceStrength);
 
 		damageCalculationMsg.setChanceToDefend (3 + getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
-		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
+		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 		
+		// Dish out damage
+		final int totalHits = applyDamage (defender, actualDamage, damageCalculationMsg.getModifiedDefenceStrength (),
+			damageCalculationMsg.getChanceToDefend (), players, spells, combatAreaEffects, db);
+		
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.trace ("Exiting calculateSingleFigureDamageInternal = " + totalHits);
+		return totalHits;
+	}
+
+	/**
+	 * Sets the number of actual hits for "doom" type constant damage.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateDoomDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateDoomDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDamageType (DamageTypeID.DOOM);
+		
+		// No to hit rolls - they automatically hit
+		damageCalculationMsg.setActualHits (attackDamage.getPotentialHits ());
+		
+		// No defence hit rolls - they automatically hit
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
+
+		// Dish out damage
+		final int totalHits = applyDamage (defender, attackDamage.getPotentialHits (), 0, 0, players, spells, combatAreaEffects, db);
+		
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.trace ("Exiting calculateDoomDamage = " + totalHits);
+		return totalHits;
+	}
+	
+	/**
+	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck
+	 * 
+	 * @param defender Unit being hit
+	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
+	 * @param defenderDefenceStrength Value of defence stat for the defender unit
+	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	private final int applyDamage (final MemoryUnit defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		log.trace ("Entering applyDamage: Unit URN " + defender.getUnitURN () + " hit by " + hitsToApply + " vs defence " + defenderDefenceStrength + " at " + chanceToDefend + "0%");
+
 		// Dish out damage - See page 287 in the strategy guide
 		// We can't do all defending in one go, each figure only gets to use its shields if the previous figure dies.
 		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
 		// However only the first unit gets to use its shield, even if it blocks 1 hit it will be killed by the 2nd hit.
 		int totalHits = 0;
-		int defendingFiguresRemaining = damageCalculationMsg.getDefenderFigures ();
+		int defendingFiguresRemaining = getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db);
 		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
-		int hitsLeftToApply = actualDamage;
+		int hitsLeftToApply = hitsToApply;
 		
 		while ((defendingFiguresRemaining > 0) && (hitsLeftToApply > 0))
 		{
 			// New figure taking damage, so it gets to try to block some hits
 			int thisBlockedHits = 0;
-			for (int blockNo = 0; blockNo < damageCalculationMsg.getDefenceStrength (); blockNo++)
-				if (getRandomUtils ().nextInt (10) < damageCalculationMsg.getChanceToDefend ())
+			for (int blockNo = 0; blockNo < defenderDefenceStrength; blockNo++)
+				if (getRandomUtils ().nextInt (10) < chanceToDefend)
 					thisBlockedHits++;
 			
 			hitsLeftToApply = hitsLeftToApply - thisBlockedHits;
@@ -250,10 +443,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			}
 		}
 		
-		damageCalculationMsg.setFinalHits (totalHits);
-		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
-		
-		log.trace ("Exiting calculateSingleFigureDamage = " + totalHits);
+		log.trace ("Exiting applyDamage = " + totalHits);
 		return totalHits;
 	}
 	

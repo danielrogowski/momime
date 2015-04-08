@@ -5761,8 +5761,14 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="AttackWithoutUnit">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE hits for up to POTENTIAL_HITS damage:</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceStatistics">
-			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS unblocked hit(s) damage HP.</languageEntryText>
+		<languageEntry languageEntryID="DefenceStatisticsBase">
+			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence UNMODIFIED_DEFENCE_STRENGTH, FINAL_HITS hit(s) damage HP.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceStatisticsModified">
+			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) FINAL_HITS hit(s) damage HP.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceStatisticsAutomatic">
+			<languageEntryText>ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS hit(s) damage HP.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">

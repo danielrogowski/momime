@@ -14,6 +14,7 @@ import java.util.List;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.messages.CaptureCityDecisionID;
@@ -122,7 +123,7 @@ public final class TestDamageProcessorImpl
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
 
-		final AttackDamage damageToDefender = new AttackDamage (8, 0);
+		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE);
 		
 		when (calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
@@ -132,7 +133,7 @@ public final class TestDamageProcessorImpl
 			damageToDefender, players, trueMap.getMaintainedSpell (),
 			trueMap.getCombatAreaEffect (), db)).thenReturn (5);		// Dmg to defender
 
-		final AttackDamage damageToAttacker = new AttackDamage (5, 1);
+		final AttackDamage damageToAttacker = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE);
 		
 		when (calc.attackFromUnit (defender, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
@@ -280,7 +281,7 @@ public final class TestDamageProcessorImpl
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
 
-		final AttackDamage damageToDefender = new AttackDamage (8, 0);
+		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE);
 		
 		when (calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, players, trueMap.getMaintainedSpell (),

@@ -26,6 +26,7 @@ import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
@@ -150,7 +151,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		if (getAttackerUnitURN () != null)
 		{
 			attackerUnit = getUnitUtils ().findUnitURN (getAttackerUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-a");
-			if (isRangedAttack ())
+			if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ()))
 				getUnitCalculations ().decreaseRangedAttackAmmo (attackerUnit);
 			
 			attackerDamageTakenStart = attackerUnit.getDamageTaken ();
@@ -167,7 +168,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		
 		// Is either unit ours?  If so, then it must be damage from the combat we're in; if not, then it must be some combat going on elsewhere
 		animated =
-			(((attackerUnit != null) && (attackerUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())) ||
+			((getAttackerPlayerID () == getClient ().getOurPlayerID ()) ||
 			((defenderUnit != null) && (defenderUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())));
 		
 		// Perform any animation startup necessary
@@ -180,7 +181,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		{
 			getCombatUI ().setAttackAnim (this);
 			
-			if (isRangedAttack ())
+			if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ()))
 			{
 				// Start a ranged attack animation - firstly, after a brief frame of showing the unit firing, it'll be back to standing still
 				// To animate the missiles, first we need the locations (in pixels) of the two units involved
@@ -232,7 +233,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						log.error (e, e);
 					}
 			}
-			else
+			else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAttributeID ()))
 			{
 				// Start a close combat attack animation
 				getUnitClientUtils ().playCombatActionSound (attackerUnit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK);
@@ -270,7 +271,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	@Override
 	public final void tick (final int tickNumber)
 	{
-		if (isRangedAttack ())
+		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ()))
 		{
 			// Animate a ranged attack
 			if (tickNumber >= RANGED_ATTACK_LAUNCH_TICKS)
@@ -287,7 +288,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			
 			ratCurrentImage = (tickNumber >= tickCount - RANGED_ATTACK_IMPACT_TICKS) ? ratStrikeImage : ratFlyImage;
 		}
-		else
+		else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAttributeID ()))
 		{
 			// Animate a close combat attack - gradually ramp up the damage taken by both units.
 			// Don't even need to force a repaint, because registering the 'melee' animation will do it for us.
@@ -408,7 +409,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		}
 		
 		// Jump to the next unit to move
-		if (animated)
+		if ((animated) && (attackerUnit != null))
 		{
 			// Update remaining movement
 			attackerUnit.setDoubleCombatMovesLeft (getAttackerDoubleCombatMovesLeft ());

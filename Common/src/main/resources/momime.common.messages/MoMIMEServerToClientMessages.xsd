@@ -1109,13 +1109,18 @@ in that case the client shows the animation, then the units disappear.</xsd:docu
     		<xsd:documentation>Message server sends to all clients when an attack takes place, this might damage the attacker and/or the defender.
 For the players actually involved in the combat, this message will also generate the animation to show the units swinging their swords at each other.
 This also gets sent to players not involved in the combat who can see one or other unit; in that situation its possible that an outside observer can see one of the units but
-not the other - in that situation one of the UnitURNs (and other values associated with that unit) will all be left null, this is why every value is optional.</xsd:documentation>
+not the other - in that situation one of the UnitURNs (and other values associated with that unit) will all be left null, this is why every value is optional.
+
+It is also possible that there may be no attacking unit, in the case of a player being hit by spell damage; this is why attackerPlayerID is separate + mandatory.
+
+Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID will be filled in to denote what initiated the attack.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDamageTaken" type="momimecommon:unitAttributeValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDirection" type="map:mapDirection" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDoubleCombatMovesLeft" type="momimenewgame:integerMapDistance" />
@@ -1124,7 +1129,9 @@ not the other - in that situation one of the UnitURNs (and other values associat
 						<xsd:element minOccurs="0" maxOccurs="1" name="defenderDamageTaken" type="momimecommon:unitAttributeValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="defenderDirection" type="map:mapDirection" />
 						
-						<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttack" type="xsd:boolean" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

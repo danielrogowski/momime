@@ -386,9 +386,12 @@ public interface FogOfWarMidTurnChanges
 	 * Informs clients who can see either unit of how much combat damage two units have taken - the two players in combat use this to show the animation of the attack.
 	 * If the damage is enough to kill off the unit, the client will take care of this - we don't need to send a separate KillUnitMessage.
 	 * 
-	 * @param tuAttacker Server's true memory of unit that made the attack
+	 * @param tuAttacker Server's true memory of unit that made the attack; or null if the attack isn't coming from a unit
+	 * @param attackerPlayerID Player owning tuAttacker unit; supplied in case tuAttacker is null
 	 * @param tuDefender Server's true memory of unit that got hit
-	 * @param isRangedAttack True if ranged attack; False if melee
+	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
+	 * @param attackAttributeID Attribute used to make the attack, for regular melee or ranged attacks
+	 * @param attackSpellID Spell used to make the attack
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
 	 * @param db Lookup lists built over the XML database
@@ -398,8 +401,8 @@ public interface FogOfWarMidTurnChanges
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final MemoryUnit tuDefender,
-		final boolean isRangedAttack, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
+	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final MemoryUnit tuDefender,
+		final String attackSkillID, final String attackAttributeID, final String attackSpellID, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	

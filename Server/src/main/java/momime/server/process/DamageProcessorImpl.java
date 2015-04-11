@@ -212,8 +212,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but
 		// can see the units fighting (who will update the damage immediately).
 		// This also sends the number of combat movement points the attacker has left.
-		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, defender,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackAttributeID),
+		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, damageCalculationMsg.getAttackerPlayerID (), defender,
+			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackAttributeID (), damageCalculationMsg.getAttackSpellID (),
 			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose

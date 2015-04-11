@@ -611,7 +611,7 @@ public final class CombatUI extends MomClientFrameUI
 								if (getAttackAnim () != null)
 								{
 									// Ranged attack animation
-									if (getAttackAnim ().isRangedAttack ())
+									if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackAttributeID ()))
 									{
 										// Show firing unit going 'pew'
 										if ((unit == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
@@ -619,8 +619,11 @@ public final class CombatUI extends MomClientFrameUI
 									}
 									
 									// Melee attack animation
-									else if ((unit == getAttackAnim ().getAttackerUnit ()) || (unit == getAttackAnim ().getDefenderUnit ()))
-										combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
+									else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackAttributeID ()))
+									{
+										if ((unit == getAttackAnim ().getAttackerUnit ()) || (unit == getAttackAnim ().getDefenderUnit ()))
+											combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
+									}
 								}
 								
 								// If animation didn't provide a specific combatActionID then just default to standing still
@@ -653,7 +656,9 @@ public final class CombatUI extends MomClientFrameUI
 					}
 				
 				// Draw ranged attack missiles?
-				if ((getAttackAnim () != null) && (getAttackAnim ().isRangedAttack ()) && (getAttackAnim ().getCurrent () != null))
+				if ((getAttackAnim () != null) && (getAttackAnim ().getCurrent () != null) &&
+					(CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackAttributeID ())))
+					
 					try
 					{
 						// Draw which missile image?

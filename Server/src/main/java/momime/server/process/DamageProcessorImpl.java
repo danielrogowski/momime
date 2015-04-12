@@ -161,6 +161,13 @@ public final class DamageProcessorImpl implements DamageProcessor
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 					break;
+
+				case MULTI_FIGURE:
+					damageToDefender = getDamageCalculator ().calculateMultiFigureDamage
+						(defender, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+					break;
 					
 				case DOOM:
 					damageToDefender = getDamageCalculator ().calculateDoomDamage

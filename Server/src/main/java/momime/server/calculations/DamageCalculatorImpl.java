@@ -341,6 +341,102 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 
 	/**
+	 * Rolls the number of actual hits and blocks for "multi figure" a.k.a. immolation type damage, where all figures are hit individually by the attack,
+	 * making their own to hit and defence rolls.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateMultiFigureDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateMultiFigureDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setChanceToHit (3 + attackDamage.getPlusToHit ());
+		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setUnmodifiedDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength ());
+
+		damageCalculationMsg.setChanceToDefend (3 + getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			
+		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
+
+		// For multi figure damage, we have to work this out last
+		damageCalculationMsg.setTenTimesAverageDamage
+			(attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit () * damageCalculationMsg.getDefenderFigures ());
+
+		// Keep track of how many HP the current figure has
+		int hitPointsThisFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
+		
+		// Attack each figure individually
+		int actualDamage = 0;
+		int totalHits = 0;
+		for (int figureNo = 0; figureNo < damageCalculationMsg.getDefenderFigures (); figureNo++)
+		{
+			// How many hit this figure
+			int damageToThisFigure = 0;
+			for (int swingNo = 0; swingNo < attackDamage.getPotentialHits (); swingNo++)
+				if (getRandomUtils ().nextInt (10) < damageCalculationMsg.getChanceToHit ())
+				{
+					actualDamage++;
+					damageToThisFigure++;
+				}
+			
+			// How many hits does this figure block
+			int blocksFromThisFigure = 0;
+			for (int blockNo = 0; blockNo < damageCalculationMsg.getModifiedDefenceStrength (); blockNo++)
+				if (getRandomUtils ().nextInt (10) < damageCalculationMsg.getChanceToDefend ())
+					blocksFromThisFigure++;
+			
+			// We can't do less than 0, or more than the full HP, damage to each individual figure
+			int hitsOnThisFigure = damageToThisFigure - blocksFromThisFigure;
+			if (hitsOnThisFigure < 0)
+				hitsOnThisFigure = 0;
+			else if (hitsOnThisFigure > hitPointsThisFigure)
+				hitsOnThisFigure = hitPointsThisFigure;
+			
+			totalHits = totalHits + hitsOnThisFigure;
+			
+			// Keep track of how many HP the next figure has
+			if ((figureNo == 0) && (damageCalculationMsg.getDefenderFigures () > 1))
+				hitPointsThisFigure = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		}
+		
+		// Store and send final totals
+		damageCalculationMsg.setActualHits (actualDamage);		
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.trace ("Exiting calculateMultiFigureDamage = " + totalHits);
+		return totalHits;
+	}
+	
+	/**
 	 * Sets the number of actual hits for "doom" type constant damage.
 	 * 
 	 * @param defender Unit being hit

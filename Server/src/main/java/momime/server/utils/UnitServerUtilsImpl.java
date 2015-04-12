@@ -8,12 +8,16 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
 import momime.common.database.newgame.UnitSettingData;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -23,6 +27,8 @@ import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -36,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 /**
@@ -49,6 +56,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
 
@@ -375,6 +385,69 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	}
 
 	/**
+	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck
+	 * 
+	 * @param defender Unit being hit
+	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
+	 * @param defenderDefenceStrength Value of defence stat for the defender unit
+	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	@Override
+	public final int applyDamage (final MemoryUnit defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		log.trace ("Entering applyDamage: Unit URN " + defender.getUnitURN () + " hit by " + hitsToApply + " vs defence " + defenderDefenceStrength + " at " + chanceToDefend + "0%");
+
+		// Dish out damage - See page 287 in the strategy guide
+		// We can't do all defending in one go, each figure only gets to use its shields if the previous figure dies.
+		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
+		// However only the first unit gets to use its shield, even if it blocks 1 hit it will be killed by the 2nd hit.
+		int totalHits = 0;
+		int defendingFiguresRemaining = getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db);
+		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
+		int hitsLeftToApply = hitsToApply;
+		
+		while ((defendingFiguresRemaining > 0) && (hitsLeftToApply > 0))
+		{
+			// New figure taking damage, so it gets to try to block some hits
+			int thisBlockedHits = 0;
+			for (int blockNo = 0; blockNo < defenderDefenceStrength; blockNo++)
+				if (getRandomUtils ().nextInt (10) < chanceToDefend)
+					thisBlockedHits++;
+			
+			hitsLeftToApply = hitsLeftToApply - thisBlockedHits;
+			
+			// If any damage was not blocked by shields then it goes to health
+			if (hitsLeftToApply > 0)
+			{
+				// Work out how many hits the current figure will take
+				final int hitsOnThisFigure = Math.min (hitsLeftToApply, hitPointsRemainingOfFirstFigure);
+				
+				// Update counters for next figure.
+				// Note it doesn't matter that we're decreasing defendingFigures even if the figure didn't die, because in that case Hits
+				// will now be zero and the loop with exit, so the values of these variables won't matter at all, only the totalHits return value does.
+				hitsLeftToApply = hitsLeftToApply - hitsOnThisFigure;
+				totalHits = totalHits + hitsOnThisFigure;
+				defendingFiguresRemaining--;
+				hitPointsRemainingOfFirstFigure = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+			}
+		}
+		
+		log.trace ("Exiting applyDamage = " + totalHits);
+		return totalHits;
+	}
+	
+	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -390,6 +463,22 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+	
 	/**
 	 * @return Pending movement utils
 	 */

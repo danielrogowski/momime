@@ -36,7 +36,7 @@ public final class AttackDamage
 	@Override
 	public final String toString ()
 	{
-		return "(" + getPotentialHits () + " potential damage at +" + getPlusToHit () + " to hit)"; 
+		return "(" + getPotentialHits () + " potential damage at +" + getPlusToHit () + " to hit of type " + getDamageType () + ")"; 
 	}
 
 	/**

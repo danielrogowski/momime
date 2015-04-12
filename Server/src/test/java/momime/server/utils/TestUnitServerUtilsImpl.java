@@ -17,10 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.UnitSettingData;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -33,6 +36,8 @@ import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitAttributeComponent;
+import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
@@ -1334,5 +1339,52 @@ public final class TestUnitServerUtilsImpl
 		assertEquals (2, out.size ());
 		assertSame (u1, out.get (0));
 		assertSame (u5, out.get (1));
+	}
+	
+	/**
+	 * Tests the applyDamage method when the unit is still alive
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testApplyDamage_Alive () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Unit
+		final MemoryUnit defender = new MemoryUnit ();
+		
+		// Unit stats
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			
+		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		
+		// Fix random number generator rolls
+		// Note these are in sets of 4 - the defence rolls each figure makes trying to block, before taking damage to HP
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (10)).thenReturn
+			(5, 8, 3, 9,		// First figure is unlucky and only blocks 1 hit, then loses its 2 HP and dies
+			1, 5, 8, 2);		// Second figure blocks 2 of the hits, then loses 1 HP
+								// So in total, 3 of the dmg went against HP (which is the overall result of the method call)
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setUnitCalculations (unitCalculations);
+		utils.setRandomUtils (random);
+		
+		// Run method
+		assertEquals (3, utils.applyDamage (defender, 6, 4, 5, players, spells, combatAreaEffects, db));	// Take 6 hits, each figure has defence 4, with 50% block chance
 	}
 }

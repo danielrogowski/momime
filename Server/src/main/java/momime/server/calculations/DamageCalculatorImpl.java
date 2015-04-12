@@ -23,6 +23,7 @@ import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.utils.UnitServerUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +54,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	/** Random number generator */
 	private RandomUtils randomUtils;
 
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
+	
 	/**
 	 * Just deals with making sure we only send to human players
 	 * 
@@ -193,7 +197,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int defenderDefenceStrength = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 		
-		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, DamageTypeID.SINGLE_FIGURE,
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength,
 			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
 		
 		log.trace ("Exiting calculateSingleFigureDamage = " + totalHits);
@@ -230,7 +234,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int defenderDefenceStrength = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 		
-		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength / 2, DamageTypeID.ARMOUR_PIERCING,
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength / 2,
 			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
 		
 		log.trace ("Exiting calculateArmourPiercingDamage = " + totalHits);
@@ -264,7 +268,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		log.trace ("Entering calculateIllusionaryDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
 		
-		final int totalHits = calculateSingleFigureDamageInternal (defender, 0, DamageTypeID.ILLUSIONARY,
+		final int totalHits = calculateSingleFigureDamageInternal (defender, 0,
 			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
 		
 		log.trace ("Exiting calculateIllusionaryDamage = " + totalHits);
@@ -276,7 +280,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * 
 	 * @param defender Unit being hit
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
-	 * @param damageType The type of damage being dealt
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
@@ -291,13 +294,13 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	private final int calculateSingleFigureDamageInternal (final MemoryUnit defender, final int defenderDefenceStrength, final DamageTypeID damageType,
+	private final int calculateSingleFigureDamageInternal (final MemoryUnit defender, final int defenderDefenceStrength,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateSingleFigureDamageInternal: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage + " of type " + damageType);
+		log.trace ("Entering calculateSingleFigureDamageInternal: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
 		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -305,7 +308,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setChanceToHit (3 + attackDamage.getPlusToHit ());
 		damageCalculationMsg.setTenTimesAverageDamage (attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit ());
-		damageCalculationMsg.setDamageType (damageType);
+		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 		
 		// How many actually hit
 		int actualDamage = 0;
@@ -327,7 +330,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 		
 		// Dish out damage
-		final int totalHits = applyDamage (defender, actualDamage, damageCalculationMsg.getModifiedDefenceStrength (),
+		final int totalHits = getUnitServerUtils ().applyDamage (defender, actualDamage, damageCalculationMsg.getModifiedDefenceStrength (),
 			damageCalculationMsg.getChanceToDefend (), players, spells, combatAreaEffects, db);
 		
 		damageCalculationMsg.setFinalHits (totalHits);
@@ -367,7 +370,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
-		damageCalculationMsg.setDamageType (DamageTypeID.DOOM);
+		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 		
 		// No to hit rolls - they automatically hit
 		damageCalculationMsg.setActualHits (attackDamage.getPotentialHits ());
@@ -376,74 +379,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
 
 		// Dish out damage
-		final int totalHits = applyDamage (defender, attackDamage.getPotentialHits (), 0, 0, players, spells, combatAreaEffects, db);
+		final int totalHits = getUnitServerUtils ().applyDamage (defender, attackDamage.getPotentialHits (), 0, 0, players, spells, combatAreaEffects, db);
 		
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
 		log.trace ("Exiting calculateDoomDamage = " + totalHits);
-		return totalHits;
-	}
-	
-	/**
-	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck
-	 * 
-	 * @param defender Unit being hit
-	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
-	 * @param defenderDefenceStrength Value of defence stat for the defender unit
-	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
-	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
-	 * @param db Lookup lists built over the XML database
-	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 */
-	private final int applyDamage (final MemoryUnit defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
-	{
-		log.trace ("Entering applyDamage: Unit URN " + defender.getUnitURN () + " hit by " + hitsToApply + " vs defence " + defenderDefenceStrength + " at " + chanceToDefend + "0%");
-
-		// Dish out damage - See page 287 in the strategy guide
-		// We can't do all defending in one go, each figure only gets to use its shields if the previous figure dies.
-		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
-		// However only the first unit gets to use its shield, even if it blocks 1 hit it will be killed by the 2nd hit.
-		int totalHits = 0;
-		int defendingFiguresRemaining = getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db);
-		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
-		int hitsLeftToApply = hitsToApply;
-		
-		while ((defendingFiguresRemaining > 0) && (hitsLeftToApply > 0))
-		{
-			// New figure taking damage, so it gets to try to block some hits
-			int thisBlockedHits = 0;
-			for (int blockNo = 0; blockNo < defenderDefenceStrength; blockNo++)
-				if (getRandomUtils ().nextInt (10) < chanceToDefend)
-					thisBlockedHits++;
-			
-			hitsLeftToApply = hitsLeftToApply - thisBlockedHits;
-			
-			// If any damage was not blocked by shields then it goes to health
-			if (hitsLeftToApply > 0)
-			{
-				// Work out how many hits the current figure will take
-				final int hitsOnThisFigure = Math.min (hitsLeftToApply, hitPointsRemainingOfFirstFigure);
-				
-				// Update counters for next figure.
-				// Note it doesn't matter that we're decreasing defendingFigures even if the figure didn't die, because in that case Hits
-				// will now be zero and the loop with exit, so the values of these variables won't matter at all, only the totalHits return value does.
-				hitsLeftToApply = hitsLeftToApply - hitsOnThisFigure;
-				totalHits = totalHits + hitsOnThisFigure;
-				defendingFiguresRemaining--;
-				hitPointsRemainingOfFirstFigure = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
-			}
-		}
-		
-		log.trace ("Exiting applyDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -493,5 +434,21 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 }

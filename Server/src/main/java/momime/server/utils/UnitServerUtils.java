@@ -8,6 +8,8 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitSpecialOrder;
@@ -15,6 +17,7 @@ import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server side only helper methods for dealing with units
@@ -94,4 +97,24 @@ public interface UnitServerUtils
 	 * @return List of all units, regardless of which player they belong to, with the requested order
 	 */
 	public List<MemoryUnit> listUnitsWithSpecialOrder (final List<MemoryUnit> units, final UnitSpecialOrder order);
+
+	/**
+	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck
+	 * 
+	 * @param defender Unit being hit
+	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
+	 * @param defenderDefenceStrength Value of defence stat for the defender unit
+	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	public int applyDamage (final MemoryUnit defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 }

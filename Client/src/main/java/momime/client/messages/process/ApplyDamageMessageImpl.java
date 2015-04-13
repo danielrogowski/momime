@@ -1,6 +1,8 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -30,6 +32,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
+import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.UnitUtils;
 
@@ -98,14 +101,11 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/** The attacking unit; null if we can't see it */
 	private MemoryUnit attackerUnit;
 	
-	/** The defending unit; null if we can't see it */
-	private MemoryUnit defenderUnit;
+	/** The defending unit(s) that we can see */
+	private List<ApplyDamageMessageDefenderDetails> defenderUnits;
 	
 	/** How much damage the unit had taken before this attack; we use this to animate the damage slowly being applied */
 	private Integer attackerDamageTakenStart;
-	
-	/** How much damage the unit had taken before this attack; we use this to animate the damage slowly being applied */
-	private Integer defenderDamageTakenStart;
 	
 	/** Work the duration out once only */
 	private double duration;
@@ -157,19 +157,21 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			attackerDamageTakenStart = attackerUnit.getDamageTaken ();
 			attackerUnit.setCombatHeading (getAttackerDirection ());
 		}
-		
-		// Can we see the defender?
-		if (getDefenderUnitURN () != null)
-		{
-			defenderUnit = getUnitUtils ().findUnitURN (getDefenderUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-d");
-			defenderDamageTakenStart = defenderUnit.getDamageTaken ();
-			defenderUnit.setCombatHeading (getDefenderDirection ());
-		}
-		
+
 		// Is either unit ours?  If so, then it must be damage from the combat we're in; if not, then it must be some combat going on elsewhere
-		animated =
-			((getAttackerPlayerID () == getClient ().getOurPlayerID ()) ||
-			((defenderUnit != null) && (defenderUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())));
+		animated = (getAttackerPlayerID () == getClient ().getOurPlayerID ());
+		
+		// Can we see the defender(s)?
+		defenderUnits = new ArrayList<ApplyDamageMessageDefenderDetails> ();
+		for (final ApplyDamageMessageUnit thisUnitDetails : getDefenderUnit ())
+		{
+			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitDetails.getDefenderUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-d");
+			thisUnit.setCombatHeading (thisUnitDetails.getDefenderDirection ());
+			defenderUnits.add (new ApplyDamageMessageDefenderDetails (thisUnit, thisUnitDetails.getDefenderDamageTaken ()));
+
+			if (thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())
+				animated = true;			
+		}
 		
 		// Perform any animation startup necessary
 		if (!animated)
@@ -181,7 +183,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		{
 			getCombatUI ().setAttackAnim (this);
 			
-			if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ()))
+			if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ())) && (getDefenderUnits ().size () == 1))
 			{
 				// Start a ranged attack animation - firstly, after a brief frame of showing the unit firing, it'll be back to standing still
 				// To animate the missiles, first we need the locations (in pixels) of the two units involved
@@ -189,8 +191,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				
 				final int startX = getCombatMapBitmapGenerator ().combatCoordinatesX (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
 				final int startY = getCombatMapBitmapGenerator ().combatCoordinatesY (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
-				endX = getCombatMapBitmapGenerator ().combatCoordinatesX (defenderUnit.getCombatPosition ().getX (), defenderUnit.getCombatPosition ().getY (), combatMapTileSet);
-				endY = getCombatMapBitmapGenerator ().combatCoordinatesY (defenderUnit.getCombatPosition ().getX (), defenderUnit.getCombatPosition ().getY (), combatMapTileSet);
+				
+				final MemoryUnit singleDefender = getDefenderUnits ().get (0).getDefUnit ();
+				endX = getCombatMapBitmapGenerator ().combatCoordinatesX (singleDefender.getCombatPosition ().getX (), singleDefender.getCombatPosition ().getY (), combatMapTileSet);
+				endY = getCombatMapBitmapGenerator ().combatCoordinatesY (singleDefender.getCombatPosition ().getX (), singleDefender.getCombatPosition ().getY (), combatMapTileSet);
 				
 				// Work out the firing distance in pixels
 				final double dx = startX - endX;
@@ -292,20 +296,27 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		{
 			// Animate a close combat attack - gradually ramp up the damage taken by both units.
 			// Don't even need to force a repaint, because registering the 'melee' animation will do it for us.
+			// Also Either unit have unit info screens open that need to update?
 			final double ratio = (double) tickNumber / tickCount;
-			attackerUnit.setDamageTaken (attackerDamageTakenStart + (int) ((getAttackerDamageTaken () - attackerDamageTakenStart) * ratio));
-			defenderUnit.setDamageTaken (defenderDamageTakenStart + (int) ((getDefenderDamageTaken () - defenderDamageTakenStart) * ratio));
-			
-			// Either unit have unit info screens open that need to update?
 			try
 			{
+				// Attacker
+				attackerUnit.setDamageTaken (attackerDamageTakenStart + (int) ((getAttackerDamageTaken () - attackerDamageTakenStart) * ratio));
+
 				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
 				if (attackerUI != null)
 					attackerUI.getUnitInfoPanel ().getPanel ().repaint ();
-	
-				final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (getDefenderUnitURN ());
-				if (defenderUI != null)
-					defenderUI.getUnitInfoPanel ().getPanel ().repaint ();
+
+				// Defenders
+				for (final ApplyDamageMessageDefenderDetails thisUnit : getDefenderUnits ())
+				{
+					thisUnit.getDefUnit ().setDamageTaken
+						(thisUnit.getDefenderDamageTakenStart () + (int) ((thisUnit.getDefenderDamageTakenEnd () - thisUnit.getDefenderDamageTakenStart ()) * ratio));
+					
+					final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
+					if (defenderUI != null)
+						defenderUI.getUnitInfoPanel ().getPanel ().repaint ();
+				}
 			}
 			catch (final IOException e)
 			{
@@ -379,21 +390,21 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			}
 		}
 		
-		// Damage to defender
-		if (defenderUnit != null)
+		// Damage to defender(s)
+		for (final ApplyDamageMessageDefenderDetails thisUnit : getDefenderUnits ())
 		{
-			defenderUnit.setDamageTaken (getDefenderDamageTaken ());
-			if (getUnitCalculations ().calculateAliveFigureCount (defenderUnit, getClient ().getPlayers (),
+			thisUnit.getDefUnit ().setDamageTaken (thisUnit.getDefenderDamageTakenEnd ());
+			if (getUnitCalculations ().calculateAliveFigureCount (thisUnit.getDefUnit (), getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) <= 0)
 			{
 				// Defender is dead
-				log.debug ("ApplyDamage is killing off dead defender Unit URN " + getDefenderUnitURN ());
-				getUnitClientUtils ().killUnit (getDefenderUnitURN (), transmittedAction, untransmittedAction);
+				log.debug ("ApplyDamage is killing off dead defender Unit URN " + thisUnit.getDefUnit ().getUnitURN ());
+				getUnitClientUtils ().killUnit (thisUnit.getDefUnit ().getUnitURN (), transmittedAction, untransmittedAction);
 			}
 			else
 			{
-				final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (getDefenderUnitURN ());
+				final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
 				if (defenderUI != null)
 					defenderUI.getUnitInfoPanel ().getPanel ().repaint ();
 
@@ -630,9 +641,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * @return The defending unit; null if we can't see it
 	 */
-	public final MemoryUnit getDefenderUnit ()
+	public final List<ApplyDamageMessageDefenderDetails> getDefenderUnits ()
 	{
-		return defenderUnit;
+		return defenderUnits;
 	}
 
 	/**
@@ -649,5 +660,55 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final RangedAttackTypeCombatImageGfx getRatCurrentImage ()
 	{
 		return ratCurrentImage;
+	}
+	
+	/**
+	 * Stores additional details about each defender unit
+	 */
+	private class ApplyDamageMessageDefenderDetails
+	{
+		/** Which unit this is */
+		private final MemoryUnit defUnit;
+
+		/** How much damage the unit had taken before this attack; we use this to animate the damage slowly being applied */
+		private final int defenderDamageTakenStart;
+
+		/** How much damage the unit is taking in total from the attack */
+		private final int defenderDamageTakenEnd;
+		
+		/**
+		 * @param aDefenderUnit Which unit this is
+		 * @param aDefenderDamageTakenEnd How much damage the unit is taking in total from the attack
+		 */
+		private ApplyDamageMessageDefenderDetails (final MemoryUnit aDefenderUnit, final int aDefenderDamageTakenEnd)
+		{
+			defUnit = aDefenderUnit;
+			defenderDamageTakenStart = defUnit.getDamageTaken ();
+			defenderDamageTakenEnd = aDefenderDamageTakenEnd;
+		}
+
+		/**
+		 * @return Which unit this is
+		 */
+		public final MemoryUnit getDefUnit ()
+		{
+			return defUnit;
+		}
+
+		/**
+		 * @return How much damage the unit had taken before this attack; we use this to animate the damage slowly being applied
+		 */
+		public final int getDefenderDamageTakenStart ()
+		{
+			return defenderDamageTakenStart;
+		}
+
+		/**
+		 * @return How much damage the unit is taking in total from the attack
+		 */
+		public final int getDefenderDamageTakenEnd ()
+		{
+			return defenderDamageTakenEnd;
+		}
 	}
 }

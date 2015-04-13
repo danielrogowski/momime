@@ -639,7 +639,11 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN">
+					    <xsd:annotation>
+    						<xsd:documentation>Defender will be left null if the attack is hitting multiple defenders, e.g. Flame Strike.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
@@ -1104,6 +1108,19 @@ in that case the client shows the animation, then the units disappear.</xsd:docu
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:complexType name="applyDamageMessageUnit">
+	    <xsd:annotation>
+    		<xsd:documentation>Stores the damage taken by a single defender in an attack.
+Some attacks may hit multiple defenders at once, e.g. flame strike.  These have to be sent to the client as a single bulk message detailing all the
+hit units at once, so that the animation shows all units being hit at once, rather than the first being hit, then the second, and so on.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defenderDamageTaken" type="momimecommon:unitAttributeValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defenderDirection" type="map:mapDirection" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	<xsd:element name="applyDamageMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Message server sends to all clients when an attack takes place, this might damage the attacker and/or the defender.
@@ -1125,13 +1142,11 @@ Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID wi
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDirection" type="map:mapDirection" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDoubleCombatMovesLeft" type="momimenewgame:integerMapDistance" />
 						
-						<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="defenderDamageTaken" type="momimecommon:unitAttributeValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="defenderDirection" type="map:mapDirection" />
-						
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
+
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="defenderUnit" type="momimestoc:applyDamageMessageUnit" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

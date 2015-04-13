@@ -5755,6 +5755,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="HeaderWithoutAttackerUnit">
 			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="HeaderWithoutEitherUnit">
+			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack:</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="AttackWithUnit">
 			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to ATTACKER_FIGURES x ATTACK_STRENGTH = POTENTIAL_HITS damage:</languageEntryText>
 		</languageEntry>

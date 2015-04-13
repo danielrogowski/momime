@@ -1,5 +1,7 @@
 package momime.server.process;
 
+import java.util.List;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -19,12 +21,12 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public interface DamageProcessor
 {
 	/**
-	 * Performs one attack in combat.
+	 * Performs one attack in combat, which may be a melee, ranged or spell attack.
 	 * If a close combat attack, also resolves the defender retaliating.
 	 * Also checks to see if the attack results in either side being wiped out, in which case ends the combat.
 	 * 
 	 * @param attacker Unit making the attack; or null if the attack isn't coming from a unit
-	 * @param defender Unit being hit
+	 * @param defenders Unit(s) being hit; some attacks can hit multiple units such as Flame Strike
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender; or null if the attack isn't coming from a unit
@@ -40,7 +42,7 @@ public interface DamageProcessor
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void resolveAttack (final MemoryUnit attacker, final MemoryUnit defender,
+	public void resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackAttributeID,
 		final SpellSvr spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)

@@ -172,7 +172,10 @@ public final class TestDamageProcessorImpl
 		}
 		
 		// Run method
-		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7,
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+		
+		proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 		
 		// Check initial message was sent
@@ -196,7 +199,7 @@ public final class TestDamageProcessorImpl
 		assertEquals (2+2, attacker.getDamageTaken ());
 		assertEquals (3+5, defender.getDamageTaken ());
 		
-		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defender,
+		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
@@ -318,7 +321,10 @@ public final class TestDamageProcessorImpl
 		trueMap.getUnit ().add (survivingUnit);
 		
 		// Run method
-		proc.resolveAttack (attacker, defender, attackingPlayer, defendingPlayer, 7,
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+		
+		proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 		
 		// Check initial message was sent
@@ -342,7 +348,7 @@ public final class TestDamageProcessorImpl
 		assertEquals (2, attacker.getDamageTaken ());
 		assertEquals (3+5, defender.getDamageTaken ());
 		
-		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defender,
+		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side

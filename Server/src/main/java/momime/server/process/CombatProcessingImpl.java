@@ -1001,18 +1001,19 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// Anything special to do?
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo));
+		
 		switch (movementTypes [moveTo.getY ()] [moveTo.getX ()])
 		{
 			case MELEE:
-				getDamageProcessor ().resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo),
-					attackingPlayer, defendingPlayer,
+				getDamageProcessor ().resolveAttack (tu, defenders, attackingPlayer, defendingPlayer,
 					movementDirections [moveTo.getY ()] [moveTo.getX ()],
 					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 				break;
 				
 			case RANGED:
-				getDamageProcessor ().resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-					combatLocation, moveTo), attackingPlayer, defendingPlayer,
+				getDamageProcessor ().resolveAttack (tu, defenders, attackingPlayer, defendingPlayer,
 					getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), (MapCoordinates2DEx) tu.getCombatPosition (), moveTo),
 					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 				break;

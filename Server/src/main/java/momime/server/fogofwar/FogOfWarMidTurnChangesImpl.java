@@ -38,6 +38,7 @@ import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddUnitMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
+import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.KillUnitActionID;
@@ -1355,12 +1356,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 	
 	/**
-	 * Informs clients who can see either unit of how much combat damage two units have taken - the two players in combat use this to show the animation of the attack.
+	 * Informs clients who can see any of the units involved about how much combat damage an attacker and/or defender(s) have taken.
+	 * The two players in combat use this to show the animation of the attack, be it a melee, ranged or spell attack.
 	 * If the damage is enough to kill off the unit, the client will take care of this - we don't need to send a separate KillUnitMessage.
 	 * 
 	 * @param tuAttacker Server's true memory of unit that made the attack; or null if the attack isn't coming from a unit
 	 * @param attackerPlayerID Player owning tuAttacker unit; supplied in case tuAttacker is null
-	 * @param tuDefender Server's true memory of unit that got hit
+	 * @param tuDefenders Server's true memory of unit(s) that got hit
 	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
 	 * @param attackAttributeID Attribute used to make the attack, for regular melee or ranged attacks
 	 * @param attackSpellID Spell used to make the attack
@@ -1374,13 +1376,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final MemoryUnit tuDefender,
+	public final void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final List<MemoryUnit> tuDefenders,
 		final String attackSkillID, final String attackAttributeID, final String attackSpellID, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering sendCombatDamageToClients: Unit URN " + ((tuAttacker != null) ? new Integer (tuAttacker.getUnitURN ()).toString () : "N/A") +
-			", Unit URN " + tuDefender.getUnitURN ());
+		if (log.isTraceEnabled ())
+		{
+			String msg = "Entering sendCombatDamageToClients: Attacking unit URN " + ((tuAttacker != null) ? new Integer (tuAttacker.getUnitURN ()).toString () : "N/A") +
+				", Defending unit URN(s) ";
+			
+			for (final MemoryUnit tuDefender : tuDefenders)
+				msg = msg + tuDefender.getUnitURN () + ", ";
+			
+			log.trace (msg);
+		}
 
 		for (final PlayerServerDetails thisPlayer : players)
 		{
@@ -1388,7 +1398,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			
 			// We might get the interesting situation where an outside observer not involved in the combat can see one
 			// unit stack but not the other - and so know about one unit but not the other.
-			// We handle this by setting one of the UnitURNs to zero, but this means we have to build the message separately for each client.
+			// We handle this by leaving one of the UnitURNs as null, but this means we have to build the message separately for each client.
 			final ApplyDamageMessage msg;
 			if (thisPlayer.getPlayerDescription ().isHuman ())
 			{
@@ -1417,26 +1427,29 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				}
 			}
 			
-			// Defending unit
-			if (canSeeUnitMidTurn (tuDefender, trueTerrain, thisPlayer, db, fogOfWarSettings))
-			{
-				// Update player's memory of defender on server
-				final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-d");
-				muDefender.setDamageTaken (tuDefender.getDamageTaken ());
-				muDefender.setCombatHeading (tuDefender.getCombatHeading ());
-
-				// Update player's memory of defender on client
-				if (msg != null)
+			// Defending unit(s)
+			for (final MemoryUnit tuDefender : tuDefenders)
+				if (canSeeUnitMidTurn (tuDefender, trueTerrain, thisPlayer, db, fogOfWarSettings))
 				{
-					msg.setDefenderUnitURN (tuDefender.getUnitURN ());
-					msg.setDefenderDamageTaken (tuDefender.getDamageTaken ());
-					msg.setDefenderDirection (tuDefender.getCombatHeading ());
+					// Update player's memory of defender on server
+					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-d");
+					muDefender.setDamageTaken (tuDefender.getDamageTaken ());
+					muDefender.setCombatHeading (tuDefender.getCombatHeading ());
+	
+					// Update player's memory of defender on client
+					if (msg != null)
+					{
+						final ApplyDamageMessageUnit msgUnit = new ApplyDamageMessageUnit ();
+						msgUnit.setDefenderUnitURN (tuDefender.getUnitURN ());
+						msgUnit.setDefenderDamageTaken (tuDefender.getDamageTaken ());
+						msgUnit.setDefenderDirection (tuDefender.getCombatHeading ());
+						msg.getDefenderUnit ().add (msgUnit);
+					}
 				}
-			}
 			
 			// Do we have a message to send?
 			if (msg != null)
-				if ((msg.getAttackerUnitURN () != null) || (msg.getDefenderUnitURN () != null))
+				if ((msg.getAttackerUnitURN () != null) || (msg.getDefenderUnit ().size () > 0))
 				{
 					msg.setAttackSkillID (attackSkillID);
 					msg.setAttackAttributeID (attackAttributeID);

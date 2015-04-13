@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
@@ -263,7 +264,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * If its a spell where we need to choose a target (like Doom Bolt or Phantom Warriors), additional mana (like Counter Magic)
 	 * or both (like Firebolt), then the client will already have done all this and supplied us with the chosen values.
 	 * 
-	 * @param player Player who is casting the spell
+	 * @param castingPlayer Player who is casting the spell
 	 * @param spell Which spell they want to cast
 	 * @param reducedCombatCastingCost Skill cost of the spell, reduced by any book or retort bonuses the player may have
 	 * @param multipliedManaCost MP cost of the spell, reduced as above, then multiplied up according to the distance the combat is from the wizard's fortress
@@ -281,19 +282,19 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castCombatNow (final PlayerServerDetails player, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+	public final void castCombatNow (final PlayerServerDetails castingPlayer, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
 		log.trace ("Entering castCombatNow: Player ID " +
-			player.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID () + ", " + spell.getSpellBookSectionID () + ", " + combatLocation);
+				castingPlayer.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID () + ", " + spell.getSpellBookSectionID () + ", " + combatLocation);
 
 		// Which side is casting the spell
 		final UnitCombatSideID castingSide;
-		if (player == attackingPlayer)
+		if (castingPlayer == attackingPlayer)
 			castingSide = UnitCombatSideID.ATTACKER;
-		else if (player == defendingPlayer)
+		else if (castingPlayer == defendingPlayer)
 			castingSide = UnitCombatSideID.DEFENDER;
 		else
 			throw new MomException ("castCombatNow: Casting player is neither the attacker nor defender");
@@ -308,7 +309,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
 				
 				getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
-					spell.getSpellID (), player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			}
 		}
 		
@@ -319,7 +320,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// What effects doesn't the unit already have - can cast Warp Creature multiple times
 			final List<String> unitSpellEffectIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				spell, player.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
+				spell, castingPlayer.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
 			
 			if (unitSpellEffectIDs.size () == 0)
 				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
@@ -328,7 +329,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Pick an actual effect at random
 			final String unitSpellEffectID = unitSpellEffectIDs.get (getRandomUtils ().nextInt (unitSpellEffectIDs.size ()));
 			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-				player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
+				castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
 				true, null, null, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 		}
 		
@@ -349,10 +350,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				// Now can add it
 				final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-					unitID, summonLocation, summonLocation, combatLocation, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					unitID, summonLocation, summonLocation, combatLocation, castingPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// What direction should the unit face?
-				final int combatHeading = (player == attackingPlayer) ? 8 : 4;
+				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
 				
 				// Set it immediately into combat
 				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
@@ -370,27 +371,38 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Attack spells
 		else if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 		{
-			getDamageProcessor ().resolveAttack (null, targetUnit, attackingPlayer, defendingPlayer,
-				null, null, spell, variableDamage, player, combatLocation, mom);
+			// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
+			final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+			if (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)
+				targetUnits.add (targetUnit);
+			else
+				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) &&
+						(thisUnit.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()))
+						
+						targetUnits.add (thisUnit);
+			
+			getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
+				null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 		}
 		
 		else
 			throw new MomException ("Cast a combat spell with a section ID that there is no code to deal with yet: " + spell.getSpellBookSectionID ());
 		
 		// Charge mana
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
 		
 		// Charge skill
 		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		final int sendSkillValue;
-		if (player == defendingPlayer)
+		if (castingPlayer == defendingPlayer)
 		{
 			gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
 			sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
 		}
-		else if (player == attackingPlayer)
+		else if (castingPlayer == attackingPlayer)
 		{
 			gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
 			sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
@@ -399,7 +411,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
 		
 		// Send both values to client
-		getServerResourceCalculations ().sendGlobalProductionValues (player, sendSkillValue);
+		getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
 		
 		// Only allow casting one spell each combat turn
 		gc.setSpellCastThisCombatTurn (true);

@@ -19652,6 +19652,7 @@
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="HeaderWithAttackerUnit" />
 		<languageEntry languageEntryID="HeaderWithoutAttackerUnit" />
+		<languageEntry languageEntryID="HeaderWithoutEitherUnit" />
 		<languageEntry languageEntryID="AttackWithUnit" />
 		<languageEntry languageEntryID="AttackWithoutUnit" />
 		<languageEntry languageEntryID="DefenceStatisticsBase" />

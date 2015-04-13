@@ -84,11 +84,14 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		    	(getClient ().getPlayers (), getAttackerPlayerID (), "DamageCalculationHeaderDataEx-ap"));
 
 		// Find defending unit and player
-	    setDefenderUnit (getUnitUtils ().findUnitURN (getDefenderUnitURN (),
-		   	getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "DamageCalculationHeaderDataEx-du"));
-	    
-	    setDefenderPlayer (getMultiplayerSessionUtils ().findPlayerWithID
-	    	(getClient ().getPlayers (), getDefenderUnit ().getOwningPlayerID (), "DamageCalculationHeaderDataEx-dup"));
+		if (getDefenderUnitURN () != null)
+		{
+		    setDefenderUnit (getUnitUtils ().findUnitURN (getDefenderUnitURN (),
+			   	getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "DamageCalculationHeaderDataEx-du"));
+		    
+		    setDefenderPlayer (getMultiplayerSessionUtils ().findPlayerWithID
+		    	(getClient ().getPlayers (), getDefenderUnit ().getOwningPlayerID (), "DamageCalculationHeaderDataEx-dup"));
+		}
 
 		log.trace ("Exiting preProcess");
 	}
@@ -122,15 +125,26 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		}
 
 		// Now work out the rest of the text
-		final String languageEntryID = (getAttackerUnit () != null) ? "HeaderWithAttackerUnit" : "HeaderWithoutAttackerUnit";
+		final String languageEntryID;
+		if (getDefenderUnit () == null)
+			languageEntryID = "HeaderWithoutEitherUnit";
+		else if (getAttackerUnit () == null)
+			languageEntryID = "HeaderWithoutAttackerUnit";
+		else
+			languageEntryID = "HeaderWithAttackerUnit";
+		
 		String text = getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
-			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll
-			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
 			("ATTACK_TYPE", attackType);
 
 		if (getAttackerUnit () != null)
 			text = text.replaceAll ("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME));
+
+		if (getDefenderPlayer () != null)
+			text = text.replaceAll ("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ()));
+		
+		if (getDefenderUnit () != null)
+			text = text.replaceAll ("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME));
 		
 		return text;
 	}

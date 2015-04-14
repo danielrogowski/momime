@@ -850,7 +850,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT21">
-		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_022_000 - ShadowDemons.mp3</rangedAttackSoundFile>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_022_000 - ShadowDemons-LifeDrain-WordOfDeath.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -1149,13 +1149,17 @@
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP010" />
-	<spell spellID="SP011" />
+	<spell spellID="SP011">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_080_000 - CracksCall.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP012">
 		<spellMusicFile>/momime.client.music/MUSIC_004 - WallOfStone-NaturesEye-Earthquake-GaiasBlessing-MoveFortress-EarthGate.mp3</spellMusicFile>
 		<soundAndImageDelay>2</soundAndImageDelay>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP013" />
+	<spell spellID="SP013">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_023_000 - Djinn+IceBolt.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP014">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
@@ -1176,7 +1180,9 @@
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP022" />
+	<spell spellID="SP022">
+		<spellSoundFile>/momime.client.sounds/NEWSOUND_007_000 - Petrify.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP023">
 		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
 	</spell>
@@ -1260,7 +1266,9 @@
 	<spell spellID="SP049">
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP050" />
+	<spell spellID="SP050">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_021_000 - Sage-PsionicBlast.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP051" />
 	<spell spellID="SP052" />
 	<spell spellID="SP053">
@@ -1298,7 +1306,9 @@
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP064" />
+	<spell spellID="SP064">
+		<spellSoundFile>/momime.client.sounds/NEWSOUND_010_000 - Banish.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP065">
 		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
 	</spell>
@@ -1343,9 +1353,13 @@
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP080/overlandEnchantment.png</overlandEnchantmentImageFile>
 		<spellMusicFile>/momime.client.music/MUSIC_025 - TimeStop.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP081" />
+	<spell spellID="SP081">
+		<spellSoundFile>/momime.client.sounds/NEWSOUND_015_000 - WarpWood.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP082" />
-	<spell spellID="SP083" />
+	<spell spellID="SP083">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_093_000 - FireballSpell.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP084">
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
@@ -1371,7 +1385,9 @@
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP091" />
+	<spell spellID="SP091">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_027_000 - LightningSpell.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP092">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
@@ -1386,7 +1402,9 @@
 	<spell spellID="SP095">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP096" />
+	<spell spellID="SP096">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_093_000 - FireballSpell.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP097">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
@@ -1398,19 +1416,25 @@
 	<spell spellID="SP100">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP101" />
+	<spell spellID="SP101">
+		<spellSoundFile>/momime.client.sounds/NEWSOUND_016_000 - WarpLightning.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP102" />
 	<spell spellID="SP103">
 		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP104" />
+	<spell spellID="SP104">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_100_000 - DoomBolt.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP105" />
 	<spell spellID="SP106">
 		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP107" />
 	<spell spellID="SP108" />
-	<spell spellID="SP109" />
+	<spell spellID="SP109">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_030_000 - WallOfFire-ChaosRift.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP110">
 		<spellMusicFile>/momime.client.music/MUSIC_007 - ChaosRift.mp3</spellMusicFile>
 		<soundAndImageDelay>2</soundAndImageDelay>
@@ -1419,7 +1443,9 @@
 	<spell spellID="SP111">
 		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP112" />
+	<spell spellID="SP112">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_099_000 - Disintegrate.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP113">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP113/overlandEnchantment.png</overlandEnchantmentImageFile>
 		<spellMusicFile>/momime.client.music/MUSIC_032 - MeteorStorm.mp3</spellMusicFile>
@@ -1449,7 +1475,9 @@
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP122" />
+	<spell spellID="SP122">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP123">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
@@ -1481,7 +1509,9 @@
 	</spell>
 	<spell spellID="SP132" />
 	<spell spellID="SP133" />
-	<spell spellID="SP134" />
+	<spell spellID="SP134">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP135">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP135/overlandEnchantment.png</overlandEnchantmentImageFile>
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
@@ -1534,7 +1564,9 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP149" />
-	<spell spellID="SP150" />
+	<spell spellID="SP150">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP151" />
 	<spell spellID="SP152">
 		<spellMusicFile>/momime.client.music/MUSIC_003 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellMusicFile>
@@ -1597,7 +1629,9 @@
 	<spell spellID="SP166">
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP167" />
+	<spell spellID="SP167">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_022_000 - ShadowDemons-LifeDrain-WordOfDeath.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP168" />
 	<spell spellID="SP169" />
 	<spell spellID="SP170" />
@@ -1663,7 +1697,9 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_039_000 - MoveFortress-DispelMagicTrue-CursedLands.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP191" />
-	<spell spellID="SP192" />
+	<spell spellID="SP192">
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_022_000 - ShadowDemons-LifeDrain-WordOfDeath.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP193">
 		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
 	</spell>

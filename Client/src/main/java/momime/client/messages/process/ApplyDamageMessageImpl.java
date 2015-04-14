@@ -15,6 +15,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeCombatImageGfx;
 import momime.client.graphics.database.RangedAttackTypeGfx;
+import momime.client.graphics.database.SpellGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.v0_9_6.RangedAttackTypeActionID;
 import momime.client.process.CombatMapProcessing;
@@ -245,6 +246,22 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				// For melee attacks is set to 1 second, and melee animations in the graphics XML are set at 6 FPS, so there'll be 6 frames to show
 				duration = 1;
 				tickCount = 6;
+			}
+			else if (getAttackSpellID () != null)
+			{
+				// Find spell graphics
+				final SpellGfx spellGfx = getGraphicsDB ().findSpell (getAttackSpellID (), "ApplyDamageMessageImpl");
+				
+				// Play spell sound if there is one (some spells are silent, so should be no warning for this)
+				if (spellGfx.getSpellSoundFile () != null)
+					try
+					{
+						getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 		}
 		

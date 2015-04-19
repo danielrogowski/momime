@@ -115,6 +115,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
 		damageCalculationMsg.setAttackerPlayerID (attacker.getOwningPlayerID ());
 		damageCalculationMsg.setAttackAttributeID (attackAttributeID);
+		damageCalculationMsg.setDamageType (DamageTypeID.SINGLE_FIGURE);
 
 		// How many potential hits can we make - See page 285 in the strategy guide
 		damageCalculationMsg.setAttackerFigures (getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db));
@@ -159,6 +160,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 		damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
 		damageCalculationMsg.setPotentialHits (damage);
+		damageCalculationMsg.setDamageType (spell.getAttackSpellDamageType ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
 		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType ());
@@ -482,6 +484,56 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		log.trace ("Exiting calculateDoomDamage = " + totalHits);
 		return totalHits;
+	}
+	
+	/**
+	 * Sets the number of actual hits for "% chance of death" damage, used by cracks call.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateChanceOfDeathDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateChanceOfDeathDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		
+		// Store the dice roll
+		damageCalculationMsg.setActualHits (getRandomUtils ().nextInt (100));
+		
+		// No defence hit rolls - they automatically hit
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
+
+		// Unit either takes no damage, or dies outright
+		if (damageCalculationMsg.getActualHits () < attackDamage.getPotentialHits ())
+		{
+			final int totalHits = getUnitServerUtils ().applyDamage (defender, Integer.MAX_VALUE, 0, 0, players, spells, combatAreaEffects, db);
+			damageCalculationMsg.setFinalHits (totalHits);
+		}
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.trace ("Exiting calculateChanceOfDeathDamage = " + damageCalculationMsg.getFinalHits ());
+		return damageCalculationMsg.getFinalHits ();
 	}
 	
 	/**

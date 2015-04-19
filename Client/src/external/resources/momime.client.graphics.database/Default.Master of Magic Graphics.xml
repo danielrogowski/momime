@@ -1150,6 +1150,8 @@
 	</spell>
 	<spell spellID="SP010" />
 	<spell spellID="SP011">
+		<combatCastAnimation>CRACKS_CALL</combatCastAnimation>
+		<combatCastAnimationInFront>false</combatCastAnimationInFront>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_080_000 - CracksCall.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP012">
@@ -65450,6 +65452,22 @@
 		<frame>/momime.client.graphics/spells/SP096/cast-frame14.png</frame>
 		<frame>/momime.client.graphics/spells/SP096/cast-frame15.png</frame>
 		<frame>/momime.client.graphics/spells/SP096/cast-frame16.png</frame>
+	</animation>
+	<animation animationID="CRACKS_CALL">
+		<animationDescription>Cracks call fault lines in ground</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP011/cast-frame10.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

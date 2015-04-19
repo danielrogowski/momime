@@ -11,6 +11,7 @@ import momime.client.language.database.UnitSkillLang;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.DamageTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.utils.UnitUtils;
@@ -108,7 +109,13 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		}
 
 		// Now work out the rest of the text
-		final String languageEntryID = ((getAttackerUnitURN () != null) && (getAttackerFigures () != null)) ? "AttackWithUnit" : "AttackWithoutUnit";
+		final String languageEntryID;
+		if (getDamageType () == DamageTypeID.CHANCE_OF_DEATH)
+			languageEntryID = "AttackChanceOfDeath";
+		else if ((getAttackerUnitURN () != null) && (getAttackerFigures () != null))
+			languageEntryID = "AttackWithUnit";
+		else
+			languageEntryID = "AttackWithoutUnit";
 		
 		String text = "     " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll

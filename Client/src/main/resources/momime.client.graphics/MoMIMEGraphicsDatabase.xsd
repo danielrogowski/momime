@@ -492,6 +492,11 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastAnimationInFront" type="xsd:boolean" nxe:label="Combat cast anim in front?" nxe:gridWidth="150">
+		        <xsd:annotation>
+        			<xsd:documentation>Defaults to true (spell in front of units); but some ground-level spells need to appear behind the units to look correct, notably Cracks Call.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandEnchantmentImageFile" type="momimegfx:imageFilename" nxe:label="Overland enchantment image file" nxe:gridwidth="330" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellMusicFile" type="momimegfx:imageFilename" nxe:label="Spell music file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="soundAndImageDelay" type="momimegfx:seconds" nxe:label="Sound &amp; image delay" nxe:gridwidth="150" />

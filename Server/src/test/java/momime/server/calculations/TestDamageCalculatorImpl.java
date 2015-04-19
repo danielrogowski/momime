@@ -193,6 +193,7 @@ public final class TestDamageCalculatorImpl
 	    assertNull (data.getAttackSkillID ());
 	    assertNull (data.getAttackSpellID ());
 	    assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
+	    assertEquals (DamageTypeID.SINGLE_FIGURE, data.getDamageType ());
 	    assertEquals (6, data.getAttackerFigures ().intValue ());
 	    assertEquals (3, data.getAttackStrength ().intValue ());
 	    assertEquals (18, data.getPotentialHits ().intValue ());
@@ -253,6 +254,7 @@ public final class TestDamageCalculatorImpl
 	    assertNull (data.getAttackSkillID ());
 	    assertEquals ("SP001", data.getAttackSpellID ());
 	    assertNull (data.getAttackAttributeID ());
+	    assertEquals (DamageTypeID.DOOM, data.getDamageType ());
 	    assertNull (data.getAttackerFigures ());
 	    assertNull (data.getAttackStrength ());
 	    assertEquals (12, data.getPotentialHits ().intValue ());
@@ -313,6 +315,7 @@ public final class TestDamageCalculatorImpl
 	    assertNull (data.getAttackSkillID ());
 	    assertEquals ("SP001", data.getAttackSpellID ());
 	    assertNull (data.getAttackAttributeID ());
+	    assertEquals (DamageTypeID.DOOM, data.getDamageType ());
 	    assertNull (data.getAttackerFigures ());
 	    assertNull (data.getAttackStrength ());
 	    assertEquals (20, data.getPotentialHits ().intValue ());
@@ -768,5 +771,171 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToDefend ());
 		assertNull (data.getTenTimesAverageBlock ());
 		assertEquals (6, data.getFinalHits ());			// Nothing can get blocked
+	}
+	
+	/**
+	 * Tests the calculateChanceOfDeathDamage method when we roll that the unit dies
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateChanceOfDeathDamage_Dies () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+
+		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+
+		// Fix random number generator roll
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (100)).thenReturn (20);		// Dies
+		
+		// Mock the damage being applied
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		when (unitServerUtils.applyDamage (defender, Integer.MAX_VALUE, 0, 0, players, spells, combatAreaEffects, db)).thenReturn (6);		// Takes full dmg of 6 hits
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setRandomUtils (random);
+		calc.setUnitServerUtils (unitServerUtils);
+	
+		// Run test
+		assertEquals (6, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH),
+			players, spells, combatAreaEffects, db));
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ());
+		
+		assertNull (data.getChanceToHit ());
+		assertNull (data.getTenTimesAverageDamage ());
+		assertEquals (20, data.getActualHits ().intValue ());
+		assertEquals (DamageTypeID.CHANCE_OF_DEATH, data.getDamageType ());
+		
+		assertEquals (3, data.getDefenderFigures ());
+		assertNull (data.getUnmodifiedDefenceStrength ());
+		assertNull (data.getModifiedDefenceStrength ());
+		assertNull (data.getChanceToDefend ());
+		assertNull (data.getTenTimesAverageBlock ());
+		assertEquals (6, data.getFinalHits ());			// Only the actual number of HP the unit actually had is recorded
+	}
+
+	/**
+	 * Tests the calculateChanceOfDeathDamage method when we roll that the unit lives
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateChanceOfDeathDamage_Lives () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+
+		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+
+		// Fix random number generator roll
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (100)).thenReturn (80);		// Lives
+		
+		// Mock the damage being applied
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		when (unitServerUtils.applyDamage (defender, Integer.MAX_VALUE, 0, 0, players, spells, combatAreaEffects, db)).thenReturn (6);		// Takes full dmg of 6 hits
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setRandomUtils (random);
+		calc.setUnitServerUtils (unitServerUtils);
+	
+		// Run test
+		assertEquals (0, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH),
+			players, spells, combatAreaEffects, db));
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ());
+		
+		assertNull (data.getChanceToHit ());
+		assertNull (data.getTenTimesAverageDamage ());
+		assertEquals (80, data.getActualHits ().intValue ());
+		assertEquals (DamageTypeID.CHANCE_OF_DEATH, data.getDamageType ());
+		
+		assertEquals (3, data.getDefenderFigures ());
+		assertNull (data.getUnmodifiedDefenceStrength ());
+		assertNull (data.getModifiedDefenceStrength ());
+		assertNull (data.getChanceToDefend ());
+		assertNull (data.getTenTimesAverageBlock ());
+		assertEquals (0, data.getFinalHits ());			// Takes no damage
 	}
 }

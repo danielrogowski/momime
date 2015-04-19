@@ -666,6 +666,7 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerFigures" type="momimecommon:figureCount" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitAttributeValue" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="potentialHits" type="momimecommon:unitAttributeValue">

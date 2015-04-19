@@ -171,6 +171,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	
 					getCombatUI ().setCombatCastAnimationFrame (0);
 					getCombatUI ().setCombatCastAnimation (anim);
+					getCombatUI ().setCombatCastAnimationInFront (true);
 				}
 				else
 				{

@@ -290,6 +290,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 					getCombatUI ().setCombatCastAnimationFrame (0);
 					getCombatUI ().setCombatCastAnimation (spellAnimFly);
+					getCombatUI ().setCombatCastAnimationInFront (true);
 				}
 				else if (spellGfx.getCombatCastAnimation () != null)
 				{
@@ -310,6 +311,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 					getCombatUI ().setCombatCastAnimationFrame (0);
 					getCombatUI ().setCombatCastAnimation (spellAnim);
+					getCombatUI ().setCombatCastAnimationInFront ((spellGfx.isCombatCastAnimationInFront () == null) ? true : spellGfx.isCombatCastAnimationInFront ());
 				}
 				
 				// Play spell sound if there is one (some spells are silent, so should be no warning for this)

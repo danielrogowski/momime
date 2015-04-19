@@ -99,6 +99,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 
 				getCombatUI ().setCombatCastAnimationFrame (0);
 				getCombatUI ().setCombatCastAnimation (anim);
+				getCombatUI ().setCombatCastAnimationInFront (false);
 			}
 			
 			// See if there's a sound effect defined in the graphics XML file

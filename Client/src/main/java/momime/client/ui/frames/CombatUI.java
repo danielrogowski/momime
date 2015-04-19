@@ -360,6 +360,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Animation to display for a spell being cast */
 	private AnimationGfx combatCastAnimation;
 	
+	/** Whether the combat case animation appears behind or in front of the units */
+	private boolean combatCastAnimationInFront;
+	
 	/** Coords to display combat cast animation(s) at, in pixels */
 	private List<Point> combatCastAnimationPositions = new ArrayList<Point> ();
 
@@ -596,6 +599,19 @@ public final class CombatUI extends MomClientFrameUI
 						log.error (e, e);
 					}
 				
+				// Draw casting animation behind units?
+				if ((getCombatCastAnimation () != null) && (!isCombatCastAnimationInFront ()))
+					try
+					{
+						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()));
+						for (final Point p : getCombatCastAnimationPositions ())
+							g.drawImage (image, p.x, p.y, image.getWidth () * 2, image.getHeight () * 2, null);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				
 				// Draw units at the top first and work downwards
 				for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
 					for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
@@ -680,8 +696,8 @@ public final class CombatUI extends MomClientFrameUI
 						log.error (e, e);
 					}
 				
-				// Draw casting animation?
-				if (getCombatCastAnimation () != null)
+				// Draw casting animation in front of units?
+				if ((getCombatCastAnimation () != null) && (isCombatCastAnimationInFront ()))
 					try
 					{
 						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()));
@@ -2161,6 +2177,22 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setCombatCastAnimation (final AnimationGfx an)
 	{
 		combatCastAnimation = an;
+	}
+
+	/**
+	 * @return Whether the combat case animation appears behind or in front of the units
+	 */
+	public boolean isCombatCastAnimationInFront ()
+	{
+		return combatCastAnimationInFront;
+	}
+
+	/**
+	 * @param inFront Whether the combat case animation appears behind or in front of the units
+	 */
+	public final void setCombatCastAnimationInFront (final boolean inFront)
+	{
+		combatCastAnimationInFront = inFront;
 	}
 
 	/**

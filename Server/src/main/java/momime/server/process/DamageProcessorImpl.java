@@ -195,6 +195,13 @@ public final class DamageProcessorImpl implements DamageProcessor
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 						break;
+
+					case CHANCE_OF_DEATH:
+						damageToDefender = getDamageCalculator ().calculateChanceOfDeathDamage
+							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+						break;
 						
 					default:
 						throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamageToDefenders.getDamageType () +

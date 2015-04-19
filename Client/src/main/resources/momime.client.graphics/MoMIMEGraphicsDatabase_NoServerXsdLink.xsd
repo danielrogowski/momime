@@ -169,6 +169,10 @@
 			<xsd:selector xpath="rangedAttackType/rangedAttackTypeCombatImage" />
 			<xsd:field xpath="rangedAttackTypeCombatAnimation" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimegfx:animationPK" name="spellFKanimationFly">
+			<xsd:selector xpath="spell" />
+			<xsd:field xpath="combatCastAnimationFly" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimegfx:animationPK" name="spellFKanimation">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="combatCastAnimation" />
@@ -355,6 +359,13 @@
 	
 	<xsd:complexType name="spell" nxe:singular="Spell" nxe:plural="Spells" nxe:submenu="Magic">
 		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastAnimationFly" type="momimegfx:animationID" nxe:label="Combat cast fly anim" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastAnimation" type="momimegfx:animationID" nxe:label="Combat cast animation" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>

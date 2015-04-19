@@ -1,5 +1,6 @@
 package momime.client.messages.process;
 
+import java.awt.Point;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
@@ -91,10 +92,10 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 				final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
 				
-				getCombatUI ().setCombatCastAnimationX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-					(getCombatPosition ().getX (), getCombatPosition ().getY (), combatMapTileSet));
-				getCombatUI ().setCombatCastAnimationY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-					(getCombatPosition ().getX (), getCombatPosition ().getY (), combatMapTileSet));
+				getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+					(getCombatPosition ().getX (), getCombatPosition ().getY (), combatMapTileSet),
+				adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+					(getCombatPosition ().getX (), getCombatPosition ().getY (), combatMapTileSet)));
 
 				getCombatUI ().setCombatCastAnimationFrame (0);
 				getCombatUI ().setCombatCastAnimation (anim);
@@ -166,6 +167,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		{
 			// Remove the anim
 			getCombatUI ().setCombatCastAnimation (null);
+			getCombatUI ().getCombatCastAnimationPositions ().clear ();
 		
 			// Show the unit
 			getCombatUI ().getUnitToDrawAtEachLocation () [getCombatPosition ().getY ()] [getCombatPosition ().getX ()] = unit;

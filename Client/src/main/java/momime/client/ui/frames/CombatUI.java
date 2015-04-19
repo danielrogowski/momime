@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -359,12 +360,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Animation to display for a spell being cast */
 	private AnimationGfx combatCastAnimation;
 	
-	/** X coord to display combat cast animation at, in pixels */
-	private int combatCastAnimationX;
+	/** Coords to display combat cast animation(s) at, in pixels */
+	private List<Point> combatCastAnimationPositions = new ArrayList<Point> ();
 
-	/** Y coord to display combat cast animation at, in pixels */
-	private int combatCastAnimationY;
-	
 	/** Frame number to display of combat cast animation */
 	private int combatCastAnimationFrame;
 	
@@ -687,7 +685,8 @@ public final class CombatUI extends MomClientFrameUI
 					try
 					{
 						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()));
-						g.drawImage (image, getCombatCastAnimationX (), getCombatCastAnimationY (), image.getWidth () * 2, image.getHeight () * 2, null);
+						for (final Point p : getCombatCastAnimationPositions ())
+							g.drawImage (image, p.x, p.y, image.getWidth () * 2, image.getHeight () * 2, null);
 					}
 					catch (final Exception e)
 					{
@@ -2163,39 +2162,15 @@ public final class CombatUI extends MomClientFrameUI
 	{
 		combatCastAnimation = an;
 	}
-	
-	/**
-	 * @return X coord to display combat cast animation at, in pixels
-	 */
-	public final int getCombatCastAnimationX ()
-	{
-		return combatCastAnimationX;
-	}
 
 	/**
-	 * @param x X coord to display combat cast animation at, in pixels
-	 */
-	public final void setCombatCastAnimationX (final int x)
+	 * @return Coords to display combat cast animation(s) at, in pixels
+	 */	
+	public final List<Point> getCombatCastAnimationPositions ()
 	{
-		combatCastAnimationX = x;
-	}
-
-	/**
-	 * @return Y coord to display combat cast animation at, in pixels
-	 */
-	public final int getCombatCastAnimationY ()
-	{
-		return combatCastAnimationY;
+		return combatCastAnimationPositions;
 	}
 	
-	/**
-	 * @param y Y coord to display combat cast animation at, in pixels
-	 */
-	public final void setCombatCastAnimationY (final int y)
-	{
-		combatCastAnimationY = y;
-	}
-
 	/**
 	 * @return Frame number to display of combat cast animation
 	 */

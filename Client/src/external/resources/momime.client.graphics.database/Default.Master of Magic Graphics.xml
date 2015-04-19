@@ -1267,6 +1267,7 @@
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP050">
+		<combatCastAnimation>PSIONIC_BLAST</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_021_000 - Sage-PsionicBlast.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP051" />
@@ -1358,6 +1359,8 @@
 	</spell>
 	<spell spellID="SP082" />
 	<spell spellID="SP083">
+		<combatCastAnimationFly>FIRE_BOLT_FLY</combatCastAnimationFly>
+		<combatCastAnimation>FIRE_BOLT_STRIKE</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_093_000 - FireballSpell.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP084">
@@ -1386,6 +1389,7 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP091">
+		<combatCastAnimation>LIGHTNING_SPELL</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_027_000 - LightningSpell.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP092">
@@ -1403,6 +1407,8 @@
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP096">
+		<combatCastAnimationFly>FIRE_BALL_FLY</combatCastAnimationFly>
+		<combatCastAnimation>FIRE_BALL_STRIKE</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_093_000 - FireballSpell.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP097">
@@ -1433,6 +1439,7 @@
 	<spell spellID="SP107" />
 	<spell spellID="SP108" />
 	<spell spellID="SP109">
+		<combatCastAnimation>FLAME_STRIKE</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_030_000 - WallOfFire-ChaosRift.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP110">
@@ -65351,6 +65358,98 @@
 		<frame>/momime.client.graphics/spells/SP067/cast-frame8.png</frame>
 		<frame>/momime.client.graphics/spells/SP067/cast-frame9.png</frame>
 		<frame>/momime.client.graphics/spells/SP067/cast-frame10.png</frame>
+	</animation>
+	<animation animationID="PSIONIC_BLAST">
+		<animationDescription>Psionic blast increasing blue circle</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP050/cast-frame10.png</frame>
+	</animation>
+	<animation animationID="FLAME_STRIKE">
+		<animationDescription>Flame strike flame rising from the ground and sinking again</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame13.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame14.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame15.png</frame>
+		<frame>/momime.client.graphics/spells/SP109/cast-frame16.png</frame>
+	</animation>
+	<animation animationID="LIGHTNING_SPELL">
+		<animationDescription>Lightning bolt coming in from top of screen</animationDescription>
+		<animationSpeed>10</animationSpeed>
+		<combatCastOffsetX>11</combatCastOffsetX>
+		<combatCastOffsetY>-194</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP091/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP091/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP091/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP091/cast-frame4.png</frame>
+	</animation>
+	<animation animationID="FIRE_BOLT_FLY">
+		<animationDescription>Fire bolt spell flying towards its target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>6</combatCastOffsetX>
+		<combatCastOffsetY>-21</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP083/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP083/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP083/cast-frame3.png</frame>
+	</animation>
+	<animation animationID="FIRE_BOLT_STRIKE">
+		<animationDescription>Fire bolt spell hitting its target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>6</combatCastOffsetX>
+		<combatCastOffsetY>-21</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP083/cast-frame4.png</frame>
+	</animation>
+	<animation animationID="FIRE_BALL_FLY">
+		<animationDescription>Fire ball spell flying towards its target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>2</combatCastOffsetX>
+		<combatCastOffsetY>-19</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame11.png</frame>
+	</animation>
+	<animation animationID="FIRE_BALL_STRIKE">
+		<animationDescription>Fire ball spell hitting its target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>2</combatCastOffsetX>
+		<combatCastOffsetY>-19</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame13.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame14.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame15.png</frame>
+		<frame>/momime.client.graphics/spells/SP096/cast-frame16.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

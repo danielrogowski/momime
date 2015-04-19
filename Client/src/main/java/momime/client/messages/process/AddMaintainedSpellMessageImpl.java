@@ -1,5 +1,6 @@
 package momime.client.messages.process;
 
+import java.awt.Point;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
@@ -163,10 +164,10 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 					final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 					final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
 					
-					getCombatUI ().setCombatCastAnimationX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
-					getCombatUI ().setCombatCastAnimationY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+					getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet),
+					adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet)));
 	
 					getCombatUI ().setCombatCastAnimationFrame (0);
 					getCombatUI ().setCombatCastAnimation (anim);
@@ -296,7 +297,10 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 		if (anim != null)
 		{
 			if (getMaintainedSpell ().isCastInCombat ())
+			{
 				getCombatUI ().setCombatCastAnimation (null);
+				getCombatUI ().getCombatCastAnimationPositions ().clear ();
+			}
 			else
 				getOverlandMapUI ().setOverlandCastAnimation (null);
 		}

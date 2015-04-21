@@ -19656,11 +19656,14 @@
 		<languageEntry languageEntryID="AttackWithUnit" />
 		<languageEntry languageEntryID="AttackWithoutUnit" />
 		<languageEntry languageEntryID="AttackChanceOfDeath" />
+		<languageEntry languageEntryID="AttackResistOrDie" />
 		<languageEntry languageEntryID="DefenceStatisticsBase" />
 		<languageEntry languageEntryID="DefenceStatisticsModified" />
 		<languageEntry languageEntryID="DefenceStatisticsAutomatic" />
 		<languageEntry languageEntryID="DefenceChanceOfDeathDies" />
 		<languageEntry languageEntryID="DefenceChanceOfDeathSurvives" />
+		<languageEntry languageEntryID="DefenceResistOrDieBase" />
+		<languageEntry languageEntryID="DefenceResistOrDieModified" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">
 		<languageEntry languageEntryID="Title" />

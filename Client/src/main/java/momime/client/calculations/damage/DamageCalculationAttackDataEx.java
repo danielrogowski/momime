@@ -11,7 +11,6 @@ import momime.client.language.database.UnitSkillLang;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
-import momime.common.database.DamageTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.utils.UnitUtils;
@@ -110,16 +109,29 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 
 		// Now work out the rest of the text
 		final String languageEntryID;
-		if (getDamageType () == DamageTypeID.CHANCE_OF_DEATH)
-			languageEntryID = "AttackChanceOfDeath";
-		else if ((getAttackerUnitURN () != null) && (getAttackerFigures () != null))
-			languageEntryID = "AttackWithUnit";
-		else
-			languageEntryID = "AttackWithoutUnit";
+		switch (getDamageType ())
+		{
+			case CHANCE_OF_DEATH:
+				languageEntryID = "AttackChanceOfDeath";
+				break;
+				
+			case RESIST_OR_DIE:
+				languageEntryID = "AttackResistOrDie";
+				if (getPotentialHits () != null)
+					setPotentialHits (-getPotentialHits ());
+				break;
+				
+			default:
+				if ((getAttackerUnitURN () != null) && (getAttackerFigures () != null))
+					languageEntryID = "AttackWithUnit";
+				else
+					languageEntryID = "AttackWithoutUnit";
+		}
 		
 		String text = "     " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
-			("ATTACK_TYPE", attackType);
+			("ATTACK_TYPE", attackType).replaceAll
+			("POTENTIAL_HITS", (getPotentialHits () == null) ? "0" : new Integer (getPotentialHits ()).toString ());
 		
 		if (getAttackerUnit () != null)
 			text = text.replaceAll ("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME));
@@ -129,9 +141,6 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		
 		if (getAttackStrength () != null)
 			text = text.replaceAll ("ATTACK_STRENGTH", getAttackStrength ().toString ());
-		
-		if (getPotentialHits () != null)
-			text = text.replaceAll ("POTENTIAL_HITS", new Integer (getPotentialHits ()).toString ());
 		
 		return text;
 	}

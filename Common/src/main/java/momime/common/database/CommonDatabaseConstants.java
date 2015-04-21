@@ -210,10 +210,11 @@ public final class CommonDatabaseConstants
 	/** Shields for defending against phys hits */
 	public static final String UNIT_ATTRIBUTE_ID_DEFENCE = "UA04";
 	
-	//public static final String UNIT_ATTRIBUTE_ID_RESISTANCE            = "UA05";
+	/** Resistance for avoiding negative spell effects */
+	public static final String UNIT_ATTRIBUTE_ID_RESISTANCE = "UA05";
 	
 	/** Hearts for hit points */
-	public static final String UNIT_ATTRIBUTE_ID_HIT_POINTS            = "UA06";
+	public static final String UNIT_ATTRIBUTE_ID_HIT_POINTS = "UA06";
 	
 	/** Gives better chance of each shield blocking a hit */ 
 	public static final String UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK = "UA07";

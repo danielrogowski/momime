@@ -9,7 +9,6 @@ import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
-import momime.common.database.DamageTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.utils.UnitUtils;
@@ -83,19 +82,30 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 	public final String getText () throws IOException
 	{
 		final String languageEntryID;
-		if (getDamageType () == DamageTypeID.CHANCE_OF_DEATH)
+		switch (getDamageType ())
 		{
-			if (getFinalHits () == 0)
-				languageEntryID = "DefenceChanceOfDeathSurvives";
-			else
-				languageEntryID = "DefenceChanceOfDeathDies";
+			case CHANCE_OF_DEATH:
+				if (getFinalHits () == 0)
+					languageEntryID = "DefenceChanceOfDeathSurvives";
+				else
+					languageEntryID = "DefenceChanceOfDeathDies";
+				break;
+				
+			case RESIST_OR_DIE:
+				if (getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ()))
+					languageEntryID = "DefenceResistOrDieBase";
+				else
+					languageEntryID = "DefenceResistOrDieModified";
+				break;
+
+			default:
+				if (getModifiedDefenceStrength () == null)
+					languageEntryID = "DefenceStatisticsAutomatic";		// hits strike automatically, i.e. doom damage
+				else if (getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ()))
+					languageEntryID = "DefenceStatisticsBase";
+				else
+					languageEntryID = "DefenceStatisticsModified";
 		}
-		else if (getModifiedDefenceStrength () == null)
-			languageEntryID = "DefenceStatisticsAutomatic";		// hits strike automatically, i.e. doom damage
-		else if (getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ()))
-			languageEntryID = "DefenceStatisticsBase";
-		else
-			languageEntryID = "DefenceStatisticsModified";
 		
 		String text = "          " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll

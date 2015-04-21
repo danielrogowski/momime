@@ -535,7 +535,78 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		log.trace ("Exiting calculateChanceOfDeathDamage = " + damageCalculationMsg.getFinalHits ());
 		return damageCalculationMsg.getFinalHits ();
 	}
-	
+
+	/**
+	 * Rolls the number of actual hits and blocks for "resist or die" damage, where each figure has to make a resistance roll.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateResistOrDieDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateResistOrDieDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setUnmodifiedDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+
+		// Is there a saving throw modifier?
+		final int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
+		
+		// Keep track of how many HP the current figure has
+		int hitPointsThisFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
+		
+		// Each figure individually
+		int figuresDied = 0;
+		int totalHits = 0;
+		for (int figureNo = 0; figureNo < damageCalculationMsg.getDefenderFigures (); figureNo++)
+		{
+			// Make resistance roll for this figure
+			if (getRandomUtils ().nextInt (10) >= damageCalculationMsg.getModifiedDefenceStrength ())
+			{
+				figuresDied++;
+				totalHits = totalHits + hitPointsThisFigure;
+			}
+			
+			// Keep track of how many HP the next figure has
+			if ((figureNo == 0) && (damageCalculationMsg.getDefenderFigures () > 1))
+				hitPointsThisFigure = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		}
+		
+		// Store and send final totals
+		damageCalculationMsg.setActualHits (figuresDied);		
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.trace ("Exiting calculateResistOrDieDamage = " + totalHits);
+		return totalHits;
+	}
+		
 	/**
 	 * @return Unit utils
 	 */

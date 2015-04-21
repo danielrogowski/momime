@@ -1160,6 +1160,8 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP013">
+		<combatCastAnimationFly>ICE_BOLT_FLY</combatCastAnimationFly>
+		<combatCastAnimation>ICE_BOLT_STRIKE</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_023_000 - Djinn+IceBolt.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP014">
@@ -1183,6 +1185,7 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP022">
+		<combatCastAnimation>PETRIFY</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_007_000 - Petrify.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP023">
@@ -65409,6 +65412,22 @@
 		<frame>/momime.client.graphics/spells/SP091/cast-frame3.png</frame>
 		<frame>/momime.client.graphics/spells/SP091/cast-frame4.png</frame>
 	</animation>
+	<animation animationID="ICE_BOLT_FLY">
+		<animationDescription>Ice bolt spell flying towards its target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>6</combatCastOffsetX>
+		<combatCastOffsetY>-21</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP013/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP013/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP013/cast-frame3.png</frame>
+	</animation>
+	<animation animationID="ICE_BOLT_STRIKE">
+		<animationDescription>Ice bolt spell hitting its target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>6</combatCastOffsetX>
+		<combatCastOffsetY>-21</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP013/cast-frame4.png</frame>
+	</animation>
 	<animation animationID="FIRE_BOLT_FLY">
 		<animationDescription>Fire bolt spell flying towards its target</animationDescription>
 		<animationSpeed>15</animationSpeed>
@@ -65468,6 +65487,20 @@
 		<frame>/momime.client.graphics/spells/SP011/cast-frame8.png</frame>
 		<frame>/momime.client.graphics/spells/SP011/cast-frame9.png</frame>
 		<frame>/momime.client.graphics/spells/SP011/cast-frame10.png</frame>
+	</animation>
+	<animation animationID="PETRIFY">
+		<animationDescription>Petrify fuzzy green cloud animation</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP022/cast-frame8.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

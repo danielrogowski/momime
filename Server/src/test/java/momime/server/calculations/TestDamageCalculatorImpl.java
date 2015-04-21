@@ -361,7 +361,7 @@ public final class TestDamageCalculatorImpl
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 shields...
@@ -453,7 +453,7 @@ public final class TestDamageCalculatorImpl
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 shields...
@@ -545,7 +545,7 @@ public final class TestDamageCalculatorImpl
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 shields...
@@ -637,7 +637,7 @@ public final class TestDamageCalculatorImpl
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 shields...
@@ -733,7 +733,7 @@ public final class TestDamageCalculatorImpl
 
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 
 		// Mock the damage being applied
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
@@ -811,7 +811,7 @@ public final class TestDamageCalculatorImpl
 
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 
 		// Fix random number generator roll
 		final RandomUtils random = mock (RandomUtils.class);
@@ -894,7 +894,7 @@ public final class TestDamageCalculatorImpl
 
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 
 		// Fix random number generator roll
 		final RandomUtils random = mock (RandomUtils.class);
@@ -937,5 +937,183 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToDefend ());
 		assertNull (data.getTenTimesAverageBlock ());
 		assertEquals (0, data.getFinalHits ());			// Takes no damage
+	}
+	
+	/**
+	 * Tests the calculateResistOrDieDamage method with no saving throw modifier
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateResistOrDieDamage_NoSavingThrowModifier () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+
+		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
+		
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 resistance...
+
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+				
+		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		
+		// Fix random number generator rolls
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (10)).thenReturn (5, 4, 3, 2, 1);		// So first two die, other 3 save
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitUtils (unitUtils);
+		calc.setRandomUtils (random);
+		
+		// Run test
+		assertEquals (5, calc.calculateResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_DIE),
+			players, spells, combatAreaEffects, db));
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ());
+		
+		assertNull (data.getChanceToHit ());
+		assertNull (data.getTenTimesAverageDamage ());
+		assertEquals (2, data.getActualHits ().intValue ());									// 2 figures died
+		assertEquals (DamageTypeID.RESIST_OR_DIE, data.getDamageType ());
+		
+		assertEquals (5, data.getDefenderFigures ());
+		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
+		assertEquals (4, data.getModifiedDefenceStrength ().intValue ());
+		assertNull (data.getChanceToDefend ());
+		assertNull (data.getTenTimesAverageBlock ());
+		assertEquals (5, data.getFinalHits ());													// 2+3 for the 2 dead figures (one was already hurt)
+	}
+
+	/**
+	 * Tests the calculateResistOrDieDamage method with a -2 saving throw modifier
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateResistOrDieDamage_WithSavingThrowModifier () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+
+		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
+		
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 resistance...
+
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+				
+		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		
+		// Fix random number generator rolls
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (10)).thenReturn (5, 4, 3, 2, 1);		// So first four die, last one saves
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitUtils (unitUtils);
+		calc.setRandomUtils (random);
+		
+		// Run test
+		assertEquals (11, calc.calculateResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.RESIST_OR_DIE),
+			players, spells, combatAreaEffects, db));
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ());
+		
+		assertNull (data.getChanceToHit ());
+		assertNull (data.getTenTimesAverageDamage ());
+		assertEquals (4, data.getActualHits ().intValue ());									// 4 figures died
+		assertEquals (DamageTypeID.RESIST_OR_DIE, data.getDamageType ());
+		
+		assertEquals (5, data.getDefenderFigures ());
+		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
+		assertEquals (2, data.getModifiedDefenceStrength ().intValue ());			// Effective resistance of 2
+		assertNull (data.getChanceToDefend ());
+		assertNull (data.getTenTimesAverageBlock ());
+		assertEquals (11, data.getFinalHits ());													// 2+3+3+3 for the 4 dead figures (one was already hurt)
 	}
 }

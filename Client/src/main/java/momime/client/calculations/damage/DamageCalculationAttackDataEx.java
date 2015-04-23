@@ -114,6 +114,10 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 			case CHANCE_OF_DEATH:
 				languageEntryID = "AttackChanceOfDeath";
 				break;
+
+			case ZEROES_AMMO:
+				languageEntryID = "AttackZeroesAmmo";
+				break;
 				
 			case RESIST_OR_DIE:
 				languageEntryID = "AttackResistOrDie";

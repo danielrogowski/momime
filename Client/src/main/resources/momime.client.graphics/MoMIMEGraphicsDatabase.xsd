@@ -492,6 +492,12 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastAnimationFlyXMultiplier" type="momimegfx:pixelCoordinate" nxe:label="X multiplier of fly anim?" nxe:gridWidth="150">
+		        <xsd:annotation>
+        			<xsd:documentation>X coordinate multiplier of spell's approach to target, so 0 (default) for spells that come
+straight down like Doom Bolt, or 1 for spells that come from up-right like Fire Bolt.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastAnimationInFront" type="xsd:boolean" nxe:label="Combat cast anim in front?" nxe:gridWidth="150">
 		        <xsd:annotation>
         			<xsd:documentation>Defaults to true (spell in front of units); but some ground-level spells need to appear behind the units to look correct, notably Cracks Call.</xsd:documentation>

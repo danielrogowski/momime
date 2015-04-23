@@ -5770,6 +5770,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="AttackResistOrDie">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to survive:</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="AttackZeroesAmmo">
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE destroys remaining ranged attack ammo</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="DefenceStatisticsBase">
 			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence UNMODIFIED_DEFENCE_STRENGTH, FINAL_HITS hit(s) damage HP.</languageEntryText>
 		</languageEntry>

@@ -1162,6 +1162,7 @@
 	<spell spellID="SP013">
 		<combatCastAnimationFly>ICE_BOLT_FLY</combatCastAnimationFly>
 		<combatCastAnimation>ICE_BOLT_STRIKE</combatCastAnimation>
+		<combatCastAnimationFlyXMultiplier>1</combatCastAnimationFlyXMultiplier>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_023_000 - Djinn+IceBolt.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP014">
@@ -1368,6 +1369,7 @@
 	<spell spellID="SP083">
 		<combatCastAnimationFly>FIRE_BOLT_FLY</combatCastAnimationFly>
 		<combatCastAnimation>FIRE_BOLT_STRIKE</combatCastAnimation>
+		<combatCastAnimationFlyXMultiplier>1</combatCastAnimationFlyXMultiplier>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_093_000 - FireballSpell.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP084">
@@ -1416,6 +1418,7 @@
 	<spell spellID="SP096">
 		<combatCastAnimationFly>FIRE_BALL_FLY</combatCastAnimationFly>
 		<combatCastAnimation>FIRE_BALL_STRIKE</combatCastAnimation>
+		<combatCastAnimationFlyXMultiplier>1</combatCastAnimationFlyXMultiplier>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_093_000 - FireballSpell.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP097">
@@ -1430,6 +1433,7 @@
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP101">
+		<combatCastAnimation>WARP_LIGHTNING</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_016_000 - WarpLightning.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP102" />
@@ -1437,6 +1441,8 @@
 		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP104">
+		<combatCastAnimationFly>DOOM_BOLT_FLY</combatCastAnimationFly>
+		<combatCastAnimation>DOOM_BOLT_STRIKE</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_100_000 - DoomBolt.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP105" />
@@ -65542,6 +65548,36 @@
 		<frame>/momime.client.graphics/spells/SP081/cast-frame11.png</frame>
 		<frame>/momime.client.graphics/spells/SP081/cast-frame12.png</frame>
 		<frame>/momime.client.graphics/spells/SP081/cast-frame13.png</frame>
+	</animation>
+	<animation animationID="WARP_LIGHTNING">
+		<animationDescription>Warp lightning red flashes</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP101/cast-frame8.png</frame>
+	</animation>
+	<animation animationID="DOOM_BOLT_FLY">
+		<animationDescription>Doom bolt spell flying down at target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>6</combatCastOffsetX>
+		<combatCastOffsetY>-21</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP104/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP104/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP104/cast-frame3.png</frame>
+	</animation>
+	<animation animationID="DOOM_BOLT_STRIKE">
+		<animationDescription>Doom bolt spell hitting its target</animationDescription>
+		<animationSpeed>15</animationSpeed>
+		<combatCastOffsetX>6</combatCastOffsetX>
+		<combatCastOffsetY>-21</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP104/cast-frame4.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

@@ -155,6 +155,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/** Combat map tile set is required all over the place */
 	private TileSetGfx combatMapTileSet;
 	
+	/** Details of spell graphics */
+	private SpellGfx spellGfx;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -266,7 +269,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			else if (getAttackSpellID () != null)
 			{
 				// Find spell graphics
-				final SpellGfx spellGfx = getGraphicsDB ().findSpell (getAttackSpellID (), "ApplyDamageMessageImpl");
+				spellGfx = getGraphicsDB ().findSpell (getAttackSpellID (), "ApplyDamageMessageImpl");
 				
 				// Is there an animation to display for it?
 				if (spellGfx.getCombatCastAnimationFly () != null)
@@ -279,7 +282,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 
 					// Show anim on CombatUI
 					final int distance = INCOMING_SPELL_TICK_DISTANCE * INCOMING_SPELL_TICKS;
-					final int adjustX = 2 * (distance + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
+					final int xMultiplier = (spellGfx.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spellGfx.getCombatCastAnimationFlyXMultiplier ();
+					final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
 					final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
 					
 					for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
@@ -421,7 +425,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			if (tickNumber <= INCOMING_SPELL_TICKS)
 			{
 				final int distance = INCOMING_SPELL_TICK_DISTANCE * (INCOMING_SPELL_TICKS - tickNumber);
-				final int adjustX = 2 * (distance + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
+				final int xMultiplier = (spellGfx.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spellGfx.getCombatCastAnimationFlyXMultiplier ();
+				final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
 				final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
 				
 				getCombatUI ().getCombatCastAnimationPositions ().clear ();

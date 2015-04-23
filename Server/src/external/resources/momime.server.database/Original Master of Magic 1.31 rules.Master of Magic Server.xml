@@ -19657,6 +19657,7 @@
 		<languageEntry languageEntryID="AttackWithoutUnit" />
 		<languageEntry languageEntryID="AttackChanceOfDeath" />
 		<languageEntry languageEntryID="AttackResistOrDie" />
+		<languageEntry languageEntryID="AttackZeroesAmmo" />
 		<languageEntry languageEntryID="DefenceStatisticsBase" />
 		<languageEntry languageEntryID="DefenceStatisticsModified" />
 		<languageEntry languageEntryID="DefenceStatisticsAutomatic" />

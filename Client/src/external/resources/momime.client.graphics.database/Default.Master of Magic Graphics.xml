@@ -1313,6 +1313,7 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP064">
+		<combatCastAnimation>BANISH</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_010_000 - Banish.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP065">
@@ -1360,6 +1361,7 @@
 		<spellMusicFile>/momime.client.music/MUSIC_025 - TimeStop.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP081">
+		<combatCastAnimation>WARP_WOOD</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_015_000 - WarpWood.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP082" />
@@ -65501,6 +65503,45 @@
 		<frame>/momime.client.graphics/spells/SP022/cast-frame6.png</frame>
 		<frame>/momime.client.graphics/spells/SP022/cast-frame7.png</frame>
 		<frame>/momime.client.graphics/spells/SP022/cast-frame8.png</frame>
+	</animation>
+	<animation animationID="BANISH">
+		<animationDescription>Banish white circle</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame13.png</frame>
+		<frame>/momime.client.graphics/spells/SP064/cast-frame14.png</frame>
+	</animation>
+	<animation animationID="WARP_WOOD">
+		<animationDescription>Warp wood red-orange circle</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP081/cast-frame13.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

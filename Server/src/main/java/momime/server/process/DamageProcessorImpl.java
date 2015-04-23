@@ -210,6 +210,10 @@ public final class DamageProcessorImpl implements DamageProcessor
 							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 						break;
 						
+					case ZEROES_AMMO:
+						damageToDefender = 0;
+						break;
+						
 					default:
 						throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamageToDefenders.getDamageType () +
 							" to the defender, which it does not know how to deal with yet");
@@ -249,7 +253,20 @@ public final class DamageProcessorImpl implements DamageProcessor
 		for (int index = 0; index < defenders.size (); index++)
 		{
 			final MemoryUnit defender = defenders.get (index);
+			
+			// Apply regular damage
 			defender.setDamageTaken (defender.getDamageTaken () + damageToDefenders.get (index));
+			
+			// Apply special effect
+			switch (potentialDamageToDefenders.getDamageType ())
+			{
+				case ZEROES_AMMO:
+					defender.setRangedAttackAmmo (0);
+					break;
+					
+				default:
+					break;
+			}
 		}
 		
 		if (attacker != null)
@@ -261,7 +278,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// This also sends the number of combat movement points the attacker has left.
 		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, damageCalculationMsg.getAttackerPlayerID (), defenders,
 			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackAttributeID (), damageCalculationMsg.getAttackSpellID (),
-			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+			potentialDamageToDefenders.getDamageType (), mom.getPlayers (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose
 		// is whose unit - because it could be the defending players' unit making the attack in combat.

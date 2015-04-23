@@ -200,7 +200,8 @@ public final class TestDamageProcessorImpl
 		assertEquals (3+5, defender.getDamageTaken ());
 		
 		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
-			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, players, trueTerrain, db, fogOfWarSettings);
+			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
+			DamageTypeID.SINGLE_FIGURE, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
 		verify (midTurn, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
@@ -349,7 +350,8 @@ public final class TestDamageProcessorImpl
 		assertEquals (3+5, defender.getDamageTaken ());
 		
 		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
-			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, players, trueTerrain, db, fogOfWarSettings);
+			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
+			DamageTypeID.SINGLE_FIGURE, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
 		verify (midTurn, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);

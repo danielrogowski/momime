@@ -1146,6 +1146,7 @@ Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID wi
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" />
 
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="defenderUnit" type="momimestoc:applyDamageMessageUnit" />
 					</xsd:sequence>

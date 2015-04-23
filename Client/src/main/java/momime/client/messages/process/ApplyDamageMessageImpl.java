@@ -501,7 +501,20 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		// Damage to defender(s)
 		for (final ApplyDamageMessageDefenderDetails thisUnit : getDefenderUnits ())
 		{
+			// Apply regular damage
 			thisUnit.getDefUnit ().setDamageTaken (thisUnit.getDefenderDamageTakenEnd ());
+			
+			// Apply special effect
+			switch (getDamageType ())
+			{
+				case ZEROES_AMMO:
+					thisUnit.getDefUnit ().setRangedAttackAmmo (0);
+					break;
+					
+				default:
+					break;
+			}
+			
 			if (getUnitCalculations ().calculateAliveFigureCount (thisUnit.getDefUnit (), getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) <= 0)

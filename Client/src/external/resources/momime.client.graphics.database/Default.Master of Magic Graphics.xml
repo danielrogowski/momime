@@ -1464,6 +1464,7 @@
 		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP112">
+		<combatCastAnimation>DISINTEGRATE</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_099_000 - Disintegrate.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP113">
@@ -1496,6 +1497,7 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP122">
+		<combatCastAnimation>STAR_FIRES</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP123">
@@ -1530,6 +1532,7 @@
 	<spell spellID="SP132" />
 	<spell spellID="SP133" />
 	<spell spellID="SP134">
+		<combatCastAnimation>DISPEL_EVIL</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP135">
@@ -1585,6 +1588,7 @@
 	</spell>
 	<spell spellID="SP149" />
 	<spell spellID="SP150">
+		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP151" />
@@ -65578,6 +65582,58 @@
 		<combatCastOffsetX>6</combatCastOffsetX>
 		<combatCastOffsetY>-21</combatCastOffsetY>
 		<frame>/momime.client.graphics/spells/SP104/cast-frame4.png</frame>
+	</animation>
+	<animation animationID="DISINTEGRATE">
+		<animationDescription>Disintegrate falling red effect</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP112/cast-frame10.png</frame>
+	</animation>
+	<animation animationID="STAR_FIRES">
+		<animationDescription>Star fires black and white circle</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP122/cast-frame1.png</frame>
+	</animation>
+	<animation animationID="DISPEL_EVIL">
+		<animationDescription>Dispel evil white twirl</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP134/cast-frame10.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

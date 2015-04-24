@@ -19658,6 +19658,7 @@
 		<languageEntry languageEntryID="AttackChanceOfDeath" />
 		<languageEntry languageEntryID="AttackResistOrDie" />
 		<languageEntry languageEntryID="AttackZeroesAmmo" />
+		<languageEntry languageEntryID="AttackDisintegrate" />
 		<languageEntry languageEntryID="DefenceStatisticsBase" />
 		<languageEntry languageEntryID="DefenceStatisticsModified" />
 		<languageEntry languageEntryID="DefenceStatisticsAutomatic" />
@@ -19665,6 +19666,10 @@
 		<languageEntry languageEntryID="DefenceChanceOfDeathSurvives" />
 		<languageEntry languageEntryID="DefenceResistOrDieBase" />
 		<languageEntry languageEntryID="DefenceResistOrDieModified" />
+		<languageEntry languageEntryID="DefenceDisintegrateBaseDies" />
+		<languageEntry languageEntryID="DefenceDisintegrateBaseSurvives" />
+		<languageEntry languageEntryID="DefenceDisintegrateModifiedDies" />
+		<languageEntry languageEntryID="DefenceDisintegrateModifiedSurvives" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">
 		<languageEntry languageEntryID="Title" />

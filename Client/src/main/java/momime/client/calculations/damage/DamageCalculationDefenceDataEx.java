@@ -85,36 +85,35 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		switch (getDamageType ())
 		{
 			case CHANCE_OF_DEATH:
-				if (getFinalHits () == 0)
-					languageEntryID = "DefenceChanceOfDeathSurvives";
-				else
-					languageEntryID = "DefenceChanceOfDeathDies";
+				languageEntryID = "DefenceChanceOfDeath" + ((getFinalHits () == 0) ? "Survives" : "Dies");
+				break;
+
+			case DISINTEGRATE:
+				languageEntryID = "DefenceDisintegrate" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified") +
+					((getFinalHits () == 0) ? "Survives" : "Dies");
 				break;
 				
 			case RESIST_OR_DIE:
-				if (getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ()))
-					languageEntryID = "DefenceResistOrDieBase";
-				else
-					languageEntryID = "DefenceResistOrDieModified";
+				languageEntryID = "DefenceResistOrDie" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
 				break;
 
 			default:
 				if (getModifiedDefenceStrength () == null)
 					languageEntryID = "DefenceStatisticsAutomatic";		// hits strike automatically, i.e. doom damage
-				else if (getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ()))
-					languageEntryID = "DefenceStatisticsBase";
 				else
-					languageEntryID = "DefenceStatisticsModified";
+					languageEntryID = "DefenceStatistics" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
 		}
 		
 		String text = "          " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll
 			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
 			("DEFENDER_FIGURES", new Integer (getDefenderFigures ()).toString ()).replaceAll
-			("ACTUAL_HITS", getActualHits ().toString ()).replaceAll
 			("FINAL_HITS", new Integer (getFinalHits ()).toString ());
 
 		// All of these are only applicable if we actually make to hit/to defend rolls, so may be null
+		if (getActualHits () != null)
+			text = text.replaceAll ("ACTUAL_HITS", getActualHits ().toString ());
+
 		if (getUnmodifiedDefenceStrength () != null)
 			text = text.replaceAll ("UNMODIFIED_DEFENCE_STRENGTH", getUnmodifiedDefenceStrength ().toString ());
 		

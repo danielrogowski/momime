@@ -209,6 +209,13 @@ public final class DamageProcessorImpl implements DamageProcessor
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 						break;
+
+					case DISINTEGRATE:
+						damageToDefender = getDamageCalculator ().calculateDisintegrateDamage
+							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+						break;
 						
 					case ZEROES_AMMO:
 						damageToDefender = 0;

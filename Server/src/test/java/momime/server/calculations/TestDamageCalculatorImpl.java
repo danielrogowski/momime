@@ -1116,4 +1116,172 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getTenTimesAverageBlock ());
 		assertEquals (11, data.getFinalHits ());													// 2+3+3+3 for the 4 dead figures (one was already hurt)
 	}
+
+	/**
+	 * Tests the calculateDisintegrateDamage method when the unit has low resistance so dies
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDisintegrateDamage_Dies () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+
+		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
+
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 resistance...
+		
+		// Mock the damage being applied
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		when (unitServerUtils.applyDamage (defender, Integer.MAX_VALUE, 0, 0, players, spells, combatAreaEffects, db)).thenReturn (6);		// Takes full dmg of 6 hits
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitUtils (unitUtils);
+		calc.setUnitServerUtils (unitServerUtils);
+	
+		// Run test
+		assertEquals (6, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE),
+			players, spells, combatAreaEffects, db));
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ());
+		
+		assertNull (data.getChanceToHit ());
+		assertNull (data.getTenTimesAverageDamage ());
+		assertNull (data.getActualHits ());
+		assertEquals (DamageTypeID.DISINTEGRATE, data.getDamageType ());
+		
+		assertEquals (3, data.getDefenderFigures ());
+		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
+		assertEquals (4, data.getModifiedDefenceStrength ().intValue ());
+		assertNull (data.getChanceToDefend ());
+		assertNull (data.getTenTimesAverageBlock ());
+		assertEquals (6, data.getFinalHits ());			// Only the actual number of HP the unit actually had is recorded
+	}
+
+	/**
+	 * Tests the calculateDisintegrateDamage method when the unit has high resistance so takes no damage
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDisintegrateDamage_Lives () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+
+		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
+
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (12);	// ..and 12 resistance...
+		
+		// Mock the damage being applied
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		when (unitServerUtils.applyDamage (defender, Integer.MAX_VALUE, 0, 0, players, spells, combatAreaEffects, db)).thenReturn (6);		// Takes full dmg of 6 hits
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitUtils (unitUtils);
+		calc.setUnitServerUtils (unitServerUtils);
+	
+		// Run test
+		assertEquals (0, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE),
+			players, spells, combatAreaEffects, db));
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ());
+		
+		assertNull (data.getChanceToHit ());
+		assertNull (data.getTenTimesAverageDamage ());
+		assertNull (data.getActualHits ());
+		assertEquals (DamageTypeID.DISINTEGRATE, data.getDamageType ());
+		
+		assertEquals (3, data.getDefenderFigures ());
+		assertEquals (12, data.getUnmodifiedDefenceStrength ().intValue ());
+		assertEquals (10, data.getModifiedDefenceStrength ().intValue ());
+		assertNull (data.getChanceToDefend ());
+		assertNull (data.getTenTimesAverageBlock ());
+		assertEquals (0, data.getFinalHits ());			// Takes no damage
+	}
 }

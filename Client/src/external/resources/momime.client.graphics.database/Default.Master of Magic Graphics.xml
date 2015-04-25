@@ -1723,12 +1723,15 @@
 	</spell>
 	<spell spellID="SP191" />
 	<spell spellID="SP192">
+		<combatCastAnimation>DEATH_SKULL</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_022_000 - ShadowDemons-LifeDrain-WordOfDeath.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP193">
 		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP194" />
+	<spell spellID="SP194">
+		<combatCastAnimation>DEATH_SKULL</combatCastAnimation>
+	</spell>
 	<spell spellID="SP195" />
 	<spell spellID="SP196">
 		<spellMusicFile>/momime.client.music/MUSIC_008 - EvilPresence-Famine-CursedLands-Pestilence.mp3</spellMusicFile>
@@ -65656,6 +65659,49 @@
 		<frame>/momime.client.graphics/spells/SP167/cast-frame3.png</frame>
 		<frame>/momime.client.graphics/spells/SP167/cast-frame2.png</frame>
 		<frame>/momime.client.graphics/spells/SP167/cast-frame1.png</frame>
+	</animation>
+	<animation animationID="DEATH_SKULL">
+		<animationDescription>Ghostly skull that fades in and out for a couple of Death spells</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>-15</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame13.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame14.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame15.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame16.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame17.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame18.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame19.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame20.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame21.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame22.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame23.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame24.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame25.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame26.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame27.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame28.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame29.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame30.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame31.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame32.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame33.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame34.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame35.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame36.png</frame>
+		<frame>/momime.client.graphics/spells/SP192/cast-frame37.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

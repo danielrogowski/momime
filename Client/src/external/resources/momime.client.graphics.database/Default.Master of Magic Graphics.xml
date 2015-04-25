@@ -1654,6 +1654,7 @@
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
 	<spell spellID="SP167">
+		<combatCastAnimation>LIFE_DRAIN</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_022_000 - ShadowDemons-LifeDrain-WordOfDeath.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP168" />
@@ -65634,6 +65635,27 @@
 		<frame>/momime.client.graphics/spells/SP134/cast-frame8.png</frame>
 		<frame>/momime.client.graphics/spells/SP134/cast-frame9.png</frame>
 		<frame>/momime.client.graphics/spells/SP134/cast-frame10.png</frame>
+	</animation>
+	<animation animationID="LIFE_DRAIN">
+		<animationDescription>Life drain falling purple effect</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-22</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP167/cast-frame1.png</frame>
 	</animation>
 	<animation animationID="SUMMON_COMBAT_UNIT">
 		<animationDescription>Summoning circle anim for summoning units in combat</animationDescription>

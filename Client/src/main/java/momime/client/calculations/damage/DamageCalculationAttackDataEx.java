@@ -128,6 +128,12 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 				if (getPotentialHits () != null)
 					setPotentialHits (-getPotentialHits ());
 				break;
+
+			case RESIST_OR_TAKE_DAMAGE:
+				languageEntryID = "AttackResistOrTakeDamage";
+				if (getPotentialHits () != null)
+					setPotentialHits (-getPotentialHits ());
+				break;
 				
 			default:
 				if ((getAttackerUnitURN () != null) && (getAttackerFigures () != null))

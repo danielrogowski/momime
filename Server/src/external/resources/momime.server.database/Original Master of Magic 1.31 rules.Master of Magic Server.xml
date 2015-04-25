@@ -19657,6 +19657,7 @@
 		<languageEntry languageEntryID="AttackWithoutUnit" />
 		<languageEntry languageEntryID="AttackChanceOfDeath" />
 		<languageEntry languageEntryID="AttackResistOrDie" />
+		<languageEntry languageEntryID="AttackResistOrTakeDamage" />
 		<languageEntry languageEntryID="AttackZeroesAmmo" />
 		<languageEntry languageEntryID="AttackDisintegrate" />
 		<languageEntry languageEntryID="DefenceStatisticsBase" />
@@ -19666,6 +19667,8 @@
 		<languageEntry languageEntryID="DefenceChanceOfDeathSurvives" />
 		<languageEntry languageEntryID="DefenceResistOrDieBase" />
 		<languageEntry languageEntryID="DefenceResistOrDieModified" />
+		<languageEntry languageEntryID="DefenceResistOrTakeDamageBase" />
+		<languageEntry languageEntryID="DefenceResistOrTakeDamageModified" />
 		<languageEntry languageEntryID="DefenceDisintegrateBaseDies" />
 		<languageEntry languageEntryID="DefenceDisintegrateBaseSurvives" />
 		<languageEntry languageEntryID="DefenceDisintegrateModifiedDies" />

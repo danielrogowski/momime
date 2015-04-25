@@ -5770,6 +5770,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="AttackResistOrDie">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to survive:</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="AttackResistOrTakeDamage">
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to avoid damage:</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="AttackZeroesAmmo">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE destroys remaining ranged attack ammo</languageEntryText>
 		</languageEntry>
@@ -5796,6 +5799,12 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceResistOrDieModified">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), ACTUAL_HITS figures fail resistance roll and die, unit loses FINAL_HITS HP.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceResistOrTakeDamageBase">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH, dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceResistOrTakeDamageModified">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceDisintegrateBaseDies">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH so dies.</languageEntryText>

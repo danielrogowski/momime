@@ -27,6 +27,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitMagicRealmLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
@@ -206,6 +207,46 @@ public final class TestSpellClientUtilsImpl
 		
 		// Run method
 		assertEquals ("Upkeep: 5 Mana, 2 Gold per turn", utils.listUpkeepsOfSpell (spell, picks));
+	}
+	
+	/**
+	 * Tests the listValidMagicRealmLifeformTypeTargetsOfSpell method
+	 */
+	@Test
+	public final void testListValidMagicRealmLifeformTypeTargetsOfSpell ()
+	{
+		// Mock entries from the language XML
+		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		
+		final UnitMagicRealmLang magicRealm1 = new UnitMagicRealmLang ();
+		magicRealm1.setUnitMagicRealmPlural ("Chaos units");
+		when (lang.findUnitMagicRealm ("LT01")).thenReturn (magicRealm1);
+
+		final UnitMagicRealmLang magicRealm3 = new UnitMagicRealmLang ();
+		magicRealm3.setUnitMagicRealmPlural ("Death units");
+		when (lang.findUnitMagicRealm ("LT03")).thenReturn (magicRealm3);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguage (lang);
+
+		// Spell
+		final Spell spell = new Spell ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final SpellValidUnitTarget target = new SpellValidUnitTarget ();
+			target.setTargetMagicRealmID ("LT0" + n);
+			
+			spell.getSpellValidUnitTarget ().add (target);
+		}
+
+		// Set up object to test
+		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
+		utils.setLanguageHolder (langHolder);
+		
+		// Run method
+		assertEquals (System.lineSeparator () + "Chaos units" + System.lineSeparator () + "LT02" + System.lineSeparator () + "Death units",
+			utils.listValidMagicRealmLifeformTypeTargetsOfSpell (spell));
 	}
 	
 	/**

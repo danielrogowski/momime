@@ -1210,6 +1210,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="helpUI" ref="helpUI" />
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 		<property name="variableManaUI" ref="variableManaUI" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1644,6 +1645,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
 	</bean>
 	
 </beans>

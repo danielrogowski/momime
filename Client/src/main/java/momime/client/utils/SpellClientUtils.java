@@ -24,6 +24,12 @@ public interface SpellClientUtils
 	public String listUpkeepsOfSpell (final Spell spell, final List<PlayerPick> picks);
 	
 	/**
+	 * @param spell Spell to list valid Magic realm/Lifeform type targets of
+	 * @return Descriptive list of all the valid Magic realm/Lifeform types for this spell; always returns some text, never null
+	 */
+	public String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell);
+	
+	/**
 	 * @param spell Spell to list saving throws of
 	 * @return Descriptive list of all the saving throws of the specified curse spell; always returns some text, never null
 	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes

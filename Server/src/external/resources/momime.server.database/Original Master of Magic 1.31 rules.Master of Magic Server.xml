@@ -16098,6 +16098,10 @@
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<attackSpellDamageType>S</attackSpellDamageType>
 		<combatBaseDamage>15</combatBaseDamage>
+		<spellValidUnitTarget targetMagicRealmID="LT02" />
+		<spellValidUnitTarget targetMagicRealmID="LT03" />
+		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTU" />
 		<spellName>Star Fires</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>
@@ -19854,4 +19858,3 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
-

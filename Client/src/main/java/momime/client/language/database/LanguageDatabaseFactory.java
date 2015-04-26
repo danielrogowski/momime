@@ -22,9 +22,9 @@ import momime.client.language.database.v0_9_6.SpellBookSection;
 import momime.client.language.database.v0_9_6.TileType;
 import momime.client.language.database.v0_9_6.Unit;
 import momime.client.language.database.v0_9_6.UnitAttribute;
+import momime.client.language.database.v0_9_6.UnitMagicRealm;
 import momime.client.language.database.v0_9_6.UnitSkill;
 import momime.client.language.database.v0_9_6.UnitType;
-
 
 /**
  * Creates our custom extended LanguageDatabase when it is unmarshalled with JAXB
@@ -210,6 +210,15 @@ public final class LanguageDatabaseFactory extends ObjectFactory
 	public final UnitSkill createUnitSkill ()
 	{
 		return new UnitSkillLang ();
+	}
+	
+	/**
+	 * @return Custom extended UnitMagicRealm
+	 */
+	@Override
+	public final UnitMagicRealm createUnitMagicRealm ()
+	{
+		return new UnitMagicRealmLang ();
 	}
 
 	/**

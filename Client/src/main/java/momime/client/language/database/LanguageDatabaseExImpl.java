@@ -33,6 +33,7 @@ import momime.client.language.database.v0_9_6.SpellSetting;
 import momime.client.language.database.v0_9_6.TileType;
 import momime.client.language.database.v0_9_6.Unit;
 import momime.client.language.database.v0_9_6.UnitAttribute;
+import momime.client.language.database.v0_9_6.UnitMagicRealm;
 import momime.client.language.database.v0_9_6.UnitSetting;
 import momime.client.language.database.v0_9_6.UnitSkill;
 import momime.client.language.database.v0_9_6.UnitType;
@@ -88,6 +89,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/** Map of unit skill IDs to unit skill objects */
 	private Map<String, UnitSkillLang> unitSkillsMap;
+	
+	/** Map of magic realm/lifeform type IDs to magic realm/lifeform type objects */
+	private Map<String, UnitMagicRealmLang> magicRealmsMap;
 	
 	/** Map of ranged attack type IDs to unit skill objects */
 	private Map<String, RangedAttackType> rangedAttackTypesMap;
@@ -218,6 +222,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		unitSkillsMap = new HashMap<String, UnitSkillLang> ();
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
 			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillLang) thisUnitSkill);
+		
+		// Create magic realms/lifeform types map
+		magicRealmsMap = new HashMap<String, UnitMagicRealmLang> ();
+		for (final UnitMagicRealm thisMagicRealm : getUnitMagicRealm ())
+			magicRealmsMap.put (thisMagicRealm.getUnitMagicRealmID (), (UnitMagicRealmLang) thisMagicRealm);
 
 		// Create ranged attack types map
 		rangedAttackTypesMap = new HashMap<String, RangedAttackType> ();
@@ -448,6 +457,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		return unitSkillsMap.get (unitSkillID);
 	}
 
+	/**
+	 * @param magicRealmLifeformTypeID Magic realm/Lifeform type ID to search for
+	 * @return Magic realm/Lifeform type descriptions object; or null if not found
+	 */
+	@Override
+	public final UnitMagicRealmLang findUnitMagicRealm (final String magicRealmLifeformTypeID)
+	{
+		return magicRealmsMap.get (magicRealmLifeformTypeID);
+	}
+	
 	/**
 	 * @param rangedAttackTypeID Ranged attack type ID to search for
 	 * @return Ranged attack type description; or replays back the ID if no description exists

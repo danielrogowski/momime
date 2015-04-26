@@ -48,6 +48,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.AnimationController;
+import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
@@ -197,6 +198,9 @@ public final class CombatUI extends MomClientFrameUI
 
 	/** Variable MP popup */
 	private VariableManaUI variableManaUI;	
+
+	/** Client-side spell utils */
+	private SpellClientUtils spellClientUtils;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -930,8 +934,12 @@ public final class CombatUI extends MomClientFrameUI
 									final SpellLang spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
 									final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 									
-									final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+									String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
 										("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ());
+									
+									// If spell can only be targetted on specific magic realm/lifeform types, the list them
+									if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
+										text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
 									
 									final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
 									msgBox.setTitleLanguageCategoryID ("SpellTargetting");
@@ -2217,5 +2225,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setCombatCastAnimationFrame (final int frame)
 	{
 		combatCastAnimationFrame = frame;
+	}
+
+	/**
+	 * @return Client-side spell utils
+	 */
+	public final SpellClientUtils getSpellClientUtils ()
+	{
+		return spellClientUtils;
+	}
+
+	/**
+	 * @param utils Client-side spell utils
+	 */
+	public final void setSpellClientUtils (final SpellClientUtils utils)
+	{
+		spellClientUtils = utils;
 	}
 }

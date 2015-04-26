@@ -18,6 +18,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitMagicRealmLang;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -110,6 +111,32 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		return result;
 	}
 
+	/**
+	 * @param spell Spell to list valid Magic realm/Lifeform type targets of
+	 * @return Descriptive list of all the valid Magic realm/Lifeform types for this spell; always returns some text, never null
+	 */
+	@Override
+	public final String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell)
+	{
+		log.trace ("Entering listValidMagicRealmLifeformTypeTargetsOfSpell: " + spell.getSpellID ());
+
+		final StringBuilder magicRealms = new StringBuilder ();
+		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
+			if (target.getTargetMagicRealmID () != null)
+			{
+				final UnitMagicRealmLang magicRealm = getLanguage ().findUnitMagicRealm (target.getTargetMagicRealmID ());
+				final String magicRealmPlural = (magicRealm == null) ? null : magicRealm.getUnitMagicRealmPlural ();
+				
+				magicRealms.append (System.lineSeparator () +
+					((magicRealmPlural != null) ? magicRealmPlural : target.getTargetMagicRealmID ()));
+			}
+		
+		final String result = magicRealms.toString ();
+		log.trace ("Exiting listValidMagicRealmLifeformTypeTargetsOfSpell = \"" + result + "\"");
+		return result;
+	}
+	
+	
 	/**
 	 * @param spell Spell to list saving throws of
 	 * @return Descriptive list of all the saving throws of the specified curse spell; always returns some text, never null

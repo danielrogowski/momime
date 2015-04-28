@@ -19649,6 +19649,7 @@
 		<languageEntry languageEntryID="CursingOwnCity" />
 		<languageEntry languageEntryID="AlreadyHasAllPossibleCitySpellEffects" />
 		<languageEntry languageEntryID="AlreadyHasBuilding" />
+		<languageEntry languageEntryID="TooHighResistance" />
 		<languageEntry languageEntryID="CancelTitle" />
 		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>

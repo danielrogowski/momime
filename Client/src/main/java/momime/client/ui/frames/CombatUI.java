@@ -77,6 +77,7 @@ import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitAttributeComponent;
 import momime.common.utils.UnitAttributePositiveNegative;
@@ -567,8 +568,11 @@ public final class CombatUI extends MomClientFrameUI
 							{
 								// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
 								validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-									(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getSpellBeingTargetted (),
-									getClient ().getOurPlayerID (), unit, getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+									(getSpellBeingTargetted (), SpellCastType.COMBAT, getClient ().getOurPlayerID (),
+									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+									getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 							}
 							
 							moveTypeFilename = "/momime.client.graphics/ui/combat/moveType-" + (validTarget ? "spell" : "cannot") + ".png";
@@ -892,15 +896,13 @@ public final class CombatUI extends MomClientFrameUI
 						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
 							getCombatLocation (), moveToLocation);
 						
-						final Spell spell = getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "CombatUI-targetSpell");
-						
 						// Build message
 						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
 						msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
 						msg.setCombatLocation (getCombatLocation ());
 						
 						// Does the spell have varying cost?
-						if (spell.getCombatMaxDamage () != null)
+						if (getSpellBeingTargetted ().getCombatMaxDamage () != null)
 							msg.setVariableDamage (getVariableManaUI ().getVariableDamage ());
 									
 						boolean isValidTarget = false;
@@ -919,8 +921,11 @@ public final class CombatUI extends MomClientFrameUI
 							if (unit != null)
 							{
 								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-									(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getSpellBeingTargetted (),
-									getClient ().getOurPlayerID (), unit, getClient ().getClientDB ());
+									(getSpellBeingTargetted (), SpellCastType.COMBAT, getClient ().getOurPlayerID (),
+									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+									getClient ().getClientDB ());
 								
 								if (validTarget == TargetSpellResult.VALID_TARGET)
 								{
@@ -939,7 +944,7 @@ public final class CombatUI extends MomClientFrameUI
 									
 									// If spell can only be targetted on specific magic realm/lifeform types, the list them
 									if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
-										text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
+										text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (getSpellBeingTargetted ());
 									
 									final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
 									msgBox.setTitleLanguageCategoryID ("SpellTargetting");

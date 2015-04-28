@@ -27,7 +27,10 @@ public enum TargetSpellResult
 	NO_CITY_HERE (null, null),
 
 	/** Spell can't be targetted on this magic realm/lifeform type of unit, e.g. Star Fires can only be targetted on Chaos+Death units */
-	UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE ("InvalidMagicRealmLifeformType", null);
+	UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE ("InvalidMagicRealmLifeformType", null),
+	
+	/** Spell rolls against resistance, and the target unit has too high resistance to possibly be affected by it */
+	TOO_HIGH_RESISTANCE ("TooHighResistance", null);
 	
 	/** languageEntryID for the text describing this kind of error for units; if null then no error will be displayed */
 	private final String unitLanguageEntryID;

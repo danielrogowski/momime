@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import momime.common.MomException;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -12,6 +14,7 @@ import momime.common.database.SpellHasCityEffect;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
@@ -20,6 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -255,19 +260,27 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * 
 	 * In Delphi code this is named isUnitValidTargetForCombatSpell, but took "combat" word out here since its used for validating overland targets as well.
 	 * 
-	 * @param spells List of known existing spells
 	 * @param spell Spell being cast
+	 * @param castType Whether the spell is being cast Overland or in Combat
 	 * @param castingPlayerID Player casting the spell
+	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param unit Unit to cast the spell on
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
-	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final TargetSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
-		final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException
+	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellCastType castType,
+		final int castingPlayerID, final Integer variableDamage, final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
+    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID + ", " + castType);
     	
     	final TargetSpellResult result;
     	
@@ -292,12 +305,38 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if ((unitSpellEffectRequired) && (unitSpellEffectIDs.size () == 0))
     			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
-    		else if (getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell,
+    		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell,
     			getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db)))
     			
-    			result = TargetSpellResult.VALID_TARGET;
-    		else
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
+    		
+    		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (castType == SpellCastType.OVERLAND))
+    			result = TargetSpellResult.VALID_TARGET;
+    		
+    		else
+    			// Combat attack spell
+    			switch (spell.getAttackSpellDamageType ())
+    			{
+    				case RESIST_OR_DIE:
+    				case RESIST_OR_TAKE_DAMAGE:
+    				case DISINTEGRATE:
+    					// Units with 10 or more resistance are immune to spells that roll against resistance
+    					// First need to take into account if there's a saving throw modifier
+    					final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
+    					final int resistance = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+    						UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) -
+    						((savingThrowModifier == null) ? 0 : savingThrowModifier);
+    						
+    					if (resistance >= 10)
+    						result = TargetSpellResult.TOO_HIGH_RESISTANCE;
+    					else
+    						result = TargetSpellResult.VALID_TARGET;
+    					break;
+    				
+    				default:
+    					// Combat attack spell that rolls against something other than resistance, so always a valid target
+    	    			result = TargetSpellResult.VALID_TARGET;
+    			}
     	}
 
     	log.trace ("Exiting isUnitValidTargetForSpell = " + result);

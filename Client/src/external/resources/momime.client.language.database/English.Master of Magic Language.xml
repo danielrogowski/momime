@@ -5738,6 +5738,11 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="AlreadyHasBuilding">
 			<languageEntryText>This city already a BUILDING_NAME.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="TooHighResistance">
+			<languageEntryText>This unit has too high resistance to suffer any effect from this spell.
+			
+Note some spells such as Banish and Life Drain allow additional Mana to be channeled into the spell to reduce the target's resistance.</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="CancelTitle">
 			<languageEntryText>Cancel Spell</languageEntryText>
 		</languageEntry>

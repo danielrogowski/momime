@@ -234,9 +234,11 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "Cannot find the unit you are trying to target the spell on";
 				else
 				{
+					final SpellCastType castType = (combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT;
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
-						player.getPlayerDescription ().getPlayerID (), combatTargetUnit, mom.getServerDB ());
+						(spell, castType, player.getPlayerDescription ().getPlayerID (), variableDamage, combatTargetUnit,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 					
 					if (validTarget != TargetSpellResult.VALID_TARGET)
 					{

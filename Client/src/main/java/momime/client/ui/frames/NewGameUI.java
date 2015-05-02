@@ -3306,6 +3306,7 @@ public final class NewGameUI extends MomClientFrameUI
 		setCurrentMagicRealmSpellNames ();
 		updateInitialSpellsCount ();
 		freeSpellsPanel.validate ();
+		freeSpellsPanel.repaint ();
 		
 		cardLayout.show (cards, FREE_SPELLS_PANEL);
 

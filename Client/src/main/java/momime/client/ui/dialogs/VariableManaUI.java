@@ -17,6 +17,8 @@ import javax.swing.JSlider;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.language.database.ProductionTypeLang;
@@ -26,6 +28,7 @@ import momime.client.utils.TextUtils;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -85,6 +88,12 @@ public final class VariableManaUI extends MomClientDialogUI
 	/** Spell chosen from spell book that we want to cast, and need to select MP for */
 	private Spell spellBeingTargetted;
 	
+	/** Minimum damage chooseable for this spell */
+	private int minimumDamage;
+	
+	/** Maximum damage chooseable for this spell, taking into account our spell skill and remaining MP in combat */
+	private int maximumDamage;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -108,27 +117,7 @@ public final class VariableManaUI extends MomClientDialogUI
 			{
 				try
 				{
-					final Spell spell = getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "VariableManaUI-ok");
-					final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
-					
-					if ((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
-						(sectionID == SpellBookSectionID.SUMMONING) ||
-						((sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
-						
-						getCombatUI ().setSpellBeingTargetted (spell);
-					else
-					{
-						// Tell server to cast it
-						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-						msg.setSpellID (spell.getSpellID ());
-
-						if (getCastType () == SpellCastType.COMBAT)
-							msg.setCombatLocation (getCombatUI ().getCombatLocation ());
-						
-						msg.setVariableDamage (getVariableDamage ());
-						
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
+					variableDamageChosen ();
 				}
 				catch (final Exception e)
 				{
@@ -260,7 +249,7 @@ public final class VariableManaUI extends MomClientDialogUI
 				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 	
-				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargetted(), unmodifiedCost,
+				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargetted (), unmodifiedCost,
 					pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 				
 				// Show modified cost or not?
@@ -292,23 +281,94 @@ public final class VariableManaUI extends MomClientDialogUI
 	/**
 	 * Sets up prompt slider and labels to target a spell
 	 * @param spell Spell chosen from spell book that we want to cast, and need to select MP for
+	 * @throws IOException If we can't find our player, or there's a problem calculating the reduced casting cost 
 	 */
-	public final void setSpellBeingTargetted (final Spell spell)
+	public final void setSpellBeingTargetted (final Spell spell) throws IOException
 	{
 		log.trace ("Entering setSpellBeingTargetted: " + spell.getSpellID ());
 		
+		// This has to work and be able to calculate the minimum+maximum damage even if the form has never been displayed
+		// so that we can handle the situation where the first variable damage spell cast is one that we don't have enough skill/MP
+		// to put any additional MP into
 		spellBeingTargetted = spell;
+		minimumDamage = spell.getCombatBaseDamage ();
+
+		// We may not have enough mana (or casting skill remaining in combat) to use the spell at full power,
+		// so work out what the maximum we can actually afford is.
+		// This is awkward to work out directly because we have to go from
+		// base dmg > unmodified mana cost > reduced mana cost e.g. from having a lot of that colour spell book.
+		// NB. We already know we can at least cast the spell for minimum damage, or the player wouldn't
+		// have been able to click the spell in the spell book to get here.
+		maximumDamage = spell.getCombatMaxDamage ();
+		if (getCastType () == SpellCastType.COMBAT)
+		{
+			boolean done = false;
+			while (!done)
+			{
+				final int unmodifiedCost = getSpellBeingTargetted ().getCombatCastingCost () +
+					((maximumDamage - minimumDamage) * getSpellBeingTargetted ().getCombatManaPerAdditionalDamagePoint ());
+					
+				// Work out the modified MP cost, reduced if we have a lot of spell books
+				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "setSpellBeingTargetted");
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		
+				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargetted (), unmodifiedCost,
+					pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+				
+				if (modifiedCost > getCombatUI ().getMaxCastable ())
+					maximumDamage--;
+				else
+					done = true;
+			}
+		}
+		
+		// Update the UI, if the form has ever been displayed
 		if (slider != null)
 		{
-			slider.setMinimum (spell.getCombatBaseDamage ());
-			slider.setMaximum (spell.getCombatMaxDamage ());
-			slider.setValue (slider.getMinimum ());
+			slider.setMinimum (minimumDamage);
+			slider.setValue (minimumDamage);
+			slider.setMaximum (maximumDamage);
 	
 			// Update slider labels
 			sliderPositionChanged ();
 		}
 		
 		log.trace ("Exiting setSpellBeingTargetted");
+	}
+	
+	/**
+	 * Handles when we click the "OK" button to confirm the chosen variable amount of damage that we want
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If we can't find the spell being targetted
+	 */
+	public final void variableDamageChosen () throws JAXBException, XMLStreamException, RecordNotFoundException
+	{
+		log.trace ("Entering variableDamageChosen");
+
+		final Spell spell = getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "variableDamageChosen");
+		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
+		
+		if ((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
+			(sectionID == SpellBookSectionID.SUMMONING) ||
+			((sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
+			
+			getCombatUI ().setSpellBeingTargetted (spell);
+		else
+		{
+			// Tell server to cast it
+			final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+			msg.setSpellID (spell.getSpellID ());
+
+			if (getCastType () == SpellCastType.COMBAT)
+				msg.setCombatLocation (getCombatUI ().getCombatLocation ());
+			
+			msg.setVariableDamage (getVariableDamage ());
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		}
+
+		log.trace ("Exiting variableDamageChosen");
 	}
 	
 	/**
@@ -320,11 +380,22 @@ public final class VariableManaUI extends MomClientDialogUI
 	}
 	
 	/**
+	 * @return Whether we need to display the slider at all; false if we've only enough casting skill or MP to cast the spell at base cost
+	 */
+	public final boolean anySelectableRange ()
+	{
+		return (maximumDamage > minimumDamage);
+	}
+	
+	/**
 	 * @return Reads off the slider value
 	 */
 	public final int getVariableDamage ()
 	{
-		return slider.getValue ();
+		// The only time we may get here when the form hasn't been displayed is if the first variable MP spell we cast
+		// we had insufficient MP to make any choice at all, and so the form was never set up properly or displayed.
+		// So if there's no range at all, avoid reading the slider value which may be null. 
+		return anySelectableRange () ? slider.getValue () : minimumDamage;
 	}
 	
 	/**

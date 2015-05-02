@@ -595,7 +595,12 @@ public final class SpellBookUI extends MomClientFrameUI
 											else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null))
 											{
 												getVariableManaUI ().setSpellBeingTargetted (spell);
-												getVariableManaUI ().setVisible (true);
+												
+												// If we've only got enough casting skill/MP to cast the spell at base cost, then don't even bother showing the variable damage form 
+												if (getVariableManaUI ().anySelectableRange ())
+													getVariableManaUI ().setVisible (true);
+												else
+													getVariableManaUI ().variableDamageChosen ();
 											}
 											
 											// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it

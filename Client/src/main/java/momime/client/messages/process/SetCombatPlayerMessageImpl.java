@@ -78,6 +78,7 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 		else
 		{
 			log.debug ("Its their combat turn");
+			getCombatUI ().setSpellActionEnabled (false);
 		}
 		
 		log.trace ("Exiting start");

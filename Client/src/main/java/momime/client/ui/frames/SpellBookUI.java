@@ -546,37 +546,43 @@ public final class SpellBookUI extends MomClientFrameUI
 										// Clicking on a spell to cast it
 										final boolean proceed;
 										
-										// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
-										final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
-											getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
-										
-										if ((getCastType () == SpellCastType.OVERLAND) && (spell.getOverlandCastingCost () == null))
+										// Ignore trying to cast spells in combat when it isn't our turn
+										if ((getCastType () == SpellCastType.COMBAT) && (!getCombatUI ().isSpellActionEnabled ()))
 											proceed = false;
-
-										else if ((getCastType () == SpellCastType.COMBAT) &&
-											((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ())))
-											proceed = false;
-										
-										// Check if it is an overland enchantment that we already have
-										else if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
-										{
-											proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-												(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-												getClient ().getOurPlayerID (), spell.getSpellID (), null, null, null, null) == null);
-											if (!proceed)
-											{
-												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-												msg.setTitleLanguageCategoryID ("frmSpellBook");
-												msg.setTitleLanguageEntryID ("CastSpellTitle");
-												msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "RequestCastExistingOverlandEnchantment").replaceAll
-													("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
-	
-												msg.setCastSpellID (spell.getSpellID ());
-												msg.setVisible (true);
-											}
-										}
 										else
-											proceed = true;
+										{										
+											// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
+											final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
+												getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+											
+											if ((getCastType () == SpellCastType.OVERLAND) && (spell.getOverlandCastingCost () == null))
+												proceed = false;
+	
+											else if ((getCastType () == SpellCastType.COMBAT) &&
+												((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ())))
+												proceed = false;
+											
+											// Check if it is an overland enchantment that we already have
+											else if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+											{
+												proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+													(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+													getClient ().getOurPlayerID (), spell.getSpellID (), null, null, null, null) == null);
+												if (!proceed)
+												{
+													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+													msg.setTitleLanguageCategoryID ("frmSpellBook");
+													msg.setTitleLanguageEntryID ("CastSpellTitle");
+													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "RequestCastExistingOverlandEnchantment").replaceAll
+														("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
+		
+													msg.setCastSpellID (spell.getSpellID ());
+													msg.setVisible (true);
+												}
+											}
+											else
+												proceed = true;
+										}
 										
 										if (proceed)
 										{

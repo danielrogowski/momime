@@ -19,7 +19,7 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 	 * @return Replacement value; or null if the code is not recognized
 	 */
 	@Override
-	protected final String determineVariableValue (final String code)
+	public final String determineVariableValue (final String code)
 	{
 		final String text;
 		switch (code)

@@ -30,14 +30,14 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitAttribute;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;

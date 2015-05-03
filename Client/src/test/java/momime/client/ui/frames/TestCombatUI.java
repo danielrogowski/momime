@@ -40,6 +40,8 @@ import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.TileType;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.FogOfWarMemory;
@@ -55,8 +57,6 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;

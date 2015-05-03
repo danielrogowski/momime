@@ -14,6 +14,7 @@ import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitAttributeComponent;
 import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
 
@@ -440,6 +441,47 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findUnitType ("UT04", "testFindUnitType_NotExists");
+	}
+	
+	/**
+	 * Tests the findUnitAttributeComponent method to find a unit attribute ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindUnitAttributeComponent_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 65; n <= 67; n++)
+		{
+			final UnitAttributeComponentImageGfx newUnitAttributeComponent = new UnitAttributeComponentImageGfx ();
+			newUnitAttributeComponent.setUnitAttributeComponentID (UnitAttributeComponent.fromValue (new String (new char [] {(char) n})));
+			db.getUnitAttributeComponentImage ().add (newUnitAttributeComponent);
+		}
+
+		db.buildMaps ();
+
+		assertEquals (UnitAttributeComponent.BASIC,
+			db.findUnitAttributeComponent (UnitAttributeComponent.BASIC, "testFindUnitAttributeComponent_Exists").getUnitAttributeComponentID ());
+	}
+
+	/**
+	 * Tests the findUnitAttributeComponent method to find a unit attribute ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitAttributeComponent_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 65; n <= 67; n++)
+		{
+			final UnitAttributeComponentImageGfx newUnitAttributeComponent = new UnitAttributeComponentImageGfx ();
+			newUnitAttributeComponent.setUnitAttributeComponentID (UnitAttributeComponent.fromValue (new String (new char [] {(char) n})));
+			db.getUnitAttributeComponentImage ().add (newUnitAttributeComponent);
+		}
+
+		db.buildMaps ();
+
+		db.findUnitAttributeComponent (UnitAttributeComponent.HERO_SKILLS, "testFindUnitAttributeComponent_NotExists");
 	}
 	
 	/**

@@ -1236,17 +1236,17 @@ Summoned creatures and heroes may not be possessed.</unitSkillHelpText>
 The unit being attacked can then use its Defence attribute to try to block some of the hits.  The base chance that each shield icon will block a hit is 30%, although this can be modified by the defender's + to Block attribute.
 
 Melee weapons are available in a number of weapon grades which confer improved stats:
-IMAGE_UNIT_ATTRIBUTE(UA01+0) Standard weapon
-IMAGE_UNIT_ATTRIBUTE(UA01+1) Magic weapon
-IMAGE_UNIT_ATTRIBUTE(UA01+2) Mithril weapon
-IMAGE_UNIT_ATTRIBUTE(UA01+3) Adamantium weapon
+#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon
+#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon
+#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon
+#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon
 
 The background colour of each icon depicts the source of the attribute:
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Basic statistic of the unit
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_WEAPON_GRADE Bonus from an improved weapon grade
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus from experience
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus from Might hero skill
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).BASIC, 'HelpText').unitAttributeComponentImageFile} Basic statistic of the unit
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).WEAPON_GRADE, 'HelpText').unitAttributeComponentImageFile} Bonus from an improved weapon grade
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).EXPERIENCE, 'HelpText').unitAttributeComponentImageFile} Bonus from experience
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).HERO_SKILLS, 'HelpText').unitAttributeComponentImageFile} Bonus from Might hero skill
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
 
 A darkened icon represents a minus, for example from a curse type spell.</unitAttributeHelpText>
 	</unitAttribute>
@@ -1257,22 +1257,22 @@ A darkened icon represents a minus, for example from a curse type spell.</unitAt
 The unit being attacked can then use its Defence attribute to try to block some of the hits.  The base chance that each shield icon will block a hit is 30%, although this can be modified by the defender's + to Block attribute.
 
 Standard ranged weapons are available in a number of types, and weapon grades which confer improved stats:
-IMAGE_RANGED_ATTACK_TYPE(RAT14+0) IMAGE_RANGED_ATTACK_TYPE(RAT0A+0) Standard weapon
-IMAGE_RANGED_ATTACK_TYPE(RAT14+1) IMAGE_RANGED_ATTACK_TYPE(RAT0A+1) Magic weapon
-IMAGE_RANGED_ATTACK_TYPE(RAT14+2) IMAGE_RANGED_ATTACK_TYPE(RAT0A+2) Mithril weapon
-IMAGE_RANGED_ATTACK_TYPE(RAT14+3) IMAGE_RANGED_ATTACK_TYPE(RAT0A+3) Adamantium weapon
+#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon
+#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon
+#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon
+#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon
 
 Magical ranged attacks are always treated as a particular realm of magic, which is important for spells like Resist Elements and Bless which give defensive bonuses only against specific realms of magic:
-IMAGE_RANGED_ATTACK_TYPE(RAT1F) Chaos magic ranged attack
-IMAGE_RANGED_ATTACK_TYPE(RAT20) Sorcery magic ranged attack
-IMAGE_RANGED_ATTACK_TYPE(RAT26) Nature magic ranged attack
+#{findRangedAttackType ('RAT1F', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Chaos magic ranged attack
+#{findRangedAttackType ('RAT20', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Sorcery magic ranged attack
+#{findRangedAttackType ('RAT26', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Nature magic ranged attack
 
 The background colour of each icon depicts the source of the attribute:
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Basic statistic of the unit
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_WEAPON_GRADE Bonus from an improved weapon grade
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus from experience
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus from Arcane Power hero skill
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).BASIC, 'HelpText').unitAttributeComponentImageFile} Basic statistic of the unit
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).WEAPON_GRADE, 'HelpText').unitAttributeComponentImageFile} Bonus from an improved weapon grade
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).EXPERIENCE, 'HelpText').unitAttributeComponentImageFile} Bonus from experience
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).HERO_SKILLS, 'HelpText').unitAttributeComponentImageFile} Bonus from Arcane Power hero skill
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
 
 A darkened icon represents a minus, for example from a curse type spell.</unitAttributeHelpText>
 	</unitAttribute>
@@ -1283,10 +1283,10 @@ A darkened icon represents a minus, for example from a curse type spell.</unitAt
 Standard ranged weapons (bows, slings and rocks) also suffer To Hit penalties the further they are from the target.  Magical ranged attacks do not suffer distance penalties.
 
 The background colour of each icon depicts the source of the attribute:
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Basic statistic of the unit
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus from experience
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus from Blademaster hero skill
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).BASIC, 'HelpText').unitAttributeComponentImageFile} Basic statistic of the unit
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).EXPERIENCE, 'HelpText').unitAttributeComponentImageFile} Bonus from experience
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).HERO_SKILLS, 'HelpText').unitAttributeComponentImageFile} Bonus from Blademaster hero skill
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
 
 A darkened icon represents a minus, for example from a curse type spell.</unitAttributeHelpText>
 	</unitAttribute>
@@ -1297,17 +1297,17 @@ A darkened icon represents a minus, for example from a curse type spell.</unitAt
 When a unit is hit, the first figure will try to block some of the damage using the unit's Defence and + to Block attributes.  Any remaining damage is then taken from Hit Points.  If the first figure dies and there is still unassigned damage, the second figure will then try to block using the unit's Defence and + to Block attributes before it takes damage and so on.  Thus the Defence value is per figure, but every figure does not get to try to block attacks before the first figure takes damage.
 
 Shields are available in a number of weapon grades which confer improved stats:
-IMAGE_UNIT_ATTRIBUTE(UA04+0) Standard shield
-IMAGE_UNIT_ATTRIBUTE(UA04+1) Magic shield
-IMAGE_UNIT_ATTRIBUTE(UA04+2) Mithril shield
-IMAGE_UNIT_ATTRIBUTE(UA04+3) Adamantium shield
+#{findUnitAttribute ('UA04', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard shield
+#{findUnitAttribute ('UA04', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic shield
+#{findUnitAttribute ('UA04', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril shield
+#{findUnitAttribute ('UA04', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium shield
 
 The background colour of each icon depicts the source of the attribute:
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Basic statistic of the unit
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_WEAPON_GRADE Bonus from an improved weapon grade
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus from experience
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus from Agility hero skill
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).BASIC, 'HelpText').unitAttributeComponentImageFile} Basic statistic of the unit
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).WEAPON_GRADE, 'HelpText').unitAttributeComponentImageFile} Bonus from an improved weapon grade
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).EXPERIENCE, 'HelpText').unitAttributeComponentImageFile} Bonus from experience
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).HERO_SKILLS, 'HelpText').unitAttributeComponentImageFile} Bonus from Agility hero skill
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
 
 A darkened icon represents a minus, for example from a curse type spell.</unitAttributeHelpText>
 	</unitAttribute>
@@ -1316,9 +1316,9 @@ A darkened icon represents a minus, for example from a curse type spell.</unitAt
 		<unitAttributeHelpText>Each icon represents a 10% chance to resist a negative spell effect.  A resistance value of 10 does not make the unit immune to magic, since many spells give a penalty to resistance or cannot be resisted at all.
 
 The background colour of each icon depicts the source of the attribute:
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Basic statistic of the unit
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus from experience
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).BASIC, 'HelpText').unitAttributeComponentImageFile} Basic statistic of the unit
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).EXPERIENCE, 'HelpText').unitAttributeComponentImageFile} Bonus from experience
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
 
 A darkened icon represents a minus, for example from a curse type spell.</unitAttributeHelpText>
 	</unitAttribute>
@@ -1327,10 +1327,10 @@ A darkened icon represents a minus, for example from a curse type spell.</unitAt
 		<unitAttributeHelpText>Each icon represents one hit point, or health, that each figure in the unit has, or the amount of damage that figure can take.
 
 The background colour of each icon depicts the source of the attribute:
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Basic statistic of the unit
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus from experience
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus from Constitution hero skill
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).BASIC, 'HelpText').unitAttributeComponentImageFile} Basic statistic of the unit
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).EXPERIENCE, 'HelpText').unitAttributeComponentImageFile} Bonus from experience
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).HERO_SKILLS, 'HelpText').unitAttributeComponentImageFile} Bonus from Constitution hero skill
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
 
 A darkened icon represents damage already taken to the first figure in the unit.  The other figures still alive in the unit will be at full health.
 
@@ -1341,7 +1341,7 @@ For example a unit with 6 figures with 3 hit points each can take a total of 18 
 		<unitAttributeHelpText>Each icon represents a 10% improvement to the chance each figure has to block an attack.  The base chance to defend is 30% and there are very few situations in the game which modify this.
 
 The background colour of each icon depicts the source of the attribute:
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeHelpText>
+#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from High Prayer spell</unitAttributeHelpText>
 	</unitAttribute>
 	<unitMagicRealm unitMagicRealmID="LTN">
 		<unitMagicRealmPlural>Normal units</unitMagicRealmPlural>

@@ -14,6 +14,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.ProductionTypeLang;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.frames.CombatUI;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -107,6 +108,9 @@ public final class TestVariableManaUI
 		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		spellUtils.setSpellCalculations (spellCalc);
 		
+		// Need combatUI to tell whether it is an overland or combat cast
+		final CombatUI combatUI = new CombatUI ();
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/VariableManaUI.xml"));
 		layout.buildMaps ();
@@ -122,12 +126,13 @@ public final class TestVariableManaUI
 		box.setClient (client);
 		box.setSpellUtils (spellUtils);
 		box.setMediumFont (CreateFontsForTests.getMediumFont ());
+		box.setCombatUI (combatUI);
 		box.setSpellBeingTargetted (spell);
 		
 		// Display form		
 		box.setModal (false);
 		box.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 		box.setVisible (false);
 	}
 }

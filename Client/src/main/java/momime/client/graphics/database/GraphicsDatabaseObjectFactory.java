@@ -26,6 +26,7 @@ import momime.client.graphics.database.v0_9_6.Spell;
 import momime.client.graphics.database.v0_9_6.TileSet;
 import momime.client.graphics.database.v0_9_6.Unit;
 import momime.client.graphics.database.v0_9_6.UnitAttribute;
+import momime.client.graphics.database.v0_9_6.UnitAttributeComponentImage;
 import momime.client.graphics.database.v0_9_6.UnitCombatAction;
 import momime.client.graphics.database.v0_9_6.UnitCombatImage;
 import momime.client.graphics.database.v0_9_6.UnitSkill;
@@ -295,14 +296,6 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Factory for creating prototype message beans from spring
-	 */
-	public final GraphicsDatabaseFactory getFactory ()
-	{
-		return factory;
-	}
-
-	/**
 	 * @return Custom extended Weapon grade
 	 */
 	@Override
@@ -310,7 +303,24 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	{
 		return new WeaponGradeGfx ();
 	}
+	
+	/**
+	 * @return Custom extended Unit attribute component images
+	 */
+	@Override
+	public final UnitAttributeComponentImage createUnitAttributeComponentImage ()
+	{
+		return new UnitAttributeComponentImageGfx ();
+	}
 
+	/**
+	 * @return Factory for creating prototype message beans from spring
+	 */
+	public final GraphicsDatabaseFactory getFactory ()
+	{
+		return factory;
+	}
+	
 	/**
 	 * @param fac Factory for creating prototype message beans from spring
 	 */

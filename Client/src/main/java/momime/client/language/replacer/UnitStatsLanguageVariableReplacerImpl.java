@@ -17,6 +17,8 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceAttributeBonus;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -24,8 +26,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
 
@@ -36,7 +36,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Replacer for replacing language strings to do with unit stats
  */
-public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariableReplacerImpl implements UnitStatsLanguageVariableReplacer
+public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariableReplacerTokenImpl implements UnitStatsLanguageVariableReplacer
 {
 	/** Multiplayer client */
 	private MomClient client;
@@ -74,7 +74,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	 * @throws IOException If there is an error calculating a replacement value
 	 */
 	@Override
-	protected final String determineVariableValue (final String code) throws IOException
+	public final String determineVariableValue (final String code) throws IOException
 	{
 		final String text;
 		switch (code)

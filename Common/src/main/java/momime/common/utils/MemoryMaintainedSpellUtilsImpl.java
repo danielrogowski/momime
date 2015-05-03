@@ -11,6 +11,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;

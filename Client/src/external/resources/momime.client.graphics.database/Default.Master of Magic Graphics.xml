@@ -395,6 +395,21 @@
 	<pick pickID="RT16" />
 	<pick pickID="RT17" />
 	<pick pickID="RT18" />
+	<unitAttributeComponentImage unitAttributeComponentID="B">
+		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/basic.png</unitAttributeComponentImageFile>
+	</unitAttributeComponentImage>
+	<unitAttributeComponentImage unitAttributeComponentID="W">
+		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/weaponGrade.png</unitAttributeComponentImageFile>
+	</unitAttributeComponentImage>
+	<unitAttributeComponentImage unitAttributeComponentID="E">
+		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/experience.png</unitAttributeComponentImageFile>
+	</unitAttributeComponentImage>
+	<unitAttributeComponentImage unitAttributeComponentID="H">
+		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/heroSkills.png</unitAttributeComponentImageFile>
+	</unitAttributeComponentImage>
+	<unitAttributeComponentImage unitAttributeComponentID="C">
+		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/combatAreaEffect.png</unitAttributeComponentImageFile>
+	</unitAttributeComponentImage>
 	<unitAttribute unitAttributeID="UA01">
 		<unitAttributeWeaponGrade weaponGradeNumber="0">
 			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeNormal.png</attributeImageFile>

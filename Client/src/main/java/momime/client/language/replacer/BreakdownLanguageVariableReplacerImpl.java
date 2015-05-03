@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @param <B> Class of breakdown object
  */
-public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageVariableReplacerImpl implements BreakdownLanguageVariableReplacer<B>
+public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageVariableReplacerTokenImpl implements BreakdownLanguageVariableReplacer<B>
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (BreakdownLanguageVariableReplacerImpl.class);

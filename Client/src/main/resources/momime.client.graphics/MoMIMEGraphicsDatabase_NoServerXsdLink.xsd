@@ -34,6 +34,7 @@
 				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimegfx:pick" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttributeComponentImage" type="momimegfx:unitAttributeComponentImage" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttribute" type="momimegfx:unitAttribute">
 				<xsd:key name="unitAttributeWeaponGradePK">
 					<xsd:selector xpath="unitAttributeWeaponGrade" />
@@ -93,6 +94,10 @@
 		<xsd:key name="pickPK">
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="@pickID" />
+		</xsd:key>
+		<xsd:key name="unitAttributeComponentPK">
+			<xsd:selector xpath="unitAttributeComponent" />
+			<xsd:field xpath="@unitAttributeComponentID" />
 		</xsd:key>
 		<xsd:key name="unitAttributePK">
 			<xsd:selector xpath="unitAttribute" />
@@ -292,6 +297,13 @@
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="bookImageFile" type="momimegfx:imageFilename" nxe:label="Book image file" nxe:gridwidth="250" />
 		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="unitAttributeComponentImage" nxe:singular="Unit Attribute Component" nxe:plural="Unit Attribute Components" nxe:submenu="Units">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeComponentImageFile" type="momimegfx:imageFilename" nxe:label="Component image file" nxe:gridwidth="250" />
+		</xsd:sequence>
+		<xsd:attribute name="unitAttributeComponentID" type="momimecommon:unitAttributeComponent" use="required" nxe:label="Component" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitAttribute" nxe:singular="Unit Attribute" nxe:plural="Unit Attributes" nxe:submenu="Units">

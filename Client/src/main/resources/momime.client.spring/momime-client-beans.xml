@@ -890,6 +890,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
+	
+	<bean id="graphicsDatabaseEvaluationContext" class="org.springframework.expression.spel.support.StandardEvaluationContext">
+		<!-- Trying to set this via the rootObject property gives an error because getRootObject doesn't return the same type -->
+		<constructor-arg ref="graphicsDatabase" />
+	</bean>
+	
+	<bean id="graphicsDatabaseSpringExpressionReplacer" class="momime.client.language.replacer.SpringExpressionReplacerImpl">
+		<property name="evaluationContext" ref="graphicsDatabaseEvaluationContext" />
+		<property name="classpathResource" value="true" />
+		<property name="htmlImage" value="true" />
+	</bean>
 
 	<!-- Fonts
 		Having to use same font for medium and large sizes, because I can't find anywhere a decent
@@ -1330,6 +1341,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="springExpressionReplacer" ref="graphicsDatabaseSpringExpressionReplacer" />
 	</bean>
 	
 	<bean id="damageCalculationsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

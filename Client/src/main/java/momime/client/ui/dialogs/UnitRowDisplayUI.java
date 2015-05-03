@@ -32,14 +32,14 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

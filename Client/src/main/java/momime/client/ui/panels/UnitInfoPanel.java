@@ -61,6 +61,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitAttribute;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
@@ -68,8 +70,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -477,34 +477,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								if (totalValue > 0)
 								{
 									// Work out background image according to the component that the bonus is coming from
-									final String backgroundImageName;
-									switch (attrComponent)
-									{
-										case BASIC:
-											backgroundImageName = "/momime.client.graphics/unitAttributes/basic.png";
-											break;
-											
-										case WEAPON_GRADE:
-											backgroundImageName = "/momime.client.graphics/unitAttributes/weaponGrade.png";
-											break;
-											
-										case EXPERIENCE:
-											backgroundImageName = "/momime.client.graphics/unitAttributes/experience.png";
-											break;
-											
-										case HERO_SKILLS:
-											backgroundImageName = "/momime.client.graphics/unitAttributes/heroSkills.png";
-											break;
-											
-										case COMBAT_AREA_EFFECTS:
-											backgroundImageName = "/momime.client.graphics/unitAttributes/combatAreaEffect.png";
-											break;
-										
-										default:
-											throw new MomException ("Don't know unit attribute background image to use for component " + attrComponent);
-									}
-									
-									final BufferedImage backgroundImage = getUtils ().loadImage (backgroundImageName);
+									final BufferedImage backgroundImage = getUtils ().loadImage
+										(getGraphicsDB ().findUnitAttributeComponent (attrComponent, "UnitInfoPanel").getUnitAttributeComponentImageFile ()); 
 									
 									// Draw right number of attribute icons
 									for (int n = 0; n < totalValue; n++)

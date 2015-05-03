@@ -14,9 +14,9 @@ import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.messages.MemoryUnit;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

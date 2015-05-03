@@ -1526,4 +1526,56 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
+	<xsd:simpleType name="unitAttributeComponent">
+	    <xsd:annotation>
+			<xsd:documentation>Different things that can contribute to a unit's attribute values; defined so we can colour them separately on the Unit Info screen.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Total of all the below (this is all the server ever uses)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Basic value defined in the server XML</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BASIC" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="W"><xsd:annotation>
+				<xsd:documentation>Bonus from normal unit having magical, mithril or adamantium weapons</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="WEAPON_GRADE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="E"><xsd:annotation>
+				<xsd:documentation>Bonus from normal unit or hero being experienced</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="EXPERIENCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Bonus from the types of hero skills that simply add to an attribute, e.g. Might +5 simply adds +5 to melee attack strength</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO_SKILLS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>Bonus from combat area effects, including CAE-type spells, e.g. node auras or prayer</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_AREA_EFFECTS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="unitAttributePositiveNegative">
+	    <xsd:annotation>
+			<xsd:documentation>This is used on the unit info screen to show when stats have been reduced, e.g. by Black Prayer, Vertigo, Warp Reality.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Positive</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="POSITIVE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Negative</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NEGATIVE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Both</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BOTH" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 </xsd:schema>

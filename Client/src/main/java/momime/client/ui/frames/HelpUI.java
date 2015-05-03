@@ -18,7 +18,9 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
@@ -35,6 +37,7 @@ import momime.client.language.database.SpellBookSectionLang;
 import momime.client.language.database.SpellLang;
 import momime.client.language.database.UnitAttributeLang;
 import momime.client.language.database.UnitSkillLang;
+import momime.client.language.replacer.SpringExpressionReplacer;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellClientUtils;
@@ -110,6 +113,9 @@ public final class HelpUI extends MomClientFrameUI
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
+	
+	/** Replacer for evaluating EL expressions in help text */
+	private SpringExpressionReplacer springExpressionReplacer;
 	
 	/** Title */
 	private JLabel title;
@@ -224,9 +230,13 @@ public final class HelpUI extends MomClientFrameUI
 		unindentedText.setFont (getSmallFont ());
 		unindentedText.setForeground (MomUIConstants.DARK_BROWN);
 		unindentedText.setBackground (MomUIConstants.TRANSPARENT);
+		unindentedText.setContentType ("text/html");
 		unindentedText.setOpaque (false);
 		unindentedText.setEditable (false);
-		gridPanel.add (unindentedText, getUtils ().createConstraintsBothFill (0, 2, 2, 1, NO_INSET));
+		
+		final JScrollPane unindentedTextScroll = getUtils ().createTransparentScrollPane (unindentedText);
+		unindentedTextScroll.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		gridPanel.add (unindentedTextScroll, getUtils ().createConstraintsBothFill (0, 2, 2, 1, NO_INSET));
 		
 		// Force grid to correct size
 		final XmlLayoutComponent gridSize = getNewTurnMessagesLayout ().findComponent ("frmNewTurnMessagesList");
@@ -309,6 +319,8 @@ public final class HelpUI extends MomClientFrameUI
 		
 		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmHelp", "Title"));
 		
+		String text = null;		// unindentedText
+		
 		if (pickID != null)
 		{
 			final PickLang pick = getLanguage ().findPick (pickID);
@@ -337,7 +349,7 @@ public final class HelpUI extends MomClientFrameUI
 				if (spell != null)
 					try
 					{
-						unindentedText.setText (indentedText.getText ());
+						text = indentedText.getText ();
 						
 						final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "HelpUI");
 						final PlayerPublicDetails thisPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "HelpUI");
@@ -356,7 +368,7 @@ public final class HelpUI extends MomClientFrameUI
 			final String effectTitle = (effect == null) ? null : effect.getCitySpellEffectName ();
 			final String effectHelpText = (effect == null) ? null : effect.getCitySpellEffectHelpText ();
 			title.setText ((effectTitle != null) ? effectTitle : citySpellEffectID);
-			unindentedText.setText ((effectHelpText != null) ? effectHelpText : citySpellEffectID);
+			text = (effectHelpText != null) ? effectHelpText : citySpellEffectID;
 			
 			// City spell effects *must* be the result of a spell, so we should already know the spellID and who cast it
 			try
@@ -376,7 +388,7 @@ public final class HelpUI extends MomClientFrameUI
 			final String unitAttributeTitle = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeDescription ();
 			final String unitAttributeHelpText = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeHelpText ();
 			title.setText ((unitAttributeTitle != null) ? unitAttributeTitle : unitAttributeID);
-			indentedText.setText ((unitAttributeHelpText != null) ? unitAttributeHelpText : unitAttributeID);
+			text = (unitAttributeHelpText != null) ? unitAttributeHelpText : unitAttributeID;
 		}
 		else if (combatAreaEffectID != null)
 		{
@@ -392,20 +404,20 @@ public final class HelpUI extends MomClientFrameUI
 			final String spellTitle = (spell == null) ? null : spell.getSpellName ();
 			final String spellHelpText = (spell == null) ? null : spell.getSpellHelpText ();
 			title.setText ((spellTitle != null) ? spellTitle : spellID);
-			unindentedText.setText ((spellHelpText != null) ? spellHelpText : spellID);
+			text = (spellHelpText != null) ? spellHelpText : spellID;
 			
 			// Show all the spell stats (research and casting cost and so on) at the top
 			try
 			{
 				final Spell spellDef = getClient ().getClientDB ().findSpell (spellID, "HelpUI");
-				final StringBuilder text = new StringBuilder ();
+				final StringBuilder spellStats = new StringBuilder ();
 				
 				// Spell book section
 				if (spellDef.getSpellBookSectionID () != null)
 				{
 					final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spellDef.getSpellBookSectionID ());
 					final String sectionName = (section == null) ? null : section.getSpellBookSectionName ();
-					text.append (getLanguage ().findCategoryEntry ("frmHelp", "SpellBookSection").replaceAll
+					spellStats.append (getLanguage ().findCategoryEntry ("frmHelp", "SpellBookSection").replaceAll
 						("SPELL_BOOK_SECTION", (sectionName != null) ? sectionName : spellDef.getSpellBookSectionID ().toString ()));
 				}
 				
@@ -417,7 +429,7 @@ public final class HelpUI extends MomClientFrameUI
 					if ((castingPlayer == null) || (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())))
 						
 						// Someone else's spell, so don't show any details about research status
-						text.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp", "SpellBookResearchCostNotOurs").replaceAll
+						spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp", "SpellBookResearchCostNotOurs").replaceAll
 							("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (spellDef.getResearchCost ())).replaceAll
 							("PRODUCTION_TYPE", (researchSuffix != null) ? researchSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH));
 					else
@@ -432,7 +444,7 @@ public final class HelpUI extends MomClientFrameUI
 						else
 							languageEntryID = "SpellBookResearchCostPartial";
 
-						text.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp", languageEntryID).replaceAll
+						spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp", languageEntryID).replaceAll
 							("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (spellDef.getResearchCost ())).replaceAll
 							("PRODUCTION_TYPE", (researchSuffix != null) ? researchSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH).replaceAll
 							("RESEARCH_SO_FAR", getTextUtils ().intToStrCommas (spellDef.getResearchCost () - researchStatus.getRemainingResearchCost ())));
@@ -454,7 +466,7 @@ public final class HelpUI extends MomClientFrameUI
 					else
 						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
-					text.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp",
+					spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp",
 						(spellDef.getOverlandCastingCost () == reducedCastingCost) ? "SpellBookOverlandCostFull" : "SpellBookOverlandCostReduced").replaceAll
 						("PRODUCTION_TYPE", (manaSuffix != null) ? manaSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA).replaceAll
 						("FULL_CASTING_COST", getTextUtils ().intToStrCommas (spellDef.getOverlandCastingCost ())).replaceAll
@@ -470,7 +482,7 @@ public final class HelpUI extends MomClientFrameUI
 					else
 						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
-					text.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp",
+					spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp",
 						(spellDef.getCombatCastingCost () == reducedCastingCost) ? "SpellBookCombatCostFull" : "SpellBookCombatCostReduced").replaceAll
 						("PRODUCTION_TYPE", (manaSuffix != null) ? manaSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA).replaceAll
 						("FULL_CASTING_COST", getTextUtils ().intToStrCommas (spellDef.getCombatCastingCost ())).replaceAll
@@ -479,21 +491,35 @@ public final class HelpUI extends MomClientFrameUI
 				
 				// Saving throw modifier?
 				if (spellDef.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)
-					text.append (System.lineSeparator () + getSpellClientUtils ().listSavingThrowsOfSpell (spellDef));
+					spellStats.append (System.lineSeparator () + getSpellClientUtils ().listSavingThrowsOfSpell (spellDef));
 				
 				// Upkeep
 				final String upkeep = getSpellClientUtils ().listUpkeepsOfSpell (spellDef, (castingPub == null) ? null : castingPub.getPick ());
 				if (upkeep != null)
-					text.append (System.lineSeparator () + upkeep);
+					spellStats.append (System.lineSeparator () + upkeep);
 				
-				indentedText.setText (text.toString ());
+				indentedText.setText (spellStats.toString ());
 			}
 			catch (final IOException e)
 			{
 				log.error (e, e);
 			}
 		}
-
+		
+		// Only show the indentedText if it has some text in it, otherwise it takes up space on help pages like
+		// unit attributes which only have unindentedText
+		indentedText.setVisible (!"".equals (indentedText.getText ()));
+		
+		// Convert to HTML
+		if (text != null)
+		{
+			unindentedText.setText ("<html><body>" +
+				getSpringExpressionReplacer ().replaceVariables (text.replaceAll ("\\r\\n|\\r|\\n", "<br/>")) +
+				"</body></html>");
+			
+			unindentedText.setCaretPosition (0);		// Scroll to the top
+		}
+		
 		// The text and images resize themselves according to the size of the text, so force everything to reposition and redraw itself
 		contentPane.validate ();
 		contentPane.repaint ();
@@ -518,6 +544,7 @@ public final class HelpUI extends MomClientFrameUI
 		imageLabel.setVisible (false);
 		title.setText (null);
 		indentedText.setText (null);
+		indentedText.setVisible (false);
 		unindentedText.setText (null);
 		
 		// Clear identifiers
@@ -914,5 +941,21 @@ public final class HelpUI extends MomClientFrameUI
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Replacer for evaluating EL expressions in help text
+	 */
+	public final SpringExpressionReplacer getSpringExpressionReplacer ()
+	{
+		return springExpressionReplacer;
+	}
+
+	/**
+	 * @param replacer Replacer for evaluating EL expressions in help text
+	 */
+	public final void setSpringExpressionReplacer (final SpringExpressionReplacer replacer)
+	{
+		springExpressionReplacer = replacer;
 	}
 }

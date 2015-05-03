@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitAttributeComponent;
 import momime.common.messages.MemoryBuilding;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -83,6 +84,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
 	 */
 	public UnitTypeGfx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param unitAttributeComponentID Unit attribute component ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit attribute component object
+	 * @throws RecordNotFoundException If the unitAttributeComponentID doesn't exist
+	 */
+	public UnitAttributeComponentImageGfx findUnitAttributeComponent (final UnitAttributeComponent unitAttributeComponentID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param unitAttributeID Unit attribute ID to search for

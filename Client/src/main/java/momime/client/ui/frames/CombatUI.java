@@ -61,6 +61,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.messages.CombatMapSizeData;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -79,8 +81,6 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

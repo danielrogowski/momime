@@ -26,12 +26,14 @@ import momime.client.graphics.database.v0_9_6.Spell;
 import momime.client.graphics.database.v0_9_6.TileSet;
 import momime.client.graphics.database.v0_9_6.Unit;
 import momime.client.graphics.database.v0_9_6.UnitAttribute;
+import momime.client.graphics.database.v0_9_6.UnitAttributeComponentImage;
 import momime.client.graphics.database.v0_9_6.UnitSkill;
 import momime.client.graphics.database.v0_9_6.UnitType;
 import momime.client.graphics.database.v0_9_6.WeaponGrade;
 import momime.client.graphics.database.v0_9_6.Wizard;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitAttributeComponent;
 import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
 
@@ -75,6 +77,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of unit type IDs to unit type objects */
 	private Map<String, UnitTypeGfx> unitTypesMap;
+
+	/** Map of unit attribute component IDs to unit attribute component objects */
+	private Map<UnitAttributeComponent, UnitAttributeComponentImageGfx> unitAttributeComponentsMap;
 	
 	/** Map of unit attribute IDs to unit attribute objects */
 	private Map<String, UnitAttributeGfx> unitAttributesMap;
@@ -186,6 +191,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			utex.buildMap ();
 			unitTypesMap.put (utex.getUnitTypeID (), utex);
 		}
+		
+		// Create unit attribute components map
+		unitAttributeComponentsMap = new HashMap<UnitAttributeComponent, UnitAttributeComponentImageGfx> ();
+		for (final UnitAttributeComponentImage thisComponent : getUnitAttributeComponentImage ())
+			unitAttributeComponentsMap.put (thisComponent.getUnitAttributeComponentID (), (UnitAttributeComponentImageGfx) thisComponent);
 		
 		// Create unit attributes map
 		unitAttributesMap = new HashMap<String, UnitAttributeGfx> ();
@@ -482,6 +492,23 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final UnitTypeGfx found = unitTypesMap.get (unitTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param unitAttributeComponentID Unit attribute component ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit attribute component object
+	 * @throws RecordNotFoundException If the unitAttributeComponentID doesn't exist
+	 */
+	@Override
+	public final UnitAttributeComponentImageGfx findUnitAttributeComponent (final UnitAttributeComponent unitAttributeComponentID, final String caller)
+		throws RecordNotFoundException
+	{
+		final UnitAttributeComponentImageGfx found = unitAttributeComponentsMap.get (unitAttributeComponentID);
+		if (found == null)
+			throw new RecordNotFoundException (UnitAttributeComponentImage.class, unitAttributeComponentID.toString (), caller);
 
 		return found;
 	}

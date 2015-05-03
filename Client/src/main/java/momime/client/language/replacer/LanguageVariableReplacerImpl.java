@@ -14,23 +14,6 @@ public abstract class LanguageVariableReplacerImpl implements LanguageVariableRe
 	private final Log log = LogFactory.getLog (LanguageVariableReplacerImpl.class);
 	
 	/**
-	 * @param c Char to test 
-	 * @return True if this char is used for replacable codes
-	 */
-	boolean isCodeChar (final char c)
-	{
-		// Spaces, any other punctuation, and lower case letters all signify breaks in codes, notably this includes +-%
-		return (c == '_') || ((c >= 'A') && (c <= 'Z')) || ((c >= '0') && (c <= '9')); 
-	}
-	
-	/**
-	 * @param code Code to replace
-	 * @return Replacement value; or null if the code is not recognized
-	 * @throws IOException If there is an error calculating a replacement value
-	 */
-	protected abstract String determineVariableValue (final String code) throws IOException;
-
-	/**
 	 * @param description Text containing codes to replace
 	 * @return Input text, with codes replaced accordingly
 	 */
@@ -41,20 +24,11 @@ public abstract class LanguageVariableReplacerImpl implements LanguageVariableRe
 		
 		String text = description;
 		
-		int codeStart = text.indexOf ('_');
-		while (codeStart >= 0)
+		LanguageVariableReplacerCodePosition position = findCode (text);
+		while (position != null)
 		{
-			// Scan to the end of the code
-			int codeEnd = codeStart+1;
-			while ((codeEnd < text.length ()) && (isCodeChar (text.charAt (codeEnd))))
-				codeEnd++;
-			
-			// Scan to the start of the code
-			while ((codeStart > 0) && (isCodeChar (text.charAt (codeStart-1))))
-				codeStart--;
-			
 			// Read out the code
-			final String code = text.substring (codeStart, codeEnd);
+			final String code = text.substring (position.getCodeStart (), position.getCodeEnd ());
 			
 			// Find the value to replace the code with
 			String replacement = "";
@@ -73,10 +47,10 @@ public abstract class LanguageVariableReplacerImpl implements LanguageVariableRe
 			}
 			
 			// Perform the replacement
-			text = text.substring (0, codeStart) + replacement + text.substring (codeEnd);
+			text = text.substring (0, position.getCodeStart ()) + replacement + text.substring (position.getCodeEnd ());
 			
 			// Search for more codes
-			codeStart = text.indexOf ('_');
+			position = findCode (text);
 		}
 		
 		log.trace ("Exiting replaceVariables = " + text);

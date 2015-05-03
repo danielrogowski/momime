@@ -3,13 +3,14 @@ package momime.client.language.replacer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 /**
- * Tests the LanguageVariableReplacerImpl class
+ * Tests the LanguageVariableReplacerTokenImpl class
  */
-public final class TestLanguageVariableReplacerImpl
+public final class TestLanguageVariableReplacerTokenImpl
 {
 	/**
 	 * Tests the isCodeChar method
@@ -28,6 +29,34 @@ public final class TestLanguageVariableReplacerImpl
 		assertFalse (replacer.isCodeChar ('+'));
 		assertFalse (replacer.isCodeChar ('%'));
 		assertFalse (replacer.isCodeChar ('c'));
+	}
+	
+	/**
+	 * Tests the findCode method on a string which includes a code
+	 */
+	@Test
+	public final void testFindCode_Found ()
+	{
+		// Set up object to test
+		final DummyLanguageVariableReplacer replacer = new DummyLanguageVariableReplacer ();
+
+		// Run method
+		final String text = "Test FIRST_CODE_1 string SECOND_CODE_2 end";
+		final LanguageVariableReplacerCodePosition position = replacer.findCode (text);
+		assertEquals ("FIRST_CODE_1", text.substring (position.getCodeStart (), position.getCodeEnd ()));
+	}
+	
+	/**
+	 * Tests the findCode method on a string which doesn't include a code
+	 */
+	@Test
+	public final void testFindCode_NotFound ()
+	{
+		// Set up object to test
+		final DummyLanguageVariableReplacer replacer = new DummyLanguageVariableReplacer ();
+
+		// Run method
+		assertNull (replacer.findCode ("Test FIRSTCODE end"));
 	}
 	
 	/**
@@ -69,14 +98,14 @@ public final class TestLanguageVariableReplacerImpl
 	/**
 	 * Dummy implementation to test with
 	 */
-	private final class DummyLanguageVariableReplacer extends LanguageVariableReplacerImpl
+	private final class DummyLanguageVariableReplacer extends LanguageVariableReplacerTokenImpl
 	{
 		/**
 		 * @param code Code to replace
 		 * @return Replacement value; or null if the code is not recognized
 		 */
 		@Override
-		protected final String determineVariableValue (final String code)
+		public final String determineVariableValue (final String code)
 		{
 			final String text;
 			switch (code)

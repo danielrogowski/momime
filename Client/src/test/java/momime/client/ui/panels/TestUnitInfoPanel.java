@@ -25,6 +25,7 @@ import momime.client.graphics.database.ProductionTypeGfx;
 import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.client.graphics.database.RangedAttackTypeGfx;
 import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
+import momime.client.graphics.database.UnitAttributeComponentImageGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.BuildingLang;
@@ -46,14 +47,14 @@ import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Unit;
 import momime.common.database.UnitAttribute;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
@@ -286,6 +287,27 @@ public final class TestUnitInfoPanel
 			
 			when (gfx.findUnitSkill (eq ("US0" + n), anyString ())).thenReturn (skill);
 		}
+		
+		// Unit attribute component backgrounds
+		final UnitAttributeComponentImageGfx basicBackground = new UnitAttributeComponentImageGfx ();
+		basicBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/basic.png");
+		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.BASIC, "UnitInfoPanel")).thenReturn (basicBackground);
+		
+		final UnitAttributeComponentImageGfx weaponGradeBackground = new UnitAttributeComponentImageGfx ();
+		weaponGradeBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/weaponGrade.png");
+		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.WEAPON_GRADE, "UnitInfoPanel")).thenReturn (weaponGradeBackground);
+		
+		final UnitAttributeComponentImageGfx experienceBackground = new UnitAttributeComponentImageGfx ();
+		experienceBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/experience.png");
+		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.EXPERIENCE, "UnitInfoPanel")).thenReturn (experienceBackground);
+		
+		final UnitAttributeComponentImageGfx heroSkillsBackground = new UnitAttributeComponentImageGfx ();
+		heroSkillsBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/heroSkills.png");
+		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.HERO_SKILLS, "UnitInfoPanel")).thenReturn (heroSkillsBackground);
+		
+		final UnitAttributeComponentImageGfx caeBackground = new UnitAttributeComponentImageGfx ();
+		caeBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/combatAreaEffect.png");
+		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.COMBAT_AREA_EFFECTS, "UnitInfoPanel")).thenReturn (caeBackground);
 		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);

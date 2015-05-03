@@ -18,6 +18,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;

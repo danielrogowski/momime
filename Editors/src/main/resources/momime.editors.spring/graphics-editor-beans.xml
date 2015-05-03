@@ -83,13 +83,24 @@
 		</property>
 	</bean>
 
-	<bean id="unitAttributeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+	<bean id="unitAttributeWeaponGradeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="20" />
 		<property name="filenameElements">
 			<list>
 				<value>attributeImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="unitAttributeComponentGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>unitAttributeComponentImageFile</value>
 			</list>
 		</property>
 	</bean>
@@ -243,7 +254,8 @@
 				<entry key="bookImage" value="bookImageGrid" />
 				<entry key="spell" value="spellGrid" />
 				<entry key="combatAreaEffect" value="combatAreaEffectGrid" />
-				<entry key="unitAttribute" value="unitAttributeGrid" />
+				<entry key="unitAttributeWeaponGrade" value="unitAttributeWeaponGradeGrid" />
+				<entry key="unitAttributeComponentImage" value="unitAttributeComponentGrid" />
 				<entry key="rangedAttackType" value="rangedAttackTypeGrid" />
 				<entry key="rangedAttackTypeCombatImage" value="rangedAttackTypeCombatImageGrid" />
 				<entry key="unit" value="unitGrid" />

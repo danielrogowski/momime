@@ -5,14 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RangedAttackType;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
+import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -27,8 +29,6 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
-import momime.common.utils.UnitAttributeComponent;
-import momime.common.utils.UnitAttributePositiveNegative;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 

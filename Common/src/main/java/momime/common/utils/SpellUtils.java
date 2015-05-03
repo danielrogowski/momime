@@ -5,6 +5,7 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -115,6 +116,13 @@ public interface SpellUtils
 	 */
 	public boolean spellCanTargetMagicRealmLifeformType (final Spell spell, final String targetMagicRealmLifeformTypeID);
 
+	/**
+	 * @param spell Spell we want to cast
+	 * @param targetMagicRealmLifeformTypeID the unique string ID of the magic realm/lifeform type to check
+	 * @return Record for the specific magicRealmLifeformTypeID if there is one; otherwise the null record if there is one; otherwise null
+	 */
+	public SpellValidUnitTarget findMagicRealmLifeformTypeTarget (final Spell spell, final String targetMagicRealmLifeformTypeID);
+	
 	// Methods dealing with lists of spells
 
 	/**

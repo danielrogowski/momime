@@ -123,7 +123,7 @@ public final class TestDamageProcessorImpl
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
 
-		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE);
+		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE, null);
 		
 		when (calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
@@ -133,7 +133,7 @@ public final class TestDamageProcessorImpl
 			damageToDefender, players, trueMap.getMaintainedSpell (),
 			trueMap.getCombatAreaEffect (), db)).thenReturn (5);		// Dmg to defender
 
-		final AttackDamage damageToAttacker = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE);
+		final AttackDamage damageToAttacker = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null);
 		
 		when (calc.attackFromUnit (defender, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
@@ -286,7 +286,7 @@ public final class TestDamageProcessorImpl
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
 
-		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE);
+		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE, null);
 		
 		when (calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, players, trueMap.getMaintainedSpell (),

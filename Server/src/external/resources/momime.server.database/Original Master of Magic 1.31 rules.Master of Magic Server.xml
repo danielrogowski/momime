@@ -16248,6 +16248,13 @@
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<attackSpellDamageType>P</attackSpellDamageType>
 		<combatBaseDamage>4</combatBaseDamage>
+		<spellValidUnitTarget targetMagicRealmID="LT02" />
+		<spellValidUnitTarget targetMagicRealmID="LT03" />
+		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTU">
+			<savingThrowAttributeID>UA05</savingThrowAttributeID>
+			<savingThrowModifier>5</savingThrowModifier>
+		</spellValidUnitTarget>
 		<spellName>Dispel Evil</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
 	</spell>
@@ -16435,6 +16442,17 @@
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
 		<attackSpellDamageType>P</attackSpellDamageType>
 		<combatBaseDamage>2</combatBaseDamage>
+		<spellValidUnitTarget targetMagicRealmID="LT01" />
+		<spellValidUnitTarget targetMagicRealmID="LT02" />
+		<spellValidUnitTarget targetMagicRealmID="LT03" />
+		<spellValidUnitTarget targetMagicRealmID="LT04" />
+		<spellValidUnitTarget targetMagicRealmID="LT05" />
+		<spellValidUnitTarget targetMagicRealmID="LT06" />
+		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTU">
+			<savingThrowAttributeID>UA05</savingThrowAttributeID>
+			<savingThrowModifier>5</savingThrowModifier>
+		</spellValidUnitTarget>
 		<spellName>Holy Word</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>

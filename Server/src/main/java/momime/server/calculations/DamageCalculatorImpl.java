@@ -10,6 +10,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -20,6 +21,7 @@ import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
@@ -56,6 +58,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
 	
 	/**
 	 * Just deals with making sure we only send to human players
@@ -127,7 +132,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int plusToHit = getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 
-		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE);
+		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE, null);
 		log.trace ("Exiting attackFromUnit = " + attackDamage);
 		return attackDamage;
 	}
@@ -163,7 +168,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (spell.getAttackSpellDamageType ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
-		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType ());
+		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType (), spell);
 		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
 	}
@@ -574,7 +579,27 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		// Is there a saving throw modifier?
-		final int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		
+		
+		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
+		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
+		if (attackDamage.getSpell () != null)
+		{
+			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
+				(attackDamage.getSpell (), getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (defender, defender.getUnitHasSkill (), spells, db));
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getSavingThrowModifier () != 0))
+			{
+				if (!CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE.equals (magicRealmLifeformTypeTarget.getSavingThrowAttributeID ()))
+					throw new MomException ("calculateResistOrDieDamage from spell " + attackDamage.getSpell ().getSpellID () +
+						" has a saving throw modifier that rolls against a stat other than resistance");
+				
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getSavingThrowModifier ();
+			}
+		}
+		
+		// Work out the target's effective resistance score, reduced by any saving throw modifier
 		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
 		
 		// Keep track of how many HP the current figure has
@@ -782,5 +807,21 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
 	}
 }

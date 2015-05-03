@@ -288,6 +288,30 @@ public final class SpellUtilsImpl implements SpellUtils
 		log.trace ("Exiting spellCanTargetMagicRealmLifeform = " + targetIsValidForThisSpell);
 		return targetIsValidForThisSpell;
 	}
+	
+	/**
+	 * @param spell Spell we want to cast
+	 * @param targetMagicRealmLifeformTypeID the unique string ID of the magic realm/lifeform type to check
+	 * @return Record for the specific magicRealmLifeformTypeID if there is one; otherwise the null record if there is one; otherwise null
+	 */
+	@Override
+	public final SpellValidUnitTarget findMagicRealmLifeformTypeTarget (final Spell spell, final String targetMagicRealmLifeformTypeID)
+	{
+		log.trace ("Entering findMagicRealmLifeformTypeTarget: " + spell.getSpellID () + ", " + targetMagicRealmLifeformTypeID);
+
+		SpellValidUnitTarget found = null;
+		final Iterator<SpellValidUnitTarget> iter = spell.getSpellValidUnitTarget ().iterator ();
+		
+		while (((found == null) || (found.getTargetMagicRealmID () == null)) && (iter.hasNext ()))
+		{
+			final SpellValidUnitTarget spellValidUnitTarget = iter.next ();
+			if ((targetMagicRealmLifeformTypeID.equals (spellValidUnitTarget.getTargetMagicRealmID ())) || (spellValidUnitTarget.getTargetMagicRealmID () == null))
+				found = spellValidUnitTarget;
+		}
+
+		log.trace ("Exiting findMagicRealmLifeformTypeTarget = " + found);
+		return found;
+	}
 
 	// Methods dealing with lists of spells
 

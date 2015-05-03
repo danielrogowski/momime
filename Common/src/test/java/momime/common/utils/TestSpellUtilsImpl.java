@@ -348,6 +348,7 @@ public final class TestSpellUtilsImpl
 	@Test
 	public final void testSpellCanTargetMagicRealmLifeformType ()
 	{
+		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		
 		// Resist elements can be cast on anything (has no Targets defined)
@@ -400,6 +401,43 @@ public final class TestSpellUtilsImpl
 		assertEquals ("Flame blade shouldn't be targettable against LT01", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, LIFE_CREATURE));
 		assertEquals ("Flame blade should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CHAOS_CHANNELED_CREATURE));
 		assertEquals ("Flame blade shouldn't be targettable against LTU", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, UNDEAD_CREATURE));
+	}
+	
+	/**
+	 * Tests the findMagicRealmLifeformTypeTarget method
+	 */
+	@Test
+	public final void testFindMagicRealmLifeformTypeTarget ()
+	{
+		// Set up object to test
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		
+		// If nothing in list, then get null back
+		final Spell spell = new Spell ();
+		assertNull (utils.findMagicRealmLifeformTypeTarget (spell, UNDEAD_CREATURE));
+		
+		// If list contains wrong type, then get null back
+		final SpellValidUnitTarget specificSavingThrowModifier = new SpellValidUnitTarget ();
+		specificSavingThrowModifier.setTargetMagicRealmID (LIFE_CREATURE);
+		spell.getSpellValidUnitTarget ().add (specificSavingThrowModifier);
+		assertNull (utils.findMagicRealmLifeformTypeTarget (spell, UNDEAD_CREATURE));
+		
+		// If list contains exact type, then get it back
+		assertEquals (LIFE_CREATURE, utils.findMagicRealmLifeformTypeTarget (spell, LIFE_CREATURE).getTargetMagicRealmID ());
+		
+		// Add a null entry into the list as well
+		final SpellValidUnitTarget generalSavingThrowModifier = new SpellValidUnitTarget ();
+		spell.getSpellValidUnitTarget ().add (generalSavingThrowModifier);
+
+		assertNull (utils.findMagicRealmLifeformTypeTarget (spell, UNDEAD_CREATURE).getTargetMagicRealmID ());
+		assertEquals (LIFE_CREATURE, utils.findMagicRealmLifeformTypeTarget (spell, LIFE_CREATURE).getTargetMagicRealmID ());
+		
+		// Prove it behaves the same if the null comes first, i.e. that the LIFE_CREATURE doesn't exist as soon as it finds the null, and takes the specific record in preference
+		spell.getSpellValidUnitTarget ().remove (generalSavingThrowModifier);
+		spell.getSpellValidUnitTarget ().add (0, generalSavingThrowModifier);
+
+		assertNull (utils.findMagicRealmLifeformTypeTarget (spell, UNDEAD_CREATURE).getTargetMagicRealmID ());
+		assertEquals (LIFE_CREATURE, utils.findMagicRealmLifeformTypeTarget (spell, LIFE_CREATURE).getTargetMagicRealmID ());
 	}
 
 	// Methods dealing with lists of spells

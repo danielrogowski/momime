@@ -369,6 +369,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
 	<bean id="combatMapGenerator" class="momime.server.mapgenerator.CombatMapGeneratorImpl">

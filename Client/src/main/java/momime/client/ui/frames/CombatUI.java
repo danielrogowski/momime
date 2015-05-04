@@ -79,7 +79,6 @@ import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
@@ -568,7 +567,7 @@ public final class CombatUI extends MomClientFrameUI
 							{
 								// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
 								validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-									(getSpellBeingTargetted (), SpellCastType.COMBAT, getClient ().getOurPlayerID (),
+									(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
 									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
 									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
@@ -921,7 +920,7 @@ public final class CombatUI extends MomClientFrameUI
 							if (unit != null)
 							{
 								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-									(getSpellBeingTargetted (), SpellCastType.COMBAT, getClient ().getOurPlayerID (),
+									(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
 									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
 									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),

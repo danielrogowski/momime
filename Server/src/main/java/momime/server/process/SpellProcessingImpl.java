@@ -32,6 +32,7 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -377,13 +378,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 				targetUnits.add (targetUnit);
 			else
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) &&
-						(thisUnit.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()))
+					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+						variableDamage, thisUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						targetUnits.add (thisUnit);
 			
-			getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
-				null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+			if (targetUnits.size () > 0)
+				getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
+					null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 		}
 		
 		else

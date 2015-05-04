@@ -93,6 +93,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 			
 			log.trace (msg);
 		}
+		
+		if (defenders.size () == 0)
+			throw new MomException ("resolveAttack was called with 0 defenders");
 
 		// We send this a couple of times for different parts of the calculation, so initialize it here
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();

@@ -5606,6 +5606,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="RequestCastExistingOverlandEnchantment">
 			<languageEntryText>You have already cast SPELL_NAME.  You may cast it again but this will have no effect unless your existing spell is cancelled, disjunctioned or spell bound in the meantime.  Continue?</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="NoValidTargets">
+			<languageEntryText>There are no valid targets for a SPELL_NAME spell.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title">
@@ -5742,6 +5745,12 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>This unit has too high resistance to suffer any effect from this spell.
 			
 Note some spells such as Banish and Life Drain allow additional Mana to be channeled into the spell to reduce the target's resistance.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UnitNotInExpectedCombat">
+			<languageEntryText>This unit is not in the expected combat location.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UnitDead">
+			<languageEntryText>You cannot target dead units.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="CancelTitle">
 			<languageEntryText>Cancel Spell</languageEntryText>

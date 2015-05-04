@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.newgame.SwitchResearch;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
@@ -58,6 +60,7 @@ import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
+import momime.common.utils.TargetSpellResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -580,6 +583,38 @@ public final class SpellBookUI extends MomClientFrameUI
 													msg.setVisible (true);
 												}
 											}
+											
+											// If its a combat spell then make sure there's at least something we can target it on
+											// Only do this for spells without variable damage, because otherwise we might raise or lower the saving throw modifier
+											// enough to make a difference as to whether there are any valid targets 
+											else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () == null) &&
+												((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
+												(sectionID == SpellBookSectionID.ATTACK_SPELLS)))
+											{
+												boolean found = false;
+												final Iterator<MemoryUnit> iter = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().iterator ();
+												while ((!found) && (iter.hasNext ()))
+													if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+														(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, iter.next (),
+														getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+														getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+														getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+														
+														found = true;
+												
+												proceed = found;
+												if (!proceed)
+												{
+													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+													msg.setTitleLanguageCategoryID ("frmSpellBook");
+													msg.setTitleLanguageEntryID ("CastSpellTitle");
+													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoValidTargets").replaceAll
+														("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
+		
+													msg.setVisible (true);
+												}
+											}
+											
 											else
 												proceed = true;
 										}

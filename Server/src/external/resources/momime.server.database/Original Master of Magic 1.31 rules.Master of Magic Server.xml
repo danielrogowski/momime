@@ -19615,6 +19615,7 @@
 		<languageEntry languageEntryID="SwitchResearchLose" />
 		<languageEntry languageEntryID="CastSpellTitle" />
 		<languageEntry languageEntryID="RequestCastExistingOverlandEnchantment" />
+		<languageEntry languageEntryID="NoValidTargets" />
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title" />
@@ -19668,6 +19669,8 @@
 		<languageEntry languageEntryID="AlreadyHasAllPossibleCitySpellEffects" />
 		<languageEntry languageEntryID="AlreadyHasBuilding" />
 		<languageEntry languageEntryID="TooHighResistance" />
+		<languageEntry languageEntryID="UnitNotInExpectedCombat" />
+		<languageEntry languageEntryID="UnitDead" />
 		<languageEntry languageEntryID="CancelTitle" />
 		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>

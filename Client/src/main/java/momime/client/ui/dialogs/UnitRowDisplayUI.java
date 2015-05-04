@@ -38,7 +38,6 @@ import momime.common.database.UnitHasSkill;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
@@ -197,7 +196,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 					{
 						// Use common routine to do all the validation
 						final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(spell, SpellCastType.OVERLAND, getClient ().getOurPlayerID (), null, unit,
+							(spell, null, getClient ().getOurPlayerID (), null, unit,
 							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 						

@@ -20,6 +20,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.UnitStatusID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -263,7 +264,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * In Delphi code this is named isUnitValidTargetForCombatSpell, but took "combat" word out here since its used for validating overland targets as well.
 	 * 
 	 * @param spell Spell being cast
-	 * @param castType Whether the spell is being cast Overland or in Combat
+	 * @param combatLocation The location that the combat is taking place; null for targetting overland spells
 	 * @param castingPlayerID Player casting the spell
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param unit Unit to cast the spell on
@@ -277,17 +278,23 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellCastType castType,
+	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
 		final int castingPlayerID, final Integer variableDamage, final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID + ", " + castType);
+    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID + ", " + combatLocation);
     	
     	final TargetSpellResult result;
     	
     	// Do easy checks first
-    	if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) && (unit.getOwningPlayerID () != castingPlayerID))
+    	if ((combatLocation != null) && (!combatLocation.equals (unit.getCombatLocation ())))
+    		result = TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT;
+    	
+    	else if (unit.getStatus () != UnitStatusID.ALIVE)
+    		result =TargetSpellResult.UNIT_DEAD;
+    	
+    	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) && (unit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.ENCHANTING_ENEMY; 
 
     	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) || (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)) &&
@@ -312,7 +319,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     		
-    		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (castType == SpellCastType.OVERLAND))
+    		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
     			result = TargetSpellResult.VALID_TARGET;
     		
     		else

@@ -18,7 +18,6 @@ import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
@@ -158,7 +157,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				{
 					// Common routine used by both the client and server does the guts of the validation work
 					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, SpellCastType.OVERLAND, sender.getPlayerDescription ().getPlayerID (), null, unit,
+						(spell, null, sender.getPlayerDescription ().getPlayerID (), null, unit,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 					

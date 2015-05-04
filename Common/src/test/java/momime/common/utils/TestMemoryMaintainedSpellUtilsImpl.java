@@ -25,6 +25,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.UnitStatusID;
 
 import org.junit.Test;
 
@@ -623,6 +624,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitURN (10);
+		unit.setStatus (UnitStatusID.DEAD);
+		unit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		
 		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (12);
@@ -633,23 +636,28 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		
+		// Dead unit
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell
+			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
+		unit.setStatus (UnitStatusID.ALIVE);
 	
 		// Enchanting enemy unit
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		unit.setOwningPlayerID (2);
 		assertEquals (TargetSpellResult.ENCHANTING_ENEMY, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.OVERLAND, 1, null, unit, players, spells, combatAreaEffects, db));
+			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Cursing own uint
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
 		unit.setOwningPlayerID (1);
 		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.OVERLAND, 1, null, unit, players, spells, combatAreaEffects, db));
+			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Spell has no effects defined
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.OVERLAND, 1, null, unit, players, spells, combatAreaEffects, db));
+			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
 		
 		// All effects already cast on this unit
 		final UnitSpellEffect effectA = new UnitSpellEffect ();
@@ -664,7 +672,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spells.add (existingEffectA);
 
 		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.OVERLAND, 1, null, unit, players, spells, combatAreaEffects, db));
+			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Invalid magic realm/lifeform type
 		final UnitSpellEffect effectB = new UnitSpellEffect ();
@@ -674,42 +682,46 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db)).thenReturn ("X");
 		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (false);
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.OVERLAND, 1, null, unit, players, spells, combatAreaEffects, db));
+			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Valid target overland
 		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (true);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.OVERLAND, 1, null, unit, players, spells, combatAreaEffects, db));
+			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Combat non-attack spell
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.COMBAT, 1, null, unit, players, spells, combatAreaEffects, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Combat attack spell that rolls against something other than resistance
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageType (DamageTypeID.SINGLE_FIGURE);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.COMBAT, 2, null, unit, players, spells, combatAreaEffects, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Combat attack spell that rolls against resistance, but its resistance is really high
 		spell.setAttackSpellDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.COMBAT, 2, null, unit, players, spells, combatAreaEffects, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Spell gives -1 modifier, but its still not enough
 		spell.setCombatBaseDamage (1);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.COMBAT, 2, null, unit, players, spells, combatAreaEffects, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, spells, combatAreaEffects, db));
 		
 		// Spell gives variable modifier, and we're setting it to -2 - still not enough
 		spell.setCombatMaxDamage (5);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.COMBAT, 2, 2, unit, players, spells, combatAreaEffects, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, 2, unit, players, spells, combatAreaEffects, db));
 
 		// Upping it to a -3 modifier is enough
 		spell.setCombatMaxDamage (5);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, SpellCastType.COMBAT, 2, 3, unit, players, spells, combatAreaEffects, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, 3, unit, players, spells, combatAreaEffects, db));
+		
+		// Unit is in a different combat
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 11, 1), 2, 3, unit, players, spells, combatAreaEffects, db));
 	}
 	
 	/**

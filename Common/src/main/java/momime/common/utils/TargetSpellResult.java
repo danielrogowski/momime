@@ -30,7 +30,13 @@ public enum TargetSpellResult
 	UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE ("InvalidMagicRealmLifeformType", null),
 	
 	/** Spell rolls against resistance, and the target unit has too high resistance to possibly be affected by it */
-	TOO_HIGH_RESISTANCE ("TooHighResistance", null);
+	TOO_HIGH_RESISTANCE ("TooHighResistance", null),
+	
+	/** Units combatLocation doesn't match the combat the spell is targetted at */
+	UNIT_NOT_IN_EXPECTED_COMBAT ("UnitNotInExpectedCombat", null),
+	
+	/** Unit's status is not ALIVE */
+	UNIT_DEAD ("UnitDead", null);
 	
 	/** languageEntryID for the text describing this kind of error for units; if null then no error will be displayed */
 	private final String unitLanguageEntryID;

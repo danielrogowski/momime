@@ -252,9 +252,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Singleton beans for server -->
 	
-	<bean id="userRegistry" class="com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl">
-		<constructor-arg value="#{serverConfig.userRegistryFilename}" />
-		<constructor-arg value="#{serverConfig.createUserRegistry}" />
+	<bean id="userRegistry" class="com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl" init-method="loadUserRegistry">
+		<property name="xmlFilename" value="#{serverConfig.userRegistryFilename}" />
+		<property name="schemaFactory" ref="schemaFactory" />
 	</bean>
 
 	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConvertersImpl" />

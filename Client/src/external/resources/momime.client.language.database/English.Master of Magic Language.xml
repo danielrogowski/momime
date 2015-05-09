@@ -4424,6 +4424,15 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="LeaveSessionFailedTitle">
 			<languageEntryText>Leave Session Failed</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="BrowseSavedGamesFailedTitle">
+			<languageEntryText>Browse Saved Games Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="BrowseSavePointsFailedTitle">
+			<languageEntryText>Browse Save Points Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="LoadGameFailedTitle">
+			<languageEntryText>Load Game Failed</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="KickedTitle">
 			<languageEntryText>You were Kicked</languageEntryText>
 		</languageEntry>
@@ -4477,6 +4486,48 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="S">
 			<languageEntryText>You can't leave a session since you weren't in one.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="BrowseSavedGamesFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You must log into the server before you can browse saved games.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="A">
+			<languageEntryText>You are already in a game and cannot browse save games.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="U">
+			<languageEntryText>The server isn't configured for browsing saved games.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="BrowseSavePointsFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You must log into the server before you can browse save points.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="A">
+			<languageEntryText>You are already in a game and cannot browse save points.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="G">
+			<languageEntryText>The saved game you requested could not be found.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="U">
+			<languageEntryText>The server isn't configured for browsing save points.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="LoadGameFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You must log into the server before you can load a saved game.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="A">
+			<languageEntryText>You are already in a game and cannot load a saved game.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="G">
+			<languageEntryText>The saved game you requested could not be found.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="F">
+			<languageEntryText>The save point you requested could not be found.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="U">
+			<languageEntryText>The server isn't configured for load saved games.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMainMenu">

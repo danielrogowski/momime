@@ -33,12 +33,17 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerSessionClient;
 import com.ndg.multiplayer.client.MultiplayerSessionClientEvent;
+import com.ndg.multiplayer.sessionbase.BrowseSavePointsFailedReason;
+import com.ndg.multiplayer.sessionbase.BrowseSavedGamesFailedReason;
 import com.ndg.multiplayer.sessionbase.CreateAccountFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinFailedReason;
 import com.ndg.multiplayer.sessionbase.LeaveSessionFailedReason;
+import com.ndg.multiplayer.sessionbase.LoadGameFailedReason;
 import com.ndg.multiplayer.sessionbase.LoginFailedReason;
 import com.ndg.multiplayer.sessionbase.LogoutFailedReason;
 import com.ndg.multiplayer.sessionbase.RequestSessionListFailedReason;
+import com.ndg.multiplayer.sessionbase.SavedGamePoint;
+import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.NdgUIUtils;
 
@@ -247,6 +252,34 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			}
 
 			/**
+			 * Event triggered when server tells us what saved games we have stored
+			 * 
+			 * @param savedGames List of saved games the server is telling us we can reload
+			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
+			 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
+			 * @throws IOException Can be used for more general types of processing failure
+			 */
+			@Override
+			public final void receivedSavedGamesList (final List<SavedGameSession> savedGames)
+				throws JAXBException, XMLStreamException, IOException
+			{
+			}
+
+			/**
+			 * Event triggered when server tells us what save points one of our saved games has stored
+			 * 
+			 * @param savePoints List of save points within a saved game that the server is telling us we can join
+			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
+			 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
+			 * @throws IOException Can be used for more general types of processing failure
+			 */
+			@Override
+			public final void receivedSavePointsList (final List<SavedGamePoint> savePoints)
+				throws JAXBException, XMLStreamException, IOException
+			{
+			}
+			
+			/**
 			 * Event triggered when the server rejects a request.  Exactly one of the failure codes will be non-null
 			 * which indicates which kind of request got rejected.
 			 * 
@@ -256,6 +289,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			 * @param requestSessionListFailed If not null, indicates why our session list request was rejected
 			 * @param joinFailed If not null, indicates why our join request was rejected
 			 * @param leaveSessionFailed If not null, indicates why our leave request was rejected
+			 * @param browseSavedGamesFailed If not null, indicates why our browse saved games request was rejected
+			 * @param browseSavePointsFailed If not null, indicates why our browse save points request was rejected
+			 * @param loadGameFailed If not null, indicates why our load game request was rejected
 			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 			 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 			 * @throws IOException Can be used for more general types of processing failure
@@ -263,7 +299,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			@Override
 			public final void failed (final CreateAccountFailedReason createAccountFailed,
 				final LoginFailedReason loginFailed, final LogoutFailedReason logoutFailed, final RequestSessionListFailedReason requestSessionListFailed,
-				final JoinFailedReason joinFailed, final LeaveSessionFailedReason leaveSessionFailed)
+				final JoinFailedReason joinFailed, final LeaveSessionFailedReason leaveSessionFailed, final BrowseSavedGamesFailedReason browseSavedGamesFailed,
+				final BrowseSavePointsFailedReason browseSavePointsFailed, final LoadGameFailedReason loadGameFailed)
 				throws JAXBException, XMLStreamException, IOException
 			{
 				// Get relevant entry from language XML
@@ -306,6 +343,24 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					titleEntryID = "LeaveSessionFailedTitle";
 					languageCategoryID = "LeaveSessionFailedReason";
 					languageEntryID = leaveSessionFailed.value ();
+				}
+				else if (browseSavedGamesFailed != null)
+				{
+					titleEntryID = "BrowseSavedGamesFailedTitle";
+					languageCategoryID = "BrowseSavedGamesFailedReason";
+					languageEntryID = browseSavedGamesFailed.value ();
+				}
+				else if (browseSavePointsFailed != null)
+				{
+					titleEntryID = "BrowseSavePointsFailedTitle";
+					languageCategoryID = "BrowseSavePointsFailedReason";
+					languageEntryID = browseSavePointsFailed.value ();
+				}
+				else if (loadGameFailed != null)
+				{
+					titleEntryID = "LoadGameFailedTitle";
+					languageCategoryID = "LoadGameFailedReason";
+					languageEntryID = loadGameFailed.value ();
 				}
 				else
 					throw new IOException ("MultiplayerSessionClientEvent.failed handler: Every failure code was null");

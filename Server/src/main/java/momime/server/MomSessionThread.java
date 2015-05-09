@@ -247,7 +247,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Descendant of TransientPlayerPublicKnowledge, or can be left as null if not required
 	 */
 	@Override
-	protected final TransientPlayerPublicKnowledge createTransientPlayerPublicKnowledge ()
+	public final TransientPlayerPublicKnowledge createTransientPlayerPublicKnowledge ()
 	{
 		return new MomTransientPlayerPublicKnowledge ();
 	}
@@ -256,7 +256,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Descendant of TransientPlayerPrivateKnowledge, or can be left as null if not required
 	 */
 	@Override
-	protected final TransientPlayerPrivateKnowledge createTransientPlayerPrivateKnowledge ()
+	public final TransientPlayerPrivateKnowledge createTransientPlayerPrivateKnowledge ()
 	{
 		return new MomTransientPlayerPrivateKnowledge ();
 	}

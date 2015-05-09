@@ -19167,6 +19167,9 @@
 		<languageEntry languageEntryID="RequestSessionListFailedTitle" />
 		<languageEntry languageEntryID="JoinSessionFailedTitle" />
 		<languageEntry languageEntryID="LeaveSessionFailedTitle" />
+		<languageEntry languageEntryID="BrowseSavedGamesFailedTitle" />
+		<languageEntry languageEntryID="BrowseSavePointsFailedTitle" />
+		<languageEntry languageEntryID="LoadGameFailedTitle" />
 		<languageEntry languageEntryID="KickedTitle" />
 		<languageEntry languageEntryID="KickedText" />
 	</languageCategory>
@@ -19193,6 +19196,24 @@
 	<languageCategory languageCategoryID="LeaveSessionFailedReason">
 		<languageEntry languageEntryID="L" />
 		<languageEntry languageEntryID="S" />
+	</languageCategory>
+	<languageCategory languageCategoryID="BrowseSavedGamesFailedReason">
+		<languageEntry languageEntryID="L" />
+		<languageEntry languageEntryID="A" />
+		<languageEntry languageEntryID="U" />
+	</languageCategory>
+	<languageCategory languageCategoryID="BrowseSavePointsFailedReason">
+		<languageEntry languageEntryID="L" />
+		<languageEntry languageEntryID="A" />
+		<languageEntry languageEntryID="G" />
+		<languageEntry languageEntryID="U" />
+	</languageCategory>
+	<languageCategory languageCategoryID="LoadGameFailedReason">
+		<languageEntry languageEntryID="L" />
+		<languageEntry languageEntryID="A" />
+		<languageEntry languageEntryID="G" />
+		<languageEntry languageEntryID="F" />
+		<languageEntry languageEntryID="U" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMainMenu">
 		<languageEntry languageEntryID="LongTitle" />

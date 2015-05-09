@@ -1275,6 +1275,7 @@ public final class NewGameUI extends MomClientFrameUI
 						final PlayerDescription pd = new PlayerDescription ();
 						pd.setPlayerID (getClient ().getOurPlayerID ());
 						pd.setPlayerName (getClient ().getOurPlayerName ());
+						pd.setHuman (true);
 				
 						final JoinSession msg = new JoinSession ();
 						msg.setSessionID (spd.getSessionDescription ().getSessionID ());
@@ -2602,6 +2603,7 @@ public final class NewGameUI extends MomClientFrameUI
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (getClient ().getOurPlayerID ());
 			pd.setPlayerName (getClient ().getOurPlayerName ());
+			pd.setHuman (true);
 	
 			final NewSession msg = new NewSession ();
 			msg.setSessionDescription (buildSessionDescription ());

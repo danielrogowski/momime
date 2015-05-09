@@ -337,6 +337,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	{
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerName (wizard.getWizardID () + "-" + wizard.getWizardName ());
+		pd.setHuman (false);
 
 		return pd;
 	}
@@ -410,7 +411,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					availableWizards.remove (chosenWizard);
 
 					// Add AI player
-					final PlayerServerDetails aiPlayer = mom.addComputerPlayer (createAiPlayerDescription (chosenWizard));
+					final PlayerServerDetails aiPlayer = mom.addPlayer (createAiPlayerDescription (chosenWizard), null, true, null);
 
 					// Choose wizard
 					chooseWizard (chosenWizard.getWizardID (), aiPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
@@ -425,14 +426,14 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 
 			// Add raiders
-			final PlayerServerDetails raidersPlayer = mom.addComputerPlayer (createAiPlayerDescription
-				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")));
+			final PlayerServerDetails raidersPlayer = mom.addPlayer (createAiPlayerDescription
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")), null, true, null);
 
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, raidersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Add monsters
-			final PlayerServerDetails monstersPlayer = mom.addComputerPlayer (createAiPlayerDescription
-				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")));
+			final PlayerServerDetails monstersPlayer = mom.addPlayer (createAiPlayerDescription
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")), null, true, null);
 
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 

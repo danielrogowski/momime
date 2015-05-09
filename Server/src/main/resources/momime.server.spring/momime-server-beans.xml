@@ -267,6 +267,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="momServer" class="momime.server.MomServer" init-method="start">
 		<property name="clientToServerContext" ref="clientToServerJaxbContext" />
 		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
+		<property name="savedGamesContext" ref="savedGamesContext" />
+		<property name="savedGamesFolder" value="#{serverConfig.pathToSavedGames}" />
 		<property name="clientToServerContextFactoryArray">
 			<array>
 				<ref bean="multiplayerSessionServerClientToServerObjectFactory" />
@@ -287,6 +289,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="booleanMapAreaOperations2D" class="com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl">
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+	</bean>
+
+	<!-- Saved games support -->
+
+	<bean id="savedGamesContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>com.ndg.multiplayer.persistence.SavedGame</value>
+	   			<value>momime.common.messages.MomSessionDescription</value>
+	   			<value>momime.common.messages.MomGeneralPublicKnowledge</value>
+	   			<value>momime.server.messages.v0_9_6.MomGeneralServerKnowledge</value>
+	   			<value>momime.common.messages.MomPersistentPlayerPublicKnowledge</value>
+	   			<value>momime.common.messages.MomPersistentPlayerPrivateKnowledge</value>
+    		</list>
+   		</constructor-arg>
 	</bean>
 
 	<!-- Utils -->

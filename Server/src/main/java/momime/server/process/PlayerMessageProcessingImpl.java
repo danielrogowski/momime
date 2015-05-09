@@ -671,6 +671,18 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		final PlayerServerDetails currentPlayer = mom.getPlayers ().get (playerIndex);
 		mom.getGeneralPublicKnowledge ().setCurrentPlayerID (currentPlayer.getPlayerDescription ().getPlayerID ());
+		
+		// Save the game on turn number changes
+		if (playerIndex == 0)
+			try
+			{
+				mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+			}
+			catch (final Exception e)
+			{
+				// Don't allow failure to save the game to totally kill things if there's a problem
+				log.error (e, e);
+			}
 
 		// Start phase for the new player
 		startPhase (mom, mom.getGeneralPublicKnowledge ().getCurrentPlayerID ());
@@ -721,6 +733,17 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Bump up the turn number
 		mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
 
+		// Save the game every turn
+		try
+		{
+			mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+		}
+		catch (final Exception e)
+		{
+			// Don't allow failure to save the game to totally kill things if there's a problem
+			log.error (e, e);
+		}
+		
 		// Process everybody's start phases together
 		startPhase (mom, 0);
 

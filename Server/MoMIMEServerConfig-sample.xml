@@ -2,6 +2,6 @@
 <config:momImeServerConfig xmlns:config="http://momime/server/config/v0_9_6">
 	<portNumber>18250</portNumber>
 	<userRegistryFilename>server/userRegistry/MoMIMEServerUserRegistry.xml</userRegistryFilename>
-	<createUserRegistry>false</createUserRegistry>
 	<pathToServerXmlDatabases>server/databases</pathToServerXmlDatabases>
+	<pathToSavedGames>server/savedGames</pathToSavedGames>
 </config:momImeServerConfig>

@@ -1,5 +1,6 @@
 package momime.server;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -77,4 +78,12 @@ public interface MomSessionVariables
 	public PlayerServerDetails addPlayer (final PlayerDescription pd, final ServerToClientSessionConnection connection,
 		final boolean sendMessages, final PlayerServerDetails existingPlayerDetails)
 		throws JAXBException, XMLStreamException;
+
+	/**
+	 * Records a save game file of this session's state
+	 * @param identifier Identifier of the sequence of saved game files for this session, such as a turn number; can be left null
+	 * @throws IOException If saved games are not enabled on this server, or there is some error saving the file
+	 * @throws JAXBException If there is an XML error trying to save the file
+	 */
+	public void saveGame (final String identifier) throws IOException, JAXBException;
 }

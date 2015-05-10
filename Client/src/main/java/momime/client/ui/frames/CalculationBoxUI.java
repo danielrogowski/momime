@@ -1,6 +1,5 @@
 package momime.client.ui.frames;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -105,7 +104,7 @@ public final class CalculationBoxUI extends MomClientFrameUI
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmCalculationBoxText");
 
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			buttonNormal, buttonPressed, buttonNormal), "frmCalculationBoxOK");
 		
 		// Lock frame size

@@ -5459,6 +5459,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="ChooseLanguage">
 			<languageEntryText>Choose Language:</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSurveyor">
 		<languageEntry languageEntryID="Title">

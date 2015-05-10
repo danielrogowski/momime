@@ -1,6 +1,5 @@
 package momime.client.ui.frames;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
@@ -145,7 +144,7 @@ public final class WizardsUI extends MomClientFrameUI
 		contentPane.setLayout (new XmlLayoutManager (getWizardsLayout ()));
 		
 		contentPane.add (getUtils ().createImageButton (closeAction,
-			MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmWizardsClose");
+			MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmWizardsClose");
 		
 		playerName = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (playerName, "frmWizardsName");

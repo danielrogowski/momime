@@ -1,6 +1,5 @@
 package momime.client.ui.frames;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -98,7 +97,7 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 		contentPane.add (title, "frmSpellQueueTitle");
 		
 		contentPane.add (getUtils ().createImageButton (closeAction,
-			MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmSpellQueueClose");
+			MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmSpellQueueClose");
 		
 		// Set up the list
 		getQueuedSpellListCellRenderer ().setFont (getSmallFont ());

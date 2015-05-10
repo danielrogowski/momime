@@ -1,7 +1,5 @@
 package momime.client.ui.frames;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -167,6 +165,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** Choose language label */
 	private JLabel chooseLanguageLabel;
 	
+	/** Ok action */
+	private Action okAction;
+	
 	/** List of screens that need to be notified when the selected language changes */
 	private final List<LanguageVariableUI> languageChangeListeners = new ArrayList<LanguageVariableUI> ();
 	
@@ -180,15 +181,15 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		log.trace ("Entering init");
 		
 		// Load images
-		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/options/background.png");
-		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/options/okButtonNormal.png");
-		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/options/okButtonPressed.png");
+		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/options.png");
+		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldNormal.png");
+		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldPressed.png");
 
 		final BufferedImage checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
 		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
 		
 		// Actions
-		final Action okAction = new AbstractAction ()
+		okAction = new AbstractAction ()
 		{
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
@@ -222,19 +223,20 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		};			
 		
 		// Initialize the content pane
-		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		final JPanel contentPane = new JPanel ()
+		{
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				g.drawImage (background, 0, 0, background.getWidth () * 2, background.getHeight () * 2, null);
+			}
+		};
 
-		final Dimension size = new Dimension (background.getWidth (), background.getHeight ());
-		contentPane.setMinimumSize (size);
-		contentPane.setMaximumSize (size);
-		contentPane.setPreferredSize (size);
-		
-		contentPane.setBackground (Color.BLACK);
-		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getOptionsLayout ()));
 		
-		contentPane.add (getUtils ().createImageButton (okAction, null, null, null, buttonNormal, buttonPressed, buttonNormal), "frmOptionsOK");
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.DULL_GOLD, MomUIConstants.DARK_BROWN, getMediumFont (),
+			buttonNormal, buttonPressed, buttonNormal), "frmOptionsOK");
 		
 		shortTitleLabel = getUtils ().createLabel (MomUIConstants.SILVER, getLargeFont ());
 		contentPane.add (shortTitleLabel, "frmOptionsIMELabel");
@@ -527,6 +529,8 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		combatScaleLabel.setText					(getLanguage ().findCategoryEntry ("frmOptions", "CombatUnitScale"));
 		chooseLanguageLabel.setText				(getLanguage ().findCategoryEntry ("frmOptions", "ChooseLanguage"));
 		
+		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmOptions", "OK"));
+
 		log.trace ("Exiting languageChanged");
 	}
 	

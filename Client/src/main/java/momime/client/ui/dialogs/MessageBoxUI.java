@@ -1,6 +1,5 @@
 package momime.client.ui.dialogs;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -277,14 +276,14 @@ public final class MessageBoxUI extends MomClientDialogUI
 		// Is it just a regular message box with an OK button, or do we need separate no/yes buttons?
 		if (buttonCount == 1)
 		{
-			contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxOK");
+			contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxOK");
 			noAction.setEnabled (false);
 			yesAction.setEnabled (false);
 		}
 		else
 		{
-			contentPane.add (getUtils ().createImageButton (noAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxNo");
-			contentPane.add (getUtils ().createImageButton (yesAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxYes");
+			contentPane.add (getUtils ().createImageButton (noAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxNo");
+			contentPane.add (getUtils ().createImageButton (yesAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxYes");
 			okAction.setEnabled (false);
 		}
 		

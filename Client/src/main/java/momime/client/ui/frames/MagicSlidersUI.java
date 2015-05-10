@@ -1,6 +1,5 @@
 package momime.client.ui.frames;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -489,13 +488,13 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		contentPane.add (castingSkill, "frmMagicCastingSkill");
 
 		// Buttons
-		contentPane.add (getUtils ().createImageButton (alchemyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		contentPane.add (getUtils ().createImageButton (alchemyAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			buttonNormal, buttonPressed, buttonNormal), "frmMagicAlchemy");
 		
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			buttonNormal, buttonPressed, buttonNormal), "frmMagicOK");
 
-		contentPane.add (getUtils ().createImageButton (applyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		contentPane.add (getUtils ().createImageButton (applyAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			buttonNormal, buttonPressed, buttonNormal), "frmMagicApply");
 		
 		// Overland enchantments grid

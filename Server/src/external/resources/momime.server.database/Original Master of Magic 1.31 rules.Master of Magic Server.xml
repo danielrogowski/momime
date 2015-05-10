@@ -19564,6 +19564,7 @@
 		<languageEntry languageEntryID="ResolutionDescription" />
 		<languageEntry languageEntryID="LanguageSection" />
 		<languageEntry languageEntryID="ChooseLanguage" />
+		<languageEntry languageEntryID="OK" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSurveyor">
 		<languageEntry languageEntryID="Title" />

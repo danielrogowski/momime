@@ -802,40 +802,40 @@ public final class OverlandMapUI extends MomClientFrameUI
 		mapButtonBar.setLayout (new GridBagLayout ());
 		mapButtonBar.add (Box.createRigidArea (new Dimension (7, 0)), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
-		mapButtonBar.add (getUtils ().createImageButton (gameAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (gameAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		mapButtonBar.add (getUtils ().createImageButton (spellsAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (spellsAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			
-		mapButtonBar.add (getUtils ().createImageButton (armiesAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (armiesAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (3, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			
-		mapButtonBar.add (getUtils ().createImageButton (citiesAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (citiesAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (4, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			
-		mapButtonBar.add (getUtils ().createImageButton (magicAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (magicAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (5, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
-		mapButtonBar.add (getUtils ().createImageButton (planeAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (planeAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (6, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
-		mapButtonBar.add (getUtils ().createImageButton (messagesAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (messagesAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (7, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
-		mapButtonBar.add (getUtils ().createImageButton (chatAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (chatAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraintsNoFill (8, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
-		mapButtonBar.add (getUtils ().createImageButton (infoAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (infoAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarInfoNormal, topBarInfoPressed, topBarInfoNormal), getUtils ().createConstraintsNoFill (9, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		mapButtonBar.add (getUtils ().createImageButton (zoomInAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (zoomInAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarZoomInNormal, topBarZoomInPressed, topBarZoomInNormal), getUtils ().createConstraintsNoFill (10, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			
-		mapButtonBar.add (getUtils ().createImageButton (zoomOutAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (zoomOutAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarZoomOutNormal, topBarZoomOutPressed, topBarZoomOutNormal), getUtils ().createConstraintsNoFill (11, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			
-		mapButtonBar.add (getUtils ().createImageButton (optionsAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		mapButtonBar.add (getUtils ().createImageButton (optionsAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarOptionsNormal, topBarOptionsPressed, topBarOptionsNormal), getUtils ().createConstraintsNoFill (12, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
 		final GridBagConstraints turnLabelConstraints = getUtils ().createConstraintsNoFill (13, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST);

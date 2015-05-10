@@ -746,11 +746,11 @@ public final class CombatUI extends MomClientFrameUI
 		bottomPanel.setLayout (new XmlLayoutManager (getCombatLayoutBottom ()));
 		contentPane.add (bottomPanel, "frmCombatBottomPanel");		
 		
-		bottomPanel.add (getUtils ().createImageButton (spellAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatSpell");
-		bottomPanel.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatWait");
-		bottomPanel.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatDone");
-		bottomPanel.add (getUtils ().createImageButton (fleeAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatFlee");
-		bottomPanel.add (getUtils ().createImageButton (autoAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatAuto");
+		bottomPanel.add (getUtils ().createImageButton (spellAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatSpell");
+		bottomPanel.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatWait");
+		bottomPanel.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatDone");
+		bottomPanel.add (getUtils ().createImageButton (fleeAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatFlee");
+		bottomPanel.add (getUtils ().createImageButton (autoAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatAuto");
 		
 		bottomPanel.add (getUtils ().createImageButton (toggleDamageCalculationsAction, null, null, null, calculatorButtonNormal, calculatorButtonPressed, calculatorButtonNormal), "frmCombatToggleDamageCalculations");
 		

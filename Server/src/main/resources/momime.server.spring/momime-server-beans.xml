@@ -269,6 +269,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
 		<property name="savedGamesContext" ref="savedGamesContext" />
 		<property name="savedGamesFolder" value="#{serverConfig.pathToSavedGames}" />
+		<property name="zipSavedGames" value="true" />
 		<property name="clientToServerContextFactoryArray">
 			<array>
 				<ref bean="multiplayerSessionServerClientToServerObjectFactory" />

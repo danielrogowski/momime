@@ -766,10 +766,10 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="ctrl" type="xsd:boolean" nxe:label="Ctrl?" nxe:gridwidth="50" />
 			<!-- <xsd:choice minOccurs="1" maxOccurs="1" > -->
 				<xsd:element minOccurs="0" maxOccurs="1" name="normalKey" type="momimelang:normalKey" nxe:label="Key" nxe:gridwidth="50" />
-				<xsd:element minOccurs="0" maxOccurs="1" name="virtualKey" type="momimelang:virtualKey" nxe:label="Virtual Key" nxe:gridwidth="70" />
+				<xsd:element minOccurs="0" maxOccurs="1" name="virtualKey" type="momimecommon:virtualKey" nxe:label="Virtual Key" nxe:gridwidth="70" />
 			<!-- </xsd:choice> -->
 		</xsd:sequence>
-		<xsd:attribute name="shortcut" type="momimelang:shortcut" use="required" nxe:label="Shortcut" nxe:gridwidth="300" />
+		<xsd:attribute name="shortcut" type="momimecommon:shortcut" use="required" nxe:label="Shortcut" nxe:gridwidth="300" />
 	</xsd:complexType>
 	
 <!-- Simple data types -->
@@ -781,99 +781,8 @@
 		<xsd:restriction base="xsd:string" />
 	</xsd:simpleType>
 
-	<!-- Shortcut keys, new for 0.9.3 -->
-	<xsd:simpleType name="shortcut">
-        <xsd:annotation>
-        	<xsd:documentation>Defines the shortcut keys supported by this version.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<!-- Overland map shortcut keys -->
-			<xsd:enumeration value="ARMIES_SCREEN" />
-			<xsd:enumeration value="CENTRE_OVERLAND_ON_SELECTED_UNIT" />
-			<xsd:enumeration value="GAME_SCREEN" />
-			<xsd:enumeration value="MAGIC_SCREEN" />
-			<xsd:enumeration value="NEXT_TURN" />
-			<xsd:enumeration value="SWITCH_PLANE" />
-			<xsd:enumeration value="SPELLBOOK" />
-			<xsd:enumeration value="ZOOM_IN" />
-			<xsd:enumeration value="ZOOM_OUT" />
-
-			<!-- The latter part of these names must exactly match the enums defined in SquareMapDirection.java -->
-			<xsd:enumeration value="MOVE_OVERLAND_NORTH" />
-			<xsd:enumeration value="MOVE_OVERLAND_NORTHEAST" />
-			<xsd:enumeration value="MOVE_OVERLAND_EAST" />
-			<xsd:enumeration value="MOVE_OVERLAND_SOUTHEAST" />
-			<xsd:enumeration value="MOVE_OVERLAND_SOUTH" />
-			<xsd:enumeration value="MOVE_OVERLAND_SOUTHWEST" />
-			<xsd:enumeration value="MOVE_OVERLAND_WEST" />
-			<xsd:enumeration value="MOVE_OVERLAND_NORTHWEST" />
-			
-			<xsd:enumeration value="OVERLAND_MOVE_DONE" />
-			<xsd:enumeration value="OVERLAND_MOVE_WAIT" />
-			<xsd:enumeration value="BUILD_ROAD_OR_CITY" />
-			
-			<xsd:enumeration value="ADVISOR_SCREEN" />
-			<xsd:enumeration value="ADVISOR_SURVEYOR" />
-			<xsd:enumeration value="ADVISOR_PARCHMENT_MAP" />
-			<xsd:enumeration value="ADVISOR_SPELL_QUEUE" />
-			<xsd:enumeration value="ADVISOR_POWER_GRAPH" />
-			<xsd:enumeration value="ADVISOR_WIZARD_STATS" />
-			<xsd:enumeration value="ADVISOR_MESSAGES" />
-			<xsd:enumeration value="ADVISOR_TAX_RATE" />
-			<xsd:enumeration value="ADVISOR_AUTO_CONTROL" />
-			<xsd:enumeration value="ADVISOR_WIZARDS" />
-			
-			<!-- Combat map shortcut keys -->
-			<xsd:enumeration value="COMBAT_TOGGLE_AUTO" />
-			<xsd:enumeration value="COMBAT_TOGGLE_DAMAGE_CALCULATIONS" />
-			<xsd:enumeration value="COMBAT_MOVE_DONE" />
-			<xsd:enumeration value="COMBAT_FLEE" />
-			<xsd:enumeration value="COMBAT_CAST_SPELL" />
-			<xsd:enumeration value="COMBAT_MOVE_WAIT" />
-			
-			<!-- Other screen shortcut keys -->
-			<xsd:enumeration value="ALCHEMY" />
-			
-			<!-- Generic message box shortcut keys -->
-			<xsd:enumeration value="MESSAGE_BOX_CLOSE" />
-			<xsd:enumeration value="MESSAGE_BOX_YES" />
-			<xsd:enumeration value="MESSAGE_BOX_NO" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
 	<xsd:simpleType name="normalKey">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 
-	<xsd:simpleType name="virtualKey">
-        <xsd:annotation>
-        	<xsd:documentation>Defines virtual keys (untypeable special key values) supported by this version.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="VK_F1" />
-			<xsd:enumeration value="VK_F2" />
-			<xsd:enumeration value="VK_F3" />
-			<xsd:enumeration value="VK_F4" />
-			<xsd:enumeration value="VK_F5" />
-			<xsd:enumeration value="VK_F6" />
-			<xsd:enumeration value="VK_F7" />
-			<xsd:enumeration value="VK_F8" />
-			<xsd:enumeration value="VK_F9" />
-
-			<xsd:enumeration value="VK_LEFT" />
-			<xsd:enumeration value="VK_RIGHT" />
-			<xsd:enumeration value="VK_UP" />
-			<xsd:enumeration value="VK_DOWN" />
-			<xsd:enumeration value="VK_HOME" />
-			<xsd:enumeration value="VK_END" />
-			<xsd:enumeration value="VK_PAGE_UP" />
-			<xsd:enumeration value="VK_PAGE_DOWN" />
-
-			<xsd:enumeration value="VK_ADD" />
-			<xsd:enumeration value="VK_SUBTRACT" />
-
-			<xsd:enumeration value="VK_ENTER" />
-		</xsd:restriction>
-	</xsd:simpleType>
 </xsd:schema>
-

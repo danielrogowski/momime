@@ -978,7 +978,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					<xsd:element minOccurs="0" maxOccurs="1" name="buildingScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="inWizardsStartingCities" type="xsd:boolean" nxe:label="In Wizards' Starting Cities?" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="inRaidersStartingCitiesWithPopulationAtLeast" type="momimenewgame:cityPopulationDiv1000" nxe:label="In Raider Starting Cities of what size?" nxe:gridwith="180" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="aiBuildingTypeID" type="momimesvr:aiBuildingTypeID" nxe:label="AI Building Type" nxe:showmaincolumn="false" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="aiBuildingTypeID" type="momimecommon:aiBuildingTypeID" nxe:label="AI Building Type" nxe:showmaincolumn="false" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1464,44 +1464,6 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 		</xsd:sequence>
 	</xsd:complexType>
 	
-<!-- MoM-specific enums -->
-	
-	<xsd:simpleType name="aiBuildingTypeID">
-        <xsd:annotation>
-        	<xsd:documentation>Building types that the AI uses to decide which order to construct buildings in raider and AI wizards' cities.'</xsd:documentation>
-        </xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="G"><xsd:annotation>
-				<xsd:documentation>Growth</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="GROWTH" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="P"><xsd:annotation>
-				<xsd:documentation>Production</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="PRODUCTION" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="M"><xsd:annotation>
-				<xsd:documentation>Unrest / Magic Power</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="UNREST_AND_MAGIC_POWER" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="R"><xsd:annotation>
-				<xsd:documentation>Research</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCH" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="T"><xsd:annotation>
-				<xsd:documentation>Units</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="UNITS" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="Z"><xsd:annotation>
-				<xsd:documentation>Gold</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="GOLD" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="U"><xsd:annotation>
-				<xsd:documentation>Unrest without Magic Power</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="UNREST_WITHOUT_MAGIC_POWER" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-		
 <!-- MoM-specific data types -->
 
 	<xsd:simpleType name="fame">

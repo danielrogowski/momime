@@ -16,11 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import momime.client.language.database.ShortcutKeyLang;
-import momime.client.language.database.v0_9_6.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
+import momime.common.database.Shortcut;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -175,6 +175,38 @@
 							<generateDirectory>target/generated-sources/xjc-momime-clientcfg</generateDirectory>
 							<episodeFile>target/generated-sources/xjc-momime-clientcfg/META-INF/momime-clientcfg.episode</episodeFile>
 							<extension>true</extension>
+							<bindings>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.map</groupId>
+										<artifactId>ndgmap</artifactId>
+										<resource>META-INF/map.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.momime</groupId>
+										<artifactId>momime-common</artifactId>
+										<resource>META-INF/momime-commondb.episode</resource>
+									</dependencyResource>
+								</binding>
+							</bindings>
+							<catalogs>
+								<catalog>
+									<dependencyResource>
+										<groupId>com.ndg.map</groupId>
+										<artifactId>ndgmap</artifactId>
+										<resource>com.ndg.map/catalog.txt</resource>
+									</dependencyResource>
+								</catalog>
+								<catalog>
+									<dependencyResource>
+										<groupId>com.ndg.momime</groupId>
+										<artifactId>momime-common</artifactId>
+										<resource>momime.common.database/catalog.txt</resource>
+									</dependencyResource>
+								</catalog>
+							</catalogs>
 						</configuration>
 					</execution>
 					<execution>

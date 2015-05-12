@@ -11,6 +11,7 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.database.AiBuildingTypeID;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
@@ -32,7 +33,6 @@ import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_6.AiBuildingTypeID;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;

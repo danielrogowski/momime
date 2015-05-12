@@ -11,7 +11,6 @@ import javax.xml.bind.Marshaller;
 
 import momime.client.ClientTestData;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.config.v0_9_6.UnitCombatScale;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -19,6 +18,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.UnitClientUtilsImpl;
+import momime.common.database.UnitCombatScale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

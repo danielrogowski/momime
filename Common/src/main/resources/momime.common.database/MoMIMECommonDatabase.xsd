@@ -1577,5 +1577,177 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
+	
+<!-- Enums cannot be extended, so I avoid defining any in the server/client XSDs to avoid changing dozens of import statements between MoM IME versions -->	
 
+	<xsd:simpleType name="aiBuildingTypeID">
+        <xsd:annotation>
+        	<xsd:documentation>Building types that the AI uses to decide which order to construct buildings in raider and AI wizards' cities.'</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="G"><xsd:annotation>
+				<xsd:documentation>Growth</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GROWTH" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Production</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PRODUCTION" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Unrest / Magic Power</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNREST_AND_MAGIC_POWER" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>Research</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCH" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="T"><xsd:annotation>
+				<xsd:documentation>Units</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNITS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Z"><xsd:annotation>
+				<xsd:documentation>Gold</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GOLD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="U"><xsd:annotation>
+				<xsd:documentation>Unrest without Magic Power</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNREST_WITHOUT_MAGIC_POWER" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="rangedAttackTypeActionID">
+        <xsd:annotation>
+        	<xsd:documentation>Types of action we can define an image for a ranged attack type for.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="FLY">
+				<xsd:annotation><xsd:documentation>Image of the rock/fireball/etc flying towards its target</xsd:documentation></xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="STRIKE">
+				<xsd:annotation><xsd:documentation>Image of the rock/fireball/etc striking its target</xsd:documentation></xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="frontOrBack">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Front</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FRONT"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Back</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BACK"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="unitCombatScale">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Double size units</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DOUBLE_SIZE_UNITS"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Four times figures</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Four times figures except for single-figure summoned creatures</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="shortcut">
+        <xsd:annotation>
+        	<xsd:documentation>Defines the shortcut keys supported by this version.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<!-- Overland map shortcut keys -->
+			<xsd:enumeration value="ARMIES_SCREEN" />
+			<xsd:enumeration value="CENTRE_OVERLAND_ON_SELECTED_UNIT" />
+			<xsd:enumeration value="GAME_SCREEN" />
+			<xsd:enumeration value="MAGIC_SCREEN" />
+			<xsd:enumeration value="NEXT_TURN" />
+			<xsd:enumeration value="SWITCH_PLANE" />
+			<xsd:enumeration value="SPELLBOOK" />
+			<xsd:enumeration value="ZOOM_IN" />
+			<xsd:enumeration value="ZOOM_OUT" />
+
+			<!-- The latter part of these names must exactly match the enums defined in SquareMapDirection.java -->
+			<xsd:enumeration value="MOVE_OVERLAND_NORTH" />
+			<xsd:enumeration value="MOVE_OVERLAND_NORTHEAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_EAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTHEAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTH" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTHWEST" />
+			<xsd:enumeration value="MOVE_OVERLAND_WEST" />
+			<xsd:enumeration value="MOVE_OVERLAND_NORTHWEST" />
+			
+			<xsd:enumeration value="OVERLAND_MOVE_DONE" />
+			<xsd:enumeration value="OVERLAND_MOVE_WAIT" />
+			<xsd:enumeration value="BUILD_ROAD_OR_CITY" />
+			
+			<xsd:enumeration value="ADVISOR_SCREEN" />
+			<xsd:enumeration value="ADVISOR_SURVEYOR" />
+			<xsd:enumeration value="ADVISOR_PARCHMENT_MAP" />
+			<xsd:enumeration value="ADVISOR_SPELL_QUEUE" />
+			<xsd:enumeration value="ADVISOR_POWER_GRAPH" />
+			<xsd:enumeration value="ADVISOR_WIZARD_STATS" />
+			<xsd:enumeration value="ADVISOR_MESSAGES" />
+			<xsd:enumeration value="ADVISOR_TAX_RATE" />
+			<xsd:enumeration value="ADVISOR_AUTO_CONTROL" />
+			<xsd:enumeration value="ADVISOR_WIZARDS" />
+			
+			<!-- Combat map shortcut keys -->
+			<xsd:enumeration value="COMBAT_TOGGLE_AUTO" />
+			<xsd:enumeration value="COMBAT_TOGGLE_DAMAGE_CALCULATIONS" />
+			<xsd:enumeration value="COMBAT_MOVE_DONE" />
+			<xsd:enumeration value="COMBAT_FLEE" />
+			<xsd:enumeration value="COMBAT_CAST_SPELL" />
+			<xsd:enumeration value="COMBAT_MOVE_WAIT" />
+			
+			<!-- Other screen shortcut keys -->
+			<xsd:enumeration value="ALCHEMY" />
+			
+			<!-- Generic message box shortcut keys -->
+			<xsd:enumeration value="MESSAGE_BOX_CLOSE" />
+			<xsd:enumeration value="MESSAGE_BOX_YES" />
+			<xsd:enumeration value="MESSAGE_BOX_NO" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="virtualKey">
+        <xsd:annotation>
+        	<xsd:documentation>Defines virtual keys (untypeable special key values) supported by this version.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="VK_F1" />
+			<xsd:enumeration value="VK_F2" />
+			<xsd:enumeration value="VK_F3" />
+			<xsd:enumeration value="VK_F4" />
+			<xsd:enumeration value="VK_F5" />
+			<xsd:enumeration value="VK_F6" />
+			<xsd:enumeration value="VK_F7" />
+			<xsd:enumeration value="VK_F8" />
+			<xsd:enumeration value="VK_F9" />
+
+			<xsd:enumeration value="VK_LEFT" />
+			<xsd:enumeration value="VK_RIGHT" />
+			<xsd:enumeration value="VK_UP" />
+			<xsd:enumeration value="VK_DOWN" />
+			<xsd:enumeration value="VK_HOME" />
+			<xsd:enumeration value="VK_END" />
+			<xsd:enumeration value="VK_PAGE_UP" />
+			<xsd:enumeration value="VK_PAGE_DOWN" />
+
+			<xsd:enumeration value="VK_ADD" />
+			<xsd:enumeration value="VK_SUBTRACT" />
+
+			<xsd:enumeration value="VK_ENTER" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 </xsd:schema>

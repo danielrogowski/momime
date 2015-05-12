@@ -24,7 +24,6 @@ import momime.client.language.database.v0_9_6.PopulationTask;
 import momime.client.language.database.v0_9_6.ProductionType;
 import momime.client.language.database.v0_9_6.Race;
 import momime.client.language.database.v0_9_6.RangedAttackType;
-import momime.client.language.database.v0_9_6.Shortcut;
 import momime.client.language.database.v0_9_6.ShortcutKey;
 import momime.client.language.database.v0_9_6.Spell;
 import momime.client.language.database.v0_9_6.SpellBookSection;
@@ -38,6 +37,7 @@ import momime.client.language.database.v0_9_6.UnitSetting;
 import momime.client.language.database.v0_9_6.UnitSkill;
 import momime.client.language.database.v0_9_6.UnitType;
 import momime.client.language.database.v0_9_6.Wizard;
+import momime.common.database.Shortcut;
 import momime.common.database.SpellBookSectionID;
 
 import org.apache.commons.logging.Log;

@@ -2,7 +2,7 @@ package momime.client.language.database;
 
 import java.util.List;
 
-import momime.client.language.database.v0_9_6.Shortcut;
+import momime.common.database.Shortcut;
 import momime.common.database.SpellBookSectionID;
 
 /**

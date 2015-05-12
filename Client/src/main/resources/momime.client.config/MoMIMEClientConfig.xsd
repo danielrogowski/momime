@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-	xmlns:momimecltconfig="http://momime/client/config/v0_9_6" targetNamespace="http://momime/client/config/v0_9_6"
+	xmlns:momimecltconfig="http://momime/client/config/v0_9_6" xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/client/config/v0_9_6"
 	jaxb:version="2.0">
+
+	<xsd:import namespace="http://momime/common/database"/>
 
 	<xsd:element name="momImeClientConfig">
 		<xsd:complexType>
@@ -38,7 +40,7 @@
 						<xsd:documentation>True to use the full terrain tileset so e.g. ridges and dark areas run together; false to use only "blocky" combat tiles.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecltconfig:unitCombatScale" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecommon:unitCombatScale" />
 				
 				<!-- Debug options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="debugShowURNs" type="xsd:boolean" />
@@ -46,23 +48,6 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-
-	<xsd:simpleType name="unitCombatScale">
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="D"><xsd:annotation>
-				<xsd:documentation>Double size units</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="DOUBLE_SIZE_UNITS"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="F"><xsd:annotation>
-				<xsd:documentation>Four times figures</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="S"><xsd:annotation>
-				<xsd:documentation>Four times figures except for single-figure summoned creatures</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
 
 	<xsd:simpleType name="path">
 		<xsd:restriction base="xsd:normalizedString" />

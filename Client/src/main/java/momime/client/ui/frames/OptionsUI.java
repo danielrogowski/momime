@@ -25,7 +25,6 @@ import javax.xml.bind.Unmarshaller;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.config.v0_9_6.UnitCombatScale;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.LanguageVariableUI;
@@ -33,6 +32,7 @@ import momime.client.language.database.LanguageDatabaseExImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.UnitCombatScale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

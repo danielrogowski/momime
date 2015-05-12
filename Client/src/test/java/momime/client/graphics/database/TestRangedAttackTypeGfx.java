@@ -1,7 +1,7 @@
 package momime.client.graphics.database;
 
 import static org.junit.Assert.assertEquals;
-import momime.client.graphics.database.v0_9_6.RangedAttackTypeActionID;
+import momime.common.database.RangedAttackTypeActionID;
 import momime.common.database.RecordNotFoundException;
 
 import org.junit.Test;

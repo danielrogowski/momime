@@ -484,7 +484,7 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="rangedAttackTypeCombatImageFile" type="momimegfx:imageFilename" nxe:label="RAT combat image file" nxe:gridwidth="370" />
 		</xsd:sequence>
-		<xsd:attribute name="rangedAttackTypeActionID" type="momimegfx:rangedAttackTypeActionID" use="required" nxe:label="Action" nxe:gridwidth="100" />
+		<xsd:attribute name="rangedAttackTypeActionID" type="momimecommon:rangedAttackTypeActionID" use="required" nxe:label="Action" nxe:gridwidth="100" />
 		<xsd:attribute name="direction" type="map:mapDirection" use="required" nxe:label="Direction" nxe:gridwidth="50" />
 	</xsd:complexType>
 	
@@ -905,7 +905,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatTileBorderID" type="momimecommon:combatTileBorderID" nxe:label="Combat Tile Border ID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="directions" type="momimecommon:directions" nxe:label="Direction(s)" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="frontOrBack" type="momimegfx:frontOrBack" nxe:label="Front/Back" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="frontOrBack" type="momimecommon:frontOrBack" nxe:label="Front/Back" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="standardAnimation" type="momimegfx:animationID" nxe:label="Standard animation" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -1045,30 +1045,4 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="rangedAttackTypeActionID">
-        <xsd:annotation>
-        	<xsd:documentation>Types of action we can define an image for a ranged attack type for.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="FLY">
-				<xsd:annotation><xsd:documentation>Image of the rock/fireball/etc flying towards its target</xsd:documentation></xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="STRIKE">
-				<xsd:annotation><xsd:documentation>Image of the rock/fireball/etc striking its target</xsd:documentation></xsd:annotation>
-			</xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-
-	<xsd:simpleType name="frontOrBack">
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="F"><xsd:annotation>
-				<xsd:documentation>Front</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="FRONT"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="B"><xsd:annotation>
-				<xsd:documentation>Back</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BACK"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
 </xsd:schema>

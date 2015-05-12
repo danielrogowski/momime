@@ -54,7 +54,6 @@ import com.ndg.multiplayer.base.client.ClientToServerConnection;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.random.RandomUtilsImpl;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -236,13 +235,6 @@ public final class TestNewGameUI
 		// DEBUG OPTIONS PANEL
 		when (lang.findCategoryEntry ("frmNewGameCustomDebug", "Title")).thenReturn ("New Game: Debug Options");
 		when (lang.findCategoryEntry ("frmNewGameCustomDebug", "DisableFogOfWar")).thenReturn ("Disable Fog of War (as if all players have Nature Awareness cast all the time)");
-		
-		// JOIN GAME PANEL
-		when (lang.findCategoryEntry ("frmJoinGame", "SelectGame")).thenReturn ("Select Game to Join");
-		when (lang.findCategoryEntry ("frmJoinGame", "Refresh")).thenReturn ("Refresh");
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn0")).thenReturn ("Game Name");
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn1")).thenReturn ("Players");
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn2")).thenReturn ("Map Size");
 		
 		// WIZARD SELECTION PANEL
 		when (lang.findCategoryEntry ("frmChooseWizard", "Title")).thenReturn ("Select Wizard");
@@ -491,7 +483,6 @@ public final class TestNewGameUI
 		final XmlLayoutContainerEx unitSettingsLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
 		final XmlLayoutContainerEx debugOptionsLayout	= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Debug.xml"));
-		final XmlLayoutContainerEx joinLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Join.xml"));
 		final XmlLayoutContainerEx flagColourLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FlagColour.xml"));
 		final XmlLayoutContainerEx picksLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Picks.xml"));
 		final XmlLayoutContainerEx waitLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Wait.xml"));
@@ -507,7 +498,6 @@ public final class TestNewGameUI
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
 		debugOptionsLayout.buildMaps ();
-		joinLayout.buildMaps ();
 		flagColourLayout.buildMaps ();
 		picksLayout.buildMaps ();
 		waitLayout.buildMaps ();
@@ -536,7 +526,6 @@ public final class TestNewGameUI
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
 		game.setNewGameLayoutDebug (debugOptionsLayout);
-		game.setNewGameLayoutJoin (joinLayout);
 		game.setNewGameLayoutFlagColour (flagColourLayout);
 		game.setNewGameLayoutPicks (picksLayout);
 		game.setNewGameLayoutWait (waitLayout);
@@ -559,38 +548,6 @@ public final class TestNewGameUI
 		// Display form
 		game.setVisible (true);
 		game.showNewGamePanel ();
-		Thread.sleep (5000);
-		game.setVisible (false);
-	}
-
-	/**
-	 * Tests the "join game" screen
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testNewGameUI_JoinGame () throws Exception
-	{
-		final NewGameUI game = createNewGameUI ();
-		
-		// Set up some dummy sessions
-		final MomSessionDescription sd1 = new MomSessionDescription ();
-		sd1.setAiPlayerCount (4);
-		sd1.setMaxPlayers (10);
-		sd1.setSessionName ("Nigel's Game");
-		sd1.setMapSize (ClientTestData.createMapSizeData ());
-		
-		final SessionAndPlayerDescriptions spd1 = new SessionAndPlayerDescriptions ();
-		spd1.setSessionDescription (sd1);
-		spd1.getPlayer ().add (null);
-		spd1.setSessionDescription (sd1);
-		
-		final List<SessionAndPlayerDescriptions> sessions = new ArrayList<SessionAndPlayerDescriptions> ();
-		sessions.add (spd1);
-		game.setSessions (sessions);
-		
-		// Display form
-		game.setVisible (true);
-		game.showJoinGamePanel ();
 		Thread.sleep (5000);
 		game.setVisible (false);
 	}

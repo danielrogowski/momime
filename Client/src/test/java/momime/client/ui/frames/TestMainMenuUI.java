@@ -45,6 +45,7 @@ public final class TestMainMenuUI
 		when (lang.findCategoryEntry ("frmMainMenu", "ConnectToServer")).thenReturn ("Connect to Server");
 		when (lang.findCategoryEntry ("frmMainMenu", "NewGame")).thenReturn ("New Game");
 		when (lang.findCategoryEntry ("frmMainMenu", "JoinGame")).thenReturn ("Join Game");
+		when (lang.findCategoryEntry ("frmMainMenu", "LoadGame")).thenReturn ("Load Game");
 		when (lang.findCategoryEntry ("frmMainMenu", "Options")).thenReturn ("Options");
 		when (lang.findCategoryEntry ("frmMainMenu", "Exit")).thenReturn ("Exit");
 		when (lang.findCategoryEntry ("frmMainMenu", "LanguageFileAuthor")).thenReturn ("Language file written by Blah");

@@ -184,6 +184,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/options.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldPressed.png");
+		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldDisabled.png");
 
 		final BufferedImage checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
 		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
@@ -235,8 +236,8 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getOptionsLayout ()));
 		
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.DULL_GOLD, MomUIConstants.DARK_BROWN, getMediumFont (),
-			buttonNormal, buttonPressed, buttonNormal), "frmOptionsOK");
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.DULL_GOLD, MomUIConstants.DARK_BROWN, getLargeFont (),
+			buttonNormal, buttonPressed, buttonDisabled), "frmOptionsOK");
 		
 		shortTitleLabel = getUtils ().createLabel (MomUIConstants.SILVER, getLargeFont ());
 		contentPane.add (shortTitleLabel, "frmOptionsIMELabel");

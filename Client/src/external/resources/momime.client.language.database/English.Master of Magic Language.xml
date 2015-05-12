@@ -4555,6 +4555,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="JoinGame">
 			<languageEntryText>Join Game</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="LoadGame">
+			<languageEntryText>Load Game</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="Options">
 			<languageEntryText>Options</languageEntryText>
 		</languageEntry>
@@ -5078,7 +5081,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmJoinGame">
-		<languageEntry languageEntryID="SelectGame">
+		<languageEntry languageEntryID="Title">
 			<languageEntryText>Select Game to Join</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="SessionsColumn0">
@@ -5093,8 +5096,8 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="Refresh">
 			<languageEntryText>Refresh</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="OK">
-			<languageEntryText>OK</languageEntryText>
+		<languageEntry languageEntryID="Join">
+			<languageEntryText>Join</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Cancel">
 			<languageEntryText>Cancel</languageEntryText>

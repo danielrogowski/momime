@@ -19224,6 +19224,7 @@
 		<languageEntry languageEntryID="ConnectToServer" />
 		<languageEntry languageEntryID="NewGame" />
 		<languageEntry languageEntryID="JoinGame" />
+		<languageEntry languageEntryID="LoadGame" />
 		<languageEntry languageEntryID="Options" />
 		<languageEntry languageEntryID="Exit" />
 		<languageEntry languageEntryID="LanguageFileAuthor" />
@@ -19417,12 +19418,12 @@
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmJoinGame">
-		<languageEntry languageEntryID="SelectGame" />
+		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="SessionsColumn0" />
 		<languageEntry languageEntryID="SessionsColumn1" />
 		<languageEntry languageEntryID="SessionsColumn2" />
 		<languageEntry languageEntryID="Refresh" />
-		<languageEntry languageEntryID="OK" />
+		<languageEntry languageEntryID="Join" />
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseWizard">

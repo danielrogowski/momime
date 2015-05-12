@@ -62,6 +62,9 @@ public final class MainMenuUI extends MomClientFrameUI
 
 	/** New Game UI */
 	private NewGameUI newGameUI;
+
+	/** Join Game UI */
+	private JoinGameUI joinGameUI;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -87,6 +90,12 @@ public final class MainMenuUI extends MomClientFrameUI
 	/** Join game button */
 	private JButton joinGameButton;
 
+	/** Load game action */
+	private Action loadGameAction;
+	
+	/** Load game button */
+	private JButton loadGameButton;
+	
 	/** Options action */
 	private Action optionsAction;
 
@@ -168,8 +177,25 @@ public final class MainMenuUI extends MomClientFrameUI
 			{
 				try
 				{
+					getJoinGameUI ().setVisible (true);
+					getJoinGameUI ().refreshSessionList ();
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
+			}
+		};
+		
+		loadGameAction = new AbstractAction ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				try
+				{
 					getNewGameUI ().setVisible (true);
-					getNewGameUI ().showJoinGamePanel ();
+					// getNewGameUI ().showBrowseSavedGamesPanel ();
 				}
 				catch (final IOException e)
 				{
@@ -280,13 +306,16 @@ public final class MainMenuUI extends MomClientFrameUI
 		
 		joinGameButton = getUtils ().createTextOnlyButton (joinGameAction, MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (joinGameButton, getUtils ().createConstraintsNoFill (0, 10, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+
+		loadGameButton = getUtils ().createTextOnlyButton (loadGameAction, MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (loadGameButton, getUtils ().createConstraintsNoFill (0, 11, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 11, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 12, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 12, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 13, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
 		final Dimension buttonsSpace = new Dimension (630, 0);
 		buttonsGap = new Box.Filler (buttonsSpace, buttonsSpace, buttonsSpace);
-		contentPane.add (buttonsGap, getUtils ().createConstraintsNoFill (0, 13, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (buttonsGap, getUtils ().createConstraintsNoFill (0, 14, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Animate the title
 		// This anim never finishes - if we close the window or click exit, it immediately shuts down the JVM and so it doesn't matter
@@ -355,6 +384,7 @@ public final class MainMenuUI extends MomClientFrameUI
 		connectToServerAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "ConnectToServer"));
 		newGameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "NewGame"));
 		joinGameAction.putValue				(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "JoinGame"));
+		loadGameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "LoadGame"));
 		optionsAction.putValue				(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Options"));
 		exitToWindowsAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Exit"));
 	}
@@ -369,6 +399,9 @@ public final class MainMenuUI extends MomClientFrameUI
 		
 		joinGameAction.setEnabled (getClient ().getOurPlayerID () != null);
 		joinGameButton.setForeground (joinGameAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY);
+
+		loadGameAction.setEnabled (getClient ().getOurPlayerID () != null);
+		loadGameButton.setForeground (loadGameAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY);
 	}
 	
 	/**
@@ -465,6 +498,22 @@ public final class MainMenuUI extends MomClientFrameUI
 	public final void setNewGameUI (final NewGameUI ui)
 	{
 		newGameUI = ui;
+	}
+	
+	/**
+	 * @return Join Game UI
+	 */
+	public final JoinGameUI getJoinGameUI ()
+	{
+		return joinGameUI;
+	}
+
+	/**
+	 * @param ui Join Game UI
+	 */
+	public final void setJoinGameUI (final JoinGameUI ui)
+	{
+		joinGameUI = ui;
 	}
 	
 	/**

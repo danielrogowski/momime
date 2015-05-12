@@ -52,7 +52,7 @@ public final class TestOptionsUI
 		when (lang.findCategoryEntry ("frmOptions", "Title")).thenReturn ("Options");
 		when (lang.findCategoryEntry ("frmMainMenu", "ShortTitle")).thenReturn ("Implode's Multiplayer Edition - Client");
 		when (lang.findCategoryEntry ("frmMainMenu", "Version")).thenReturn ("version VERSION");
-		when (lang.findCategoryEntry ("frmOptions", "OK")).thenReturn ("Refresh");
+		when (lang.findCategoryEntry ("frmOptions", "OK")).thenReturn ("OK");
 
 		when (lang.findCategoryEntry ("frmOptions", "DebugSection")).thenReturn ("Debug Options");
 		when (lang.findCategoryEntry ("frmOptions", "OverlandMapSection")).thenReturn ("Overland Map");

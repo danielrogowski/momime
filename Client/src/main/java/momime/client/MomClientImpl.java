@@ -18,6 +18,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.ConnectToServerUI;
+import momime.client.ui.frames.JoinGameUI;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -66,6 +67,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** New Game UI */
 	private NewGameUI newGameUI;
+	
+	/** Join Game UI */
+	private JoinGameUI joinGameUI;
 
 	/** Tax rate UI */
 	private TaxRateUI taxRateUI;
@@ -187,7 +191,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			@Override
 			public final void receivedSessionList (final List<SessionAndPlayerDescriptions> sessions) throws JAXBException, XMLStreamException, IOException
 			{
-				getNewGameUI ().setSessions (sessions);
+				getJoinGameUI ().setSessions (sessions);
 			}
 
 			/**
@@ -201,6 +205,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			public final void joinedSession () throws JAXBException, XMLStreamException, IOException
 			{
 				((ClientDatabaseExImpl) getClientDB ()).buildMapsAndRunConsistencyChecks ();
+				getJoinGameUI ().setVisible (false);
+				getNewGameUI ().setVisible (true);
 				getNewGameUI ().afterJoinedSession ();
 				getOverlandMapBitmapGenerator ().afterJoinedSession ();
 				getCombatMapBitmapGenerator ().afterJoinedSession ();
@@ -515,6 +521,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 		newGameUI = ui;
 	}
 
+	/**
+	 * @return Join Game UI
+	 */
+	public final JoinGameUI getJoinGameUI ()
+	{
+		return joinGameUI;
+	}
+
+	/**
+	 * @param ui Join Game UI
+	 */
+	public final void setJoinGameUI (final JoinGameUI ui)
+	{
+		joinGameUI = ui;
+	}
+	
 	/**
 	 * @return Tax rate UI
 	 */

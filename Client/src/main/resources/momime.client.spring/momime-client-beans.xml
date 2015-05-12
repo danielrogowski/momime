@@ -714,6 +714,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="joinGameUI" ref="joinGameUI" />
 		<property name="taxRateUI" ref="taxRateUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
@@ -947,6 +948,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="joinGameUI" ref="joinGameUI" />
 		<property name="optionsUI" ref="optionsUI" />
 		<property name="client" ref="client" />
 		<property name="anim" ref="anim" />
@@ -1012,10 +1014,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Debug.xml" />
 	</bean>
 
-	<bean id="newGameLayoutJoin" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Join.xml" />
-	</bean>
-
 	<bean id="newGameLayoutFlagColour" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-FlagColour.xml" />
 	</bean>
@@ -1041,7 +1039,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameLayoutUnits" ref="newGameLayoutUnits" />
 		<property name="newGameLayoutSpells" ref="newGameLayoutSpells" />
 		<property name="newGameLayoutDebug" ref="newGameLayoutDebug" />
-		<property name="newGameLayoutJoin" ref="newGameLayoutJoin" />
 		<property name="newGameLayoutFlagColour" ref="newGameLayoutFlagColour" />
 		<property name="newGameLayoutPicks" ref="newGameLayoutPicks" />
 		<property name="newGameLayoutWait" ref="newGameLayoutWait" />
@@ -1063,6 +1060,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 
+	<bean id="joinGameLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/JoinGameUI.xml" />
+	</bean>
+
+	<bean id="joinGameUI" class="momime.client.ui.frames.JoinGameUI">
+		<property name="joinGameLayout" ref="joinGameLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+	</bean>
+	
 	<bean id="surveyorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml" />
 	</bean>

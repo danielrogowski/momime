@@ -19,12 +19,12 @@ import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.RoundingDirectionID;
+import momime.common.database.SpellSetting;
 import momime.common.database.SpellUpkeep;
 import momime.common.database.UnitUpkeep;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.database.newgame.NodeStrengthData;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -123,17 +123,17 @@ public final class TestServerResourceCalculationsImpl
 		when (db.findSpell ("SP158", "recalculateAmountsPerTurn")).thenReturn (crusadeDef);
 		
 		// Session description
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
 		
-		final NodeStrengthData nodeStrength = new NodeStrengthData ();
+		final NodeStrength nodeStrength = new NodeStrength ();
 		nodeStrength.setDoubleNodeAuraMagicPower (3);		// 1.5 mana per node aura cell
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setNodeStrength (nodeStrength);
 
 		// Overland map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -571,7 +571,7 @@ public final class TestServerResourceCalculationsImpl
 	public final void testAccumulateGlobalProductionValues () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
+		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -633,7 +633,7 @@ public final class TestServerResourceCalculationsImpl
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
+		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
@@ -665,7 +665,7 @@ public final class TestServerResourceCalculationsImpl
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
+		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
@@ -697,7 +697,7 @@ public final class TestServerResourceCalculationsImpl
 	public final void testProgressResearch () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
+		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();

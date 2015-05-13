@@ -63,7 +63,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
@@ -1047,7 +1047,7 @@ public final class CombatUI extends MomClientFrameUI
 			doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty
 				(ourPlayer, getCombatLocation (), getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getSessionDescription ().getMapSize ());
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getSessionDescription ().getOverlandMapSize ());
 
 			if (doubleRangePenalty == null)
 			{
@@ -1424,7 +1424,7 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		else
 		{
-			final CombatMapSizeData combatMapSize = getClient ().getSessionDescription ().getCombatMapSize ();
+			final CombatMapSize combatMapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 			
 			final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

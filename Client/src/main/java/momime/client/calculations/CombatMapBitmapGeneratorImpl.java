@@ -16,7 +16,7 @@ import momime.client.graphics.database.SmoothedTileTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.utils.CombatMapUtils;
 
@@ -71,7 +71,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		smoothedTiles = new HashMap<CombatMapLayerID, SmoothedTileGfx [] []> ();
 		smoothedTileTypes = new HashMap<CombatMapLayerID, SmoothedTileTypeGfx [] []> ();
 		
-		final CombatMapSizeData mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
+		final CombatMapSize mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
 		{
 			smoothedTiles.put (layer, new SmoothedTileGfx [mapSize.getHeight ()] [mapSize.getWidth ()]);
@@ -97,7 +97,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		final String tileTypeID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ()).getTerrainData ().getTileTypeID ();
 		
-		final CombatMapSizeData mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
+		final CombatMapSize mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
 		
 		// Choose the appropriate tile set
@@ -195,7 +195,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	{
 		log.trace ("Entering generateCombatMapBitmaps");
 
-		final CombatMapSizeData mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
+		final CombatMapSize mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		
 		// We need the tile set so we know how many animation frames there are
 		final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "generateCombatMapBitmap");

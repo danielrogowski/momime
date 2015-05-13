@@ -1248,25 +1248,25 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		if (cityInfo == null)
 		{
 			if (getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-				getSurveyorLocation ().getZ (), getClient ().getSessionDescription ().getMapSize ()).get (getSurveyorLocation ().getX (), getSurveyorLocation ().getY ()))
+				getSurveyorLocation ().getZ (), getClient ().getSessionDescription ().getOverlandMapSize ()).get (getSurveyorLocation ().getX (), getSurveyorLocation ().getY ()))
 			{
 				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity").replaceAll
-					("CITY_SEPARATION", new Integer (getClient ().getSessionDescription ().getMapSize ().getCitySeparation ()).toString ());
+					("CITY_SEPARATION", new Integer (getClient ().getSessionDescription ().getOverlandMapSize ().getCitySeparation ()).toString ());
 			}
 			else
 			{
 				final CityProductionBreakdown gold = new CityProductionBreakdown ();
 				getCityCalculations ().calculateGoldTradeBonus (gold,
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (), null,
-					getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ());
+					getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
 				
 				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CanBuildCity").replaceAll
 					("MAXIMUM_POPULATION", new Integer (getCityCalculations ().listCityFoodProductionFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
-						getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()).getDoubleProductionAmount ()).toString () + ",000").replaceAll
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getDoubleProductionAmount ()).toString () + ",000").replaceAll
 					("PRODUCTION_BONUS", new Integer (getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
-						getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()).getPercentageBonus ()).toString ()).replaceAll
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getPercentageBonus ()).toString ()).replaceAll
 					("GOLD_BONUS", new Integer (gold.getTradePercentageBonusFromTileType ()).toString ());
 			}
 		}
@@ -1327,9 +1327,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						(getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS))
 						
 						// Search whole map for all cities with pending building sales
-						for (int plane = 0; plane < getClient ().getSessionDescription ().getMapSize ().getDepth (); plane++)
-							for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
-								for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
+						for (int plane = 0; plane < getClient ().getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
+							for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+								for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 								{
 									final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 										(plane).getRow ().get (y).getCell ().get (x);

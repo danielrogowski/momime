@@ -10,7 +10,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
@@ -215,7 +215,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
      */
 	@Override
 	public final int calculateAmountPerTurnForProductionType (final MomPersistentPlayerPrivateKnowledge privateInfo, final List<PlayerPick> picks,
-		final String productionTypeID, final SpellSettingData spellSettings, final CommonDatabase db)
+		final String productionTypeID, final SpellSetting spellSettings, final CommonDatabase db)
     	throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering calculateAmountPerTurnForProductionType = " + productionTypeID);

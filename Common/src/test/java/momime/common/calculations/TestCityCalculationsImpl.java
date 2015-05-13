@@ -14,24 +14,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.GenerateTestData;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.DifficultyLevelData;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DifficultyLevel;
 import momime.common.database.FortressPickTypeProduction;
 import momime.common.database.FortressPlaneProduction;
+import momime.common.database.GenerateTestData;
 import momime.common.database.MapFeature;
 import momime.common.database.MapFeatureProduction;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
 import momime.common.database.Race;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RacePopulationTaskProduction;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.RoundingDirectionID;
 import momime.common.database.TileType;
 import momime.common.internal.CityGrowthRateBreakdown;
@@ -1405,18 +1405,18 @@ public final class TestCityCalculationsImpl
 			map.getPlane ().get (1).getRow ().get (y).getCell ().get (2).getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
 
 		// Session description
-		final MapSizeData mapSize = new MapSizeData ();
-		mapSize.setWidth (sys.getWidth ());
-		mapSize.setHeight (sys.getHeight ());
-		mapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
-		mapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
-		mapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
+		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
+		overlandMapSize.setWidth (sys.getWidth ());
+		overlandMapSize.setHeight (sys.getHeight ());
+		overlandMapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
+		overlandMapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
+		overlandMapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
 
-		final DifficultyLevelData dl = new DifficultyLevelData ();
+		final DifficultyLevel dl = new DifficultyLevel ();
 		dl.setCityMaxSize (25);
 
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setDifficultyLevel (dl);
 
 		// City
@@ -1942,13 +1942,13 @@ public final class TestCityCalculationsImpl
 		doReturn (buildings).when (db).getBuildings ();
 		
 		// Session description
-		final MapSizeData mapSize = GenerateTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = GenerateTestData.createOverlandMapSize ();
 		
-		final DifficultyLevelData difficultyLevel = new DifficultyLevelData ();
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setCityMaxSize (25);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setDifficultyLevel (difficultyLevel);
 		
 		// Players
@@ -1958,7 +1958,7 @@ public final class TestCityCalculationsImpl
 		final List<MemoryBuilding> memoryBuildings = new ArrayList<MemoryBuilding> ();
 		
 		// Put 3 of the 'food' tiles, 5 of the 'both' files and 3 of the 'production' tiles
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (overlandMapSize);
 		
 		for (int x = 0; x <= 4; x++)
 		{
@@ -2132,18 +2132,18 @@ public final class TestCityCalculationsImpl
 			map.getPlane ().get (1).getRow ().get (y).getCell ().get (2).getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
 
 		// Session description
-		final MapSizeData mapSize = new MapSizeData ();
-		mapSize.setWidth (sys.getWidth ());
-		mapSize.setHeight (sys.getHeight ());
-		mapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
-		mapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
-		mapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
+		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
+		overlandMapSize.setWidth (sys.getWidth ());
+		overlandMapSize.setHeight (sys.getHeight ());
+		overlandMapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
+		overlandMapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
+		overlandMapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
 
-		final DifficultyLevelData dl = new DifficultyLevelData ();
+		final DifficultyLevel dl = new DifficultyLevel ();
 		dl.setCityMaxSize (25);
 
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setDifficultyLevel (dl);
 
 		// City
@@ -2270,17 +2270,17 @@ public final class TestCityCalculationsImpl
 		final MapAreaOperations2DImpl<Boolean> op = new MapAreaOperations2DImpl<Boolean> (); 
 
 		// Coordinate system
-		final MapSizeData mapSize = new MapSizeData ();
-		mapSize.setWidth (sys.getWidth ());
-		mapSize.setHeight (sys.getHeight ());
-		mapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
-		mapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
-		mapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
+		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
+		overlandMapSize.setWidth (sys.getWidth ());
+		overlandMapSize.setHeight (sys.getHeight ());
+		overlandMapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
+		overlandMapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
+		overlandMapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
 
-		mapSize.setCitySeparation (3);
+		overlandMapSize.setCitySeparation (3);
 
 		// No cities
-		final MapArea2D<Boolean> none = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		final MapArea2D<Boolean> none = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
 		assertEquals (0, op.countCellsEqualTo (none, true));
 
 		// City on the wrong plane
@@ -2288,7 +2288,7 @@ public final class TestCityCalculationsImpl
 		wrongPlaneCity.setCityPopulation (1);
 		map.getPlane ().get (0).getRow ().get (4).getCell ().get (6).setCityData (wrongPlaneCity);
 
-		final MapArea2D<Boolean> wrongPlane = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		final MapArea2D<Boolean> wrongPlane = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
 		assertEquals (0, op.countCellsEqualTo (wrongPlane, true));
 
 		// City in the middle of the map
@@ -2296,7 +2296,7 @@ public final class TestCityCalculationsImpl
 		oneCity.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (4).getCell ().get (6).setCityData (oneCity);
 
-		final MapArea2D<Boolean> one = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		final MapArea2D<Boolean> one = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
 		assertEquals (49, op.countCellsEqualTo (one, true));
 
 		for (int x = 3; x <= 9; x++)
@@ -2308,7 +2308,7 @@ public final class TestCityCalculationsImpl
 		twoCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (1).getCell ().get (16).setCityData (twoCities);
 
-		final MapArea2D<Boolean> two = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		final MapArea2D<Boolean> two = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
 		assertEquals (49 + 35, op.countCellsEqualTo (two, true));
 
 		// 3nd city at left edge of map so some of it gets wrapped
@@ -2316,7 +2316,7 @@ public final class TestCityCalculationsImpl
 		threeCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (14).getCell ().get (1).setCityData (threeCities);
 
-		final MapArea2D<Boolean> three = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		final MapArea2D<Boolean> three = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
 		assertEquals (49 + 49 + 35, op.countCellsEqualTo (three, true));
 	}
 

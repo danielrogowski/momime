@@ -58,7 +58,7 @@ public final class TestJoinGameUI
 		sd1.setAiPlayerCount (4);
 		sd1.setMaxPlayers (10);
 		sd1.setSessionName ("Nigel's Game");
-		sd1.setMapSize (ClientTestData.createMapSizeData ());
+		sd1.setOverlandMapSize (ClientTestData.createOverlandMapSize ());
 		
 		final SessionAndPlayerDescriptions spd1 = new SessionAndPlayerDescriptions ();
 		spd1.setSessionDescription (sd1);

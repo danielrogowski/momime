@@ -29,10 +29,10 @@ import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileType;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -160,9 +160,9 @@ public final class TestOverlandMapRightHandPanel
 		when (db.findMapFeature ("MF01", "surveyorLocationOrLanguageChanged")).thenReturn (mapFeature);
 		
 		// Overland map
-		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
 		
-		final MapVolumeOfMemoryGridCells map = ClientTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells map = ClientTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (map);
@@ -190,7 +190,7 @@ public final class TestOverlandMapRightHandPanel
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
@@ -238,13 +238,13 @@ public final class TestOverlandMapRightHandPanel
 		final CityCalculations cityCalc = mock (CityCalculations.class);
 
 		final MapArea2DArrayListImpl<Boolean> invalidCityLocations = new MapArea2DArrayListImpl<Boolean> ();
-		invalidCityLocations.setCoordinateSystem (mapSize);
+		invalidCityLocations.setCoordinateSystem (overlandMapSize);
 		
-		for (int x = 0; x < mapSize.getWidth (); x++)
-			for (int y = 0; y < mapSize.getHeight (); y++)
+		for (int x = 0; x < overlandMapSize.getWidth (); x++)
+			for (int y = 0; y < overlandMapSize.getHeight (); y++)
 				invalidCityLocations.set (x, y, true);
 		
-		when (cityCalc.markWithinExistingCityRadius (map, 1, mapSize)).thenReturn (invalidCityLocations);
+		when (cityCalc.markWithinExistingCityRadius (map, 1, overlandMapSize)).thenReturn (invalidCityLocations);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

@@ -5,10 +5,10 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.SpellValidUnitTarget;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellSetting;
+import momime.common.database.SpellValidUnitTarget;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -63,7 +63,7 @@ public interface SpellUtils
 	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
+	public int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -75,7 +75,7 @@ public interface SpellUtils
 	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
+	public int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -89,7 +89,7 @@ public interface SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	public int getReducedCastingCost (final Spell spell, final int castingCost, final List<PlayerPick> picks,
-		final SpellSettingData spellSettings, final CommonDatabase db)
+		final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	
 	/**

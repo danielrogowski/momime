@@ -18,7 +18,7 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.QueuedSpellListCellRenderer;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
-import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -73,7 +73,7 @@ public final class TestQueuedSpellsUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Session description
-		final SpellSettingData spellSettings = new SpellSettingData ();
+		final SpellSetting spellSettings = new SpellSetting ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (spellSettings);

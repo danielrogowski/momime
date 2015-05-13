@@ -496,24 +496,24 @@ public final class TestLanguageDatabaseExImpl
 	}
 	
 	/**
-	 * Tests the findMapSizeDescription method
+	 * Tests the findOverlandMapSizeDescription method
 	 */
 	@Test
-	public final void testFindMapSizeDescription ()
+	public final void testFindOverlandMapSizeDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapSizeLang newMapSize = new MapSizeLang ();
-			newMapSize.setMapSizeID ("MS0" + n);
-			newMapSize.setMapSizeDescription ("MSDesc0" + n);
-			lang.getMapSize ().add (newMapSize);
+			final OverlandMapSizeLang newMapSize = new OverlandMapSizeLang ();
+			newMapSize.setOverlandMapSizeID ("MS0" + n);
+			newMapSize.setOverlandMapSizeDescription ("MSDesc0" + n);
+			lang.getOverlandMapSize ().add (newMapSize);
 		}
 
 		lang.buildMaps ();
 
-		assertEquals ("MSDesc02", lang.findMapSizeDescription ("MS02"));
-		assertEquals ("MS04", lang.findMapSizeDescription ("MS04"));
+		assertEquals ("MSDesc02", lang.findOverlandMapSizeDescription ("MS02"));
+		assertEquals ("MS04", lang.findOverlandMapSizeDescription ("MS04"));
 	}
 	
 	/**

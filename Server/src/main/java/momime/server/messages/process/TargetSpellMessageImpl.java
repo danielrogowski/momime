@@ -113,8 +113,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					error = "You didn't provide a target for a city enchantment";
 				
 				else if ((getCityLocation ().getX () < 0) || (getCityLocation ().getY () < 0) || (getCityLocation ().getZ () < 0) ||
-					(getCityLocation ().getX () >= mom.getSessionDescription ().getMapSize ().getWidth ()) ||
-					(getCityLocation ().getY () >= mom.getSessionDescription ().getMapSize ().getHeight ()) ||
+					(getCityLocation ().getX () >= mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) ||
+					(getCityLocation ().getY () >= mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) ||
 					(getCityLocation ().getZ () >= mom.getServerDB ().getPlanes ().size ()))
 					
 					error = "The coordinates you are trying to aim a city spell at are off the edge of the map";

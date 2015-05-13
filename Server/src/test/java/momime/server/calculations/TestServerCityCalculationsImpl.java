@@ -13,9 +13,9 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RacePopulationTaskProduction;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -158,13 +158,13 @@ public final class TestServerCityCalculationsImpl
 		when (db.findRace ("RC03", "calculateDoubleFarmingRate")).thenReturn (halfling);
 
 		// Session description
-		final MapSizeData mapSizeData = ServerTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSizeData);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Overland map
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (mapSizeData);
+		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (overlandMapSize);
 
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -350,7 +350,7 @@ public final class TestServerCityCalculationsImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
@@ -387,34 +387,34 @@ public final class TestServerCityCalculationsImpl
 			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
 				(!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)))
 
-				assertTrue (building.getBuildingID (), calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getMapSize (), db));
+				assertTrue (building.getBuildingID (), calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getOverlandMapSize (), db));
 
 		// Barbarians can't build Universities
 		cityData.setCityRaceID ("RC01");
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL20", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL20", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 
 		// Barbarians can't build Banks, because they can't build Universities
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL27", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL27", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 
 		// Barbarians can't build Merchants' Guilds, because they can't build Banks, because they can't build Universities
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 
 		// Orcs can't build Ship Wrights' Guilds if there's no water
 		cityData.setCityRaceID ("RC09");
 		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL12", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL12", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 
 		// Orcs can't build Ship Yards if there's no water, because they can't build a Ship Wrights' Guild
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 
 		// Orcs can't build Merchants' Guilds if there's no water, because they can't build a Ship Yard, because they can't build a Ship Wrights' Guild
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 
 		// If we got a Ship Wrights' Guild and subsequently the water all dried up then we *can* then construct the other building types
 		// (Ok bad example, but similar with Sawmills + forests disappearing is definitely possible)
@@ -425,8 +425,8 @@ public final class TestServerCityCalculationsImpl
 		buildings.add (shipWrightsGuild);
 
 		assertTrue (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 		assertTrue (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 	}
 }

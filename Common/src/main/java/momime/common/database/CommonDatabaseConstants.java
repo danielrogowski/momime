@@ -6,12 +6,6 @@ package momime.common.database;
 public final class CommonDatabaseConstants
 {
 	/** Path and name to locate the common XSD file on the classpath */
-	public static final String NEW_GAME_XSD_LOCATION = "/momime.common.database/MoMIMENewGameDatabase.xsd";
-
-	/** Namespace of the common XSD */
-	public static final String NEW_GAME_XSD_NAMESPACE_URI = "http://momime/common/database/newgame";
-
-	/** Path and name to locate the common XSD file on the classpath */
 	public static final String COMMON_XSD_LOCATION = "/momime.common.database/MoMIMECommonDatabase.xsd";
 
 	/** Namespace of the common XSD */

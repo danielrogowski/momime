@@ -319,7 +319,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 						sampleUnit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-							pub.getPick (), getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()));
+							pub.getPick (), getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()));
 					
 						getUnitUtils ().initializeUnitSkills (sampleUnit, startingExperience, getClient ().getClientDB ());
 						getUnitInfoPanel ().showUnit (sampleUnit);
@@ -391,7 +391,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				
 				// and we have any necessary prerequisite tile types (e.g. Ship Wrights' Guild requires an adjacent Ocean tile)
 				(getCityCalculations ().buildingPassesTileTypeRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-					getCityLocation (), thisBuilding, getClient ().getSessionDescription ().getMapSize ())))
+					getCityLocation (), thisBuilding, getClient ().getSessionDescription ().getOverlandMapSize ())))
 			{
 				// Check the race inhabiting this city can construct this kind of building
 				boolean canBuild = true;

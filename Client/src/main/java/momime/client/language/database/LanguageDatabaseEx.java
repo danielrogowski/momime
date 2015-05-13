@@ -149,10 +149,10 @@ public interface LanguageDatabaseEx
 	public SpellLang findSpell (final String spellID);
 	
 	/**
-	 * @param mapSizeID Map size ID to search for
-	 * @return Map size description; or replays back the ID if no description exists
+	 * @param overlandMapSizeID Overland map size ID to search for
+	 * @return Overland map size description; or replays back the ID if no description exists
 	 */
-	public String findMapSizeDescription (final String mapSizeID);
+	public String findOverlandMapSizeDescription (final String overlandMapSizeID);
 	
 	/**
 	 * @param landProportionID Land proportion ID to search for

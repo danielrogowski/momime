@@ -17691,7 +17691,7 @@
 	<unitMagicRealm unitMagicRealmID="LTU">
 		<unitMagicRealmName>Undead (killed by Ghouls/Life Steal or Black Channeled units)</unitMagicRealmName>
 	</unitMagicRealm>
-	<mapSize mapSizeID="MS01">
+	<overlandMapSize overlandMapSizeID="MS01">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>30</width>
 		<height>20</height>
@@ -17712,9 +17712,9 @@
 		<mapSizePlane planeNumber="1">
 			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 		</mapSizePlane>
-		<mapSizeDescription>Tiny 30x20 map</mapSizeDescription>
-	</mapSize>
-	<mapSize mapSizeID="MS02">
+		<overlandMapSizeDescription>Tiny 30x20 map</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS02">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>45</width>
 		<height>30</height>
@@ -17735,9 +17735,9 @@
 		<mapSizePlane planeNumber="1">
 			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 		</mapSizePlane>
-		<mapSizeDescription>Small 45x30 map</mapSizeDescription>
-	</mapSize>
-	<mapSize mapSizeID="MS03">
+		<overlandMapSizeDescription>Small 45x30 map</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS03">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>60</width>
 		<height>40</height>
@@ -17758,9 +17758,9 @@
 		<mapSizePlane planeNumber="1">
 			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 		</mapSizePlane>
-		<mapSizeDescription>Standard 60x40 map</mapSizeDescription>
-	</mapSize>
-	<mapSize mapSizeID="MS04">
+		<overlandMapSizeDescription>Standard 60x40 map</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS04">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>75</width>
 		<height>50</height>
@@ -17781,9 +17781,9 @@
 		<mapSizePlane planeNumber="1">
 			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 		</mapSizePlane>
-		<mapSizeDescription>Large 75x50 map</mapSizeDescription>
-	</mapSize>
-	<mapSize mapSizeID="MS05">
+		<overlandMapSizeDescription>Large 75x50 map</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS05">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>90</width>
 		<height>60</height>
@@ -17804,8 +17804,8 @@
 		<mapSizePlane planeNumber="1">
 			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
 		</mapSizePlane>
-		<mapSizeDescription>Huge 90x60 map</mapSizeDescription>
-	</mapSize>
+		<overlandMapSizeDescription>Huge 90x60 map</overlandMapSizeDescription>
+	</overlandMapSize>
 	<landProportion landProportionID="LP01">
 		<percentageOfMapIsLand>15</percentageOfMapIsLand>
 		<percentageOfLandIsHills>25</percentageOfLandIsHills>
@@ -18348,7 +18348,7 @@
 		<spellSettingDescription>Recommended</spellSettingDescription>
 	</spellSetting>
 	<newGameDefaults>
-		<defaultMapSizeID>MS03</defaultMapSizeID>
+		<defaultOverlandMapSizeID>MS03</defaultOverlandMapSizeID>
 		<defaultLandProportionID>LP03</defaultLandProportionID>
 		<defaultNodeStrengthID>NS03</defaultNodeStrengthID>
 		<defaultDifficultyLevelID>DL05</defaultDifficultyLevelID>

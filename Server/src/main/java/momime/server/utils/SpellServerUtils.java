@@ -1,7 +1,7 @@
 package momime.server.utils;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SwitchResearch;
+import momime.common.database.SwitchResearch;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

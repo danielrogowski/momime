@@ -87,7 +87,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		log.trace ("Entering start");
 
 		// Work out the direction of travel
-		final int direction = getCoordinateSystemUtils ().determineDirectionTo (getClient ().getSessionDescription ().getMapSize (),
+		final int direction = getCoordinateSystemUtils ().determineDirectionTo (getClient ().getSessionDescription ().getOverlandMapSize (),
 			getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveTo ().getX (), getMoveTo ().getY ());
 		
 		// Split the direction into X and Y components

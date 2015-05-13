@@ -4343,9 +4343,21 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<citySpellEffectName>Pestilence</citySpellEffectName>
 		<citySpellEffectHelpText>Spreads a deadly plague throughout the affected city killing 1,000 population each turn if the current population exceeds a (1-10 roll) * 1000.</citySpellEffectHelpText>
 	</citySpellEffect>
-	<mapSize mapSizeID="60x40">
-		<mapSizeDescription>60 x 40</mapSizeDescription>
-	</mapSize>
+	<overlandMapSize overlandMapSizeID="MS01">
+		<overlandMapSizeDescription>Tiny</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS02">
+		<overlandMapSizeDescription>Small</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS03">
+		<overlandMapSizeDescription>Standard</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS04">
+		<overlandMapSizeDescription>Large</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS05">
+		<overlandMapSizeDescription>Huge</overlandMapSizeDescription>
+	</overlandMapSize>
 	<landProportion landProportionID="LP01">
 		<landProportionDescription>Small</landProportionDescription>
 	</landProportion>

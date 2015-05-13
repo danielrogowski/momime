@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
-	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
-	xmlns:momimemsgs="http://momime/common/messages"
+	xmlns:momimecommon="http://momime/common/database" xmlns:momimemsgs="http://momime/common/messages"
 	xmlns:momimectos="http://momime/common/messages/clienttoserver" targetNamespace="http://momime/common/messages/clienttoserver"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
-	<xsd:import namespace="http://momime/common/database/newgame" />
 	<xsd:import namespace="http://momime/common/database" />
 	<xsd:import namespace="http://momime/common/messages" />
     
@@ -201,7 +199,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="optionalFarmers" type="momimenewgame:cityPopulationDiv1000" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="optionalFarmers" type="momimecommon:cityPopulationDiv1000" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -453,7 +451,7 @@ Auto switched on or not - this makes it easier to allow the player to switch Aut
     							<xsd:documentation>toProductionTypeID is implied; if from=Gold then to=Mana, and if from=Mana then to=Gold</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
-						<xsd:element minOccurs="1" maxOccurs="1" name="fromValue" type="momimenewgame:undoubledProductionValue" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="fromValue" type="momimecommon:undoubledProductionValue" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

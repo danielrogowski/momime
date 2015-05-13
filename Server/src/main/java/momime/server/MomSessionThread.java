@@ -201,10 +201,10 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
 		{
 			final MapAreaOfFogOfWarStates fogOfWarPlane = new MapAreaOfFogOfWarStates ();
-			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)
+			for (int y = 0; y < getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 			{
 				final MapRowOfFogOfWarStates fogOfWarRow = new MapRowOfFogOfWarStates ();
-				for (int x = 0; x < getSessionDescription ().getMapSize ().getWidth (); x++)
+				for (int x = 0; x < getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					fogOfWarRow.getCell ().add (FogOfWarStateID.NEVER_SEEN);
 
 				fogOfWarPlane.getRow ().add (fogOfWarRow);
@@ -223,10 +223,10 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
 		{
 			final MapAreaOfMemoryGridCells fogOfWarPlane = new MapAreaOfMemoryGridCells ();
-			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)
+			for (int y = 0; y < getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 			{
 				final MapRowOfMemoryGridCells fogOfWarRow = new MapRowOfMemoryGridCells ();
-				for (int x = 0; x < getSessionDescription ().getMapSize ().getWidth (); x++)
+				for (int x = 0; x < getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					fogOfWarRow.getCell ().add (new MemoryGridCell ());
 
 				fogOfWarPlane.getRow ().add (fogOfWarRow);

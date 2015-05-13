@@ -15,10 +15,10 @@ import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.newgame.FogOfWarSettingData;
 import momime.common.messages.CaptureCityDecisionID;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -90,7 +90,7 @@ public final class TestDamageProcessorImpl
 		defender.setDamageTaken (3);
 		
 		// Session description
-		final FogOfWarSettingData fogOfWarSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		
@@ -104,7 +104,7 @@ public final class TestDamageProcessorImpl
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
-		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
@@ -253,7 +253,7 @@ public final class TestDamageProcessorImpl
 		defender.setDamageTaken (3);
 		
 		// Session description
-		final FogOfWarSettingData fogOfWarSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		
@@ -267,7 +267,7 @@ public final class TestDamageProcessorImpl
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
-		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);

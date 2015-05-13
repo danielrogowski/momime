@@ -16,11 +16,11 @@ import java.util.List;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
-import momime.common.database.newgame.DifficultyLevelData;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
@@ -152,17 +152,17 @@ public final class TestCityProcessingImpl
 		when (db.getBuildings ()).thenReturn (buildings);
 		
 		// Session description
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
 		sys.setRaiderCityCount (2);
 
-		final DifficultyLevelData difficultyLevel = new DifficultyLevelData ();
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setWizardCityStartSize (4);
 		difficultyLevel.setRaiderCityStartSizeMin (2);
 		difficultyLevel.setRaiderCityStartSizeMax (11);
 		difficultyLevel.setRaiderCityGrowthCap (8);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (sys);
+		sd.setOverlandMapSize (sys);
 		sd.setDifficultyLevel (difficultyLevel);
 		
 		// General server knowledge
@@ -427,10 +427,10 @@ public final class TestCityProcessingImpl
 		when (db.findUnit ("UN001", "growCitiesAndProgressConstructionProjects")).thenReturn (unit);				
 		
 		// Session description
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		final FogOfWarSettingData fogOfWarSettings = new FogOfWarSettingData (); 
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (sys);
+		sd.setOverlandMapSize (sys);
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		
 		// General server knowledge
@@ -1047,9 +1047,9 @@ public final class TestCityProcessingImpl
 		when (db.findTaxRate ("TR03", "changeTaxRate")).thenReturn (taxRate);
 		
 		// Session description
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (sys);
+		sd.setOverlandMapSize (sys);
 		
 		// General server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);

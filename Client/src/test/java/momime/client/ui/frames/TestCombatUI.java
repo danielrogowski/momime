@@ -39,11 +39,11 @@ import momime.client.utils.WizardClientUtilsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.TileType;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -148,8 +148,8 @@ public final class TestCombatUI
 		when (db.findMapFeature ("MF01", "CombatUI")).thenReturn (mapFeature);
 		
 		// Overland map
-		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -162,10 +162,10 @@ public final class TestCombatUI
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Session description
-		final CombatMapSizeData combatMapSize = ClientTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapSize = ClientTestData.createCombatMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setCombatMapSize (combatMapSize);
 		
 		when (client.getSessionDescription ()).thenReturn (sd);
@@ -229,7 +229,7 @@ public final class TestCombatUI
 		
 		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
 		when (spellCalculations.calculateDoubleCombatCastingRangePenalty
-			(attackingPlayer, new MapCoordinates3DEx (20, 10, 0), false, fow.getMap (), fow.getBuilding (), mapSize)).thenReturn (3);
+			(attackingPlayer, new MapCoordinates3DEx (20, 10, 0), false, fow.getMap (), fow.getBuilding (), overlandMapSize)).thenReturn (3);
 		
 		// Players involved in combat
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);

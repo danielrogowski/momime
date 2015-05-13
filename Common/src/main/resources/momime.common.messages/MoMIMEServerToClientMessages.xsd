@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
-	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
+	xmlns:momimecommon="http://momime/common/database"
 	xmlns:momimeclient="http://momime/client/database" xmlns:momimemsgs="http://momime/common/messages"
 	xmlns:momimestoc="http://momime/common/messages/servertoclient" targetNamespace="http://momime/common/messages/servertoclient"
 	jaxb:version="2.0">
@@ -9,7 +9,6 @@
 	<xsd:import namespace="http://www.ndg.com/map" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
-	<xsd:import namespace="http://momime/common/database/newgame" />
 	<xsd:import namespace="http://momime/common/database" />
 	<xsd:import namespace="http://momime/common/messages" />
 	<xsd:import namespace="http://momime/client/database" />
@@ -337,8 +336,8 @@ since new GPVs are sent (to update mana) every time we cast a combat spell.</xsd
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="overlandCastingSkillRemainingThisTurn" type="momimenewgame:undoubledProductionValue" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="castingSkillRemainingThisCombat" type="momimenewgame:undoubledProductionValue" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="overlandCastingSkillRemainingThisTurn" type="momimecommon:undoubledProductionValue" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="castingSkillRemainingThisCombat" type="momimecommon:undoubledProductionValue" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="resourceValue" type="momimemsgs:momResourceValue" />
 					</xsd:sequence>
 				</xsd:extension>
@@ -438,7 +437,7 @@ This is that tells the client where to draw the white arrows showing the unit st
 	<xsd:complexType name="updateOverlandMovementRemainingUnit">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleMovesLeft" type="momimenewgame:integerMapDistance" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleMovesLeft" type="momimecommon:integerMapDistance" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -556,7 +555,7 @@ details of all the units in the combat and the terrain, so is probably the most 
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates2D" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="direction" type="map:mapDirection" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="doubleCombatMovesLeft" type="momimenewgame:integerMapDistance" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="doubleCombatMovesLeft" type="momimecommon:integerMapDistance" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -594,8 +593,8 @@ details of all the units in the combat and the terrain, so is probably the most 
 Will be null if combat wasn't at a city, or if it was a city combat and the defender won.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
-						<xsd:element minOccurs="0" maxOccurs="1" name="goldSwiped" type="momimenewgame:undoubledProductionValue" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="goldFromRazing" type="momimenewgame:undoubledProductionValue" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="goldSwiped" type="momimecommon:undoubledProductionValue" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="goldFromRazing" type="momimecommon:undoubledProductionValue" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1141,7 +1140,7 @@ Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID wi
 						<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDamageTaken" type="momimecommon:unitAttributeValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDirection" type="map:mapDirection" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDoubleCombatMovesLeft" type="momimenewgame:integerMapDistance" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDoubleCombatMovesLeft" type="momimecommon:integerMapDistance" />
 						
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />

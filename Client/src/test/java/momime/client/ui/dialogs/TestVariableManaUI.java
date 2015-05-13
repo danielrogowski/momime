@@ -19,7 +19,7 @@ import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
-import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.utils.SpellUtilsImpl;
@@ -76,7 +76,7 @@ public final class TestVariableManaUI
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		// Session description
-		final SpellSettingData spellSettings = new SpellSettingData ();
+		final SpellSetting spellSettings = new SpellSetting ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (spellSettings);

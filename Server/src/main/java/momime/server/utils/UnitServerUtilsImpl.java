@@ -14,7 +14,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
-import momime.common.database.newgame.UnitSettingData;
+import momime.common.database.UnitSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -257,7 +257,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @return Whether unit can be added here or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills, final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db) throws RecordNotFoundException
+	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
+		final FogOfWarMemory trueMap, final UnitSetting settings, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering canUnitBeAddedHere: " + addLocation + ", " + testUnit.getUnitID ());
 
@@ -345,10 +346,10 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		else
 		{
 			int direction = 1;
-			while ( (addLocation == null) && (direction <= getCoordinateSystemUtils ().getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
+			while ((addLocation == null) && (direction <= getCoordinateSystemUtils ().getMaxDirection (sd.getOverlandMapSize ().getCoordinateSystemType ())))
 			{
 				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (desiredLocation);
-				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), adjacentLocation, direction))
+				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), adjacentLocation, direction))
 					if (canUnitBeAddedHere (adjacentLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
 					{
 						addLocation = adjacentLocation;

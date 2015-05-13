@@ -23,7 +23,7 @@ import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -119,7 +119,7 @@ public final class TestSpellBookUI
 		when (gfx.findPick ("MB02", "languageOrPageChanged")).thenReturn (greenPick);
 		
 		// Session description
-		final SpellSettingData spellSettings = new SpellSettingData ();
+		final SpellSetting spellSettings = new SpellSetting ();
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (spellSettings);
 		

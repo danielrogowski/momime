@@ -17,7 +17,7 @@ the common project and so accessible to the server so that the server is able to
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSize" type="momimecommon:mapSize" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimecommon:overlandMapSize" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportion" type="momimecommon:landProportion" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrength" type="momimecommon:nodeStrength" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevel" type="momimecommon:difficultyLevel" />

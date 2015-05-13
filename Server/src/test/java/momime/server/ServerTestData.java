@@ -15,9 +15,9 @@ import javax.xml.validation.SchemaFactory;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.DifficultyLevelNodeStrength;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapAreaOfFogOfWarStates;
@@ -36,8 +36,8 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.server.database.DifficultyLevelSvr;
 import momime.server.database.FogOfWarSettingSvr;
 import momime.server.database.LandProportionSvr;
-import momime.server.database.MapSizeSvr;
 import momime.server.database.NodeStrengthSvr;
+import momime.server.database.OverlandMapSizeSvr;
 import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseExImpl;
@@ -104,7 +104,7 @@ public final class ServerTestData
 	
 	/**
 	 * @param db Server database loaded from XML
-	 * @param mapSizeID Map size to use
+	 * @param overlandMapSizeID Overland map size to use
 	 * @param landProportionID Land proportion to use
 	 * @param nodeStrengthID Node strength to use
 	 * @param difficultyLevelID Difficulty level to use
@@ -115,19 +115,19 @@ public final class ServerTestData
 	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
 	 */
 	public final static MomSessionDescription createMomSessionDescription (final ServerDatabaseEx db,
-		final String mapSizeID, final String landProportionID, final String nodeStrengthID, final String difficultyLevelID,
+		final String overlandMapSizeID, final String landProportionID, final String nodeStrengthID, final String difficultyLevelID,
 		final String fogOfWarSettingID, final String unitSettingID, final String spellSettingID)
 		throws RecordNotFoundException
 	{
 		final MomSessionDescription sd = new MomSessionDescription ();
 
-		for (final MapSizeSvr mapSize : db.getMapSizes ())
-			if (mapSize.getMapSizeID ().equals (mapSizeID))
-				sd.setMapSize (mapSize);
-		if (sd.getMapSize () == null)
-			throw new RecordNotFoundException (MapSizeSvr.class.getName (), mapSizeID, "createMomSessionDescription");
+		for (final OverlandMapSizeSvr mapSize : db.getOverlandMapSizes ())
+			if (mapSize.getOverlandMapSizeID ().equals (overlandMapSizeID))
+				sd.setOverlandMapSize (mapSize);
+		if (sd.getOverlandMapSize () == null)
+			throw new RecordNotFoundException (OverlandMapSizeSvr.class.getName (), overlandMapSizeID, "createMomSessionDescription");
 
-		sd.setCombatMapSize (createCombatMapSizeData ());
+		sd.setCombatMapSize (createCombatMapSize ());
 		
 		for (final LandProportionSvr landProportion : db.getLandProportions ())
 			if (landProportion.getLandProportionID ().equals (landProportionID))
@@ -141,16 +141,40 @@ public final class ServerTestData
 		if (sd.getNodeStrength () == null)
 			throw new RecordNotFoundException (NodeStrengthSvr.class.getName (), nodeStrengthID, "createMomSessionDescription");
 
-		for (final DifficultyLevelSvr difficultyLevel : db.getDifficultyLevels ())
-			if (difficultyLevel.getDifficultyLevelID ().equals (difficultyLevelID))
+		for (final DifficultyLevelSvr src : db.getDifficultyLevels ())
+			if (src.getDifficultyLevelID ().equals (difficultyLevelID))
 			{
-				sd.setDifficultyLevel (difficultyLevel);
-
-				// Also find difficulty level - node strength settings
-				for (final DifficultyLevelNodeStrength nodeStrength : difficultyLevel.getDifficultyLevelNodeStrength ())
-					if (nodeStrength.getNodeStrengthID ().equals (nodeStrengthID))
-						sd.getDifficultyLevelNodeStrength ().add (nodeStrength);
+				// Copy the difficulty level, so we can reduce the difficulty level-node strength records to only those matching the requested node strength
+				final DifficultyLevelSvr dest = new DifficultyLevelSvr ();
+			    dest.setHumanSpellPicks				(src.getHumanSpellPicks ());
+			    dest.setAiSpellPicks					(src.getAiSpellPicks ());
+			    dest.setHumanStartingGold			(src.getHumanStartingGold ());
+			    dest.setAiStartingGold					(src.getAiStartingGold ());
+			    dest.setCustomWizards				(src.isCustomWizards ());
+			    dest.setEachWizardOnlyOnce		(src.isEachWizardOnlyOnce ());
+			    dest.setNormalLairCount				(src.getNormalLairCount ());
+			    dest.setWeakLairCount				(src.getWeakLairCount ());
+			    dest.setTowerMonstersMinimum	(src.getTowerMonstersMinimum ());
+			    dest.setTowerMonstersMaximum	(src.getTowerMonstersMaximum ());
+			    dest.setTowerTreasureMinimum	(src.getTowerTreasureMinimum ());
+			    dest.setTowerTreasureMaximum	(src.getTowerTreasureMaximum ());
+			    dest.setRaiderCityStartSizeMin		(src.getRaiderCityStartSizeMin ());
+			    dest.setRaiderCityStartSizeMax	(src.getRaiderCityStartSizeMax ());
+			    dest.setRaiderCityGrowthCap		(src.getRaiderCityGrowthCap ());
+			    dest.setWizardCityStartSize			(src.getWizardCityStartSize ());
+			    dest.setCityMaxSize					(src.getCityMaxSize ());
+			    dest.setDifficultyLevelID				(src.getDifficultyLevelID ());
+			    dest.setDifficultyLevelDescription	(src.getDifficultyLevelDescription ());
+				
+			    dest.getDifficultyLevelPlane ().addAll (src.getDifficultyLevelPlane ());
+				sd.setDifficultyLevel (dest);
+				
+				// Copy only the relevant difficulty level-node strength records
+				for (final DifficultyLevelNodeStrength ns : src.getDifficultyLevelNodeStrength ())
+					if (ns.getNodeStrengthID ().equals (nodeStrengthID))
+						dest.getDifficultyLevelNodeStrength ().add (ns);
 			}
+		
 		if (sd.getDifficultyLevel () == null)
 			throw new RecordNotFoundException (DifficultyLevelSvr.class.getName (), difficultyLevelID, "createMomSessionDescription");
 
@@ -192,9 +216,9 @@ public final class ServerTestData
 	/**
 	 * @return Overland map coordinate system that can be included into session description
 	 */
-	public final static MapSizeData createMapSizeData ()
+	public final static OverlandMapSize createOverlandMapSize ()
 	{
-		final MapSizeData sys = new MapSizeData ();
+		final OverlandMapSize sys = new OverlandMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
 		sys.setWidth (60);
 		sys.setHeight (40);
@@ -222,9 +246,9 @@ public final class ServerTestData
 	/**
 	 * @return Combat map coordinate system that can be included into session description
 	 */
-	public final static CombatMapSizeData createCombatMapSizeData ()
+	public final static CombatMapSize createCombatMapSize ()
 	{
-		final CombatMapSizeData sys = new CombatMapSizeData ();
+		final CombatMapSize sys = new CombatMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
 		sys.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
 		sys.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);

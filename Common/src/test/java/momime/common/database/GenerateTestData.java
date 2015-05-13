@@ -9,54 +9,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.newgame.CastingReductionCombination;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.database.newgame.SpellSettingData;
-import momime.common.database.newgame.SwitchResearch;
-import momime.common.database.Building;
-import momime.common.database.BuildingPopulationProductionModifier;
-import momime.common.database.BuildingRequiresTileType;
-import momime.common.database.CombatAreaAffectsPlayersID;
-import momime.common.database.CombatAreaEffect;
-import momime.common.database.CombatAreaEffectAttributeBonus;
-import momime.common.database.CombatAreaEffectSkillBonus;
-import momime.common.database.CombatTileBorder;
-import momime.common.database.CombatTileBorderBlocksMovementID;
-import momime.common.database.CombatTileType;
-import momime.common.database.ExperienceAttributeBonus;
-import momime.common.database.ExperienceLevel;
-import momime.common.database.ExperienceSkillBonus;
-import momime.common.database.FortressPickTypeProduction;
-import momime.common.database.FortressPlaneProduction;
-import momime.common.database.MapFeature;
-import momime.common.database.MapFeatureProduction;
-import momime.common.database.Pick;
-import momime.common.database.PickPrerequisite;
-import momime.common.database.PickProductionBonus;
-import momime.common.database.PickType;
-import momime.common.database.Plane;
-import momime.common.database.ProductionType;
-import momime.common.database.Race;
-import momime.common.database.RacePopulationTask;
-import momime.common.database.RacePopulationTaskProduction;
-import momime.common.database.RaceUnrest;
-import momime.common.database.RangedAttackType;
-import momime.common.database.RoundingDirectionID;
-import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
-import momime.common.database.SummonedUnit;
-import momime.common.database.TaxRate;
-import momime.common.database.TileType;
-import momime.common.database.Unit;
-import momime.common.database.UnitHasAttributeValue;
-import momime.common.database.UnitHasSkill;
-import momime.common.database.UnitMagicRealm;
-import momime.common.database.UnitSkill;
-import momime.common.database.UnitType;
-import momime.common.database.UnitUpkeep;
-import momime.common.database.WeaponGrade;
-import momime.common.database.WeaponGradeAttributeBonus;
-import momime.common.database.WeaponGradeSkillBonus;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfCombatTiles;
@@ -1367,9 +1319,9 @@ public final class GenerateTestData
 	 *
 	 * @return Spell settings, configured like the original spell settings in the server XML file
 	 */
-	public final static SpellSettingData createOriginalSpellSettings ()
+	public final static SpellSetting createOriginalSpellSettings ()
 	{
-		final SpellSettingData settings = new SpellSettingData ();
+		final SpellSetting settings = new SpellSetting ();
 		settings.setSwitchResearch (SwitchResearch.DISALLOWED);
 		settings.setSpellBooksToObtainFirstReduction (8);
 		settings.setSpellBooksCastingReduction (10);
@@ -1396,9 +1348,9 @@ public final class GenerateTestData
 
 	 * @return Spell settings, configured like the recommended spell settings in the server XML file
 	 */
-	public final static SpellSettingData createRecommendedSpellSettings ()
+	public final static SpellSetting createRecommendedSpellSettings ()
 	{
-		final SpellSettingData settings = new SpellSettingData ();
+		final SpellSetting settings = new SpellSetting ();
 		settings.setSwitchResearch (SwitchResearch.FREE);
 		settings.setSpellBooksToObtainFirstReduction (8);
 		settings.setSpellBooksCastingReduction (8);
@@ -1517,9 +1469,9 @@ public final class GenerateTestData
 	/**
 	 * @return Overland map coordinate system that can be included into session description
 	 */
-	public final static MapSizeData createMapSizeData ()
+	public final static OverlandMapSize createOverlandMapSize ()
 	{
-		final MapSizeData sys = new MapSizeData ();
+		final OverlandMapSize sys = new OverlandMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
 		sys.setWidth (60);
 		sys.setHeight (40);

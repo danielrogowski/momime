@@ -25,7 +25,7 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.WizardClientUtils;
-import momime.common.database.newgame.MapSizeData;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -99,10 +99,10 @@ public final class TestOverlandMapUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Set up session description
-		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
 		
 		final MomClient client = mock (MomClient.class);
@@ -223,7 +223,7 @@ public final class TestOverlandMapUI
 		}
 		
 		final OverlandMapBitmapGenerator gen = mock (OverlandMapBitmapGenerator.class);
-		when (gen.generateOverlandMapBitmaps (0, 0, 0, mapSize.getWidth (), mapSize.getHeight ())).thenReturn (overlandMapBitmaps);
+		when (gen.generateOverlandMapBitmaps (0, 0, 0, overlandMapSize.getWidth (), overlandMapSize.getHeight ())).thenReturn (overlandMapBitmaps);
 		
 		// Set up form
 		final OverlandMapUI map = new OverlandMapUI ();

@@ -21,7 +21,7 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
 import momime.common.database.CommonXsdResourceResolver;
-import momime.common.database.newgame.MapSizeData;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -78,10 +78,10 @@ public final class TestOverlandMapBitmapGeneratorImpl
 		config.setOverlandSmoothTerrain (true);
 		
 		// Session description
-		final MapSizeData mapSizeData = ClientTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSizeData);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Overland map
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -111,7 +111,7 @@ public final class TestOverlandMapBitmapGeneratorImpl
 		// Display each plane
 		for (int plane = 0; plane < 2; plane++)
 		{
-			final BufferedImage [] bitmaps = gen.generateOverlandMapBitmaps (plane, 0, 0, mapSizeData.getWidth (), mapSizeData.getHeight ());
+			final BufferedImage [] bitmaps = gen.generateOverlandMapBitmaps (plane, 0, 0, overlandMapSize.getWidth (), overlandMapSize.getHeight ());
 			
 			// Do what automated checks we can
 			assertEquals (4, bitmaps.length);

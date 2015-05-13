@@ -307,7 +307,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (),
-					mom.getSessionDescription ().getMapSize (), mom.getServerDB ());
+					mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 				final long goldSwiped = (totalGold * cityPopulation) / totalPopulation;
 				msg.setGoldSwiped ((int) goldSwiped);
 				

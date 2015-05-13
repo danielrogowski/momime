@@ -19,12 +19,12 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.CaptureCityDecisionID;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -219,7 +219,7 @@ public final class TestCombatStartAndEndImpl
 		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		// Combat map generator
-		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
@@ -372,7 +372,7 @@ public final class TestCombatStartAndEndImpl
 		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		// Combat map generator
-		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
@@ -523,7 +523,7 @@ public final class TestCombatStartAndEndImpl
 		tc.setCityData (cityData);
 		
 		// Combat map generator
-		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
@@ -904,7 +904,7 @@ public final class TestCombatStartAndEndImpl
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
@@ -1027,7 +1027,7 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1037,12 +1037,12 @@ public final class TestCombatStartAndEndImpl
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
 		sd.setFogOfWarSetting (fowSettings);
-		sd.setMapSize (sys);
+		sd.setOverlandMapSize (sys);
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -1223,7 +1223,7 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1233,12 +1233,12 @@ public final class TestCombatStartAndEndImpl
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
 		sd.setFogOfWarSetting (fowSettings);
-		sd.setMapSize (sys);
+		sd.setOverlandMapSize (sys);
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();

@@ -1311,9 +1311,9 @@ public final class CityViewUI extends MomClientFrameUI
 
 		// This might move us off the top or left of the map and get -ve coordinates if they aren't wrapping edges, but that's fine, the bitmap generator copes with that
 		final MapCoordinates3DEx mapTopLeft = new MapCoordinates3DEx (getCityLocation ());
-		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
-		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
-		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
 		
 		miniMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapTopLeft.getZ (), mapTopLeft.getX (), mapTopLeft.getY (), 7, 7);
 		
@@ -1337,9 +1337,9 @@ public final class CityViewUI extends MomClientFrameUI
 		log.trace ("Entering regenerateCityViewMiniMapFogOfWar: " + getCityLocation ());
 
 		final MapCoordinates3DEx mapTopLeft = new MapCoordinates3DEx (getCityLocation ());
-		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
-		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
-		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
 		
 		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapTopLeft.getZ (), mapTopLeft.getX (), mapTopLeft.getY (), 7, 7);
 		

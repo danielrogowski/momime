@@ -66,8 +66,8 @@ public final class MomAIImpl implements MomAI
 		// e.g. if a city has minimal defence and has a university almost built and then a
 		// group of halbardiers show up 2 squares away, you're going to want to stuff the university and rush buy the best unit you can afford
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&

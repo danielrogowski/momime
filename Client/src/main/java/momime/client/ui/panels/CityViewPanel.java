@@ -282,7 +282,7 @@ public final class CityViewPanel extends JPanel
 			// Terrain matches?
 			((element.getTileTypeID () == null) || (getOverlandMapClientUtils ().findAdjacentTileType
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-				getClient ().getSessionDescription ().getMapSize (), element.getTileTypeID ()))) &&
+				getClient ().getSessionDescription ().getOverlandMapSize (), element.getTileTypeID ()))) &&
 			
 			// Building matches?
 			((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding

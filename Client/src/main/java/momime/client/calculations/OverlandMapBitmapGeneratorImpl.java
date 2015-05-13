@@ -17,8 +17,8 @@ import momime.client.graphics.database.SmoothedTileTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MemoryGridCell;
 
@@ -77,8 +77,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	{
 		log.trace ("Entering afterJoinedSession");
 
-		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-		smoothedTiles = new SmoothedTileGfx [mapSize.getDepth ()] [mapSize.getHeight ()] [mapSize.getWidth ()];
+		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
+		smoothedTiles = new SmoothedTileGfx [overlandMapSize.getDepth ()] [overlandMapSize.getHeight ()] [overlandMapSize.getWidth ()];
 
 		log.trace ("Exiting afterJoinedSession");
 	}	
@@ -93,16 +93,16 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	{
 		log.trace ("Entering smoothMapTerrain: " + areaToSmooth);
 
-		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
+		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
+		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (overlandMapSize.getCoordinateSystemType ());
 		
 		// Choose the appropriate tile set
 		final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "smoothMapTerrain");
 		
 		// Now check each map cell
-		for (int planeNo = 0; planeNo < mapSize.getDepth (); planeNo++) 
-			for (int y = 0; y < mapSize.getHeight (); y++) 
-				for (int x = 0; x < mapSize.getWidth (); x++)
+		for (int planeNo = 0; planeNo < overlandMapSize.getDepth (); planeNo++) 
+			for (int y = 0; y < overlandMapSize.getHeight (); y++) 
+				for (int x = 0; x < overlandMapSize.getWidth (); x++)
 					if ((areaToSmooth == null) || ((areaToSmooth.get (x, y, planeNo) != null) && (areaToSmooth.get (x, y, planeNo))))
 					{
 						final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
@@ -166,7 +166,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 										else
 										{
 											final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, planeNo);
-											if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+											if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapSize, coords, d))
 											{
 												final MemoryGridCell otherGc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
@@ -213,7 +213,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	{
 		log.trace ("Entering generateOverlandMapBitmaps: " + mapViewPlane);
 
-		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
 		
 		// We need the tile set so we know how many animation frames there are
 		final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateOverlandMapBitmaps");
@@ -237,7 +237,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			for (int y = 0; y < countY; y++)
 			{
 				// If close to a non-wrapping edge (possible to put a city on the top/bottom row of tundra on the map), we may move off the end of the map
-				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
+				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
 				{
 					// Terrain
 					final SmoothedTileGfx tile = smoothedTiles [mapViewPlane] [mapCoords.getY ()] [mapCoords.getX ()];
@@ -278,9 +278,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 				}
 				
 				// Use proper routine to move map coordinates so it correctly handles wrapping edges (startX might = 58 on a width 60 map)
-				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
+				getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
 			}
-			getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+			getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
 		}
 		
 		// Cities have to be drawn in a 2nd pass, since they're larger than the terrain tiles
@@ -290,7 +290,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			mapCoords.setY (startY);
 			for (int y = 0; y < countY; y++)
 			{
-				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
+				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
 				{
 					final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
@@ -316,9 +316,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					}
 				}
 				
-				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
+				getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
 			}
-			getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+			getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
 		}
 		
 		// Node auras have to be drawn in a 3rd pass, so they appear over the top of cities
@@ -328,7 +328,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			mapCoords.setY (startY);
 			for (int y = 0; y < countY; y++)
 			{
-				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
+				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
 				{
 					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
@@ -344,9 +344,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						}
 				}
 				
-				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
+				getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
 			}
-			getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+			getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
 		}
 		
 		// Clean up the drawing contexts 
@@ -382,8 +382,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			fogOfWarBitmap = null;
 		else
 		{
-			final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-			final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
+			final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
+			final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (overlandMapSize.getCoordinateSystemType ());
 
 			// Choose the appropriate tile sets
 			final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateFogOfWarBitmap");
@@ -402,7 +402,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 				for (int y = 0; y < countY; y++)
 				{
 					// If close to a non-wrapping edge (possible to put a city on the top/bottom row of tundra on the map), we may move off the end of the map
-					if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
+					if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
 					{
 						final FogOfWarStateID state = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
 							(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
@@ -416,7 +416,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							for (int d = 1; d <= maxDirection; d++)
 							{
 								final MapCoordinates3DEx coords = new MapCoordinates3DEx (mapCoords.getX (), mapCoords.getY (), mapViewPlane);
-								if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+								if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapSize, coords, d))
 								{
 									final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
 										(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
@@ -449,7 +449,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 								for (int d = 1; d <= maxDirection; d++)
 								{
 									final MapCoordinates3DEx coords = new MapCoordinates3DEx (mapCoords.getX (), mapCoords.getY (), mapViewPlane);
-									if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+									if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapSize, coords, d))
 									{
 										final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
 											(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
@@ -482,9 +482,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					}
 					
 					// Use proper routine to move map coordinates so it correctly handles wrapping edges (startX might = 58 on a width 60 map)
-					getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
+					getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
 				}
-				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+				getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
 			}
 			
 			g.dispose ();

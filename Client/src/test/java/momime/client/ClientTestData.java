@@ -27,8 +27,8 @@ import momime.client.graphics.database.v0_9_6.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.database.OverlandMapSize;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -179,9 +179,9 @@ public final class ClientTestData
 	/**
 	 * @return Overland map coordinate system that can be included into session description
 	 */
-	public final static MapSizeData createMapSizeData ()
+	public final static OverlandMapSize createOverlandMapSize ()
 	{
-		final MapSizeData sys = new MapSizeData ();
+		final OverlandMapSize sys = new OverlandMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
 		sys.setWidth (60);
 		sys.setHeight (40);
@@ -234,9 +234,9 @@ public final class ClientTestData
 	/**
 	 * @return Combat map coordinate system that can be included into session description
 	 */
-	public final static CombatMapSizeData createCombatMapSizeData ()
+	public final static CombatMapSize createCombatMapSize ()
 	{
-		final CombatMapSizeData sys = new CombatMapSizeData ();
+		final CombatMapSize sys = new CombatMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
 		sys.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
 		sys.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);

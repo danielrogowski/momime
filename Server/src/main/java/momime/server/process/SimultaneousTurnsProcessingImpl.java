@@ -102,8 +102,8 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		
 		// Sell buildings
 		for (final PlaneSvr plane : mom.getServerDB ().getPlanes ())
-			for (int x = 0; x < mom.getSessionDescription ().getMapSize ().getWidth (); x++)
-				for (int y = 0; y < mom.getSessionDescription ().getMapSize ().getHeight (); y++)
+			for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 				{
 					final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
@@ -152,9 +152,9 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				error = "The map feature here has changed, you can no longer build a city here";
 			else if (getCityCalculations ().markWithinExistingCityRadius
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				settler.getUnitLocation ().getZ (), mom.getSessionDescription ().getMapSize ()).get (settler.getUnitLocation ().getX (), settler.getUnitLocation ().getY ()))
+				settler.getUnitLocation ().getZ (), mom.getSessionDescription ().getOverlandMapSize ()).get (settler.getUnitLocation ().getX (), settler.getUnitLocation ().getY ()))
 				
-				error = "Another city was built before yours and is within " + mom.getSessionDescription ().getMapSize ().getCitySeparation () +
+				error = "Another city was built before yours and is within " + mom.getSessionDescription ().getOverlandMapSize ().getCitySeparation () +
 					" squares of where you are trying to build, so you cannot build here anymore";
 
 			if (error != null)

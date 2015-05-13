@@ -9,8 +9,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.FogOfWarValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
@@ -189,8 +189,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
 		{
 			for (final PlaneSvr plane : db.getPlanes ())
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 						canSee (priv.getFogOfWar (), x, y, plane.getPlaneNumber ());
 		}
 		else
@@ -201,8 +201,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 			// Check what areas we can see because we have cities there
 			for (final PlaneSvr plane : db.getPlanes ())
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					{
 						final OverlandMapCityData trueCity = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 						if ((trueCity != null) && (trueCity.getCityPopulation () != null) && (trueCity.getCityPopulation () > 0))
@@ -216,12 +216,12 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 								// This does not handle the "Nature's Eye" spell - this is done with the spells below
 								final int scoutingRange = getServerCityCalculations ().calculateCityScoutingRange (trueMap.getBuilding (), coords, db);
 								if (scoutingRange >= 0)
-									canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), x, y, plane.getPlaneNumber (), scoutingRange);
+									canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), scoutingRange);
 								else
 								{
 									// Standard city pattern
 									for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-										if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
+										if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, direction.getDirectionID ()))
 											canSee (priv.getFogOfWar (), coords.getX (), coords.getY (), coords.getZ ());
 								}
 							}
@@ -230,7 +230,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 							else if ((awareness) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
 								(trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), null, null, null, coords, null) != null))
 
-								canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), x, y, plane.getPlaneNumber (), 1);
+								canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), 1);
 						}
 					}
 
@@ -246,11 +246,11 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
 						for (final PlaneSvr plane : db.getPlanes ())
-							canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
+							canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
 					}
 					else
 						// Can see single plane only
-						canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), thisUnit.getUnitLocation ().getZ (), scoutingRange);
+						canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), thisUnit.getUnitLocation ().getZ (), scoutingRange);
 				}
 
 			// Check what areas we can see because of visibility spells
@@ -261,7 +261,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					// See if this spell has a scouting range
 					final Integer scoutingRange = db.findSpell (thisSpell.getSpellID (), "markVisibleArea").getSpellScoutingRange ();
 					if (scoutingRange != null)
-						canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisSpell.getCityLocation ().getX (),
+						canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
 							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), scoutingRange);
 				}
 		}
@@ -364,8 +364,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
@@ -766,8 +766,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		// Lastly send the client details of the changes in the fog of war area itself
 		// Also sets the values on the server back normal
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final List<FogOfWarStateID> row = priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ();
 

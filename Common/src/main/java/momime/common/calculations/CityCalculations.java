@@ -3,10 +3,10 @@ package momime.common.calculations;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
+import momime.common.database.OverlandMapSize;
+import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
@@ -185,11 +185,11 @@ public interface CityCalculations
 	 *
 	 * @param map Our knowledge of the overland terrain map
 	 * @param plane Which plane we want to place a city on
-	 * @param mapSize Overland map coordinate system and extended details
+	 * @param overlandMapSize Overland map coordinate system and extended details
 	 * @return Map area with areas we know are too close to cities marked
 	 */
 	public MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
-		final int plane, final MapSizeData mapSize);
+		final int plane, final OverlandMapSize overlandMapSize);
 
 	/**
 	 * @param totalCost Total production cost of the building/unit

@@ -1,10 +1,10 @@
 package momime.client.language.database;
 
-import momime.client.language.database.v0_9_6.MapSize;
+import momime.client.language.database.v0_9_6.OverlandMapSize;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions
  */
-public final class MapSizeLang extends MapSize
+public final class OverlandMapSizeLang extends OverlandMapSize
 {
 }

@@ -278,8 +278,8 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			tc.setNodeSpiritUnitID (attackingSpirit.getUnitID ());
 			
 			// Resolve the node ownership out across the full area, updating the true map as well as players' memory of who can see each cell and informing the clients too
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					for (final PlaneSvr plane : db.getPlanes ())
 					{
 						final ServerGridCellEx aura = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);

@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.FogOfWarValue;
-import momime.common.database.newgame.MapSizeData;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.FogOfWarValue;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
@@ -75,7 +75,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		// True terrain
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		
 		final OverlandMapTerrainData td = new OverlandMapTerrainData ();
 		
@@ -93,7 +93,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setPlayerID (5);
 		pd1.setHuman (true);
 		
-		final MapVolumeOfMemoryGridCells map1 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map1 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc1 = map1.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 
 		final FogOfWarMemory mem1 = new FogOfWarMemory ();
@@ -101,7 +101,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		priv1.setFogOfWarMemory (mem1);
-		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
@@ -112,7 +112,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setPlayerID (-1);
 		pd2.setHuman (false);
 
-		final MapVolumeOfMemoryGridCells map2 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map2 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc2 = map2.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		final FogOfWarMemory mem2 = new FogOfWarMemory ();
@@ -120,7 +120,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		priv2.setFogOfWarMemory (mem2);
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
@@ -131,7 +131,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd3.setPlayerID (7);
 		pd3.setHuman (true);
 
-		final MapVolumeOfMemoryGridCells map3 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map3 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc3 = map3.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		final FogOfWarMemory mem3 = new FogOfWarMemory ();
@@ -139,7 +139,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
 		priv3.setFogOfWarMemory (mem3);
-		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
@@ -152,7 +152,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd4.setPlayerID (-2);
 		pd4.setHuman (false);
 
-		final MapVolumeOfMemoryGridCells map4 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map4 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc4 = map4.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		final FogOfWarMemory mem4 = new FogOfWarMemory ();
@@ -160,7 +160,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
 		priv4.setFogOfWarMemory (mem4);
-		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
@@ -171,7 +171,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd5.setPlayerID (8);
 		pd5.setHuman (true);
 
-		final MapVolumeOfMemoryGridCells map5 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map5 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc5 = map5.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 
 		final FogOfWarMemory mem5 = new FogOfWarMemory ();
@@ -179,7 +179,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv5 = new MomPersistentPlayerPrivateKnowledge ();
 		priv5.setFogOfWarMemory (mem5);
-		priv5.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv5.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv5.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
@@ -232,7 +232,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		// True terrain
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		
 		final OverlandMapCityData td = new OverlandMapCityData ();
 		
@@ -250,7 +250,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setPlayerID (5);
 		pd1.setHuman (true);
 		
-		final MapVolumeOfMemoryGridCells map1 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map1 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc1 = map1.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 
 		final FogOfWarMemory mem1 = new FogOfWarMemory ();
@@ -258,7 +258,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		priv1.setFogOfWarMemory (mem1);
-		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
@@ -269,7 +269,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setPlayerID (-1);
 		pd2.setHuman (false);
 
-		final MapVolumeOfMemoryGridCells map2 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map2 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc2 = map2.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		final FogOfWarMemory mem2 = new FogOfWarMemory ();
@@ -277,7 +277,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		priv2.setFogOfWarMemory (mem2);
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
@@ -288,7 +288,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd3.setPlayerID (7);
 		pd3.setHuman (true);
 
-		final MapVolumeOfMemoryGridCells map3 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map3 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc3 = map3.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		final FogOfWarMemory mem3 = new FogOfWarMemory ();
@@ -296,7 +296,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
 		priv3.setFogOfWarMemory (mem3);
-		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
@@ -309,7 +309,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd4.setPlayerID (-2);
 		pd4.setHuman (false);
 
-		final MapVolumeOfMemoryGridCells map4 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map4 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc4 = map4.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		final FogOfWarMemory mem4 = new FogOfWarMemory ();
@@ -317,7 +317,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
 		priv4.setFogOfWarMemory (mem4);
-		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
@@ -328,7 +328,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd5.setPlayerID (8);
 		pd5.setHuman (true);
 
-		final MapVolumeOfMemoryGridCells map5 = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map5 = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final MemoryGridCell mc5 = map5.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 
 		final FogOfWarMemory mem5 = new FogOfWarMemory ();
@@ -336,7 +336,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MomPersistentPlayerPrivateKnowledge priv5 = new MomPersistentPlayerPrivateKnowledge ();
 		priv5.setFogOfWarMemory (mem5);
-		priv5.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv5.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv5.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
@@ -393,7 +393,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	{
 		// Mock server database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 
 		// True terrain
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -466,7 +466,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	{
 		// Mock server database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 
 		// True terrain
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -543,7 +543,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
 		
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -657,7 +657,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -672,7 +672,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
-		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv1.setFogOfWarMemory (new FogOfWarMemory ());
 		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
@@ -685,7 +685,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv2.setFogOfWarMemory (new FogOfWarMemory ());
 		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
@@ -698,7 +698,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd3.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
-		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv3.setFogOfWarMemory (new FogOfWarMemory ());
 		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -714,7 +714,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd4.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
-		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv4.setFogOfWarMemory (new FogOfWarMemory ());
 		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -789,7 +789,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -804,7 +804,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
-		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv1.setFogOfWarMemory (new FogOfWarMemory ());
 		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
@@ -817,7 +817,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv2.setFogOfWarMemory (new FogOfWarMemory ());
 		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
@@ -830,7 +830,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd3.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
-		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv3.setFogOfWarMemory (new FogOfWarMemory ());
 		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -846,7 +846,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd4.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
-		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		priv4.setFogOfWarMemory (new FogOfWarMemory ());
 		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -929,15 +929,15 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Session description
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setFogOfWarSetting (fowSettings);
 
 		// Overland map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
@@ -959,7 +959,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
-		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv1.setFogOfWarMemory (new FogOfWarMemory ());
 		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
@@ -978,7 +978,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv2.setFogOfWarMemory (new FogOfWarMemory ());
 		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 
@@ -997,7 +997,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd3.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
-		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv3.setFogOfWarMemory (new FogOfWarMemory ());
 		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -1019,7 +1019,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd4.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
-		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv4.setFogOfWarMemory (new FogOfWarMemory ());
 		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -1084,15 +1084,15 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Session description
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setFogOfWarSetting (fowSettings);
 
 		// Overland map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
@@ -1122,7 +1122,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
-		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv1.setFogOfWarMemory (new FogOfWarMemory ());
 		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		
@@ -1141,7 +1141,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv2.setFogOfWarMemory (new FogOfWarMemory ());
 		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 
@@ -1160,7 +1160,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd3.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
-		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv3.setFogOfWarMemory (new FogOfWarMemory ());
 		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -1182,7 +1182,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd4.setHuman (false);
 		
 		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
-		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (mapSize));
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (overlandMapSize));
 		priv4.setFogOfWarMemory (new FogOfWarMemory ());
 		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 		
@@ -1254,19 +1254,19 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);	// Value used is pretty much irrelevant since anything to do with it is mocked out
 		fowSettings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fowSettings);
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// True map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1466,19 +1466,19 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);	// Value used is pretty much irrelevant since anything to do with it is mocked out
 		fowSettings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fowSettings);
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// True map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1499,12 +1499,12 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setPlayerID (3);
 		pd1.setHuman (true);
 		
-		final MapVolumeOfMemoryGridCells terrain1 = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells terrain1 = ServerTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		fow1.setMap (terrain1);
 		
-		final MapVolumeOfFogOfWarStates fowArea1 = ServerTestData.createFogOfWarArea (mapSize);
+		final MapVolumeOfFogOfWarStates fowArea1 = ServerTestData.createFogOfWarArea (overlandMapSize);
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		priv1.setFogOfWar (fowArea1);
@@ -1603,19 +1603,19 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (db.findMapFeature (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);	// Value used is pretty much irrelevant since anything to do with it is mocked out
 		fowSettings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fowSettings);
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// True map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1640,12 +1640,12 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd1.setPlayerID (3);
 		pd1.setHuman (true);
 		
-		final MapVolumeOfMemoryGridCells terrain1 = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells terrain1 = ServerTestData.createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		fow1.setMap (terrain1);
 		
-		final MapVolumeOfFogOfWarStates fowArea1 = ServerTestData.createFogOfWarArea (mapSize);
+		final MapVolumeOfFogOfWarStates fowArea1 = ServerTestData.createFogOfWarArea (overlandMapSize);
 		
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		priv1.setFogOfWar (fowArea1);

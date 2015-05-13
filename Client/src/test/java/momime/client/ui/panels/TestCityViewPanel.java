@@ -16,7 +16,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.OverlandMapClientUtils;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.MapSizeData;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -128,12 +128,12 @@ public final class TestCityViewPanel
 		when (gfx.getCityViewElements ()).thenReturn (elements);
 		
 		// Mock what is in this city
-		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -154,7 +154,7 @@ public final class TestCityViewPanel
 		when (spells.findMaintainedSpell (fow.getMaintainedSpell (), null, null, null, null, new MapCoordinates3DEx (20, 10, 0), "SE183")).thenReturn (new MemoryMaintainedSpell ());
 		
 		final OverlandMapClientUtils mapUtils = mock (OverlandMapClientUtils.class);
-		when (mapUtils.findAdjacentTileType (terrain, new MapCoordinates3DEx (20, 10, 0), mapSize, "TT02")).thenReturn (true);
+		when (mapUtils.findAdjacentTileType (terrain, new MapCoordinates3DEx (20, 10, 0), overlandMapSize, "TT02")).thenReturn (true);
 		
 		// Animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();

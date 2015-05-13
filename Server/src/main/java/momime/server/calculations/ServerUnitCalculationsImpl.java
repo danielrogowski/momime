@@ -449,13 +449,13 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack (unitStack, map.getMaintainedSpell (), db);
 
 		// Count how many of OUR units are in every cell on the map - enemy units are fine, we'll just attack them :-)
-		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getMapSize ());
+		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getOverlandMapSize ());
 
 		// Now we can work out the movement cost of entering every tile, taking into account the tiles we can't enter because we'll have too many units there
-		final Integer [] [] [] doubleMovementToEnterTile = new Integer [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final Integer [] [] [] doubleMovementToEnterTile = new Integer [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					// If cell will be full, leave it as null = impassable
 					if (ourUnitCountAtLocation [plane.getPlaneNumber ()] [y] [x] + unitStack.size () <= sd.getUnitSetting ().getUnitsPerMapCell ())
@@ -476,12 +476,12 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			for (final PlaneSvr plane : db.getPlanes ())
 				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (),
 					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-					doubleMovementToEnterTile, sd.getMapSize (), db);
+					doubleMovementToEnterTile, sd.getOverlandMapSize (), db);
 		}
 		else
 			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID, map.getMap (), map.getUnit (),
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-				doubleMovementToEnterTile, sd.getMapSize (), db);
+				doubleMovementToEnterTile, sd.getOverlandMapSize (), db);
 
 		log.trace ("Exiting calculateOverlandMovementDistances");
 	}

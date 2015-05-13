@@ -357,7 +357,7 @@ public final class JoinGameUI extends MomClientFrameUI
 					break;
 
 				case 2:
-					value = sd.getMapSize ().getWidth () + " x " + sd.getMapSize ().getHeight ();
+					value = sd.getOverlandMapSize ().getWidth () + " x " + sd.getOverlandMapSize ().getHeight ();
 					break;
 					
 				default:

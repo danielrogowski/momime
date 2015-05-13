@@ -21,8 +21,8 @@ import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.database.OverlandMapSize;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -83,18 +83,18 @@ public final class TestCombatMapBitmapGeneratorImpl
 		config.setCombatSmoothTerrain (true);
 		
 		// Session description
-		final MapSizeData mapSizeData = ClientTestData.createMapSizeData ();
-		final CombatMapSizeData combatMapSizeData = ClientTestData.createCombatMapSizeData ();
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final CombatMapSize combatMapSize = ClientTestData.createCombatMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSizeData);
-		sd.setCombatMapSize (combatMapSizeData);
+		sd.setOverlandMapSize (overlandMapSize);
+		sd.setCombatMapSize (combatMapSize);
 		
 		// Overland map (we need the tile type)
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_FOREST);
 		
-		final MapVolumeOfMemoryGridCells overlandMap = ClientTestData.createOverlandMap (mapSizeData);
+		final MapVolumeOfMemoryGridCells overlandMap = ClientTestData.createOverlandMap (overlandMapSize);
 		overlandMap.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();

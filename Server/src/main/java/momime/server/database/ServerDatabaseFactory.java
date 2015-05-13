@@ -15,10 +15,10 @@ import momime.server.database.v0_9_6.FogOfWarSetting;
 import momime.server.database.v0_9_6.LandProportion;
 import momime.server.database.v0_9_6.MapFeature;
 import momime.server.database.v0_9_6.MapFeatureMagicRealm;
-import momime.server.database.v0_9_6.MapSize;
 import momime.server.database.v0_9_6.MovementRateRule;
 import momime.server.database.v0_9_6.NodeStrength;
 import momime.server.database.v0_9_6.ObjectFactory;
+import momime.server.database.v0_9_6.OverlandMapSize;
 import momime.server.database.v0_9_6.Pick;
 import momime.server.database.v0_9_6.PickFreeSpell;
 import momime.server.database.v0_9_6.PickType;
@@ -240,12 +240,12 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Custom extended MapSize 
+	 * @return Custom extended OverlandMapSize 
 	 */
 	@Override
-	public final MapSize createMapSize ()
+	public final OverlandMapSize createOverlandMapSize ()
 	{
-		return new MapSizeSvr ();
+		return new OverlandMapSizeSvr ();
 	}
 
 	/**

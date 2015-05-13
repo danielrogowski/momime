@@ -35,7 +35,7 @@ import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.MapSizeData;
+import momime.common.database.OverlandMapSize;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
@@ -158,12 +158,12 @@ public final class TestCityViewUI
 		cityData.setCurrentlyConstructingBuildingID ("BL01");
 		cityData.setCityOwnerID (ourCity ? 1 : 2);
 		
-		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
 		final MemoryGridCell mc = terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20);
 		mc.setCityData (cityData);
 		mc.setProductionSoFar (60);

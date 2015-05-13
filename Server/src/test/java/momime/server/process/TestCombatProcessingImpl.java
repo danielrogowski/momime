@@ -15,11 +15,11 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -957,7 +957,7 @@ public final class TestCombatProcessingImpl
 		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1159,7 +1159,7 @@ public final class TestCombatProcessingImpl
 		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1353,7 +1353,7 @@ public final class TestCombatProcessingImpl
 		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1542,7 +1542,7 @@ public final class TestCombatProcessingImpl
 		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1693,7 +1693,7 @@ public final class TestCombatProcessingImpl
 		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -3393,7 +3393,7 @@ public final class TestCombatProcessingImpl
 		players.add (defendingPlayer);
 		
 		// Session description
-		final CombatMapSizeData combatMapSize = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setCombatMapSize (combatMapSize);
@@ -3553,7 +3553,7 @@ public final class TestCombatProcessingImpl
 		players.add (defendingPlayer);
 		
 		// Session description
-		final CombatMapSizeData combatMapSize = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setCombatMapSize (combatMapSize);
@@ -3715,7 +3715,7 @@ public final class TestCombatProcessingImpl
 		players.add (defendingPlayer);
 		
 		// Session description
-		final CombatMapSizeData combatMapSize = ServerTestData.createCombatMapSizeData ();
+		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setCombatMapSize (combatMapSize);

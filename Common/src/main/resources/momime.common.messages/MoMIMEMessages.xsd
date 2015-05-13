@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
-	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
-	xmlns:momimeclient="http://momime/client/database"
+	xmlns:momimecommon="http://momime/common/database" xmlns:momimeclient="http://momime/client/database"
 	xmlns:momimemsgs="http://momime/common/messages" targetNamespace="http://momime/common/messages"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
-	<xsd:import namespace="http://momime/common/database/newgame" />
 	<xsd:import namespace="http://momime/common/database" />
 	<xsd:import namespace="http://momime/client/database" />
     
@@ -28,16 +26,14 @@ This includes the session description and all knowledge structures - i.e. any ru
 					<xsd:element minOccurs="1" maxOccurs="1" name="aiPlayerCount" type="xsd:unsignedShort" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="turnSystem" type="momimemsgs:turnSystem" />
 					
-					<xsd:element minOccurs="1" maxOccurs="1" name="mapSize" type="momimenewgame:mapSizeData" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="combatMapSize" type="momimemsgs:combatMapSizeData" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="landProportion" type="momimenewgame:landProportionData" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="nodeStrength" type="momimenewgame:nodeStrengthData" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevel" type="momimenewgame:difficultyLevelData" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarSetting" type="momimenewgame:fogOfWarSettingData" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="unitSetting" type="momimenewgame:unitSettingData" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="spellSetting" type="momimenewgame:spellSettingData" />
-					
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelNodeStrength" type="momimenewgame:difficultyLevelNodeStrengthData" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapSize" type="momimecommon:overlandMapSize" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="combatMapSize" type="momimemsgs:combatMapSize" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="landProportion" type="momimecommon:landProportion" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="nodeStrength" type="momimecommon:nodeStrength" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevel" type="momimecommon:difficultyLevel" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitSetting" type="momimecommon:unitSetting" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="spellSetting" type="momimecommon:spellSetting" />
 					
 					<!--  Special debug options -->
 
@@ -47,7 +43,7 @@ This includes the session description and all knowledge structures - i.e. any ru
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="combatMapSizeData">
+	<xsd:complexType name="combatMapSize">
 		<xsd:annotation>
 			<xsd:documentation>Details about the combat map coordinate system; all these are fixed for now.</xsd:documentation>
 		</xsd:annotation>
@@ -69,8 +65,8 @@ This includes the session description and all knowledge structures - i.e. any ru
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="productionTypeID" type="momimecommon:productionTypeID" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="amountStored" type="momimenewgame:undoubledProductionValue" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="amountPerTurn" type="momimenewgame:undoubledProductionValue">
+			<xsd:element minOccurs="1" maxOccurs="1" name="amountStored" type="momimecommon:undoubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="amountPerTurn" type="momimecommon:undoubledProductionValue">
 			    <xsd:annotation>
     				<xsd:documentation>This includes production from buildings, population, map features, consumption and maintenance spent on buildings and units.
 It doesn't include where one type of production is converted into another, such as selling 2 rations for 1 gold,
@@ -151,8 +147,8 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="oldPopulation" type="momimenewgame:cityPopulation" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="newPopulation" type="momimenewgame:cityPopulation" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="oldPopulation" type="momimecommon:cityPopulation" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="newPopulation" type="momimecommon:cityPopulation" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -201,8 +197,8 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
-					<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -441,7 +437,7 @@ RiverDirections stores the list of directions in which a river runs from this ti
 off the tile downwards = 5; so RiverDirections is blank for tiles without a river.</xsd:documentation>
 		</xsd:annotation>
         <xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimenewgame:tileTypeID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="riverDirections" type="momimecommon:directions" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="nodeOwnerID" type="mps:playerID">
@@ -457,10 +453,10 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
     		<xsd:documentation>Stores what we remember about a city after it becomes obscured by Fog of War.</xsd:documentation>
 		</xsd:annotation>
         <xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityPopulation" type="momimenewgame:cityPopulationDiv1000" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="numberOfRebels" type="momimenewgame:cityPopulationDiv1000" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="minimumFarmers" type="momimenewgame:cityPopulationDiv1000" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="optionalFarmers" type="momimenewgame:cityPopulationDiv1000" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="cityPopulation" type="momimecommon:cityPopulationDiv1000" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="numberOfRebels" type="momimecommon:cityPopulationDiv1000" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="minimumFarmers" type="momimecommon:cityPopulationDiv1000" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="optionalFarmers" type="momimecommon:cityPopulationDiv1000" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityRaceID" type="momimecommon:raceID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeID" type="momimecommon:citySizeID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityName" type="momimecommon:description" />

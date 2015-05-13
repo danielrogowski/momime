@@ -1,11 +1,10 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
-	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
+	xmlns:momimecommon="http://momime/common/database"
 	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" 
 	xmlns:momimelang="http://momime/client/language/database/v0_9_6" targetNamespace="http://momime/client/language/database/v0_9_6">
 	
-	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
-	<xsd:import namespace="http://momime/common/database/newgame"/>
-	<xsd:import namespace="http://momime/common/database"/>
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
+	<xsd:import namespace="http://momime/common/database" />
 
     <xsd:annotation>
     	<xsd:documentation>
@@ -51,7 +50,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimelang:spell" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimelang:citySpellEffect" />
 			
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSize" type="momimelang:mapSize" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimelang:overlandMapSize" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportion" type="momimelang:landProportion" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrength" type="momimelang:nodeStrength" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevel" type="momimelang:difficultyLevel" />
@@ -169,9 +168,9 @@
 		</xsd:key>
 		
 		<!-- New game form settings, new for 0.9.2 -->
-		<xsd:key name="mapSizePK">
-			<xsd:selector xpath="mapSize" />
-			<xsd:field xpath="@mapSizeID" />
+		<xsd:key name="overlandMapSizePK">
+			<xsd:selector xpath="overlandMapSize" />
+			<xsd:field xpath="@overlandMapSizeID" />
 		</xsd:key>
 		<xsd:key name="landProportionPK">
 			<xsd:selector xpath="landProportion" />
@@ -217,7 +216,7 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="planeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="planeRacesTitle" type="momimecommon:description" nxe:label="Category on Choose Race screen" nxe:gridwidth="200" />
 		</xsd:sequence>
-		<xsd:attribute name="planeNumber" type="momimenewgame:planeNumber" use="required" nxe:label="Plane Number" nxe:gridwidth="80">
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:gridwidth="80">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
@@ -265,7 +264,7 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="tileTypeCannotBuildCityDescription" type="momimecommon:description" nxe:label="Description when saying City cannot be built here" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeShowAsFeature" type="momimecommon:description" nxe:label="Text to make tile type act like a map feature" nxe:gridwidth="250" />
 		</xsd:sequence>
-		<xsd:attribute name="tileTypeID" type="momimenewgame:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100">
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
@@ -520,14 +519,14 @@
 	</xsd:complexType>
 	
 	<!-- New game form settings, new for 0.9.2 -->
-	<xsd:complexType name="mapSize" nxe:singular="Map Size" nxe:plural="Map Sizes" nxe:submenu="New Game Form">
+	<xsd:complexType name="overlandMapSize" nxe:singular="Overland Map Size" nxe:plural="Overland Map Sizes" nxe:submenu="New Game Form">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="mapSizeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapSizeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
 		</xsd:sequence>
-		<xsd:attribute name="mapSizeID" type="momimecommon:mapSizeID" use="required" nxe:label="Map Size ID" nxe:gridwidth="100">
+		<xsd:attribute name="overlandMapSizeID" type="momimecommon:overlandMapSizeID" use="required" nxe:label="Overland Map Size ID" nxe:gridwidth="100">
 			<xsd:annotation>
 				<xsd:appinfo>
-					<nxe:showreferencedfield>mapSizeDescription</nxe:showreferencedfield>
+					<nxe:showreferencedfield>overlandMapSizeDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

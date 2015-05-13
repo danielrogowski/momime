@@ -74,39 +74,31 @@ import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
+import momime.common.database.CastingReductionCombination;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.DifficultyLevelNodeStrength;
+import momime.common.database.DifficultyLevelPlane;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.FogOfWarValue;
 import momime.common.database.LandProportion;
-import momime.common.database.MapSize;
+import momime.common.database.LandProportionPlane;
+import momime.common.database.LandProportionTileType;
+import momime.common.database.MapSizePlane;
 import momime.common.database.NewGameDefaults;
 import momime.common.database.NodeStrength;
+import momime.common.database.NodeStrengthPlane;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
 import momime.common.database.Plane;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.database.SwitchResearch;
 import momime.common.database.UnitSetting;
 import momime.common.database.WizardPick;
-import momime.common.database.newgame.CastingReductionCombination;
-import momime.common.database.newgame.DifficultyLevelData;
-import momime.common.database.newgame.DifficultyLevelNodeStrengthData;
-import momime.common.database.newgame.DifficultyLevelPlane;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.FogOfWarValue;
-import momime.common.database.newgame.LandProportionData;
-import momime.common.database.newgame.LandProportionPlane;
-import momime.common.database.newgame.LandProportionTileType;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.database.newgame.MapSizePlane;
-import momime.common.database.newgame.NodeStrengthData;
-import momime.common.database.newgame.NodeStrengthPlane;
-import momime.common.database.newgame.SpellSettingData;
-import momime.common.database.newgame.SwitchResearch;
-import momime.common.database.newgame.UnitSettingData;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -344,7 +336,7 @@ public final class NewGameUI extends MomClientFrameUI
 	private JLabel mapSizeLabel;
 
 	/** Action for selecting pre-defined map size or custom */
-	private CycleAction<MapSize> changeMapSizeAction;
+	private CycleAction<OverlandMapSize> changeMapSizeAction;
 	
 	/** Checkbox for customizing map size */
 	JCheckBox customizeMapSize;
@@ -1465,7 +1457,7 @@ public final class NewGameUI extends MomClientFrameUI
 			}
 		};
 		
-		changeMapSizeAction = new CycleAction<MapSize> ();
+		changeMapSizeAction = new CycleAction<OverlandMapSize> ();
 		changeLandProportionAction = new CycleAction<LandProportion> ();
 		changeNodeStrengthAction = new CycleAction<NodeStrength> ();
 		changeDifficultyLevelAction = new CycleAction<DifficultyLevel> ();
@@ -3609,8 +3601,8 @@ public final class NewGameUI extends MomClientFrameUI
 
 		// Reload the available selections of all the buttons
 		changeMapSizeAction.clearItems ();
-		for (final MapSize mapSize : changeDatabaseAction.getSelectedItem ().getMapSize ())
-			changeMapSizeAction.addItem (mapSize, getLanguage ().findMapSizeDescription (mapSize.getMapSizeID ()));
+		for (final OverlandMapSize overlandMapSize : changeDatabaseAction.getSelectedItem ().getOverlandMapSize ())
+			changeMapSizeAction.addItem (overlandMapSize, getLanguage ().findOverlandMapSizeDescription (overlandMapSize.getOverlandMapSizeID ()));
 		
 		changeLandProportionAction.clearItems ();
 		for (final LandProportion landProportion : changeDatabaseAction.getSelectedItem ().getLandProportion ())
@@ -3640,7 +3632,7 @@ public final class NewGameUI extends MomClientFrameUI
 		final NewGameDefaults defaults = changeDatabaseAction.getSelectedItem ().getNewGameDefaults ();
 		if (defaults != null)
 		{
-			while ((defaults.getDefaultMapSizeID () != null) && (!defaults.getDefaultMapSizeID ().equals (changeMapSizeAction.getSelectedItem ().getMapSizeID ())))
+			while ((defaults.getDefaultOverlandMapSizeID () != null) && (!defaults.getDefaultOverlandMapSizeID ().equals (changeMapSizeAction.getSelectedItem ().getOverlandMapSizeID ())))
 				changeMapSizeAction.actionPerformed (null);
 
 			while ((defaults.getDefaultLandProportionID () != null) && (!defaults.getDefaultLandProportionID ().equals (changeLandProportionAction.getSelectedItem ().getLandProportionID ())))
@@ -3994,28 +3986,28 @@ public final class NewGameUI extends MomClientFrameUI
 		log.trace ("Entering populateNewGameFieldsFromSelectedOptions");
 		
 		// Map size
-		final MapSizeData mapSize = changeMapSizeAction.getSelectedItem ();
-		mapSizeWidth.setText						(new Integer (mapSize.getWidth ()).toString ());
-		mapSizeHeight.setText						(new Integer (mapSize.getHeight ()).toString ());
-		mapWrapsLeftToRight.setSelected		(mapSize.isWrapsLeftToRight ());
-		mapWrapsTopToBottom.setSelected	(mapSize.isWrapsTopToBottom ());
-		mapZoneWidth.setText						(new Integer (mapSize.getZoneWidth ()).toString ());
-		mapZoneHeight.setText						(new Integer (mapSize.getZoneHeight ()).toString ());
-		towersOfWizardryCount.setText			(new Integer (mapSize.getTowersOfWizardryCount ()).toString ());
-		towersOfWizardrySeparation.setText	(new Integer (mapSize.getTowersOfWizardrySeparation ()).toString ());
-		continentalRaceChance.setText			(new Integer (mapSize.getContinentalRaceChance ()).toString ());
-		citySeparation.setText							(new Integer (mapSize.getCitySeparation ()).toString ());
-		riverCount.setText								(new Integer (mapSize.getRiverCount ()).toString ());
-		raiderCityCount.setText						(new Integer (mapSize.getRaiderCityCount ()).toString ());
+		final OverlandMapSize overlandMapSize = changeMapSizeAction.getSelectedItem ();
+		mapSizeWidth.setText						(new Integer (overlandMapSize.getWidth ()).toString ());
+		mapSizeHeight.setText						(new Integer (overlandMapSize.getHeight ()).toString ());
+		mapWrapsLeftToRight.setSelected		(overlandMapSize.isWrapsLeftToRight ());
+		mapWrapsTopToBottom.setSelected	(overlandMapSize.isWrapsTopToBottom ());
+		mapZoneWidth.setText						(new Integer (overlandMapSize.getZoneWidth ()).toString ());
+		mapZoneHeight.setText						(new Integer (overlandMapSize.getZoneHeight ()).toString ());
+		towersOfWizardryCount.setText			(new Integer (overlandMapSize.getTowersOfWizardryCount ()).toString ());
+		towersOfWizardrySeparation.setText	(new Integer (overlandMapSize.getTowersOfWizardrySeparation ()).toString ());
+		continentalRaceChance.setText			(new Integer (overlandMapSize.getContinentalRaceChance ()).toString ());
+		citySeparation.setText							(new Integer (overlandMapSize.getCitySeparation ()).toString ());
+		riverCount.setText								(new Integer (overlandMapSize.getRiverCount ()).toString ());
+		raiderCityCount.setText						(new Integer (overlandMapSize.getRaiderCityCount ()).toString ());
 		
-		for (final MapSizePlane plane : mapSize.getMapSizePlane ())
+		for (final MapSizePlane plane : overlandMapSize.getMapSizePlane ())
 			if (plane.getPlaneNumber () == 0)
 				arcanusNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
 			else
 				myrrorNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
 	    
 		// Land proportion
-		final LandProportionData landProportion = changeLandProportionAction.getSelectedItem ();
+		final LandProportion landProportion = changeLandProportionAction.getSelectedItem ();
 		landPercentage.setText			(new Integer (landProportion.getPercentageOfMapIsLand ()).toString ());
 		hillsPercentage.setText			(new Integer (landProportion.getPercentageOfLandIsHills ()).toString ());
 		mountainsPercentage.setText	(new Integer (landProportion.getPercentageOfHillsAreMountains ()).toString ());
@@ -4045,7 +4037,7 @@ public final class NewGameUI extends MomClientFrameUI
 				myrrorMineralChance.setText (new Integer (plane.getFeatureChance ()).toString ());
 
 		// Node strength
-		final NodeStrengthData nodeStrength = changeNodeStrengthAction.getSelectedItem ();
+		final NodeStrength nodeStrength = changeNodeStrengthAction.getSelectedItem ();
 		doubleNodeAuraMagicPower.setText (new Integer (nodeStrength.getDoubleNodeAuraMagicPower ()).toString ());
 		
 		for (final NodeStrengthPlane plane : nodeStrength.getNodeStrengthPlane ())
@@ -4061,7 +4053,7 @@ public final class NewGameUI extends MomClientFrameUI
 			}
 		
 		// Difficulty level
-		final DifficultyLevelData difficultyLevel = changeDifficultyLevelAction.getSelectedItem ();
+		final DifficultyLevel difficultyLevel = changeDifficultyLevelAction.getSelectedItem ();
 		humanSpellPicks.setText					(new Integer (difficultyLevel.getHumanSpellPicks ()).toString ());
 		aiSpellPicks.setText						(new Integer (difficultyLevel.getAiSpellPicks ()).toString ());
 		humanStartingGold.setText				(new Integer (difficultyLevel.getHumanStartingGold ()).toString ());
@@ -4127,7 +4119,7 @@ public final class NewGameUI extends MomClientFrameUI
 			}
 		
 		// Fog of war settings
-		final FogOfWarSettingData fowSettings = changeFogOfWarSettingsAction.getSelectedItem ();
+		final FogOfWarSetting fowSettings = changeFogOfWarSettingsAction.getSelectedItem ();
 		fowTerrainAlways.setSelected						(fowSettings.getTerrainAndNodeAuras () == FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
 		fowTerrainRemember.setSelected				(fowSettings.getTerrainAndNodeAuras () == FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		fowTerrainForget.setSelected						(fowSettings.getTerrainAndNodeAuras () == FogOfWarValue.FORGET);
@@ -4140,14 +4132,14 @@ public final class NewGameUI extends MomClientFrameUI
 		fowUnitsForget.setSelected							(fowSettings.getUnits () == FogOfWarValue.FORGET);
 		
 		// Unit settings
-		final UnitSettingData unitSettings = changeUnitSettingsAction.getSelectedItem ();
+		final UnitSetting unitSettings = changeUnitSettingsAction.getSelectedItem ();
 		maxUnitsPerGridCell.setText						(new Integer (unitSettings.getUnitsPerMapCell ()).toString ());
 		exceedMaxUnitsDuringCombat.setSelected	(unitSettings.isCanExceedMaximumUnitsDuringCombat ());
 		maximumHeroes.setText								(new Integer (unitSettings.getMaxHeroes ()).toString ());
 		rollHeroSkillsAtStart.setSelected					(unitSettings.isRollHeroSkillsAtStartOfGame ());
 		
 		// Spell settings
-		final SpellSettingData spellSettings = changeSpellSettingsAction.getSelectedItem ();
+		final SpellSetting spellSettings = changeSpellSettingsAction.getSelectedItem ();
 		switchResearchNo.setSelected							(spellSettings.getSwitchResearch () == SwitchResearch.DISALLOWED);
 		switchResearchNotStarted.setSelected				(spellSettings.getSwitchResearch () == SwitchResearch.ONLY_IF_NOT_STARTED);
 		switchResearchLose.setSelected						(spellSettings.getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH);
@@ -4195,27 +4187,31 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorMapSize.setPlaneNumber (1);
 		myrrorMapSize.setNumberOfNodesOnPlane (Integer.parseInt (myrrorNodeCount.getText ()));
 		
-		final MapSizeData mapSize = new MapSizeData ();
-	    mapSize.setCoordinateSystemType			(CoordinateSystemType.SQUARE);
-	    mapSize.setWidth									(Integer.parseInt (mapSizeWidth.getText ()));
-	    mapSize.setHeight									(Integer.parseInt (mapSizeHeight.getText ()));
-	    mapSize.setDepth									(2);
-	    mapSize.setWrapsLeftToRight					(mapWrapsLeftToRight.isSelected ());
-	    mapSize.setWrapsTopToBottom				(mapWrapsTopToBottom.isSelected ());
-	    mapSize.setZoneWidth							(Integer.parseInt (mapZoneWidth.getText ()));
-	    mapSize.setZoneHeight							(Integer.parseInt (mapZoneHeight.getText ()));
-	    mapSize.setTowersOfWizardryCount		(Integer.parseInt (towersOfWizardryCount.getText ()));
-	    mapSize.setTowersOfWizardrySeparation	(Integer.parseInt (towersOfWizardrySeparation.getText ()));
-	    mapSize.setContinentalRaceChance			(Integer.parseInt (continentalRaceChance.getText ()));
-	    mapSize.setCitySeparation						(Integer.parseInt (citySeparation.getText ()));
-	    mapSize.setRiverCount							(Integer.parseInt (riverCount.getText ()));
-	    mapSize.setRaiderCityCount					(Integer.parseInt (raiderCityCount.getText ()));
-	    mapSize.getMapSizePlane ().add (arcanusMapSize);
-	    mapSize.getMapSizePlane ().add (myrrorMapSize);
-		sd.setMapSize (mapSize);
+		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
+	    overlandMapSize.setCoordinateSystemType			(CoordinateSystemType.SQUARE);
+	    overlandMapSize.setWidth									(Integer.parseInt (mapSizeWidth.getText ()));
+	    overlandMapSize.setHeight									(Integer.parseInt (mapSizeHeight.getText ()));
+	    overlandMapSize.setDepth									(2);
+	    overlandMapSize.setWrapsLeftToRight					(mapWrapsLeftToRight.isSelected ());
+	    overlandMapSize.setWrapsTopToBottom				(mapWrapsTopToBottom.isSelected ());
+	    overlandMapSize.setZoneWidth							(Integer.parseInt (mapZoneWidth.getText ()));
+	    overlandMapSize.setZoneHeight							(Integer.parseInt (mapZoneHeight.getText ()));
+	    overlandMapSize.setTowersOfWizardryCount		(Integer.parseInt (towersOfWizardryCount.getText ()));
+	    overlandMapSize.setTowersOfWizardrySeparation	(Integer.parseInt (towersOfWizardrySeparation.getText ()));
+	    overlandMapSize.setContinentalRaceChance			(Integer.parseInt (continentalRaceChance.getText ()));
+	    overlandMapSize.setCitySeparation						(Integer.parseInt (citySeparation.getText ()));
+	    overlandMapSize.setRiverCount							(Integer.parseInt (riverCount.getText ()));
+	    overlandMapSize.setRaiderCityCount					(Integer.parseInt (raiderCityCount.getText ()));
+	    overlandMapSize.getMapSizePlane ().add (arcanusMapSize);
+	    overlandMapSize.getMapSizePlane ().add (myrrorMapSize);
+	    
+	    if (!customizeMapSize.isSelected ())
+	    	overlandMapSize.setOverlandMapSizeID (changeMapSizeAction.getSelectedItem ().getOverlandMapSizeID ());
+	    
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Combat map size is fixed, at least for now
-		final CombatMapSizeData combatMapSize = new CombatMapSizeData ();
+		final CombatMapSize combatMapSize = new CombatMapSize ();
 		combatMapSize.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
 		combatMapSize.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
 		combatMapSize.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
@@ -4250,7 +4246,7 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorLandProportion.setPlaneNumber (1);
 		myrrorLandProportion.setFeatureChance (Integer.parseInt (myrrorMineralChance.getText ()));
 		
-		final LandProportionData landProportion = new LandProportionData (); 
+		final LandProportion landProportion = new LandProportion (); 
 		landProportion.setPercentageOfMapIsLand			(Integer.parseInt (landPercentage.getText ()));
 		landProportion.setPercentageOfLandIsHills			(Integer.parseInt (hillsPercentage.getText ()));
 		landProportion.setPercentageOfHillsAreMountains	(Integer.parseInt (mountainsPercentage.getText ()));
@@ -4260,6 +4256,10 @@ public final class NewGameUI extends MomClientFrameUI
 		landProportion.getLandProportionTileType ().add (swampTileType);
 		landProportion.getLandProportionPlane ().add (arcanusLandProportion);
 		landProportion.getLandProportionPlane ().add (myrrorLandProportion);
+		
+		if (!customizeLandProportion.isSelected ())
+			landProportion.setLandProportionID (changeLandProportionAction.getSelectedItem ().getLandProportionID ());
+		
 		sd.setLandProportion (landProportion);		
 		
 		// Node strength
@@ -4273,10 +4273,14 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorNodeStrength.setNodeAuraSquaresMinimum	(Integer.parseInt (myrrorNodeSizeMin.getText ()));
 		myrrorNodeStrength.setNodeAuraSquaresMaximum	(Integer.parseInt (myrrorNodeSizeMax.getText ()));
 		
-		final NodeStrengthData nodeStrength = new NodeStrengthData ();
+		final NodeStrength nodeStrength = new NodeStrength ();
 		nodeStrength.setDoubleNodeAuraMagicPower (Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
 		nodeStrength.getNodeStrengthPlane ().add (arcanusNodeStrength);
 		nodeStrength.getNodeStrengthPlane ().add (myrrorNodeStrength);
+		
+		if (!customizeNodes.isSelected ())
+			nodeStrength.setNodeStrengthID (changeNodeStrengthAction.getSelectedItem ().getNodeStrengthID ());
+		
 		sd.setNodeStrength (nodeStrength);
 		
 		// Difficulty level
@@ -4302,7 +4306,7 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorDifficultyLevel.setWeakLairTreasureMinimum	(Integer.parseInt (myrrorWeakLairTreasureMin.getText ()));
 		myrrorDifficultyLevel.setWeakLairTreasureMaximum	(Integer.parseInt (myrrorWeakLairTreasureMax.getText ()));
 		
-		final DifficultyLevelData difficultyLevel = new DifficultyLevelData ();
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 	    difficultyLevel.setHumanSpellPicks				(Integer.parseInt (humanSpellPicks.getText ()));
 	    difficultyLevel.setAiSpellPicks						(Integer.parseInt (aiSpellPicks.getText ()));
 	    difficultyLevel.setHumanStartingGold				(Integer.parseInt (humanStartingGold.getText ()));
@@ -4322,28 +4326,32 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setCityMaxSize						(Integer.parseInt (maxCitySize.getText ()));
 	    difficultyLevel.getDifficultyLevelPlane ().add (arcanusDifficultyLevel);
 	    difficultyLevel.getDifficultyLevelPlane ().add (myrrorDifficultyLevel);
+	    
+	    if (!customizeDifficulty.isSelected ())
+	    	difficultyLevel.setDifficultyLevelID (changeDifficultyLevelAction.getSelectedItem ().getDifficultyLevelID ());
+	    
 		sd.setDifficultyLevel (difficultyLevel);
 		
 		// Difficulty level - node strength
-		final DifficultyLevelNodeStrengthData arcanusNodeDifficultyLevel = new DifficultyLevelNodeStrengthData ();
+		final DifficultyLevelNodeStrength arcanusNodeDifficultyLevel = new DifficultyLevelNodeStrength ();
 		arcanusNodeDifficultyLevel.setPlaneNumber (0);
 		arcanusNodeDifficultyLevel.setMonstersMinimum	(Integer.parseInt (arcanusNodeMonstersMin.getText ()));
 		arcanusNodeDifficultyLevel.setMonstersMaximum	(Integer.parseInt (arcanusNodeMonstersMax.getText ()));
 		arcanusNodeDifficultyLevel.setTreasureMinimum	(Integer.parseInt (arcanusNodeTreasureMin.getText ()));
 		arcanusNodeDifficultyLevel.setTreasureMaximum	(Integer.parseInt (arcanusNodeTreasureMax.getText ()));
 		
-		final DifficultyLevelNodeStrengthData myrrorNodeDifficultyLevel = new DifficultyLevelNodeStrengthData ();
+		final DifficultyLevelNodeStrength myrrorNodeDifficultyLevel = new DifficultyLevelNodeStrength ();
 		myrrorNodeDifficultyLevel.setPlaneNumber (1);
 		myrrorNodeDifficultyLevel.setMonstersMinimum		(Integer.parseInt (myrrorNodeMonstersMin.getText ()));
 		myrrorNodeDifficultyLevel.setMonstersMaximum	(Integer.parseInt (myrrorNodeMonstersMax.getText ()));
 		myrrorNodeDifficultyLevel.setTreasureMinimum		(Integer.parseInt (myrrorNodeTreasureMin.getText ()));
 		myrrorNodeDifficultyLevel.setTreasureMaximum	(Integer.parseInt (myrrorNodeTreasureMax.getText ()));
 		
-		sd.getDifficultyLevelNodeStrength ().add (arcanusNodeDifficultyLevel);
-		sd.getDifficultyLevelNodeStrength ().add (myrrorNodeDifficultyLevel);
+		difficultyLevel.getDifficultyLevelNodeStrength ().add (arcanusNodeDifficultyLevel);
+		difficultyLevel.getDifficultyLevelNodeStrength ().add (myrrorNodeDifficultyLevel);
 		
 		// FOW settings
-		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		if (fowTerrainAlways.isSelected ())
 			fowSettings.setTerrainAndNodeAuras (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
 		else if (fowTerrainRemember.isSelected ())
@@ -4366,18 +4374,26 @@ public final class NewGameUI extends MomClientFrameUI
 			fowSettings.setUnits (FogOfWarValue.FORGET);
 		
 		fowSettings.setSeeEnemyCityConstruction (canSeeEnemyCityConstruction.isSelected ());
+		
+		if (!customizeFogOfWar.isSelected ())
+			fowSettings.setFogOfWarSettingID (changeFogOfWarSettingsAction.getSelectedItem ().getFogOfWarSettingID ());
+		
 		sd.setFogOfWarSetting (fowSettings);
 		
 		// Unit settings
-		final UnitSettingData unitSettings = new UnitSettingData ();
+		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setUnitsPerMapCell									(Integer.parseInt (maxUnitsPerGridCell.getText ()));
 		unitSettings.setCanExceedMaximumUnitsDuringCombat	(exceedMaxUnitsDuringCombat.isSelected ());
 		unitSettings.setMaxHeroes											(Integer.parseInt (maximumHeroes.getText ()));
 		unitSettings.setRollHeroSkillsAtStartOfGame					(rollHeroSkillsAtStart.isSelected ());
+		
+		if (!customizeUnits.isSelected ())
+			unitSettings.setUnitSettingID (changeUnitSettingsAction.getSelectedItem ().getUnitSettingID ());
+		
 		sd.setUnitSetting (unitSettings);
 		
 		// Spell settings
-		final SpellSettingData spellSettings = new SpellSettingData ();
+		final SpellSetting spellSettings = new SpellSetting ();
 		if (switchResearchNo.isSelected ())
 			spellSettings.setSwitchResearch (SwitchResearch.DISALLOWED);
 		else if (switchResearchNotStarted.isSelected ())
@@ -4402,6 +4418,10 @@ public final class NewGameUI extends MomClientFrameUI
 		spellSettings.setSpellBooksCastingReductionCap	(Integer.parseInt (castingCostReductionCap.getText ()));
 		spellSettings.setSpellBooksResearchBonus			(Integer.parseInt (researchBonus.getText ()));
 		spellSettings.setSpellBooksResearchBonusCap		(Integer.parseInt (researchBonusCap.getText ()));
+
+		if (!customizeSpells.isSelected ())
+			spellSettings.setSpellSettingID (changeSpellSettingsAction.getSelectedItem ().getSpellSettingID ());
+		
 		sd.setSpellSetting (spellSettings);
 		
 		// Debug options

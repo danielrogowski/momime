@@ -11,8 +11,8 @@ import java.util.List;
 
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.MapSizeData;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -87,14 +87,14 @@ public final class TestSimultaneousTurnsProcessingImpl
 		when (db.findTileType ("TT01", "processSpecialOrders-t")).thenReturn (tt);
 		
 		// Session description
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
-		final FogOfWarSettingData fogOfWarSettings = new FogOfWarSettingData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -191,20 +191,20 @@ public final class TestSimultaneousTurnsProcessingImpl
 		
 		// Existing city radius
 		final MapArea2D<Boolean> falseArea = new MapArea2DArrayListImpl<Boolean> ();
-		falseArea.setCoordinateSystem (mapSize);
+		falseArea.setCoordinateSystem (overlandMapSize);
 		
 		final MapArea2D<Boolean> trueArea = new MapArea2DArrayListImpl<Boolean> (); 
-		trueArea.setCoordinateSystem (mapSize);
+		trueArea.setCoordinateSystem (overlandMapSize);
 		
-		for (int x = 0; x < mapSize.getWidth (); x++)
-			for (int y = 0; y < mapSize.getHeight (); y++)
+		for (int x = 0; x < overlandMapSize.getWidth (); x++)
+			for (int y = 0; y < overlandMapSize.getHeight (); y++)
 			{
 				falseArea.set (x, y, false);
 				trueArea.set (x, y, true);
 			}
 		
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.markWithinExistingCityRadius (trueTerrain, 1, mapSize)).thenReturn (falseArea, trueArea);
+		when (cityCalc.markWithinExistingCityRadius (trueTerrain, 1, overlandMapSize)).thenReturn (falseArea, trueArea);
 		
 		// Player2 has 2 spirits he's trying to take a node from Player1 with; first fails, second succeeds, so third doesn't need to try
 		final List<MemoryUnit> spirits = new ArrayList<MemoryUnit> ();

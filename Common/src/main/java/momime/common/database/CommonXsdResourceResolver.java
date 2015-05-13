@@ -51,13 +51,6 @@ public class CommonXsdResourceResolver extends MultiplayerSessionXsdResourceReso
 			result = getClass ().getResourceAsStream (MapConstants.MAP_XSD_LOCATION);
 		}
 
-		// New game XSD
-		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.NEW_GAME_XSD_NAMESPACE_URI)))
-		{
-			log.debug ("Namespace matches new game XSD");
-			result = getClass ().getResourceAsStream (CommonDatabaseConstants.NEW_GAME_XSD_LOCATION);
-		}
-
 		// Common XSD
 		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.COMMON_XSD_NAMESPACE_URI)))
 		{

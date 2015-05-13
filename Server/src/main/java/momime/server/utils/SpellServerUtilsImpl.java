@@ -1,7 +1,7 @@
 package momime.server.utils;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SwitchResearch;
+import momime.common.database.SwitchResearch;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;

@@ -33,8 +33,8 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.LandProportion;
-import momime.common.database.MapSize;
 import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
 import momime.common.database.PickExclusiveFrom;
 import momime.common.database.Plane;
@@ -431,9 +431,9 @@ public final class TestNewGameUI
 		// Default new game settings
 		final AvailableDatabase newGameDB = dbs.getMomimeXmlDatabase ().get (0);
 		
-		final MapSize mapSize = new MapSize ();
-		mapSize.setMapSizeID ("60x40");
-		newGameDB.getMapSize ().add (mapSize);
+		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
+		overlandMapSize.setOverlandMapSizeID ("60x40");
+		newGameDB.getOverlandMapSize ().add (overlandMapSize);
 		
 		final LandProportion landProportion = new LandProportion ();
 		landProportion.setLandProportionID ("LP01");

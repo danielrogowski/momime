@@ -127,7 +127,7 @@ public final class CityProcessingImpl implements CityProcessing
 		log.trace ("Entering createStartingCities");
 
 		// Allocate a race to each continent of land for raider cities
-		final MapArea3D<String> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getMapSize (), db);
+		final MapArea3D<String> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getOverlandMapSize (), db);
 
 		// Now create cities for each player
 		for (final PlayerServerDetails thisPlayer : players)
@@ -140,7 +140,7 @@ public final class CityProcessingImpl implements CityProcessing
 				numberOfCities = 1;
 
 			else if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
-				numberOfCities = sd.getMapSize ().getRaiderCityCount ();
+				numberOfCities = sd.getOverlandMapSize ().getRaiderCityCount ();
 
 			else
 				numberOfCities = 0;	// For monsters
@@ -185,7 +185,7 @@ public final class CityProcessingImpl implements CityProcessing
 					cityCell.setRaiderCityAdditionalPopulationCap (city.getCityPopulation () + (sd.getDifficultyLevel ().getRaiderCityGrowthCap () * 1000));
 
 					// Have a good chance of just picking the continental race ID
-					if (getRandomUtils ().nextInt (100) < sd.getMapSize ().getContinentalRaceChance ())
+					if (getRandomUtils ().nextInt (100) < sd.getOverlandMapSize ().getContinentalRaceChance ())
 					{
 						final String raceID = continentalRace.get (cityLocation);
 						if (raceID == null)
@@ -269,8 +269,8 @@ public final class CityProcessingImpl implements CityProcessing
 		log.trace ("Entering growCitiesAndProgressConstructionProjects: Player ID " + onlyOnePlayerID);
 
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					final ServerGridCellEx mc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final OverlandMapCityData cityData = mc.getCityData ();
@@ -589,8 +589,8 @@ public final class CityProcessingImpl implements CityProcessing
 			// Recalc stats for all cities based on the new tax rate
 			final FogOfWarMemory trueMap = mom.getGeneralServerKnowledge ().getTrueMap ();
 			for (final PlaneSvr plane : mom.getServerDB ().getPlanes ())
-				for (int x = 0; x < mom.getSessionDescription ().getMapSize ().getWidth (); x++)
-					for (int y = 0; y < mom.getSessionDescription ().getMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					{
 						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 						if (cityData != null)

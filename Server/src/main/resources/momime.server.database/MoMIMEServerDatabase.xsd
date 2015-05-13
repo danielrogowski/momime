@@ -186,9 +186,9 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimesvr:movementRateRule" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimesvr:citySpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimesvr:unitMagicRealm" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSize" type="momimesvr:mapSize">
-				<xsd:key name="mapSizePlanePK">
-					<xsd:selector xpath="mapSizePlane" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimesvr:overlandMapSize">
+				<xsd:key name="overlandMapSizePlanePK">
+					<xsd:selector xpath="overlandMapSizePlane" />
 					<xsd:field xpath="@planeNumber" />
 				</xsd:key>
 			</xsd:element>
@@ -344,9 +344,9 @@
 		</xsd:key>
 		
 		<!-- New game form settings, new for 0.9.2 -->
-		<xsd:key name="mapSizePK">
-			<xsd:selector xpath="mapSize" />
-			<xsd:field xpath="@mapSizeID" />
+		<xsd:key name="overlandMapSizePK">
+			<xsd:selector xpath="overlandMapSize" />
+			<xsd:field xpath="@overlandMapSizeID" />
 		</xsd:key>
 		<xsd:key name="landProportionPK">
 			<xsd:selector xpath="landProportion" />
@@ -778,7 +778,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>For a particular type of map feature that contains monsters, lists the relative chances of it being filled with monsters of each magic realm, e.g. Towers of Wizardry are twice as likely to contain Death creatures as other realms of magic.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimenewgame:featureChance" nxe:label="Feature Chance" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimecommon:featureChance" nxe:label="Feature Chance" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="magicRealm" type="momimecommon:unitMagicRealmID" use="required" nxe:label="Magic Realm" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -814,7 +814,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>If a map feature is going to be placed on a particular terrain tile, this defines the relative chances of each possible type of map feature.  The chance of a map feature being placed in the first place is set on the new game form.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="planeNumber" type="momimenewgame:planeNumber" nxe:label="Plane" nxe:gridwidth="80">
+			<xsd:element minOccurs="1" maxOccurs="1" name="planeNumber" type="momimecommon:planeNumber" nxe:label="Plane" nxe:gridwidth="80">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
@@ -828,7 +828,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimenewgame:featureChance" nxe:label="Feature Chance" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimecommon:featureChance" nxe:label="Feature Chance" nxe:gridwidth="150" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -943,7 +943,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPick" type="momimecommon:wizardPick" />
 		</xsd:sequence>
-		<xsd:attribute name="pickCount" type="momimenewgame:pickCount" use="required" nxe:label="Pick Count" nxe:gridwidth="80" />
+		<xsd:attribute name="pickCount" type="momimecommon:pickCount" use="required" nxe:label="Pick Count" nxe:gridwidth="80" />
 	</xsd:complexType>
 
 	<xsd:complexType name="race" nxe:singular="Race" nxe:plural="Races">
@@ -977,7 +977,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					<xsd:element minOccurs="1" maxOccurs="1" name="buildingName" type="momimecommon:description" nxe:label="Building Name" nxe:gridwidth="120" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="buildingScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="inWizardsStartingCities" type="xsd:boolean" nxe:label="In Wizards' Starting Cities?" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="inRaidersStartingCitiesWithPopulationAtLeast" type="momimenewgame:cityPopulationDiv1000" nxe:label="In Raider Starting Cities of what size?" nxe:gridwith="180" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="inRaidersStartingCitiesWithPopulationAtLeast" type="momimecommon:cityPopulationDiv1000" nxe:label="In Raider Starting Cities of what size?" nxe:gridwith="180" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="aiBuildingTypeID" type="momimecommon:aiBuildingTypeID" nxe:label="AI Building Type" nxe:showmaincolumn="false" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -1218,8 +1218,8 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         	<xsd:documentation>Lists the city size categories, e.g. that a city changes from a "Village" to a "Town" when it goes from 9,999 to 10,000 population.  Each "city size" also has a different appearance on the overland map.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMinimum" type="momimenewgame:cityPopulation" nxe:label="Minimum population" nxe:gridwidth="130" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMaximum" type="momimenewgame:cityPopulation" nxe:label="Maximum population" nxe:gridwidth="130" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMinimum" type="momimecommon:cityPopulation" nxe:label="Minimum population" nxe:gridwidth="130" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMaximum" type="momimecommon:cityPopulation" nxe:label="Maximum population" nxe:gridwidth="130" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="fameLostForRazing" type="momimesvr:fame" nxe:label="Fame Lost for Razing" nxe:gridwidth="120" />
 		</xsd:sequence>
 		<xsd:attribute name="citySizeID" type="momimecommon:citySizeID" use="required" nxe:label="City Size ID" nxe:gridwidth="100" />
@@ -1278,7 +1278,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         	<xsd:documentation>Defines a list of rules for deciding the movement rate of units over different types of terrain.  Rules are evaluated in order, and the first one found that applies will dictate the units' movement over this type of terrain.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimenewgame:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="80">
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="80">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
@@ -1306,14 +1306,15 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 	</xsd:complexType>
 
 	<!-- New game form settings, new for 0.9.2 -->
-	<xsd:complexType name="mapSize" nxe:singular="Map Size" nxe:plural="Map Sizes" nxe:submenu="New Game Form">
+	
+	<xsd:complexType name="overlandMapSize" nxe:singular="Overland Map Size" nxe:plural="Overland Map Sizes" nxe:submenu="New Game Form">
         <xsd:annotation>
         	<xsd:documentation>Defines standard map sizes, i.e. 60x40.</xsd:documentation>
         </xsd:annotation>
 		<xsd:complexContent>
-			<xsd:extension base="momimecommon:mapSize">
+			<xsd:extension base="momimecommon:overlandMapSize">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="mapSizeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="150" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapSizeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="150" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1428,7 +1429,7 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimenewgame:tileTypeID" nxe:label="Condition - Tile Type" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Condition - Tile Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
@@ -1442,8 +1443,8 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="minimumPopulation" type="momimenewgame:cityPopulation" nxe:label="Condition - Minimum population" nxe:gridwidth="130" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="maximumPopulation" type="momimenewgame:cityPopulation" nxe:label="Condition - Maximum population" nxe:gridwidth="130" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="minimumPopulation" type="momimecommon:cityPopulation" nxe:label="Condition - Minimum population" nxe:gridwidth="130" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="maximumPopulation" type="momimecommon:cityPopulation" nxe:label="Condition - Maximum population" nxe:gridwidth="130" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="locationX" type="momimesvr:combatMapCoordinate" nxe:label="Location to place X" nxe:gridwidth="110" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="locationY" type="momimesvr:combatMapCoordinate" nxe:label="Location to place Y" nxe:gridwidth="110" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatTileTypeID" type="momimecommon:combatTileTypeID" nxe:label="Tile to place" nxe:showmaincolumn="false">

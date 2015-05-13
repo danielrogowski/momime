@@ -11,9 +11,9 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -146,7 +146,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
+	public final int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		return getReducedCastingCost (spell, spell.getCombatCastingCost (), picks, spellSettings, db);
@@ -162,7 +162,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
+	public final int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		return getReducedCastingCost (spell, spell.getOverlandCastingCost (), picks, spellSettings, db);
@@ -180,7 +180,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 */
 	@Override
 	public final int getReducedCastingCost (final Spell spell, final int castingCost, final List<PlayerPick> picks,
-		final SpellSettingData spellSettings, final CommonDatabase db)
+		final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering getReducedCastingCostForCastingType: " + spell.getSpellID () + ", " + castingCost);

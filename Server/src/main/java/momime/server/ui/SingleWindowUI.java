@@ -441,7 +441,7 @@ public final class SingleWindowUI extends AppenderSkeleton implements MomServerU
 						}
 						break;
 					case 3:
-						result = sd.getMapSize ().getWidth () + " x " + sd.getMapSize ().getHeight ();
+						result = sd.getOverlandMapSize ().getWidth () + " x " + sd.getOverlandMapSize ().getHeight ();
 						break;
 					case 4:
 						if (sd.getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)

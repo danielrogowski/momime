@@ -22,7 +22,7 @@ import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
-import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -166,7 +166,7 @@ public final class TestMagicSlidersUI
 		priv.getResourceValue ().add (skill);
 		
 		// Spell settings
-		final SpellSettingData spellSettings = new SpellSettingData (); 
+		final SpellSetting spellSettings = new SpellSetting (); 
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (spellSettings);

@@ -359,7 +359,7 @@ public final class TestCombatMapGeneratorImpl
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
-		fow.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
+		fow.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Need real random number generator to generate a meaningful map
 		final RandomUtils random = new RandomUtilsImpl ();

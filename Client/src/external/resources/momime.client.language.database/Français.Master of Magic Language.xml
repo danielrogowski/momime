@@ -4328,9 +4328,21 @@ Si la cité a une insuffisante fourniture de nourriture, les citoyens commencero
 		<citySpellEffectName>Peste</citySpellEffectName>
 		<citySpellEffectHelpText>Répend une peste mortelle à travers la cité affectée tuant 1 000 personnes à chaque tour de jeu si la population actuelle excéde 1000 * (jet 1-10).</citySpellEffectHelpText>
 	</citySpellEffect>
-	<mapSize mapSizeID="60x40">
-		<mapSizeDescription>60 x 40</mapSizeDescription>
-	</mapSize>
+	<overlandMapSize overlandMapSizeID="MS01">
+		<overlandMapSizeDescription>Tiny</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS02">
+		<overlandMapSizeDescription>Small</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS03">
+		<overlandMapSizeDescription>Standard</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS04">
+		<overlandMapSizeDescription>Large</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS05">
+		<overlandMapSizeDescription>Huge</overlandMapSizeDescription>
+	</overlandMapSize>
 	<landProportion landProportionID="LP01">
 		<landProportionDescription>Petit</landProportionDescription>
 	</landProportion>

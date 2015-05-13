@@ -262,9 +262,9 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public List<CombatTileBorderSvr> getCombatTileBorders ();
 	
 	/**
-	 * @return Complete list of all pre-defined map sizes
+	 * @return Complete list of all pre-defined overland map sizes
 	 */
-	public List<MapSizeSvr> getMapSizes ();
+	public List<OverlandMapSizeSvr> getOverlandMapSizes ();
 
 	/**
 	 * @return Complete list of all pre-defined land proportions

@@ -13,7 +13,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -238,7 +238,7 @@ public final class CombatAIImpl implements CombatAI
 		log.trace ("Entering moveOneUnit: Unit URN + " + tu.getUnitURN ());
 		
 		// Work out where this unit can move
-		final CombatMapSizeData combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
+		final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
 		
 		final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

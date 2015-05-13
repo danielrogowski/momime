@@ -5,7 +5,7 @@ import java.util.List;
 
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapRowOfCombatTiles;
@@ -62,7 +62,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
 	@Override
-	public final MapAreaOfCombatTiles generateCombatMap (final CombatMapSizeData combatMapCoordinateSystem,
+	public final MapAreaOfCombatTiles generateCombatMap (final CombatMapSize combatMapCoordinateSystem,
 		final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{

@@ -14,10 +14,10 @@ import java.util.List;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.newgame.MapSizeData;
-import momime.common.database.newgame.SpellSettingData;
-import momime.common.database.newgame.UnitSettingData;
+import momime.common.database.SpellSetting;
+import momime.common.database.UnitSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -406,7 +406,7 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
@@ -476,7 +476,7 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
@@ -737,7 +737,7 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
@@ -834,13 +834,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -944,13 +944,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1058,13 +1058,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1172,13 +1172,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1288,13 +1288,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1407,13 +1407,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1533,13 +1533,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1661,13 +1661,13 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1783,18 +1783,18 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
-		final UnitSettingData unitSettings = new UnitSettingData ();
+		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setCanExceedMaximumUnitsDuringCombat (false);
 		unitSettings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1913,18 +1913,18 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
-		final UnitSettingData unitSettings = new UnitSettingData ();
+		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setCanExceedMaximumUnitsDuringCombat (false);
 		unitSettings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -2050,18 +2050,18 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
-		final UnitSettingData unitSettings = new UnitSettingData ();
+		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setCanExceedMaximumUnitsDuringCombat (true); 		// <---
 		unitSettings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
-		final MapSizeData sys = ServerTestData.createMapSizeData ();
-		sd.setMapSize (sys);
+		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		sd.setOverlandMapSize (sys);
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -2232,7 +2232,7 @@ public final class TestSpellQueueingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
@@ -2303,7 +2303,7 @@ public final class TestSpellQueueingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
@@ -2382,7 +2382,7 @@ public final class TestSpellQueueingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Session description
-		final SpellSettingData settings = new SpellSettingData (); 
+		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		

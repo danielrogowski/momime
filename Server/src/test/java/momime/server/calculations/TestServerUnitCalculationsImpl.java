@@ -645,16 +645,16 @@ public final class TestServerUnitCalculationsImpl
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx"));
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getMapSize (), workbook);
+		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
 
 		final FogOfWarMemory map = new FogOfWarMemory ();
 		map.setMap (terrain);
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
 		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
@@ -708,8 +708,8 @@ public final class TestServerUnitCalculationsImpl
 		assertTrue (canMoveToInOneTurn [1] [13] [23]);
 
 		// Check all the movement distances and directions on Myrror
-		for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+		for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 			{
 				// Distances
 				final Cell distanceCell = workbook.getSheetAt (2).getRow (y + 1).getCell (x + 1);
@@ -738,8 +738,8 @@ public final class TestServerUnitCalculationsImpl
 		int accessibleTilesDirections = 0;
 
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
 						countCanMoveToInOneTurn++;
@@ -774,7 +774,7 @@ public final class TestServerUnitCalculationsImpl
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx"));
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getMapSize (), workbook);
+		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
 
 		final FogOfWarMemory map = new FogOfWarMemory ();
 		map.setMap (terrain);
@@ -807,10 +807,10 @@ public final class TestServerUnitCalculationsImpl
 		}
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
 		// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
@@ -913,8 +913,8 @@ public final class TestServerUnitCalculationsImpl
 
 		// Check all the movement distances on both planes
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					// Distances
 					final Cell distanceCell = workbook.getSheetAt (4 + plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
@@ -938,8 +938,8 @@ public final class TestServerUnitCalculationsImpl
 		int accessibleTilesDirections = 0;
 
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
 						countCanMoveToInOneTurn++;

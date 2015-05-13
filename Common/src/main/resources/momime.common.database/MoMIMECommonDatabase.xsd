@@ -1,10 +1,8 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
-	xmlns:map="http://www.ndg.com/map" xmlns:momimenewgame="http://momime/common/database/newgame"
-	xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/common/database"
+	xmlns:map="http://www.ndg.com/map" xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/common/database"
 	jaxb:version="2.0">
 	
-	<xsd:import namespace="http://www.ndg.com/map"/>
-	<xsd:import namespace="http://momime/common/database/newgame"/>
+	<xsd:import namespace="http://www.ndg.com/map" />
 	
     <xsd:annotation>
     	<xsd:documentation>Defines the portions of the main data XML file that are needed both by the client and server.
@@ -13,95 +11,232 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 
 <!-- Types used in the new game database that the server sends to each client before they create a session so they know available databases and new game params -->
 
-	<xsd:complexType name="mapSize">
+	<xsd:complexType name="overlandMapSize">
         <xsd:annotation>
         	<xsd:documentation>Defines standard map sizes, i.e. 60x40.</xsd:documentation>
         </xsd:annotation>
 		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:mapSizeData">
-				<xsd:attribute name="mapSizeID" type="momimecommon:mapSizeID" use="required" nxe:label="Map Size ID" nxe:gridwidth="80" />
+			<xsd:extension base="map:coordinateSystem">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="zoneWidth" type="map:mapDimension" nxe:label="Zone Width" nxe:gridwidth="100" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="zoneHeight" type="map:mapDimension" nxe:label="Zone Height" nxe:gridwidth="100" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="towersOfWizardryCount" type="momimecommon:mapTileCount" nxe:label="Nbr. Towers of Wizardry" nxe:gridwidth="150" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="towersOfWizardrySeparation" type="momimecommon:integerMapDistance" nxe:label="Towers of Wizardry separation" nxe:gridwidth="180" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="continentalRaceChance" type="momimecommon:percentage" nxe:label="% chance that raider cities are the race chosen for the continent" nxe:gridwidth="300" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="citySeparation" type="momimecommon:integerMapDistance" nxe:label="City separation" nxe:gridwidth="100" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityCount" type="momimecommon:cityCount" nxe:label="Nbr. raider cities" nxe:gridwidth="100" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="riverCount" type="momimecommon:mapTileCount" nxe:label="Nbr. Rivers on each plane" nxe:gridwidth="150" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapSizePlane" type="momimecommon:mapSizePlane" />
+				</xsd:sequence>
+				<xsd:attribute name="overlandMapSizeID" type="momimecommon:overlandMapSizeID" use="optional" nxe:label="Map Size ID" nxe:gridwidth="80" />
 			</xsd:extension>
 		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="mapSizePlane" nxe:singular="Map Size Plane" nxe:plural="Map Size Planes">
+        <xsd:annotation>
+        	<xsd:documentation>Defines map size details that are different on each plane.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfNodesOnPlane" type="momimecommon:numberOfNodesOnPlane" nxe:label="Number of nodes on Plane" nxe:gridwidth="150" />
+		</xsd:sequence>
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="landProportion">
         <xsd:annotation>
         	<xsd:documentation>Defines land proportions choosable on the new game form, i.e. small/medium/large.</xsd:documentation>
         </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:landProportionData">
-				<xsd:attribute name="landProportionID" type="momimecommon:landProportionID" use="required" nxe:label="Land Proportion ID" nxe:gridwidth="120" />
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfMapIsLand" type="momimecommon:percentage" nxe:label="% of map which is land" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLandIsHills" type="momimecommon:percentage" nxe:label="% of land which is hills" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfHillsAreMountains" type="momimecommon:percentage" nxe:label="% of hills which are mountains" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="tundraRowCount" type="momimecommon:mapTileCount" nxe:label="Nbr. rows from map edge where tundra can appear" nxe:gridwidth="270" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionTileType" type="momimecommon:landProportionTileType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionPlane" type="momimecommon:landProportionPlane" />
+		</xsd:sequence>
+		<xsd:attribute name="landProportionID" type="momimecommon:landProportionID" use="optional" nxe:label="Land Proportion ID" nxe:gridwidth="120" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="landProportionTileType" nxe:singular="Land Proportion Tile Type" nxe:plural="Land Proportion Tile Types">
+        <xsd:annotation>
+        	<xsd:documentation>Defines charactistics of terrain which is generated in blobs (trees, desert and swamp).</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLand" type="momimecommon:percentage" nxe:label="% of land which is this terrain" nxe:gridwidth="180" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eachAreaTileCount" type="momimecommon:mapTileCount" nxe:label="Approx. size of each area of this terrain" nxe:gridwidth="220" />
+		</xsd:sequence>
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="landProportionPlane" nxe:singular="Land Proportion Plane" nxe:plural="Land Proportion Planes">
+        <xsd:annotation>
+        	<xsd:documentation>Defines land proportion values that are different on each plane.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimecommon:featureChance" nxe:label="1 in X chance of each terrain tile gaining a special feature/mineral" nxe:gridwidth="350" />
+		</xsd:sequence>
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 	
 	<xsd:complexType name="nodeStrength">
         <xsd:annotation>
         	<xsd:documentation>Defines node strengths choosable on the new game form, i.e. weak/normal/powerful.</xsd:documentation>
         </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:nodeStrengthData">
-				<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="required" nxe:label="Node Strength ID" nxe:gridwidth="150" />
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleNodeAuraMagicPower" type="momimecommon:doubledProductionValue" nxe:label="2x node aura magic power" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrengthPlane" type="momimecommon:nodeStrengthPlane" />
+		</xsd:sequence>
+		<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="optional" nxe:label="Node Strength ID" nxe:gridwidth="150" />
+	</xsd:complexType>
+
+	<xsd:complexType name="nodeStrengthPlane" nxe:singular="Node Strength Plane" nxe:plural="Node Strength Planes">
+        <xsd:annotation>
+        	<xsd:documentation>Defines node strength characteristics that are different on each plane.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="nodeAuraSquaresMinimum" type="momimecommon:nodeAuraSqaures" nxe:label="Min. map cells node aura covers" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="nodeAuraSquaresMaximum" type="momimecommon:nodeAuraSqaures" nxe:label="Max. map cells node aura covers" nxe:gridwidth="200" />
+		</xsd:sequence>
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="difficultyLevel">
         <xsd:annotation>
         	<xsd:documentation>Defines difficulty levels choosable on the new game form, i.e. intro/easy/normal/hard/impossible.</xsd:documentation>
         </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:difficultyLevelData">
-				<xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelNodeStrength" type="momimecommon:difficultyLevelNodeStrength" />
-				</xsd:sequence>
-				<xsd:attribute name="difficultyLevelID" type="momimecommon:difficultyLevelID" use="required" nxe:label="Difficulty Level ID" nxe:gridwidth="100" />
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="humanSpellPicks" type="momimecommon:pickCount" nxe:label="Human spell picks" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellPicks" type="momimecommon:pickCount" nxe:label="AI spell picks" nxe:gridwidth="90" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="humanStartingGold" type="momimecommon:undoubledProductionValue" nxe:label="Human starting gold" nxe:gridwidth="110" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiStartingGold" type="momimecommon:undoubledProductionValue" nxe:label="AI starting gold" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="customWizards" type="xsd:boolean" nxe:label="Custom wizards?" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="130" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairCount" type="momimecommon:lairCount" nxe:label="Nbr. normal lairs" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairCount" type="momimecommon:lairCount" nxe:label="Nbr. weak lairs" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMinimum" type="momimecommon:monsterStrength" nxe:label="Tower Min. monster strength" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMaximum" type="momimecommon:monsterStrength" nxe:label="Tower Max. monster strength" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMinimum" type="momimecommon:treasureValue" nxe:label="Tower Min. treasure value" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMaximum" type="momimecommon:treasureValue" nxe:label="Tower Max. treasure value" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMin" type="momimecommon:cityPopulationDiv1000" nxe:label="Min. starting size of raider cities" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMax" type="momimecommon:cityPopulationDiv1000" nxe:label="Max. starting size of raider cities" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityGrowthCap" type="momimecommon:cityPopulationDiv1000" nxe:label="Amount raider cities are allowed to grow" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="wizardCityStartSize" type="momimecommon:cityPopulationDiv1000" nxe:label="Starting size of wizard cities" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityMaxSize" type="momimecommon:cityPopulationDiv1000" nxe:label="Max. city size" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelPlane" type="momimecommon:difficultyLevelPlane" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelNodeStrength" type="momimecommon:difficultyLevelNodeStrength" />
+		</xsd:sequence>
+		<xsd:attribute name="difficultyLevelID" type="momimecommon:difficultyLevelID" use="optional" nxe:label="Difficulty Level ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="difficultyLevelPlane" nxe:singular="Difficulty Level - Plane" nxe:plural="Difficulty Level - Planes">
+        <xsd:annotation>
+        	<xsd:documentation>Defines difficulty level settings that are different on each plane.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairMonstersMinimum" type="momimecommon:monsterStrength" nxe:label="Norm. Lair Min. monster strength" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairMonstersMaximum" type="momimecommon:monsterStrength" nxe:label="Norm. Lair Max. monster strength" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairTreasureMinimum" type="momimecommon:treasureValue" nxe:label="Norm. Lair Min. treasure value" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairTreasureMaximum" type="momimecommon:treasureValue" nxe:label="Norm. Lair Max. treasure value" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairMonstersMinimum" type="momimecommon:monsterStrength" nxe:label="Weak Lair Min. monster strength" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairMonstersMaximum" type="momimecommon:monsterStrength" nxe:label="Weak Lair Max. monster strength" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairTreasureMinimum" type="momimecommon:treasureValue" nxe:label="Weak Lair Min. treasure value" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairTreasureMaximum" type="momimecommon:treasureValue" nxe:label="Weak Lair Max. treasure value" nxe:gridwidth="200" />
+		</xsd:sequence>
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="difficultyLevelNodeStrength" nxe:singular="Difficulty Level - Node Strength" nxe:plural="Difficulty Level - Node Strengths">
         <xsd:annotation>
         	<xsd:documentation>Defines difficulty level settings that are different with each node strength and on each plane.</xsd:documentation>
         </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:difficultyLevelNodeStrengthData">
-				<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="required" nxe:label="Node Strength ID" nxe:showmaincolumn="false" />
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="monstersMinimum" type="momimecommon:monsterStrength" nxe:label="Min. monster strength" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="monstersMaximum" type="momimecommon:monsterStrength" nxe:label="Max. monster strength" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="treasureMinimum" type="momimecommon:treasureValue" nxe:label="Min. treasure value" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="treasureMaximum" type="momimecommon:treasureValue" nxe:label="Max. treasure value" nxe:gridwidth="150" />
+		</xsd:sequence>
+		<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="optional" nxe:label="Node Strength ID" nxe:showmaincolumn="false" />
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="fogOfWarSetting">
         <xsd:annotation>
         	<xsd:documentation>Defines standard fog of war settings choosable on the new game form, i.e. original/recommended.</xsd:documentation>
         </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:fogOfWarSettingData">
-				<xsd:attribute name="fogOfWarSettingID" type="momimecommon:fogOfWarSettingID" use="required" nxe:label="Fog of War Setting ID" nxe:gridwidth="150" />
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="terrainAndNodeAuras" type="momimecommon:fogOfWarValue" nxe:label="Terrain and Node Auras" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="citiesSpellsAndCombatAreaEffects" type="momimecommon:fogOfWarValue" nxe:label="Cities, Combat Spells and CAEs" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="units" type="momimecommon:fogOfWarValue" nxe:label="Units" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="seeEnemyCityConstruction" type="xsd:boolean" nxe:label="See what enemy cities are constructing?" nxe:gridwidth="200" />
+		</xsd:sequence>
+		<xsd:attribute name="fogOfWarSettingID" type="momimecommon:fogOfWarSettingID" use="optional" nxe:label="Fog of War Setting ID" nxe:gridwidth="150" />
 	</xsd:complexType>
 
 	<xsd:complexType name="unitSetting">
         <xsd:annotation>
         	<xsd:documentation>Defines standard unit settings choosable on the new game form, i.e. original/recommended.</xsd:documentation>
         </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:unitSettingData">
-				<xsd:attribute name="unitSettingID" type="momimecommon:unitSettingID" use="required" nxe:label="Unit Setting ID" nxe:gridwidth="100" />
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitsPerMapCell" type="momimecommon:unitCount" nxe:label="Max. units in a map cell" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="canExceedMaximumUnitsDuringCombat" type="xsd:boolean" nxe:label="Exceed limit during combat?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="maxHeroes" type="momimecommon:unitCount" nxe:label="Max. heroes hired at once" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="rollHeroSkillsAtStartOfGame" type="xsd:boolean" nxe:label="Roll hero skills at start of game?" nxe:gridwidth="170" />
+		</xsd:sequence>
+		<xsd:attribute name="unitSettingID" type="momimecommon:unitSettingID" use="optional" nxe:label="Unit Setting ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spellSetting">
         <xsd:annotation>
         	<xsd:documentation>Defines spell settings that must be supplied when creating a new game.</xsd:documentation>
         </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimenewgame:spellSettingData">
-				<xsd:attribute name="spellSettingID" type="momimecommon:spellSettingID" use="required" nxe:label="Spell Setting ID" nxe:gridwidth="120" />
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="switchResearch" type="momimecommon:switchResearch" nxe:label="Switch spell research?" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksToObtainFirstReduction" type="momimecommon:spellBookCount" nxe:label="Spell books to obtain first reduction" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksCastingReduction" type="momimecommon:percentage" nxe:label="% casting reduction from each book" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksCastingReductionCap" type="momimecommon:castingReductionCap" nxe:label="% casting reduction cap" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksCastingReductionCombination" type="momimecommon:castingReductionCombination" nxe:label="Casting reduction combination rule" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonus" type="momimecommon:percentage" nxe:label="% research bonus from each book" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonusCap" type="momimecommon:castingReductionCap" nxe:label="% research bonus cap" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonusCombination" type="momimecommon:castingReductionCombination" nxe:label="Research bonus combination rule" nxe:showmaincolumn="false" />
+		</xsd:sequence>
+		<xsd:attribute name="spellSettingID" type="momimecommon:spellSettingID" use="optional" nxe:label="Spell Setting ID" nxe:gridwidth="120" />
 	</xsd:complexType>
 
 	<xsd:complexType name="newGameDefaults">
@@ -109,7 +244,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
         	<xsd:documentation>Default map size, difficulty level and so on to preselect on the new game screen.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultMapSizeID" type="momimecommon:mapSizeID" nxe:label="Default Map Size" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defaultOverlandMapSizeID" type="momimecommon:overlandMapSizeID" nxe:label="Default Overland Map Size" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="defaultLandProportionID" type="momimecommon:landProportionID" nxe:label="Default Land Proportion" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="defaultNodeStrengthID" type="momimecommon:nodeStrengthID" nxe:label="Default Node Strength" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="defaultDifficultyLevelID" type="momimecommon:difficultyLevelID" nxe:label="Default Difficulty Level" />
@@ -135,7 +270,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPlaneProduction" type="momimecommon:fortressPlaneProduction" />
 		</xsd:sequence>
-		<xsd:attribute name="planeNumber" type="momimenewgame:planeNumber" use="required" nxe:label="Plane Number" nxe:gridwidth="80" />
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:gridwidth="80" />
 	</xsd:complexType>
 
 	<xsd:complexType name="fortressPlaneProduction" nxe:singular="Fortress Plane Production" nxe:plural="Fortress Plane Productions">
@@ -143,7 +278,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
         	<xsd:documentation>Models that a Wizards' Fortress on Myrror generates +5 magic power.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
 		</xsd:sequence>
 		<xsd:attribute name="fortressProductionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Fortress Production Type" nxe:showmaincolumn="false" nxe:gridwidth="200">
 			<xsd:annotation>
@@ -192,7 +327,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines the types of production that a particular map feature generates, e.g. +5 Gold from Gems, +2 Magic Power from Adamantium.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -208,10 +343,10 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines the types of terrain tiles that make up the map, e.g. Grassland, Forest, Mountains, Ocean, Nodes, plus some special entries which aren't really "terrain" - roads and fog of war - for defining movement rate rules.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="productionBonus" type="momimenewgame:percentage" nxe:label="Production Bonus %" nxe:gridwidth="120" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonus" type="momimenewgame:percentage" nxe:label="Gold Bonus %" nxe:gridwidth="90" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionBonus" type="momimecommon:percentage" nxe:label="Production Bonus %" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonus" type="momimecommon:percentage" nxe:label="Gold Bonus %" nxe:gridwidth="90" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonusSurroundingTiles" type="xsd:boolean" nxe:label="Gold Bonus from Surrounding Tiles?" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="doubleFood" type="momimenewgame:doubledProductionValue" nxe:label="2x Food Harvest from Tile" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="doubleFood" type="momimecommon:doubledProductionValue" nxe:label="2x Food Harvest from Tile" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="canBuildCity" type="xsd:boolean" nxe:label="Can Build City on this Terrain?" nxe:gridwidth="180" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:unitMagicRealmID" nxe:label="Fill with Monsters" nxe:showmaincolumn="false">
 				<xsd:annotation>
@@ -221,7 +356,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-		<xsd:attribute name="tileTypeID" type="momimenewgame:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="80" />
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="80" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pickType" nxe:singular="Type of Spell Pick" nxe:plural="Types of Spell Pick" nxe:submenu="Magic">
@@ -239,7 +374,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Models that a Wizards' Fortress generates +2 magic power for each spell book the wizard has.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
 		</xsd:sequence>
 		<xsd:attribute name="fortressProductionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Fortress Production Type" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -257,7 +392,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="pickType" type="momimecommon:pickTypeID" nxe:label="Pick Type" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="pickCost" type="momimecommon:pickCost" nxe:label="Cost" nxe:gridwidth="60" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="pickReligiousBuildingBonus" type="momimenewgame:percentage" nxe:label="Religious Building Bonus %" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickReligiousBuildingBonus" type="momimecommon:percentage" nxe:label="Religious Building Bonus %" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -324,7 +459,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="percentageBonus" type="momimenewgame:percentage" nxe:label="% bonus" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageBonus" type="momimecommon:percentage" nxe:label="% bonus" nxe:gridwidth="80" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -365,7 +500,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>The different races of civilians &amp; units in the game.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="nativePlane" type="momimenewgame:planeNumber" nxe:label="Native Plane" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="1" maxOccurs="1" name="nativePlane" type="momimecommon:planeNumber" nxe:label="Native Plane" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
@@ -374,7 +509,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateModifier" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Modifier" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="mineralBonusMultiplier" type="momimecommon:mineralBonusMultiplier" nxe:label="Mineral Bonus Multipler" nxe:gridwidth="130" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="goldTradeBonus" type="momimenewgame:percentage" nxe:label="Gold Trade Bonus" nxe:gridwidth="130" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="goldTradeBonus" type="momimecommon:percentage" nxe:label="Gold Trade Bonus" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="racePopulationTask" type="momimecommon:racePopulationTask">
 				<xsd:key name="racePopulationTaskProductionPK">
 					<xsd:selector xpath="racePopulationTaskProduction" />
@@ -402,7 +537,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Lists the types of production that 1,000 civilians of a particular race performing a particular task produce.  e.g. Defines that Halfling farmers produce more food, that Klackon and Dwarven workers produce more production, and which races naturally generate magic power.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -419,7 +554,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:choice minOccurs="1" maxOccurs="1" >
-				<xsd:element minOccurs="0" maxOccurs="1" name="unrestPercentage" type="momimenewgame:percentage" nxe:label="Unrest %" nxe:gridwidth="70" />
+				<xsd:element minOccurs="0" maxOccurs="1" name="unrestPercentage" type="momimecommon:percentage" nxe:label="Unrest %" nxe:gridwidth="70" />
 				<xsd:element minOccurs="0" maxOccurs="1" name="unrestLiteral" type="momimecommon:unrestLiteral" nxe:label="Unrest Literal Amount" nxe:gridwidth="120" />
 			</xsd:choice>
 		</xsd:sequence>
@@ -450,8 +585,8 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Lists the tax rates players can choose in the game, and how much gold and unrest is generated by each setting.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleTaxGold" type="momimenewgame:doubledProductionValue" nxe:label="2x Gold per Population" nxe:gridwidth="140" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="taxUnrestPercentage" type="momimenewgame:percentage" nxe:label="Unrest %" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleTaxGold" type="momimecommon:doubledProductionValue" nxe:label="2x Gold per Population" nxe:gridwidth="140" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="taxUnrestPercentage" type="momimecommon:percentage" nxe:label="Unrest %" nxe:gridwidth="80" />
 		</xsd:sequence>
 		<xsd:attribute name="taxRateID" type="momimecommon:taxRateID" use="required" nxe:label="Tax Rate ID" nxe:gridwidth="80" />
 	</xsd:complexType>
@@ -486,8 +621,8 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 Animsts' Guilds increasing farmers' ration production, production boost from Sawmills, and the magic power and research produced by Alchemists' and Sages' Guilds.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Modifier Amount" nxe:gridwidth="120" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimenewgame:percentage" nxe:label="Percentage Bonus" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Modifier Amount" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimecommon:percentage" nxe:label="Percentage Bonus" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="optional" nxe:label="Population Task ID" nxe:showmaincolumn="false">
 	        <xsd:annotation>
@@ -521,9 +656,9 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
         	<xsd:documentation>For a particular building, specifies if you can only construct this building if there is a particular type of tile within a particular radius, e.g. can only build a Ship Wrights' Guild if there is an adjacent Ocean tile, and can only build a Sawmill if there is some Forest in the city radius.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="distance" type="momimenewgame:integerMapDistance" nxe:label="Distance" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="distance" type="momimecommon:integerMapDistance" nxe:label="Distance" nxe:gridwidth="80" />
 		</xsd:sequence>
-		<xsd:attribute name="tileTypeID" type="momimenewgame:tileTypeID" use="required" nxe:label="Tile Type Pre-requisite" nxe:gridwidth="150">
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type Pre-requisite" nxe:gridwidth="150">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
@@ -763,7 +898,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
         	<xsd:documentation>Lists all the types of upkeep for a particular unit, e.g. that Wolf Riders eat 1 ration and use 2 gold per turn.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="upkeepValue" type="momimenewgame:undoubledProductionValue" nxe:label="Value" nxe:gridwidth="60" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="upkeepValue" type="momimecommon:undoubledProductionValue" nxe:label="Value" nxe:gridwidth="60" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -940,7 +1075,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
         	<xsd:documentation>Defines the upkeep a particular spells costs each turn, typically an amount of mana.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="upkeepValue" type="momimenewgame:undoubledProductionValue" nxe:label="Value" nxe:gridwidth="60" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="upkeepValue" type="momimecommon:undoubledProductionValue" nxe:label="Value" nxe:gridwidth="60" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -1008,7 +1143,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 	
 <!-- PK identifiers for the new game database entities defined in this XSD -->
 
-	<xsd:simpleType name="mapSizeID">
+	<xsd:simpleType name="overlandMapSizeID">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 
@@ -1037,6 +1172,14 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 	</xsd:simpleType>
 
 <!-- PK identifiers for the client database entities defined in this XSD -->
+
+	<xsd:simpleType name="planeNumber">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="tileTypeID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
 
 	<xsd:simpleType name="productionTypeID">
 		<xsd:restriction base="xsd:normalizedString" />
@@ -1136,21 +1279,112 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	
+<!-- Moved from new game database XSD -->
+	
+	<xsd:simpleType name="percentage">
+		<xsd:restriction base="xsd:unsignedShort">
+			<xsd:maxInclusive value="100"></xsd:maxInclusive>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="doubledProductionValue">
+        <xsd:annotation>
+        	<xsd:documentation>Stores an amount of production something generates, or upkeep that something consumes.  Most production values in the game are stored as doubled values.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:int" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="undoubledProductionValue">
+        <xsd:annotation>
+        	<xsd:documentation>Stores an amount of production something generates, or upkeep that something consumes.  Most upkeep values in the game are stored directly, not doubled.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:int" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="mapTileCount">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="featureChance">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="cityPopulation">
+        <xsd:annotation>
+        	<xsd:documentation>Represents how many people are in a city.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="cityPopulationDiv1000">
+        <xsd:annotation>
+        	<xsd:documentation>Represents how many population figures are in a city, i.e. population divided by 1000 rounded down.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="unitCount">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="monsterStrength">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="treasureValue">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="spellBookCount">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="castingReductionCap">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="lairCount">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="cityCount">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="numberOfNodesOnPlane">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="nodeAuraSqaures">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="pickCount">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="integerMapDistance">
+        <xsd:annotation>
+        	<xsd:documentation>The number of map tiles between two locations on the map, as an integer (rounded) number (often the actual number of map moves it will take to get somewhere).</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
 <!-- Client database enums -->
 	
 	<xsd:simpleType name="roundingDirectionID" nxe:singular="Rounding Direction ID">
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Round down</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ROUND_DOWN"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ROUND_DOWN" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="U"><xsd:annotation>
 				<xsd:documentation>Round up</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ROUND_UP"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ROUND_UP" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="M"><xsd:annotation>
 				<xsd:documentation>Must be an exact multiple</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="MUST_BE_EXACT_MULTIPLE"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MUST_BE_EXACT_MULTIPLE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1159,11 +1393,11 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="T"><xsd:annotation>
 				<xsd:documentation>Per Turn amount cannot go below zero</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="S"><xsd:annotation>
 				<xsd:documentation>Stored amount cannot go below zero</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="STORED_AMOUNT_CANNOT_GO_BELOW_ZERO"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="STORED_AMOUNT_CANNOT_GO_BELOW_ZERO" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1172,15 +1406,15 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="N"><xsd:annotation>
 				<xsd:documentation>No</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="NO"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NO" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="B"><xsd:annotation>
 				<xsd:documentation>Cannot cross specified borders</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="CANNOT_CROSS_SPECIFIED_BORDERS"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CANNOT_CROSS_SPECIFIED_BORDERS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="T"><xsd:annotation>
 				<xsd:documentation>Whole tile impassable</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="WHOLE_TILE_IMPASSABLE"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="WHOLE_TILE_IMPASSABLE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1189,19 +1423,70 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="C"><xsd:annotation>
 				<xsd:documentation>Player who cast the spell</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="CASTER_ONLY"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CASTER_ONLY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="O"><xsd:annotation>
 				<xsd:documentation>Combat opponent of player who cast the spell</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_OPPONENT"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_OPPONENT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="B"><xsd:annotation>
 				<xsd:documentation>Both players in combat</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BOTH_PLAYERS_IN_COMBAT"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BOTH_PLAYERS_IN_COMBAT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="A"><xsd:annotation>
 				<xsd:documentation>All players (even outside of combat)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ALL_EVEN_NOT_IN_COMBAT"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALL_EVEN_NOT_IN_COMBAT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="fogOfWarValue" nxe:singular="Fog of War Value">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Always see once seen</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALWAYS_SEE_ONCE_SEEN" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>Remember as last seen</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REMEMBER_AS_LAST_SEEN" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Forget</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FORGET" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="switchResearch" nxe:singular="Switch Research">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Switch disallowed until finish current research</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DISALLOWED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Switch allowed only if current research not started</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ONLY_IF_NOT_STARTED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="L"><xsd:annotation>
+				<xsd:documentation>Switch allowed but lose research put into current spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="LOSE_CURRENT_RESEARCH" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Switch freely</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FREE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="castingReductionCombination" nxe:singular="Casting Reduction Combination">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Additive</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ADDITIVE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Multiplicative</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MULTIPLICATIVE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1220,15 +1505,15 @@ Movement rules start from the top layer and work down, i.e. check if there is an
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="T"><xsd:annotation>
 				<xsd:documentation>Terrain layer</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="TERRAIN"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="TERRAIN" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="R"><xsd:annotation>
 				<xsd:documentation>Road layer</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ROAD"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ROAD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="B"><xsd:annotation>
 				<xsd:documentation>Building/terrain feature layer</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILDINGS_AND_TERRAIN_FEATURES"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILDINGS_AND_TERRAIN_FEATURES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1241,43 +1526,43 @@ about what a spell must be targetted on.  e.g. Unit enchantments must be targett
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="SC01"><xsd:annotation>
 				<xsd:documentation>Summoning spells</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="SUMMONING"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SUMMONING" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC02"><xsd:annotation>
 				<xsd:documentation>Overland enchantments</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="OVERLAND_ENCHANTMENTS"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OVERLAND_ENCHANTMENTS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC03"><xsd:annotation>
 				<xsd:documentation>City enchantments</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY_ENCHANTMENTS"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY_ENCHANTMENTS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC04"><xsd:annotation>
 				<xsd:documentation>Unit enchantments</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_ENCHANTMENTS"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_ENCHANTMENTS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC05"><xsd:annotation>
 				<xsd:documentation>Combat enchantments</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_ENCHANTMENTS"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_ENCHANTMENTS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC06"><xsd:annotation>
 				<xsd:documentation>City curses</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY_CURSES"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY_CURSES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC07"><xsd:annotation>
 				<xsd:documentation>Unit curses</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_CURSES"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_CURSES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC08"><xsd:annotation>
 				<xsd:documentation>Attack spells</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_SPELLS"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC98"><xsd:annotation>
 				<xsd:documentation>Researchable now - One of the 8 options for what to research next</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE_NOW"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE_NOW" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC99"><xsd:annotation>
 				<xsd:documentation>Researchable - Just not yet (e.g. you have to research most Common spells before proceeding to Uncommon, etc.)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1375,7 +1660,7 @@ However we still need to record negative skill modification values, e.g. True Li
         	<xsd:documentation>Colour value, stored as 6 hex characters RRGGBB.</xsd:documentation>
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:length value="6"/>
+			<xsd:length value="6" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -1634,11 +1919,11 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="F"><xsd:annotation>
 				<xsd:documentation>Front</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="FRONT"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FRONT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="B"><xsd:annotation>
 				<xsd:documentation>Back</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BACK"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BACK" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1647,15 +1932,15 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Double size units</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="DOUBLE_SIZE_UNITS"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DOUBLE_SIZE_UNITS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="F"><xsd:annotation>
 				<xsd:documentation>Four times figures</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="S"><xsd:annotation>
 				<xsd:documentation>Four times figures except for single-figure summoned creatures</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

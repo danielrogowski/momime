@@ -50,8 +50,8 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		dest.setDbName (dbName);
 		dest.setNewGameDefaults (src.getNewGameDefaults ());
 
-		for (final MapSizeSvr mapSize : src.getMapSizes ())
-			dest.getMapSize ().add (mapSize);
+		for (final OverlandMapSizeSvr overlandMapSize : src.getOverlandMapSizes ())
+			dest.getOverlandMapSize ().add (overlandMapSize);
 
 		for (final LandProportionSvr landProportion : src.getLandProportions ())
 			dest.getLandProportion ().add (landProportion);

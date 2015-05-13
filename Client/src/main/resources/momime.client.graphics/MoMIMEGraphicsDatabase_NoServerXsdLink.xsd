@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
-	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
+	xmlns:momimecommon="http://momime/common/database"
 	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map" 
 	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_6" targetNamespace="http://momime/client/graphics/database/v0_9_6"
 	jaxb:version="2.0">
 	
-	<xsd:import namespace="http://www.ndg.com/map"/>
-	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
-	<xsd:import namespace="http://momime/common/database/newgame"/>
-	<xsd:import namespace="http://momime/common/database"/>
+	<xsd:import namespace="http://www.ndg.com/map" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
+	<xsd:import namespace="http://momime/common/database" />
 
     <xsd:annotation>
     	<xsd:documentation>
@@ -530,14 +529,14 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="secondaryTileTypeID" type="momimenewgame:tileTypeID" nxe:label="Secondary Tile Type ID" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="secondaryTileTypeID" type="momimecommon:tileTypeID" nxe:label="Secondary Tile Type ID" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="tertiaryTileTypeID" type="momimenewgame:tileTypeID" nxe:label="Tertiary Tile Type ID" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="tertiaryTileTypeID" type="momimecommon:tileTypeID" nxe:label="Tertiary Tile Type ID" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
@@ -555,14 +554,14 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 			<xsd:element minOccurs="0" maxOccurs="1" name="tileOffsetY" type="momimegfx:pixelCoordinate" nxe:label="Tile offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="smoothedTile" type="momimegfx:smoothedTile" />
 		</xsd:sequence>
-		<xsd:attribute name="tileTypeID" type="momimenewgame:tileTypeID" use="optional" nxe:label="Tile Type ID" nxe:gridwidth="80">
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="optional" nxe:label="Tile Type ID" nxe:gridwidth="80">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="planeNumber" type="momimenewgame:planeNumber" use="optional" nxe:label="Plane Number" nxe:gridwidth="80">
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="optional" nxe:label="Plane Number" nxe:gridwidth="80">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
@@ -694,7 +693,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
         			<xsd:documentation>Location is optional; this is for Trade Goods + Housing special settings that have an image defined but don't appear on the actual city scape image.</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="planeNumber" type="momimenewgame:planeNumber" nxe:label="Plane Number" nxe:gridwidth="80">
+			<xsd:element minOccurs="0" maxOccurs="1" name="planeNumber" type="momimecommon:planeNumber" nxe:label="Plane Number" nxe:gridwidth="80">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
@@ -703,7 +702,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID" nxe:label="City Spell Effect" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="sizeMultiplier" type="momimegfx:sizeMultiplier" nxe:label="Size Multiplier" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimenewgame:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
@@ -738,7 +737,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimegfx:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="380" />
 		</xsd:sequence>
-		<xsd:attribute name="tileTypeID" type="momimenewgame:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100">
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
@@ -922,7 +921,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
         	<xsd:documentation>Set of 8 values denoting bit value of each tile type in if we move in each of the 8 direction from here; or the special value "NoSmooth".</xsd:documentation>
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:length value="8"/>
+			<xsd:length value="8" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	

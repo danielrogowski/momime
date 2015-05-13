@@ -49,7 +49,7 @@ public final class TestCityAIImpl
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 
 		// Fill map with ocean, then we can't build a city anywhere
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
@@ -175,7 +175,7 @@ public final class TestCityAIImpl
 
 		// Map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -198,7 +198,7 @@ public final class TestCityAIImpl
 		ai.setRandomUtils (random);
 		
 		// If we want trade goods cities and there are none, no updates will take place
-		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 		{
 			final OverlandMapCityData cityData = new OverlandMapCityData ();
 			cityData.setCityOwnerID (2);
@@ -213,7 +213,7 @@ public final class TestCityAIImpl
 
 		assertEquals (10, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd));
 
-		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
 
 		// In the situation where we have 62 cities - 2 building trade goods and 60 building something else - and we need 5 rations, there are
@@ -234,7 +234,7 @@ public final class TestCityAIImpl
 
 		assertEquals (-2, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd));
 
-		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
 
 		switch (trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (0).getCityData ().getOptionalFarmers ())
@@ -263,7 +263,7 @@ public final class TestCityAIImpl
 
 		// Map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		final List<MemoryBuilding> trueBuildings = new ArrayList<MemoryBuilding> ();
 
 		// Need certain types of terrain in order to be able to construct all building types

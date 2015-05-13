@@ -7,17 +7,16 @@ import java.util.List;
 import java.util.Map;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.BuildingRequiresTileType;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FortressPickTypeProduction;
 import momime.common.database.FortressPlaneProduction;
 import momime.common.database.MapFeature;
 import momime.common.database.MapFeatureProduction;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
@@ -25,6 +24,7 @@ import momime.common.database.Race;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RacePopulationTaskProduction;
 import momime.common.database.RaceUnrest;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.TileType;
 import momime.common.internal.CityGrowthRateBreakdown;
@@ -985,11 +985,11 @@ public final class CityCalculationsImpl implements CityCalculations
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
 
 		// Food production from surrounding tiles
-		final CityProductionBreakdown food = listCityFoodProductionFromTerrainTiles (map, cityLocation, sd.getMapSize (), db);
+		final CityProductionBreakdown food = listCityFoodProductionFromTerrainTiles (map, cityLocation, sd.getOverlandMapSize (), db);
 		productionValues.getProductionType ().add (food);
 
 		// Production % increase from surrounding tiles
-		final CityProductionBreakdown production = listCityProductionPercentageBonusesFromTerrainTiles (map, cityLocation, sd.getMapSize (), db);
+		final CityProductionBreakdown production = listCityProductionPercentageBonusesFromTerrainTiles (map, cityLocation, sd.getOverlandMapSize (), db);
 		productionValues.getProductionType ().add (production);
 
 		// Deal with people
@@ -1074,7 +1074,7 @@ public final class CityCalculationsImpl implements CityCalculations
 
 		// Production from nearby map features
 		// Have to do this after buildings, so we can have discovered if we have the miners' guild bonus to map features
-		addProductionFromMapFeatures (productionValues, map, cityLocation, sd.getMapSize (), db, raceMineralBonusMultipler, buildingMineralPercentageBonus);
+		addProductionFromMapFeatures (productionValues, map, cityLocation, sd.getOverlandMapSize (), db, raceMineralBonusMultipler, buildingMineralPercentageBonus);
 		
 		// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
 		// we can calculate the gold trade % cap.
@@ -1085,7 +1085,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
 		// into considering the potential maximum size this city will reach and cap the gold trade % accordingly
 		calculateGoldTradeBonus (productionValues.findOrAddProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD), map, cityLocation,
-			(calculatePotential ? food.getCappedProductionAmount () : null), sd.getMapSize (), db);
+			(calculatePotential ? food.getCappedProductionAmount () : null), sd.getOverlandMapSize (), db);
 
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
 		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
@@ -1231,28 +1231,28 @@ public final class CityCalculationsImpl implements CityCalculations
 	 *
 	 * @param map Our knowledge of the overland terrain map
 	 * @param plane Which plane we want to place a city on
-	 * @param mapSize Overland map coordinate system and extended details
+	 * @param overlandMapSize Overland map coordinate system and extended details
 	 * @return Map area with areas we know are too close to cities marked
 	 */
 	@Override
 	public final MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
-		final int plane, final MapSizeData mapSize)
+		final int plane, final OverlandMapSize overlandMapSize)
 	{
 		log.trace ("Entering markWithinExistingCityRadius: " + plane);
 
 		final MapArea2D<Boolean> result = new MapArea2DArrayListImpl<Boolean> ();
-		result.setCoordinateSystem (mapSize);
+		result.setCoordinateSystem (overlandMapSize);
 		
 		final BooleanMapAreaOperations2DImpl op = new BooleanMapAreaOperations2DImpl ();
 		op.setCoordinateSystemUtils (getCoordinateSystemUtils ());
 		op.deselectAll (result);
 		
-		for (int x = 0; x < mapSize.getWidth (); x++)
-			for (int y = 0; y < mapSize.getHeight (); y++)
+		for (int x = 0; x < overlandMapSize.getWidth (); x++)
+			for (int y = 0; y < overlandMapSize.getHeight (); y++)
 			{
 				final OverlandMapCityData cityData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
 				if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
-					op.selectRadius (result, x, y, mapSize.getCitySeparation ());
+					op.selectRadius (result, x, y, overlandMapSize.getCitySeparation ());
 			}
 
 		log.trace ("Exiting markWithinExistingCityRadius");

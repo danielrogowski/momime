@@ -1,6 +1,6 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
 	xmlns:map="http://www.ndg.com/map" xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase"
-	xmlns:momimecommon="http://momime/common/database" xmlns:momimenewgame="http://momime/common/database/newgame"
+	xmlns:momimecommon="http://momime/common/database"
 	xmlns:momimeclient="http://momime/client/database" xmlns:momimemsgs="http://momime/common/messages"
 	xmlns:momimectos="http://momime/common/messages/clienttoserver" xmlns:momimestoc="http://momime/common/messages/servertoclient"
 	xmlns:momimedummy="http://momime/dummycommon/database" targetNamespace="http://momime/dummycommon/database">
@@ -8,7 +8,6 @@
 	<xsd:import namespace="http://www.ndg.com/map"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
-	<xsd:import namespace="http://momime/common/database/newgame"/>
 	<xsd:import namespace="http://momime/common/database"/>
 
 	<!-- Following 4 are only here because they are present in MoMIMECommon's episode file and so we have to declare them even if we don't use them -->
@@ -25,7 +24,6 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="raceID" type="momimecommon:raceID"/>
-				<xsd:element name="percentage" type="momimenewgame:percentage"/>
 				<xsd:element name="direction" type="map:mapDirection"/>
 				<xsd:element name="sessionID" type="mps:sessionID"/>
 			</xsd:sequence>
@@ -33,4 +31,3 @@
 	</xsd:element>
 	
 </xsd:schema>
-

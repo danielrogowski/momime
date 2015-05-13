@@ -7,7 +7,7 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
@@ -82,7 +82,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			error = "You cannot move from a location back to the same location";
 		
 		// Calculate distances to every point on the map
-		final CombatMapSizeData combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
+		final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
 		
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

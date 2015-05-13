@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.FogOfWarValue;
-import momime.common.database.newgame.MapSizeData;
+import momime.common.database.FogOfWarValue;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
@@ -165,12 +165,12 @@ public final class TestFogOfWarProcessingImpl
 		when (db.findSpell ("SP110", "markVisibleArea")).thenReturn (curseDef);
 		
 		// Map
-		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -307,13 +307,13 @@ public final class TestFogOfWarProcessingImpl
 		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 
 		// Test with no special spells
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/markVisibleArea.xlsx"));
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
 
@@ -327,12 +327,12 @@ public final class TestFogOfWarProcessingImpl
 		// Awareness
 		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
 					if ((cell != null) && (cell.getCellType () != Cell.CELL_TYPE_BLANK))
@@ -344,12 +344,12 @@ public final class TestFogOfWarProcessingImpl
 		// Nature Awareness
 		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
 	}
 

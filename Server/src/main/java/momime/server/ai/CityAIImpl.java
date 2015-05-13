@@ -96,14 +96,14 @@ public final class CityAIImpl implements CityAI
 		log.trace ("Entering chooseCityLocation: " + plane);
 
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
-		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (map, plane, sd.getMapSize ());
+		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (map, plane, sd.getOverlandMapSize ());
 
 		// Now consider every map location as a possible location for a new city
 		MapCoordinates3DEx bestLocation = null;
 		int bestCityQuality = -1;
 
-		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 			{
 				// Can we build a city here?
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
@@ -137,7 +137,7 @@ public final class CityAIImpl implements CityAI
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
 						
 						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-							if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
+							if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, direction.getDirectionID ()))
 							{
 								final OverlandMapTerrainData checkFeatureData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								if (checkFeatureData.getMapFeatureID () != null)
@@ -186,8 +186,8 @@ public final class CityAIImpl implements CityAI
 		final List<MapCoordinates3DEx> workerCoordinates = new ArrayList<MapCoordinates3DEx> ();
 
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
@@ -261,8 +261,8 @@ public final class CityAIImpl implements CityAI
 		// e.g. a size 1 city with a granary next to a wild game resource will produce +3 rations even with no farmers,
 		// or a size 1 city with no resources must be a farmer, but he only eats 1 of the 2 rations he produces so this also gives +1
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
@@ -297,8 +297,8 @@ public final class CityAIImpl implements CityAI
 
 		// Update each player's memorised view of this city with the new number of optional farmers, if they can see it
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
@@ -369,7 +369,7 @@ public final class CityAIImpl implements CityAI
 			final List<BuildingSvr> buildingOptions = new ArrayList<BuildingSvr> ();
 			for (final BuildingSvr building : db.getBuildings ())
 				if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, building.getBuildingID ()) == null) &&
-					(getServerCityCalculations ().canEventuallyConstructBuilding (trueTerrain, trueBuildings, cityLocation, building, sd.getMapSize (), db)))
+					(getServerCityCalculations ().canEventuallyConstructBuilding (trueTerrain, trueBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
 
 					buildingOptions.add (building);
 

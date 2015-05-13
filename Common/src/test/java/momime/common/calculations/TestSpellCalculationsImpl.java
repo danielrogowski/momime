@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.database.CastingReductionCombination;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.CastingReductionCombination;
-import momime.common.database.newgame.SpellSettingData;
-import momime.common.database.newgame.SwitchResearch;
+import momime.common.database.SpellSetting;
+import momime.common.database.SwitchResearch;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -43,9 +43,9 @@ public final class TestSpellCalculationsImpl
 	/**
 	 * @return None of the pre-defined spell settings use multiplicative for research, so this creates special test settings with 8% per book multiplicative, 1000% cap
 	 */
-	private final SpellSettingData createSpecialSpellSettings ()
+	private final SpellSetting createSpecialSpellSettings ()
 	{
-		final SpellSettingData settings = new SpellSettingData ();
+		final SpellSetting settings = new SpellSetting ();
 		settings.setSwitchResearch (SwitchResearch.FREE);
 		settings.setSpellBooksToObtainFirstReduction (8);
 		settings.setSpellBooksCastingReduction (8);
@@ -97,7 +97,7 @@ public final class TestSpellCalculationsImpl
 	@Test
 	public final void testCalculateCastingCostReductionAdditive () throws MomException, RecordNotFoundException
 	{
-		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
+		final SpellSetting spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
 		final CommonDatabase db = GenerateTestData.createDB ();
 
@@ -158,7 +158,7 @@ public final class TestSpellCalculationsImpl
 	@Test
 	public final void testCalculateResearchBonusAdditive () throws MomException, RecordNotFoundException
 	{
-		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
+		final SpellSetting spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
 		final CommonDatabase db = GenerateTestData.createDB ();
 
@@ -219,7 +219,7 @@ public final class TestSpellCalculationsImpl
 	@Test
 	public final void testCalculateCastingCostReductionMultiplicative () throws MomException, RecordNotFoundException
 	{
-		final SpellSettingData spellSettings = GenerateTestData.createRecommendedSpellSettings ();
+		final SpellSetting spellSettings = GenerateTestData.createRecommendedSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
 		final CommonDatabase db = GenerateTestData.createDB ();
 
@@ -280,7 +280,7 @@ public final class TestSpellCalculationsImpl
 	@Test
 	public final void testCalculateResearchBonusMultiplicative () throws MomException, RecordNotFoundException
 	{
-		final SpellSettingData spellSettings = createSpecialSpellSettings ();
+		final SpellSetting spellSettings = createSpecialSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
 		final CommonDatabase db = GenerateTestData.createDB ();
 

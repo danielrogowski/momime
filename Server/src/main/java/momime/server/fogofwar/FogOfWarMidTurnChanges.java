@@ -8,10 +8,10 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.DamageTypeID;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.FogOfWarValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -64,7 +64,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx coords, final FogOfWarSettingData fogOfWarSettings, final boolean newlyAddedCity)
+		final List<PlayerServerDetails> players, final MapCoordinates3DEx coords, final FogOfWarSetting fogOfWarSettings, final boolean newlyAddedCity)
 		throws JAXBException, XMLStreamException;
 
 	/**
@@ -139,7 +139,7 @@ public interface FogOfWarMidTurnChanges
 	 */
 	public void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final FogOfWarSettingData fogOfWarSettings, final ServerDatabaseEx db)
+		final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -363,7 +363,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	public void updatePlayerMemoryOfUnit_UnitName (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -380,7 +380,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	public void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -407,7 +407,7 @@ public interface FogOfWarMidTurnChanges
 	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final List<MemoryUnit> tuDefenders,
 		final String attackSkillID, final String attackAttributeID, final String attackSpellID, final DamageTypeID damageType,
 		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
-		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
+		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
@@ -428,7 +428,7 @@ public interface FogOfWarMidTurnChanges
 	 */
 	public void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
+		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**

@@ -1,2 +1,1 @@
-PUBLIC "http://momime/common/database/newgame" "MoMIMENewGameDatabase.xsd"
 PUBLIC "http://momime/common/database" "MoMIMECommonDatabase.xsd"

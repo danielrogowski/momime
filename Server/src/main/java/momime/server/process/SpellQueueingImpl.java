@@ -199,7 +199,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
 						getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-						mom.getSessionDescription ().getMapSize ());
+						mom.getSessionDescription ().getOverlandMapSize ());
 				
 					if (doubleRangePenalty == null)
 						msg = "You cannot cast combat spells while you are banished.";

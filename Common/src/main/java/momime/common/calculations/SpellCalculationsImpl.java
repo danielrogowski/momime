@@ -6,10 +6,10 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.PickProductionBonus;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -60,7 +60,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final double calculateCastingCostReduction (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
+	public final double calculateCastingCostReduction (final int bookCount, final SpellSetting spellSettings, final Spell spell,
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
@@ -173,7 +173,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final double calculateResearchBonus (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
+	public final double calculateResearchBonus (final int bookCount, final SpellSetting spellSettings, final Spell spell,
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{

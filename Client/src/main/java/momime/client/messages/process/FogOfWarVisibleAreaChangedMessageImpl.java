@@ -60,7 +60,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getTerrainUpdate ().size () > 0)
 		{
 			final MapArea3D<Boolean> areaToSmooth = new MapArea3DArrayListImpl<Boolean> ();
-			areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getMapSize ());
+			areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getOverlandMapSize ());
 			
 			final UpdateTerrainMessageImpl proc = getFactory ().createUpdateTerrainMessage ();
 			for (final UpdateTerrainMessageData data : getTerrainUpdate ())

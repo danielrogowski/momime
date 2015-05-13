@@ -5,8 +5,8 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.PlayerPick;
@@ -30,7 +30,7 @@ public interface SpellCalculations
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public double calculateCastingCostReduction (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
+	public double calculateCastingCostReduction (final int bookCount, final SpellSetting spellSettings, final Spell spell,
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
@@ -44,7 +44,7 @@ public interface SpellCalculations
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public double calculateResearchBonus (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
+	public double calculateResearchBonus (final int bookCount, final SpellSetting spellSettings, final Spell spell,
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	

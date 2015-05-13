@@ -14,9 +14,9 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -171,7 +171,7 @@ public final class TestSpellUtilsImpl
 
 		// Recommended spell settings - 8% per book multiplicative, 90% cap
 		// Using this because all overland spell casting costs end in 0 or 5, so with nice round percentage reductions in multiples of 10% we can't get any results ending in anything other than .0 or .5
-		final SpellSettingData spellSettings = GenerateTestData.createRecommendedSpellSettings ();
+		final SpellSetting spellSettings = GenerateTestData.createRecommendedSpellSettings ();
 
 		// 10 Nature books gives us a 22.1312% reduction
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
@@ -207,7 +207,7 @@ public final class TestSpellUtilsImpl
 		calc.setSpellUtils (utils);
 
 		// Original spell settings - 10% per book additive, 100% cap
-		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
+		final SpellSetting spellSettings = GenerateTestData.createOriginalSpellSettings ();
 
 		// 10 Nature books gives us a 30% reduction
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();

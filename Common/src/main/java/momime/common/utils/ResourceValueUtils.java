@@ -5,7 +5,7 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
@@ -84,6 +84,6 @@ public interface ResourceValueUtils
 	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
      */
 	public int calculateAmountPerTurnForProductionType (final MomPersistentPlayerPrivateKnowledge privateInfo, final List<PlayerPick> picks,
-		final String productionTypeID, final SpellSettingData spellSettings, final CommonDatabase db)
+		final String productionTypeID, final SpellSetting spellSettings, final CommonDatabase db)
     	throws MomException, RecordNotFoundException;
 }

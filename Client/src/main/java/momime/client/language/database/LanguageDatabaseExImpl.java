@@ -15,8 +15,8 @@ import momime.client.language.database.v0_9_6.LandProportion;
 import momime.client.language.database.v0_9_6.LanguageCategory;
 import momime.client.language.database.v0_9_6.LanguageDatabase;
 import momime.client.language.database.v0_9_6.MapFeature;
-import momime.client.language.database.v0_9_6.MapSize;
 import momime.client.language.database.v0_9_6.NodeStrength;
+import momime.client.language.database.v0_9_6.OverlandMapSize;
 import momime.client.language.database.v0_9_6.Pick;
 import momime.client.language.database.v0_9_6.PickType;
 import momime.client.language.database.v0_9_6.Plane;
@@ -120,8 +120,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	/** Map of spell IDs to spell objects */
 	private Map<String, SpellLang> spellsMap;
 	
-	/** Map of map size IDs to map size objects */
-	private Map<String, MapSize> mapSizesMap;
+	/** Map of overland map size IDs to overland map size objects */
+	private Map<String, OverlandMapSize> overlandMapSizesMap;
 	
 	/** Map of land proportion IDs to land proportion objects */
 	private Map<String, LandProportion> landProportionsMap;
@@ -273,10 +273,10 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		for (final Spell thisSpell : getSpell ())
 			spellsMap.put (thisSpell.getSpellID (), (SpellLang) thisSpell);
 		
-		// Create map sizes map
-		mapSizesMap = new HashMap<String, MapSize> ();
-		for (final MapSize thisMapSize : getMapSize ())
-			mapSizesMap.put (thisMapSize.getMapSizeID (), thisMapSize);
+		// Create overland map sizes map
+		overlandMapSizesMap = new HashMap<String, OverlandMapSize> ();
+		for (final OverlandMapSize thisOverlandMapSize : getOverlandMapSize ())
+			overlandMapSizesMap.put (thisOverlandMapSize.getOverlandMapSizeID (), thisOverlandMapSize);
 		
 		// Create land proportions map
 		landProportionsMap = new HashMap<String, LandProportion> ();
@@ -566,15 +566,15 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	}
 	
 	/**
-	 * @param mapSizeID Map size ID to search for
-	 * @return Map size description; or replays back the ID if no description exists
+	 * @param overlandMapSizeID Overland map size ID to search for
+	 * @return Overland map size description; or replays back the ID if no description exists
 	 */
 	@Override
-	public final String findMapSizeDescription (final String mapSizeID)
+	public final String findOverlandMapSizeDescription (final String overlandMapSizeID)
 	{
-		final MapSize thisMapSize = mapSizesMap.get (mapSizeID);
-		final String desc = (thisMapSize != null) ? thisMapSize.getMapSizeDescription () : null;
-		return (desc != null) ? desc : mapSizeID;
+		final OverlandMapSize thisMapSize = overlandMapSizesMap.get (overlandMapSizeID);
+		final String desc = (thisMapSize != null) ? thisMapSize.getOverlandMapSizeDescription () : null;
+		return (desc != null) ? desc : overlandMapSizeID;
 	}
 	
 	/**

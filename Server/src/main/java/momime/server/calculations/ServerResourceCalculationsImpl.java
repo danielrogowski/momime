@@ -12,9 +12,9 @@ import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SpellSetting;
 import momime.common.database.SpellUpkeep;
 import momime.common.database.UnitUpkeep;
-import momime.common.database.newgame.SpellSettingData;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
@@ -157,8 +157,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 		// Calculates production and consumption from all cities on the map
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
@@ -177,8 +177,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// Counts up how many node aura squares each player gets
 		int nodeAuraSquares = 0;
 		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
 					if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()))
@@ -398,7 +398,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
 	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
 	 */
-	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
+	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSetting spellSettings, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering accumulateGlobalProductionValues: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
@@ -457,7 +458,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	final void progressResearch (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
+	final void progressResearch (final PlayerServerDetails player, final SpellSetting spellSettings, final ServerDatabaseEx db)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering progressResearch");
 

@@ -1,6 +1,6 @@
 package momime.server.calculations;
 
-import momime.common.database.newgame.FogOfWarValue;
+import momime.common.database.FogOfWarValue;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;

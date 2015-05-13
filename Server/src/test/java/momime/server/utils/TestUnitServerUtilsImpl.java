@@ -22,7 +22,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
-import momime.common.database.newgame.UnitSettingData;
+import momime.common.database.UnitSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -675,7 +675,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -726,7 +726,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -781,7 +781,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -837,7 +837,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -894,7 +894,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -945,7 +945,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -1002,7 +1002,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -1059,7 +1059,7 @@ public final class TestUnitServerUtilsImpl
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Unit settings
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
@@ -1100,15 +1100,15 @@ public final class TestUnitServerUtilsImpl
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
 
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (settings);
 		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
+		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)
@@ -1171,15 +1171,15 @@ public final class TestUnitServerUtilsImpl
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
 
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (settings);
 		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
+		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)
@@ -1250,15 +1250,15 @@ public final class TestUnitServerUtilsImpl
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
 
-		final UnitSettingData settings = new UnitSettingData ();
+		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (settings);
 		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
+		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)

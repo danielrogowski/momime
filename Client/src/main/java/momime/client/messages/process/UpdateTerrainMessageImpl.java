@@ -55,7 +55,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		log.trace ("Entering start: " + getData ().getMapLocation ());
 
 		final MapArea3D<Boolean> areaToSmooth = new MapArea3DArrayListImpl<Boolean> ();
-		areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getMapSize ());
+		areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getOverlandMapSize ());
 		
 		processOneUpdate (areaToSmooth);
 		endUpdates (areaToSmooth);

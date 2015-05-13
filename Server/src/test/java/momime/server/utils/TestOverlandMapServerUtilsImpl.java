@@ -18,10 +18,10 @@ import javax.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.newgame.FogOfWarSettingData;
-import momime.common.database.newgame.FogOfWarValue;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
@@ -278,15 +278,15 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -379,15 +379,15 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -474,15 +474,15 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -609,15 +609,15 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.getPlanes ()).thenReturn (planes);
 
 		// Session description
-		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);

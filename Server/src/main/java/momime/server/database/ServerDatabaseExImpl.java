@@ -808,13 +808,13 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
-	 * @return Complete list of all pre-defined map sizes
+	 * @return Complete list of all pre-defined overland map sizes
 	 */
 	@Override
 	@SuppressWarnings ("unchecked")
-	public final List<MapSizeSvr> getMapSizes ()
+	public final List<OverlandMapSizeSvr> getOverlandMapSizes ()
 	{
-		return (List<MapSizeSvr>) (List<?>) getMapSize ();
+		return (List<OverlandMapSizeSvr>) (List<?>) getOverlandMapSize ();
 	}
 	
 	/**

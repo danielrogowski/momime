@@ -34,10 +34,10 @@ import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.Unit;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -176,12 +176,12 @@ public final class TestChangeConstructionUI
 		cityData.setCitySizeID ("CS01");
 		cityData.setCityName ("Blahdy Blah");
 
-		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
+		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setMapSize (mapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
 		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -208,7 +208,7 @@ public final class TestChangeConstructionUI
 		// Tile type reqs
 		final CityCalculations cityCalc = mock (CityCalculations.class);
 		for (int n = 1; n < buildings.size (); n++)
-			when (cityCalc.buildingPassesTileTypeRequirements (fow.getMap (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n), mapSize)).thenReturn (true);
+			when (cityCalc.buildingPassesTileTypeRequirements (fow.getMap (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n), overlandMapSize)).thenReturn (true);
 		
 		// Current construction
 		cityData.setCurrentlyConstructingBuildingID ("BL05");

@@ -9,11 +9,11 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculationsImpl;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.SpellSetting;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomResourceValue;
@@ -346,7 +346,7 @@ public final class TestResourceValueUtilsImpl
 		spellCalculations.setSpellUtils (new SpellUtilsImpl ());
 		
 		final MomPersistentPlayerPrivateKnowledge privateInfo = new MomPersistentPlayerPrivateKnowledge ();
-		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
+		final SpellSetting spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Add some production

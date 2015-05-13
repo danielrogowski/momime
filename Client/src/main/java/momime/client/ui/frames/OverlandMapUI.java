@@ -52,10 +52,10 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.newgame.MapSizeData;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
@@ -460,8 +460,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 				g.setClip (0, 0, mapZoomedWidth, mapZoomedHeight);
 				
 				// Need to draw it 1-2 times in each direction, depending on wrapping params
-				final int xRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight () ? 2 : 1;
-				final int yRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom () ? 2 : 1;
+				final int xRepeatCount = getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight () ? 2 : 1;
+				final int yRepeatCount = getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom () ? 2 : 1;
 				
 				for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
 					for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
@@ -488,8 +488,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 				// my only conclusion can be that its Mockito itself that behaves erratically.
 				final MemoryUnit [] [] unitToDrawAtEachLocation = chooseUnitToDrawAtEachLocation ();
 				if (unitToDrawAtEachLocation != null)
-					for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
-						for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
+					for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 						{
 							final MemoryUnit unit = unitToDrawAtEachLocation [y] [x];
 							if (unit != null)
@@ -624,7 +624,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 								
 								for (final Integer d : pendingMovement.getPath ())
 								{
-									final int dReversed = getCoordinateSystemUtils ().normalizeDirection (getClient ().getSessionDescription ().getMapSize ().getCoordinateSystemType (), d+4);
+									final int dReversed = getCoordinateSystemUtils ().normalizeDirection (getClient ().getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), d+4);
 
 									final int bootX = (((coords.getX () * overlandMapTileSet.getTileWidth ()) - ((bootImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
 									final int bootY = (((coords.getY () * overlandMapTileSet.getTileHeight ()) - ((bootImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
@@ -660,7 +660,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 									moveOutFromDirectionImageNo = d;
 									
 									// Move to next square
-									getCoordinateSystemUtils ().move2DCoordinates (getClient ().getSessionDescription ().getMapSize (), coords, dReversed);
+									getCoordinateSystemUtils ().move2DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), coords, dReversed);
 								}
 							}
 					}
@@ -698,10 +698,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 				{
 					g.setColor (Color.GRAY);
 					
-					if (getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ())
+					if (getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ())
 						g.drawLine (mapZoomedWidth - mapViewX, 0, mapZoomedWidth - mapViewX, mapZoomedHeight);
 
-					if (getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ())
+					if (getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ())
 						g.drawLine (0, mapZoomedHeight - mapViewY, mapZoomedWidth, mapZoomedHeight - mapViewY);
 				}
 			}
@@ -755,10 +755,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 					final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
 					
 					mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
 
 					mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
 					
 					sceneryPanel.repaint ();
 				}
@@ -788,10 +788,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 					final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
 					
 					mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
 
 					mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
 					
 					sceneryPanel.repaint ();
 				}
@@ -1059,10 +1059,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 					if (mapViewUpdated)
 					{
 						newMapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-							sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+							sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
 
 						newMapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-							sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+							sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
 					
 						if ((newMapViewX != mapViewX) || (newMapViewY != mapViewY))
 						{
@@ -1161,7 +1161,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		{
 			// So its our turn, and have a current position, now have to check the direction pressed is a valid move
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (getOverlandMapProcessing ().getUnitMoveFrom ());
-			if (getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), coords, d.getDirectionID ()))
+			if (getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), coords, d.getDirectionID ()))
 				if (getMovementTypes ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()) != OverlandMoveTypeID.CANNOT_MOVE_HERE)
 					getOverlandMapProcessing ().moveUnitStackTo (coords);
 		}
@@ -1188,12 +1188,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 			int mapCellX = (((ev.getX () + mapViewX) * 10) / mapViewZoom) / overlandMapTileSet.getTileWidth ();
 			int mapCellY = (((ev.getY () + mapViewY) * 10) / mapViewZoom) / overlandMapTileSet.getTileHeight ();
 			
-			final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+			final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
 			
-			while (mapCellX < 0) mapCellX = mapCellX + mapSize.getWidth ();
-			while (mapCellX >= mapSize.getWidth ()) mapCellX = mapCellX - mapSize.getWidth (); 
-			while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
-			while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
+			while (mapCellX < 0) mapCellX = mapCellX + overlandMapSize.getWidth ();
+			while (mapCellX >= overlandMapSize.getWidth ()) mapCellX = mapCellX - overlandMapSize.getWidth (); 
+			while (mapCellY < 0) mapCellY = mapCellY + overlandMapSize.getHeight ();
+			while (mapCellY >= overlandMapSize.getHeight ()) mapCellY = mapCellY - overlandMapSize.getHeight ();
 			
 			result = new MapCoordinates2DEx (mapCellX, mapCellY);
 		}
@@ -1244,7 +1244,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		log.trace ("Entering regenerateOverlandMapBitmaps: " + mapViewPlane);
 
 		overlandMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapViewPlane,
-			0, 0, getClient ().getSessionDescription ().getMapSize ().getWidth (), getClient ().getSessionDescription ().getMapSize ().getHeight ());
+			0, 0, getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ());
 		
 		// Tell all the city screens to do the same.
 		// A bit weird putting this in the map UI, it should go on the messages, but at least this way the messages then only have to call 1 method so I don't
@@ -1265,7 +1265,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		log.trace ("Entering regenerateFogOfWarBitmap");
 
 		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapViewPlane,
-			0, 0, getClient ().getSessionDescription ().getMapSize ().getWidth (), getClient ().getSessionDescription ().getMapSize ().getHeight ());
+			0, 0, getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ());
 
 		// Tell all the city screens to do the same
 		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
@@ -1281,7 +1281,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	final MemoryUnit [][] chooseUnitToDrawAtEachLocation ()
 	{
-		final MemoryUnit [][] bestUnits = new MemoryUnit [getClient ().getSessionDescription ().getMapSize ().getHeight ()] [getClient ().getSessionDescription ().getMapSize ().getWidth ()];
+		final MemoryUnit [][] bestUnits = new MemoryUnit [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
 		boolean found = false;
 		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
@@ -1360,10 +1360,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 			movementTypesBitmap = null;
 		else
 		{
-			movementTypesBitmap = new BufferedImage (getClient ().getSessionDescription ().getMapSize ().getWidth (), getClient ().getSessionDescription ().getMapSize ().getHeight (), BufferedImage.TYPE_INT_ARGB);
+			movementTypesBitmap = new BufferedImage (getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (), BufferedImage.TYPE_INT_ARGB);
 
-			for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
-				for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
+			for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					switch (getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (y).getCell ().get (x))
 					{
 						// Brighten areas we can move to in 1 turn
@@ -1428,8 +1428,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 			final double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
 			final double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
 			
-			final double scaledX = (x + 0.5d) / getClient ().getSessionDescription ().getMapSize ().getWidth ();
-			final double scaledY = (y + 0.5d) / getClient ().getSessionDescription ().getMapSize ().getHeight ();
+			final double scaledX = (x + 0.5d) / getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ();
+			final double scaledY = (y + 0.5d) / getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ();
 			
 			final double centreX = scaledX * mapZoomedWidth;
 			final double centreY = scaledY * mapZoomedHeight;
@@ -1439,8 +1439,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 			if (!force)
 			{
 				// Check the map in all 4 positions to see if it covers that pixel
-				final int xRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight () ? 2 : 1;
-				final int yRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom () ? 2 : 1;
+				final int xRepeatCount = getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight () ? 2 : 1;
+				final int yRepeatCount = getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom () ? 2 : 1;
 				
 				for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
 					for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
@@ -1461,10 +1461,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 				final int newMapViewY = (int) (centreY - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
 				
 				mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-					sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+					sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
 	
 				mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-					sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+					sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
 				
 				sceneryPanel.repaint ();
 			}

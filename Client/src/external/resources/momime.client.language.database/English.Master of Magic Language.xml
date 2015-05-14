@@ -5091,7 +5091,10 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Players</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="SessionsColumn2">
-			<languageEntryText>Map Size</languageEntryText>
+			<languageEntryText>Map, Land, Nodes, Difficulty</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SessionsColumn3">
+			<languageEntryText>Turn System</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Refresh">
 			<languageEntryText>Refresh</languageEntryText>

@@ -11,7 +11,12 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.LandProportion;
+import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.TurnSystem;
 
 import org.junit.Test;
 
@@ -45,7 +50,15 @@ public final class TestJoinGameUI
 
 		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn0")).thenReturn ("Game Name");
 		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn1")).thenReturn ("Players");
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn2")).thenReturn ("Map Size");
+		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn2")).thenReturn ("Map, Land, Nodes, Difficulty");
+		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn3")).thenReturn ("Turn System");
+		
+		when (lang.findCategoryEntry ("NewGameFormTurnSystems", TurnSystem.ONE_PLAYER_AT_A_TIME.name ())).thenReturn ("One player at a time");
+		when (lang.findOverlandMapSizeDescription ("MS03")).thenReturn ("Standard");
+		when (lang.findLandProportionDescription ("LP03")).thenReturn ("Large");
+		when (lang.findNodeStrengthDescription ("NS03")).thenReturn ("Powerful");
+		when (lang.findDifficultyLevelDescription ("DL05")).thenReturn ("Impossible");
+		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Custom")).thenReturn ("Custom");
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -54,19 +67,34 @@ public final class TestJoinGameUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Set up some dummy sessions
-		final MomSessionDescription sd1 = new MomSessionDescription ();
-		sd1.setAiPlayerCount (4);
-		sd1.setMaxPlayers (10);
-		sd1.setSessionName ("Nigel's Game");
-		sd1.setOverlandMapSize (ClientTestData.createOverlandMapSize ());
+		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
+		overlandMapSize.setOverlandMapSizeID ("MS03");
 		
-		final SessionAndPlayerDescriptions spd1 = new SessionAndPlayerDescriptions ();
-		spd1.setSessionDescription (sd1);
-		spd1.getPlayer ().add (null);
-		spd1.setSessionDescription (sd1);
+		final LandProportion landProportion = new LandProportion ();
+		landProportion.setLandProportionID ("LP03");
+		
+		final NodeStrength nodeStrength = new NodeStrength ();
+		nodeStrength.setNodeStrengthID ("NS03");
+		
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setAiPlayerCount (4);
+		sd.setMaxPlayers (10);
+		sd.setSessionName ("Nigel's Game");
+		sd.setOverlandMapSize (overlandMapSize);
+		sd.setLandProportion (landProportion);
+		sd.setNodeStrength (nodeStrength);
+		sd.setDifficultyLevel (difficultyLevel);
+		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
+		
+		final SessionAndPlayerDescriptions spd = new SessionAndPlayerDescriptions ();
+		spd.setSessionDescription (sd);
+		spd.getPlayer ().add (null);
+		spd.setSessionDescription (sd);
 		
 		final List<SessionAndPlayerDescriptions> sessions = new ArrayList<SessionAndPlayerDescriptions> ();
-		sessions.add (spd1);
+		sessions.add (spd);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/JoinGameUI.xml"));
@@ -78,7 +106,7 @@ public final class TestJoinGameUI
 		join.setUtils (utils);
 		join.setLanguageHolder (langHolder);
 		join.setLanguageChangeMaster (langMaster);
-		join.setSmallFont (CreateFontsForTests.getSmallFont ());
+		join.setTinyFont (CreateFontsForTests.getTinyFont ());
 		join.setLargeFont (CreateFontsForTests.getLargeFont ());
 		join.setSessions (sessions);
 	

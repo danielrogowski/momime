@@ -3,21 +3,21 @@
 	<formWidth>640</formWidth>
 	<formHeight>480</formHeight>
 	<component name="frmJoinGameSessions">
-		<left>86</left>
+		<left>50</left>
 		<top>88</top>
-		<width>458</width>
+		<width>532</width>
 		<height>314</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmJoinGameRefresh">
-		<left>158</left>
+		<left>118</left>
 		<top>422</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmJoinGameConfirm">
-		<left>240</left>
+		<left>200</left>
 		<top>422</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>

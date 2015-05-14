@@ -46,8 +46,8 @@ public final class JoinGameUI extends MomClientFrameUI
 	/** Large font */
 	private Font largeFont;
 	
-	/** Small font */
-	private Font smallFont;
+	/** Tiny font */
+	private Font tinyFont;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -163,13 +163,19 @@ public final class JoinGameUI extends MomClientFrameUI
 		
 		sessionsTable = new JTable ();
 		sessionsTable.setModel (sessionsTableModel);
-		sessionsTable.setFont (getSmallFont ());
+		sessionsTable.setFont (getTinyFont ());
 		sessionsTable.setForeground (MomUIConstants.SILVER);
 		sessionsTable.setBackground (new Color (0, 0, 0, 0));
-		sessionsTable.getTableHeader ().setFont (getSmallFont ());
+		sessionsTable.getTableHeader ().setFont (getTinyFont ());
 		sessionsTable.setOpaque (false);
 		sessionsTable.setRowSelectionAllowed (true);
 		sessionsTable.setColumnSelectionAllowed (false);
+		
+		sessionsTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
+		sessionsTable.getColumnModel ().getColumn (0).setPreferredWidth (80);
+		sessionsTable.getColumnModel ().getColumn (1).setPreferredWidth (70);
+		sessionsTable.getColumnModel ().getColumn (2).setPreferredWidth (200);
+		sessionsTable.getColumnModel ().getColumn (3).setPreferredWidth (110);
 		
 		final JScrollPane sessionsTablePane = new JScrollPane (sessionsTable);
 		sessionsTablePane.getViewport ().setOpaque (false);
@@ -255,19 +261,19 @@ public final class JoinGameUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Small font
+	 * @return Tiny font
 	 */
-	public final Font getSmallFont ()
+	public final Font getTinyFont ()
 	{
-		return smallFont;
+		return tinyFont;
 	}
 
 	/**
-	 * @param font Small font
+	 * @param font Tiny font
 	 */
-	public final void setSmallFont (final Font font)
+	public final void setTinyFont (final Font font)
 	{
-		smallFont = font;
+		tinyFont = font;
 	}
 
 	/**
@@ -314,7 +320,7 @@ public final class JoinGameUI extends MomClientFrameUI
 		@Override
 		public final int getColumnCount ()
 		{
-			return 3;
+			return 4;
 		}
 		
 		/**
@@ -357,7 +363,22 @@ public final class JoinGameUI extends MomClientFrameUI
 					break;
 
 				case 2:
-					value = sd.getOverlandMapSize ().getWidth () + " x " + sd.getOverlandMapSize ().getHeight ();
+					// Display the name of each settings preset or "Custom"
+					value = (sd.getOverlandMapSize ().getOverlandMapSizeID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
+							getLanguage ().findOverlandMapSizeDescription (sd.getOverlandMapSize ().getOverlandMapSizeID ())) + ", " +
+							
+						(sd.getLandProportion ().getLandProportionID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
+							getLanguage ().findLandProportionDescription (sd.getLandProportion ().getLandProportionID ())) + ", " +
+						
+						(sd.getNodeStrength ().getNodeStrengthID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
+							getLanguage ().findNodeStrengthDescription (sd.getNodeStrength ().getNodeStrengthID ())) + ", " +
+								
+						(sd.getDifficultyLevel ().getDifficultyLevelID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
+							getLanguage ().findDifficultyLevelDescription (sd.getDifficultyLevel ().getDifficultyLevelID ()));
+					break;
+					
+				case 3:
+					value = getLanguage ().findCategoryEntry ("NewGameFormTurnSystems", sd.getTurnSystem ().name ());
 					break;
 					
 				default:

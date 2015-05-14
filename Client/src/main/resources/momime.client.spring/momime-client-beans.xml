@@ -1070,7 +1070,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="largeFont" ref="largeFont" />
-		<property name="smallFont" ref="smallFont" />
+		<property name="tinyFont" ref="tinyFont" />
 		<property name="client" ref="client" />
 	</bean>
 	

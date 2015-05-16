@@ -136,7 +136,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 					msg = "The unit you're trying to build cannot be built in cities - change ignored.";
 
 				// Check unit is for the correct race
-				else if ((unit.getUnitRaceID () == null) || (!unit.getUnitRaceID ().equals (cityData.getCityRaceID ())))
+				else if ((unit.getUnitRaceID () != null) && (!unit.getUnitRaceID ().equals (cityData.getCityRaceID ())))
 					msg = "This unit you're trying to build doesn't match the race inhabiting the city - change ignored.";
 
 				// Check that we have any necessary pre-requisite buildings e.g. have to have a Barracks and a Blacksmith to be able to build Swordsmen

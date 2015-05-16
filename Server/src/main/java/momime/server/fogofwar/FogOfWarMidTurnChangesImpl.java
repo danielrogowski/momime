@@ -868,7 +868,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		
 		for (final MemoryMaintainedSpell trueSpell : copyOfTrueSpells)
 			if ((cityLocation.equals (trueSpell.getCityLocation ())) &&
-				(castingPlayerID == 0) || (trueSpell.getCastingPlayerID () == castingPlayerID))
+				((castingPlayerID == 0) || (trueSpell.getCastingPlayerID () == castingPlayerID)))
 
 				switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
 		

@@ -5,6 +5,7 @@ import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -122,6 +123,14 @@ public interface GraphicsDatabaseEx
 	 */
 	public UnitGfx findUnit (final String unitID, final String caller) throws RecordNotFoundException;
 
+	/**
+	 * @param unitSpecialOrderID Unit special order ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit special order object
+	 * @throws RecordNotFoundException If the unitSpecialOrderID doesn't exist
+	 */
+	public UnitSpecialOrderImageGfx findUnitSpecialOrder (final UnitSpecialOrder unitSpecialOrderID, final String caller) throws RecordNotFoundException;
+	
 	/**
 	 * @param rangedAttackTypeID Ranged attack type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

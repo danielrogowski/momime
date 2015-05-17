@@ -15,6 +15,7 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
 
@@ -604,6 +605,47 @@ public final class TestGraphicsDatabaseExImpl
 		db.findUnit ("UN004", "testFindUnit_NotExists");
 	}
 
+	/**
+	 * Tests the findUnitSpecialOrder method to find a unit attribute ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindUnitSpecialOrder_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 67; n <= 68; n++)
+		{
+			final UnitSpecialOrderImageGfx newUnitSpecialOrder = new UnitSpecialOrderImageGfx ();
+			newUnitSpecialOrder.setUnitSpecialOrderID (UnitSpecialOrder.fromValue (new String (new char [] {(char) n})));
+			db.getUnitSpecialOrderImage ().add (newUnitSpecialOrder);
+		}
+
+		db.buildMaps ();
+
+		assertEquals (UnitSpecialOrder.BUILD_CITY,
+			db.findUnitSpecialOrder (UnitSpecialOrder.BUILD_CITY, "testFindUnitSpecialOrder_Exists").getUnitSpecialOrderID ());
+	}
+
+	/**
+	 * Tests the findUnitSpecialOrder method to find a unit attribute ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitSpecialOrder_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 67; n <= 68; n++)
+		{
+			final UnitSpecialOrderImageGfx newUnitSpecialOrder = new UnitSpecialOrderImageGfx ();
+			newUnitSpecialOrder.setUnitSpecialOrderID (UnitSpecialOrder.fromValue (new String (new char [] {(char) n})));
+			db.getUnitSpecialOrderImage ().add (newUnitSpecialOrder);
+		}
+
+		db.buildMaps ();
+
+		db.findUnitSpecialOrder (UnitSpecialOrder.BUILD_ROAD, "testFindUnitSpecialOrder_NotExists");
+	}
+	
 	/**
 	 * Tests the findRangedAttackType method to find a rangedAttackType ID that does exist
 	 * @throws RecordNotFoundException If the record is not found

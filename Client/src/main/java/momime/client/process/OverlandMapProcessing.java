@@ -5,8 +5,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.UnitSpecialOrder;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;

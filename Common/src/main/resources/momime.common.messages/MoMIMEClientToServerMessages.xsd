@@ -346,7 +346,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="map:mapCoordinates3D" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="specialOrder" type="momimemsgs:unitSpecialOrder" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="specialOrder" type="momimecommon:unitSpecialOrder" />
 						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN" />
 		        	</xsd:sequence>
 				</xsd:extension>

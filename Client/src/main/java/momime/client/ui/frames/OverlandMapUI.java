@@ -56,12 +56,12 @@ import momime.common.database.OverlandMapSize;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
-import momime.common.messages.UnitSpecialOrder;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.messages.servertoclient.MapVolumeOfOverlandMoveType;
@@ -539,6 +539,17 @@ public final class OverlandMapUI extends MomClientFrameUI
 												g.drawImage (unitImage,
 													(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
 													unitZoomedWidth, unitZoomedHeight, null);
+												
+												// Any special order to draw on the unit?
+												if (unit.getSpecialOrder () != null)
+												{
+													final BufferedImage unitSpecialOrderImage = getUtils ().loadImage
+														(getGraphicsDB ().findUnitSpecialOrder (unit.getSpecialOrder (), "sceneryPanel.paintComponent").getUnitSpecialOrderImageFile ());
+
+													g.drawImage (unitSpecialOrderImage,
+														(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+														unitZoomedWidth, unitZoomedHeight, null);
+												}
 											}
 									}
 									catch (final IOException e)
@@ -1304,7 +1315,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 					final MemoryUnit existingUnit = bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()];
 	
 					// Show real special orders in preference to patrol
-					if ((existingUnit == null) || ((existingUnit != null) && (existingUnit.getSpecialOrder () == null) && (unit.getSpecialOrder () != null)) || ((existingUnit != null) && (existingUnit.getSpecialOrder () == UnitSpecialOrder.PATROL) && (unit.getSpecialOrder () != null) && (unit.getSpecialOrder () != UnitSpecialOrder.PATROL)))
+					if ((existingUnit == null) ||
+						((existingUnit != null) && (existingUnit.getSpecialOrder () == null) && (unit.getSpecialOrder () != null)) ||
+						((existingUnit != null) && (existingUnit.getSpecialOrder () == UnitSpecialOrder.PATROL) && (unit.getSpecialOrder () != null) && (unit.getSpecialOrder () != UnitSpecialOrder.PATROL)))
 	
 						bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
 				}

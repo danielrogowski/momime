@@ -7,12 +7,12 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.UnitSpecialOrder;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;

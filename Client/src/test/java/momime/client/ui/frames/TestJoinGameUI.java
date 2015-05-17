@@ -91,7 +91,6 @@ public final class TestJoinGameUI
 		final SessionAndPlayerDescriptions spd = new SessionAndPlayerDescriptions ();
 		spd.setSessionDescription (sd);
 		spd.getPlayer ().add (null);
-		spd.setSessionDescription (sd);
 		
 		final List<SessionAndPlayerDescriptions> sessions = new ArrayList<SessionAndPlayerDescriptions> ();
 		sessions.add (spd);

@@ -28,12 +28,14 @@ import momime.client.graphics.database.v0_9_6.Unit;
 import momime.client.graphics.database.v0_9_6.UnitAttribute;
 import momime.client.graphics.database.v0_9_6.UnitAttributeComponentImage;
 import momime.client.graphics.database.v0_9_6.UnitSkill;
+import momime.client.graphics.database.v0_9_6.UnitSpecialOrderImage;
 import momime.client.graphics.database.v0_9_6.UnitType;
 import momime.client.graphics.database.v0_9_6.WeaponGrade;
 import momime.client.graphics.database.v0_9_6.Wizard;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
 
@@ -90,6 +92,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of unit IDs to unit objects */
 	private Map<String, UnitGfx> unitsMap;
 
+	/** Map of unit special order IDs to unit special order objects */
+	private Map<UnitSpecialOrder, UnitSpecialOrderImageGfx> unitSpecialOrdersMap;
+	
 	/** Map of ranged attack type IDs to ranged attack type objects */
 	private Map<String, RangedAttackTypeGfx> rangedAttackTypesMap;
 	
@@ -220,6 +225,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			unitsMap.put (UnitGfx.getUnitID (), UnitGfx);
 		}
 
+		// Create unit special orders map
+		unitSpecialOrdersMap = new HashMap<UnitSpecialOrder, UnitSpecialOrderImageGfx> ();
+		for (final UnitSpecialOrderImage thisSpecialOrder : getUnitSpecialOrderImage ())
+			unitSpecialOrdersMap.put (thisSpecialOrder.getUnitSpecialOrderID (), (UnitSpecialOrderImageGfx) thisSpecialOrder);
+		
 		// Create ranged attack types map
 		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeGfx> ();
 		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
@@ -567,6 +577,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final UnitGfx found = unitsMap.get (unitID);
 		if (found == null)
 			throw new RecordNotFoundException (Unit.class, unitID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param unitSpecialOrderID Unit special order ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit special order object
+	 * @throws RecordNotFoundException If the unitSpecialOrderID doesn't exist
+	 */
+	@Override
+	public final UnitSpecialOrderImageGfx findUnitSpecialOrder (final UnitSpecialOrder unitSpecialOrderID, final String caller) throws RecordNotFoundException
+	{
+		final UnitSpecialOrderImageGfx found = unitSpecialOrdersMap.get (unitSpecialOrderID);
+		if (found == null)
+			throw new RecordNotFoundException (UnitSpecialOrderImage.class, unitSpecialOrderID.toString (), caller);
 
 		return found;
 	}

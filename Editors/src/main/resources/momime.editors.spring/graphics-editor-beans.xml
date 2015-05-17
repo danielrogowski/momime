@@ -105,6 +105,17 @@
 		</property>
 	</bean>
 
+	<bean id="unitSpecialOrderGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>unitSpecialOrderImageFile</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="rangedAttackTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -256,6 +267,7 @@
 				<entry key="combatAreaEffect" value="combatAreaEffectGrid" />
 				<entry key="unitAttributeWeaponGrade" value="unitAttributeWeaponGradeGrid" />
 				<entry key="unitAttributeComponentImage" value="unitAttributeComponentGrid" />
+				<entry key="unitSpecialOrderImage" value="unitSpecialOrderGrid" />
 				<entry key="rangedAttackType" value="rangedAttackTypeGrid" />
 				<entry key="rangedAttackTypeCombatImage" value="rangedAttackTypeCombatImageGrid" />
 				<entry key="unit" value="unitGrid" />

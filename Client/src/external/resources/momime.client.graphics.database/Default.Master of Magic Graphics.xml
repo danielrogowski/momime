@@ -40109,6 +40109,24 @@
 	<unitSkill unitSkillID="SC172">
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC172-icon.png</unitSkillImageFile>
 	</unitSkill>
+	<unitSpecialOrderImage unitSpecialOrderID="P">
+		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/patrol.png</unitSpecialOrderImageFile>
+	</unitSpecialOrderImage>
+	<unitSpecialOrderImage unitSpecialOrderID="C">
+		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/buildCity.png</unitSpecialOrderImageFile>
+	</unitSpecialOrderImage>
+	<unitSpecialOrderImage unitSpecialOrderID="R">
+		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/buildRoad.png</unitSpecialOrderImageFile>
+	</unitSpecialOrderImage>
+	<unitSpecialOrderImage unitSpecialOrderID="M">
+		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/meldWithNode.png</unitSpecialOrderImageFile>
+	</unitSpecialOrderImage>
+	<unitSpecialOrderImage unitSpecialOrderID="U">
+		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/purify.png</unitSpecialOrderImageFile>
+	</unitSpecialOrderImage>
+	<unitSpecialOrderImage unitSpecialOrderID="D">
+		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/dismiss.png</unitSpecialOrderImageFile>
+	</unitSpecialOrderImage>
 	<weaponGrade weaponGradeNumber="0" />
 	<weaponGrade weaponGradeNumber="1">
 		<weaponGradeMiniImageFile>/momime.client.graphics/weaponGrades/weaponGradeMiniImageAlchemy.png</weaponGradeMiniImageFile>

@@ -1863,6 +1863,40 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<xsd:simpleType name="unitSpecialOrder">
+	    <xsd:annotation>
+    		<xsd:documentation>Different special orders that units can be given.
+All of these except for msoPatrol are only used in simultaneous turn games - in one-player-at-a-time games, these kinds of commands are executed instantly.
+Units with special orders won't be asked for movement orders and look visibly different on the map.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Patrol</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PATROL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>Build city</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILD_CITY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>Build road</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILD_ROAD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Meld with node</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MELD_WITH_NODE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="U"><xsd:annotation>
+				<xsd:documentation>Purify</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PURIFY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Dismiss</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DISMISS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 <!-- Enums cannot be extended, so I avoid defining any in the server/client XSDs to avoid changing dozens of import statements between MoM IME versions -->	
 
 	<xsd:simpleType name="aiBuildingTypeID">

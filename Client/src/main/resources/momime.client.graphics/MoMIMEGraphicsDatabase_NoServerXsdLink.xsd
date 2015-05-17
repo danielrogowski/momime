@@ -62,6 +62,7 @@
 				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimegfx:unitSkill" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpecialOrderImage" type="momimegfx:unitSpecialOrderImage" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimegfx:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimegfx:combatAreaEffect" />
@@ -97,6 +98,10 @@
 		<xsd:key name="unitAttributeComponentPK">
 			<xsd:selector xpath="unitAttributeComponent" />
 			<xsd:field xpath="@unitAttributeComponentID" />
+		</xsd:key>
+		<xsd:key name="unitSpecialOrderImagePK">
+			<xsd:selector xpath="unitSpecialOrderImage" />
+			<xsd:field xpath="@unitSpecialOrderID" />
 		</xsd:key>
 		<xsd:key name="unitAttributePK">
 			<xsd:selector xpath="unitAttribute" />
@@ -323,6 +328,13 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="unitSpecialOrderImage" nxe:singular="Unit Special Order" nxe:plural="Unit Special Orders" nxe:submenu="Units">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitSpecialOrderImageFile" type="momimegfx:imageFilename" nxe:label="Special order image file" nxe:gridwidth="250" />
+		</xsd:sequence>
+		<xsd:attribute name="unitSpecialOrderID" type="momimecommon:unitSpecialOrder" use="required" nxe:label="Special Order" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="rangedAttackType" nxe:singular="Ranged Attack Type" nxe:plural="Ranged Attack Types" nxe:submenu="Units">

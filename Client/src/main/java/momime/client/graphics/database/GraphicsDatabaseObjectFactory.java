@@ -30,6 +30,7 @@ import momime.client.graphics.database.v0_9_6.UnitAttributeComponentImage;
 import momime.client.graphics.database.v0_9_6.UnitCombatAction;
 import momime.client.graphics.database.v0_9_6.UnitCombatImage;
 import momime.client.graphics.database.v0_9_6.UnitSkill;
+import momime.client.graphics.database.v0_9_6.UnitSpecialOrderImage;
 import momime.client.graphics.database.v0_9_6.UnitType;
 import momime.client.graphics.database.v0_9_6.WeaponGrade;
 import momime.client.graphics.database.v0_9_6.Wizard;
@@ -311,6 +312,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final UnitAttributeComponentImage createUnitAttributeComponentImage ()
 	{
 		return new UnitAttributeComponentImageGfx ();
+	}
+
+	/**
+	 * @return Custom extended Unit special order images
+	 */
+	@Override
+	public final UnitSpecialOrderImage createUnitSpecialOrderImage ()
+	{
+		return new UnitSpecialOrderImageGfx ();
 	}
 
 	/**

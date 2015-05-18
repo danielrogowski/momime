@@ -16,6 +16,10 @@
     			<value>com.ndg.multiplayer.sessionbase.JoinSession</value>
     			<value>com.ndg.multiplayer.sessionbase.LeaveSession</value>
 
+    			<value>com.ndg.multiplayer.sessionbase.BrowseSavedGames</value>
+    			<value>com.ndg.multiplayer.sessionbase.BrowseSavePoints</value>
+    			<value>com.ndg.multiplayer.sessionbase.LoadGame</value>
+
     			<!-- MoM multiplayer structures -->
     			<value>momime.common.messages.MomSessionDescription</value>
 
@@ -75,6 +79,12 @@
     			<value>com.ndg.multiplayer.sessionbase.SessionEnding</value>
     			<value>com.ndg.multiplayer.sessionbase.KickedByAnotherLogin</value>
     			<value>com.ndg.multiplayer.sessionbase.LeaveSessionFailed</value>
+    			
+    			<value>com.ndg.multiplayer.sessionbase.BrowseSavedGamesSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.BrowseSavedGamesFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.BrowseSavePointsSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.BrowseSavePointsFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.LoadGameFailed</value>
     			
     			<!-- MoM multiplayer structures -->
     			<value>momime.common.messages.MomSessionDescription</value>

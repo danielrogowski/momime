@@ -32,6 +32,7 @@ import momime.client.utils.AnimationController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.sessionbase.BrowseSavedGames;
 import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
@@ -194,10 +195,10 @@ public final class MainMenuUI extends MomClientFrameUI
 			{
 				try
 				{
-					getNewGameUI ().setVisible (true);
-					// getNewGameUI ().showBrowseSavedGamesPanel ();
+					getClient ().getServerConnection ().sendMessageToServer (new BrowseSavedGames ());
+					// Receiving the reply to this causes LoadGameUI to be displayed, see receivedSavedGamesList ()
 				}
-				catch (final IOException e)
+				catch (final Exception e)
 				{
 					log.error (e, e);
 				}

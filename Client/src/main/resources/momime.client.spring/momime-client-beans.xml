@@ -720,6 +720,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="joinGameUI" ref="joinGameUI" />
+		<property name="loadGameUI" ref="loadGameUI" />
 		<property name="taxRateUI" ref="taxRateUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
@@ -1070,6 +1071,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="joinGameUI" class="momime.client.ui.frames.JoinGameUI">
+		<property name="joinGameLayout" ref="joinGameLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="tinyFont" ref="tinyFont" />
+		<property name="client" ref="client" />
+	</bean>
+	
+	<bean id="loadGameUI" class="momime.client.ui.frames.LoadGameUI">
 		<property name="joinGameLayout" ref="joinGameLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />

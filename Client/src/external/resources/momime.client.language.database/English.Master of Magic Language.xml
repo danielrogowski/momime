@@ -5106,6 +5106,41 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmLoadGame">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Load Game</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SavedGamesColumn0">
+			<languageEntryText>Game Name</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SavedGamesColumn1">
+			<languageEntryText>Players</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SavedGamesColumn2">
+			<languageEntryText>Game Started</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SavedGamesColumn3">
+			<languageEntryText>Latest Save</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SavePointsColumn0">
+			<languageEntryText>Saved At</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SavePointsColumn1">
+			<languageEntryText>Turn</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SelectSavedGame">
+			<languageEntryText>Select</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SelectSavePoint">
+			<languageEntryText>Load</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Back">
+			<languageEntryText>Back</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Cancel">
+			<languageEntryText>Cancel</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseWizard">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Select Wizard</languageEntryText>

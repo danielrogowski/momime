@@ -19427,6 +19427,19 @@
 		<languageEntry languageEntryID="Join" />
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmLoadGame">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="SavedGamesColumn0" />
+		<languageEntry languageEntryID="SavedGamesColumn1" />
+		<languageEntry languageEntryID="SavedGamesColumn2" />
+		<languageEntry languageEntryID="SavedGamesColumn3" />
+		<languageEntry languageEntryID="SavePointsColumn0" />
+		<languageEntry languageEntryID="SavePointsColumn1" />
+		<languageEntry languageEntryID="SelectSavedGame" />
+		<languageEntry languageEntryID="SelectSavePoint" />
+		<languageEntry languageEntryID="Back" />
+		<languageEntry languageEntryID="Cancel" />
+	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseWizard">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="OK" />

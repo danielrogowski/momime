@@ -19,6 +19,7 @@ import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.ConnectToServerUI;
 import momime.client.ui.frames.JoinGameUI;
+import momime.client.ui.frames.LoadGameUI;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -71,6 +72,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	/** Join Game UI */
 	private JoinGameUI joinGameUI;
 
+	/** Load Game UI */
+	private LoadGameUI loadGameUI;
+	
 	/** Tax rate UI */
 	private TaxRateUI taxRateUI;
 	
@@ -269,6 +273,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			public final void receivedSavedGamesList (final List<SavedGameSession> savedGames)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				getLoadGameUI ().setVisible (true);
+				getLoadGameUI ().setSavedGames (savedGames);
 			}
 
 			/**
@@ -283,6 +289,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			public final void receivedSavePointsList (final List<SavedGamePoint> savePoints)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				getLoadGameUI ().setVisible (true);
+				getLoadGameUI ().setSavePoints (savePoints);
 			}
 			
 			/**
@@ -535,6 +543,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setJoinGameUI (final JoinGameUI ui)
 	{
 		joinGameUI = ui;
+	}
+
+	/**
+	 * @return Load Game UI
+	 */
+	public final LoadGameUI getLoadGameUI ()
+	{
+		return loadGameUI;
+	}
+
+	/**
+	 * @param ui Load Game UI
+	 */
+	public final void setLoadGameUI (final LoadGameUI ui)
+	{
+		loadGameUI = ui;
 	}
 	
 	/**

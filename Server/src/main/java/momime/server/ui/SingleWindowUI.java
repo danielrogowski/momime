@@ -28,6 +28,7 @@ import javax.swing.table.TableColumn;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.TurnSystem;
 import momime.server.MomServer;
+import momime.server.MomSessionThread;
 import momime.server.logging.LoggingConstants;
 
 import org.apache.log4j.AppenderSkeleton;
@@ -187,11 +188,11 @@ public final class SingleWindowUI extends AppenderSkeleton implements MomServerU
 			public final void run ()
 			{
 				// Log here, or in separate session window?
-				final boolean isSessionLog = event.getLoggerName ().startsWith (MomServer.MOM_SESSION_LOGGER_PREFIX);
+				final boolean isSessionLog = event.getLoggerName ().startsWith (MomSessionThread.MOM_SESSION_LOGGER_PREFIX);
 				boolean done = false;
 				if ((isSeparateWindowForEachSession ()) && (isSessionLog))
 				{
-					final int sessionID = Integer.parseInt (event.getLoggerName ().substring (MomServer.MOM_SESSION_LOGGER_PREFIX.length ()));
+					final int sessionID = Integer.parseInt (event.getLoggerName ().substring (MomSessionThread.MOM_SESSION_LOGGER_PREFIX.length ()));
 					final SessionWindow sessionWindow = sessionWindows.get (sessionID);
 					if (sessionWindow != null)
 					{

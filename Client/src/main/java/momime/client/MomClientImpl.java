@@ -9,11 +9,14 @@ import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.NewGameDatabase;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
@@ -22,19 +25,23 @@ import momime.client.ui.frames.JoinGameUI;
 import momime.client.ui.frames.LoadGameUI;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.TaxRateUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerSessionClient;
 import com.ndg.multiplayer.client.MultiplayerSessionClientEvent;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.BrowseSavePointsFailedReason;
 import com.ndg.multiplayer.sessionbase.BrowseSavedGamesFailedReason;
 import com.ndg.multiplayer.sessionbase.CreateAccountFailedReason;
@@ -56,6 +63,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MomClientImpl.class);
+
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Name that we logged in using */
 	private String ourPlayerName;
@@ -77,6 +87,12 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** Tax rate UI */
 	private TaxRateUI taxRateUI;
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
+	/** Music player */
+	private AudioPlayer musicPlayer;
 	
 	/** Overland map bitmap generator */
 	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
@@ -210,11 +226,46 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			{
 				((ClientDatabaseExImpl) getClientDB ()).buildMapsAndRunConsistencyChecks ();
 				getJoinGameUI ().setVisible (false);
-				getNewGameUI ().setVisible (true);
+				getLoadGameUI ().setVisible (false);
+				getMainMenuUI ().setVisible (false);
+				
+				// Can tell the difference between a new game and loading a saved game by how many players are in the session 
+				getNewGameUI ().setVisible (getPlayers ().size () == 1);
+				
 				getNewGameUI ().afterJoinedSession ();
 				getOverlandMapBitmapGenerator ().afterJoinedSession ();
 				getCombatMapBitmapGenerator ().afterJoinedSession ();
 				getTaxRateUI ().updateTaxRateButtons ();
+				
+				// If making or joining a new game, we won't yet know the photos and flag colours all the players are using
+				// but if reloading a game, we'll already have this info, and have to use it to populate the flag colour in the player's transient data
+				for (final PlayerPublicDetails player : getPlayers ())
+				{
+					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+					final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+					
+					if (pub.getCustomFlagColour () != null)
+						trans.setFlagColour (pub.getCustomFlagColour ());
+					
+					else if (pub.getStandardPhotoID () != null)
+						trans.setFlagColour (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "joinedSession").getFlagColour ());
+				}
+				
+				// Also if reloading a game, show the map screen, like StartGameMessage would normally
+				if (getPlayers ().size () > 1)
+				{
+					getOverlandMapUI ().setVisible (true);
+					
+					// Switch to the overland map background music
+					try
+					{
+						getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
 			}
 
 			/**
@@ -464,6 +515,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	}
 	
 	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
+	}
+	
+	/**
 	 * @return Name that we logged in using
 	 */
 	@Override
@@ -575,6 +642,38 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setTaxRateUI (final TaxRateUI ui)
 	{
 		taxRateUI = ui;
+	}
+
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Music player
+	 */
+	public final AudioPlayer getMusicPlayer ()
+	{
+		return musicPlayer;
+	}
+
+	/**
+	 * @param player Music player
+	 */
+	public final void setMusicPlayer (final AudioPlayer player)
+	{
+		musicPlayer = player;
 	}
 	
 	/**

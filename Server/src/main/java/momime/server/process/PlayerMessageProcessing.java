@@ -55,15 +55,30 @@ public interface PlayerMessageProcessing
 	 * In a one-player-at-a-time game, this gets called when a player clicks the Next Turn button to tell everyone whose turn it is now
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If an expected element cannot be found
 	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void switchToNextPlayer (final MomSessionVariables mom)
+	public void switchToNextPlayer (final MomSessionVariables mom, final boolean loadingSavedGame)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
+	/**
+	 * Kicks off a new turn in an everybody-allocate-movement-then-move-simultaneously game
+	 *
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If an expected element cannot be found
+	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public void kickOffSimultaneousTurn (final MomSessionVariables mom, final boolean loadingSavedGame)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+	
 	/**
 	 * Sends all new turn messages queued up on the server to each player, then clears them from the server
 	 * This is also used to trigger new turns or when it is a different player's turn

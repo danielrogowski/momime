@@ -267,7 +267,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="momServer" class="momime.server.MomServer" init-method="start">
 		<property name="clientToServerContext" ref="clientToServerJaxbContext" />
 		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
-		<property name="savedGamesContext" ref="savedGamesContext" />
+		<property name="savedGamesUnmarshaller" ref="savedGamesUnmarshaller" />
+		<property name="savedGamesMarshaller" ref="savedGamesMarshaller" />
 		<property name="savedGamesFolder" value="#{serverConfig.pathToSavedGames}" />
 		<property name="zipSavedGames" value="true" />
 		<property name="clientToServerContextFactoryArray">
@@ -277,12 +278,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				<ref bean="objectFactoryMap" />
 			</array>
 		</property>
-		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
-		<property name="serverDatabaseUnmarshaller" ref="serverDatabaseUnmarshaller" />
 		<property name="userRegistry" ref="userRegistry" />
 		<property name="newGameDatabaseMessage" ref="newGameDatabaseMessage" />
 		<property name="port" value="#{serverConfig.portNumber}" />
-		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
 		<property name="conversationTag" value="#{'MoMIME-' + '${momime.server.version}'}" />
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>
@@ -294,6 +292,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<!-- Saved games support -->
 
+	<bean id="serverKnowledgeObjectFactory" class="momime.server.knowledge.MomServerKnowledgeObjectFactory" />
+
 	<bean id="savedGamesContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
@@ -301,10 +301,40 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	   			<value>momime.common.messages.MomSessionDescription</value>
 	   			<value>momime.common.messages.MomGeneralPublicKnowledge</value>
 	   			<value>momime.server.messages.v0_9_6.MomGeneralServerKnowledge</value>
+	   			<value>momime.server.messages.v0_9_6.ServerGridCell</value>
 	   			<value>momime.common.messages.MomPersistentPlayerPublicKnowledge</value>
 	   			<value>momime.common.messages.MomPersistentPlayerPrivateKnowledge</value>
     		</list>
    		</constructor-arg>
+	</bean>
+
+	<bean id="savedGamesUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="savedGamesContext" factory-method="createUnmarshaller" />
+	
+	<bean id="configureSavedGamesUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="savedGamesUnmarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>com.sun.xml.bind.ObjectFactory</value>
+				<array>
+					<ref bean="serverKnowledgeObjectFactory" />
+					<ref bean="objectFactoryMap" />
+				</array>
+			</list>
+		</property>
+	</bean>	
+	
+	<bean id="savedGamesMarshaller" class="javax.xml.bind.Marshaller" factory-bean="savedGamesContext" factory-method="createMarshaller" />
+
+	<bean id="configureSavedGamesMarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="savedGamesMarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>jaxb.formatted.output</value>
+				<value type="java.lang.Boolean">true</value>
+			</list>
+		</property>
 	</bean>
 
 	<!-- Utils -->
@@ -649,6 +679,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="generalServerKnowledge" ref="gsk" />
 		<property name="overlandMapGenerator" ref="overlandMapGenerator" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
+		<property name="serverDatabaseUnmarshaller" ref="serverDatabaseUnmarshaller" />
+		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 	
 </beans>

@@ -1,5 +1,13 @@
 package momime.server;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+
+import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
@@ -19,11 +27,16 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.server.database.ServerDatabaseConverters;
+import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseExImpl;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
+import momime.server.mapgenerator.OverlandMapGeneratorImpl;
+import momime.server.process.PlayerMessageProcessing;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.MomServerUIHolder;
 
@@ -43,6 +56,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MomSessionThread.class);
+
+	/** Prefix for all session loggers */
+	public static final String MOM_SESSION_LOGGER_PREFIX = "MoMIMESession.";
 	
 	/** Lookup lists built over the XML database */
 	private ServerDatabaseEx db;
@@ -52,6 +68,112 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 
 	/** Overland map generator for this session */
 	private OverlandMapGenerator overlandMapGenerator;	
+	
+	/** Database converters */
+	private ServerDatabaseConverters serverDatabaseConverters;
+	
+	/** Path to where all the server database XMLs are - from config file */
+	private String pathToServerXmlDatabases;
+	
+	/** JAXB unmarshaller for reading server databases */
+	private Unmarshaller serverDatabaseUnmarshaller;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/**
+	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
+	 * 
+	 * @throws JAXBException If there is an error dealing with any XML files during creation
+	 * @throws XMLStreamException If there is an error dealing with any XML files during creation
+	 * @throws IOException If there is a problem generating the client database for this session
+	 */
+	@Override
+	public final void initializeNewGame () throws JAXBException, XMLStreamException, IOException
+	{
+		log.trace ("Entering initializeNewGame: Session ID " + getSessionDescription ().getSessionID ());
+
+		// Start logger for this sesssion.  These are much the same as the class loggers, except named MoMIMESession.1, MoMIMESession.2 and so on.
+		if (getUI () != null)
+			getUI ().createWindowForNewSession (getSessionDescription ());
+		
+		setSessionLogger (LogFactory.getLog (MOM_SESSION_LOGGER_PREFIX + getSessionDescription ().getSessionID ()));
+
+		// Load server XML
+		getSessionLogger ().info ("Loading server XML...");
+		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
+			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
+		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
+
+		// Create hash maps to look up all the values from the DB
+		getSessionLogger ().info ("Building maps over XML data...");
+		sdb.buildMaps ();
+		setServerDB (sdb); 
+		
+		// Create client database
+		getSessionLogger ().info ("Generating client XML...");
+		getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
+			(getServerDB (), getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ()));
+		
+		// Generate the overland map
+		getSessionLogger ().info ("Generating overland map...");
+		final OverlandMapGeneratorImpl mapGen = (OverlandMapGeneratorImpl) getOverlandMapGenerator ();
+		mapGen.setSessionDescription (getSessionDescription ());
+		mapGen.setServerDB (getServerDB ());
+		mapGen.setGsk (getGeneralServerKnowledge ());		// See comment in spring XML for why this isn't just injected
+		mapGen.generateOverlandTerrain ();
+		mapGen.generateInitialCombatAreaEffects ();
+
+		getSessionLogger ().info ("Session startup completed");
+		log.trace ("Exiting initializeNewGame");
+	}
+	
+	/**
+	 * Kick off the first turn after loading a game.  
+	 * 
+	 * @throws JAXBException If there is an error dealing with any XML files during creation
+	 * @throws XMLStreamException If there is an error dealing with any XML files during creation
+	 * @throws IOException Can be used for non-JAXB related errors
+	 */
+	@Override
+	public final void initializeLoadedGame () throws JAXBException, XMLStreamException, IOException
+	{
+		log.trace ("Entering initializeLoadedGame");
+
+		// Start logger for this sesssion.  These are much the same as the class loggers, except named MoMIMESession.1, MoMIMESession.2 and so on.
+		if (getUI () != null)
+			getUI ().createWindowForNewSession (getSessionDescription ());
+		
+		setSessionLogger (LogFactory.getLog (MOM_SESSION_LOGGER_PREFIX + getSessionDescription ().getSessionID ()));
+
+		// Load server XML
+		getSessionLogger ().info ("Loading server XML...");
+		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
+			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
+		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
+		
+		// Create hash maps to look up all the values from the DB
+		getSessionLogger ().info ("Building maps over XML data...");
+		sdb.buildMaps ();
+		setServerDB (sdb); 
+		
+		// Start up the first turn
+		switch (getSessionDescription ().getTurnSystem ())
+		{
+			case ONE_PLAYER_AT_A_TIME:
+				getPlayerMessageProcessing ().switchToNextPlayer (this, true);
+				break;
+
+			case SIMULTANEOUS:
+				getPlayerMessageProcessing ().kickOffSimultaneousTurn (this, true);
+				break;
+				
+			default:
+				throw new MomException ("initializeLoadedGame encountered an unknown turn system " + getSessionDescription ().getTurnSystem ());
+		}
+		
+		log.trace ("Exiting initializeLoadedGame");
+	}
 	
 	/**
 	 * @return UI being used by server
@@ -296,5 +418,69 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setOverlandMapGenerator (final OverlandMapGenerator mapGen)
 	{
 		overlandMapGenerator = mapGen;
+	}
+
+	/**
+	 * @return Database converters
+	 */
+	public final ServerDatabaseConverters getServerDatabaseConverters ()
+	{
+		return serverDatabaseConverters;
+	}
+
+	/**
+	 * @param conv Database converters
+	 */
+	public final void setServerDatabaseConverters (final ServerDatabaseConverters conv)
+	{
+		serverDatabaseConverters = conv;
+	}
+	
+	/**
+	 * @return Path to where all the server database XMLs are - from config file
+	 */
+	public final String getPathToServerXmlDatabases ()
+	{
+		return pathToServerXmlDatabases;
+	}
+
+	/**
+	 * @param path Path to where all the server database XMLs are - from config file
+	 */
+	public final void setPathToServerXmlDatabases (final String path)
+	{
+		pathToServerXmlDatabases = path;
+	}
+
+	/**
+	 * @return JAXB unmarshaller for reading server databases
+	 */
+	public final Unmarshaller getServerDatabaseUnmarshaller ()
+	{
+		return serverDatabaseUnmarshaller;
+	}
+
+	/**
+	 * @param unmarshaller JAXB unmarshaller for reading server databases
+	 */
+	public final void setServerDatabaseUnmarshaller (final Unmarshaller unmarshaller)
+	{
+		serverDatabaseUnmarshaller = unmarshaller;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

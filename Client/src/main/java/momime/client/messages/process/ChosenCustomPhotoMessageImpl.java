@@ -49,6 +49,7 @@ public final class ChosenCustomPhotoMessageImpl extends ChosenCustomPhotoMessage
 		pub.setCustomPhoto (getNdgBmpImage ());
 		
 		// Store flag colour
+		pub.setCustomFlagColour (getFlagColour ());
 		trans.setFlagColour (getFlagColour ());
 		
 		log.trace ("Exiting start");

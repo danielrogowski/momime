@@ -726,6 +726,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 	
 	<bean id="advancedPlayerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >

@@ -570,11 +570,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			switch (mom.getSessionDescription ().getTurnSystem ())
 			{
 				case ONE_PLAYER_AT_A_TIME:
-					switchToNextPlayer (mom);
+					switchToNextPlayer (mom, false);
 					break;
 
 				case SIMULTANEOUS:
-					kickOffSimultaneousTurn (mom);
+					kickOffSimultaneousTurn (mom, false);
 					break;
 					
 				default:
@@ -640,6 +640,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * In a one-player-at-a-time game, this gets called when a player clicks the Next Turn button to tell everyone whose turn it is now
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If an expected element cannot be found
@@ -647,42 +648,48 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void switchToNextPlayer (final MomSessionVariables mom)
+	public final void switchToNextPlayer (final MomSessionVariables mom, final boolean loadingSavedGame)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering switchToNextPlayer: Player ID " +
 			mom.getGeneralPublicKnowledge ().getCurrentPlayerID () + " turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
 
-		// Find the current player
-		int playerIndex;
-		if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID () == null)	// First turn
-			playerIndex = mom.getPlayers ().size () - 1;		// So we make sure we trip the turn number over
+		final PlayerServerDetails currentPlayer;
+		if (loadingSavedGame)
+			currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer (L)");
 		else
-			playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
-
-		// Find the next player
-		if (playerIndex >= mom.getPlayers ().size () - 1)
 		{
-			playerIndex = 0;
-			mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
+			// Find the current player
+			int playerIndex;
+			if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID () == null)	// First turn
+				playerIndex = mom.getPlayers ().size () - 1;		// So we make sure we trip the turn number over
+			else
+				playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
+	
+			// Find the next player
+			if (playerIndex >= mom.getPlayers ().size () - 1)
+			{
+				playerIndex = 0;
+				mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
+			}
+			else
+				playerIndex++;
+	
+			currentPlayer = mom.getPlayers ().get (playerIndex);
+			mom.getGeneralPublicKnowledge ().setCurrentPlayerID (currentPlayer.getPlayerDescription ().getPlayerID ());
+			
+			// Save the game on turn number changes
+			if (playerIndex == 0)
+				try
+				{
+					mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+				}
+				catch (final Exception e)
+				{
+					// Don't allow failure to save the game to totally kill things if there's a problem
+					log.error (e, e);
+				}
 		}
-		else
-			playerIndex++;
-
-		final PlayerServerDetails currentPlayer = mom.getPlayers ().get (playerIndex);
-		mom.getGeneralPublicKnowledge ().setCurrentPlayerID (currentPlayer.getPlayerDescription ().getPlayerID ());
-		
-		// Save the game on turn number changes
-		if (playerIndex == 0)
-			try
-			{
-				mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
-			}
-			catch (final Exception e)
-			{
-				// Don't allow failure to save the game to totally kill things if there's a problem
-				log.error (e, e);
-			}
 
 		// Start phase for the new player
 		startPhase (mom, mom.getGeneralPublicKnowledge ().getCurrentPlayerID ());
@@ -719,29 +726,34 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * Kicks off a new turn in an everybody-allocate-movement-then-move-simultaneously game
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If an expected element cannot be found
 	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public final void kickOffSimultaneousTurn (final MomSessionVariables mom)
+	@Override
+	public final void kickOffSimultaneousTurn (final MomSessionVariables mom, final boolean loadingSavedGame)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering kickOffSimultaneousTurn: " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
 
-		// Bump up the turn number
-		mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
-
-		// Save the game every turn
-		try
+		if (!loadingSavedGame)
 		{
-			mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
-		}
-		catch (final Exception e)
-		{
-			// Don't allow failure to save the game to totally kill things if there's a problem
-			log.error (e, e);
+			// Bump up the turn number
+			mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
+	
+			// Save the game every turn
+			try
+			{
+				mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+			}
+			catch (final Exception e)
+			{
+				// Don't allow failure to save the game to totally kill things if there's a problem
+				log.error (e, e);
+			}
 		}
 		
 		// Process everybody's start phases together
@@ -864,11 +876,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		switch (mom.getSessionDescription ().getTurnSystem ())
 		{
 			case ONE_PLAYER_AT_A_TIME:
-				switchToNextPlayer (mom);
+				switchToNextPlayer (mom, false);
 				break;
 				
 			case SIMULTANEOUS:
-				kickOffSimultaneousTurn (mom);
+				kickOffSimultaneousTurn (mom, false);
 				break;
 
 			default:

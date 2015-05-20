@@ -254,6 +254,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				// Also if reloading a game, show the map screen, like StartGameMessage would normally
 				if (getPlayers ().size () > 1)
 				{
+					getOverlandMapBitmapGenerator ().smoothMapTerrain (null);
+					getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+					getOverlandMapUI ().regenerateFogOfWarBitmap ();
 					getOverlandMapUI ().setVisible (true);
 					
 					// Switch to the overland map background music

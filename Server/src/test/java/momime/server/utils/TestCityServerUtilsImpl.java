@@ -498,7 +498,7 @@ public final class TestCityServerUtilsImpl
 	}
 	
 	/**
-	 * Tests the validateCityConstruction method for constructing a unit that has no race (hero or summoned)
+	 * Tests the validateCityConstruction method for constructing a valid unit that has no race (trieme or catapault)
 	 * @throws Exception If there is a problem
 	 */
 	@Test
@@ -541,7 +541,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
+		assertNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
 	}
 	
 	/**

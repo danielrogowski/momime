@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-utils</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<name>momimeUtils</name>
 	<description>Helper classes for dealing with original MoM and MoM IME file formats like .lbx and .ndgarc</description>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEUtils/tags/momime-utils-0.1.1</connection>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEUtils/trunk</connection>
 	</scm>
 
 	<parent>

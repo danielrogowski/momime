@@ -644,120 +644,122 @@ public final class TestServerUnitCalculationsImpl
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
-		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx"));
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
-
-		final FogOfWarMemory map = new FogOfWarMemory ();
-		map.setMap (terrain);
-
-		// Create other areas
-		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-
-		// Units that are moving - two units of high men spearmen
-		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-
-		for (int n = 1; n <= 2; n++)
+		try (final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx")))
 		{
-			final UnitHasSkill walkingSkill = new UnitHasSkill ();
-			walkingSkill.setUnitSkillID ("USX01");
-			
-			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitURN (n);
-			spearmen.setOwningPlayerID (2);
-			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
-			spearmen.getUnitHasSkill ().add (walkingSkill);
-
-			unitStack.add (spearmen);
-		}
-		map.getUnit ().addAll (unitStack);
-
-		// Set up object to test
-		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
-		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+			final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
 		
-		// Run method
-		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
-			2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
-
-		// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
-		assertTrue (canMoveToInOneTurn [1] [8] [20]);
-		assertTrue (canMoveToInOneTurn [1] [8] [21]);
-		assertTrue (canMoveToInOneTurn [1] [8] [22]);
-		assertTrue (canMoveToInOneTurn [1] [9] [19]);
-		assertTrue (canMoveToInOneTurn [1] [9] [20]);
-		assertTrue (canMoveToInOneTurn [1] [9] [21]);
-		assertTrue (canMoveToInOneTurn [1] [9] [22]);
-		assertTrue (canMoveToInOneTurn [1] [10] [19]);
-		assertTrue (canMoveToInOneTurn [1] [10] [20]);
-		assertTrue (canMoveToInOneTurn [1] [10] [21]);
-		assertTrue (canMoveToInOneTurn [1] [10] [22]);
-		assertTrue (canMoveToInOneTurn [1] [11] [21]);
-		assertTrue (canMoveToInOneTurn [1] [11] [22]);
-		assertTrue (canMoveToInOneTurn [1] [11] [23]);
-		assertTrue (canMoveToInOneTurn [1] [12] [21]);
-		assertTrue (canMoveToInOneTurn [1] [12] [22]);
-		assertTrue (canMoveToInOneTurn [1] [12] [23]);
-		assertTrue (canMoveToInOneTurn [1] [13] [20]);
-		assertTrue (canMoveToInOneTurn [1] [13] [21]);
-		assertTrue (canMoveToInOneTurn [1] [13] [22]);
-		assertTrue (canMoveToInOneTurn [1] [13] [23]);
-
-		// Check all the movement distances and directions on Myrror
-		for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+			final FogOfWarMemory map = new FogOfWarMemory ();
+			map.setMap (terrain);
+		
+			// Create other areas
+			final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+			final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+			final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		
+			// Units that are moving - two units of high men spearmen
+			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+		
+			for (int n = 1; n <= 2; n++)
 			{
-				// Distances
-				final Cell distanceCell = workbook.getSheetAt (2).getRow (y + 1).getCell (x + 1);
-				if (distanceCell != null)
-				{
-					// Impassable
-					if (distanceCell.getCellType () == Cell.CELL_TYPE_BLANK)
-						assertEquals (x + "," + y, -2, doubleMovementDistances [1] [y] [x]);
-					else
-					{
-						final int doubleMovementDistance = (int) distanceCell.getNumericCellValue ();
-						assertEquals ("Distance to " + x + "," + y, doubleMovementDistance, doubleMovementDistances [1] [y] [x]);
-					}
-				}
-
-				// Directions
-				final Cell directionCell = workbook.getSheetAt (3).getRow (y + 1).getCell (x + 1);
-				final int movementDirection = (int) directionCell.getNumericCellValue ();
-				assertEquals ("Direction to " + x + "," + y, movementDirection, movementDirections [1] [y] [x]);
+				final UnitHasSkill walkingSkill = new UnitHasSkill ();
+				walkingSkill.setUnitSkillID ("USX01");
+				
+				final MemoryUnit spearmen = new MemoryUnit ();
+				spearmen.setUnitURN (n);
+				spearmen.setOwningPlayerID (2);
+				spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+				spearmen.getUnitHasSkill ().add (walkingSkill);
+		
+				unitStack.add (spearmen);
 			}
-
-		// Perform counts on all the areas to make sure no additional values other than the ones checked above
-		int countCanMoveToInOneTurn = 0;
-		int countMovingHereResultsInAttack = 0;
-		int accessibleTilesDistances = 0;
-		int accessibleTilesDirections = 0;
-
-		for (final PlaneSvr plane : db.getPlanes ())
+			map.getUnit ().addAll (unitStack);
+		
+			// Set up object to test
+			final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+			calc.setUnitUtils (unitUtils);
+			calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+			calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+			
+			// Run method
+			calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
+				2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
+		
+			// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
+			assertTrue (canMoveToInOneTurn [1] [8] [20]);
+			assertTrue (canMoveToInOneTurn [1] [8] [21]);
+			assertTrue (canMoveToInOneTurn [1] [8] [22]);
+			assertTrue (canMoveToInOneTurn [1] [9] [19]);
+			assertTrue (canMoveToInOneTurn [1] [9] [20]);
+			assertTrue (canMoveToInOneTurn [1] [9] [21]);
+			assertTrue (canMoveToInOneTurn [1] [9] [22]);
+			assertTrue (canMoveToInOneTurn [1] [10] [19]);
+			assertTrue (canMoveToInOneTurn [1] [10] [20]);
+			assertTrue (canMoveToInOneTurn [1] [10] [21]);
+			assertTrue (canMoveToInOneTurn [1] [10] [22]);
+			assertTrue (canMoveToInOneTurn [1] [11] [21]);
+			assertTrue (canMoveToInOneTurn [1] [11] [22]);
+			assertTrue (canMoveToInOneTurn [1] [11] [23]);
+			assertTrue (canMoveToInOneTurn [1] [12] [21]);
+			assertTrue (canMoveToInOneTurn [1] [12] [22]);
+			assertTrue (canMoveToInOneTurn [1] [12] [23]);
+			assertTrue (canMoveToInOneTurn [1] [13] [20]);
+			assertTrue (canMoveToInOneTurn [1] [13] [21]);
+			assertTrue (canMoveToInOneTurn [1] [13] [22]);
+			assertTrue (canMoveToInOneTurn [1] [13] [23]);
+		
+			// Check all the movement distances and directions on Myrror
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
-					if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
-						countCanMoveToInOneTurn++;
-
-					if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x])
-						countMovingHereResultsInAttack++;
-
-					if (doubleMovementDistances [plane.getPlaneNumber ()] [y] [x] >= 0)
-						accessibleTilesDistances++;
-
-					if (movementDirections [plane.getPlaneNumber ()] [y] [x] > 0)
-						accessibleTilesDirections++;
+					// Distances
+					final Cell distanceCell = workbook.getSheetAt (2).getRow (y + 1).getCell (x + 1);
+					if (distanceCell != null)
+					{
+						// Impassable
+						if (distanceCell.getCellType () == Cell.CELL_TYPE_BLANK)
+							assertEquals (x + "," + y, -2, doubleMovementDistances [1] [y] [x]);
+						else
+						{
+							final int doubleMovementDistance = (int) distanceCell.getNumericCellValue ();
+							assertEquals ("Distance to " + x + "," + y, doubleMovementDistance, doubleMovementDistances [1] [y] [x]);
+						}
+					}
+		
+					// Directions
+					final Cell directionCell = workbook.getSheetAt (3).getRow (y + 1).getCell (x + 1);
+					final int movementDirection = (int) directionCell.getNumericCellValue ();
+					assertEquals ("Direction to " + x + "," + y, movementDirection, movementDirections [1] [y] [x]);
 				}
-
-		assertEquals (21, countCanMoveToInOneTurn);
-		assertEquals (0, countMovingHereResultsInAttack);
-		assertEquals ((60*40)-3, accessibleTilesDistances);		// 3 ocean tiles - for distances the cell we start from has a valid value of 0
-		assertEquals ((60*40)-4, accessibleTilesDirections);		// 3 ocean tiles plus start position - for directions the cell we start from has invalid value 0
+		
+			// Perform counts on all the areas to make sure no additional values other than the ones checked above
+			int countCanMoveToInOneTurn = 0;
+			int countMovingHereResultsInAttack = 0;
+			int accessibleTilesDistances = 0;
+			int accessibleTilesDirections = 0;
+		
+			for (final PlaneSvr plane : db.getPlanes ())
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					{
+						if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
+							countCanMoveToInOneTurn++;
+		
+						if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x])
+							countMovingHereResultsInAttack++;
+		
+						if (doubleMovementDistances [plane.getPlaneNumber ()] [y] [x] >= 0)
+							accessibleTilesDistances++;
+		
+						if (movementDirections [plane.getPlaneNumber ()] [y] [x] > 0)
+							accessibleTilesDirections++;
+					}
+		
+			assertEquals (21, countCanMoveToInOneTurn);
+			assertEquals (0, countMovingHereResultsInAttack);
+			assertEquals ((60*40)-3, accessibleTilesDistances);		// 3 ocean tiles - for distances the cell we start from has a valid value of 0
+			assertEquals ((60*40)-4, accessibleTilesDirections);		// 3 ocean tiles plus start position - for directions the cell we start from has invalid value 0
+		}
 	}
 
 	/**
@@ -773,190 +775,192 @@ public final class TestServerUnitCalculationsImpl
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
-		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx"));
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
-
-		final FogOfWarMemory map = new FogOfWarMemory ();
-		map.setMap (terrain);
-
-		// Add tower
-		for (final PlaneSvr plane : db.getPlanes ())
-			terrain.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (10).getCell ().get (20).getTerrainData ().setMapFeatureID
-				(CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
-
-		// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
-		// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past
-		// Nature nodes, so forest, same as there before so we don't alter movement rates - all we alter is that we can't move through them
-		int nextUnitURN = 0;
-		for (int y = 9; y <= 11; y++)
+		try (final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx")))
 		{
-			terrain.getPlane ().get (0).getRow ().get (y).getCell ().get (18).getTerrainData ().setTileTypeID ("TT13");
-			
-			// With removal of scouting, nodes just means enemy units
-			if (y < 11)
+			final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
+	
+			final FogOfWarMemory map = new FogOfWarMemory ();
+			map.setMap (terrain);
+	
+			// Add tower
+			for (final PlaneSvr plane : db.getPlanes ())
+				terrain.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (10).getCell ().get (20).getTerrainData ().setMapFeatureID
+					(CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
+	
+			// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
+			// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past
+			// Nature nodes, so forest, same as there before so we don't alter movement rates - all we alter is that we can't move through them
+			int nextUnitURN = 0;
+			for (int y = 9; y <= 11; y++)
 			{
+				terrain.getPlane ().get (0).getRow ().get (y).getCell ().get (18).getTerrainData ().setTileTypeID ("TT13");
+				
+				// With removal of scouting, nodes just means enemy units
+				if (y < 11)
+				{
+					nextUnitURN++;
+					final MemoryUnit their = new MemoryUnit ();
+					their.setUnitURN (nextUnitURN);
+					their.setOwningPlayerID (1);
+					their.setUnitLocation (new MapCoordinates3DEx (18, y, 0));
+					their.setStatus (UnitStatusID.ALIVE);
+	
+					map.getUnit ().add (their);
+				}
+			}
+	
+			// Create other areas
+			final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+			final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+			final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+	
+			// Units that are moving - two units of high men spearmen
+			// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
+			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+	
+			for (int n = 1; n <= 2; n++)
+			{
+				final UnitHasSkill walkingSkill = new UnitHasSkill ();
+				walkingSkill.setUnitSkillID ("USX01");
+	
+				nextUnitURN++;
+				final MemoryUnit spearmen = new MemoryUnit ();
+				spearmen.setUnitURN (nextUnitURN);
+				spearmen.setOwningPlayerID (2);
+				spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+				spearmen.getUnitHasSkill ().add (walkingSkill);
+				spearmen.setStatus (UnitStatusID.ALIVE);
+	
+				unitStack.add (spearmen);
+			}
+			map.getUnit ().addAll (unitStack);
+	
+			// Add 8 of our units in one location, and 8 enemy units in another location, both on Myrror
+			// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it
+			for (int n = 1; n <= 8; n++)
+			{
+				nextUnitURN++;
+				final MemoryUnit our = new MemoryUnit ();
+				our.setUnitURN (nextUnitURN);
+				our.setOwningPlayerID (2);
+				our.setUnitLocation (new MapCoordinates3DEx (19, 9, 1));
+				our.setStatus (UnitStatusID.ALIVE);
+	
+				map.getUnit ().add (our);
+	
 				nextUnitURN++;
 				final MemoryUnit their = new MemoryUnit ();
 				their.setUnitURN (nextUnitURN);
 				their.setOwningPlayerID (1);
-				their.setUnitLocation (new MapCoordinates3DEx (18, y, 0));
+				their.setUnitLocation (new MapCoordinates3DEx (20, 9, 1));
 				their.setStatus (UnitStatusID.ALIVE);
-
+	
 				map.getUnit ().add (their);
 			}
-		}
-
-		// Create other areas
-		final int [] [] [] doubleMovementDistances			= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-
-		// Units that are moving - two units of high men spearmen
-		// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
-		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-
-		for (int n = 1; n <= 2; n++)
-		{
-			final UnitHasSkill walkingSkill = new UnitHasSkill ();
-			walkingSkill.setUnitSkillID ("USX01");
-
-			nextUnitURN++;
-			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitURN (nextUnitURN);
-			spearmen.setOwningPlayerID (2);
-			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
-			spearmen.getUnitHasSkill ().add (walkingSkill);
-			spearmen.setStatus (UnitStatusID.ALIVE);
-
-			unitStack.add (spearmen);
-		}
-		map.getUnit ().addAll (unitStack);
-
-		// Add 8 of our units in one location, and 8 enemy units in another location, both on Myrror
-		// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it
-		for (int n = 1; n <= 8; n++)
-		{
-			nextUnitURN++;
-			final MemoryUnit our = new MemoryUnit ();
-			our.setUnitURN (nextUnitURN);
-			our.setOwningPlayerID (2);
-			our.setUnitLocation (new MapCoordinates3DEx (19, 9, 1));
-			our.setStatus (UnitStatusID.ALIVE);
-
-			map.getUnit ().add (our);
-
-			nextUnitURN++;
-			final MemoryUnit their = new MemoryUnit ();
-			their.setUnitURN (nextUnitURN);
-			their.setOwningPlayerID (1);
-			their.setUnitLocation (new MapCoordinates3DEx (20, 9, 1));
-			their.setStatus (UnitStatusID.ALIVE);
-
-			map.getUnit ().add (their);
-		}
-
-		// Set up object to test
-		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
-		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		
-		// Run method
-		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
-			2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
-
-		// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
-		assertTrue (canMoveToInOneTurn [0] [8] [20]);
-		assertTrue (canMoveToInOneTurn [0] [8] [21]);
-		assertTrue (canMoveToInOneTurn [0] [8] [22]);
-		assertTrue (canMoveToInOneTurn [0] [9] [19]);
-		assertTrue (canMoveToInOneTurn [0] [9] [20]);
-		assertTrue (canMoveToInOneTurn [0] [9] [21]);
-		assertTrue (canMoveToInOneTurn [0] [9] [22]);
-		assertTrue (canMoveToInOneTurn [0] [10] [19]);
-		assertTrue (canMoveToInOneTurn [0] [10] [20]);
-		assertTrue (canMoveToInOneTurn [0] [10] [21]);
-		assertTrue (canMoveToInOneTurn [0] [10] [22]);
-		assertTrue (canMoveToInOneTurn [0] [11] [21]);
-		assertTrue (canMoveToInOneTurn [0] [11] [22]);
-		assertTrue (canMoveToInOneTurn [0] [11] [23]);
-		assertTrue (canMoveToInOneTurn [0] [12] [21]);
-		assertTrue (canMoveToInOneTurn [0] [12] [22]);
-		assertTrue (canMoveToInOneTurn [0] [12] [23]);
-		assertTrue (canMoveToInOneTurn [0] [13] [20]);
-		assertTrue (canMoveToInOneTurn [0] [13] [21]);
-		assertTrue (canMoveToInOneTurn [0] [13] [22]);
-		assertTrue (canMoveToInOneTurn [0] [13] [23]);
-
-		assertTrue (canMoveToInOneTurn [1] [8] [20]);
-		assertTrue (canMoveToInOneTurn [1] [8] [21]);
-		assertTrue (canMoveToInOneTurn [1] [8] [22]);
-		// assertTrue (canMoveToInOneTurn [1] [9] [19]);	<-- where stack of 8 units is so we can't move there
-		assertTrue (canMoveToInOneTurn [1] [9] [20]);
-		assertTrue (canMoveToInOneTurn [1] [9] [21]);
-		assertTrue (canMoveToInOneTurn [1] [9] [22]);
-		assertTrue (canMoveToInOneTurn [1] [10] [19]);
-		assertTrue (canMoveToInOneTurn [1] [10] [20]);
-		assertTrue (canMoveToInOneTurn [1] [10] [21]);
-		assertTrue (canMoveToInOneTurn [1] [10] [22]);
-		assertTrue (canMoveToInOneTurn [1] [11] [21]);
-		assertTrue (canMoveToInOneTurn [1] [11] [22]);
-		assertTrue (canMoveToInOneTurn [1] [11] [23]);
-		assertTrue (canMoveToInOneTurn [1] [12] [21]);
-		assertTrue (canMoveToInOneTurn [1] [12] [22]);
-		assertTrue (canMoveToInOneTurn [1] [12] [23]);
-		assertTrue (canMoveToInOneTurn [1] [13] [20]);
-		assertTrue (canMoveToInOneTurn [1] [13] [21]);
-		assertTrue (canMoveToInOneTurn [1] [13] [22]);
-		assertTrue (canMoveToInOneTurn [1] [13] [23]);
-
-		// Check all the movement distances on both planes
-		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				{
-					// Distances
-					final Cell distanceCell = workbook.getSheetAt (4 + plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
-					if (distanceCell != null)
+	
+			// Set up object to test
+			final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+			calc.setUnitUtils (unitUtils);
+			calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+			calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+			
+			// Run method
+			calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
+				2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
+	
+			// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
+			assertTrue (canMoveToInOneTurn [0] [8] [20]);
+			assertTrue (canMoveToInOneTurn [0] [8] [21]);
+			assertTrue (canMoveToInOneTurn [0] [8] [22]);
+			assertTrue (canMoveToInOneTurn [0] [9] [19]);
+			assertTrue (canMoveToInOneTurn [0] [9] [20]);
+			assertTrue (canMoveToInOneTurn [0] [9] [21]);
+			assertTrue (canMoveToInOneTurn [0] [9] [22]);
+			assertTrue (canMoveToInOneTurn [0] [10] [19]);
+			assertTrue (canMoveToInOneTurn [0] [10] [20]);
+			assertTrue (canMoveToInOneTurn [0] [10] [21]);
+			assertTrue (canMoveToInOneTurn [0] [10] [22]);
+			assertTrue (canMoveToInOneTurn [0] [11] [21]);
+			assertTrue (canMoveToInOneTurn [0] [11] [22]);
+			assertTrue (canMoveToInOneTurn [0] [11] [23]);
+			assertTrue (canMoveToInOneTurn [0] [12] [21]);
+			assertTrue (canMoveToInOneTurn [0] [12] [22]);
+			assertTrue (canMoveToInOneTurn [0] [12] [23]);
+			assertTrue (canMoveToInOneTurn [0] [13] [20]);
+			assertTrue (canMoveToInOneTurn [0] [13] [21]);
+			assertTrue (canMoveToInOneTurn [0] [13] [22]);
+			assertTrue (canMoveToInOneTurn [0] [13] [23]);
+	
+			assertTrue (canMoveToInOneTurn [1] [8] [20]);
+			assertTrue (canMoveToInOneTurn [1] [8] [21]);
+			assertTrue (canMoveToInOneTurn [1] [8] [22]);
+			// assertTrue (canMoveToInOneTurn [1] [9] [19]);	<-- where stack of 8 units is so we can't move there
+			assertTrue (canMoveToInOneTurn [1] [9] [20]);
+			assertTrue (canMoveToInOneTurn [1] [9] [21]);
+			assertTrue (canMoveToInOneTurn [1] [9] [22]);
+			assertTrue (canMoveToInOneTurn [1] [10] [19]);
+			assertTrue (canMoveToInOneTurn [1] [10] [20]);
+			assertTrue (canMoveToInOneTurn [1] [10] [21]);
+			assertTrue (canMoveToInOneTurn [1] [10] [22]);
+			assertTrue (canMoveToInOneTurn [1] [11] [21]);
+			assertTrue (canMoveToInOneTurn [1] [11] [22]);
+			assertTrue (canMoveToInOneTurn [1] [11] [23]);
+			assertTrue (canMoveToInOneTurn [1] [12] [21]);
+			assertTrue (canMoveToInOneTurn [1] [12] [22]);
+			assertTrue (canMoveToInOneTurn [1] [12] [23]);
+			assertTrue (canMoveToInOneTurn [1] [13] [20]);
+			assertTrue (canMoveToInOneTurn [1] [13] [21]);
+			assertTrue (canMoveToInOneTurn [1] [13] [22]);
+			assertTrue (canMoveToInOneTurn [1] [13] [23]);
+	
+			// Check all the movement distances on both planes
+			for (final PlaneSvr plane : db.getPlanes ())
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					{
-						// Impassable
-						if (distanceCell.getCellType () == Cell.CELL_TYPE_BLANK)
-							assertEquals (x + "," + y, -2, doubleMovementDistances [plane.getPlaneNumber ()] [y] [x]);
-						else
+						// Distances
+						final Cell distanceCell = workbook.getSheetAt (4 + plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
+						if (distanceCell != null)
 						{
-							final int doubleMovementDistance = (int) distanceCell.getNumericCellValue ();
-							assertEquals ("Distance to " + x + "," + y + "," + plane.getPlaneNumber (), doubleMovementDistance, doubleMovementDistances [plane.getPlaneNumber ()] [y] [x]);
+							// Impassable
+							if (distanceCell.getCellType () == Cell.CELL_TYPE_BLANK)
+								assertEquals (x + "," + y, -2, doubleMovementDistances [plane.getPlaneNumber ()] [y] [x]);
+							else
+							{
+								final int doubleMovementDistance = (int) distanceCell.getNumericCellValue ();
+								assertEquals ("Distance to " + x + "," + y + "," + plane.getPlaneNumber (), doubleMovementDistance, doubleMovementDistances [plane.getPlaneNumber ()] [y] [x]);
+							}
 						}
 					}
-				}
-
-		// Perform counts on all the areas to make sure no additional values other than the ones checked above
-		int countCanMoveToInOneTurn = 0;
-		int countMovingHereResultsInAttack = 0;
-		int accessibleTilesDistances = 0;
-		int accessibleTilesDirections = 0;
-
-		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				{
-					if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
-						countCanMoveToInOneTurn++;
-
-					if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x])
-						countMovingHereResultsInAttack++;
-
-					if (doubleMovementDistances [plane.getPlaneNumber ()] [y] [x] >= 0)
-						accessibleTilesDistances++;
-
-					if (movementDirections [plane.getPlaneNumber ()] [y] [x] > 0)
-						accessibleTilesDirections++;
-				}
-
-		assertEquals (41, countCanMoveToInOneTurn);
-		assertEquals (3, countMovingHereResultsInAttack);
-		assertEquals ((60*40*2)-7, accessibleTilesDistances);		// 3 ocean tiles - for distances the cell we start from has a valid value of 0
-		assertEquals ((60*40*2)-9, accessibleTilesDirections);		// 3 ocean tiles plus start position - for directions the cell we start from has invalid value 0
+	
+			// Perform counts on all the areas to make sure no additional values other than the ones checked above
+			int countCanMoveToInOneTurn = 0;
+			int countMovingHereResultsInAttack = 0;
+			int accessibleTilesDistances = 0;
+			int accessibleTilesDirections = 0;
+	
+			for (final PlaneSvr plane : db.getPlanes ())
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					{
+						if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
+							countCanMoveToInOneTurn++;
+	
+						if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x])
+							countMovingHereResultsInAttack++;
+	
+						if (doubleMovementDistances [plane.getPlaneNumber ()] [y] [x] >= 0)
+							accessibleTilesDistances++;
+	
+						if (movementDirections [plane.getPlaneNumber ()] [y] [x] > 0)
+							accessibleTilesDirections++;
+					}
+	
+			assertEquals (41, countCanMoveToInOneTurn);
+			assertEquals (3, countMovingHereResultsInAttack);
+			assertEquals ((60*40*2)-7, accessibleTilesDistances);		// 3 ocean tiles - for distances the cell we start from has a valid value of 0
+			assertEquals ((60*40*2)-9, accessibleTilesDirections);		// 3 ocean tiles plus start position - for directions the cell we start from has invalid value 0
+		}
 	}
 }

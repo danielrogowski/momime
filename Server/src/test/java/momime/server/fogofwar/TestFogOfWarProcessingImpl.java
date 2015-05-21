@@ -310,36 +310,38 @@ public final class TestFogOfWarProcessingImpl
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
-		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/markVisibleArea.xlsx"));
-		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				{
-					final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
-
-					// The "A" cells mark locations we can only see after we cast Awareness
-					if ((cell != null) && (cell.getCellType () != Cell.CELL_TYPE_BLANK) && (!cell.getStringCellValue ().equals ("A")))
-						assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
-					else
-						assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
-				}
-
-		// Awareness
-		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
-
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
-		proc.markVisibleArea (trueMap, player, players, sd, db);
-
-		for (final PlaneSvr plane : db.getPlanes ())
-			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				{
-					final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
-					if ((cell != null) && (cell.getCellType () != Cell.CELL_TYPE_BLANK))
-						assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
-					else
-						assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
-				}
+		try (final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/markVisibleArea.xlsx")))
+		{
+			for (final PlaneSvr plane : db.getPlanes ())
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					{
+						final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
+	
+						// The "A" cells mark locations we can only see after we cast Awareness
+						if ((cell != null) && (cell.getCellType () != Cell.CELL_TYPE_BLANK) && (!cell.getStringCellValue ().equals ("A")))
+							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+						else
+							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+					}
+	
+			// Awareness
+			when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
+	
+			priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
+			proc.markVisibleArea (trueMap, player, players, sd, db);
+	
+			for (final PlaneSvr plane : db.getPlanes ())
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					{
+						final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
+						if ((cell != null) && (cell.getCellType () != Cell.CELL_TYPE_BLANK))
+							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+						else
+							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+					}
+		}
 
 		// Nature Awareness
 		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());

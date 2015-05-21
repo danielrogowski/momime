@@ -5,24 +5,24 @@
 	<artifactId>momime-client-resourceConversion</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>momimeClientResourceConversion</name>
-	<description>MoM IME Client initial resource conversion</description>
+	<description>MoM IME Client resource conversion</description>
 
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.0</version>
+		<version>0.1.1</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>0.9.5.2</version>
+			<version>0.9.5.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-utils</artifactId>
-			<version>0.1.0</version>
+			<version>0.1.1</version>
 		</dependency>
 	</dependencies>
 </project>

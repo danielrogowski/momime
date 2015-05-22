@@ -36,71 +36,42 @@
 		<tr>
 			<td align=left colspan=2>To Do</td>
 			<td align=left>
-				<b>To do.</b>  Note this list was written before moving the server and client to Java and so much of it may no longer be relevant:
+				To do.  Have revisted this list and removed anything relating to the old Delphi versions.
 				<ul>
 					<li>Half tile production in squares shared by two cities
-					<li>Check how the map view in the city screen looks for cities very close to the top or bottom of the map - suspect it will be wrong
 					<li>Add each pre-defined Wizard's personality to the Server database, this should affect AI decisions about what to build
-					<li>Allow server to impose a size restriction on custom BMP Wizard pictures, auto reduce from 24 to 21 to 18 bpp to shrink image
-					<li>Improve handling of a player leaving the game (convert player to AI or save game - need to write save game routine first)
 					<li>Allow creating and joining passworded games
 					<li>AI should make a choice of what tax rate to use - currently it will never change from the default 1 gold/20% unrest
 					<li>AI should make a choice of what proportion to channel magic power into mana, research and skill - currently it will never change from the default 1/3rd allocated to each
 					<li>Display different types of houses for different races (i.e. tree houses and mud huts)
 					<li>Server doesn't currently validate spell pick pre-requisites (it only validates the total cost of the spell picks)
 					<li>When multiple units in one map grid cell, make more intelligent choice about which to show on top rather than always just using the first (i.e. show best unit)
-					<li>Prevent going over the maximum number of units in a map cell
-					<li>An occupied map grid cell should prevent trying to move past it
-					<li>Combat scenery should include random features such as ridges and trees
 					<li>Handle Hydras 9 'figures'/heads properly
-					<li>When right clicking overland enchantment spells when choosing free spells at the start of the game, the mirror frame isn't drawn in the player colour despite the fact that typically a wizard/portrait has been chosen by this stage
-					<li>In a one-at-a-time game, if units die in a combat initiated by the local player, the global economy is not updated
-					<li>CancelPendingMovementAndSpecialOrders does not check that the unit requested belongs to the player that sent the message, or that the unit is alive
-					<li>Prevent creating more than one game with the same session name
+					<li>Prevent creating more than one concurrent game with the same session name
 					<li>Fix the graphics for flying and shadows in combat (so that flying units are actually raised off the ground, so that when you cast Flight onto a unit of Swordsmen they don't stupid as if they are running on the spot like they do in the original MoM)
 					<li>Spell Ward currently picks a random realm of magic when you cast it - it needs to pop up a menu so the player can make a choice instead
 					<li>When switching off spells in a simultaneous turns game, switching off the spell should be queued and processed at the end of the turn, the same as selling buildings
-					<li>Ability to change sound volume (this is harder than it sounds and requires a complete rewrite of the sound/music player)
 					<li>Enchanted/cursed units should have a visibility different appearance (e.g. be surrounded in a white glow)
 					<li>Draw cities containing wizards' fortresses visibly different on the overland map (the graphics XML file already supports this, its just a case of drawing the images)
 					<li>If two players are in combat and a 3rd player has an overland enchantment cast that will have an effect on the combat (e.g. Eternal Night) then the combat area effect doesn't appear (it still works functionally, you just can't see it)
 					<li>I don't like that you can't tell the different on the unit info screen between unit attribute bonuses from true Combat Area Effects (i.e. node auras) and Combat Area Effect spells (e.g. Prayer) - they all just show up green
 					<li>If negative effects reduce a stat below zero (Warp Reality is the best example), you cannot tell on the unit info screen
-					<li>The "Allows" entries on the Change Construction screen aren't clever enough to realise the knock on effects of building tile type dependancies; e.g. when selecting a Sawmill, says "Allows Ship Yard" even in cities miles away from any water
-					<li>Units with special orders (especially Dismiss) in simultaneous turns games should have visibility different appearance on the city screen and unit selection buttons
-					<li>In human/human combat, the opponent's auto/manual control indicator does not display correctly
 					<li>Add option to allow sorting spells in the spell book according to Magic Realm instead of Section (Stew)
 					<li>City screen should show how many turns until the current construction is completed (Stew)
 					<li>Add overland map scroll speed as a slider on the options screen (Stew)
 					<li>Right click a location to recentre the overland map (Stew &amp; esper256)
 					<li>Impose limits on custom new game settings (e.g. stop trying to create a 99,999 x 99,999 map, or 100 units per grid cell)
-					<li>If a city has both Walls of Stone + Fire, on the city view you can't see the wall of stone; presumably same is true for Wall of Darkness
-					<li>Wall of Fire and Wall of Darkness appear in combat correctly, but don't do anything yet
+					<li>Defence bonuses for units inside cities (see details on the MoM wiki about this)
 					<li>Combat AI - Units defending a walled city should camp out inside the walls and only walk out if their ranged attack strength is less than the attackers'
 					<li>Green parts of overland unit images are supposed to change to the same colour as the wizard's flag (same as city flags)
 					<li>Green parts of combat unit images are supposed to change to the same colour as the wizard's flag (same as city flags)
-					<li>AI wizard pick selection doesn't work the same as the original (see strategy guide p412)
-					<li>Improve simultaneous turns games - I've not done much testing on these, suspect there's plenty of situations where you try to attack some units and they move out of the way, or you try to move into an empty square but units move there and you end up attacking them
-					<li>Units should get a resistance saving throws against some types of unit curses
-					<li>Dynamically size the tax collector form based on how many tax rates are defined (similarly to how the Select Target for overland Unit Spell form works)
+					<li>AI wizard pick selection doesn't work the same as the original (see strategy guide p412), though don't necessarily want it to, so this needs some thought
 					<li>Dispelling unit, city and global enchantments and curses (taking into account bonuses from Chaos/Nature/Sorcery Mastery, Runemaster and 'Dispel True' versions)
 					<li>Remember IP addresses that have been used on the client so they appear in the list in future
-					<li>When a unit stack moves into view it sends a flood of separate 'add unit' messages which can make the map updates look odd - should do in a single message
-					<li>If two unit stacks both reach a node/lair/tower as part of continued movement in a one-at-a-time game, the 2nd dialog box overwrites the first, so the 1st stack loses the opportunity to attack
-					<li>(Bug) If server kicks you out of a game during game setup, you can end up with books and/or Next Turn button left on the LHS shelf
-					<li>(Bug) Scrolling the map to the next unit to move sometimes scrolls the long way around
-					<li>(Bug) If the last creature guarding a monster lair is killed and the counterattack kills the last attacker at the same time, then technically the defenders win and so the lair is not removed from the map which is correct - but walking onto it with fresh units doesn't display the "Scouts have found nothing" message and so the lair can never be removed from the map. It also behaves oddly if you find an empty lair but answer "no" to "attacking" it the first time, then answer "yes" another time. Probably the same bug.
-					<li>(Bug) Stop "Server has ended the game" from coming up if the player wilfully clicks the Leave Game button
-					<li>(Bug) esper256 reported in 0.9.3 that when taking an empty monster lair, the screen scrolls away to the next unit before it shows your unit actually taking up that square
-					<li>(Bug) Sometimes when switching music (e.g. casting a spell with music), it won't stop the previous background music... meaning from then on, there's always two sets of music playing over the top of each other which sounds awful
-				</ul></td>
-		</tr>
-		<tr>
-			<td align=left colspan=2>To double check</td>
-			<td align=left><ul>
+					<li>Ability to change sound volume (this is harder than it sounds and requires a complete rewrite of the sound/music player)
+					<li>Sometimes when switching music (e.g. casting a spell with music), it won't stop the previous background music... meaning from then on, there's always two sets of music playing over the top of each other which sounds awful
 					<li>Verify whether picking up extra books after the start of the game increases magic power generated by fortress
 					<li>Is inter-racial unrest really zero when banished? (should be obvious if you try getting banished while you have a Dark Elf city)
-					<li>Monster player units heal OK
 				</ul></td>
 		</tr>
 		<tr>
@@ -109,7 +80,7 @@
 			<td align=left><b>Planned features:</b>
 				<ul>
 					<li>All spells working (including that the AI will cast them)
-					<li>Victory conditions (including New Game options to change what the Spell of Mastery does, or if its even allowed)
+					<li>Victory conditions (banishing wizards when fortress captured; New Game options to change what the Spell of Mastery does, or if its even allowed)
 				</ul>
 			</td>
 		</tr>
@@ -150,30 +121,68 @@
 					<li>All common spells working (including that the AI will cast them)
 					<li>Treasure rewards from capturing nodes/lairs/towers
 					<li>Overland mini-map
+					<li>Saving and reloading multiplayer games
+					<li>Some kind of cleanup of old saved game files so they don't sit on the server forever
 				</ul>
 			</td>
 		</tr>
 		<tr>
-			<td align=left>0.9.6</td>
+			<td align=left>0.9.6.1</td>
 			<td align=left></td>
 			<td align=left><b>Planned features:</b>
 				<ul>
-					<li>Complete revamp of simultaneous turns combat system
-					<li>Calculate position of national borders/friendly zones from each player's memory independantly, and allow viewing by a new checkbox on the Options screen
+					<li>Calculate position of national borders/friendly zones from each player's memory independantly, and allow viewing own border via a new checkbox on the Options screen
 					<li>AI calculates unit factory rating for its cities and thus can choose the best city to build units at
-					<li>AI calculates defence rating for its cities and thus knows where it needs to send (or summon) more units to
-					<li>Special abilities affecting the order that attacks are resolved in combat, e.g. First Strike, Negate First Strike, Poison, Breath and Thrown attacks
+					<li>AI calculates defence rating for its cities and thus knows the friendly zones in which it needs to build more units
+					<li>Special attacks now work correctly: First Strike, Armour Piercing, Poison, Breath, Thrown, Gaze, Touch attacks
 					<li>Generic handling of which unit abilities and spell effects negate each other, e.g. Negate First Strike negates First Strike, Poison Immunity negates Poison, Fire Immunity negates Immolation (and a whole lot more besides), Elemental Armour negates Resist Elements
 					<li>Ship movement working properly (e.g. moving back into cities), as well as loading and unloading
 					<li>Range penalties for non-magic range attacks; Long Range and Large Shield skills
-					<li>Combat Area Effects from City Enchantments, so that Heavenly Light and Cloud of Shadow work correctly
+					<li>Combat tile border images, for wall of stone/darkness/fire
+					<li>Fix bug where if you try to take a unit stack off of patrol, sometimes part of the stack remains on patrol orders
 				</ul>
 			</td>
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.5.5</b></td>
-			<td align=left><b>18 Feb 2015</b></td>
+			<td align=left><b>Current version: 0.9.6</b></td>
+			<td align=left><b>22 May 2015</b></td>
+			<td align=left>
+				<b>Major new features:</b>
+				<ul>
+					<li>Complete revamp of how simultaneous turns movement and combats are resolved (most noticable effect of which is that the server now chooses order to process combats in rather than asking players)
+					<li>Web, Entangle and Possession and many combat attack spells such as Fire Bolt, Flame Strike, Disintegrate, Death Spell are now castable (the fact that they're castable doesn't necessarily mean that they work 100% yet, in particular immunities to spells do not work yet)
+					<li>Saving and reloading single player games (please read comments in readme about this)
+				</ul>
+					
+				<b>Minor new features:</b>
+				<ul>
+					<li>Combat Area Effects from City Enchantments, so that Heavenly Light and Cloud of Shadow work correctly
+				</ul>
+
+				<b>Features from 0.9.4 Delphi client added back in:</b>
+				<ul>
+					<li>Images now show correctly inline in help text, e.g. when right clicking to get help on unit attributes such as Melee or Defence
+					<li>Calculator button in combat shows detailed damage calculation breakdowns again
+					<li>Icons showing special orders (meld node, build city, dismiss) are shown on the overland map in simultaneous turns games, and units on patrol are greyed out
+				</ul>
+
+				<b>Fixed bugs (thanks to Andy III for spotting all 3 of these):</b>
+				<ul>
+					<li>Fixed game crashing if you try to give special orders (meld node or build city) to units in a simultaneous turns game
+					<li>Fixed building raceless units (triemes, catapaults, etc) 
+					<li>Fixed cancelling too many spells after city combats
+				</ul>
+				
+				<b>Changes to the editors:</b>
+				<ul>
+					<li>Greatly improved handling of entities with an inheritance path (i.e. just about everything in the server XML); doing much with these threw a lot of exceptions before
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.5.5</td>
+			<td align=left>18 Feb 2015</td>
 			<td align=left>
 				<b>Features from 0.9.4 Delphi client added back in:</b>
 				<ul>

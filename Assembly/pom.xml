@@ -13,14 +13,14 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.0</version>
+		<version>0.1.1</version>
 	</parent>
 
 	<properties>
 		<!-- These are needed to generate the .bat files correctly -->
-		<momime.client.version>0.9.5.5</momime.client.version>
-		<momime.server.version>0.9.5.5</momime.server.version>
-		<momime.editors.version>0.9.5.5</momime.editors.version>
+		<momime.client.version>0.9.6</momime.client.version>
+		<momime.server.version>0.9.6</momime.server.version>
+		<momime.editors.version>0.9.6</momime.editors.version>
 	</properties>
 
 	<build>

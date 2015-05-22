@@ -102,8 +102,8 @@
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="@pickID" />
 		</xsd:key>
-		<xsd:key name="unitAttributeComponentPK">
-			<xsd:selector xpath="unitAttributeComponent" />
+		<xsd:key name="unitAttributeComponentImagePK">
+			<xsd:selector xpath="unitAttributeComponentImage" />
 			<xsd:field xpath="@unitAttributeComponentID" />
 		</xsd:key>
 		<xsd:key name="unitSpecialOrderImagePK">

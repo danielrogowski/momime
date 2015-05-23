@@ -17,6 +17,8 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 
+import org.apache.commons.io.IOUtils;
+
 import com.ndg.graphics.ndgbmp.NdgBmpWriterSpi;
 import com.ndg.utils.FileNameUtils;
 import com.ndg.utils.StreamUtils;
@@ -68,7 +70,7 @@ public final class NdgArcWriter
 					else
 					{
 						// Standard file, just read it in directly
-						StreamUtils.copyBetweenStreams (in, outStream, false, false, 0);
+						IOUtils.copy (in, outStream);
 					}
 
 					outStream.close ();
@@ -109,7 +111,7 @@ public final class NdgArcWriter
 
 			// Write out the actual files
 			for (final byte [] thisFile : sourceFiles)
-				StreamUtils.copyBetweenStreams (new ByteArrayInputStream (thisFile), out, false, false, 0);
+				IOUtils.copy (new ByteArrayInputStream (thisFile), out);
 
 			out.flush ();
 			out.close ();

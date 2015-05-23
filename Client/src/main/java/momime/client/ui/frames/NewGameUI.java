@@ -115,6 +115,7 @@ import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -130,7 +131,6 @@ import com.ndg.swing.filefilters.ExtensionFileFilter;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.utils.StreamUtils;
 
 /**
  * Screens for setting up new games
@@ -1248,7 +1248,7 @@ public final class NewGameUI extends MomClientFrameUI
 							{
 								try (final ByteArrayOutputStream out = new ByteArrayOutputStream ())
 								{
-									StreamUtils.copyBetweenStreams (in, out, true, false, 0);
+									IOUtils.copy (in, out);
 									
 									final UploadCustomPhotoMessage msg = new UploadCustomPhotoMessage ();
 									msg.setNdgBmpImage (out.toByteArray ());

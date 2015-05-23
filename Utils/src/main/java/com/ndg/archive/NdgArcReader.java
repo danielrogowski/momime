@@ -15,6 +15,8 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 
+import org.apache.commons.io.IOUtils;
+
 import com.ndg.graphics.ndgbmp.NdgBmpReaderSpi;
 import com.ndg.utils.FileNameUtils;
 import com.ndg.utils.StreamUtils;
@@ -169,7 +171,7 @@ public final class NdgArcReader
 				else
 				{
 					// Standard file, just dump it out directly
-					StreamUtils.copyBetweenStreams (in, out, false, false, archivedFile.getFileSize ());
+					IOUtils.copyLarge (in, out, 0, archivedFile.getFileSize ());
 				}
 				out.flush ();
 				out.close ();

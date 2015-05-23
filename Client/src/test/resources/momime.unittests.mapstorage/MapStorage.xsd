@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
-	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
-	xmlns:momimemsgs="http://momime/common/messages"
+	xmlns:momimecommon="http://momime/common/database" xmlns:momimemsgs="http://momime/common/messages"
 	xmlns:mapstorage="http://momime/unittests/mapstorage" targetNamespace="http://momime/unittests/mapstorage">
 
 	<xsd:import namespace="http://www.ndg.com/map"/>
@@ -10,7 +9,6 @@
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
 	
 	<xsd:import namespace="http://momime/common/database"/>
-	<xsd:import namespace="http://momime/common/database/newgame"/>
 	<xsd:import namespace="http://momime/common/messages"/>
 	<xsd:import namespace="http://momime/common/messages/clienttoserver"/>
 	<xsd:import namespace="http://momime/common/messages/servertoclient"/>

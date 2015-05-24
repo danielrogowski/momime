@@ -84,6 +84,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.MouseClickListener;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -765,10 +766,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
 				selectUnitButton.init ();
 				
-				selectUnitButton.addMouseListener (new MouseAdapter ()
+				selectUnitButton.addMouseListener (new MouseClickListener ()
 				{
 					@Override
-					public final void mouseClicked (final MouseEvent ev)
+					public final void fixMouseClicked (final MouseEvent ev)
 					{
 						try
 						{

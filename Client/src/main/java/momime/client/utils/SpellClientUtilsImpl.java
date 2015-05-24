@@ -260,7 +260,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 					for (final SummonedUnit summonedUnit : spell.getSummonedUnit ())
 					{
 						final String imageName = getGraphicsDB ().findUnit (summonedUnit.getSummonedUnitID (), "findImageForSpell").getUnitSummonImageFile ();
-						if (!imageFilenames.contains (imageName))
+						if ((imageName != null) && (!imageFilenames.contains (imageName)))
 							imageFilenames.add (imageName);
 					}
 					

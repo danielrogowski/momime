@@ -95,9 +95,10 @@ public final class EditUnit extends EditXmlRecord
 					ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_HAS_SKILL_ID, ruleUnitSkillId) != null)
 				{
 					final String ruleTileTypeId = thisRule.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_MOVEMENT_RATE_RULE_TILE_TYPE);
+					final String unitStackSkillId = thisRule.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_MOVEMENT_RATE_RULE_UNIT_STACK_SKILL);
 
-					// Does the tile type match?
-					if ((ruleTileTypeId == null) || (ruleTileTypeId.equals (tileTypeId)))
+					// Does the tile type match, and does this rule not require another skill from the unit stack?
+					if ((unitStackSkillId == null) && ((ruleTileTypeId == null) || (ruleTileTypeId.equals (tileTypeId))))
 					{
 						// Found a match!
 						doubleMovementRate = thisRule.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_MOVEMENT_RATE_RULE_DOUBLE_MOVEMENT);

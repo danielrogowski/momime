@@ -8682,6 +8682,7 @@
 		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
+		<transportCapacity>2</transportCapacity>
 		<unitAttributeValue unitAttributeID="UA01">
 			<attributeValue>6</attributeValue>
 		</unitAttributeValue>
@@ -8703,7 +8704,6 @@
 		<unitPrerequisite prerequisiteID="BL12" />
 		<unitHasSkill unitSkillID="USX02" />
 		<unitName>Trireme</unitName>
-		<transportCapacity>2</transportCapacity>
 	</unit>
 	<unit unitID="UN037">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -8711,6 +8711,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
+		<transportCapacity>5</transportCapacity>
 		<unitAttributeValue unitAttributeID="UA01">
 			<attributeValue>8</attributeValue>
 		</unitAttributeValue>
@@ -8738,7 +8739,6 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX02" />
 		<unitName>Galley</unitName>
-		<transportCapacity>5</transportCapacity>
 	</unit>
 	<unit unitID="UN038">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -8779,6 +8779,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>160</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
+		<transportCapacity>3</transportCapacity>
 		<unitAttributeValue unitAttributeID="UA01">
 			<attributeValue>10</attributeValue>
 		</unitAttributeValue>
@@ -8808,7 +8809,6 @@
 		<unitHasSkill unitSkillID="USX02" />
 		<unitHasSkill unitSkillID="US125" />
 		<unitName>Warship</unitName>
-		<transportCapacity>3</transportCapacity>
 	</unit>
 	<unit unitID="UN040">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -13730,6 +13730,7 @@
 		<unitMagicRealm>LT05</unitMagicRealm>
 		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
+		<transportCapacity>8</transportCapacity>
 		<unitAttributeValue unitAttributeID="UA05">
 			<attributeValue>10</attributeValue>
 		</unitAttributeValue>
@@ -13744,7 +13745,6 @@
 		<unitHasSkill unitSkillID="US047" />
 		<unitHasSkill unitSkillID="US005" />
 		<unitName>Floating Island</unitName>
-		<transportCapacity>8</transportCapacity>
 	</unit>
 	<unit unitID="UN192">
 		<unitMagicRealm>LT05</unitMagicRealm>

@@ -1075,7 +1075,6 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 			<xsd:extension base="momimecommon:unit">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="110" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="transportCapacity" type="momimesvr:transportCapacity" nxe:label="Transport Capacity" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="hiringFame" type="momimesvr:fame" nxe:label="Req'd Fame" nxe:gridwidth="60" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickType" type="momimesvr:heroSkillTypeID" nxe:label="Hero Random Pick Type" nxe:showmaincolumn="false" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickCount" type="momimesvr:heroRandomPickCount" nxe:label="Hero Random Picks" nxe:gridwidth="100" />
@@ -1446,10 +1445,6 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="pickInitialSkill">
-		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="transportCapacity">
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	

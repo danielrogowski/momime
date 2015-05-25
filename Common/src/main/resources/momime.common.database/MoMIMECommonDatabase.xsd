@@ -855,6 +855,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="transportCapacity" type="momimecommon:transportCapacity" nxe:label="Transport Capacity" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttributeValue" type="momimecommon:unitHasAttributeValue" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitUpkeep" type="momimecommon:unitUpkeep" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPrerequisite" type="momimecommon:unitPrerequisite" />
@@ -1741,6 +1742,10 @@ However we still need to record negative skill modification values, e.g. True Li
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACKER" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="transportCapacity">
+		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
 <!-- Attack spells, proper attack resolution and immunities, new for 0.9.6 -->

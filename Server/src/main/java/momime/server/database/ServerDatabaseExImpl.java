@@ -788,16 +788,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 	
 	/**
-	 * @return Complete list of all movement rate rules in game
-	 */
-	@Override
-	@SuppressWarnings ("unchecked")
-	public final List<MovementRateRuleSvr> getMovementRateRules ()
-	{
-		return (List<MovementRateRuleSvr>) (List<?>) getMovementRateRule ();
-	}
-	
-	/**
 	 * @return Complete list of all combat map elements in game
 	 */
 	@Override

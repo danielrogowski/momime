@@ -4,7 +4,6 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -49,26 +48,6 @@ public interface ServerUnitCalculations
 	 */
 	public boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final ServerDatabaseEx db) throws RecordNotFoundException;
-
-	/**
-	 * @param unitStack Unit stack to check
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
-	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
-	 */
-	public List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db);
-
-	/**
-	 * @param unit Unit that we want to move
-	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
-	 * @param tileTypeID Type of tile we are moving onto
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
-	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
-	 */
-	public Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db);
 
 	/**
 	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location on the map plus whether we can move there or not

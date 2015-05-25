@@ -15,7 +15,6 @@ import momime.server.database.v0_9_6.FogOfWarSetting;
 import momime.server.database.v0_9_6.LandProportion;
 import momime.server.database.v0_9_6.MapFeature;
 import momime.server.database.v0_9_6.MapFeatureMagicRealm;
-import momime.server.database.v0_9_6.MovementRateRule;
 import momime.server.database.v0_9_6.NodeStrength;
 import momime.server.database.v0_9_6.ObjectFactory;
 import momime.server.database.v0_9_6.OverlandMapSize;
@@ -219,15 +218,6 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	public final Spell createSpell ()
 	{
 		return new SpellSvr ();
-	}
-
-	/**
-	 * @return Custom extended MovementRateRule 
-	 */
-	@Override
-	public final MovementRateRule createMovementRateRule ()
-	{
-		return new MovementRateRuleSvr ();
 	}
 
 	/**

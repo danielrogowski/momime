@@ -10,6 +10,7 @@ import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MovementRateRule;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
@@ -379,6 +380,84 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * @param unitStack Unit stack to check
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
+	 */
+	@Override
+	public final List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+	{
+		log.trace ("Entering listAllSkillsInUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
+
+		final List<String> list = new ArrayList<String> ();
+		String debugList = "";
+
+		if (unitStack != null)
+			for (final MemoryUnit thisUnit : unitStack)
+				for (final UnitHasSkill thisSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, thisUnit))
+					if (!list.contains (thisSkill.getUnitSkillID ()))
+					{
+						list.add (thisSkill.getUnitSkillID ());
+
+						if (!debugList.equals (""))
+							debugList = debugList + ", ";
+
+						debugList = debugList + thisSkill.getUnitSkillID ();
+					}
+
+		log.trace ("Exiting listAllSkillsInUnitStack = " + debugList);
+		return list;
+	}
+
+	/**
+	 * @param unit Unit that we want to move
+	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
+	 * @param tileTypeID Type of tile we are moving onto
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 */
+	@Override
+	public final Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+	{
+		log.trace ("Entering calculateDoubleMovementToEnterTileType: " + unit.getUnitID () + ", Player ID " + unit.getOwningPlayerID () + ", " + tileTypeID);
+
+		// Only merge the units list of skills once
+		final List<UnitHasSkill> unitHasSkills;
+		if (unit instanceof MemoryUnit)
+			unitHasSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit);
+		else
+			unitHasSkills = unit.getUnitHasSkill ();
+
+		// Turn it into a list of strings so we can search it more quickly
+		final List<String> unitSkills = new ArrayList<String> ();
+		for (final UnitHasSkill thisSkill : unitHasSkills)
+			unitSkills.add (thisSkill.getUnitSkillID ());
+
+		// We basically run down the movement rate rules and stop as soon as we find the first applicable one
+		// Terrain is impassable if we check every movement rule and none of them are applicable
+		Integer doubleMovement = null;
+		final Iterator<MovementRateRule> rules = db.getMovementRateRule ().iterator ();
+		while ((doubleMovement == null) && (rules.hasNext ()))
+		{
+			final MovementRateRule thisRule = rules.next ();
+
+			// All 3 parts are optional
+			if (((thisRule.getTileTypeID () == null) || (thisRule.getTileTypeID ().equals (tileTypeID))) &&
+				((thisRule.getUnitSkillID () == null) || (unitSkills.contains (thisRule.getUnitSkillID ()))) &&
+				((thisRule.getUnitStackSkillID () == null) || (unitStackSkills.contains (thisRule.getUnitStackSkillID ()))))
+
+				doubleMovement = thisRule.getDoubleMovement ();
+		}
+
+		log.trace ("Exiting calculateDoubleMovementToEnterTileType = " + doubleMovement);
+		return doubleMovement;
 	}
 	
 	/**

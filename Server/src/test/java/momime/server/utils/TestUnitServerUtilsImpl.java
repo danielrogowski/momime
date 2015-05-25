@@ -41,7 +41,6 @@ import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.HeroNameSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
@@ -685,7 +684,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -694,7 +693,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -736,7 +735,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -749,7 +748,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -791,7 +790,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -805,7 +804,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -847,7 +846,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -861,7 +860,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -904,7 +903,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -913,7 +912,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -955,7 +954,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (null);		// <---
 		
 		// Other units
@@ -964,7 +963,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -1012,7 +1011,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -1021,7 +1020,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -1069,7 +1068,7 @@ public final class TestUnitServerUtilsImpl
 		final List<String> testUnitSkills = new ArrayList<String> ();
 
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
 		
 		// Other units
@@ -1078,7 +1077,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -1120,7 +1119,7 @@ public final class TestUnitServerUtilsImpl
 			}
 		
 		// Unit can enter this type of tile
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
 			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
 		
@@ -1135,7 +1134,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
@@ -1191,7 +1190,7 @@ public final class TestUnitServerUtilsImpl
 			}
 		
 		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
 			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT02"),
@@ -1221,7 +1220,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
@@ -1270,7 +1269,7 @@ public final class TestUnitServerUtilsImpl
 			}
 		
 		// Easiest thing to do is make the tile type impassable, then we can't fit anywhere
-		final ServerUnitCalculations calc = mock (ServerUnitCalculations.class);
+		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
 			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (null);
 
@@ -1280,7 +1279,7 @@ public final class TestUnitServerUtilsImpl
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (calc);
+		utils.setUnitCalculations (calc);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method

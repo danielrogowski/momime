@@ -2,6 +2,7 @@ package momime.common.calculations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.GenerateTestData;
+import momime.common.database.MovementRateRule;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
@@ -36,6 +38,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitUtilsImpl;
 
 import org.junit.Test;
 
@@ -552,6 +555,221 @@ public final class TestUnitCalculationsImpl
 		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
 		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);
 		assertTrue (calc.canMakeRangedAttack (magRATUnit, players, spells, combatAreaEffects, db));
+	}
+	
+	/**
+	 * Tests the listAllSkillsInUnitStack method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListAllSkillsInUnitStack () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Set up object to test
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Null stack
+		assertEquals (0, calc.listAllSkillsInUnitStack (null, spells, db).size ());
+
+		// Single unit with only skills from DB
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		final MemoryUnit longbowmenUnit = new MemoryUnit ();
+		longbowmenUnit.setUnitURN (1);
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "US132", "US001", "USX01"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			longbowmenUnit.getUnitHasSkill ().add (unitHasSkill);
+		}
+		
+		units.add (longbowmenUnit);
+
+		final List<String> longbowmen = calc.listAllSkillsInUnitStack (units, spells, db);
+		assertEquals (4, longbowmen.size ());
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, longbowmen.get (0));
+		assertEquals ("US132", longbowmen.get (1));
+		assertEquals ("US001", longbowmen.get (2));
+		assertEquals ("USX01", longbowmen.get (3));
+
+		// Two units with skills only from DB
+		final MemoryUnit elvenLordsUnit = new MemoryUnit ();
+		elvenLordsUnit.setUnitURN (2);
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "US001", "USX01", "US028", "US029"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			elvenLordsUnit.getUnitHasSkill ().add (unitHasSkill);
+		}
+		
+		units.add (elvenLordsUnit);
+
+		final List<String> elvenLords = calc.listAllSkillsInUnitStack (units, spells, db);
+		assertEquals (6, elvenLords.size ());
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, elvenLords.get (0));
+		assertEquals ("US132", elvenLords.get (1));
+		assertEquals ("US001", elvenLords.get (2));
+		assertEquals ("USX01", elvenLords.get (3));
+		assertEquals ("US028", elvenLords.get (4));
+		assertEquals ("US029", elvenLords.get (5));
+
+		// Three units with skills only from DB
+		final MemoryUnit hellHoundsUnit = new MemoryUnit ();
+		hellHoundsUnit.setUnitURN (3);
+		for (final String unitSkillID : new String [] {"US134", "USX01"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			hellHoundsUnit.getUnitHasSkill ().add (unitHasSkill);
+		}
+		
+		units.add (hellHoundsUnit);
+
+		final List<String> hellHounds = calc.listAllSkillsInUnitStack (units, spells, db);
+		assertEquals (7, hellHounds.size ());
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, hellHounds.get (0));
+		assertEquals ("US132", hellHounds.get (1));
+		assertEquals ("US001", hellHounds.get (2));
+		assertEquals ("USX01", hellHounds.get (3));
+		assertEquals ("US028", hellHounds.get (4));
+		assertEquals ("US029", hellHounds.get (5));
+		assertEquals ("US134", hellHounds.get (6));
+
+		// Multiple units with skills both from DB and from spells
+		for (int n = 1; n <= 2; n++)
+		{
+			final MemoryMaintainedSpell endurance = new MemoryMaintainedSpell ();
+			endurance.setUnitURN (n);
+			endurance.setUnitSkillID ("SS123");
+			spells.add (endurance);
+		}
+
+		for (int n = 2; n <= 3; n++)
+		{
+			final MemoryMaintainedSpell flameBlade = new MemoryMaintainedSpell ();
+			flameBlade.setUnitURN (n);
+			flameBlade.setUnitSkillID ("SS094");
+			spells.add (flameBlade);
+		}
+
+		// Include a spell on a unit that isn't in the stack
+		final MemoryMaintainedSpell heroism = new MemoryMaintainedSpell ();
+		heroism.setUnitURN (4);
+		heroism.setUnitSkillID ("SS130");
+		spells.add (heroism);
+
+		final List<String> withSpells = calc.listAllSkillsInUnitStack (units, spells, db);
+		assertEquals (9, withSpells.size ());
+		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, withSpells.get (0));
+		assertEquals ("US132", withSpells.get (1));
+		assertEquals ("US001", withSpells.get (2));
+		assertEquals ("USX01", withSpells.get (3));
+		assertEquals ("SS123", withSpells.get (4));
+		assertEquals ("US028", withSpells.get (5));
+		assertEquals ("US029", withSpells.get (6));
+		assertEquals ("SS094", withSpells.get (7));
+		assertEquals ("US134", withSpells.get (8));
+	}
+
+	/**
+	 * Tests the calculateDoubleMovementToEnterTileType method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDoubleMovementToEnterTileType () throws Exception
+	{
+		// Set up some movement rate rules to say:
+		// 1) Regular units on foot (US001) can move over TT01 at cost of 4 points and TT02 at cost of 6 points
+		// 2) Flying (US002) units move over everything at a cost of 2 points, including water (TT03)
+		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		for (int n = 1; n <= 2; n++)
+		{
+			final MovementRateRule pathfindingRule = new MovementRateRule ();
+			pathfindingRule.setTileTypeID ("TT0" + n);
+			pathfindingRule.setUnitStackSkillID ("US003");
+			pathfindingRule.setDoubleMovement (1);
+			rules.add (pathfindingRule);
+		}
+		
+		final MovementRateRule flyingRule = new MovementRateRule ();
+		flyingRule.setUnitSkillID ("US002");
+		flyingRule.setDoubleMovement (2);
+		rules.add (flyingRule);
+
+		final MovementRateRule hillsRule = new MovementRateRule ();
+		hillsRule.setUnitSkillID ("US001");
+		hillsRule.setTileTypeID ("TT01");
+		hillsRule.setDoubleMovement (4);
+		rules.add (hillsRule);
+		
+		final MovementRateRule mountainsRule = new MovementRateRule ();
+		mountainsRule.setUnitSkillID ("US001");
+		mountainsRule.setTileTypeID ("TT02");
+		mountainsRule.setDoubleMovement (6);
+		rules.add (mountainsRule);
+		
+		when (db.getMovementRateRule ()).thenReturn (rules);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Sample unit
+		final UnitHasSkill movementSkill = new UnitHasSkill ();
+		movementSkill.setUnitSkillID ("US001");
+		
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.getUnitHasSkill ().add (movementSkill);
+
+		// Set up object to test
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+
+		// Regular walking unit can walk over the two types of land tiles, but not water
+		final List<String> unitStackSkills = new ArrayList<String> ();
+
+		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (6, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
+		
+		// Stack with a pathfinding unit
+		unitStackSkills.add ("US003");
+
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
+		
+		// Cast flight spell - pathfinding takes preference, with how the demo rules above are ordered
+		final MemoryMaintainedSpell flightSpell = new MemoryMaintainedSpell ();
+		flightSpell.setUnitSkillID ("US002");
+		flightSpell.setUnitURN (1);
+		spells.add (flightSpell);
+
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
+		
+		// Naturally flying unit
+		unitStackSkills.clear ();
+		spells.clear ();
+		movementSkill.setUnitSkillID ("US002");
+		
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
 	}
 	
 	/**

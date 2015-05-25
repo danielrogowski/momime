@@ -182,7 +182,7 @@
 					<xsd:field xpath="@targetMagicRealmID" />
 				</xsd:unique>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimesvr:movementRateRule" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimesvr:citySpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimesvr:unitMagicRealm" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimesvr:overlandMapSize">
@@ -1270,38 +1270,6 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			</xsd:element >
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />
-	</xsd:complexType>
-
-	<xsd:complexType name="movementRateRule" nxe:singular="Movement Rate Rule" nxe:plural="Movement Rate Rules" nxe:submenu="Units">
-        <xsd:annotation>
-        	<xsd:documentation>Defines a list of rules for deciding the movement rate of units over different types of terrain.  Rules are evaluated in order, and the first one found that applies will dictate the units' movement over this type of terrain.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="80">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
-						<nxe:showreferencedfield>isLand</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Our skill" nxe:gridwidth="100">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitStackSkillID" type="momimecommon:unitSkillID" nxe:label="Stacked skill" nxe:gridwidth="100">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleMovement" type="momimecommon:doubleMovement" nxe:label="2x Movement to enter this terrain" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<!-- New game form settings, new for 0.9.2 -->

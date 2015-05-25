@@ -161,6 +161,26 @@ public interface UnitCalculations
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
+	 * @param unitStack Unit stack to check
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
+	 */
+	public List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
+
+	/**
+	 * @param unit Unit that we want to move
+	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
+	 * @param tileTypeID Type of tile we are moving onto
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 */
+	public Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
+	
+	/**
 	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.
 	 * 
 	 * MoM is a little weird with how movement works - providing you have even 1/2 move left, you can move anywhere, even somewhere

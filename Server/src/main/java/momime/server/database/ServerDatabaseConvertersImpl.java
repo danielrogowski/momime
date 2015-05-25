@@ -241,6 +241,8 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 
 		for (final CombatTileBorderSvr combatTileBorder : src.getCombatTileBorders ())
 			dest.getCombatTileBorder ().add (combatTileBorder);
+		
+		dest.getMovementRateRule ().addAll (src.getMovementRateRule ());
 
 	    // Derive client-side only flag for map features
 		for (final MapFeatureSvr srcMapFeature : src.getMapFeatures ())

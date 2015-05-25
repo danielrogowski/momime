@@ -237,11 +237,6 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public List<WeaponGradeSvr> getWeaponGrades ();
 
 	/**
-	 * @return Complete list of all movement rate rules in game
-	 */
-	public List<MovementRateRuleSvr> getMovementRateRules ();
-
-	/**
 	 * @return Complete list of all combat map elements in game
 	 */
 	public List<CombatMapElementSvr> getCombatMapElements ();

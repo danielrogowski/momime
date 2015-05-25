@@ -1135,6 +1135,38 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:attribute name="combatTileBorderID" type="momimecommon:combatTileBorderID" use="required" nxe:label="Combat Tile Border ID" nxe:gridwidth="150" />
 	</xsd:complexType>
 
+	<xsd:complexType name="movementRateRule" nxe:singular="Movement Rate Rule" nxe:plural="Movement Rate Rules" nxe:submenu="Units">
+        <xsd:annotation>
+        	<xsd:documentation>Defines a list of rules for deciding the movement rate of units over different types of terrain.  Rules are evaluated in order, and the first one found that applies will dictate the units' movement over this type of terrain.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="80">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>isLand</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Our skill" nxe:gridwidth="100">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitStackSkillID" type="momimecommon:unitSkillID" nxe:label="Stacked skill" nxe:gridwidth="100">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleMovement" type="momimecommon:doubleMovement" nxe:label="2x Movement to enter this terrain" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 <!-- Generic simple data types that are not really MoM specific -->
 
 	<xsd:simpleType name="description">

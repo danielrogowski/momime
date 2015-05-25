@@ -2,28 +2,6 @@ package momime.common.database;
 
 import java.util.List;
 
-import momime.common.database.Building;
-import momime.common.database.CombatAreaEffect;
-import momime.common.database.CombatTileBorder;
-import momime.common.database.CombatTileType;
-import momime.common.database.MapFeature;
-import momime.common.database.Pick;
-import momime.common.database.PickType;
-import momime.common.database.Plane;
-import momime.common.database.ProductionType;
-import momime.common.database.Race;
-import momime.common.database.RangedAttackType;
-import momime.common.database.Spell;
-import momime.common.database.TaxRate;
-import momime.common.database.TileType;
-import momime.common.database.Unit;
-import momime.common.database.UnitAttribute;
-import momime.common.database.UnitMagicRealm;
-import momime.common.database.UnitSkill;
-import momime.common.database.UnitType;
-import momime.common.database.WeaponGrade;
-import momime.common.database.Wizard;
-
 /**
  * Interface describing lookups that are needed by the utils in MoMIMECommon 
  * Both the server and client databases then provide implementations of these
@@ -259,4 +237,9 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the combat tile border ID doesn't exist
 	 */
 	public CombatTileBorder findCombatTileBorder (final String combatTileBorderID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of all movement rate rules in game
+	 */
+	public List<MovementRateRule> getMovementRateRule ();
 }

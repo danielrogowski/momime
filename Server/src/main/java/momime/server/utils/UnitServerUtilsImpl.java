@@ -289,7 +289,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		else
 		{
 			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (addLocation.getZ ()).getRow ().get (addLocation.getY ()).getCell ().get (addLocation.getX ());
-			if ( (ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) || (getServerUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
+			if ( (ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) || (getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
 
 				okToAdd = false;
 			else

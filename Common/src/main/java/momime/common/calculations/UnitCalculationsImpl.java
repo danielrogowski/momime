@@ -13,6 +13,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MovementRateRule;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
 import momime.common.database.Unit;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
@@ -458,6 +459,131 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 		log.trace ("Exiting calculateDoubleMovementToEnterTileType = " + doubleMovement);
 		return doubleMovement;
+	}
+	
+	/**
+	 * @param unit Unit that we want to move
+	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether this unit can pass over every type of possible terrain on the map; i.e. true for swimming units like Lizardmen, any flying unit, or any unit stacked with a Wind Walking unit
+	 */
+	@Override
+	public final boolean areAllTerrainTypesPassable (final AvailableUnit unit, final List<String> unitStackSkills,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+	{
+		log.trace ("Entering areAllTerrainTypesPassable: " + unit.getUnitID ());
+
+		// Go through each tile type
+		boolean result = true;
+		final Iterator<? extends TileType> iter = db.getTileTypes ().iterator ();
+		while ((result) && (iter.hasNext ()))
+		{
+			final TileType tileType = iter.next ();
+			if ((!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN)) &&
+				(calculateDoubleMovementToEnterTileType (unit, unitStackSkills, tileType.getTileTypeID (), spells, db) == null))
+				
+				result = false;
+		}
+
+		log.trace ("Exiting areAllTerrainTypesPassable = " + result);
+		return result;
+	}
+	
+	/**
+	 * Checks whether selectedUnits includes any transports, and if so whether the other units fit inside them, and whether any others in the same map cell should be added to the stack.
+	 * See the UnitStack object for a lot more comments on the rules by which this needs to work.
+	 * 
+	 * @param selectedUnits Units selected by the player to move
+	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on 
+	 * @param db Lookup lists built over the XML database
+	 * @return UnitStack object
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Override
+	public final UnitStack createUnitStack (final List<MemoryUnit> selectedUnits, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
+		throws RecordNotFoundException, MomException
+	{
+		log.trace ("Entering createUnitStack: " + getUnitUtils ().listUnitURNs (selectedUnits));
+
+		// We need at least one unit, or we can't even figure out the location and owner
+		if (selectedUnits.size () == 0)
+			throw new MomException ("createUnitStack: Selected units list is empty");
+		
+		final List<String> unitStackSkills = listAllSkillsInUnitStack (selectedUnits, fogOfWarMemory.getMaintainedSpell (), db);
+		
+		// Count the units already in the stack into 3 categories: transports, units that want to be in transports (have some impassable terrain), and units that will accompany transports (all terrain passable)
+		// Also while we're at it, find the location of the unit stack
+		final List<MemoryUnit> transports = new ArrayList<MemoryUnit> ();
+		int transportCapacity = 0;
+		int unitsInside = 0;
+		int owningPlayerID = 0;
+		MapCoordinates3DEx unitLocation = null;
+		
+		for (final MemoryUnit thisUnit : selectedUnits)
+		{
+			// Categorise unit
+			final Integer thisTransportCapacity = db.findUnit (thisUnit.getUnitID (), "createUnitStack").getTransportCapacity ();
+			if ((thisTransportCapacity != null) && (thisTransportCapacity > 0))
+			{
+				transports.add (thisUnit);
+				transportCapacity = transportCapacity + thisTransportCapacity;
+			}
+			else if (!areAllTerrainTypesPassable (thisUnit, unitStackSkills, fogOfWarMemory.getMaintainedSpell (), db))
+				unitsInside++;
+			
+			// Record or check location
+			if (unitLocation == null)
+				unitLocation = (MapCoordinates3DEx) thisUnit.getUnitLocation ();
+			else if (!unitLocation.equals (thisUnit.getUnitLocation ()))
+				throw new MomException ("createUnitStack: All selected units are not in the same starting location");
+			
+			// Record or check player
+			if (owningPlayerID == 0)
+				owningPlayerID = thisUnit.getOwningPlayerID ();
+			else if (owningPlayerID != thisUnit.getOwningPlayerID ())
+				throw new MomException ("createUnitStack: All selected units are not owned by the same player");				
+		}
+		
+		// Now can figure out if the stack will move in "transported" or "normal" mode
+		final UnitStack stack = new UnitStack ();
+		if ((transportCapacity > 0) && (transportCapacity >= unitsInside))
+		{
+			// "transported" mode, so first take the list of transports, and any units already specified
+			stack.getTransports ().addAll (transports);
+			stack.getUnits ().addAll (selectedUnits);
+			stack.getUnits ().removeAll (transports);
+			
+			// Now search for other units in the same location that can also fit and should be added to the stack
+			for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
+				
+				if ((thisUnit.getOwningPlayerID () == owningPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+					(unitLocation.equals (thisUnit.getUnitLocation ())) && (!selectedUnits.contains (thisUnit)))
+				{
+					// Never automatically add additional transports
+					final Integer thisTransportCapacity = db.findUnit (thisUnit.getUnitID (), "createUnitStack").getTransportCapacity ();
+					if ((thisTransportCapacity == null) || (thisTransportCapacity <= 0))
+					{
+						// Always automatically add "outside" units; add "inside" units only if there's still space
+						if (areAllTerrainTypesPassable (thisUnit, unitStackSkills, fogOfWarMemory.getMaintainedSpell (), db))
+							stack.getUnits ().add (thisUnit);
+						else if (unitsInside < transportCapacity)
+						{
+							stack.getUnits ().add (thisUnit);
+							unitsInside++;
+						}
+					}
+				}
+		}
+		else
+		{
+			// "normal" mode, so just take the unit stack as given
+			stack.getUnits ().addAll (selectedUnits);
+		}
+		
+		log.trace ("Exiting createUnitStack = " + stack);
+		return stack;
 	}
 	
 	/**

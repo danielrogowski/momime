@@ -4,12 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.common.MomException;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
@@ -20,11 +24,13 @@ import momime.common.database.GenerateTestData;
 import momime.common.database.MovementRateRule;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
 import momime.common.database.Unit;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -35,6 +41,7 @@ import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
 import momime.common.utils.UnitUtils;
@@ -770,6 +777,501 @@ public final class TestUnitCalculationsImpl
 		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
 		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
 		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
+	}
+	
+	/**
+	 * Tests the areAllTerrainTypesPassable method
+	 */
+	@Test
+	public final void testAreAllTerrainTypesPassable ()
+	{
+		// There are 3 tile types, first two a land tiles, third is a sea tile
+		final CommonDatabase db = mock (CommonDatabase.class);
+		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final TileType tileType = new TileType ();
+			tileType.setTileTypeID ("TT0" + n);
+			tileTypes.add (tileType);
+		}
+		doReturn (tileTypes).when (db).getTileTypes ();
+
+		// First is a flying skill, second is a walking skill
+		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MovementRateRule flyingRule = new MovementRateRule ();
+			flyingRule.setUnitSkillID ("US001");
+			flyingRule.setTileTypeID ("TT0" + n);
+			flyingRule.setDoubleMovement (1);
+			rules.add (flyingRule);
+			
+			if (n < 3)
+			{
+				final MovementRateRule walkingRule = new MovementRateRule ();
+				walkingRule.setUnitSkillID ("US002");
+				walkingRule.setTileTypeID ("TT0" + n);
+				walkingRule.setDoubleMovement (1);
+				rules.add (walkingRule);
+			}
+		}
+		when (db.getMovementRateRule ()).thenReturn (rules);
+		
+		// Example unit with each skill
+		final UnitHasSkill flyingUnitSkill = new UnitHasSkill ();
+		flyingUnitSkill.setUnitSkillID ("US001");
+		
+		final AvailableUnit flyingUnit = new AvailableUnit ();
+		flyingUnit.getUnitHasSkill ().add (flyingUnitSkill);
+
+		final UnitHasSkill walkingUnitSkill = new UnitHasSkill ();
+		walkingUnitSkill.setUnitSkillID ("US002");
+		
+		final AvailableUnit walkingUnit = new AvailableUnit ();
+		walkingUnit.getUnitHasSkill ().add (walkingUnitSkill);
+		
+		// Other lists
+		final List<String> unitStackSkills = new ArrayList<String> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		
+		// Run checks
+		assertTrue (calc.areAllTerrainTypesPassable (flyingUnit, unitStackSkills, spells, db));
+		assertFalse (calc.areAllTerrainTypesPassable (walkingUnit, unitStackSkills, spells, db));
+	}
+	
+	/**
+	 * Tests the createUnitStack method on an empty unit stack
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Test(expected=MomException.class)
+	public final void testCreateUnitStack_Empty () throws RecordNotFoundException, MomException
+	{
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Player's memory
+		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+		
+		// Unit stack
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		
+		// Skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+	}
+	
+	/**
+	 * Tests the createUnitStack method on a unit stack which is invalid because all the units aren't in the same place
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Test(expected=MomException.class)
+	public final void testCreateUnitStack_DifferentLocations () throws RecordNotFoundException, MomException
+	{
+		// Unit definitions
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit spearmenDef = new Unit ();
+		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
+		
+		// Player's memory
+		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+		
+		// Unit stack
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		
+		for (int n = 0; n < 2; n++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID ("UN001");
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, n));
+			selectedUnits.add (spearmen);
+		}
+
+		// Skills
+		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+	}
+	
+	/**
+	 * Tests the createUnitStack method on a unit stack which is invalid because all the units aren't owned by the same player
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Test(expected=MomException.class)
+	public final void testCreateUnitStack_DifferentPlayers () throws RecordNotFoundException, MomException
+	{
+		// Unit definitions
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit spearmenDef = new Unit ();
+		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
+		
+		// Player's memory
+		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+		
+		// Unit stack
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		
+		for (int n = 0; n < 2; n++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID ("UN001");
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+			spearmen.setOwningPlayerID (n + 1);
+			selectedUnits.add (spearmen);
+		}
+
+		// Skills
+		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+	}
+	
+	/**
+	 * Tests the createUnitStack method on a unit stack containing only normal units
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Test
+	public final void testCreateUnitStack_Normal () throws RecordNotFoundException, MomException
+	{
+		// Unit definitions
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit spearmenDef = new Unit ();
+		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
+		
+		// Player's memory
+		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+		
+		// Unit stack
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		
+		for (int n = 0; n < 2; n++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID ("UN001");
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+			spearmen.setOwningPlayerID (1);
+			spearmen.setUnitURN (n + 1);
+			selectedUnits.add (spearmen);
+		}
+
+		// Skills
+		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		
+		// Check results
+		assertEquals (0, unitStack.getTransports ().size ());
+		assertEquals (2, unitStack.getUnits ().size ());
+		assertEquals (1, unitStack.getUnits ().get (0).getUnitURN ());
+		assertEquals (2, unitStack.getUnits ().get (1).getUnitURN ());
+	}
+
+	/**
+	 * Tests the createUnitStack method on a unit stack containing a trieme and a regular unit, and there's 2 other regular units at the same location
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Test
+	public final void testCreateUnitStack_Transport () throws RecordNotFoundException, MomException
+	{
+		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
+		final TileType tileType = new TileType ();
+		tileType.setTileTypeID ("TT01");
+
+		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		tileTypes.add (tileType);
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		doReturn (tileTypes).when (db).getTileTypes ();
+		
+		// Unit definitions
+		final Unit spearmenDef = new Unit ();
+		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
+
+		final Unit triemeDef = new Unit ();
+		triemeDef.setTransportCapacity (2);
+		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triemeDef);
+		
+		// Player's memory
+		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+		
+		// Unit stack
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		
+		for (int n = 0; n < 3; n++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID ("UN001");
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+			spearmen.setOwningPlayerID (1);
+			spearmen.setUnitURN (n + 1);
+			spearmen.setStatus (UnitStatusID.ALIVE);
+			
+			fogOfWarMemory.getUnit ().add (spearmen);
+			if (n == 0)
+				selectedUnits.add (spearmen);
+		}
+
+		final MemoryUnit trieme = new MemoryUnit ();
+		trieme.setUnitID ("UN002");
+		trieme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		trieme.setOwningPlayerID (1);
+		trieme.setUnitURN (4);
+		trieme.setStatus (UnitStatusID.ALIVE);
+		
+		fogOfWarMemory.getUnit ().add (trieme);
+		selectedUnits.add (trieme);
+		
+		// Skills
+		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		
+		// Check results
+		assertEquals (1, unitStack.getTransports ().size ());
+		assertEquals (4, unitStack.getTransports ().get (0).getUnitURN ());
+		
+		assertEquals (2, unitStack.getUnits ().size ());
+		assertEquals (1, unitStack.getUnits ().get (0).getUnitURN ());
+		assertEquals (2, unitStack.getUnits ().get (1).getUnitURN ());
+	}
+	
+	/**
+	 * Tests the createUnitStack method on a unit stack containing a trieme and 3 regular units all preselected in the stack, so they don't fit
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Test
+	public final void testCreateUnitStack_NotEnoughSpace () throws RecordNotFoundException, MomException
+	{
+		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
+		final TileType tileType = new TileType ();
+		tileType.setTileTypeID ("TT01");
+
+		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		tileTypes.add (tileType);
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		doReturn (tileTypes).when (db).getTileTypes ();
+		
+		// Unit defintions
+		final Unit spearmenDef = new Unit ();
+		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
+
+		final Unit triemeDef = new Unit ();
+		triemeDef.setTransportCapacity (2);
+		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triemeDef);
+		
+		// Player's memory
+		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+		
+		// Unit stack
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		
+		for (int n = 0; n < 3; n++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID ("UN001");
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+			spearmen.setOwningPlayerID (1);
+			spearmen.setUnitURN (n + 1);
+			spearmen.setStatus (UnitStatusID.ALIVE);
+			
+			fogOfWarMemory.getUnit ().add (spearmen);
+			selectedUnits.add (spearmen);
+		}
+
+		final MemoryUnit trieme = new MemoryUnit ();
+		trieme.setUnitID ("UN002");
+		trieme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		trieme.setOwningPlayerID (1);
+		trieme.setUnitURN (4);
+		trieme.setStatus (UnitStatusID.ALIVE);
+		
+		fogOfWarMemory.getUnit ().add (trieme);
+		selectedUnits.add (trieme);
+		
+		// Skills
+		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		
+		// Check results
+		assertEquals (0, unitStack.getTransports ().size ());
+		assertEquals (4, unitStack.getUnits ().size ());
+		assertEquals (1, unitStack.getUnits ().get (0).getUnitURN ());
+		assertEquals (2, unitStack.getUnits ().get (1).getUnitURN ());
+		assertEquals (3, unitStack.getUnits ().get (2).getUnitURN ());
+		assertEquals (4, unitStack.getUnits ().get (3).getUnitURN ());
+	}
+
+	/**
+	 * Tests the createUnitStack method when we only select the transport to move, but there's 3 regular units and 3 flying units also all in the same location
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	@Test
+	public final void testCreateUnitStack_TransportOnly () throws RecordNotFoundException, MomException
+	{
+		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
+		final TileType tileType = new TileType ();
+		tileType.setTileTypeID ("TT01");
+
+		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		tileTypes.add (tileType);
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		doReturn (tileTypes).when (db).getTileTypes ();
+		
+		// Unit definitions
+		final Unit spearmenDef = new Unit ();
+		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
+
+		final Unit triemeDef = new Unit ();
+		triemeDef.setTransportCapacity (2);
+		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triemeDef);
+
+		final Unit drakeDef = new Unit ();
+		when (db.findUnit ("UN003", "createUnitStack")).thenReturn (drakeDef);
+
+		// Have to mock skill list merging
+		final UnitHasSkillMergedList noSkills = new UnitHasSkillMergedList ();
+
+		final UnitHasSkill drakesFly = new UnitHasSkill ();
+		drakesFly.setUnitSkillID ("US001");
+		
+		final UnitHasSkillMergedList yesSkills = new UnitHasSkillMergedList ();
+		yesSkills.add (drakesFly);
+		
+		// Movement rate rules, so that the tile type is passable to the flying units but not the spearmen
+		final MovementRateRule rule = new MovementRateRule ();
+		rule.setTileTypeID ("TT01");
+		rule.setUnitSkillID ("US001");
+		rule.setDoubleMovement (2);
+		
+		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		rules.add (rule);
+
+		when (db.getMovementRateRule ()).thenReturn (rules);
+		
+		// Player's memory
+		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+		
+		// Unit stack
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		
+		for (int n = 0; n < 3; n++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID ("UN001");
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+			spearmen.setOwningPlayerID (1);
+			spearmen.setUnitURN (n + 1);
+			spearmen.setStatus (UnitStatusID.ALIVE);
+			
+			fogOfWarMemory.getUnit ().add (spearmen);
+
+			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), spearmen)).thenReturn (noSkills);
+		}
+
+		for (int n = 0; n < 3; n++)
+		{
+			final MemoryUnit drake = new MemoryUnit ();
+			drake.setUnitID ("UN003");
+			drake.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+			drake.setOwningPlayerID (1);
+			drake.setUnitURN (n + 4);
+			drake.setStatus (UnitStatusID.ALIVE);
+			
+			fogOfWarMemory.getUnit ().add (drake);
+			
+			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), drake)).thenReturn (yesSkills);
+		}
+
+		final MemoryUnit trieme = new MemoryUnit ();
+		trieme.setUnitID ("UN002");
+		trieme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		trieme.setOwningPlayerID (1);
+		trieme.setUnitURN (7);
+		trieme.setStatus (UnitStatusID.ALIVE);
+		
+		fogOfWarMemory.getUnit ().add (trieme);
+		selectedUnits.add (trieme);
+		
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), trieme)).thenReturn (noSkills);		
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		
+		// Check results
+		assertEquals (1, unitStack.getTransports ().size ());
+		assertEquals (7, unitStack.getTransports ().get (0).getUnitURN ());
+		
+		assertEquals (5, unitStack.getUnits ().size ());
+		assertEquals (1, unitStack.getUnits ().get (0).getUnitURN ());
+		assertEquals (2, unitStack.getUnits ().get (1).getUnitURN ());
+		assertEquals (4, unitStack.getUnits ().get (2).getUnitURN ());
+		assertEquals (5, unitStack.getUnits ().get (3).getUnitURN ());
+		assertEquals (6, unitStack.getUnits ().get (4).getUnitURN ());
 	}
 	
 	/**

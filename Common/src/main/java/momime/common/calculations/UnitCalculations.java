@@ -181,6 +181,30 @@ public interface UnitCalculations
 		final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
 	
 	/**
+	 * @param unit Unit that we want to move
+	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether this unit can pass over every type of possible terrain on the map; i.e. true for swimming units like Lizardmen, any flying unit, or any unit stacked with a Wind Walking unit
+	 */
+	public boolean areAllTerrainTypesPassable (final AvailableUnit unit, final List<String> unitStackSkills,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
+	
+	/**
+	 * Checks whether selectedUnits includes any transports, and if so whether the other units fit inside them, and whether any others in the same map cell should be added to the stack.
+	 * See the UnitStack object for a lot more comments on the rules by which this needs to work.
+	 * 
+	 * @param selectedUnits Units selected by the player to move
+	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on 
+	 * @param db Lookup lists built over the XML database
+	 * @return UnitStack object
+	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 */
+	public UnitStack createUnitStack (final List<MemoryUnit> selectedUnits, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
+		throws RecordNotFoundException, MomException;
+	
+	/**
 	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.
 	 * 
 	 * MoM is a little weird with how movement works - providing you have even 1/2 move left, you can move anywhere, even somewhere

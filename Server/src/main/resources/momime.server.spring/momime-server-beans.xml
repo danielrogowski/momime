@@ -156,6 +156,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="requestOverlandMovementDistancesMessage" class="momime.server.messages.process.RequestOverlandMovementDistancesMessageImpl" scope="prototype">
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 	

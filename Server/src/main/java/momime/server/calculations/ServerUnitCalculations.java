@@ -3,6 +3,7 @@ package momime.server.calculations;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.calculations.UnitStack;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -71,7 +72,7 @@ public interface ServerUnitCalculations
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	public void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
-		final FogOfWarMemory map, final List<MemoryUnit> unitStack, final int doubleMovementRemaining,
+		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
 		final boolean [] [] [] movingHereResultsInAttack,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;

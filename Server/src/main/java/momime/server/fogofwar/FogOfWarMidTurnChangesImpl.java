@@ -11,6 +11,7 @@ import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.FogOfWarSetting;
@@ -1837,7 +1838,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * end of the map, and we may not have seen it or the intervening terrain yet, so we basically move one tile at a time
 	 * and re-evaluate *everthing* based on the knowledge we learn of the terrain from our new location before we make the next move
 	 *
-	 * @param unitStack The units we want to move (true unit versions)
+	 * @param selectedUnits The units we want to move (true unit versions)
 	 * @param unitStackOwner The player who owns the units
 	 * @param originalMoveFrom Location to move from
 	 *
@@ -1855,17 +1856,26 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+	public final void moveUnitStack (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering moveUnitStack: " + unitStack.size () + ", Player ID " +
+		log.trace ("Entering moveUnitStack: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
 			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + originalMoveFrom.toString () + ", " + moveTo.toString ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
-		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack, priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
+		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (selectedUnits, priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
 
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		
+		// Get the list of units who are actually moving
+		final List<MemoryUnit> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
+		
+		final List<MemoryUnit> allUnits = new ArrayList<MemoryUnit> ();
+		allUnits.addAll (unitStack.getTransports ());
+		allUnits.addAll (unitStack.getUnits ());
+		
 		// Have to define a lot of these out here so they can be used after the loop
 		boolean keepGoing = true;
 		boolean validMoveFound = false;
@@ -1879,7 +1889,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			// What's the lowest movement remaining of any unit in the stack
 			doubleMovementRemaining = Integer.MAX_VALUE;
-			for (final MemoryUnit thisUnit : unitStack)
+			for (final MemoryUnit thisUnit : movingUnits)
 				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
@@ -1914,11 +1924,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 				// Update the movement remaining for each unit
 				if (!combatInitiated)
-					reduceMovementRemaining (unitStack, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
+					reduceMovementRemaining (movingUnits, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
 				else
 				{
 					// Attacking uses up all movement
-					for (final MemoryUnit thisUnit : unitStack)
+					for (final MemoryUnit thisUnit : allUnits)
 						thisUnit.setDoubleOverlandMovesLeft (0);
 				}
 
@@ -1926,7 +1936,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final UpdateOverlandMovementRemainingMessage movementRemainingMsg = new UpdateOverlandMovementRemainingMessage ();
 				doubleMovementRemaining = Integer.MAX_VALUE;
 
-				for (final MemoryUnit thisUnit : unitStack)
+				for (final MemoryUnit thisUnit : movingUnits)
 				{
 					final UpdateOverlandMovementRemainingUnit msgUnit = new UpdateOverlandMovementRemainingUnit ();
 					msgUnit.setUnitURN (thisUnit.getUnitURN ());
@@ -1948,7 +1958,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						oneStep.setZ (moveTo.getZ ());
 
 					// Actually move the units
-					moveUnitStackOneCellOnServerAndClients (unitStack, unitStackOwner, moveFrom, oneStep, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+					moveUnitStackOneCellOnServerAndClients (allUnits, unitStackOwner, moveFrom, oneStep, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 
 					// Prepare for next loop
 					moveFrom = oneStep;
@@ -1986,7 +1996,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				pending.setMoveFrom (moveFrom);
 				pending.setMoveTo (moveTo);
 
-				for (final MemoryUnit thisUnit : unitStack)
+				for (final MemoryUnit thisUnit : selectedUnits)
 					pending.getUnitURN ().add (thisUnit.getUnitURN ());
 
 				// Record the movement path
@@ -2034,9 +2044,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), towerPlane);
 
 			final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
-			for (final MemoryUnit tu : unitStack)
+			for (final MemoryUnit tu : allUnits)
 				attackingUnitURNs.add (tu.getUnitURN ());
-
+			
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
 				throw new MomException ("moveUnitStack found a combat in a simultaneous turns game, which should be handled outside of here");
 			
@@ -2051,7 +2061,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * This follows the same logic as moveUnitStack, except that it only works out what the first cell of movement will be,
 	 * and doesn't actually perform the movement.
 	 * 
-	 * @param unitStack The units we want to move (true unit versions)
+	 * @param selectedUnits The units we want to move (true unit versions)
 	 * @param unitStackOwner The player who owns the units
 	 * @param pendingMovement The pending move we're determining one step of
 	 * @param doubleMovementRemaining The lowest movement remaining of any unit in the stack
@@ -2061,18 +2071,20 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
 	@Override
-	public final OneCellPendingMovement determineOneCellPendingMovement (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+	public final OneCellPendingMovement determineOneCellPendingMovement (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final PendingMovement pendingMovement,  final int doubleMovementRemaining, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException
 	{
 		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) pendingMovement.getMoveFrom ();
 		final MapCoordinates3DEx moveTo = (MapCoordinates3DEx) pendingMovement.getMoveTo ();
 		
-		log.trace ("Entering determineOneCellPendingMovement: " + unitStack.size () + ", Player ID " +
+		log.trace ("Entering determineOneCellPendingMovement: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
 			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom.toString () + ", " + moveTo.toString ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		
 		// Find distances and route from our start point to every location on the map
 		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 		final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
@@ -2120,7 +2132,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * This follows the same logic as moveUnitStack, except that it only works out what the movement path will be,
 	 * and doesn't actually perform the movement.
 	 * 
-	 * @param unitStack The units we want to move (true unit versions)
+	 * @param selectedUnits The units we want to move (true unit versions)
 	 * @param unitStackOwner The player who owns the units
 	 * @param moveFrom Location to move from
 	 * @param moveTo Location to move to
@@ -2130,14 +2142,16 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
 	@Override
-	public final List<Integer> determineMovementPath (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+	public final List<Integer> determineMovementPath (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering determineMovementPath: " + unitStack.size () + ", Player ID " +
+		log.trace ("Entering determineMovementPath: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
 			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom.toString () + ", " + moveTo.toString ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
+		
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// We do this at the end of simultaneous turns movement, when all units stacks have used up all movement, so we know this
 		final int doubleMovementRemaining = 0;

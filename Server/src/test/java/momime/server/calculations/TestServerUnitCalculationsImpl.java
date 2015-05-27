@@ -13,6 +13,7 @@ import java.util.Map;
 
 import momime.common.calculations.UnitCalculationsImpl;
 import momime.common.calculations.UnitHasSkillMergedList;
+import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MovementRateRule;
 import momime.common.database.UnitHasSkill;
@@ -446,7 +447,7 @@ public final class TestServerUnitCalculationsImpl
 			final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 		
 			// Units that are moving - two units of high men spearmen
-			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+			final UnitStack unitStack = new UnitStack ();
 		
 			for (int n = 1; n <= 2; n++)
 			{
@@ -459,9 +460,9 @@ public final class TestServerUnitCalculationsImpl
 				spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 				spearmen.getUnitHasSkill ().add (walkingSkill);
 		
-				unitStack.add (spearmen);
+				unitStack.getUnits ().add (spearmen);
 			}
-			map.getUnit ().addAll (unitStack);
+			map.getUnit ().addAll (unitStack.getUnits ());
 		
 			// Set up object to test
 			final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
@@ -609,7 +610,7 @@ public final class TestServerUnitCalculationsImpl
 	
 			// Units that are moving - two units of high men spearmen
 			// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
-			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+			final UnitStack unitStack = new UnitStack ();
 	
 			for (int n = 1; n <= 2; n++)
 			{
@@ -624,9 +625,9 @@ public final class TestServerUnitCalculationsImpl
 				spearmen.getUnitHasSkill ().add (walkingSkill);
 				spearmen.setStatus (UnitStatusID.ALIVE);
 	
-				unitStack.add (spearmen);
+				unitStack.getUnits ().add (spearmen);
 			}
-			map.getUnit ().addAll (unitStack);
+			map.getUnit ().addAll (unitStack.getUnits ());
 	
 			// Add 8 of our units in one location, and 8 enemy units in another location, both on Myrror
 			// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it

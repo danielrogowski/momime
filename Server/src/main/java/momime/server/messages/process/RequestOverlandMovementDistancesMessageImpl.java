@@ -7,6 +7,9 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.MomException;
+import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitStack;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -40,6 +43,9 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
 	
@@ -49,10 +55,11 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, RecordNotFoundException
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering process: (" + getMoveFrom ().getX () + ", " + getMoveFrom ().getY () + ", " + getMoveFrom ().getZ () +
 			"), Player ID " + sender.getPlayerDescription ().getPlayerID ());
@@ -65,8 +72,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		if (getUnitURN ().size () == 0)
 			error = "You must select at least one unit to move.";
 
-		int doubleMovementRemaining = Integer.MAX_VALUE;
-		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
 
 		final Iterator<Integer> unitUrnIterator = getUnitURN ().iterator ();
 		while ((error == null) && (unitUrnIterator.hasNext ()))
@@ -83,15 +89,26 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			else if (!thisUnit.getUnitLocation ().equals (getMoveFrom ()))
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
-			{
-				unitStack.add (thisUnit);
+				selectedUnits.add (thisUnit);
+		}
+		
+		// If other validation passed, create the unit stack, then find remaining movement
+		int doubleMovementRemaining = Integer.MAX_VALUE;
+		UnitStack unitStack = null;
+		
+		if (error == null)
+		{
+			unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			
+			// Get the list of units who are actually moving
+			final List<MemoryUnit> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
+			for (final MemoryUnit thisUnit : movingUnits)
 				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
-			}
-		}
 
-		if (doubleMovementRemaining <= 0)
-			error = "Some of the units you are trying to move have no movement remaining";
+			if (doubleMovementRemaining <= 0)
+				error = "Some of the units you are trying to move have no movement remaining";
+		}
 
 		if (error != null)
 		{
@@ -164,6 +181,22 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 	
 	/**

@@ -9,6 +9,7 @@ import java.util.Map;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
+import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
@@ -362,7 +363,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 */
 	@Override
 	public final void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
-		final FogOfWarMemory map, final List<MemoryUnit> unitStack, final int doubleMovementRemaining,
+		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
 		final boolean [] [] [] movingHereResultsInAttack,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
@@ -370,7 +371,9 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		log.trace ("Entering calculateOverlandMovementDistances: (" + startX + ", " + startY + ", " + startPlane + ")");
 
 		// Work out all the movement rates over all tile types of the unit stack
-		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack (unitStack, map.getMaintainedSpell (), db);
+		// If a transporting move, only the movement speed of the transports matters 
+		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack
+			((unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits (), map.getMaintainedSpell (), db);
 
 		// Count how many of OUR units are in every cell on the map - enemy units are fine, we'll just attack them :-)
 		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getOverlandMapSize ());
@@ -382,7 +385,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					// If cell will be full, leave it as null = impassable
-					if (ourUnitCountAtLocation [plane.getPlaneNumber ()] [y] [x] + unitStack.size () <= sd.getUnitSetting ().getUnitsPerMapCell ())
+					if (ourUnitCountAtLocation [plane.getPlaneNumber ()] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= sd.getUnitSetting ().getUnitsPerMapCell ())
 						doubleMovementToEnterTile [plane.getPlaneNumber ()] [y] [x] = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW
 							(map.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ()));
 

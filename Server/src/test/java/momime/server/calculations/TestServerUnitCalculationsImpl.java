@@ -459,6 +459,8 @@ public final class TestServerUnitCalculationsImpl
 				spearmen.setOwningPlayerID (2);
 				spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 				spearmen.getUnitHasSkill ().add (walkingSkill);
+				spearmen.setStatus (UnitStatusID.ALIVE);
+				spearmen.setUnitID ("UN001");
 		
 				unitStack.getUnits ().add (spearmen);
 			}
@@ -597,6 +599,7 @@ public final class TestServerUnitCalculationsImpl
 					their.setOwningPlayerID (1);
 					their.setUnitLocation (new MapCoordinates3DEx (18, y, 0));
 					their.setStatus (UnitStatusID.ALIVE);
+					their.setUnitID ("UN001");
 	
 					map.getUnit ().add (their);
 				}
@@ -624,6 +627,7 @@ public final class TestServerUnitCalculationsImpl
 				spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 				spearmen.getUnitHasSkill ().add (walkingSkill);
 				spearmen.setStatus (UnitStatusID.ALIVE);
+				spearmen.setUnitID ("UN001");
 	
 				unitStack.getUnits ().add (spearmen);
 			}
@@ -639,6 +643,7 @@ public final class TestServerUnitCalculationsImpl
 				our.setOwningPlayerID (2);
 				our.setUnitLocation (new MapCoordinates3DEx (19, 9, 1));
 				our.setStatus (UnitStatusID.ALIVE);
+				our.setUnitID ("UN001");
 	
 				map.getUnit ().add (our);
 	
@@ -648,6 +653,7 @@ public final class TestServerUnitCalculationsImpl
 				their.setOwningPlayerID (1);
 				their.setUnitLocation (new MapCoordinates3DEx (20, 9, 1));
 				their.setStatus (UnitStatusID.ALIVE);
+				their.setUnitID ("UN001");
 	
 				map.getUnit ().add (their);
 			}

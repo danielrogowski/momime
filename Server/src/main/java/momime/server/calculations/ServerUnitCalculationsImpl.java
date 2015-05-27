@@ -370,6 +370,54 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	{
 		log.trace ("Entering calculateOverlandMovementDistances: (" + startX + ", " + startY + ", " + startPlane + ")");
 
+		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack.getUnits (), map.getMaintainedSpell (), db);
+		
+		// If its a transported movement, then by defintion the stack can move onto another transport if it wants to,
+		// so don't need to make any special considerations for moving units onto a transport
+		final int [] [] [] cellTransportCapacity;
+		if (unitStack.getTransports ().size () > 0)
+			cellTransportCapacity = null;
+		else
+		{
+			// Find how much spare transport capacity we have on every cell of the map.
+			// We add +capacity for every transport found, and -1 capacity for every unit that is on terrain impassable to itself (therefore must be in a transport).
+			// Then any spaces left with 1 or higher value have spare space units could be loaded into.
+			// Any units standing in towers have their values counted on both planes.
+			cellTransportCapacity = new int [db.getPlanes ().size ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()]; 
+			for (final MemoryUnit thisUnit : map.getUnit ())
+				if ((thisUnit.getOwningPlayerID () == movingPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null))
+				{
+					final int x = thisUnit.getUnitLocation ().getX ();
+					final int y = thisUnit.getUnitLocation ().getY ();
+					final int z = thisUnit.getUnitLocation ().getZ ();
+					
+					final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+					
+					// Count space granted by transports
+					final Integer unitTransportCapacity = db.findUnit (thisUnit.getUnitID (), "calculateOverlandMovementDistances").getTransportCapacity ();
+					if (unitTransportCapacity != null)
+						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+						{
+							for (final PlaneSvr plane : db.getPlanes ())
+								cellTransportCapacity [plane.getPlaneNumber ()] [y] [x] = cellTransportCapacity [plane.getPlaneNumber ()] [y] [x] + unitTransportCapacity;
+						}
+						else
+							cellTransportCapacity [z] [y] [x] = cellTransportCapacity [z] [y] [x] + unitTransportCapacity;
+					
+					// Count space taken up by units already in transports
+					if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
+						(terrainData), map.getMaintainedSpell (), db) == null)
+						
+						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+						{
+							for (final PlaneSvr plane : db.getPlanes ())
+								cellTransportCapacity [plane.getPlaneNumber ()] [y] [x]--;
+						}
+						else
+							cellTransportCapacity [z] [y] [x]--;
+				}			
+		}
+		
 		// Work out all the movement rates over all tile types of the unit stack
 		// If a transporting move, only the movement speed of the transports matters 
 		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack
@@ -386,8 +434,36 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				{
 					// If cell will be full, leave it as null = impassable
 					if (ourUnitCountAtLocation [plane.getPlaneNumber ()] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= sd.getUnitSetting ().getUnitsPerMapCell ())
-						doubleMovementToEnterTile [plane.getPlaneNumber ()] [y] [x] = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW
-							(map.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ()));
+					{
+						final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						Integer movementRate = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData));
+						
+						// If the cell is otherwise impassable to us (i.e. land units trying to walk onto water) but there's enough space in a transport there, then allow it
+						if ((movementRate == null) && (cellTransportCapacity != null) && (cellTransportCapacity [plane.getPlaneNumber ()] [y] [x] > 0))
+						{
+							// Work out how many spaces we -need-
+							// Can't do this up front because it varies depending on whether the terrain being moved to is impassable to each kind of unit in the stack
+							int spaceRequired = 0;
+							for (final MemoryUnit thisUnit : unitStack.getUnits ())
+							{															
+								// Count space granted by transports
+								final Integer unitTransportCapacity = db.findUnit (thisUnit.getUnitID (), "calculateOverlandMovementDistances").getTransportCapacity ();
+								if (unitTransportCapacity != null)
+									spaceRequired = spaceRequired - unitTransportCapacity;
+								
+								// Count space taken up by units already in transports
+								if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
+									(terrainData), map.getMaintainedSpell (), db) == null)
+									
+									spaceRequired++;
+							}							
+							
+							if (cellTransportCapacity [plane.getPlaneNumber ()] [y] [x] >= spaceRequired)
+								movementRate = 2;
+						}
+						
+						doubleMovementToEnterTile [plane.getPlaneNumber ()] [y] [x] = movementRate;
+					}
 
 					// Initialize all the map areas
 					doubleMovementDistances	[plane.getPlaneNumber ()] [y] [x] = MOVEMENT_DISTANCE_NOT_YET_CHECKED;

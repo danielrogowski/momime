@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 
 import com.ndg.multiplayer.server.ServerToClientSessionConnection;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
@@ -68,16 +69,18 @@ public interface MomSessionVariables
 	 * 	The only exception is that AI players may be added with a null playerID, in which a playerID will be allocated to them.
 	 * @param connection Connection to player who requested new session; only applicable if newPlayer.isHuman () is true, and even then, can be left null
 	 * 	(as will be the case when reloading multiplayer games - the connection for the secondary players will initially be null until they join the session).
+	 * @param reason The type of session the player joined into; ignored and can be null if connection is null OR sendMessages is false
 	 * @param sendMessages Whether to send JoinSuccessful & AdditionalPlayerJoined messages
 	 * @param existingPlayerDetails If the player has existing details (i.e. persistent/transient public/private details), pass them in here.
 	 * 	The details will be added to the player list if not already present (for rejoins they'll already be in the list, for loading saved games they won't be).
 	 * @throws JAXBException If there is a problem converting the reply into XML
 	 * @throws XMLStreamException If there is a problem writing the reply to the XML stream
+	 * @throws IOException If there is a problem sending any reply back to the client
 	 * @return Newly created player
 	 */
-	public PlayerServerDetails addPlayer (final PlayerDescription pd, final ServerToClientSessionConnection connection,
+	public PlayerServerDetails addPlayer (final PlayerDescription pd, final ServerToClientSessionConnection connection, final JoinSuccessfulReason reason,
 		final boolean sendMessages, final PlayerServerDetails existingPlayerDetails)
-		throws JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Records a save game file of this session's state

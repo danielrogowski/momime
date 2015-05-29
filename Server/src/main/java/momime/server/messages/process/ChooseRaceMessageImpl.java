@@ -1,10 +1,10 @@
 package momime.server.messages.process;
 
+import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.clienttoserver.ChooseRaceMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
@@ -19,7 +19,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Message we send to the server when we choose which race we want to be
@@ -40,13 +39,11 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 	 * @param sender Player who sent the message
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws MomException If there is a problem in any game logic or data
-	 * @throws RecordNotFoundException If various elements cannot be found in the DB
-	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
+	 * @throws IOException If there are any other kinds of faults
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getRaceID ());
 

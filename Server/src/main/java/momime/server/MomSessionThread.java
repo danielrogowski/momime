@@ -7,7 +7,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
@@ -44,6 +43,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
@@ -156,23 +157,33 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		getSessionLogger ().info ("Building maps over XML data...");
 		sdb.buildMaps ();
 		setServerDB (sdb); 
-		
-		// Start up the first turn
-		switch (getSessionDescription ().getTurnSystem ())
-		{
-			case ONE_PLAYER_AT_A_TIME:
-				getPlayerMessageProcessing ().switchToNextPlayer (this, true);
-				break;
 
-			case SIMULTANEOUS:
-				getPlayerMessageProcessing ().kickOffSimultaneousTurn (this, true);
-				break;
-				
-			default:
-				throw new MomException ("initializeLoadedGame encountered an unknown turn system " + getSessionDescription ().getTurnSystem ());
-		}
+		// If its a single player game, then start it immediately
+		getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
 		
 		log.trace ("Exiting initializeLoadedGame");
+	}
+	
+	/**
+	 * Called after players are added to the session for any reason (when setting up a new game, joining, rejoining or loading)
+	 *
+	 * @param player The player who just joined the session
+	 * @param reason The type of session the player joined into; ignored and can be null if connection is null OR sendMessages is false
+	 * @throws JAXBException If there is a problem converting the reply into XML
+	 * @throws XMLStreamException If there is a problem writing the reply to the XML stream
+	 * @throws IOException If there is a problem sending any reply back to the client
+	 */
+	@Override
+	public final void playerAdded (final PlayerServerDetails player, final JoinSuccessfulReason reason)
+		throws JAXBException, XMLStreamException, IOException
+	{
+		log.trace ("Entering playerAdded: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + reason);
+		
+		// Only do this for *additional* players joining saved games - if we've loading a single player saved game, the player is added too early so these are handled above
+		if (reason == JoinSuccessfulReason.REJOINED_SESSION)
+			getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
+		
+		log.trace ("Exiting playerAdded");
 	}
 	
 	/**

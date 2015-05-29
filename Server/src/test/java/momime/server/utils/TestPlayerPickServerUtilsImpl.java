@@ -36,6 +36,7 @@ import momime.server.database.WizardSvr;
 
 import org.junit.Test;
 
+import com.ndg.multiplayer.server.ServerToClientSessionConnection;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -1629,6 +1630,42 @@ public final class TestPlayerPickServerUtilsImpl
 		ppk2.setWizardID ("WZ02");
 		priv2.setFirstCityRaceID ("RC02");
 		assertTrue (utils.allPlayersHaveChosenAllDetails (players, sd));
+	}
+	
+	/**
+	 * Tests the allPlayersAreConnected method
+	 */
+	@Test
+	public final void testAllPlayersAreConnected ()
+	{
+		// Set up 2 human and 1 AI player, 1 human player is still disconnected
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setHuman (true);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, null);
+		player1.setConnection (mock (ServerToClientSessionConnection.class));
+
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setHuman (true);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, null);
+		
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setHuman (false);
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		players.add (player2);
+		players.add (player3);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Initially should return false
+		assertFalse (utils.allPlayersAreConnected (players));
+		
+		// Missing human player connects
+		player2.setConnection (mock (ServerToClientSessionConnection.class));
+		assertTrue (utils.allPlayersAreConnected (players));
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -44,13 +45,24 @@ public interface PlayerMessageProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending any messages to the clients
 	 * @throws XMLStreamException If there is a problem sending any messages to the clients
+	 * @throws IOException If there are any other kinds of faults
+	 */
+	public void checkIfCanStartGame (final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, IOException;
+
+	/**
+	 * After reloading a saved game, checks whether all human players have joined back in, and if so then starts the game back up again
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending any messages to the clients
+	 * @throws XMLStreamException If there is a problem sending any messages to the clients
 	 * @throws MomException If there is a problem in any game logic or data
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
 	 */
-	public void checkIfCanStartGame (final MomSessionVariables mom)
+	public void checkIfCanStartLoadedGame (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException;
-
+	
 	/**
 	 * In a one-player-at-a-time game, this gets called when a player clicks the Next Turn button to tell everyone whose turn it is now
 	 *

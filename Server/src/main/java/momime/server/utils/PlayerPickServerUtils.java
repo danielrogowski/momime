@@ -102,6 +102,13 @@ public interface PlayerPickServerUtils
 	public boolean allPlayersHaveChosenAllDetails (final List<PlayerServerDetails> players, final MomSessionDescription sd);
 
 	/**
+	 * Used when reloading multiplayer games to test whether all necessary players have joined back into the session and it can continue
+	 * @param players List of players
+	 * @return True if all human players are connected
+	 */
+	public boolean allPlayersAreConnected (final List<PlayerServerDetails> players);
+	
+	/**
 	 * @param players List of players
 	 * @param db Lookup lists built over the XML database
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list

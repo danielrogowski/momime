@@ -468,6 +468,30 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	}
 
 	/**
+	 * Used when reloading multiplayer games to test whether all necessary players have joined back into the session and it can continue
+	 * @param players List of players
+	 * @return True if all human players are connected
+	 */
+	@Override
+	public final boolean allPlayersAreConnected (final List<PlayerServerDetails> players)
+	{
+		log.trace ("Entering allPlayersAreConnected");
+		
+		// Check each player
+		boolean result = true;
+		final Iterator<PlayerServerDetails> iter = players.iterator ();
+		while ((result) && (iter.hasNext ()))
+		{
+			final PlayerServerDetails player = iter.next ();
+			if ((player.getPlayerDescription ().isHuman ()) && (player.getConnection () == null))
+				result = false;
+		}
+		
+		log.trace ("Exiting allPlayersAreConnected = " + result);
+		return result;
+	}
+	
+	/**
 	 * @param players List of players
 	 * @param db Lookup lists built over the XML database
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list

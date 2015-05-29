@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -381,13 +382,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending any messages to the clients
 	 * @throws XMLStreamException If there is a problem sending any messages to the clients
-	 * @throws MomException If there is a problem in any game logic or data
-	 * @throws RecordNotFoundException If various elements cannot be found in the DB
-	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
+	 * @throws IOException If there are any other kinds of faults
 	 */
 	@Override
 	public final void checkIfCanStartGame (final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		log.trace ("Entering checkIfCanStartGame");
 
@@ -411,7 +410,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					availableWizards.remove (chosenWizard);
 
 					// Add AI player
-					final PlayerServerDetails aiPlayer = mom.addPlayer (createAiPlayerDescription (chosenWizard), null, true, null);
+					final PlayerServerDetails aiPlayer = mom.addPlayer (createAiPlayerDescription (chosenWizard), null, null, true, null);
 
 					// Choose wizard
 					chooseWizard (chosenWizard.getWizardID (), aiPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
@@ -427,13 +426,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Add raiders
 			final PlayerServerDetails raidersPlayer = mom.addPlayer (createAiPlayerDescription
-				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")), null, true, null);
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")), null, null, true, null);
 
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, raidersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Add monsters
 			final PlayerServerDetails monstersPlayer = mom.addPlayer (createAiPlayerDescription
-				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")), null, true, null);
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")), null, null, true, null);
 
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
@@ -585,6 +584,47 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		log.trace ("Exiting checkIfCanStartGame");
 	}
 
+	/**
+	 * After reloading a saved game, checks whether all human players have joined back in, and if so then starts the game back up again
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending any messages to the clients
+	 * @throws XMLStreamException If there is a problem sending any messages to the clients
+	 * @throws MomException If there is a problem in any game logic or data
+	 * @throws RecordNotFoundException If various elements cannot be found in the DB
+	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
+	 */
+	@Override
+	public final void checkIfCanStartLoadedGame (final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
+	{
+		log.trace ("Entering checkIfCanStartLoadedGame");
+
+		if (getPlayerPickServerUtils ().allPlayersAreConnected (mom.getPlayers ()))
+		{
+			// Use the same Start Game message as when starting a new game; this tells the client to close out the "Wait for players" list and show the overland map
+			mom.getSessionLogger ().info ("Starting game...");
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new StartGameMessage ());
+			
+			// Start up the first turn
+			switch (mom.getSessionDescription ().getTurnSystem ())
+			{
+				case ONE_PLAYER_AT_A_TIME:
+					switchToNextPlayer (mom, true);
+					break;
+
+				case SIMULTANEOUS:
+					kickOffSimultaneousTurn (mom, true);
+					break;
+					
+				default:
+					throw new MomException ("checkIfCanStartLoadedGame encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
+			}
+		}
+
+		log.trace ("Exiting checkIfCanStartLoadedGame");
+	}
+	
 	/**
 	 * Processes the 'start phase' (for want of something better to call it), which happens just at the start of each player's turn
 	 *

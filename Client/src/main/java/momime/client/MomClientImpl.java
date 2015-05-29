@@ -15,7 +15,6 @@ import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.NewGameDatabase;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.ChangeConstructionUI;
@@ -46,6 +45,7 @@ import com.ndg.multiplayer.sessionbase.BrowseSavePointsFailedReason;
 import com.ndg.multiplayer.sessionbase.BrowseSavedGamesFailedReason;
 import com.ndg.multiplayer.sessionbase.CreateAccountFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinFailedReason;
+import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.LeaveSessionFailedReason;
 import com.ndg.multiplayer.sessionbase.LoadGameFailedReason;
 import com.ndg.multiplayer.sessionbase.LoginFailedReason;
@@ -217,20 +217,19 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			/**
 			 * Event triggered when we successfully join a session
 			 * 
+			 * @param reason The type of session we've joined into
 			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 			 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 			 * @throws IOException Can be used for more general types of processing failure
 			 */
 			@Override
-			public final void joinedSession () throws JAXBException, XMLStreamException, IOException
+			public final void joinedSession (final JoinSuccessfulReason reason) throws JAXBException, XMLStreamException, IOException
 			{
 				((ClientDatabaseExImpl) getClientDB ()).buildMapsAndRunConsistencyChecks ();
 				getJoinGameUI ().setVisible (false);
 				getLoadGameUI ().setVisible (false);
 				getMainMenuUI ().setVisible (false);
-				
-				// Can tell the difference between a new game and loading a saved game by how many players are in the session 
-				getNewGameUI ().setVisible (getPlayers ().size () == 1);
+				getNewGameUI ().setVisible (true);
 				
 				getNewGameUI ().afterJoinedSession ();
 				getOverlandMapBitmapGenerator ().afterJoinedSession ();
@@ -251,23 +250,16 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 						trans.setFlagColour (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "joinedSession").getFlagColour ());
 				}
 				
-				// Also if reloading a game, show the map screen, like StartGameMessage would normally
-				if (getPlayers ().size () > 1)
+				// Also if reloading a game, or joining a game being reloaded, show the wait for players screen
+				if ((reason == JoinSuccessfulReason.LOADED_SAVED_GAME) || (reason == JoinSuccessfulReason.REJOINED_SESSION))
 				{
+					// Prepare the overland map
 					getOverlandMapBitmapGenerator ().smoothMapTerrain (null);
 					getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 					getOverlandMapUI ().regenerateFogOfWarBitmap ();
-					getOverlandMapUI ().setVisible (true);
 					
-					// Switch to the overland map background music
-					try
-					{
-						getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+					// Wait for other players to join; the server tells us when we've got everybody and to start
+					getNewGameUI ().showWaitPanel ();
 				}
 			}
 

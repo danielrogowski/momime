@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -501,7 +502,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			combatMapCoordinateSystem, combatMap, mom.getServerDB ());
 		
 		// Make a list of all the units we need to position - attackers may not have selected entire stack to attack with
-		final List<MemoryUnitAndCombatClass> unitsToPosition = new ArrayList<MemoryUnitAndCombatClass> ();
+		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((currentLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 				((onlyUnitURNs == null) || (onlyUnitURNs.contains (tu.getUnitURN ()))))
@@ -512,9 +513,30 @@ public final class CombatProcessingImpl implements CombatProcessing
 					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 				
 				// Add it to the list
-				unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu, mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ())));
+				unitStack.add (tu);
 			}
+		
+		// Remove from the list any units to whom the combat terrain is impassable.
+		// This is so land units being transported in boats can't participate in naval combats.
+		final String tileTypeID = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get
+			(combatLocation.getY ()).getCell ().get (combatLocation.getX ()).getTerrainData ().getTileTypeID ();
+		
+		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+		
+		final Iterator<MemoryUnit> iter = unitStack.iterator ();
+		while (iter.hasNext ())
+		{
+			final MemoryUnit tu = iter.next ();
+			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills, tileTypeID,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ()) == null)
+				iter.remove ();
+		}
+		
+		// Work out combat class of all units to position
+		final List<MemoryUnitAndCombatClass> unitsToPosition = new ArrayList<MemoryUnitAndCombatClass> ();
+		for (final MemoryUnit tu : unitStack)
+			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu, mom.getPlayers (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ())));
 		
 		// Sort the units by their "combat class"; this sorts in the order: Melee heroes, melee units, ranged heroes, ranged units, settlers
 		Collections.sort (unitsToPosition);

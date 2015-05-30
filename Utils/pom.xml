@@ -13,14 +13,14 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.2-SNAPSHOT</version>
+		<version>0.1.2</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>ndgutils</artifactId>
-			<version>0.1.2-SNAPSHOT</version>
+			<version>0.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

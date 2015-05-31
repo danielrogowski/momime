@@ -6,11 +6,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.FogOfWarMemory;
@@ -22,12 +26,14 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,8 +42,10 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
@@ -64,6 +72,12 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Random utils */
+	private RandomUtils randomUtils; 
 	
 	/**
 	 * @param unit The unit to check
@@ -395,7 +409,8 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					
 					// Count space granted by transports
 					final Integer unitTransportCapacity = db.findUnit (thisUnit.getUnitID (), "calculateOverlandMovementDistances").getTransportCapacity ();
-					if (unitTransportCapacity != null)
+					if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
+					{
 						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 						{
 							for (final PlaneSvr plane : db.getPlanes ())
@@ -403,9 +418,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 						}
 						else
 							cellTransportCapacity [z] [y] [x] = cellTransportCapacity [z] [y] [x] + unitTransportCapacity;
+					}
 					
 					// Count space taken up by units already in transports
-					if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
+					else if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
 						(terrainData), map.getMaintainedSpell (), db) == null)
 						
 						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
@@ -444,21 +460,29 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 							// Work out how many spaces we -need-
 							// Can't do this up front because it varies depending on whether the terrain being moved to is impassable to each kind of unit in the stack
 							int spaceRequired = 0;
+							boolean impassableToTransport = false;
 							for (final MemoryUnit thisUnit : unitStack.getUnits ())
 							{															
+								final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills,
+									getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), map.getMaintainedSpell (), db) == null);
+								
 								// Count space granted by transports
 								final Integer unitTransportCapacity = db.findUnit (thisUnit.getUnitID (), "calculateOverlandMovementDistances").getTransportCapacity ();
-								if (unitTransportCapacity != null)
-									spaceRequired = spaceRequired - unitTransportCapacity;
+								if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
+								{
+									if (impassable)
+										impassableToTransport = true;
+									else
+										spaceRequired = spaceRequired - unitTransportCapacity;
+								}
 								
 								// Count space taken up by units already in transports
-								if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
-									(terrainData), map.getMaintainedSpell (), db) == null)
-									
+								else if (impassable)									
 									spaceRequired++;
 							}							
 							
-							if (cellTransportCapacity [plane.getPlaneNumber ()] [y] [x] >= spaceRequired)
+							// If the cell is impassable to one of our transports then the free space is irrelevant, we just can't go there
+							if ((!impassableToTransport) && (cellTransportCapacity [plane.getPlaneNumber ()] [y] [x] >= spaceRequired))
 								movementRate = 2;
 						}
 						
@@ -487,6 +511,105 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				doubleMovementToEnterTile, sd.getOverlandMapSize (), db);
 
 		log.trace ("Exiting calculateOverlandMovementDistances");
+	}
+	
+	/**
+	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
+	 * This is used after naval combats where some of the transports may have died, to kill off any surviving units who now have no transport,
+	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
+	 * 
+	 * @param combatLocation The combatLocation where the units need to be rechecked
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void recheckTransportCapacity (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+	{
+		log.trace ("Entering recheckTransportCapacity: " + combatLocation);
+		
+		// First get a list of the map coordinates and players to check; this could be two cells if the defender won - they'll have units at the combatLocation and the
+		// attackers' transports may have been wiped out but the transported units are still sat at the point they attacked from.
+		final List<MapCoordinates3DEx> mapLocations = new ArrayList<MapCoordinates3DEx> ();
+		final List<Integer> playerIDs = new ArrayList<Integer> ();
+		for (final MemoryUnit tu : trueMap.getUnit ())
+			if ((tu.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (tu.getCombatLocation ())))
+			{
+				if (!mapLocations.contains (tu.getUnitLocation ()))
+					mapLocations.add ((MapCoordinates3DEx) tu.getUnitLocation ());
+				
+				if (!playerIDs.contains (tu.getOwningPlayerID ()))
+					playerIDs.add (tu.getOwningPlayerID ());
+			}
+		
+		// Now check all locations and all players
+		for (final MapCoordinates3DEx mapLocation : mapLocations)
+			for (final Integer playerID : playerIDs)
+			{
+				log.debug ("recheckTransportCapacity checking location " + mapLocation + " for units owned by player ID " + playerID);
+
+				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
+					(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ()).getTerrainData ();
+				
+				// List all the units at this location owned by this player
+				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+				for (final MemoryUnit tu : trueMap.getUnit ())
+					if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())) && (playerID == tu.getOwningPlayerID ()))
+						unitStack.add (tu);
+				
+				// Get a list of the unit stack skills
+				final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack, trueMap.getMaintainedSpell (), db);
+				
+				// Now check each unit in the stack
+				final List<MemoryUnit> impassableUnits = new ArrayList<MemoryUnit> ();
+				int spaceRequired = 0;
+				for (final MemoryUnit tu : unitStack)
+				{
+					final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
+						getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), trueMap.getMaintainedSpell (), db) == null);
+						
+					// Count space granted by transports
+					final Integer unitTransportCapacity = db.findUnit (tu.getUnitID (), "recheckTransportCapacity").getTransportCapacity ();
+					if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
+					{
+						// Transports on impassable terrain just get killed (maybe a ship had its flight spell dispelled during an overland combat)
+						if (impassable)
+						{
+							log.debug ("Killing Unit URN " + tu.getUnitURN () + " (transport on impassable terrain)");
+							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
+						}
+						else
+							spaceRequired = spaceRequired - unitTransportCapacity;
+					}
+					else if (impassable)
+					{
+						spaceRequired++;
+						impassableUnits.add (tu);
+					}
+				}
+				
+				// Need to kill off any units?
+				while ((spaceRequired > 0) && (impassableUnits.size () > 0))
+				{
+					final MemoryUnit killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
+					log.debug ("Killing Unit URN " + killUnit.getUnitURN () + " (unit on impassable terrain)");
+					
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
+					
+					spaceRequired--;
+					impassableUnits.remove (killUnit);
+				}
+			}
+		
+		log.trace ("Exiting recheckTransportCapacity");
 	}
 
 	/**
@@ -551,5 +674,37 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Random utils
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random utils
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

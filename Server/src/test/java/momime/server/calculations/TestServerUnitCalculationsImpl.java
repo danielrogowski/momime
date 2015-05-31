@@ -4,17 +4,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitCalculationsImpl;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.MovementRateRule;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.FogOfWarMemory;
@@ -26,6 +31,8 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.KillUnitActionID;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
@@ -35,6 +42,8 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
+import momime.server.database.UnitSvr;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -45,6 +54,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the ServerUnitCalculations class
@@ -766,5 +776,95 @@ public final class TestServerUnitCalculationsImpl
 			assertEquals ((60*40*2)-7, accessibleTilesDistances);		// 3 ocean tiles - for distances the cell we start from has a valid value of 0
 			assertEquals ((60*40*2)-9, accessibleTilesDirections);		// 3 ocean tiles plus start position - for directions the cell we start from has invalid value 0
 		}
+	}
+
+	/**
+	 * Tests the recheckTransportCapacity method
+	 * @throws Exception If there if a problem
+	 */
+	@Test
+	public final void testRecheckTransportCapacity () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr triremeDef = new UnitSvr ();
+		triremeDef.setTransportCapacity (2);
+		when (db.findUnit ("UN001", "recheckTransportCapacity")).thenReturn (triremeDef);
+		
+		final UnitSvr spearmenDef = new UnitSvr ();
+		when (db.findUnit ("UN002", "recheckTransportCapacity")).thenReturn (spearmenDef);
+		
+		// Session description
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting (); 
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (terrain);
+		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (terrainData);
+		
+		// Terrain tile
+		final MemoryGridCellUtils gridCellUtils = mock (MemoryGridCellUtils.class);
+		when (gridCellUtils.convertNullTileTypeToFOW (terrainData)).thenReturn ("TT01");
+
+		// Unit skills
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
+		
+		final List<String> unitStackSkills = new ArrayList<String> ();
+		when (unitCalc.listAllSkillsInUnitStack (anyListOf (MemoryUnit.class), eq (trueMap.getMaintainedSpell ()), eq (db))).thenReturn (unitStackSkills);
+		
+		// Units
+		final MemoryUnit trireme = new MemoryUnit ();
+		trireme.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		trireme.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
+		trireme.setStatus (UnitStatusID.ALIVE);
+		trireme.setUnitID ("UN001");
+		trireme.setOwningPlayerID (1);
+		trueMap.getUnit ().add (trireme);
+
+		when (unitCalc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (2);
+		
+		MemoryUnit killedUnit = null;
+		for (int n = 0; n < 3; n++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
+			spearmen.setStatus (UnitStatusID.ALIVE);
+			spearmen.setUnitID ("UN002");
+			spearmen.setOwningPlayerID (1);
+			trueMap.getUnit ().add (spearmen);
+			
+			when (unitCalc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (null);
+			
+			if (n == 1)
+				killedUnit = spearmen;
+		}
+		
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Fix random numbers
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (3)).thenReturn (1);
+		
+		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		calc.setUnitCalculations (unitCalc);
+		calc.setMemoryGridCellUtils (gridCellUtils);
+		calc.setRandomUtils (random);
+		calc.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		calc.recheckTransportCapacity (new MapCoordinates3DEx (20, 10, 1), trueMap, players, fogOfWarSettings, db);
+		
+		// Check 1 unit of spearmen was killed
+		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
 	}
 }

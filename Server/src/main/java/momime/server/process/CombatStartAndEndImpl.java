@@ -30,6 +30,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
@@ -123,6 +124,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -444,6 +448,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			{
 				log.debug ("Defender won");
 			}
+
+			// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)
+			getServerUnitCalculations ().recheckTransportCapacity (combatLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			
 			// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.
 			// Have to do this after we advance the attackers, otherwise the attackers' CombatX, CombatY will already
@@ -752,5 +760,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

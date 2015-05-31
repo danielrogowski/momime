@@ -2,8 +2,12 @@ package momime.server.calculations;
 
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitStack;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -13,6 +17,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -76,4 +81,24 @@ public interface ServerUnitCalculations
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
 		final boolean [] [] [] movingHereResultsInAttack,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;
+	
+	/**
+	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
+	 * This is used after naval combats where some of the transports may have died, to kill off any surviving units who now have no transport,
+	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
+	 * 
+	 * @param combatLocation The combatLocation where the units need to be rechecked
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void recheckTransportCapacity (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 }

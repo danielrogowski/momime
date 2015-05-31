@@ -51,6 +51,7 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -711,6 +712,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
+		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -837,6 +839,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
+		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -980,6 +983,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
+		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -1158,6 +1162,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setCityCalculations (cityCalc);
 		cse.setServerCityCalculations (serverCityCalc);
+		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
@@ -1359,6 +1364,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCityCalculations (cityCalc);
 		cse.setServerCityCalculations (serverCityCalc);
 		cse.setCityServerUtils (cityServerUtils);
+		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
@@ -1506,6 +1512,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setPlayerMessageProcessing (playerMessageProcessing);
+		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Regular combat, so only the attacker has a pending movement
 		final PendingMovement attackerPendingMovement = new PendingMovement ();
@@ -1640,6 +1647,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setPlayerMessageProcessing (playerMessageProcessing);
+		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Border conflict, so we have two pending movements
 		final PendingMovement attackerPendingMovement = new PendingMovement ();

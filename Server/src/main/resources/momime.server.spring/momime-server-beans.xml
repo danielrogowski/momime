@@ -398,6 +398,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="serverResourceCalculations" class="momime.server.calculations.ServerResourceCalculationsImpl">
@@ -540,6 +542,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">

@@ -506,15 +506,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((currentLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 				((onlyUnitURNs == null) || (onlyUnitURNs.contains (tu.getUnitURN ()))))
-			{
-				// Give unit full ammo and mana
-				// Have to do this now, since sorting the units relies on knowing what ranged attacks they have
-				getUnitCalculations ().giveUnitFullRangedAmmoAndMana (tu, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-				
-				// Add it to the list
+
 				unitStack.add (tu);
-			}
 		
 		// Remove from the list any units to whom the combat terrain is impassable.
 		// This is so land units being transported in boats can't participate in naval combats.
@@ -529,14 +522,28 @@ public final class CombatProcessingImpl implements CombatProcessing
 			final MemoryUnit tu = iter.next ();
 			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills, tileTypeID,
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ()) == null)
+			{
+				// Set combatLocation and side (we need these to handle units left behind properly when the combat ends), but not position and heading.
+				// Also note we don't send these values to the client.
+				tu.setCombatLocation (combatLocation);
+				tu.setCombatSide (combatSide);
+				
 				iter.remove ();
+			}
 		}
 		
 		// Work out combat class of all units to position
 		final List<MemoryUnitAndCombatClass> unitsToPosition = new ArrayList<MemoryUnitAndCombatClass> ();
 		for (final MemoryUnit tu : unitStack)
+		{
+			// Give unit full ammo and mana
+			// Have to do this now, since sorting the units relies on knowing what ranged attacks they have
+			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (tu, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+
 			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ())));
+		}
 		
 		// Sort the units by their "combat class"; this sorts in the order: Melee heroes, melee units, ranged heroes, ranged units, settlers
 		Collections.sort (unitsToPosition);

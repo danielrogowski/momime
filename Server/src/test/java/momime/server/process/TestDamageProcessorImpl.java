@@ -168,6 +168,7 @@ public final class TestDamageProcessorImpl
 			survivingUnit.setCombatPosition (new MapCoordinates2DEx (7, 9));
 			survivingUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 			survivingUnit.setCombatSide ((thisPlayer == attackingPlayer) ? UnitCombatSideID.ATTACKER : UnitCombatSideID.DEFENDER);
+			survivingUnit.setCombatHeading (1);
 			trueMap.getUnit ().add (survivingUnit);
 		}
 		
@@ -379,6 +380,7 @@ public final class TestDamageProcessorImpl
 		unit1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit1.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit1.setCombatHeading (1);
 		units.add (unit1);
 		
 		// Wrong location
@@ -387,6 +389,7 @@ public final class TestDamageProcessorImpl
 		unit2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		unit2.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit2.setCombatHeading (1);
 		units.add (unit2);
 		
 		// Defender
@@ -395,6 +398,7 @@ public final class TestDamageProcessorImpl
 		unit3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit3.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit3.setCombatSide (UnitCombatSideID.DEFENDER);
+		unit3.setCombatHeading (1);
 		units.add (unit3);
 		
 		// Dead
@@ -403,6 +407,7 @@ public final class TestDamageProcessorImpl
 		unit4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit4.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit4.setCombatHeading (1);
 		units.add (unit4);
 		
 		// Not in combat
@@ -410,15 +415,24 @@ public final class TestDamageProcessorImpl
 		unit5.setStatus (UnitStatusID.ALIVE);
 		unit5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit5.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit5.setCombatHeading (1);
 		units.add (unit5);
 		
-		// Another right one
+		// Land unit waiting in a transport in a naval combat
 		final MemoryUnit unit6 = new MemoryUnit ();
 		unit6.setStatus (UnitStatusID.ALIVE);
 		unit6.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
-		unit6.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit6);
+
+		// Another right one
+		final MemoryUnit unit7 = new MemoryUnit ();
+		unit7.setStatus (UnitStatusID.ALIVE);
+		unit7.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit7.setCombatPosition (new MapCoordinates2DEx (7, 9));
+		unit7.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit7.setCombatHeading (1);
+		units.add (unit7);
 		
 		// Set up object to test
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();

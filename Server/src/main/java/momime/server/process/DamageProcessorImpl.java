@@ -402,7 +402,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		int count = 0;
 		for (final MemoryUnit trueUnit : trueUnits)
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
-				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null))
+				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
 					
 				count++;
 

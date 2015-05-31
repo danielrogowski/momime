@@ -18,6 +18,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -30,6 +31,7 @@ import momime.common.messages.UnitStatusID;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -626,6 +628,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		unit.setUnitURN (10);
 		unit.setStatus (UnitStatusID.DEAD);
 		unit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit.setCombatSide (UnitCombatSideID.ATTACKER);
 		
 		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (12);
@@ -689,7 +692,14 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
 			(spell, null, 1, null, unit, players, spells, combatAreaEffects, db));
 		
+		// Currently the unit has combat location + side, but not heading + position, so its s land unit in a naval combat and can't fight, and can't be targetted
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, spells, combatAreaEffects, db));
+		
 		// Combat non-attack spell
+		unit.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit.setCombatHeading (1);
+		
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
 			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, spells, combatAreaEffects, db));
 		

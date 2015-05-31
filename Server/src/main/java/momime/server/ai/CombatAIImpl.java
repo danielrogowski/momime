@@ -69,7 +69,7 @@ public final class CombatAIImpl implements CombatAI
 		final List<MemoryUnit> unitsToMove = new ArrayList<MemoryUnit> ();
 		for (final MemoryUnit tu : trueUnits)
 			if ((tu.getOwningPlayerID () == currentPlayerID) && (tu.getStatus () == UnitStatusID.ALIVE) &&
-				(combatLocation.equals (tu.getCombatLocation ())) &&
+				(combatLocation.equals (tu.getCombatLocation ())) && (tu.getCombatPosition () != null) && (tu.getCombatHeading () != null) && (tu.getCombatSide () != null) &&
 				(tu.getDoubleCombatMovesLeft () != null) && (tu.getDoubleCombatMovesLeft () > 0))
 				
 				unitsToMove.add (tu);				
@@ -201,6 +201,7 @@ public final class CombatAIImpl implements CombatAI
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () != attacker.getOwningPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && 
 				(combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+				(thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) &&
 				
 				// Check that if we select this enemy, we have a valid action to take against it - i.e. that we don't have a cunning human
 				// player box in a weak unit by surrounding it by 8 others and then get in a tizzy trying to work out a path to the unit.

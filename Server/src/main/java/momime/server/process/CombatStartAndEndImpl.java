@@ -364,7 +364,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 					moveTo.setZ (0);
 				
-				// Put all the attackers in a list, and figure out moveFrom
+				// Put all the attackers in a list, and figure out moveFrom.
+				// NB. We intentionally don't check combatPosition and heading here because we DO want units to advance if they
+				// were land units sitting in transports during a naval combat.
 				MapCoordinates3DEx moveFrom = null;
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 				for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())

@@ -161,6 +161,7 @@ public final class TestCombatMapUtilsImpl
 		unit1.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
 		unit1.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		unit1.setCombatHeading (1);
 		units.add (unit1);
 		
 		// Unit at wrong place
@@ -171,6 +172,7 @@ public final class TestCombatMapUtilsImpl
 		unit2.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
 		unit2.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		unit2.setCombatHeading (1);
 		units.add (unit2);
 		
 		// Doesn't have a location within the combat
@@ -180,6 +182,7 @@ public final class TestCombatMapUtilsImpl
 		unit3.setStatus (UnitStatusID.ALIVE);
 		unit3.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit3.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit3.setCombatHeading (1);
 		units.add (unit3);
 
 		// Matches, but side isn't set
@@ -189,6 +192,7 @@ public final class TestCombatMapUtilsImpl
 		unit4.setStatus (UnitStatusID.ALIVE);
 		unit4.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit4.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		unit4.setCombatHeading (1);
 		units.add (unit4);
 
 		// Set up object to test
@@ -209,6 +213,7 @@ public final class TestCombatMapUtilsImpl
 		unit5.setOwningPlayerID (defenderPd.getPlayerID ());
 		unit5.setCombatSide (UnitCombatSideID.DEFENDER);
 		unit5.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		unit5.setCombatHeading (1);
 		units.add (unit5);
 		
 		final CombatPlayers result2 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);
@@ -224,6 +229,7 @@ public final class TestCombatMapUtilsImpl
 		unit6.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
 		unit6.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		unit6.setCombatHeading (1);
 		units.add (unit6);
 		
 		final CombatPlayers result3 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);
@@ -246,6 +252,9 @@ public final class TestCombatMapUtilsImpl
 		unit1.setOwningPlayerID (3);
 		unit1.setStatus (UnitStatusID.ALIVE);
 		unit1.setCombatLocation (new MapCoordinates3DEx (15, 10, 1));
+		unit1.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit1.setCombatHeading (1);
 		units.add (unit1);
 		
 		// Dead
@@ -253,6 +262,9 @@ public final class TestCombatMapUtilsImpl
 		unit2.setOwningPlayerID (3);
 		unit2.setStatus (UnitStatusID.DEAD);
 		unit2.setCombatLocation (new MapCoordinates3DEx (15, 10, 1));
+		unit2.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit2.setCombatHeading (1);
 		units.add (unit2);
 		
 		// Wrong location
@@ -260,6 +272,9 @@ public final class TestCombatMapUtilsImpl
 		unit3.setOwningPlayerID (3);
 		unit3.setStatus (UnitStatusID.ALIVE);
 		unit3.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		unit3.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit3.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit3.setCombatHeading (1);
 		units.add (unit3);
 		
 		// Wrong player
@@ -267,6 +282,9 @@ public final class TestCombatMapUtilsImpl
 		unit4.setOwningPlayerID (4);
 		unit4.setStatus (UnitStatusID.ALIVE);
 		unit4.setCombatLocation (new MapCoordinates3DEx (15, 10, 1));
+		unit4.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit4.setCombatHeading (1);
 		units.add (unit4);
 		
 		// Unit meets critera
@@ -274,7 +292,18 @@ public final class TestCombatMapUtilsImpl
 		unit5.setOwningPlayerID (3);
 		unit5.setStatus (UnitStatusID.ALIVE);
 		unit5.setCombatLocation (new MapCoordinates3DEx (15, 10, 1));
+		unit5.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit5.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit5.setCombatHeading (1);
 		units.add (unit5);
+
+		// Unit in movement stack but not in the combat (land unit sitting in transport during naval combat)
+		final MemoryUnit unit6 = new MemoryUnit ();
+		unit6.setOwningPlayerID (3);
+		unit6.setStatus (UnitStatusID.ALIVE);
+		unit6.setCombatLocation (new MapCoordinates3DEx (15, 10, 1));
+		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit6);
 		
 		// Set up object to test
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();

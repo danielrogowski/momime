@@ -115,7 +115,7 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 		{
 			final MemoryUnit thisUnit = iter.next ();
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) &&
-				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null))					
+				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))					
 			{
 				switch (thisUnit.getCombatSide ())
 				{
@@ -151,7 +151,8 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 		
 		int count = 0;
 		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatHeading () != null) &&
+				(thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null))
 				count++;			
 
 		log.trace ("Exiting countPlayersAliveUnitsAtCombatLocation = " + count);

@@ -288,7 +288,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	final TargetSpellResult result;
     	
     	// Do easy checks first
-    	if ((combatLocation != null) && (!combatLocation.equals (unit.getCombatLocation ())))
+    	if ((combatLocation != null) && ((!combatLocation.equals (unit.getCombatLocation ())) ||
+    		(unit.getCombatPosition () == null) || (unit.getCombatSide () == null) || (unit.getCombatHeading () == null)))
+    		
     		result = TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT;
     	
     	else if (unit.getStatus () != UnitStatusID.ALIVE)

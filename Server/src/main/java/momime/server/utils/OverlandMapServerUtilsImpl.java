@@ -349,7 +349,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		while ((location == null) && (iter.hasNext ()))
 		{
 			final MemoryUnit unit = iter.next ();
-			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) &&
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (unit.getCombatHeading () != null) &&
 				(unit.getCombatSide () == combatSide) && (combatLocation.equals (unit.getCombatLocation ())))
 				
 				location = (MapCoordinates3DEx) unit.getUnitLocation ();

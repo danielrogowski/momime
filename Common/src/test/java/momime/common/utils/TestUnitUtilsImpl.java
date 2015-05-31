@@ -20,6 +20,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -817,7 +818,15 @@ public final class TestUnitUtilsImpl
 
 		// Put the unit into combat - Note the units are at 15,10,1 but in a combat at 16,10,1 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		ourUnit.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		ourUnit.setCombatHeading (1);
+		ourUnit.setCombatSide (UnitCombatSideID.ATTACKER);
+		
 		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatPosition (new MapCoordinates2DEx (15, 12));
+		theirUnit.setCombatHeading (5);
+		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
+		
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -865,7 +874,15 @@ public final class TestUnitUtilsImpl
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		ourUnit.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		ourUnit.setCombatHeading (1);
+		ourUnit.setCombatSide (UnitCombatSideID.ATTACKER);
+		
 		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatPosition (new MapCoordinates2DEx (15, 12));
+		theirUnit.setCombatHeading (5);
+		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
+		
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -915,7 +932,15 @@ public final class TestUnitUtilsImpl
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		ourUnit.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		ourUnit.setCombatHeading (1);
+		ourUnit.setCombatSide (UnitCombatSideID.ATTACKER);
+		
 		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatPosition (new MapCoordinates2DEx (15, 12));
+		theirUnit.setCombatHeading (5);
+		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
+		
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -965,7 +990,15 @@ public final class TestUnitUtilsImpl
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		ourUnit.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		ourUnit.setCombatHeading (1);
+		ourUnit.setCombatSide (UnitCombatSideID.ATTACKER);
+		
 		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatPosition (new MapCoordinates2DEx (15, 12));
+		theirUnit.setCombatHeading (5);
+		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
+		
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -1667,41 +1700,56 @@ public final class TestUnitUtilsImpl
 
 		// Unit A that matches
 		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setStatus (UnitStatusID.ALIVE);
 		u1.setUnitID ("A");
 		u1.setOwningPlayerID (1);
 		u1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u1.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		u1.setCombatSide (UnitCombatSideID.ATTACKER);
+		u1.setCombatHeading (1);
 		units.add (u1);
 
 		// Wrong location
 		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setStatus (UnitStatusID.ALIVE);
 		u2.setUnitID ("A");
 		u2.setOwningPlayerID (1);
 		u2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		u2.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		u2.setCombatSide (UnitCombatSideID.ATTACKER);
+		u2.setCombatHeading (1);
 		units.add (u2);
 
 		// No combat position
 		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setStatus (UnitStatusID.ALIVE);
 		u3.setUnitID ("A");
 		u3.setOwningPlayerID (1);
 		u3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u3.setCombatSide (UnitCombatSideID.ATTACKER);
+		u3.setCombatHeading (1);
 		units.add (u3);
 		
 		// Wrong player
 		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setStatus (UnitStatusID.ALIVE);
 		u4.setUnitID ("A");
 		u4.setOwningPlayerID (2);
 		u4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u4.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		u4.setCombatSide (UnitCombatSideID.ATTACKER);
+		u4.setCombatHeading (1);
 		units.add (u4);
 		
 		// Unit B that matches
 		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setStatus (UnitStatusID.ALIVE);
 		u5.setUnitID ("B");
 		u5.setOwningPlayerID (1);
 		u5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u5.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		u5.setCombatSide (UnitCombatSideID.ATTACKER);
+		u5.setCombatHeading (1);
 		units.add (u5);
 		
 		// Set up object to test
@@ -1911,6 +1959,8 @@ public final class TestUnitUtilsImpl
 		final MemoryUnit u1 = new MemoryUnit ();
 		u1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u1.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u1.setCombatSide (UnitCombatSideID.ATTACKER);
+		u1.setCombatHeading (1);
 		u1.setStatus (UnitStatusID.DEAD);
 		
 		units.add (u1);
@@ -1919,6 +1969,8 @@ public final class TestUnitUtilsImpl
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		u2.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u2.setCombatSide (UnitCombatSideID.ATTACKER);
+		u2.setCombatHeading (1);
 		u2.setStatus (UnitStatusID.ALIVE);
 		
 		units.add (u2);
@@ -1927,6 +1979,8 @@ public final class TestUnitUtilsImpl
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u3.setCombatPosition (new MapCoordinates2DEx (15, 7));
+		u3.setCombatSide (UnitCombatSideID.ATTACKER);
+		u3.setCombatHeading (1);
 		u3.setStatus (UnitStatusID.ALIVE);
 		
 		units.add (u3);
@@ -1943,6 +1997,8 @@ public final class TestUnitUtilsImpl
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u4.setCombatPosition (new MapCoordinates2DEx (14, 7));
+		u4.setCombatSide (UnitCombatSideID.ATTACKER);
+		u4.setCombatHeading (1);
 		u4.setStatus (UnitStatusID.ALIVE);
 		
 		units.add (u4);

@@ -627,7 +627,10 @@ until it is dead and disappears, then from the second, and so on).</xsd:document
 					<xsd:element minOccurs="1" maxOccurs="1" name="status" type="momimemsgs:unitStatusID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="wasSummonedInCombat" type="xsd:boolean" />
 
-					<!-- Combat -->
+					<!-- Combat
+The first 4 values are filled in for units currently participating in a combat (both client+server).
+For units who are in the movement stack, but not in the combat (i.e. in a naval combat, the units sitting in a transport who can't swim) have combatLocation and combatSide
+set, but combatPosition and combatHeading left null (server only). -->
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatHeading" type="map:mapDirection" />

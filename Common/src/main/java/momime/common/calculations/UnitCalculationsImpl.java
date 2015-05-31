@@ -767,7 +767,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		// Mark locations of units on both sides (including the unit being moved)
 		for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
-			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getCombatPosition () != null))
+			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
 			{
 				if (thisUnit.getOwningPlayerID () == unitBeingMoved.getOwningPlayerID ())
 					ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;

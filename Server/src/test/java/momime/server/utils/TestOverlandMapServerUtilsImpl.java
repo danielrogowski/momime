@@ -777,6 +777,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit1.setStatus (UnitStatusID.ALIVE);
 		unit1.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit1.setCombatHeading (1);
 		units.add (unit1);
 
 		// Dead
@@ -786,6 +787,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit2.setStatus (UnitStatusID.DEAD);
 		unit2.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit2.setCombatHeading (1);
 		units.add (unit2);
 		
 		// No combat position
@@ -794,6 +796,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit3.setUnitLocation (otherLocation);
 		unit3.setStatus (UnitStatusID.ALIVE);
 		unit3.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit3.setCombatHeading (1);
 		units.add (unit3);
 
 		// Wrong combat
@@ -803,6 +806,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit4.setStatus (UnitStatusID.ALIVE);
 		unit4.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit4.setCombatHeading (1);
 		units.add (unit4);
 
 		// No side
@@ -811,6 +815,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit5.setUnitLocation (otherLocation);
 		unit5.setStatus (UnitStatusID.ALIVE);
 		unit5.setCombatPosition (new MapCoordinates2DEx (0, 0));
+		unit5.setCombatHeading (1);
 		units.add (unit5);
 		
 		// Matches
@@ -820,6 +825,7 @@ public final class TestOverlandMapServerUtilsImpl
 		attackingUnit.setStatus (UnitStatusID.ALIVE);
 		attackingUnit.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		attackingUnit.setCombatSide (UnitCombatSideID.ATTACKER);
+		attackingUnit.setCombatHeading (1);
 		units.add (attackingUnit);
 
 		final MemoryUnit defendingUnit = new MemoryUnit ();
@@ -828,6 +834,7 @@ public final class TestOverlandMapServerUtilsImpl
 		defendingUnit.setStatus (UnitStatusID.ALIVE);
 		defendingUnit.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		defendingUnit.setCombatSide (UnitCombatSideID.DEFENDER);
+		defendingUnit.setCombatHeading (1);
 		units.add (defendingUnit);
 		
 		// Set up object to test

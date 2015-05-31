@@ -411,7 +411,13 @@ public final class UnitUtilsImpl implements UnitUtils
 		// Check if unit is in combat (available units can never be in combat)
 		final MapCoordinates3DEx combatLocation;
 		if (unit instanceof MemoryUnit)
-			combatLocation = (MapCoordinates3DEx) ((MemoryUnit) unit).getCombatLocation ();
+		{
+			final MemoryUnit mu = (MemoryUnit) unit;
+			if ((mu.getCombatLocation () != null) && (mu.getCombatPosition () != null) && (mu.getCombatHeading () != null) && (mu.getCombatSide () != null))
+				combatLocation = (MapCoordinates3DEx) mu.getCombatLocation ();
+			else
+				combatLocation = null;
+		}
 		else
 			combatLocation = null;
 
@@ -863,7 +869,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		log.trace ("Entering resetUnitCombatMovement: Player ID " + playerID + ", " + combatLocation);
 
 		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null))
+			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+					
 				thisUnit.setDoubleCombatMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitCombatMovement").getDoubleMovement ());
 
 		log.trace ("Exiting resetUnitCombatMovement");
@@ -988,8 +996,8 @@ public final class UnitUtilsImpl implements UnitUtils
 		{
 			final MemoryUnit thisUnit = iter.next ();
 
-			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) &&
-				(combatPosition.equals (thisUnit.getCombatPosition ())))
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (combatPosition.equals (thisUnit.getCombatPosition ())) &&
+				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
 
 				found = thisUnit;
 		}

@@ -74,6 +74,8 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			error = "Cannot find the unit you are trying to move";
 		else if (tu.getOwningPlayerID () != sender.getPlayerDescription ().getPlayerID ())
 			error = "The unit you are trying to move belongs to another player";
+		else if ((tu.getCombatLocation () == null) || (tu.getCombatPosition () == null) || (tu.getCombatHeading () == null) || (tu.getCombatSide () == null))
+			error = "The unit you are trying to move is not in a combat";
 		else if (tu.getStatus () != UnitStatusID.ALIVE)
 			error = "The unit you are trying to move is dead/dismissed";
 		else if ((tu.getDoubleCombatMovesLeft () == null) || (tu.getDoubleCombatMovesLeft () <= 0))

@@ -121,32 +121,57 @@
 					<li>All common spells working (including that the AI will cast them)
 					<li>Treasure rewards from capturing nodes/lairs/towers
 					<li>Overland mini-map
-					<li>Saving and reloading multiplayer games
 					<li>Some kind of cleanup of old saved game files so they don't sit on the server forever
 				</ul>
 			</td>
 		</tr>
 		<tr>
-			<td align=left>0.9.6.1</td>
-			<td align=left></td>
-			<td align=left><b>Planned features:</b>
+			<td align=left>0.9.6.2</td>
+			<td align=left>?? ?? 2015</td>
+			<td align=left>
+				<b>Planned features:</b>
 				<ul>
 					<li>Calculate position of national borders/friendly zones from each player's memory independantly, and allow viewing own border via a new checkbox on the Options screen
 					<li>AI calculates unit factory rating for its cities and thus can choose the best city to build units at
 					<li>AI calculates defence rating for its cities and thus knows the friendly zones in which it needs to build more units
 					<li>Special attacks now work correctly: First Strike, Armour Piercing, Poison, Breath, Thrown, Gaze, Touch attacks
 					<li>Generic handling of which unit abilities and spell effects negate each other, e.g. Negate First Strike negates First Strike, Poison Immunity negates Poison, Fire Immunity negates Immolation (and a whole lot more besides), Elemental Armour negates Resist Elements
-					<li>Ship movement working properly (e.g. moving back into cities), as well as loading and unloading
 					<li>Range penalties for non-magic range attacks; Long Range and Large Shield skills
 					<li>Combat tile border images, for wall of stone/darkness/fire
-					<li>Fix bug where if you try to take a unit stack off of patrol, sometimes part of the stack remains on patrol orders
+					<li>When a city is captured, any effort they'd put towards a construction project is now lost like the original MoM
 				</ul>
 			</td>
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.6</b></td>
-			<td align=left><b>22 May 2015</b></td>
+			<td align=left><b>Current version: 0.9.6.1</b></td>
+			<td align=left><b>31 May 2015</b></td>
+			<td align=left>
+				<b>Major new features:</b>
+				<ul>
+					<li>Loading and unloading units into transports (ships and floating islands)
+					<li>Naval combat handled correctly (swimming and flying units can help; land units cannot)
+					<li>Saving and reloading multiplayer games
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed joining multiplayer games
+					<li>Fixed bug where if you try to take a unit off of patrol, but move the mouse even a pixel between pressing and releasing, the patrol orders are not cancelled
+					<li>Fixed crash on help text page for Floating Island spell
+					<li>Fixed crash when starting a combat on a water tile
+				</ul>
+
+				<b>Fixed bugs in the editors:</b>
+				<ul>
+					<li>Fixed server and language editors, broken in 0.9.6 with error about deleted namespace http://momime/common/database/newgame
+					<li>Fixed movement rate preview on unit screen in the server editor (values were being calculated incorrectly)
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.6</b></td>
+			<td align=left>22 May 2015</td>
 			<td align=left>
 				<b>Major new features:</b>
 				<ul>

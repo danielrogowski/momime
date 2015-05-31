@@ -1940,7 +1940,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final UpdateOverlandMovementRemainingMessage movementRemainingMsg = new UpdateOverlandMovementRemainingMessage ();
 				doubleMovementRemaining = Integer.MAX_VALUE;
 
-				for (final MemoryUnit thisUnit : movingUnits)
+				// If entering a combat, ALL units have their movement zeroed, even ones sitting in transports; for regular movement only the transports' movementRemaining is updated
+				for (final MemoryUnit thisUnit : (combatInitiated ? allUnits : movingUnits))
 				{
 					final UpdateOverlandMovementRemainingUnit msgUnit = new UpdateOverlandMovementRemainingUnit ();
 					msgUnit.setUnitURN (thisUnit.getUnitURN ());

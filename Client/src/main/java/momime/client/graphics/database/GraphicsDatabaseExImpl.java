@@ -14,6 +14,7 @@ import momime.client.graphics.database.v0_9_6.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_6.CityViewElement;
 import momime.client.graphics.database.v0_9_6.CombatAction;
 import momime.client.graphics.database.v0_9_6.CombatAreaEffect;
+import momime.client.graphics.database.v0_9_6.CombatTileBorderImage;
 import momime.client.graphics.database.v0_9_6.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_6.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_6.MapFeature;
@@ -33,6 +34,7 @@ import momime.client.graphics.database.v0_9_6.UnitType;
 import momime.client.graphics.database.v0_9_6.WeaponGrade;
 import momime.client.graphics.database.v0_9_6.Wizard;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitSpecialOrder;
@@ -112,6 +114,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/** Map of combat area effect IDs to combat area effect XML objects */
 	private Map<String, CombatAreaEffectGfx> combatAreaEffectsMap;
+	
+	/** Map of borderID-directions-F/B to combat tile border image objects */
+	private Map<String, CombatTileBorderImageGfx> combatTileBorderImagesMap;
 	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationGfx> animationsMap;
@@ -272,6 +277,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		combatAreaEffectsMap = new HashMap<String, CombatAreaEffectGfx> ();
 		for (final CombatAreaEffect cae : getCombatAreaEffect ())
 			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), (CombatAreaEffectGfx) cae);
+		
+		// Create combat tile border images map
+		combatTileBorderImagesMap = new HashMap<String, CombatTileBorderImageGfx> ();
+		for (final CombatTileBorderImage ctb : getCombatTileBorderImage ())
+			combatTileBorderImagesMap.put (ctb.getCombatTileBorderID () + "-" + ctb.getDirections () + "-" + ctb.getFrontOrBack ().value (), (CombatTileBorderImageGfx) ctb);
 		
 		// Create play lists map
 		playListsMap = new HashMap<String, PlayListGfx> ();
@@ -692,6 +702,18 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 		return found;
 	}
+	
+    /**
+     * @param combatTileBorderID Combat tile border ID to search for
+     * @param directions Border directions to search for
+     * @param frontOrBack Whether to look for the front or back image
+     * @return Image details if found; null if not found
+     */
+	@Override
+    public final CombatTileBorderImageGfx findCombatTileBorderImages (final String combatTileBorderID, final String directions, final FrontOrBack frontOrBack)
+    {
+		return combatTileBorderImagesMap.get (combatTileBorderID + "-" + directions + "-" + frontOrBack.value ());
+    }
 	
 	/**
 	 * Note this isn't straightforward like the other lookups, since one citySizeID can have multiple entries in the graphics XML,

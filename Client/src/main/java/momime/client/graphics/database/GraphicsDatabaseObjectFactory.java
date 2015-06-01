@@ -7,6 +7,7 @@ import momime.client.graphics.database.v0_9_6.CityImage;
 import momime.client.graphics.database.v0_9_6.CityViewElement;
 import momime.client.graphics.database.v0_9_6.CombatAction;
 import momime.client.graphics.database.v0_9_6.CombatAreaEffect;
+import momime.client.graphics.database.v0_9_6.CombatTileBorderImage;
 import momime.client.graphics.database.v0_9_6.CombatTileFigurePositions;
 import momime.client.graphics.database.v0_9_6.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_6.FigurePositionsForFigureCount;
@@ -321,6 +322,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final UnitSpecialOrderImage createUnitSpecialOrderImage ()
 	{
 		return new UnitSpecialOrderImageGfx ();
+	}
+
+	/**
+	 * @return Custom extended Combat tile border image
+	 */
+	@Override
+	public final CombatTileBorderImage createCombatTileBorderImage ()
+	{
+		return new CombatTileBorderImageGfx ();
 	}
 
 	/**

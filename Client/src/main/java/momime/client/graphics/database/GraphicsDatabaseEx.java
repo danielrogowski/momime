@@ -3,6 +3,7 @@ package momime.client.graphics.database;
 import java.awt.Dimension;
 import java.util.List;
 
+import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitSpecialOrder;
@@ -197,6 +198,14 @@ public interface GraphicsDatabaseEx
 	 * @return List of all city view elemenets (backgrounds, buildings, spell effects and so on)
 	 */
     public List<CityViewElementGfx> getCityViewElements ();
+    
+    /**
+     * @param combatTileBorderID Combat tile border ID to search for
+     * @param directions Border directions to search for
+     * @param frontOrBack Whether to look for the front or back image
+     * @return Image details if found; null if not found
+     */
+    public CombatTileBorderImageGfx findCombatTileBorderImages (final String combatTileBorderID, final String directions, final FrontOrBack frontOrBack);
 	
 	/**
 	 * @param animationID Animation ID to search for

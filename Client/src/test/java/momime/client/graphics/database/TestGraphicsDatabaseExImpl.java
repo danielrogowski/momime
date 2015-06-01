@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitSpecialOrder;
@@ -884,6 +885,30 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findCombatAreaEffect ("CAE04", "testFindCombatAreaEffectID_NotExists");
+	}
+	
+	/**
+	 * Tests the findCombatTileBorderImages method
+	 */
+	@Test
+	public final void testFindCombatTileBorderImages ()
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatTileBorderImageGfx newCtb = new CombatTileBorderImageGfx ();
+			newCtb.setCombatTileBorderID ("CTB0" + n);
+			newCtb.setDirections ("1");
+			newCtb.setFrontOrBack (FrontOrBack.FRONT);
+			newCtb.setSortPosition (n);
+			db.getCombatTileBorderImage ().add (newCtb);
+		}
+		
+		db.buildMaps ();
+		
+		assertEquals (2, db.findCombatTileBorderImages ("CTB02", "1", FrontOrBack.FRONT).getSortPosition ());
+		assertNull (db.findCombatTileBorderImages ("CTB04", "1", FrontOrBack.FRONT));
+		assertNull (db.findCombatTileBorderImages ("CTB02", "1", FrontOrBack.BACK));
 	}
 	
 	/**

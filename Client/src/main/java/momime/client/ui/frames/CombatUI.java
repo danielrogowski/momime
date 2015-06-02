@@ -31,6 +31,7 @@ import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.AnimationGfx;
+import momime.client.graphics.database.CombatTileBorderImageGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
@@ -57,6 +58,7 @@ import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
@@ -68,6 +70,7 @@ import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
@@ -678,8 +681,7 @@ public final class CombatUI extends MomClientFrameUI
 							}
 					}
 				
-				// Draw unit that's part way through moving.
-				// Really we need to sort this to draw it at the same time as the other units its on the way 'y' row as, but this will do for now.
+				// Draw unit that's part way through moving
 				if (getUnitMoving () != null)
 					try
 					{
@@ -691,6 +693,37 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						log.error (e, e);
 					}
+				
+				// Draw tile borders, e.g. city walls
+				try
+				{
+					for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
+						for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
+						{
+							final MomCombatTile tile = getCombatTerrain ().getRow ().get (y).getCell ().get (x);
+							if (tile.getBorderDirections () != null)
+								for (final String combatTileBorderID : tile.getBorderID ())
+									
+									// May have separate front and back images, or not
+									for (final FrontOrBack frontOrBack : FrontOrBack.values ())
+									{
+										final CombatTileBorderImageGfx borderImage = getGraphicsDB ().findCombatTileBorderImages (combatTileBorderID, tile.getBorderDirections (), frontOrBack);
+										if (borderImage != null)
+										{
+											final BufferedImage image = getAnim ().loadImageOrAnimationFrame (borderImage.getStandardFile (), borderImage.getStandardAnimation (), false);
+											zOrderGraphics.drawImage (image,
+												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) - (2 * 2),
+												getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) - (16 * 2),
+												image.getWidth () * 2, image.getHeight () * 2,
+												(y * 50) + ((frontOrBack == FrontOrBack.BACK) ? (5 - borderImage.getSortPosition ()) : (44 + borderImage.getSortPosition ())));
+										}
+									}
+						}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 				
 				zOrderGraphics.draw (g);
 				

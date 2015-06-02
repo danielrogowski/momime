@@ -90,6 +90,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 /**
  * City screen, so you can view current buildings, production and civilians, examine
@@ -711,6 +712,7 @@ public final class CityViewUI extends MomClientFrameUI
 		contentPane.add (constructionProgressPanel, "frmCityConstructionProgress");
 		
 		// Set up the mini panel to what's being currently constructed
+		final ZOrderGraphicsImmediateImpl zOrderGraphics = new ZOrderGraphicsImmediateImpl ();
 		constructionPanel = new JPanel ()
 		{
 			/**
@@ -737,8 +739,9 @@ public final class CityViewUI extends MomClientFrameUI
 					// Draw unit
 					if (sampleUnit != null)
 					{
+						zOrderGraphics.setGraphics (g);
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
-						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, g, (constructionPanel.getWidth () - 60) / 2, 28, true, true);
+						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0);
 					}
 				}
 				catch (final Exception e)

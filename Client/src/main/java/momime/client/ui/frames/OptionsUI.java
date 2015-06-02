@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 /**
  * Options screen, for changing the values held in the config file.
@@ -284,6 +285,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		chooseLanguageLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (chooseLanguageLabel, "frmOptionsChooseLanguage");
 		
+		final ZOrderGraphicsImmediateImpl zOrderGraphics = new ZOrderGraphicsImmediateImpl ();
 		final JButton changeUnitCombatScaleButton = new JButton (changeUnitCombatScaleAction)
 		{
 			@Override
@@ -292,11 +294,13 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 				// Draw the sample units
 				try
 				{
+					zOrderGraphics.setGraphics (g);
+					
 					getUnitClientUtils ().drawUnitFigures (SAMPLE_UNIT_1_ID, SAMPLE_UNIT_1_UNIT_TYPE_ID, SAMPLE_UNIT_1_FIGURE_COUNT, SAMPLE_UNIT_1_FIGURE_COUNT,
-						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, g, 0, 26, SAMPLE_TILE_FILENAME, true);
+						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 0, 26, SAMPLE_TILE_FILENAME, true, 0);
 
 					getUnitClientUtils ().drawUnitFigures (SAMPLE_UNIT_2_ID, SAMPLE_UNIT_2_UNIT_TYPE_ID, SAMPLE_UNIT_2_FIGURE_COUNT, SAMPLE_UNIT_2_FIGURE_COUNT,
-						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, g, 65, 26, SAMPLE_TILE_FILENAME, true);
+						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 65, 26, SAMPLE_TILE_FILENAME, true, 0);
 				}
 				catch (final Exception e)
 				{

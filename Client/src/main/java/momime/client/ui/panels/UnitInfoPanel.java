@@ -77,6 +77,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 /**
  * Unit info screen; used both for displaying real units already on the map, or when changing
@@ -270,6 +271,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 		final Dimension currentlyConstructingImageSize = new Dimension (62, 60);
 		
+		final ZOrderGraphicsImmediateImpl zOrderGraphics = new ZOrderGraphicsImmediateImpl ();		
 		currentlyConstructingImage = new JPanel ()
 		{
 			/**
@@ -294,8 +296,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					// Draw unit
 					if (unit != null)
 					{
+						zOrderGraphics.setGraphics (g);
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, g, 1, 26, true, true);
+						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0);
 					}
 				}
 				catch (final Exception e)

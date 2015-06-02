@@ -1,6 +1,5 @@
 package momime.client.utils;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -51,6 +50,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.NdgUIUtils;
+import com.ndg.zorder.ZOrderGraphics;
 
 /**
  * Client side only helper methods for dealing with units
@@ -433,7 +433,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
-	 * @return Array of all figure positions in pixels; [0] element = x coord, [1] element = y coord, [2] element = multiplier to enlarge image by
+	 * @return Array of all figure positions in pixels; see CALC_UNIT_FIGURE_POSITIONS_COLUMN_ constants for what's stored in each column of the array
 	 * @throws IOException If there is a problem
 	 */
 	@Override
@@ -482,21 +482,23 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Show heroes with entourage of cavalry accompanying them
 		if ((figureMultiplier == 4) && (unit.getSecondaryUnitID () != null))
 			figureMultiplier++;
+
+		// This is to account that the unit's feet don't touch the bottom of the image
+		final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
 		
 		// Get the positions of the n times
-		final int [] [] result = new int [aliveFigureCount * figureMultiplier] [3];
+		final int [] [] result = new int [aliveFigureCount * figureMultiplier] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER+1];
 		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "calcUnitFigurePositions").findFigureCount (totalFigureCount * figureMultiplier, "drawUnitFigures");
 		for (int n = 0; n < (aliveFigureCount * figureMultiplier); n++)
 		{
 			final FigurePositionsForFigureCountGfx position = positions.findFigureNumber (n+1, "calcUnitFigurePositions");
 
-			// This is to account that the unit's feet don't touch the bottom of the image
-			final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
-			
 			// Generate coordinates
-			result [n] [0] = offsetX + (position.getTileRelativeX () * relativeScaleMultiplier);
-			result [n] [1] = offsetY + (position.getTileRelativeY () * relativeScaleMultiplier) + (fudgeY * unitImageMultiplier);
-			result [n] [2] = unitImageMultiplier;
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET] = (position.getTileRelativeX () * relativeScaleMultiplier);
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET] = (position.getTileRelativeY () * relativeScaleMultiplier) + (fudgeY * unitImageMultiplier);
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] = offsetX + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET];
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] = offsetY + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET];
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER] = unitImageMultiplier;
 		}
 		
 		return result;
@@ -517,17 +519,19 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param baseZOrder Z order for the top of the tile
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation) throws IOException
+		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
+		final int baseZOrder) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
 		{
 			final BufferedImage tileImage = getUtils ().loadImage (sampleTileImageFile);
-			g.drawImage (tileImage, offsetX, offsetY, tileImage.getWidth () * 2, tileImage.getHeight () * 2, null);
+			g.drawImage (tileImage, offsetX, offsetY, tileImage.getWidth () * 2, tileImage.getHeight () * 2, baseZOrder);
 		}
 		
 		// Get the main unit
@@ -562,15 +566,15 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			else
 				useImage = (n == 3) ? image : secondaryImage;
 			
-			// 3rd array element tells us what to multiply the image size up by
-			final int imageWidth = useImage.getWidth () * position [2];
-			final int imageHeight = useImage.getHeight () * position [2];
+			// Last array element tells us what to multiply the image size up by
+			final int imageWidth = useImage.getWidth () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
+			final int imageHeight = useImage.getHeight () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
 			g.drawImage (useImage,
-				position [0] - (imageWidth / 2),
-				position [1] - imageHeight,
-				imageWidth, imageHeight, null);
+				position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
+				position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight,
+				imageWidth, imageHeight, baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
 			
 			n++;
 		}
@@ -587,11 +591,12 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param baseZOrder Z order for the top of the tile
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final void drawUnitFigures (final AvailableUnit unit, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation) throws IOException
+	public final void drawUnitFigures (final AvailableUnit unit, final String combatActionID, final int direction, final ZOrderGraphics g,
+		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder) throws IOException
 	{
 		// Get total figures
 		final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "drawUnitFigures");
@@ -623,7 +628,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			
 			// Call other version now that we have all the necessary values
 			drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
-				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation);
+				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder);
 		}
 	}
 	

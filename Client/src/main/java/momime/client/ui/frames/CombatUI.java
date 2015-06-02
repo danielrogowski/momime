@@ -93,6 +93,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.JPanelWithConstantRepaints;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.zorder.ZOrderGraphicsImpl;
 
 /**
  * Combat UI.  Note there's only one of these - I played with the idea of allowing multiple combats going on at once (for simultaneous
@@ -100,6 +101,17 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
  * So the same Combat UI window is kept and reused, so it retains its position.
  * 
  * The Combat UI isn't modal, you have to be able to use the spell book and other windows.
+ * 
+ * The units, buildings and walls are all drawn with zOrders such that the correct images overlap each other, according to the following:
+ * Combat tile images are 16 pixels high, but these get doubled to 32 pixels high.
+ * combatTileUnitRelativeScale=1 Y values in the graphics XML run from 2..13 so need to be doubled (then 4..26)
+ * combatTileUnitRelativeScale=2 Y values in the graphics XML run from 2..29 so don't need to be doubled
+ * calcUnitFigurePositions adds between 4 and 6x2 to these values, so the possible range of 'excluding' Y values for each figure are 6..41
+ * So we add 2 to these to get the unit figure zOrders; each y tile getting 50 zOrder values within it, as follows:
+ * Base + 0 thru to Base + 4 = back walls (so e.g. wall of fire appears 'outside' wall of stone)
+ * Base + 5 = buildings/map features
+ * Base + 6 thru to Base + 43 = units
+ * Base + 45 thru to Base + 49 = front wall
  */
 public final class CombatUI extends MomClientFrameUI
 {
@@ -520,6 +532,8 @@ public final class CombatUI extends MomClientFrameUI
 		// The bottom half contains all the standard Swing controls such as all the buttons.  So there's nothing special here.
 		contentPane = new JPanel (new XmlLayoutManager (getCombatLayoutMain ()));
 		
+		final ZOrderGraphicsImpl zOrderGraphics = new ZOrderGraphicsImpl ();
+		
 		final JPanelWithConstantRepaints topPanel = new JPanelWithConstantRepaints ()
 		{
 			@Override
@@ -620,6 +634,8 @@ public final class CombatUI extends MomClientFrameUI
 					}
 				
 				// Draw units at the top first and work downwards
+				zOrderGraphics.clear ();
+				
 				for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
 					for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
 					{
@@ -652,9 +668,9 @@ public final class CombatUI extends MomClientFrameUI
 									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
 								
 								// Draw unit
-								getUnitClientUtils ().drawUnitFigures (unit, combatActionID, unit.getCombatHeading (), g,
+								getUnitClientUtils ().drawUnitFigures (unit, combatActionID, unit.getCombatHeading (), zOrderGraphics,
 									getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false);
+									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50);
 							}
 							catch (final Exception e)
 							{
@@ -668,13 +684,15 @@ public final class CombatUI extends MomClientFrameUI
 					try
 					{
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
-						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), g,
-							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false);
+						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
+							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder ());
 					}
 					catch (final Exception e)
 					{
 						log.error (e, e);
 					}
+				
+				zOrderGraphics.draw (g);
 				
 				// Draw ranged attack missiles?
 				if ((getAttackAnim () != null) && (getAttackAnim ().getCurrent () != null) &&

@@ -81,6 +81,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/** Current position of this unit on the combat map, in pixels */
 	private int currentY;
 	
+	/** Current base zOrder of this unit on the combat map */
+	private int currentZOrder;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -110,6 +113,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		currentX = getCombatMapBitmapGenerator ().combatCoordinatesX (getMoveFrom ().getX (), getMoveFrom ().getY (), combatMapTileSet);
 		currentY = getCombatMapBitmapGenerator ().combatCoordinatesY (getMoveFrom ().getX (), getMoveFrom ().getY (), combatMapTileSet);
+		currentZOrder = getMoveFrom ().getY ();
 		
 		// Work the duration out once only
 		duration = getUnitClientUtils ().calculateWalkTiming (unit) * 0.8d;
@@ -164,6 +168,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		// Work out current position
 		currentX = moveFromX + (int) ((moveToX - moveFromX) * ratio);
 		currentY = moveFromY + (int) ((moveToY - moveFromY) * ratio);
+		currentZOrder = (getMoveFrom ().getY () * 50) + (int) ((moveTo.getY () - getMoveFrom ().getY ()) * ratio * 50d);
 	}
 	
 	/**
@@ -369,5 +374,13 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	public final int getCurrentY ()
 	{
 		return currentY;
+	}
+
+	/**
+	 * @return Current base zOrder of this unit on the combat map
+	 */
+	public final int getCurrentZOrder ()
+	{
+		return currentZOrder;
 	}
 }

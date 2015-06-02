@@ -1,6 +1,5 @@
 package momime.client.utils;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -11,14 +10,31 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.servertoclient.KillUnitActionID;
+
+import com.ndg.zorder.ZOrderGraphics;
 
 /**
  * Client side only helper methods for dealing with units
  */
 public interface UnitClientUtils
 {
+	/** Array column index in output from calcUnitFigurePositions for the x coord including the offsetX value */
+	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET = 0;
+	
+	/** Array column index in output from calcUnitFigurePositions for the y coord including the offsetY value */
+	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET = 1;
+	
+	/** Array column index in output from calcUnitFigurePositions for the x coord excluding the offsetX value */
+	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET = 2;
+	
+	/** Array column index in output from calcUnitFigurePositions for the y coord excluding the offsetY value */
+	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET = 3;
+	
+	/** Array column index in output from calcUnitFigurePositions for the size to multiply the unit images up by */
+	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER = 4;
+	
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified
 	 * to update themselves when the language changes.  It is the responsibility of whatever is calling this method to register itself to be
@@ -103,7 +119,7 @@ public interface UnitClientUtils
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
-	 * @return Array of all figure positions in pixels; [0] element = x coord, [1] element = y coord, [2] element = multiplier to enlarge image by
+	 * @return Array of all figure positions in pixels; see CALC_UNIT_FIGURE_POSITIONS_COLUMN_ constants for what's stored in each column of the array
 	 * @throws IOException If there is a problem
 	 */
 	public int [] [] calcUnitFigurePositions (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount,
@@ -124,10 +140,12 @@ public interface UnitClientUtils
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param baseZOrder Z order for the top of the tile
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation) throws IOException;
+		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
+		final int baseZOrder) throws IOException;
 
 	/**
 	 * Version which derives most of the values from an existing unit object.
@@ -140,10 +158,11 @@ public interface UnitClientUtils
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param baseZOrder Z order for the top of the tile
 	 * @throws IOException If there is a problem
 	 */
-	public void drawUnitFigures (final AvailableUnit unit, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation) throws IOException;
+	public void drawUnitFigures (final AvailableUnit unit, final String combatActionID, final int direction, final ZOrderGraphics g,
+		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder) throws IOException;
 
 	/**
 	 * When we 4x the number of units in a tile, if they still take the same amount of time to walk from tile to tile, it looks

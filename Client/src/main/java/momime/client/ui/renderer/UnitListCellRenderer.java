@@ -25,6 +25,8 @@ import momime.common.messages.AvailableUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+
 /**
  * Renderer for drawing the name and figures of a unit in a list cell
  */
@@ -72,6 +74,8 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 		final JLabel textLabel = new JLabel ();
 		container.add (textLabel, BorderLayout.WEST);
 
+		final ZOrderGraphicsImmediateImpl zOrderGraphics = new ZOrderGraphicsImmediateImpl (); 
+		
 		try
 		{
 			// Set up the panel
@@ -82,8 +86,9 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 				{
 					try
 					{
+						zOrderGraphics.setGraphics (g);
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, g, 0, PANEL_SIZE.height - 32, true, true);
+						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0);
 					}
 					catch (final Exception e)
 					{

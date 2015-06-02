@@ -367,9 +367,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				current = new int [start.length] [3];
 				for (int n = 0; n < start.length; n++)
 				{
-					current [n] [0] = start [n] [0] + (int) ((endX - start [n] [0]) * ratio);
-					current [n] [1] = start [n] [1] + (int) ((endY - start [n] [1]) * ratio);
-					current [n] [2] = start [n] [2];
+					current [n] [0] = start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] + (int) ((endX - start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET]) * ratio);
+					current [n] [1] = start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] + (int) ((endY - start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET]) * ratio);
+					current [n] [2] = start [n] [UnitClientUtils.CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
 				}
 			}
 			

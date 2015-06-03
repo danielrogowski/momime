@@ -2,8 +2,12 @@ package momime.client.calculations;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
 
+import momime.client.graphics.database.SmoothedTileGfx;
+import momime.client.graphics.database.SmoothedTileTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
+import momime.common.database.CombatMapLayerID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfCombatTiles;
 
@@ -54,4 +58,14 @@ public interface CombatMapBitmapGenerator
 	 * @return Top edge of tile in pixel coordinates
 	 */
 	public int combatCoordinatesY (final int x, final int y, final TileSetGfx combatMapTileSet);
+
+	/**
+	 * @return Smoothed tile types to display at every map cell
+	 */
+	public Map<CombatMapLayerID, SmoothedTileTypeGfx [] []> getSmoothedTileTypes ();
+
+	/**
+	 * @return Smoothed tiles to display at every map cell
+	 */	
+	public Map<CombatMapLayerID, SmoothedTileGfx [] []> getSmoothedTiles ();
 }

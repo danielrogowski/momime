@@ -34,6 +34,8 @@ import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.CombatTileBorderImageGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.SmoothedTileGfx;
+import momime.client.graphics.database.SmoothedTileTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.WizardGfx;
 import momime.client.language.database.MapFeatureLang;
@@ -57,6 +59,7 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
@@ -693,6 +696,41 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						log.error (e, e);
 					}
+				
+				// Draw building layer - this is basically copied from CombatMapBitmapGeneratorImpl, except that it only generates 1 frame
+				try
+				{
+					for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
+						for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
+						{
+							final SmoothedTileTypeGfx [] [] smoothedTileTypesLayer = getCombatMapBitmapGenerator ().getSmoothedTileTypes ().get (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
+							final SmoothedTileGfx [] [] smoothedTilesLayer = getCombatMapBitmapGenerator ().getSmoothedTiles ().get (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
+							
+							// Terrain
+							final SmoothedTileGfx tile = smoothedTilesLayer [y] [x];
+							if ((tile != null) && ((tile.getTileFile () != null) || (tile.getTileAnimation () != null)))
+							{
+								final BufferedImage image = getAnim ().loadImageOrAnimationFrame (tile.getTileFile (), tile.getTileAnimation (), false);
+									
+								// Offset image - this is to offset things like the nature node tree and the wizard's fortress so the base sits in the middle of the tile
+								int xpos = getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet);
+								int ypos = getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet);
+								
+								if (smoothedTileTypesLayer [y] [x].getTileOffsetX () != null)
+									xpos = xpos + (smoothedTileTypesLayer [y] [x].getTileOffsetX () * 2);
+								
+								if (smoothedTileTypesLayer [y] [x].getTileOffsetY () != null)
+									ypos = ypos + (smoothedTileTypesLayer [y] [x].getTileOffsetY () * 2);
+								
+								// Draw images
+								zOrderGraphics.drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, (y * 50) + 5);
+							}
+						}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 				
 				// Draw tile borders, e.g. city walls
 				try

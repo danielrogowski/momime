@@ -209,7 +209,8 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 			g [frameNo] = combatMapBitmaps [frameNo].createGraphics ();
 		}
 		
-		for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+		// Terrain and road are static; building layer is drawn on the fly so buildings can get the correct zOrders relative to units moving in front of/behind them
+		for (final CombatMapLayerID layer : new CombatMapLayerID [] {CombatMapLayerID.TERRAIN, CombatMapLayerID.ROAD})
 		{
 			final SmoothedTileTypeGfx [] [] smoothedTileTypesLayer = smoothedTileTypes.get (layer);
 			final SmoothedTileGfx [] [] smoothedTilesLayer = smoothedTiles.get (layer);
@@ -403,5 +404,23 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	public final void setClientConfig (final MomImeClientConfigEx config)
 	{
 		clientConfig = config;
+	}
+
+	/**
+	 * @return Smoothed tile types to display at every map cell
+	 */
+	@Override
+	public final Map<CombatMapLayerID, SmoothedTileTypeGfx [] []> getSmoothedTileTypes ()
+	{
+		return smoothedTileTypes;
+	}
+
+	/**
+	 * @return Smoothed tiles to display at every map cell
+	 */	
+	@Override
+	public final Map<CombatMapLayerID, SmoothedTileGfx [] []> getSmoothedTiles ()
+	{
+		return smoothedTiles;
 	}
 }

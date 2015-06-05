@@ -25,6 +25,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -89,6 +90,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 	/** Spell processing */
 	private SpellProcessing spellProcessing;
+
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -264,6 +268,16 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(gc.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
 					
 					msg = "The terrain at your chosen location is impassable so you cannot summon a unit there.";						
+			}
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
+			{
+				// Check we haven't already cast this enchantment already
+				final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (),
+					spell, player.getPlayerDescription ().getPlayerID (), combatLocation);
+				if (combatAreaEffectIDs == null)
+					msg = "This combat enchantment spell has no possible combat area effect IDs defined";
+				else if (combatAreaEffectIDs.size () == 0)
+					msg = "You have already cast all possible effects of this combat enchantment";
 			}
 		}
 		
@@ -571,5 +585,21 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setSpellProcessing (final SpellProcessing proc)
 	{
 		spellProcessing = proc;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
 	}
 }

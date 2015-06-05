@@ -516,6 +516,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="spellCalculations" ref="spellCalculations" />
 		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

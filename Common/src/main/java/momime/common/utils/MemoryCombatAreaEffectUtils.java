@@ -3,6 +3,7 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.MemoryCombatAreaEffect;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -48,4 +49,17 @@ public interface MemoryCombatAreaEffectUtils
 	 */
 	public void removeCombatAreaEffectURN (final int combatAreaEffectURN, final List<MemoryCombatAreaEffect> CAEs)
 		throws RecordNotFoundException;
+	
+	/**
+	 * When trying to cast a spell in combat, this will make a list of all the combat enhancement effect IDs for that spell that aren't already in effect in that location.
+	 * This is to stop casting spells like Prayer twice.
+	 * 
+	 * @param CAEs List of CAEs to search through
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param combatLocation Location of the combat
+	 * @return Null = this spell has no combatAreaEffectIDs defined; empty list = has effect(s) defined but they're all cast on this combat already; non-empty list = list of effects that can still be cast
+	 */
+	public List<String> listCombatEffectsNotYetCastAtLocation (final List<MemoryCombatAreaEffect> CAEs, final Spell spell,
+		final int castingPlayerID, final MapCoordinates3DEx combatLocation);
 }

@@ -303,15 +303,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Combat enchantments
 		if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 		{
-			// Pick an actual effect at random
-			if (spell.getSpellHasCombatEffect ().size () > 0)
-			{
-				final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
-				log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
+			// What effects doesn't the combat already have
+			final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (),
+				spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation);
+
+			if ((combatAreaEffectIDs == null) || (combatAreaEffectIDs.size () == 0))
+				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " in combat " + combatLocation +
+					" but combatAreaEffectIDs list came back empty");
+			
+			final String combatAreaEffectID = combatAreaEffectIDs.get (getRandomUtils ().nextInt (combatAreaEffectIDs.size ()));
+			log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
 				
-				getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
-					spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-			}
+			getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
+				spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 		}
 		
 		// Unit enchantments or curses
@@ -323,7 +328,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 				spell, castingPlayer.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
 			
-			if (unitSpellEffectIDs.size () == 0)
+			if ((unitSpellEffectIDs == null) || (unitSpellEffectIDs.size () == 0))
 				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
 					" but unitSpellEffectIDs list came back empty");
 			

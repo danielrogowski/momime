@@ -33,6 +33,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -1158,7 +1159,7 @@ public final class TestSpellQueueingImpl
 	}
 
 	/**
-	 * Tests successfully casting a combat enchantment (these have no section-specific validation)
+	 * Tests successfully casting a combat enchantment
 	 * @throws Exception If there is a problem
 	 */
 	@Test
@@ -1254,6 +1255,12 @@ public final class TestSpellQueueingImpl
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
+		// Possible effects
+		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
+		final List<String> possibleEffectIDs = new ArrayList<String> ();
+		possibleEffectIDs.add (null);
+		when (caeUtils.listCombatEffectsNotYetCastAtLocation (trueMap.getCombatAreaEffect (), spell, attackingPlayer.getPlayerDescription ().getPlayerID (), combatLocation)).thenReturn (possibleEffectIDs);
+		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
 		
@@ -1264,6 +1271,7 @@ public final class TestSpellQueueingImpl
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setSpellProcessing (spellProcessing);
+		proc.setMemoryCombatAreaEffectUtils (caeUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, "SP001", combatLocation, null, null, null, mom);

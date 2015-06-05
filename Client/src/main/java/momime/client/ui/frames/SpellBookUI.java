@@ -57,6 +57,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -118,6 +119,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Variable MP popup */
 	private VariableManaUI variableManaUI;	
+	
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
 	private final static int SPELLS_PER_PAGE = 4;
@@ -615,6 +619,26 @@ public final class SpellBookUI extends MomClientFrameUI
 												}
 											}
 											
+											// Check combat enchantments have some available effects left
+											else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.COMBAT_ENCHANTMENTS))
+											{
+												final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation
+													(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+													spell, getClient ().getOurPlayerID (), getCombatUI ().getCombatLocation ());
+												
+												proceed = ((combatAreaEffectIDs != null) && (combatAreaEffectIDs.size () > 0));
+												if (!proceed)
+												{
+													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+													msg.setTitleLanguageCategoryID ("frmSpellBook");
+													msg.setTitleLanguageEntryID ("CastSpellTitle");
+													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook",
+														(combatAreaEffectIDs == null) ? "NoCombatSpellEffectIDsDefined" : "AlreadyHasAllPossibleCombatSpellEffects").replaceAll
+														("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
+		
+													msg.setVisible (true);
+												}
+											}
 											else
 												proceed = true;
 										}
@@ -1218,6 +1242,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setVariableManaUI (final VariableManaUI ui)
 	{
 		variableManaUI = ui;
+	}
+	
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
 	}
 	
 	/**

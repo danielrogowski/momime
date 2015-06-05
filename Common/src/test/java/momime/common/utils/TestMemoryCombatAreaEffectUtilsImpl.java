@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellHasCombatEffect;
 import momime.common.messages.MemoryCombatAreaEffect;
 
 import org.junit.Test;
@@ -184,5 +186,77 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.removeCombatAreaEffectURN (4, combatAreaEffects);
+	}
+
+	/**
+	 * Tests the listCombatEffectsNotYetCastAtLocation method
+	 */
+	@Test
+	public final void testListCombatEffectsNotYetCastAtLocation ()
+	{
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
+		final List<MemoryCombatAreaEffect> CAEs = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+		
+		// Spell has no citySpellEffectIDs defined
+		assertNull (utils.listCombatEffectsNotYetCastAtLocation (CAEs, spell, 1, combatLocation));
+		
+		// Spell with exactly one citySpellEffectID, that isn't cast yet
+		final SpellHasCombatEffect effectA = new SpellHasCombatEffect ();
+		effectA.setCombatAreaEffectID ("A");
+		spell.getSpellHasCombatEffect ().add (effectA);
+		
+		final List<String> listOne = utils.listCombatEffectsNotYetCastAtLocation (CAEs, spell, 1, combatLocation);
+		assertEquals (1, listOne.size ());
+		assertEquals ("A", listOne.get (0));
+
+		// Spell with exactly one citySpellEffectID, that is already cast yet
+		final MemoryCombatAreaEffect existingEffectA = new MemoryCombatAreaEffect ();
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setCombatAreaEffectID ("A");
+		existingEffectA.setMapLocation (new MapCoordinates3DEx (20, 10, 1));
+		CAEs.add (existingEffectA);
+		
+		final List<String> listZero = utils.listCombatEffectsNotYetCastAtLocation (CAEs, spell, 1, combatLocation);
+		assertEquals (0, listZero.size ());
+		
+		// Add three more effects
+		for (final String effectID : new String [] {"B", "C", "D"})
+		{
+			final SpellHasCombatEffect effectB = new SpellHasCombatEffect ();
+			effectB.setCombatAreaEffectID (effectID);
+			spell.getSpellHasCombatEffect ().add (effectB);
+		}
+		
+		// One matches
+		final MemoryCombatAreaEffect existingEffectB = new MemoryCombatAreaEffect ();
+		existingEffectB.setCastingPlayerID (1);
+		existingEffectB.setCombatAreaEffectID ("B");
+		existingEffectB.setMapLocation (new MapCoordinates3DEx (20, 10, 1));
+		CAEs.add (existingEffectB);
+		
+		// One for wrong player
+		final MemoryCombatAreaEffect existingEffectC = new MemoryCombatAreaEffect ();
+		existingEffectC.setCastingPlayerID (2);
+		existingEffectC.setCombatAreaEffectID ("C");
+		existingEffectC.setMapLocation (new MapCoordinates3DEx (20, 10, 1));
+		CAEs.add (existingEffectC);
+		
+		// One in wrong location
+		final MemoryCombatAreaEffect existingEffectD = new MemoryCombatAreaEffect ();
+		existingEffectD.setCastingPlayerID (1);
+		existingEffectD.setCombatAreaEffectID ("D");
+		existingEffectD.setMapLocation (new MapCoordinates3DEx (20, 11, 1));
+		CAEs.add (existingEffectD);
+		
+		// All later two effect should still be listed
+		final List<String> listThree = utils.listCombatEffectsNotYetCastAtLocation (CAEs, spell, 1, combatLocation);
+		assertEquals (2, listThree.size ());
+		assertEquals ("C", listThree.get (0));
+		assertEquals ("D", listThree.get (1));
 	}
 }

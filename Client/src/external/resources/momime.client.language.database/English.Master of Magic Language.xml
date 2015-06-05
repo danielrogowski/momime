@@ -5704,6 +5704,12 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="NoValidTargets">
 			<languageEntryText>There are no valid targets for a SPELL_NAME spell.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="NoCombatSpellEffectIDsDefined">
+			<languageEntryText>Definition for spell SPELL_NAME does not specify any combat effects.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AlreadyHasAllPossibleCombatSpellEffects">
+			<languageEntryText>You already have an active SPELL_NAME spell in this combat.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title">

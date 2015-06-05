@@ -19653,6 +19653,8 @@
 		<languageEntry languageEntryID="CastSpellTitle" />
 		<languageEntry languageEntryID="RequestCastExistingOverlandEnchantment" />
 		<languageEntry languageEntryID="NoValidTargets" />
+		<languageEntry languageEntryID="NoCombatSpellEffectIDsDefined" />
+		<languageEntry languageEntryID="AlreadyHasAllPossibleCombatSpellEffects" />
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title" />

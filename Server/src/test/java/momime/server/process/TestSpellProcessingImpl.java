@@ -692,12 +692,13 @@ public final class TestSpellProcessingImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		// It grants one of 5 possible effects
+		final List<String> combatAreaEffectIDs = new ArrayList<String> ();
 		for (int n = 1; n <= 5; n++)
-		{
-			final SpellHasCombatEffect effect = new SpellHasCombatEffect ();
-			effect.setCombatAreaEffectID ("CSE00" + n);
-			spell.getSpellHasCombatEffect ().add (effect);
-		}
+			combatAreaEffectIDs.add ("CSE00" + n);
+		
+		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
+		when (caeUtils.listCombatEffectsNotYetCastAtLocation (trueMap.getCombatAreaEffect (), spell,
+			7, new MapCoordinates3DEx (15, 25, 1))).thenReturn (combatAreaEffectIDs);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
@@ -742,6 +743,7 @@ public final class TestSpellProcessingImpl
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setServerResourceCalculations (serverResourceCalc);
+		proc.setMemoryCombatAreaEffectUtils (caeUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);

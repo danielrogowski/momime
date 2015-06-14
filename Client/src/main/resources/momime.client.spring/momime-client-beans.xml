@@ -412,6 +412,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellBookUI" ref="spellBookUI" />
 	</bean>
 
+	<bean id="updateCombatMapMessage" class="momime.client.messages.process.UpdateCombatMapMessageImpl" scope="prototype">
+		<property name="combatUI" ref="combatUI" />
+	</bean>
+
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />

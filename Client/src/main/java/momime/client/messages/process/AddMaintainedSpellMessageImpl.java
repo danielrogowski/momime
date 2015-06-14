@@ -117,12 +117,13 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				getNewTurnMessagesUI ().languageChanged ();
 			}
 			
-			// If we cast it OR its our city, then display a popup window for it
+			// If we cast it OR its our city, then display a popup window for it, as long as it isn't in combat
 			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getMaintainedSpell ().getCityLocation ().getZ ()).getRow ().get (getMaintainedSpell ().getCityLocation ().getY ()).getCell ().get (getMaintainedSpell ().getCityLocation ().getX ()).getCityData ();
 			
-			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
-				((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID ().equals (getClient ().getOurPlayerID ()))))
+			if ((!getMaintainedSpell ().isCastInCombat ()) &&
+				((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
+				((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID ().equals (getClient ().getOurPlayerID ())))))
 			{
 				animatedByOtherFrame = true;
 				

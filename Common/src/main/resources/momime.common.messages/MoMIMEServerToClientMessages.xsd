@@ -520,8 +520,25 @@ details of all the units in the combat and the terrain, so is probably the most 
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="combatTerrain" type="momimemsgs:mapAreaOfCombatTiles" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatTerrain" type="momimemsgs:mapAreaOfCombatTiles" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPlacement" type="momimestoc:startCombatMessageUnit" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="updateCombatMapMessage">
+	    <xsd:annotation>
+			<xsd:documentation>Server sends this to the client when the combat terrain changes while a combat is in progress,
+e.g. as a result of casting Wall of Fire/Darkness in combat.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatTerrain" type="momimemsgs:mapAreaOfCombatTiles" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

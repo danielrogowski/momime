@@ -315,6 +315,37 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	}
 
 	/**
+	 * Many elements of a combat map are random, e.g. placement of ridges, dark areas, rocks and trees.  So when a city enchantment
+	 * (Wall of Fire/Darkness) is cast during a combat, we want to regenerate only the tile borders to show the new enchantment
+	 * without regenerating the random elements of the combat map.
+	 *  
+	 * @param map Map to renegerate the tile borders of
+	 * @param db Server database XML
+	 * @param trueTerrain Details of the overland map, buildings and so on
+	 * @param combatMapLocation The location that the map is being regenerated for (we need this in order to look for buildings, etc)
+	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
+	 */
+	@Override
+	public final void regenerateCombatTileBorders (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering regenerateCombatTileBorders");
+		
+		// Scrub out all the old borders
+		for (final MapRowOfCombatTiles row : map.getRow ())
+			for (final MomCombatTile tile : row.getCell ())
+			{
+				tile.getBorderID ().clear ();
+				tile.setBorderDirections (null);
+			}
+		
+		// Technically this re-places tiles set from map elements too, but since they're all fixed there's no real harm in doing so
+		placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+		
+		log.trace ("Exiting regenerateCombatTileBorders");
+	}
+
+	/**
 	 * @return MemoryBuilding utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()

@@ -27,6 +27,7 @@ import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -41,6 +42,7 @@ import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
@@ -101,6 +103,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Damage processor */
 	private DamageProcessor damageProcessor;
+	
+	/** Map generator */
+	private CombatMapGenerator combatMapGenerator;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -337,6 +342,41 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 				castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
 				true, null, null, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+		}
+		
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+		{
+			// What effects doesn't the city already have
+			final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation);
+			
+			if ((citySpellEffectIDs == null) || (citySpellEffectIDs.size () == 0))
+				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " at location " + combatLocation +
+					" but citySpellEffectIDs list came back empty");
+			
+			// Pick an actual effect at random
+			final String citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
+				castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null,
+				true, combatLocation, citySpellEffectID, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			
+			// The new enchantment presumably requires the combat map to be regenerated so we can see it
+			final ServerGridCellEx mc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			
+			getCombatMapGenerator ().regenerateCombatTileBorders (mc.getCombatMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+			
+			// Send the updated map
+			final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
+			msg.setCombatLocation (combatLocation);
+			msg.setCombatTerrain (mc.getCombatMap ());
+			
+			if (attackingPlayer.getPlayerDescription ().isHuman ())
+				attackingPlayer.getConnection ().sendMessageToClient (msg);
+
+			if (defendingPlayer.getPlayerDescription ().isHuman ())
+				defendingPlayer.getConnection ().sendMessageToClient (msg);
 		}
 		
 		// Combat summons
@@ -691,5 +731,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setDamageProcessor (final DamageProcessor proc)
 	{
 		damageProcessor = proc;
+	}
+
+	/**
+	 * @return Map generator
+	 */
+	public final CombatMapGenerator getCombatMapGenerator ()
+	{
+		return combatMapGenerator;
+	}
+
+	/**
+	 * @param gen Map generator
+	 */
+	public final void setCombatMapGenerator (final CombatMapGenerator gen)
+	{
+		combatMapGenerator = gen;
 	}
 }

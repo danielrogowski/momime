@@ -251,6 +251,22 @@ public final class SpellQueueingImpl implements SpellQueueing
 					}
 				}
 			}
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+			{
+				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
+				// Verify that the city the combat is being played at is a valid target for city enchantments/curses
+				final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					spell, player.getPlayerDescription ().getPlayerID (), combatLocation,
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+				
+				if (validTarget != TargetSpellResult.VALID_TARGET)
+				{
+					// Using the enum name isn't that great, but the client will already have
+					// performed this validation so should never see any message generated here anyway
+					msg = "This city spell cannot be cast in this combat location for reason " + validTarget;
+				}
+			}
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 			{
 				// Verify for summoning spells that there isn't a unit in that location

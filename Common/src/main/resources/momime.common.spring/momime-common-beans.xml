@@ -126,6 +126,7 @@
     			<value>momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage</value>
     			<value>momime.common.messages.servertoclient.SpellResearchChangedMessage</value>
     			<value>momime.common.messages.servertoclient.StartCombatMessage</value>
+    			<value>momime.common.messages.servertoclient.UpdateCombatMapMessage</value>
     			<value>momime.common.messages.servertoclient.StartGameMessage</value>
     			<value>momime.common.messages.servertoclient.StartSimultaneousTurnMessage</value>
     			<value>momime.common.messages.servertoclient.TaxRateChangedMessage</value>

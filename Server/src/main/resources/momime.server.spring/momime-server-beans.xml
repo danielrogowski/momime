@@ -502,6 +502,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
+		<property name="combatMapGenerator" ref="combatMapGenerator" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

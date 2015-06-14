@@ -51,6 +51,7 @@ import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
+import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
@@ -117,6 +118,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final StartCombatMessage createStartCombatMessage ()
 	{
 		return getFactory ().createStartCombatMessage ();
+	}
+	
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final UpdateCombatMapMessage createUpdateCombatMapMessage ()
+	{
+		return getFactory ().createUpdateCombatMapMessage ();
 	}
 
 	/**

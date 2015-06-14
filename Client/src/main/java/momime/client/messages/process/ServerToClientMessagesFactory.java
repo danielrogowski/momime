@@ -37,6 +37,11 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
+	public UpdateCombatMapMessageImpl createUpdateCombatMapMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
 	public PendingMovementMessageImpl createPendingMovementMessage ();
 
 	/**

@@ -162,7 +162,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="requestMoveOverlandUnitStackMessage" class="momime.server.messages.process.RequestMoveOverlandUnitStackMessageImpl" scope="prototype">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 	</bean>
 	
 	<bean id="alchemyMessage" class="momime.server.messages.process.AlchemyMessageImpl" scope="prototype">
@@ -457,6 +457,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
@@ -523,6 +524,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="damageCalculator" ref="damageCalculator" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
@@ -538,6 +540,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
@@ -614,8 +617,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
+	<bean id="fogOfWarMidTurnVisibility" class="momime.server.fogofwar.FogOfWarMidTurnVisibilityImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="fogOfWarCalculations" ref="fogOfWarCalculations" />
+	</bean>
+
 	<bean id="fogOfWarMidTurnChanges" class="momime.server.fogofwar.FogOfWarMidTurnChangesImpl">
 		<property name="fogOfWarCalculations" ref="fogOfWarCalculations" />
+		<property name="fogOfWarMidTurnVisibility" ref="fogOfWarMidTurnVisibility" />
 		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -623,12 +632,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+	</bean>
+
+	<bean id="fogOfWarMidTurnMultiChanges" class="momime.server.fogofwar.FogOfWarMidTurnMultiChangesImpl">
+		<property name="fogOfWarCalculations" ref="fogOfWarCalculations" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
-		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />

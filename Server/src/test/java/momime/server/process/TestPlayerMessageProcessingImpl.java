@@ -31,7 +31,7 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSvr;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import org.apache.commons.logging.LogFactory;
@@ -370,11 +370,11 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up test object
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
 		proc.setUnitUtils (unitUtils);
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		
 		// Run method
 		proc.continueMovement (0, mom);
@@ -456,11 +456,11 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up test object
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
 		proc.setUnitUtils (unitUtils);
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
@@ -550,7 +550,7 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 
 		// Needed for setting up units
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		// Combat move
@@ -608,7 +608,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Set up test object
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
 		
 		// Run method
@@ -666,7 +666,7 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 
 		// Needed for setting up units
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		// Combat move
@@ -734,7 +734,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Set up test object
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
 		proc.setRandomUtils (random);
 		
@@ -800,7 +800,7 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 
 		// Needed for setting up units
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		// Combat move
@@ -868,7 +868,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Set up test object
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
 		proc.setRandomUtils (random);
 		
@@ -957,7 +957,7 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Needed for setting up units
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Unreachable
@@ -979,7 +979,7 @@ public final class TestPlayerMessageProcessingImpl
 
 		// Set up test object
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
 		
 		// Run method
@@ -1022,7 +1022,7 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Needed for setting up units
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Normal move
@@ -1045,7 +1045,7 @@ public final class TestPlayerMessageProcessingImpl
 
 		// Set up test object
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
 		
 		// Run method
@@ -1095,7 +1095,7 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Needed for setting up units
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// 1st Combat
@@ -1177,7 +1177,7 @@ public final class TestPlayerMessageProcessingImpl
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
 		
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
 		proc.setRandomUtils (random);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
@@ -1244,7 +1244,7 @@ public final class TestPlayerMessageProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Needed for setting up units
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// 1st Combat - attacking the 2nd stack
@@ -1322,7 +1322,7 @@ public final class TestPlayerMessageProcessingImpl
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
 		
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
 		proc.setRandomUtils (mock (RandomUtils.class));
 		proc.setCombatStartAndEnd (combatStartAndEnd);

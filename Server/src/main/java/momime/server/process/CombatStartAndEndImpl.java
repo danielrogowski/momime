@@ -32,6 +32,7 @@ import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -106,6 +107,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/** Main FOW update routine */
 	private FogOfWarProcessing fogOfWarProcessing;
@@ -339,8 +343,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 			
-			// Cancel any combat unit enchantments/curses that were cast in combat
-			getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients
+			// Cancel any spells that were cast in combat
+			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients
+				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
+			
+			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients
 				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
@@ -383,7 +390,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 
 				// Its possible to get a list of 0 here, if the only surviving attacking units were combat summons like phantom warriors which have now been removed
 				if (unitStack.size () > 0)
-					getFogOfWarMidTurnChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
+					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
 						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Deal with cities
@@ -405,12 +412,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
 					// 2) Any spells the attacker had cast on the city must be curses - we don't want to curse our own city - so cancel them
 					// 3) Any spells a 3rd player (neither the defender nor attacker) had cast on the city must be curses - and I'm sure they'd like to continue cursing the new city owner :D
-					getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
+					getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
 						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
 						attackingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
 				
 					if (defendingPlayer != null)
-						getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
+						getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
 							(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
 							defendingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
 
@@ -431,11 +438,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				else if (captureCityDecision == CaptureCityDecisionID.RAZE)
 				{
 					// Cancel all spells cast on the city regardless of owner
-					getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
+					getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
 						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, 0, mom.getServerDB (), mom.getSessionDescription ());
 					
 					// Wreck all the buildings
-					getFogOfWarMidTurnChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+					getFogOfWarMidTurnMultiChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
 						combatLocation, mom.getSessionDescription (), mom.getServerDB ());
 					
 					// Wreck the city
@@ -474,7 +481,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
 			log.debug ("Removing all spell CAEs");
-			getFogOfWarMidTurnChanges ().removeCombatAreaEffectsFromLocalisedSpells
+			getFogOfWarMidTurnMultiChanges ().removeCombatAreaEffectsFromLocalisedSpells
 				(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Assuming both sides may have taken losses, could have gained/lost a city, etc. etc., best to just recalculate production for both
@@ -666,6 +673,22 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		fogOfWarMidTurnChanges = obj;
 	}
 
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
+	}
+	
 	/**
 	 * @return Main FOW update routine
 	 */

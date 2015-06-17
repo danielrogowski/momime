@@ -15,7 +15,7 @@ import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +37,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 	private UnitUtils unitUtils;
 	
 	/** Methods for updating true map + players' memory */
-	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -101,7 +101,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		else
 		{
 			// Proceed with move
-			getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, (MapCoordinates3DEx) getMoveFrom (), (MapCoordinates3DEx) getMoveTo (),
+			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, sender, (MapCoordinates3DEx) getMoveFrom (), (MapCoordinates3DEx) getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
 		}
 
@@ -127,16 +127,16 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
 	{
-		return fogOfWarMidTurnChanges;
+		return fogOfWarMidTurnMultiChanges;
 	}
 
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
 	{
-		fogOfWarMidTurnChanges = obj;
+		fogOfWarMidTurnMultiChanges = obj;
 	}
 }

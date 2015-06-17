@@ -55,6 +55,7 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
@@ -702,13 +703,13 @@ public final class TestCombatStartAndEndImpl
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurn);
+		cse.setFogOfWarMidTurnMultiChanges (midTurn);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
@@ -828,13 +829,13 @@ public final class TestCombatStartAndEndImpl
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurn);
+		cse.setFogOfWarMidTurnMultiChanges (midTurn);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
@@ -972,13 +973,13 @@ public final class TestCombatStartAndEndImpl
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurn);
+		cse.setFogOfWarMidTurnMultiChanges (midTurn);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
@@ -1145,14 +1146,16 @@ public final class TestCombatStartAndEndImpl
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurn);
+		cse.setFogOfWarMidTurnChanges (midTurnSingle);
+		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
@@ -1181,10 +1184,10 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
+		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
+		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
 		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
@@ -1197,11 +1200,11 @@ public final class TestCombatStartAndEndImpl
 		// Check the city owner was updated
 		assertEquals (attackingPd.getPlayerID (), cityData.getCityOwnerID ());
 		assertEquals (2, cityData.getNumberOfRebels ().intValue ());
-		verify (midTurn, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings, false);
+		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings, false);
 		verify (serverCityCalc, times (1)).ensureNotTooManyOptionalFarmers (cityData);
 		
 		// Check the attacker's units advanced forward into the city
-		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
+		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 		
 		// Check the attacker swiped gold from the defender
@@ -1209,12 +1212,12 @@ public final class TestCombatStartAndEndImpl
 		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
 		// Check the summoning circle was removed (but not their fortress)
-		verify (midTurn, times (0)).destroyBuildingOnServerAndClients (trueMap, players, fortress.getBuildingURN (), false, sd, db);
-		verify (midTurn, times (1)).destroyBuildingOnServerAndClients (trueMap, players, summoningCircle.getBuildingURN (), false, sd, db);
+		verify (midTurnSingle, times (0)).destroyBuildingOnServerAndClients (trueMap, players, fortress.getBuildingURN (), false, sd, db);
+		verify (midTurnSingle, times (1)).destroyBuildingOnServerAndClients (trueMap, players, summoningCircle.getBuildingURN (), false, sd, db);
 		
 		// Check any old enchantments/curses cast by the old/new owner get switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, attackingPd.getPlayerID (), db, sd);
-		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, defendingPd.getPlayerID (), db, sd);
+		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, attackingPd.getPlayerID (), db, sd);
+		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, defendingPd.getPlayerID (), db, sd);
 	}
 	
 	/**
@@ -1346,14 +1349,16 @@ public final class TestCombatStartAndEndImpl
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurn);
+		cse.setFogOfWarMidTurnChanges (midTurnSingle);
+		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
@@ -1383,10 +1388,10 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
+		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
+		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
 		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
@@ -1398,10 +1403,10 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the city was trashed
 		assertNull (gc.getCityData ());
-		verify (midTurn, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings, false);
+		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings, false);
 		
 		// Check the attacker's units advanced forward into where the city used to be
-		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
+		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 		
 		// Check the attacker swiped gold from the defender
@@ -1409,10 +1414,10 @@ public final class TestCombatStartAndEndImpl
 		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
 		
 		// Check all buildings were destroyed
-		verify (midTurn, times (1)).destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, combatLocation, sd, db);
+		verify (midTurnMulti, times (1)).destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, combatLocation, sd, db);
 		
 		// Check all enchantments/curses were switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, 0, db, sd);
+		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, 0, db, sd);
 	}
 
 	/**
@@ -1499,14 +1504,14 @@ public final class TestCombatStartAndEndImpl
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		final PlayerMessageProcessing playerMessageProcessing = mock (PlayerMessageProcessing.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurn);
+		cse.setFogOfWarMidTurnMultiChanges (midTurn);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
@@ -1635,14 +1640,14 @@ public final class TestCombatStartAndEndImpl
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
 		final PlayerMessageProcessing playerMessageProcessing = mock (PlayerMessageProcessing.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurn);
+		cse.setFogOfWarMidTurnMultiChanges (midTurn);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);

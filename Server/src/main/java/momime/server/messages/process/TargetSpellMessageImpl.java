@@ -209,7 +209,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				
 				// Add spell on clients (they don't have a blank version of it before now)
 				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ());
+					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			}
 			else
 			{

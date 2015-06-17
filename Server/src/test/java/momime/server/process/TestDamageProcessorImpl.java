@@ -33,6 +33,7 @@ import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 import org.junit.Test;
@@ -149,13 +150,15 @@ public final class TestDamageProcessorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (0);
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
 		
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setCoordinateSystemUtils (coordinateSystemUtils);
 		proc.setDamageCalculator (calc);
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnChanges (midTurnSingle);
+		proc.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		
@@ -200,16 +203,16 @@ public final class TestDamageProcessorImpl
 		assertEquals (2+2, attacker.getDamageTaken ());
 		assertEquals (3+5, defender.getDamageTaken ());
 		
-		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
 			DamageTypeID.SINGLE_FIGURE, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurn, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurn, times (0)).killUnitOnServerAndClients (attacker, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 		
-		verify (midTurn, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
-		verify (midTurn, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
+		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
+		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
 		
 		verify (combatStartAndEnd, times (0)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), any (PlayerServerDetails.class), any (CaptureCityDecisionID.class), eq (mom));
 	}
@@ -303,13 +306,15 @@ public final class TestDamageProcessorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (0);
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
 		
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setCoordinateSystemUtils (coordinateSystemUtils);
 		proc.setDamageCalculator (calc);
-		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setFogOfWarMidTurnChanges (midTurnSingle);
+		proc.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		
@@ -350,16 +355,16 @@ public final class TestDamageProcessorImpl
 		assertEquals (2, attacker.getDamageTaken ());
 		assertEquals (3+5, defender.getDamageTaken ());
 		
-		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			DamageTypeID.SINGLE_FIGURE, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurn, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurn, times (0)).killUnitOnServerAndClients (attacker, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 		
-		verify (midTurn, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
-		verify (midTurn, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
+		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
+		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueTerrain, trueMap.getUnit (), players, db, fogOfWarSettings);
 		
 		// Defending player won
 		verify (combatStartAndEnd, times (1)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), any (CaptureCityDecisionID.class), eq (mom));

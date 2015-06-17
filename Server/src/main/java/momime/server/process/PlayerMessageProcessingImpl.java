@@ -58,6 +58,7 @@ import momime.server.database.UnitSvr;
 import momime.server.database.WizardPickCountSvr;
 import momime.server.database.WizardSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.utils.PlayerPickServerUtils;
@@ -96,6 +97,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/** City processing methods */
 	private CityProcessing cityProcessing;
@@ -651,7 +655,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		getUnitUtils ().resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDB ());
 
 		// Heal hurt units 1pt and gain 1exp
-		getFogOfWarMidTurnChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
+		getFogOfWarMidTurnMultiChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
 		// Allow another building to be sold
@@ -1040,7 +1044,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					for (final Integer unitURN : thisMove.getUnitURN ())
 						unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "continueMovement"));
 					
-					getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, player,
+					getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, player,
 						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), false, mom);
 				}
 			}
@@ -1100,7 +1104,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 							unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement"));
 						
 						// We're at a different location now, and know more about the map than when the path was calculated, so need to recalculate it
-						final List<Integer> path = getFogOfWarMidTurnChanges ().determineMovementPath (unitStack, player,
+						final List<Integer> path = getFogOfWarMidTurnMultiChanges ().determineMovementPath (unitStack, player,
 							(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), mom);
 						
 						// In the process we might now find that the location has become unreachable, because of what we've learned about the map
@@ -1185,7 +1189,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				if (doubleMovementRemaining > 0)
 				{
 					// Does this unit stack have a valid single cell non-combat move?
-					final OneCellPendingMovement oneCell = getFogOfWarMidTurnChanges ().determineOneCellPendingMovement
+					final OneCellPendingMovement oneCell = getFogOfWarMidTurnMultiChanges ().determineOneCellPendingMovement
 						(unitStack, player, thisMove, doubleMovementRemaining, mom);
 					
 					// Is the destination unreachable?  If so just remove the pending movement altogether
@@ -1214,7 +1218,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement"));
 			
 			// Execute the move
-			getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, oneCell.getUnitStackOwner (),
+			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, oneCell.getUnitStackOwner (),
 				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getOneStep (), false, mom);
 			
 			// If they got to their destination, remove the pending move completely
@@ -1276,7 +1280,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				if (doubleMovementRemaining > 0)
 				{
 					// Does this unit stack have a valid single cell non-combat move?
-					final OneCellPendingMovement oneCell = getFogOfWarMidTurnChanges ().determineOneCellPendingMovement
+					final OneCellPendingMovement oneCell = getFogOfWarMidTurnMultiChanges ().determineOneCellPendingMovement
 						(unitStack, player, thisMove, doubleMovementRemaining, mom);
 					
 					// Is the destination unreachable?  If so these should have been dealt with by findAndProcessOneCellPendingMovement
@@ -1478,6 +1482,22 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		fogOfWarMidTurnChanges = obj;
 	}
 
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
+	}
+	
 	/**
 	 * @return City processing methods
 	 */

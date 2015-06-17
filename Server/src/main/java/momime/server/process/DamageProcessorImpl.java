@@ -23,6 +23,7 @@ import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +46,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/** Damage calc */
 	private DamageCalculator damageCalculator;
@@ -339,7 +343,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
-					getFogOfWarMidTurnChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
+					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 						mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
@@ -366,7 +370,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
-					getFogOfWarMidTurnChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
+					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 						mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
@@ -442,6 +446,22 @@ public final class DamageProcessorImpl implements DamageProcessor
 		fogOfWarMidTurnChanges = obj;
 	}
 
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
+	}
+	
 	/**
 	 * @return Damage calc
 	 */

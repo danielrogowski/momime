@@ -11,20 +11,17 @@ import momime.common.database.DamageTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.PendingMovement;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
-import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
-import momime.server.process.OneCellPendingMovement;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -154,7 +151,6 @@ public interface FogOfWarMidTurnChanges
 	 * @param gsk Server knowledge structure
 	 * @param trueSpell True spell to add
 	 * @param players List of players in the session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -164,7 +160,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledgeEx gsk,
-		final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+		final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -209,40 +205,6 @@ public interface FogOfWarMidTurnChanges
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param combatLocation Location of combat that just ended
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
-	
-	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param cityLocation Location to turn spells off from
-	 * @param castingPlayerID Which player's spells to turn off; 0 = everybodys 
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void switchOffMaintainedSpellsInLocationOnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx cityLocation, final int castingPlayerID,
-		final ServerDatabaseEx db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
-	
-	/**
 	 * @param gsk Server knowledge structure to add the CAE to
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param spellID Which spell was cast to produce this CAE; null for CAEs that aren't from spells, like node auras
@@ -275,22 +237,6 @@ public interface FogOfWarMidTurnChanges
 		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
-	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void removeCombatAreaEffectsFromLocalisedSpells (final FogOfWarMemory trueMap, final MapCoordinates3DEx mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
-	
 	/**
 	 * @param gsk Server knowledge structure to add the building(s) to
 	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
@@ -330,23 +276,24 @@ public interface FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final int buildingURN, final boolean updateBuildingSoldThisTurn,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
-
+	
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
+	 * Informs clients who can see this unit of its damage taken & experience
+	 *
+	 * @param tu True unit details
+	 * @param trueTerrain True terrain map
 	 * @param players List of players in the session
-	 * @param cityLocation Location of the city to remove the building from
 	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void destroyAllBuildingsInLocationOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	public void updatePlayerMemoryOfUnit_DamageTakenAndExperience (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
 	 * After setting new unit name on server, updates player memories and clients who can see the unit
@@ -366,23 +313,6 @@ public interface FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
-	/**
-	 * @param trueUnits True list of units to heal/gain experience
-	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
-	 * @param trueTerrain True terrain map
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
-	 */
-	public void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
-
 	/**
 	 * Informs clients who can see any of the units involved about how much combat damage an attacker and/or defender(s) have taken.
 	 * The two players in combat use this to show the animation of the attack, be it a melee, ranged or spell attack.
@@ -409,120 +339,56 @@ public interface FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
-	
+
 	/**
-	 * When a unit dies in combat, all the units on the opposing side gain 1 exp. 
-	 * 
-	 * @param combatLocation The location where the combat is taking place
-	 * @param combatSide Which side is to gain 1 exp
-	 * @param trueTerrain True terrain map
-	 * @param trueUnits True units list
-	 * @param players List of players in the session
+	 * Copies all of the listed units from source to destination, along with any unit spells (enchantments like Flame Blade or curses like Weakness)
+	 * and then sends them to the client; this is used when a unit stack comes into view when it is moving
+
+	 * @param unitStack List of units to copy
+	 * @param trueSpells True spell details held on server
+	 * @param player Player to copy details into
 	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws RecordNotFoundException If unit with requested URN is not found
+	 * @throws JAXBException If there is a problem sending a message to the client
+	 * @throws XMLStreamException If there is a problem sending a message to the client
 	 */
-	public void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
-	
+	public void addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (final List<MemoryUnit> unitStack,
+		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player, final ServerDatabaseEx db)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+
 	/**
-	 * Moves a unit stack from one location to another; the two locations are assumed to be adjacent map cells.
-	 * It deals with all the resulting knock on effects, namely:
-	 * 1) Checking if the units come into view for any players, if so adds the units into the player's memory and sends them to the client
-	 * 2) Checking if the units go out of sight for any players, if so removes the units from the player's memory and removes them from the client
-	 * 3) Checking what the units can see from their new location
-	 * 4) Updating any cities the units are moving out of or into - normal units calm rebels in cities, so by moving the number of rebels may change
+	 * Similar to the above routine, this removed all the listed units from the player's memory on the server, along with any unit spells
+	 * Unlike the above routine, it sends no messages to inform the client
 	 *
-	 * @param unitStack The units we want to move (true unit versions)
-	 * @param unitStackOwner The player who owns the units
+	 * @param unitStack List of unit URNs to remove
+	 * @param player Player to remove them from
+	 */
+	public void freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (final List<Integer> unitStack, final PlayerServerDetails player);
+
+	/**
+	 * Finds the direction to make a one cell move in, when trying to get from moveFrom to moveTo
+	 * This is based on the directions calculated by the movement routine so will take into account everything known about the terrain, so the direction
+	 * chosen will try to make use of roads etc. and take into account the types of units moving rather than just being in a straight line
+	 *
 	 * @param moveFrom Location to move from
+	 * @param moveTo Location to determine direction to
+	 * @param movementDirections Movement directions from moveFrom to every location on the map
+	 * @param sys Overland map coordinate system
+	 * @return Direction to make one cell move in
+	 * @throws MomException If we can't find a route from moveFrom to moveTo
+	 */
+	public int determineMovementDirection (final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo,
+		final int [] [] [] movementDirections, final CoordinateSystem sys) throws MomException;
+
+	/**
+	 * Reduces the amount of remaining movement that all units in this stack have left by the amount that it costs them to enter a grid cell of the specified type
 	 *
-	 * @param moveTo Location to move to
-	 * 		moveTo.getPlane () needs some special discussion.  The calling routine must have set moveTo.getPlane () correctly, i.e. so if we're on Myrror
-	 *			moving onto a tower, moveTo.getPlane () = 0 - you can't just assume moveTo.getPlane () = moveFrom.getPlane ().
-	 *			Also moveTo.getPlane () cannot be calculated simply from checking if the map cell at moveTo is a tower - we might be
-	 *			in a tower (on plane 0) moving to a map cell on Myrror - in this case the only way to know the correct value
-	 *			of moveTo.getPlane () is by what map cell the player clicked on in the UI.
-	 *
-	 * @param players List of players in the session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
+	 * @param unitStack The unit stack that is moving
+	 * @param unitStackSkills All the skills that any units in the stack have
+	 * @param tileTypeID Tile type being moved onto
+	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
-
-	/**
-	 * Client has requested that we try move a stack of their units to a certain location - that location may be on the other
-	 * end of the map, and we may not have seen it or the intervening terrain yet, so we basically move one tile at a time
-	 * and re-evaluate *everthing* based on the knowledge we learn of the terrain from our new location before we make the next move
-	 *
-	 * @param unitStack The units we want to move (true unit versions)
-	 * @param unitStackOwner The player who owns the units
-	 * @param originalMoveFrom Location to move from
-	 *
-	 * @param moveTo Location to move to
-	 * 		Note about moveTo.getPlane () - the same comment as moveUnitStackOneCellOnServerAndClients *doesn't apply*, moveTo.getPlane ()
-	 *			will be whatever the player clicked on - if they click on a tower on Myrror, moveTo.getPlane () will be set to 1; the routine
-	 *			sorts the correct destination plane out for each cell that the unit stack moves
-	 *
-	 * @param forceAsPendingMovement If true, forces all generated moves to be added as pending movements rather than occurring immediately (used for simultaneous turns games)
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
-		final boolean forceAsPendingMovement, final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
-
-	/**
-	 * This follows the same logic as moveUnitStack, except that it only works out what the first cell of movement will be,
-	 * and doesn't actually perform the movement.
-	 * 
-	 * @param unitStack The units we want to move (true unit versions)
-	 * @param unitStackOwner The player who owns the units
-	 * @param pendingMovement The pending move we're determining one step of
-	 * @param doubleMovementRemaining The lowest movement remaining of any unit in the stack
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
-	 */
-	public OneCellPendingMovement determineOneCellPendingMovement (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final PendingMovement pendingMovement,  final int doubleMovementRemaining, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException;
-
-	/**
-	 * This follows the same logic as moveUnitStack, except that it only works out what the movement path will be,
-	 * and doesn't actually perform the movement.
-	 * 
-	 * @param unitStack The units we want to move (true unit versions)
-	 * @param unitStackOwner The player who owns the units
-	 * @param moveFrom Location to move from
-	 * @param moveTo Location to move to
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
-	 */
-	public List<Integer> determineMovementPath (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException;
+	public void reduceMovementRemaining (final List<MemoryUnit> unitStack, final List<String> unitStackSkills, final String tileTypeID,
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db);
 }

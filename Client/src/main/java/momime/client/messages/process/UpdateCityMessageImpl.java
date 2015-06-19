@@ -99,6 +99,7 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		{
 			cityView.cityDataChanged ();
 			cityView.productionSoFarChanged ();
+			cityView.recheckRushBuyEnabled ();
 		}
 		
 		// If any new turn message(s) are showing what this city may have just constructed, then we need to update those as well

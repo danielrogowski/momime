@@ -11,14 +11,15 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.clienttoserver.RushBuyMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.messages.servertoclient.UpdateProductionSoFarMessage;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -39,6 +40,9 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -95,7 +99,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		else
 		{
 			// Check if we have enough gold
-			rushBuyCost = getCityCalculations ().goldToRushBuy (productionCost, tc.getProductionSoFar ());
+			rushBuyCost = getCityCalculations ().goldToRushBuy (productionCost, tc.getCityData ().getProductionSoFar ());
 			
 			if (getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD) < rushBuyCost)
 				msg = "You cannot afford to rush buy the construction project in this city.";
@@ -120,12 +124,10 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 			
 			// Finish construction & send to client
 			// We don't actually construct the building/unit here - that only happens when we end turn, same as in the original MoM
-			tc.setProductionSoFar (productionCost);
-			
-			final UpdateProductionSoFarMessage reply = new UpdateProductionSoFarMessage ();
-			reply.setCityLocation (getCityLocation ());
-			reply.setProductionSoFar (productionCost);
-			sender.getConnection ().sendMessageToClient (reply);
+			tc.getCityData ().setProductionSoFar (productionCost);
+
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
 		}
 		
 		log.trace ("Exiting process");
@@ -177,5 +179,21 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

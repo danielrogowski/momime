@@ -138,6 +138,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
 	
 	<bean id="changeTaxRateMessage" class="momime.server.messages.process.ChangeTaxRateMessageImpl" scope="prototype">

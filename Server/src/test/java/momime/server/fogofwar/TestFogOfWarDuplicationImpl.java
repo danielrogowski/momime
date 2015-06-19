@@ -133,90 +133,105 @@ public final class TestFogOfWarDuplicationImpl
 
 		// Considered an update even though there's no source data because destination has no cityData yet
 		// Every time we do a test, repeat it without changing anything to show that we get false back
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertNotNull (destination.getCityData ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// City population
 		sourceData.setCityPopulation (1);
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals (1, destination.getCityData ().getCityPopulation ().intValue ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Number of rebels
 		sourceData.setNumberOfRebels (2);
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals (2, destination.getCityData ().getNumberOfRebels ().intValue ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Minimum farmers
 		sourceData.setMinimumFarmers (3);
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals (3, destination.getCityData ().getMinimumFarmers ().intValue ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Optional farmers
 		sourceData.setOptionalFarmers (4);
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals (4, destination.getCityData ().getOptionalFarmers ().intValue ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// City owner
 		sourceData.setCityOwnerID (5);
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals (5, destination.getCityData ().getCityOwnerID ().intValue ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// City race
 		sourceData.setCityRaceID ("A");
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals ("A", destination.getCityData ().getCityRaceID ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// City size
 		sourceData.setCitySizeID ("B");
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals ("B", destination.getCityData ().getCitySizeID ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// City name
 		sourceData.setCityName ("C");
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals ("C", destination.getCityData ().getCityName ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Currently constructing
 		sourceData.setCurrentlyConstructingBuildingID ("D");
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals ("D", destination.getCityData ().getCurrentlyConstructingBuildingID ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		sourceData.setCurrentlyConstructingUnitID ("F");
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals ("F", destination.getCityData ().getCurrentlyConstructingUnitID ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Change to another actual value
 		sourceData.setCityRaceID ("E");
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertEquals ("E", destination.getCityData ().getCityRaceID ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Change to null
 		sourceData.setCityRaceID (null);
-		assertTrue (dup.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true, false));
 		assertNull (destination.getCityData ().getCityRaceID ());
-		assertFalse (dup.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Currently constructing gets blanked out if we pass in null, so since it currently has a value, that counts as a change
-		assertTrue (dup.copyCityData (source, destination, false));
+		assertTrue (dup.copyCityData (source, destination, false, false));
 		assertNull (destination.getCityData ().getCurrentlyConstructingBuildingID ());
 		assertNull (destination.getCityData ().getCurrentlyConstructingUnitID ());
 
 		// Any change to its value doesn't count as a change
 		sourceData.setCurrentlyConstructingBuildingID ("G");
 		sourceData.setCurrentlyConstructingUnitID ("H");
-		assertFalse (dup.copyCityData (source, destination, false));
+		assertFalse (dup.copyCityData (source, destination, false, false));
+		
+		// Setting production so far doesn't count as a change
+		sourceData.setProductionSoFar (100);
+		assertFalse (dup.copyCityData (source, destination, false, false));
+		assertNull (destination.getCityData ().getProductionSoFar ());
+		
+		// Unless we set the flag to true
+		assertTrue (dup.copyCityData (source, destination, false, true));
+		assertEquals (100, destination.getCityData ().getProductionSoFar ().intValue ());
+		assertFalse (dup.copyCityData (source, destination, false, true));
+		
+		// Setting flag false blanks it out again, and counts as a change
+		assertTrue (dup.copyCityData (source, destination, false, false));
+		assertNull (destination.getCityData ().getProductionSoFar ());
+		assertFalse (dup.copyCityData (source, destination, false, false));
 	}
 
 	/**

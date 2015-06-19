@@ -215,7 +215,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 					
 					// Mock whether the player has up to date info for this terrain already or not
 					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-					when (dup.copyCityData (tc, mc, fowSettings.isSeeEnemyCityConstruction ())).thenReturn (!upToDateInfo);
+					when (dup.copyCityData (tc, mc, fowSettings.isSeeEnemyCityConstruction (), false)).thenReturn (!upToDateInfo);
 				}
 		
 		// Set up object to test
@@ -231,7 +231,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) players.get (playerIndex).getPersistentPlayerPrivateKnowledge ();
 			final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-			verify (dup, times (playerIndex < 4 ? 0 : 1)).copyCityData (tc, mc, fowSettings.isSeeEnemyCityConstruction ());
+			verify (dup, times (playerIndex < 4 ? 0 : 1)).copyCityData (tc, mc, fowSettings.isSeeEnemyCityConstruction (), false);
 		}
 		
 		// Only player 6 (can see location, out of date info, human) should get a message

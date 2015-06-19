@@ -42,7 +42,6 @@ import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
-import momime.common.messages.servertoclient.UpdateProductionSoFarMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.DummyServerToClientConnection;
@@ -456,9 +455,6 @@ public final class TestCityProcessingImpl
 		humanPd.setPlayerID (5);
 		final PlayerServerDetails humanPlayer = new PlayerServerDetails (humanPd, humanPpk, humanPriv, null, humanTrans);
 		
-		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
-		humanPlayer.setConnection (msgs);
-
 		final MomPersistentPlayerPublicKnowledge aiPpk = new MomPersistentPlayerPublicKnowledge ();
 		aiPpk.setWizardID ("WZ01");				// Standard wizard
 		
@@ -500,7 +496,7 @@ public final class TestCityProcessingImpl
 		humanCity.setCityOwnerID (humanPd.getPlayerID ());
 		humanCity.setCityPopulation (4400);
 		humanCity.setCurrentlyConstructingBuildingID ("BL01");
-		humanCell.setProductionSoFar (500);
+		humanCity.setProductionSoFar (500);
 		humanCell.setCityData (humanCity);
 		final int humanCityMaxSize = 12;
 		
@@ -512,7 +508,7 @@ public final class TestCityProcessingImpl
 		aiCity.setCityOwnerID (aiPd.getPlayerID ());
 		aiCity.setCityPopulation (5700);
 		aiCity.setCurrentlyConstructingBuildingID ("BL01");
-		aiCell.setProductionSoFar (500);
+		aiCity.setProductionSoFar (500);
 		aiCell.setCityData (aiCity);
 		final int aiCityMaxSize = 11;
 		
@@ -524,7 +520,7 @@ public final class TestCityProcessingImpl
 		raidersCity.setCityOwnerID (raidersPd.getPlayerID ());
 		raidersCity.setCityPopulation (8700);
 		raidersCity.setCurrentlyConstructingUnitID ("UN001");
-		raidersCell.setProductionSoFar (50);
+		raidersCity.setProductionSoFar (50);
 		final int raidersCityMaxSize = 15;
 		
 		raidersCell.setRaiderCityAdditionalPopulationCap (9000);
@@ -623,20 +619,14 @@ public final class TestCityProcessingImpl
 		assertEquals (4400+650, ntm.getNewPopulation ());
 		
 		assertEquals ("BL01", humanCity.getCurrentlyConstructingBuildingID ());
-		assertEquals (650, humanCell.getProductionSoFar ().intValue ());
-		
-		assertEquals (1, msgs.getMessages ().size ());
-		assertEquals (UpdateProductionSoFarMessage.class.getName (), msgs.getMessages ().get (0).getClass ().getName ());
-		final UpdateProductionSoFarMessage msg = (UpdateProductionSoFarMessage) msgs.getMessages ().get (0);
-		assertEquals (humanLocation, msg.getCityLocation ());
-		assertEquals (650, msg.getProductionSoFar ());
+		assertEquals (650, humanCity.getProductionSoFar ().intValue ());
 		
 		// Check AI city
 		assertEquals (5700+250, aiCity.getCityPopulation ().intValue ());
 		assertEquals (2, aiCity.getNumberOfRebels ().intValue ());
 
 		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, aiCity.getCurrentlyConstructingBuildingID ());
-		assertEquals (0, aiCell.getProductionSoFar ().intValue ());
+		assertEquals (0, aiCity.getProductionSoFar ().intValue ());
 		
 		verify (midTurn, times (1)).addBuildingOnServerAndClients (gsk, players, aiLocation, "BL01", null, null, null, sd, db);
 		
@@ -645,7 +635,7 @@ public final class TestCityProcessingImpl
 		assertEquals (3, raidersCity.getNumberOfRebels ().intValue ());
 
 		assertEquals ("UN001", raidersCity.getCurrentlyConstructingUnitID ());
-		assertEquals (0, raidersCell.getProductionSoFar ().intValue ());
+		assertEquals (0, raidersCity.getProductionSoFar ().intValue ());
 		
 		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", raidersLocation, raidersLocation, null, raidersPlayer, UnitStatusID.ALIVE, players, sd, db);
 		
@@ -655,8 +645,8 @@ public final class TestCityProcessingImpl
 		
 		verify (serverCityCalc, times (3)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
-		// Gets called 3 times for the changes in population, and once for completed building
-		verify (midTurn, times (4)).updatePlayerMemoryOfCity (eq (trueTerrain), eq (players), any (MapCoordinates3DEx.class), eq (fogOfWarSettings), eq (false));
+		// Gets called once per city
+		verify (midTurn, times (3)).updatePlayerMemoryOfCity (eq (trueTerrain), eq (players), any (MapCoordinates3DEx.class), eq (fogOfWarSettings), eq (false));
 	}
 	
 	/**

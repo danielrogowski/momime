@@ -346,10 +346,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapUI" ref="overlandMapUI" />
 	</bean>
 
-	<bean id="updateProductionSoFarMessage" class="momime.client.messages.process.UpdateProductionSoFarMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-	</bean>
-	
 	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype">
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>

@@ -237,11 +237,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public UpdateProductionSoFarMessageImpl createUpdateProductionSoFarMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public MoveUnitInCombatMessageImpl createMoveUnitInCombatMessage ();
 
 	/**

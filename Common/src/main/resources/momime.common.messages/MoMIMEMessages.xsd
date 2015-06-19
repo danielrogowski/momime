@@ -463,6 +463,11 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
 			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingBuildingID" type="momimecommon:buildingID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingUnitID" type="momimecommon:unitID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityOwnerID" type="mps:playerID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionSoFar" type="momimecommon:productionCost">
+			    <xsd:annotation>
+    				<xsd:documentation>Null for Trade Goods and Housing.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
         </xsd:sequence>
 	</xsd:complexType>
 
@@ -479,7 +484,6 @@ So the server just duplicates these values into the city owner's memory only.  S
         <xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="terrainData" type="momimemsgs:overlandMapTerrainData" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityData" type="momimemsgs:overlandMapCityData" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="productionSoFar" type="momimecommon:productionCost" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingIdSoldThisTurn" type="momimecommon:buildingID" />
         </xsd:sequence>
 	</xsd:complexType>

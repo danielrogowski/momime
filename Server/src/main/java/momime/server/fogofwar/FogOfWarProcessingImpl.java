@@ -424,10 +424,15 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						case FOG_OF_WAR_ACTION_UPDATE:
 						{
 							// Careful, may not even be a city here and hence tc.getCityData () may be null
-							final int cityOwnerID = (tc.getCityData () == null) ? 0 : tc.getCityData ().getCityOwnerID ();
+							final int cityOwnerID;
+							if (tc.getCityData () == null)
+								cityOwnerID = 0;
+							else
+								cityOwnerID = (tc.getCityData ().getCityOwnerID () == null) ? 0 : tc.getCityData ().getCityOwnerID ();
 
-							if (getFogOfWarDuplication ().copyCityData (tc, mc, (cityOwnerID == player.getPlayerDescription ().getPlayerID ()) ||
-								(sd.getFogOfWarSetting ().isSeeEnemyCityConstruction ())))
+							if (getFogOfWarDuplication ().copyCityData (tc, mc,
+								(cityOwnerID == player.getPlayerDescription ().getPlayerID ()) || (sd.getFogOfWarSetting ().isSeeEnemyCityConstruction ()),
+								cityOwnerID == player.getPlayerDescription ().getPlayerID ()))
 
 								if (msg != null)
 								{

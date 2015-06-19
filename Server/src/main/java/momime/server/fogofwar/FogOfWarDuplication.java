@@ -36,10 +36,11 @@ public interface FogOfWarDuplication
 	 * Copies all the city related data items from source to destination
 	 * @param source The map cell to copy from
 	 * @param destination The map cell to copy to
-	 * @param includeCurrentlyConstructing Whether to copy currentlyConstructing from source to destination or null it out
+	 * @param includeCurrentlyConstructing Can see current construction project if its our city OR session description FOW option is set
+	 * @param includeProductionSoFar Can see progress made on current construction project if its our city
 	 * @return Whether any update actually happened (i.e. false if source and destination already had the same info)
 	 */
-	public boolean copyCityData (final MemoryGridCell source, final MemoryGridCell destination, final boolean includeCurrentlyConstructing);
+	public boolean copyCityData (final MemoryGridCell source, final MemoryGridCell destination, final boolean includeCurrentlyConstructing, final boolean includeProductionSoFar);
 
 	/**
 	 * Wipes all memory of the city at this location

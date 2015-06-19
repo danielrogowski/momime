@@ -28,7 +28,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.messages.servertoclient.UpdateProductionSoFarMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -310,22 +309,19 @@ public final class CityProcessingImpl implements CityProcessing
 								final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 								if (productionAmount != null)
 								{
-									if (mc.getProductionSoFar () == null)
-										mc.setProductionSoFar (productionAmount.getCappedProductionAmount ());
+									if (cityData.getProductionSoFar () == null)
+										cityData.setProductionSoFar (productionAmount.getCappedProductionAmount ());
 									else
-										mc.setProductionSoFar (mc.getProductionSoFar () + productionAmount.getCappedProductionAmount ());
+										cityData.setProductionSoFar (cityData.getProductionSoFar () + productionAmount.getCappedProductionAmount ());
 
 									// Is it finished?
-									if (mc.getProductionSoFar () > productionCost)
+									if (cityData.getProductionSoFar () > productionCost)
 									{
 										// Did we construct a building?
 										if (building != null)
 										{
-											// Current building is now finished - set next construction project FIRST
-											// This is a leftover from when NTMs showed up instantly, since the mmAddBuilding message would cause the
-											// client to immediately show the 'completed construction' window so we needed to send other data that appears in that window first
-											cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-											getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
+											// Current building is now finished
+											cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);											
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
@@ -366,16 +362,7 @@ public final class CityProcessingImpl implements CityProcessing
 										}
 
 										// Zero production for the next construction project
-										mc.setProductionSoFar (0);
-									}
-
-									// Send new production so far value to client, whether its an updated value, or zero because we finished the previous building
-									if (cityOwner.getPlayerDescription ().isHuman ())
-									{
-										final UpdateProductionSoFarMessage msg = new UpdateProductionSoFarMessage ();
-										msg.setCityLocation (cityLocation);
-										msg.setProductionSoFar (mc.getProductionSoFar ());
-										cityOwner.getConnection ().sendMessageToClient (msg);
+										cityData.setProductionSoFar (0);
 									}
 								}
 							}
@@ -427,9 +414,10 @@ public final class CityProcessingImpl implements CityProcessing
 								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
 
 							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
-
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 						}
+
+						// Now update player memory with all the changes
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 					}
 				}
 

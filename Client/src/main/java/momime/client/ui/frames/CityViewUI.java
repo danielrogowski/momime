@@ -335,7 +335,7 @@ public final class CityViewUI extends MomClientFrameUI
 					
 					if (productionCost != null)
 					{
-						final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (mc.getProductionSoFar () == null) ? 0 : mc.getProductionSoFar ());
+						final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
 						text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
 					
 						// Now show the message
@@ -681,7 +681,7 @@ public final class CityViewUI extends MomClientFrameUI
 						final int totalCoins = (productionCost + productionProgressDivisor - 1) / productionProgressDivisor;
 						
 						// How many of those coins should be coloured in for what we've built so far? (round down, so things don't have every coin filled in but not completed)
-						final int goldCoins = (mc.getProductionSoFar () == null) ? 0 : (mc.getProductionSoFar () / productionProgressDivisor);
+						final int goldCoins = (cityData.getProductionSoFar () == null) ? 0 : (cityData.getProductionSoFar () / productionProgressDivisor);
 						
 						// Draw the coins
 						int x = 0;
@@ -1294,7 +1294,7 @@ public final class CityViewUI extends MomClientFrameUI
 			
 			if (productionCost != null)
 			{
-				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (mc.getProductionSoFar () == null) ? 0 : mc.getProductionSoFar ());
+				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
 				rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD));
 			}

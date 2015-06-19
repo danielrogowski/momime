@@ -206,13 +206,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 				final boolean includeCurrentlyConstructing;
-				if (tc.getCityData () == null)
+				final boolean includeProductionSoFar;
+				if ((tc.getCityData () == null) || (tc.getCityData ().getCityOwnerID () == null))
+				{
 					includeCurrentlyConstructing = false;
+					includeProductionSoFar = false;
+				}
 				else
+				{
 					includeCurrentlyConstructing = (thisPlayer.getPlayerDescription ().getPlayerID () == tc.getCityData ().getCityOwnerID ()) ||
 						(fogOfWarSettings.isSeeEnemyCityConstruction ());
+					
+					includeProductionSoFar = thisPlayer.getPlayerDescription ().getPlayerID () == tc.getCityData ().getCityOwnerID ();
+				}
 
-				if (getFogOfWarDuplication ().copyCityData (tc, mc, includeCurrentlyConstructing))
+				if (getFogOfWarDuplication ().copyCityData (tc, mc, includeCurrentlyConstructing, includeProductionSoFar))
 
 					// Update player's memory on client
 					if (thisPlayer.getPlayerDescription ().isHuman ())

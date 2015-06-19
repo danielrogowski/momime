@@ -99,11 +99,12 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	 * Copies all the city related data items from source to destination
 	 * @param source The map cell to copy from
 	 * @param destination The map cell to copy to
-	 * @param includeCurrentlyConstructing Whether to copy currentlyConstructing from source to destination or null it out
+	 * @param includeCurrentlyConstructing Can see current construction project if its our city OR session description FOW option is set
+	 * @param includeProductionSoFar Can see progress made on current construction project if its our city
 	 * @return Whether any update actually happened (i.e. false if source and destination already had the same info)
 	 */
 	@Override
-	public final boolean copyCityData (final MemoryGridCell source, final MemoryGridCell destination, final boolean includeCurrentlyConstructing)
+	public final boolean copyCityData (final MemoryGridCell source, final MemoryGridCell destination, final boolean includeCurrentlyConstructing, final boolean includeProductionSoFar)
 	{
 		// Careful, may not even be a city here and hence source.getCityData () may be null
 		// That's a valid scenario - maybe last time we saw this location there was a city here, but since then someone captured and razed it
@@ -117,6 +118,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		{
 			OverlandMapCityData destinationData = destination.getCityData ();
 
+			// Destination values for current construction depend on the input param
 			final String newCurrentlyConstructingBuilding;
 			final String newCurrentlyConstructingUnit;
 			if (includeCurrentlyConstructing)
@@ -130,6 +132,11 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				newCurrentlyConstructingUnit = null;
 			}
 
+			// Destination value for construction progress depends on the input param
+			final Integer newProductionSoFar = includeProductionSoFar ? source.getCityData ().getProductionSoFar () : null;
+			
+
+			// Now can figure out if any updates are necessary
 			updateRequired = (destinationData == null) ||
 				(!CompareUtils.safeIntegerCompare (sourceData.getCityPopulation (), destinationData.getCityPopulation ())) ||
 				(!CompareUtils.safeIntegerCompare (sourceData.getMinimumFarmers (),  destinationData.getMinimumFarmers ())) ||
@@ -140,7 +147,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(!CompareUtils.safeStringCompare (sourceData.getCitySizeID (), destinationData.getCitySizeID ())) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCityName (), destinationData.getCityName ())) ||
 				(!CompareUtils.safeStringCompare (newCurrentlyConstructingBuilding, destinationData.getCurrentlyConstructingBuildingID ())) ||
-				(!CompareUtils.safeStringCompare (newCurrentlyConstructingUnit, destinationData.getCurrentlyConstructingUnitID ()));
+				(!CompareUtils.safeStringCompare (newCurrentlyConstructingUnit, destinationData.getCurrentlyConstructingUnitID ())) ||
+				(!CompareUtils.safeIntegerCompare (newProductionSoFar, destinationData.getProductionSoFar ()));
 
 			if (updateRequired)
 			{
@@ -160,6 +168,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				destinationData.setCityName (sourceData.getCityName ());
 				destinationData.setCurrentlyConstructingBuildingID (newCurrentlyConstructingBuilding);
 				destinationData.setCurrentlyConstructingUnitID (newCurrentlyConstructingUnit);
+				destinationData.setProductionSoFar (newProductionSoFar);
 			}
 		}
 
@@ -180,7 +189,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			((destinationData.getCityPopulation () != null) || (destinationData.getMinimumFarmers () != null) || (destinationData.getOptionalFarmers () != null) ||
 			 (destinationData.getNumberOfRebels () != null) || (destinationData.getCityOwnerID () != null) || (destinationData.getCityRaceID () != null) ||
 			 (destinationData.getCitySizeID () != null) || (destinationData.getCityName () != null) ||
-			 (destinationData.getCurrentlyConstructingBuildingID () != null) || (destinationData.getCurrentlyConstructingUnitID () != null));
+			 (destinationData.getCurrentlyConstructingBuildingID () != null) || (destinationData.getCurrentlyConstructingUnitID () != null) ||
+			 (destinationData.getProductionSoFar () != null));
 
 		destination.setCityData (null);
 

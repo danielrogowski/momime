@@ -157,6 +157,7 @@ public final class TestCityViewUI
 		cityData.setNumberOfRebels (2);
 		cityData.setCurrentlyConstructingBuildingID ("BL01");
 		cityData.setCityOwnerID (ourCity ? 1 : 2);
+		cityData.setProductionSoFar (60);
 		
 		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
 		
@@ -166,7 +167,6 @@ public final class TestCityViewUI
 		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
 		final MemoryGridCell mc = terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20);
 		mc.setCityData (cityData);
-		mc.setProductionSoFar (60);
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);

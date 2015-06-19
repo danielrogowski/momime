@@ -284,23 +284,6 @@ client can't predict how many of what spell ranks and magic realms they need to 
 	
 <!-- Economy and production -->
 
-	<xsd:element name="updateProductionSoFarMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to the owner of a city to tell them how many production points they've put into the current construction project so far.
-Only the owner of the city gets this - so you cannot tell how much production has been generated from cities that you don't own.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="productionSoFar" type="momimecommon:productionCost" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="pendingSaleMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this in a simultaneous turns game to inform the city owner *only* that a building will be sold at the end of the turn.

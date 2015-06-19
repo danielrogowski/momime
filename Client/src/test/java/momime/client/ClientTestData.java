@@ -29,10 +29,13 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.OverlandMapSize;
 import momime.common.messages.CombatMapSize;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapAreaOfMemoryGridCells;
+import momime.common.messages.MapRowOfCombatTiles;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MomCombatTile;
 
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
@@ -243,6 +246,25 @@ public final class ClientTestData
 		sys.setZoneWidth (10);
 		sys.setZoneHeight (8);
 		return sys;
+	}
+
+	/**
+	 * @param sys Combat map coordinate system
+	 * @return Map area prepopulated with empty cells
+	 */
+	public final static MapAreaOfCombatTiles createCombatMap (final CoordinateSystem sys)
+	{
+		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
+		for (int y = 0; y < sys.getHeight (); y++)
+		{
+			final MapRowOfCombatTiles row = new MapRowOfCombatTiles ();
+			for (int x = 0; x < sys.getWidth (); x++)
+				row.getCell ().add (new MomCombatTile ());
+
+			map.getRow ().add (row);
+		}
+
+		return map;
 	}
 	
 	/**

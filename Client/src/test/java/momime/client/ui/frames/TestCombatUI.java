@@ -7,7 +7,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
 
@@ -21,6 +23,7 @@ import momime.client.database.MapFeature;
 import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.SmoothedTileGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.UnitGfx;
 import momime.client.graphics.database.UnitSkillGfx;
@@ -38,6 +41,7 @@ import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtilsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.TileType;
@@ -45,6 +49,7 @@ import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryUnit;
@@ -161,9 +166,11 @@ public final class TestCombatUI
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getClientDB ()).thenReturn (db);
 		
-		// Session description
+		// Combat map
 		final CombatMapSize combatMapSize = ClientTestData.createCombatMapSize ();
+		final MapAreaOfCombatTiles combatMap = ClientTestData.createCombatMap (combatMapSize);
 		
+		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		sd.setCombatMapSize (combatMapSize);
@@ -300,6 +307,13 @@ public final class TestCombatUI
 		final CombatMapBitmapGenerator gen = mock (CombatMapBitmapGenerator.class);
 		when (gen.generateCombatMapBitmaps ()).thenReturn (combatMapBitmaps);
 		
+		// Mock other outputs from the bitmap generator, used to draw the building layer
+		final SmoothedTileGfx [] [] buildingTiles = new SmoothedTileGfx [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		
+		final Map<CombatMapLayerID, SmoothedTileGfx [] []> smoothedTiles = new HashMap<CombatMapLayerID, SmoothedTileGfx [] []> ();
+		smoothedTiles.put (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES, buildingTiles);
+		when (gen.getSmoothedTiles ()).thenReturn (smoothedTiles);
+		
 		// A dummy unit to select
 		final MemoryUnit selectedUnit = new MemoryUnit ();
 		selectedUnit.setUnitID ("UN197");
@@ -367,6 +381,7 @@ public final class TestCombatUI
 		combat.setLargeFont (CreateFontsForTests.getLargeFont ());
 		combat.setCombatLayoutMain (mainLayout);
 		combat.setCombatLayoutBottom (bottomLayout);
+		combat.setCombatTerrain (combatMap);
 
 		// Display form
 		combat.initNewCombat ();

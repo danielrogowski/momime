@@ -134,7 +134,6 @@
     			<value>momime.common.messages.servertoclient.UpdateGlobalEconomyMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage</value>
-    			<value>momime.common.messages.servertoclient.UpdateProductionSoFarMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage</value>
     			<value>momime.common.messages.servertoclient.YourPhotoIsOkMessage</value>
     			<value>momime.common.messages.servertoclient.YourRaceIsOkMessage</value>

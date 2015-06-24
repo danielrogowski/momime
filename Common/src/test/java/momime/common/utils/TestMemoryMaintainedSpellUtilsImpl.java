@@ -756,15 +756,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 		
-		// City data but no actual city
-		final OverlandMapCityData city1 = new OverlandMapCityData ();
-		map.getPlane ().get (0).getRow ().get (20).getCell ().get (21).setCityData (city1);
-		
-		// City data but zero population
-		final OverlandMapCityData city2 = new OverlandMapCityData ();
-		city2.setCityPopulation (0);
-		map.getPlane ().get (0).getRow ().get (20).getCell ().get (22).setCityData (city2);
-		
 		// Our city
 		final OverlandMapCityData city3 = new OverlandMapCityData ();
 		city3.setCityPopulation (10000);
@@ -790,8 +781,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// No city, or can't see location
 		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, buildings, db));
-		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (21, 20, 0), map, buildings, db));
-		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (22, 20, 0), map, buildings, db));
 		
 		// Wrong owner
 		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));

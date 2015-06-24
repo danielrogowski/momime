@@ -31,6 +31,7 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
@@ -218,7 +219,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			log.debug ("Combat ending before it starts");
 			
 			// If attacking an enemy city with no defence, set the player correctly so we notify the player that they've lost their city.
-			if ((tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != null))
+			if (tc.getCityData () != null)
 				defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "startCombat-CD");
 				
 			combatEnded (combatLocation, attackingPlayer, defendingPlayer, attackingPlayer,	// <-- who won
@@ -284,8 +285,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// If we're walking into a city that we don't already own (its possible we're moving into our own city if this is a "walk in without a fight")
 		// then don't end the combat just yet - first ask the winner whether they want to capture or raze the city
 		if ((winningPlayer == attackingPlayer) && (captureCityDecision == null) && (tc.getCityData () != null) &&
-			(tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityPopulation () > 0) &&
-			(!attackingPlayer.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ())))
+			(attackingPlayer.getPlayerDescription ().getPlayerID () != tc.getCityData ().getCityOwnerID ()))
 		{
 			log.debug ("Undecided city capture, bulk of method will not run");
 			
@@ -423,6 +423,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 
 					// Take ownership of the city
 					tc.getCityData ().setCityOwnerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
+					tc.getCityData ().setProductionSoFar (null);
+					tc.getCityData ().setCurrentlyConstructingUnitID (null);
+					tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 					
 					// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
 					tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels

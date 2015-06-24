@@ -1198,8 +1198,8 @@ public final class TestCombatStartAndEndImpl
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city owner was updated
-		assertEquals (attackingPd.getPlayerID (), cityData.getCityOwnerID ());
-		assertEquals (2, cityData.getNumberOfRebels ().intValue ());
+		assertEquals (attackingPd.getPlayerID ().intValue (), cityData.getCityOwnerID ());
+		assertEquals (2, cityData.getNumberOfRebels ());
 		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings, false);
 		verify (serverCityCalc, times (1)).ensureNotTooManyOptionalFarmers (cityData);
 		

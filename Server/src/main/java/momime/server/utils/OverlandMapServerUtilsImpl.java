@@ -321,8 +321,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 				for (final PlaneSvr plane : db.getPlanes ())
 				{
 					final OverlandMapCityData cityData = map.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == playerID) &&
-						(cityData.getCityPopulation () != null))
+					if ((cityData != null) && (cityData.getCityOwnerID () == playerID))
 						
 						total = total + cityData.getCityPopulation ();
 				}

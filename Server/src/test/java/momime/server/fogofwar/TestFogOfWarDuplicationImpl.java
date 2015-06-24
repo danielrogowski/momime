@@ -140,31 +140,31 @@ public final class TestFogOfWarDuplicationImpl
 		// City population
 		sourceData.setCityPopulation (1);
 		assertTrue (dup.copyCityData (source, destination, true, false));
-		assertEquals (1, destination.getCityData ().getCityPopulation ().intValue ());
+		assertEquals (1, destination.getCityData ().getCityPopulation ());
 		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Number of rebels
 		sourceData.setNumberOfRebels (2);
 		assertTrue (dup.copyCityData (source, destination, true, false));
-		assertEquals (2, destination.getCityData ().getNumberOfRebels ().intValue ());
+		assertEquals (2, destination.getCityData ().getNumberOfRebels ());
 		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Minimum farmers
 		sourceData.setMinimumFarmers (3);
 		assertTrue (dup.copyCityData (source, destination, true, false));
-		assertEquals (3, destination.getCityData ().getMinimumFarmers ().intValue ());
+		assertEquals (3, destination.getCityData ().getMinimumFarmers ());
 		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// Optional farmers
 		sourceData.setOptionalFarmers (4);
 		assertTrue (dup.copyCityData (source, destination, true, false));
-		assertEquals (4, destination.getCityData ().getOptionalFarmers ().intValue ());
+		assertEquals (4, destination.getCityData ().getOptionalFarmers ());
 		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// City owner
 		sourceData.setCityOwnerID (5);
 		assertTrue (dup.copyCityData (source, destination, true, false));
-		assertEquals (5, destination.getCityData ().getCityOwnerID ().intValue ());
+		assertEquals (5, destination.getCityData ().getCityOwnerID ());
 		assertFalse (dup.copyCityData (source, destination, true, false));
 
 		// City race

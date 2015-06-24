@@ -77,7 +77,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 				(getFirstBuilding ().getCityLocation ().getZ ()).getRow ().get (getFirstBuilding ().getCityLocation ().getY ()).getCell ().get (getFirstBuilding ().getCityLocation ().getX ()).getCityData ();
 			
 			if (((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
-				((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID ().equals (getClient ().getOurPlayerID ()))))
+				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
 			{
 				animated = true;
 				

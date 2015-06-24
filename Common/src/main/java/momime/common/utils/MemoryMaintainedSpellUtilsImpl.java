@@ -382,7 +382,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
     	
     	// Do easy checks first
-    	if ((cityData == null) || (cityData.getCityPopulation () == null) || (cityData.getCityPopulation () <= 0))
+    	if (cityData == null)
     		result = TargetSpellResult.NO_CITY_HERE;
     	
     	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) && (cityData.getCityOwnerID () != castingPlayerID))

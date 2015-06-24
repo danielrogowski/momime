@@ -138,11 +138,11 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 
 			// Now can figure out if any updates are necessary
 			updateRequired = (destinationData == null) ||
-				(!CompareUtils.safeIntegerCompare (sourceData.getCityPopulation (), destinationData.getCityPopulation ())) ||
-				(!CompareUtils.safeIntegerCompare (sourceData.getMinimumFarmers (),  destinationData.getMinimumFarmers ())) ||
-				(!CompareUtils.safeIntegerCompare (sourceData.getOptionalFarmers (), destinationData.getOptionalFarmers ())) ||
-				(!CompareUtils.safeIntegerCompare (sourceData.getNumberOfRebels (), destinationData.getNumberOfRebels ())) ||
-				(!CompareUtils.safeIntegerCompare (sourceData.getCityOwnerID (), destinationData.getCityOwnerID ())) ||
+				(sourceData.getCityPopulation () != destinationData.getCityPopulation ()) ||
+				(sourceData.getMinimumFarmers () != destinationData.getMinimumFarmers ()) ||
+				(sourceData.getOptionalFarmers () != destinationData.getOptionalFarmers ()) ||
+				(sourceData.getNumberOfRebels () != destinationData.getNumberOfRebels ()) ||
+				(sourceData.getCityOwnerID () != destinationData.getCityOwnerID ()) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCityRaceID (), destinationData.getCityRaceID ())) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCitySizeID (), destinationData.getCitySizeID ())) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCityName (), destinationData.getCityName ())) ||
@@ -186,8 +186,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		final OverlandMapCityData destinationData = destination.getCityData ();
 
 		final boolean updateRequired = (destinationData != null) &&
-			((destinationData.getCityPopulation () != null) || (destinationData.getMinimumFarmers () != null) || (destinationData.getOptionalFarmers () != null) ||
-			 (destinationData.getNumberOfRebels () != null) || (destinationData.getCityOwnerID () != null) || (destinationData.getCityRaceID () != null) ||
+			((destinationData.getCityPopulation () > 0) || (destinationData.getMinimumFarmers () > 0) || (destinationData.getOptionalFarmers () > 0) ||
+			 (destinationData.getNumberOfRebels () > 0) || (destinationData.getCityOwnerID () != 0) || (destinationData.getCityRaceID () != null) ||
 			 (destinationData.getCitySizeID () != null) || (destinationData.getCityName () != null) ||
 			 (destinationData.getCurrentlyConstructingBuildingID () != null) || (destinationData.getCurrentlyConstructingUnitID () != null) ||
 			 (destinationData.getProductionSoFar () != null));

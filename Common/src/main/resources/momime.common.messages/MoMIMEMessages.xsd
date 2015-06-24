@@ -453,19 +453,27 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
     		<xsd:documentation>Stores what we remember about a city after it becomes obscured by Fog of War.</xsd:documentation>
 		</xsd:annotation>
         <xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityPopulation" type="momimecommon:cityPopulationDiv1000" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="numberOfRebels" type="momimecommon:cityPopulationDiv1000" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="minimumFarmers" type="momimecommon:cityPopulationDiv1000" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="optionalFarmers" type="momimecommon:cityPopulationDiv1000" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityRaceID" type="momimecommon:raceID" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeID" type="momimecommon:citySizeID" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityName" type="momimecommon:description" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingBuildingID" type="momimecommon:buildingID" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingUnitID" type="momimecommon:unitID" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityOwnerID" type="mps:playerID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityPopulation" type="momimecommon:cityPopulationDiv1000" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfRebels" type="momimecommon:cityPopulationDiv1000" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="minimumFarmers" type="momimecommon:cityPopulationDiv1000" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="optionalFarmers" type="momimecommon:cityPopulationDiv1000" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityRaceID" type="momimecommon:raceID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="citySizeID" type="momimecommon:citySizeID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityName" type="momimecommon:description" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingBuildingID" type="momimecommon:buildingID">
+			    <xsd:annotation>
+    				<xsd:documentation>Null if constructing a unit, or if this is a player's memory and the city isn't ours AND the new game FOW option to see constructions is set to false.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingUnitID" type="momimecommon:unitID">
+			    <xsd:annotation>
+    				<xsd:documentation>Null if constructing a building, or if this is a player's memory and the city isn't ours AND the new game FOW option to see constructions is set to false.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityOwnerID" type="mps:playerID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionSoFar" type="momimecommon:productionCost">
 			    <xsd:annotation>
-    				<xsd:documentation>Null for Trade Goods and Housing.</xsd:documentation>
+    				<xsd:documentation>Null for Trade Goods and Housing, or if this is a player's memory and the city isn't ours.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
         </xsd:sequence>

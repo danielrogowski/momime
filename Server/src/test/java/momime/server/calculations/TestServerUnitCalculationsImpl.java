@@ -283,19 +283,8 @@ public final class TestServerUnitCalculationsImpl
 		assertFalse (calc.willMovingHereResultInAnAttack
 			(30, 10, 0, 2, map, units, db));
 
-		// Enemy city but null population
-		cityData.setCityOwnerID (1);
-
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, db));
-
-		// Enemy city but zero population
-		cityData.setCityPopulation (0);
-
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, db));
-
 		// Enemy city
+		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (1);
 
 		assertTrue (calc.willMovingHereResultInAnAttack

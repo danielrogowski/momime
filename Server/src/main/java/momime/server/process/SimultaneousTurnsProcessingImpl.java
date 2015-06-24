@@ -108,8 +108,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					
-					if ((tc.getCityData () != null) && (tc.getBuildingIdSoldThisTurn () != null) && (tc.getCityData ().getCityPopulation () != null) &&
-						(tc.getCityData ().getCityPopulation () > 0))
+					if ((tc.getCityData () != null) && (tc.getBuildingIdSoldThisTurn () != null))
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 						

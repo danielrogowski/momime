@@ -161,7 +161,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 					{
 						// Calculate all productions from this city
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
@@ -264,7 +264,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		{
 			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getZ ()).getRow ().get (thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
 
-			if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+			if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 			{
 				final BuildingSvr building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
 				final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);

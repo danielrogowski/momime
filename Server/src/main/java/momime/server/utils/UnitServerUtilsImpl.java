@@ -289,13 +289,13 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		else
 		{
 			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (addLocation.getZ ()).getRow ().get (addLocation.getY ()).getCell ().get (addLocation.getX ());
-			if ( (ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) || (getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
+			if ((ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) || (getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
 
 				okToAdd = false;
 			else
 			{
 				// Lastly check for someone else's empty city (although to have two adjacent cities would be a bit weird)
-				if ( (tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityOwnerID () != null) && (tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != testUnit.getOwningPlayerID ()))
+				if ( (tc.getCityData () != null) && (tc.getCityData ().getCityOwnerID () != testUnit.getOwningPlayerID ()))
 
 					okToAdd = false;
 				else

@@ -88,7 +88,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		String msg = null;
-		if ((cityData == null) || (cityData.getCityOwnerID () == null) || (!cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
+		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the construction of a city which isn't yours - change ignored.";
 		else
 		{
@@ -169,7 +169,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final OverlandMapCityData cityData = trueTerrain.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		String msg = null;
-		if ((cityData == null) || (cityData.getCityOwnerID () == null) || (!cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
+		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the number of farmers & workers in a city which isn't yours - change ignored.";
 
 		else if ((optionalFarmers < 0) || (optionalFarmers + cityData.getMinimumFarmers () + cityData.getNumberOfRebels () > cityData.getCityPopulation () / 1000))

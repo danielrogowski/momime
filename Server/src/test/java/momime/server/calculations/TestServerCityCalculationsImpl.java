@@ -208,7 +208,7 @@ public final class TestServerCityCalculationsImpl
 		cityData.setCityPopulation (4900);
 		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());
-		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
+		assertEquals (2, cityData.getMinimumFarmers ());
 
 		// If we add a granary, that feeds 2 of the population so we need 1 less farmer
 		when (cityCalc.calculateSingleCityProduction (players, map, buildings, new MapCoordinates3DEx (2, 2, 0),
@@ -216,19 +216,19 @@ public final class TestServerCityCalculationsImpl
 
 		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());
-		assertEquals (1, cityData.getMinimumFarmers ().intValue ());
+		assertEquals (1, cityData.getMinimumFarmers ());
 
 		// Make the city bigger - now need 3 farmers to feed the 7 population (1 is fed by the granary)
 		cityData.setCityPopulation (7500);
 		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS03", cityData.getCitySizeID ());
-		assertEquals (3, cityData.getMinimumFarmers ().intValue ());
+		assertEquals (3, cityData.getMinimumFarmers ());
 
 		// Halfling farmers produce more rations - so now we only need 5/3 = 2 farmers
 		cityData.setCityRaceID ("RC03");
 		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS03", cityData.getCitySizeID ());
-		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
+		assertEquals (2, cityData.getMinimumFarmers ());
 	}
 
 	/**
@@ -251,22 +251,22 @@ public final class TestServerCityCalculationsImpl
 		// Lower optional farmers
 		city.setOptionalFarmers (1);
 		calc.ensureNotTooManyOptionalFarmers (city);
-		assertEquals (1, city.getOptionalFarmers ().intValue ());
+		assertEquals (1, city.getOptionalFarmers ());
 
 		// Exact number of optional farmers
 		city.setOptionalFarmers (2);
 		calc.ensureNotTooManyOptionalFarmers (city);
-		assertEquals (2, city.getOptionalFarmers ().intValue ());
+		assertEquals (2, city.getOptionalFarmers ());
 
 		// Too many optional farmers
 		city.setOptionalFarmers (3);
 		calc.ensureNotTooManyOptionalFarmers (city);
-		assertEquals (2, city.getOptionalFarmers ().intValue ());
+		assertEquals (2, city.getOptionalFarmers ());
 
 		// Way too many optional farmers
 		city.setNumberOfRebels (5);
 		calc.ensureNotTooManyOptionalFarmers (city);
-		assertEquals (0, city.getOptionalFarmers ().intValue ());
+		assertEquals (0, city.getOptionalFarmers ());
 	}
 
 	/**

@@ -214,7 +214,7 @@ public final class TestCityAIImpl
 		assertEquals (10, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd));
 
 		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
+			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ());
 
 		// In the situation where we have 62 cities - 2 building trade goods and 60 building something else - and we need 5 rations, there are
 		// only 2 possible outcomes - use 2 farmers in city A and 1 in city B, or use 1 in city A and 2 in city B
@@ -235,16 +235,16 @@ public final class TestCityAIImpl
 		assertEquals (-2, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd));
 
 		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
+			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ());
 
 		switch (trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (0).getCityData ().getOptionalFarmers ())
 		{
 			case 1:
-				assertEquals (2, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ().intValue ());
+				assertEquals (2, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ());
 				break;
 
 			case 2:
-				assertEquals (1, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ().intValue ());
+				assertEquals (1, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ());
 				break;
 
 			default:

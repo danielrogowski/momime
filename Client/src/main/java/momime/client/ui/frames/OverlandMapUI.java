@@ -881,7 +881,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 						if (SwingUtilities.isRightMouseButton (ev))
 						{
 							final OverlandMapCityData cityData = mc.getCityData ();
-							if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
+							if (cityData != null)
 							{
 								// Right clicking on a city to get the city screen up - is there a city view already open for this city?
 								CityViewUI cityView = getClient ().getCityViews ().get (mapLocation.toString ());
@@ -912,7 +912,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 								(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
 							{
 								// If there isn't even a city here then don't even display a message
-								if ((mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () != null) && (mc.getCityData ().getCityPopulation () > 0))
+								if (mc.getCityData () != null)
 								{
 									// Use common routine to do all the validation
 									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell

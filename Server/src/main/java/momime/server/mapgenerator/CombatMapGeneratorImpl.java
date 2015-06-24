@@ -276,13 +276,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				mapFeatureID = mc.getTerrainData ().getMapFeatureID ();
 			}
 			
-			final int cityPopulation;
-			if (mc.getCityData () == null)
-				cityPopulation = -1;
-			else if (mc.getCityData ().getCityPopulation () == null)
-				cityPopulation = -1;
-			else
-				cityPopulation = mc.getCityData ().getCityPopulation ();
+			final int cityPopulation = (mc.getCityData () == null) ? -1 : mc.getCityData ().getCityPopulation ();
 			
 			if (((element.getTileTypeID () == null) || (element.getTileTypeID ().equals (tileTypeID))) &&
 				((element.getMapFeatureID () == null) || (element.getMapFeatureID ().equals (mapFeatureID))) &&

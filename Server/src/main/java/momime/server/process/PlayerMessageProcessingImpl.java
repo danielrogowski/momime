@@ -1341,12 +1341,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final OneCellPendingMovement attackerMove;
 				final OneCellPendingMovement defenderMove;
 				
-				if ((firstMoveFromCity != null) && (firstMoveFromCity.getCityPopulation () != null) && (firstMoveFromCity.getCityPopulation () > 0))
+				if (firstMoveFromCity != null)
 				{
 					attackerMove = borderConflict.getFirstMove ();
 					defenderMove = borderConflict.getSecondMove ();
 				}
-				else if ((secondMoveFromCity != null) && (secondMoveFromCity.getCityPopulation () != null) && (secondMoveFromCity.getCityPopulation () > 0))
+				else if (secondMoveFromCity != null)
 				{
 					attackerMove = borderConflict.getSecondMove ();
 					defenderMove = borderConflict.getFirstMove ();

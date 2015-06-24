@@ -1251,7 +1251,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			for (int y = 0; y < overlandMapSize.getHeight (); y++)
 			{
 				final OverlandMapCityData cityData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
-				if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
+				if (cityData != null)
 					op.selectRadius (result, x, y, overlandMapSize.getCitySeparation ());
 			}
 

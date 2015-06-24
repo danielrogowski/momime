@@ -70,8 +70,7 @@ public final class MomAIImpl implements MomAI
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&
-						(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 

@@ -205,12 +205,12 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					{
 						final OverlandMapCityData trueCity = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-						if ((trueCity != null) && (trueCity.getCityPopulation () != null) && (trueCity.getCityPopulation () > 0))
+						if (trueCity != null)
 						{
 							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 							// Our city
-							if ((trueCity.getCityOwnerID () != null) && (trueCity.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+							if (trueCity.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
 							{
 								// Most cities can 'see' the same pattern as their resource range, but some special buildings can extend this
 								// This does not handle the "Nature's Eye" spell - this is done with the spells below
@@ -424,11 +424,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						case FOG_OF_WAR_ACTION_UPDATE:
 						{
 							// Careful, may not even be a city here and hence tc.getCityData () may be null
-							final int cityOwnerID;
-							if (tc.getCityData () == null)
-								cityOwnerID = 0;
-							else
-								cityOwnerID = (tc.getCityData ().getCityOwnerID () == null) ? 0 : tc.getCityData ().getCityOwnerID ();
+							final int cityOwnerID = (tc.getCityData () == null) ? 0 : tc.getCityData ().getCityOwnerID ();
 
 							if (getFogOfWarDuplication ().copyCityData (tc, mc,
 								(cityOwnerID == player.getPlayerDescription ().getPlayerID ()) || (sd.getFogOfWarSetting ().isSeeEnemyCityConstruction ()),
@@ -439,7 +435,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 									final UpdateCityMessageData cityMsg = new UpdateCityMessageData ();
 									cityMsg.setMapLocation (coords);
 									cityMsg.setCityData (mc.getCityData ());
-									cityMsg.setAskForCityName ((nameCitiesAtStartOfGame) && (tc.getCityData ().getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())));
+									cityMsg.setAskForCityName ((nameCitiesAtStartOfGame) && (tc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()));
 									msg.getCityUpdate ().add (cityMsg);
 								}
 							break;

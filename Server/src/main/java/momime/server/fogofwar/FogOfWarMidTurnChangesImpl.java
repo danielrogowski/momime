@@ -207,7 +207,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 				final boolean includeCurrentlyConstructing;
 				final boolean includeProductionSoFar;
-				if ((tc.getCityData () == null) || (tc.getCityData ().getCityOwnerID () == null))
+				if (tc.getCityData () == null)
 				{
 					includeCurrentlyConstructing = false;
 					includeProductionSoFar = false;

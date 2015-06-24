@@ -166,9 +166,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 		// The easiest one to check for is an enemy city - even if there's no units there, it still counts as an attack so we can decide whether to raze or capture it
 		final boolean resultsInAttack;
-		if ((mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () != null) && (mc.getCityData ().getCityOwnerID () != null) &&
-			(mc.getCityData ().getCityPopulation () > 0) && (mc.getCityData ().getCityOwnerID () != movingPlayerID))
-
+		if ((mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () != movingPlayerID))
 			resultsInAttack = true;
 
 		// Lastly check for enemy units

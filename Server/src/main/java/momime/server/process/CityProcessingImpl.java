@@ -273,8 +273,7 @@ public final class CityProcessingImpl implements CityProcessing
 				{
 					final ServerGridCellEx mc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final OverlandMapCityData cityData = mc.getCityData ();
-					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () > 0) &&
-						((onlyOnePlayerID == 0) | (onlyOnePlayerID == cityData.getCityOwnerID ())))
+					if ((cityData != null) && ((onlyOnePlayerID == 0) | (onlyOnePlayerID == cityData.getCityOwnerID ())))
 					{
 						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "growCitiesAndProgressConstructionProjects");
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
@@ -581,20 +580,16 @@ public final class CityProcessingImpl implements CityProcessing
 					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					{
 						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-						if (cityData != null)
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 						{
-							if ((cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&
-								(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
-							{
-								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
-								
-								cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels 
-									(mom.getPlayers (), trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+							
+							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels 
+								(mom.getPlayers (), trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());
 
-								getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
+							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
-							}
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
 						}
 					}
 			

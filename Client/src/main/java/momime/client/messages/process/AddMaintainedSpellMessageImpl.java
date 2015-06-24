@@ -123,7 +123,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			
 			if ((!getMaintainedSpell ().isCastInCombat ()) &&
 				((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
-				((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID ().equals (getClient ().getOurPlayerID ())))))
+				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))))
 			{
 				animatedByOtherFrame = true;
 				

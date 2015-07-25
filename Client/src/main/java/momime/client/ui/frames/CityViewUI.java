@@ -265,6 +265,9 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Panel that covers up an area of the screen if it isn't our city */
 	private JPanel notOursPanel;
+
+	/** Panel that covers up an area of the screen if we can't see what this city is constructing */
+	private JPanel cannotSeeConstructionPanel;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -285,6 +288,7 @@ public final class CityViewUI extends MomClientFrameUI
 		final BufferedImage progressCoinNotDone = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/productionProgressNotDone.png");
 		
 		final BufferedImage notOurs = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/notOurs.png");
+		final BufferedImage cannotSeeConstruction = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/cannotSeeConstruction.png");
 		final BufferedImage resourceArea = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/resourceArea.png");
 
 		final XmlLayoutComponent constructionProgressPanelSize = getCityViewLayout ().findComponent ("frmCityConstructionProgress");
@@ -492,7 +496,7 @@ public final class CityViewUI extends MomClientFrameUI
 		// OK button is also in front of the "not ours" panel
 		contentPane.add (getUtils ().createImageButton (okAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityOK");
 		
-		// Set up panel to cover up production images and buttons on cities that aren't ours.
+		// Set up panels to cover up production images and buttons on cities that aren't ours.
 		// The ordering of when we add this is significant - it must be behind the area where we draw the city (all the buildings) but in front of all the production buttons.
 		notOursPanel = new JPanel ()
 		{
@@ -503,6 +507,16 @@ public final class CityViewUI extends MomClientFrameUI
 			}
 		};
 
+		cannotSeeConstructionPanel = new JPanel ()
+		{
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				g.drawImage (cannotSeeConstruction, 0, 0, cannotSeeConstruction.getWidth () * 2, cannotSeeConstruction.getHeight () * 2, null);
+			}
+		};
+		
+		contentPane.add (cannotSeeConstructionPanel, "frmCityCannotSeeConstruction");
 		contentPane.add (notOursPanel, "frmCityNotOurs");
 		
 		// Labels
@@ -667,37 +681,40 @@ public final class CityViewUI extends MomClientFrameUI
 						(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 					final OverlandMapCityData cityData = mc.getCityData ();
 
-					// How many coins does it take to draw this (round up)
-					Integer productionCost = null;
-					if (cityData.getCurrentlyConstructingBuildingID () != null)
-						productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionProgressPanel").getProductionCost ();
-
-					if (cityData.getCurrentlyConstructingUnitID () != null)
-						productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "constructionProgressPanel").getProductionCost ();
-					
-					if (productionCost != null)
+					if (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()))
 					{
-						// How many coins does it take to draw this? (round up)
-						final int totalCoins = (productionCost + productionProgressDivisor - 1) / productionProgressDivisor;
+						// How many coins does it take to draw this (round up)
+						Integer productionCost = null;
+						if (cityData.getCurrentlyConstructingBuildingID () != null)
+							productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionProgressPanel").getProductionCost ();
+	
+						if (cityData.getCurrentlyConstructingUnitID () != null)
+							productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "constructionProgressPanel").getProductionCost ();
 						
-						// How many of those coins should be coloured in for what we've built so far? (round down, so things don't have every coin filled in but not completed)
-						final int goldCoins = (cityData.getProductionSoFar () == null) ? 0 : (cityData.getProductionSoFar () / productionProgressDivisor);
-						
-						// Draw the coins
-						int x = 0;
-						int y = 0;
-						
-						for (int n = 0; n < totalCoins; n++)
+						if (productionCost != null)
 						{
-							// Draw this one
-							g.drawImage ((n < goldCoins) ? progressCoinDone : progressCoinNotDone, x, y, null);
+							// How many coins does it take to draw this? (round up)
+							final int totalCoins = (productionCost + productionProgressDivisor - 1) / productionProgressDivisor;
 							
-							// Move to next spot
-							x = x + progressCoinDone.getWidth () + 1;
-							if (x + progressCoinDone.getWidth () > constructionProgressPanelSize.getWidth ())
+							// How many of those coins should be coloured in for what we've built so far? (round down, so things don't have every coin filled in but not completed)
+							final int goldCoins = (cityData.getProductionSoFar () == null) ? 0 : (cityData.getProductionSoFar () / productionProgressDivisor);
+							
+							// Draw the coins
+							int x = 0;
+							int y = 0;
+							
+							for (int n = 0; n < totalCoins; n++)
 							{
-								x = 0;
-								y = y + progressCoinDone.getHeight () + 1;
+								// Draw this one
+								g.drawImage ((n < goldCoins) ? progressCoinDone : progressCoinNotDone, x, y, null);
+								
+								// Move to next spot
+								x = x + progressCoinDone.getWidth () + 1;
+								if (x + progressCoinDone.getWidth () > constructionProgressPanelSize.getWidth ())
+								{
+									x = 0;
+									y = y + progressCoinDone.getHeight () + 1;
+								}
 							}
 						}
 					}
@@ -1189,6 +1206,10 @@ public final class CityViewUI extends MomClientFrameUI
 		notOursPanel.setVisible (!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()));
 		production.setVisible (!notOursPanel.isVisible ());
 		changeConstructionAction.setEnabled (!notOursPanel.isVisible ());
+		
+		// Can we see what this city is constructing?
+		cannotSeeConstructionPanel.setVisible ((!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) &&
+			(!getClient ().getSessionDescription ().getFogOfWarSetting ().isSeeEnemyCityConstruction ()));
 		
 		// Must do this after setting the "not ours" panel visibility, since it uses it
 		recheckRushBuyEnabled ();

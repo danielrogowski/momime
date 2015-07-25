@@ -35,6 +35,7 @@ import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
@@ -62,9 +63,10 @@ public final class TestCityViewUI
 	 * Tests the CityViewUI form
 	 * 
 	 * @param ourCity Whether the city is ours, or someone else's
+	 * @param seeEnemyCityConstruction Whether we can see what enemy cities are constructing or not 
 	 * @throws Exception If there is a problem
 	 */
-	private final void testCityViewUI (final boolean ourCity) throws Exception
+	private final void testCityViewUI (final boolean ourCity, final boolean seeEnemyCityConstruction) throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -174,6 +176,11 @@ public final class TestCityViewUI
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (fow);
 		priv.setTaxRateID ("TR01");
+		
+		// Session description
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
+		fowSettings.setSeeEnemyCityConstruction (seeEnemyCityConstruction);
+		sd.setFogOfWarSetting (fowSettings);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
@@ -318,16 +325,26 @@ public final class TestCityViewUI
 	@Test
 	public final void testCityViewUI_Ours () throws Exception
 	{
-		testCityViewUI (true);
+		testCityViewUI (true, true);
 	}
 
 	/**
-	 * Tests the CityViewUI form on one of someone else's cities
+	 * Tests the CityViewUI form on one of someone else's cities and we can see what they're constructing
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCityViewUI_NotOurs () throws Exception
+	public final void testCityViewUI_NotOurs_CanSee () throws Exception
 	{
-		testCityViewUI (false);
+		testCityViewUI (false, true);
+	}
+	
+	/**
+	 * Tests the CityViewUI form on one of someone else's cities and we can't see what they're constructing
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCityViewUI_NotOurs_CantSee () throws Exception
+	{
+		testCityViewUI (false, false);
 	}
 }

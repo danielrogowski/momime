@@ -4,9 +4,17 @@
 	<formHeight>482</formHeight>
 	<component name="frmCityNotOurs">
 		<left>342</left>
-		<top>252</top>
+		<top>406</top>
 		<width>238</width>
-		<height>182</height>
+		<height>28</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityCannotSeeConstruction">
+		<left>420</left>
+		<top>252</top>
+		<width>160</width>
+		<height>154</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

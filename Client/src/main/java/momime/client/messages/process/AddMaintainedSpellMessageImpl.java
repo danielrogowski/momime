@@ -150,7 +150,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
 			
 			anim = null;
-			if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getUnitURN () != null))
+			if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getUnitURN () != null) && (isNewlyCast ()))
 			{
 				final MemoryUnit spellTargetUnit = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");

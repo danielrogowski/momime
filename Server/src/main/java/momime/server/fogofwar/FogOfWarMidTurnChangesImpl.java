@@ -526,6 +526,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Build the message ready to send it to whoever can see the spell
 		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
 		msg.setMaintainedSpell (trueSpell);
+		msg.setNewlyCast (true);		// Spells added via this method must be new, or just being targetted, so either way from the client's point of view they must be newly cast
 
 		// Check which players can see the spell
 		for (final PlayerServerDetails player : players)

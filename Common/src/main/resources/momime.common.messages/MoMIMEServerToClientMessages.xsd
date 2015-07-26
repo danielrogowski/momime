@@ -955,6 +955,11 @@ Sends the complete spell object so the client can just add it as-is.</xsd:docume
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="maintainedSpell" type="momimemsgs:memoryMaintainedSpell" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="newlyCast" type="xsd:boolean">
+						    <xsd:annotation>
+    							<xsd:documentation>Whether the spell is newly cast (and so show animation for it), or has merely come into our view.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

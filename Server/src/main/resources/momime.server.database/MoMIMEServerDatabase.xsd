@@ -718,6 +718,20 @@
 			<xsd:selector xpath="citySpellEffect" />
 			<xsd:field xpath="combatAreaEffectID" />
 		</xsd:keyref>
+		
+		<!-- Combat attack resolution, for dealing with exactly what happens if e.g. we have first strike and enemy unit has haste, new for 0.9.6.2 -->
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="attackResolutionConditionFKunitSkill">
+			<xsd:selector xpath="unitAttribute/attackResolution/attackResolutionCondition" />
+			<xsd:field xpath="unitSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="attackResolutionStepFKunitSkill">
+			<xsd:selector xpath="unitAttribute/attackResolution/attackResolutionStep" />
+			<xsd:field xpath="unitSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitAttributePK" name="attackResolutionStepFKunitAttribute">
+			<xsd:selector xpath="unitAttribute/attackResolution/attackResolutionStep" />
+			<xsd:field xpath="unitAttributeID" />
+		</xsd:keyref>
 	</xsd:element>
 		
 <!-- Complex types -->
@@ -1017,6 +1031,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:extension base="momimecommon:unitAttribute">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolution" type="momimesvr:attackResolution" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1428,6 +1443,60 @@ a city wall, a wizards' fortress tile should be added if the city contains the w
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatTileBorderDirections" type="momimecommon:directions" nxe:label="Border direction(s)" nxe:gridwidth="100" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- Combat attack resolution, for dealing with exactly what happens if e.g. we have first strike and enemy unit has haste, new for 0.9.6.2 -->
+	
+	<xsd:complexType name="attackResolution" nxe:singular="Attack Resolution" nxe:plural="Attack Resolutions">
+        <xsd:annotation>
+        	<xsd:documentation>Defines attack/counterattack sequences for resolving attacks from different unit attributes.
+e.g. some of these get quite long and complicated when there may be first strike, breath attacks or haste involved.
+When e.g. a Melee attack is instigated, each possible attack resolution is checked in order until we find one where we meet all the conditions.
+Its an error if we can't find any entry that defines how to resolve a particular attack, or to put another way, the final attack resolution entry should have no conditions.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="attackResolutionDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolutionCondition" type="momimesvr:attackResolutionCondition" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolutionStep" type="momimesvr:attackResolutionStep" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="attackResolutionCondition" nxe:singular="Conditon" nxe:plural="Conditons">
+        <xsd:annotation>
+        	<xsd:documentation>Conditions that must be met, ANDed together, to select a particular attack resolution.
+e.g. attacking unit must have first strike and defending unit must have haste.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" nxe:label="Combat side" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="attackResolutionStep" nxe:singular="Step" nxe:plural="Steps">
+        <xsd:annotation>
+        	<xsd:documentation>Steps taken to resolve a particular type of attack.
+e.g. attacker uses breath weapon, then defender uses breath weapon, then attacker and defender use melee attacks simultaneously.
+If multiple steps have the same step number, they are executed simultaneously, i.e. all steps with the same step number are processed before damage is applied to either unit.
+Either unitAttributeID (for regular attacks) or unitSkillID (for e.g. breath attacks) must be specified, but not both.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="stepNumber" type="xsd:unsignedShort" nxe:label="Step number" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" nxe:label="Combat side" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitAttributeID" type="momimecommon:unitAttributeID" nxe:label="Attribute" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	

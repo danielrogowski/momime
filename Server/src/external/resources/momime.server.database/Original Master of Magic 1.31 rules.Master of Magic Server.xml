@@ -6105,9 +6105,30 @@
 	</heroSkillType>
 	<unitAttribute unitAttributeID="UA01">
 		<unitAttributeDescription>Melee Attack Strength</unitAttributeDescription>
+		<attackResolution>
+			<attackResolutionDescription>Melee attack with simultaneous counter-attack</attackResolutionDescription>
+			<attackResolutionStep>
+				<stepNumber>1</stepNumber>
+				<combatSide>A</combatSide>
+				<unitAttributeID>UA01</unitAttributeID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>1</stepNumber>
+				<combatSide>D</combatSide>
+				<unitAttributeID>UA01</unitAttributeID>
+			</attackResolutionStep>
+		</attackResolution>
 	</unitAttribute>
 	<unitAttribute unitAttributeID="UA02">
 		<unitAttributeDescription>Ranged Attack Strength</unitAttributeDescription>
+		<attackResolution>
+			<attackResolutionDescription>Ranged attack</attackResolutionDescription>
+			<attackResolutionStep>
+				<stepNumber>1</stepNumber>
+				<combatSide>A</combatSide>
+				<unitAttributeID>UA02</unitAttributeID>
+			</attackResolutionStep>
+		</attackResolution>
 	</unitAttribute>
 	<unitAttribute unitAttributeID="UA03">
 		<unitAttributeDescription>+ to Hit</unitAttributeDescription>

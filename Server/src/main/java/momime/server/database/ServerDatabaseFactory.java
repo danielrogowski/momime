@@ -2,6 +2,9 @@ package momime.server.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
+import momime.server.database.v0_9_6.AttackResolution;
+import momime.server.database.v0_9_6.AttackResolutionCondition;
+import momime.server.database.v0_9_6.AttackResolutionStep;
 import momime.server.database.v0_9_6.Building;
 import momime.server.database.v0_9_6.CityNameContainer;
 import momime.server.database.v0_9_6.CitySize;
@@ -398,5 +401,32 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	public final CitySpellEffect createCitySpellEffect ()
 	{
 		return new CitySpellEffectSvr ();
+	}
+
+	/**
+	 * @return Custom extended AttackResolution
+	 */
+	@Override
+	public final AttackResolution createAttackResolution ()
+	{
+		return new AttackResolutionSvr ();
+	}
+
+	/**
+	 * @return Custom extended AttackResolutionCondition
+	 */
+	@Override
+	public final AttackResolutionCondition createAttackResolutionCondition ()
+	{
+		return new AttackResolutionConditionSvr ();
+	}
+
+	/**
+	 * @return Custom extended AttackResolutionStep
+	 */
+	@Override
+	public final AttackResolutionStep createAttackResolutionStep ()
+	{
+		return new AttackResolutionStepSvr ();
 	}
 }

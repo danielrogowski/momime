@@ -23,6 +23,7 @@ import momime.server.database.v0_9_6.ServerDatabase;
 import momime.server.database.v0_9_6.Spell;
 import momime.server.database.v0_9_6.TileType;
 import momime.server.database.v0_9_6.Unit;
+import momime.server.database.v0_9_6.UnitAttribute;
 import momime.server.database.v0_9_6.UnitMagicRealm;
 import momime.server.database.v0_9_6.UnitSkill;
 import momime.server.database.v0_9_6.UnitType;
@@ -76,6 +77,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	/** Map of unit skill IDs to unit skill XML objects */
 	private Map<String, UnitSkillSvr> unitSkillsMap;
 
+	/** Map of unit attribute IDs to unit attribute XML objects */
+	private Map<String, UnitAttributeSvr> unitAttributesMap;
+	
 	/** Map of weapon grade numbers to weapon grade XML objects */
 	private Map<Integer, WeaponGrade> weaponGradesMap;
 
@@ -173,6 +177,11 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
 			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillSvr) thisUnitSkill);
 
+		// Create unit attributes map
+		unitAttributesMap = new HashMap<String, UnitAttributeSvr> ();
+		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
+			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), (UnitAttributeSvr) thisUnitAttribute);
+		
 		// Create weaponGrades map
 		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
@@ -538,6 +547,32 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @return Complete list of all unit attributes in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitAttributeSvr> getUnitAttributes ()
+	{
+		return (List<UnitAttributeSvr>) (List<?>) getUnitAttribute ();
+	}
+
+	/**
+	 * @param unitAttributeID Unit attribute ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit attribute object
+	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
+	 */
+	@Override
+	public final UnitAttributeSvr findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException
+	{
+		final UnitAttributeSvr found = unitAttributesMap.get (unitAttributeID);
+		if (found == null)
+			throw new RecordNotFoundException (UnitAttribute.class, unitAttributeID, caller);
+
+		return found;
+	}
+	
+	/**
 	 * @return Complete list of all weapon grades in game
 	 */
 	@Override
@@ -775,16 +810,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			throw new RecordNotFoundException (CitySpellEffect.class, citySpellEffectID, caller);
 
 		return found;
-	}
-
-	/**
-	 * @return Complete list of all unit attributes in game
-	 */
-	@Override
-	@SuppressWarnings ("unchecked")
-	public final List<UnitAttributeSvr> getUnitAttributes ()
-	{
-		return (List<UnitAttributeSvr>) (List<?>) getUnitAttribute ();
 	}
 	
 	/**

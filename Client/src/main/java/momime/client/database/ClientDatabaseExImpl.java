@@ -70,6 +70,9 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	/** Map of unit skill IDs to unit skill XML objects */
 	private Map<String, UnitSkill> unitSkillsMap;
 
+	/** Map of unit attribute IDs to unit attribute XML objects */
+	private Map<String, UnitAttribute> unitAttributesMap;
+	
 	/** Map of weapon grade numbers to weapon grade XML objects */
 	private Map<Integer, WeaponGrade> weaponGradesMap;
 
@@ -162,6 +165,11 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
 			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
 
+		// Create unit attributes map
+		unitAttributesMap = new HashMap<String, UnitAttribute> ();
+		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
+			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), thisUnitAttribute);
+		
 		// Create weaponGrades map
 		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
@@ -506,6 +514,31 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	}
 
 	/**
+	 * @return Complete list of all unit attributes in game
+	 */
+	@Override
+	public final List<UnitAttribute> getUnitAttributes ()
+	{
+		return getUnitAttribute ();
+	}
+
+	/**
+	 * @param unitAttributeID Unit attribute ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit attribute object
+	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
+	 */
+	@Override
+	public final UnitAttribute findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException
+	{
+		final UnitAttribute found = unitAttributesMap.get (unitAttributeID);
+		if (found == null)
+			throw new RecordNotFoundException (UnitAttribute.class, unitAttributeID, caller);
+
+		return found;
+	}
+	
+	/**
 	 * @param weaponGradeNumber Weapon grade number to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Weapon grade object
@@ -676,15 +709,6 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		return found;
 	}
 
-	/**
-	 * @return Complete list of all unit attributes in game
-	 */
-	@Override
-	public final List<UnitAttribute> getUnitAttributes ()
-	{
-		return getUnitAttribute ();
-	}
-	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database
 	 */

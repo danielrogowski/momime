@@ -529,6 +529,50 @@ public final class TestServerDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findUnitAttributeID method to find a unit attribute ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindUnitAttributeID_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitAttributeSvr newUnitAttribute = new UnitAttributeSvr ();
+			newUnitAttribute.setUnitAttributeID ("UA0" + n);
+			newUnitAttribute.setUnitAttributeDescription ("Unit attr UA0" + n);
+
+			db.getUnitAttribute ().add (newUnitAttribute);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("Unit attr UA02", db.findUnitAttribute ("UA02", "testFindUnitAttributeID_Exists").getUnitAttributeDescription ());
+	}
+
+	/**
+	 * Tests the findUnitAttributeID method to find a unit attribute ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitAttributeID_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitAttributeSvr newUnitAttribute = new UnitAttributeSvr ();
+			newUnitAttribute.setUnitAttributeID ("UA0" + n);
+			newUnitAttribute.setUnitAttributeDescription ("Unit attr UA0" + n);
+
+			db.getUnitAttribute ().add (newUnitAttribute);
+		}
+
+		db.buildMaps ();
+
+		db.findUnitAttribute ("UA04", "testFindUnitAttributeID_NotExists");
+	}
+
+	/**
 	 * Tests the findWeaponGrade method to find a weaponGradeNumber that does exist
 	 * @throws RecordNotFoundException If we can't find it
 	 */

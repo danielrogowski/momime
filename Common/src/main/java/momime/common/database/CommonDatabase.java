@@ -145,6 +145,14 @@ public interface CommonDatabase
 	 * @return Complete list of all unit attributes in game
 	 */
 	public List<? extends UnitAttribute> getUnitAttributes ();
+
+	/**
+	 * @param unitAttributeID Unit attribute ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit attribute object
+	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
+	 */
+	public UnitAttribute findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param weaponGradeNumber Weapon grade number to search for

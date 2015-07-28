@@ -3,23 +3,22 @@ package momime.client.database;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import momime.client.database.MapFeature;
-import momime.client.database.Wizard;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Building;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileType;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
 import momime.common.database.Race;
 import momime.common.database.RangedAttackType;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
+import momime.common.database.UnitAttribute;
 import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitType;
@@ -529,6 +528,48 @@ public final class TestClientDatabaseExImpl
 		db.buildMaps ();
 
 		db.findUnitSkill ("US004", "testFindUnitSkillID_NotExists");
+	}
+
+	/**
+	 * Tests the findUnitAttributeID method to find a unit attribute ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindUnitAttributeID_Exists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitAttribute newUnitAttribute = new UnitAttribute ();
+			newUnitAttribute.setUnitAttributeID ("UA0" + n);
+
+			db.getUnitAttribute ().add (newUnitAttribute);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("UA02", db.findUnitAttribute ("UA02", "testFindUnitAttributeID_Exists").getUnitAttributeID ());
+	}
+
+	/**
+	 * Tests the findUnitAttributeID method to find a unit attribute ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitAttributeID_NotExists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitAttribute newUnitAttribute = new UnitAttribute ();
+			newUnitAttribute.setUnitAttributeID ("UA0" + n);
+
+			db.getUnitAttribute ().add (newUnitAttribute);
+		}
+
+		db.buildMaps ();
+
+		db.findUnitAttribute ("UA04", "testFindUnitAttributeID_NotExists");
 	}
 
 	/**

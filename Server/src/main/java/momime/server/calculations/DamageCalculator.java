@@ -11,6 +11,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationData;
+import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 
@@ -290,4 +291,23 @@ public interface DamageCalculator
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * When one unit initiates a unit attribute-based attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
+	 * 
+	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
+	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
+	 * @param attackAttributeID Which attribute they are attacking with (melee or ranged)
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Chosen attack resolution
+	 * @throws RecordNotFoundException If the unit attribute or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
+	 */
+	public AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackAttributeID,
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

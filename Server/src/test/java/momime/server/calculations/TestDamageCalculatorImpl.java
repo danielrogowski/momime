@@ -9,11 +9,13 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -24,8 +26,11 @@ import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
+import momime.server.database.AttackResolutionConditionSvr;
+import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.database.UnitAttributeSvr;
 import momime.server.utils.UnitServerUtils;
 
 import org.junit.Test;
@@ -1471,5 +1476,122 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToDefend ());
 		assertNull (data.getTenTimesAverageBlock ());
 		assertEquals (0, data.getFinalHits ());			// Takes no damage
+	}
+	
+	/**
+	 * Tests the chooseAttackResolution method when an appropraite attack resolution does exist 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testChooseAttackResolution_Exists () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+
+		// Units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (1);
+		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
+
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (2);
+		when (unitUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (1);
+		
+		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
+		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
+		condition1.setCombatSide (UnitCombatSideID.ATTACKER);
+		condition1.setUnitSkillID ("US001");
+		
+		final AttackResolutionSvr res1 = new AttackResolutionSvr ();
+		res1.getAttackResolutionConditions ().add (condition1);
+
+		// Now one that does match
+		final AttackResolutionConditionSvr condition2 = new AttackResolutionConditionSvr ();
+		condition2.setCombatSide (UnitCombatSideID.DEFENDER);
+		condition2.setUnitSkillID ("US002");
+		
+		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
+		res2.getAttackResolutionConditions ().add (condition2);
+		
+		final UnitAttributeSvr unitAttr = new UnitAttributeSvr ();
+		unitAttr.getAttackResolutions ().add (res1);
+		unitAttr.getAttackResolutions ().add (res2);
+		when (db.findUnitAttribute ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitUtils (unitUtils);
+
+		// Run method
+		final AttackResolutionSvr chosen = calc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);
+		
+		// Check results
+		assertSame (res2, chosen);
+	}
+
+	/**
+	 * Tests the chooseAttackResolution method when no appropraite attack resolution exists 
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testChooseAttackResolution_NotExists () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+
+		// Units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (1);
+		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
+
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (2);
+		when (unitUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (-1);
+		
+		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
+		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
+		condition1.setCombatSide (UnitCombatSideID.ATTACKER);
+		condition1.setUnitSkillID ("US001");
+		
+		final AttackResolutionSvr res1 = new AttackResolutionSvr ();
+		res1.getAttackResolutionConditions ().add (condition1);
+
+		// Now another one that doesn't match
+		final AttackResolutionConditionSvr condition2 = new AttackResolutionConditionSvr ();
+		condition2.setCombatSide (UnitCombatSideID.DEFENDER);
+		condition2.setUnitSkillID ("US002");
+		
+		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
+		res2.getAttackResolutionConditions ().add (condition2);
+		
+		final UnitAttributeSvr unitAttr = new UnitAttributeSvr ();
+		unitAttr.getAttackResolutions ().add (res1);
+		unitAttr.getAttackResolutions ().add (res2);
+		when (db.findUnitAttribute ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitUtils (unitUtils);
+
+		// Run method
+		calc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);
 	}
 }

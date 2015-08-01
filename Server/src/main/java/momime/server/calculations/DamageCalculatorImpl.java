@@ -1,5 +1,6 @@
 package momime.server.calculations;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -13,6 +14,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -23,8 +25,11 @@ import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.database.AttackResolutionConditionSvr;
+import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.database.UnitAttributeSvr;
 import momime.server.utils.UnitServerUtils;
 
 import org.apache.commons.logging.Log;
@@ -743,6 +748,63 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		log.trace ("Exiting calculateDisintegrateDamage = " + damageCalculationMsg.getFinalHits ());
 		return damageCalculationMsg.getFinalHits ();
+	}
+	
+	/**
+	 * When one unit initiates a unit attribute-based attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
+	 * 
+	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
+	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
+	 * @param attackAttributeID Which attribute they are attacking with (melee or ranged)
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Chosen attack resolution
+	 * @throws RecordNotFoundException If the unit attribute or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
+	 */
+	@Override
+	public final AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackAttributeID,
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering chooseAttackResolution: Unit URN " + attacker.getUnitURN () + " hitting Unit URN " + defender.getUnitURN () + " with " + attackAttributeID);
+	
+		final UnitAttributeSvr unitAttr = db.findUnitAttribute (attackAttributeID, "chooseAttackResolution");
+		
+		// Check all possible attack resolutions to select the most appropriate one
+		AttackResolutionSvr match = null;
+		final Iterator<AttackResolutionSvr> iter = unitAttr.getAttackResolutions ().iterator ();
+		while ((match == null) && (iter.hasNext ()))
+		{
+			final AttackResolutionSvr attackResolution = iter.next ();
+			
+			// Check all the conditions
+			boolean conditionsMatch = true;
+			final Iterator<AttackResolutionConditionSvr> conditions = attackResolution.getAttackResolutionConditions ().iterator ();
+			while ((conditionsMatch) && (conditions.hasNext ()))
+			{
+				final AttackResolutionConditionSvr condition = conditions.next ();
+				
+				// Check this condition
+				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
+				if (getUnitUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (), players, spells, combatAreaEffects, db) < 0)
+					conditionsMatch = false;
+			}
+			
+			if (conditionsMatch)
+				match = attackResolution;
+		}
+		
+		// Its an error if we fail to find any match at all
+		if (match == null)
+			throw new MomException ("Unit URN " + attacker.getUnitURN () + " tried to hit Unit URN " + defender.getUnitURN () + " with attack of type " + attackAttributeID +
+				" but there are no defined attack resolutions capable of processing the attack");
+		
+		log.trace ("Exiting chooseAttackResolution = " + match);
+		return match;
 	}
 	
 	/**

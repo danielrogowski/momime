@@ -177,7 +177,8 @@ public final class TestDamageCalculatorImpl
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, spells, combatAreaEffects, db);
 		
 		// Check results
-		assertEquals (18, dmg.getPotentialHits ().intValue ());
+		assertEquals (3, dmg.getPotentialHits ().intValue ());
+		assertEquals (6, dmg.getRepetitions ());
 		assertEquals (1, dmg.getPlusToHit ());
 		assertEquals (DamageTypeID.SINGLE_FIGURE, dmg.getDamageType ());
 
@@ -196,9 +197,9 @@ public final class TestDamageCalculatorImpl
 	    assertNull (data.getAttackSpellID ());
 	    assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
 	    assertEquals (DamageTypeID.SINGLE_FIGURE, data.getDamageType ());
-	    assertEquals (6, data.getAttackerFigures ().intValue ());
-	    assertEquals (3, data.getAttackStrength ().intValue ());
-	    assertEquals (18, data.getPotentialHits ().intValue ());
+	    assertNull (data.getAttackerFigures ());
+	    assertNull (data.getAttackStrength ());
+	    assertEquals (3, data.getPotentialHits ().intValue ());
 	}
 	
 	/**

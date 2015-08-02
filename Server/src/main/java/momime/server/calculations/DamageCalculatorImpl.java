@@ -124,17 +124,17 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (DamageTypeID.SINGLE_FIGURE);
 
 		// How many potential hits can we make - See page 285 in the strategy guide
-		damageCalculationMsg.setAttackerFigures (getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db));
-		damageCalculationMsg.setAttackStrength (getUnitUtils ().getModifiedAttributeValue (attacker, attackAttributeID,
+		// MoM Wiki contradicts this and states that attacks are made separately from each figure
+		final int repetitions = getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db);
+		damageCalculationMsg.setPotentialHits (getUnitUtils ().getModifiedAttributeValue (attacker, attackAttributeID,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
-		damageCalculationMsg.setPotentialHits (damageCalculationMsg.getAttackerFigures () * damageCalculationMsg.getAttackStrength ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
 		// Fill in the damage object
 		final int plusToHit = getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 
-		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE, null, 1);
+		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE, null, repetitions);
 		log.trace ("Exiting attackFromUnitAttribute = " + attackDamage);
 		return attackDamage;
 	}

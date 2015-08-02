@@ -9,13 +9,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
-import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -26,11 +24,9 @@ import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
-import momime.server.database.AttackResolutionConditionSvr;
-import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
-import momime.server.database.UnitAttributeSvr;
+import momime.server.database.UnitSkillSvr;
 import momime.server.utils.UnitServerUtils;
 
 import org.junit.Test;
@@ -122,11 +118,11 @@ public final class TestDamageCalculatorImpl
 	}
 	
 	/**
-	 * Tests the attackFromUnit method
+	 * Tests the attackFromUnitAttribute method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAttackFromUnit () throws Exception
+	public final void testAttackFromUnitAttribute () throws Exception
 	{
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -176,7 +172,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnit (attacker, attackingPlayer, defendingPlayer,
+		final AttackDamage dmg = calc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, spells, combatAreaEffects, db);
 		
 		// Check results
@@ -202,6 +198,217 @@ public final class TestDamageCalculatorImpl
 	    assertEquals (6, data.getAttackerFigures ().intValue ());
 	    assertEquals (3, data.getAttackStrength ().intValue ());
 	    assertEquals (18, data.getPotentialHits ().intValue ());
+	}
+	
+	/**
+	 * Tests the attackFromUnitSkill method on an attack that is multipled up by the number of figures in the attacking unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttackFromUnitSkill_PerFigure () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// The kind of damage inflicted by this skill
+		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
+		unitSkill.setDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
+		unitSkill.setDamagePerFigure (true);
+		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
+
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+
+		// Set up unit
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (22);
+		attacker.setOwningPlayerID (attackingPD.getPlayerID ());
+
+		// Set up attacker stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has 6 figures...
+
+		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
+			players, spells, combatAreaEffects, db)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+
+		when (unitUtils.getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);	// ..with 40% chance to hit on each
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final AttackDamage dmg = calc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US001", players, spells, combatAreaEffects, db);
+		
+		// Check results
+		assertEquals (18, dmg.getPotentialHits ().intValue ());
+		assertEquals (1, dmg.getPlusToHit ());
+		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageType ());
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		
+		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
+	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
+	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
+	    assertEquals ("US001", data.getAttackSkillID ());
+	    assertNull (data.getAttackSpellID ());
+	    assertNull (data.getAttackAttributeID ());
+	    assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageType ());
+	    assertEquals (6, data.getAttackerFigures ().intValue ());
+	    assertEquals (3, data.getAttackStrength ().intValue ());
+	    assertEquals (18, data.getPotentialHits ().intValue ());
+	}
+
+	/**
+	 * Tests the attackFromUnitSkill method on an attack that remains the same regardless of the number of figures alive in the attacking unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttackFromUnitSkill_PerUnit () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// The kind of damage inflicted by this skill
+		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
+		unitSkill.setDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
+		unitSkill.setDamagePerFigure (false);
+		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
+
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+
+		// Set up unit
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (22);
+		attacker.setOwningPlayerID (attackingPD.getPlayerID ());
+
+		// Set up attacker stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has 6 figures...
+
+		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
+			players, spells, combatAreaEffects, db)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+
+		when (unitUtils.getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);	// ..with 40% chance to hit on each
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final AttackDamage dmg = calc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US001", players, spells, combatAreaEffects, db);
+		
+		// Check results
+		assertEquals (3, dmg.getPotentialHits ().intValue ());
+		assertEquals (1, dmg.getPlusToHit ());
+		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageType ());
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		
+		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
+	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
+	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
+	    assertEquals ("US001", data.getAttackSkillID ());
+	    assertNull (data.getAttackSpellID ());
+	    assertNull (data.getAttackAttributeID ());
+	    assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageType ());
+	    assertNull (data.getAttackerFigures ());
+	    assertNull (data.getAttackStrength ());
+	    assertEquals (3, data.getPotentialHits ().intValue ());
+	}
+
+	/**
+	 * Tests the attackFromUnitSkill method when the attacking unit doesn't have the requested skill
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttackFromUnitSkill_DontHaveSkill () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Set up unit
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (22);
+
+		// Set up attacker stats
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
+			players, spells, combatAreaEffects, db)).thenReturn (-1);	// Doesn't have the skill
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Run test
+		final AttackDamage dmg = calc.attackFromUnitSkill (attacker, null, null, "US001", players, spells, combatAreaEffects, db);
+		
+		// Check results
+		assertNull (dmg);
 	}
 
 	/**
@@ -1476,122 +1683,5 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToDefend ());
 		assertNull (data.getTenTimesAverageBlock ());
 		assertEquals (0, data.getFinalHits ());			// Takes no damage
-	}
-	
-	/**
-	 * Tests the chooseAttackResolution method when an appropraite attack resolution does exist 
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testChooseAttackResolution_Exists () throws Exception
-	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		
-		// Set up players
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-
-		// Units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitURN (1);
-		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
-
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (2);
-		when (unitUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (1);
-		
-		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
-		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
-		condition1.setCombatSide (UnitCombatSideID.ATTACKER);
-		condition1.setUnitSkillID ("US001");
-		
-		final AttackResolutionSvr res1 = new AttackResolutionSvr ();
-		res1.getAttackResolutionConditions ().add (condition1);
-
-		// Now one that does match
-		final AttackResolutionConditionSvr condition2 = new AttackResolutionConditionSvr ();
-		condition2.setCombatSide (UnitCombatSideID.DEFENDER);
-		condition2.setUnitSkillID ("US002");
-		
-		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
-		res2.getAttackResolutionConditions ().add (condition2);
-		
-		final UnitAttributeSvr unitAttr = new UnitAttributeSvr ();
-		unitAttr.getAttackResolutions ().add (res1);
-		unitAttr.getAttackResolutions ().add (res2);
-		when (db.findUnitAttribute ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
-		
-		// Set up object to test
-		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitUtils (unitUtils);
-
-		// Run method
-		final AttackResolutionSvr chosen = calc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);
-		
-		// Check results
-		assertSame (res2, chosen);
-	}
-
-	/**
-	 * Tests the chooseAttackResolution method when no appropraite attack resolution exists 
-	 * @throws Exception If there is a problem
-	 */
-	@Test(expected=MomException.class)
-	public final void testChooseAttackResolution_NotExists () throws Exception
-	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		
-		// Set up players
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-
-		// Units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitURN (1);
-		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
-
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (2);
-		when (unitUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (-1);
-		
-		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
-		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
-		condition1.setCombatSide (UnitCombatSideID.ATTACKER);
-		condition1.setUnitSkillID ("US001");
-		
-		final AttackResolutionSvr res1 = new AttackResolutionSvr ();
-		res1.getAttackResolutionConditions ().add (condition1);
-
-		// Now another one that doesn't match
-		final AttackResolutionConditionSvr condition2 = new AttackResolutionConditionSvr ();
-		condition2.setCombatSide (UnitCombatSideID.DEFENDER);
-		condition2.setUnitSkillID ("US002");
-		
-		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
-		res2.getAttackResolutionConditions ().add (condition2);
-		
-		final UnitAttributeSvr unitAttr = new UnitAttributeSvr ();
-		unitAttr.getAttackResolutions ().add (res1);
-		unitAttr.getAttackResolutions ().add (res2);
-		when (db.findUnitAttribute ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
-		
-		// Set up object to test
-		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitUtils (unitUtils);
-
-		// Run method
-		calc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);
 	}
 }

@@ -1,0 +1,78 @@
+package momime.server.process;
+
+import java.util.List;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.server.calculations.AttackDamage;
+import momime.server.database.AttackResolutionStepSvr;
+import momime.server.database.AttackResolutionSvr;
+import momime.server.database.ServerDatabaseEx;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+/**
+ * Methods for processing attack resolutions.  This would all just be part of DamageProcessor, these methods
+ * are just moved out so they can be mocked separately in unit tests.
+ */
+public interface AttackResolutionProcessing
+{
+	/**
+	 * When one unit initiates a unit attribute-based attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
+	 * 
+	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
+	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
+	 * @param attackAttributeID Which attribute they are attacking with (melee or ranged)
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Chosen attack resolution
+	 * @throws RecordNotFoundException If the unit attribute or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
+	 */
+	public AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackAttributeID,
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
+	 * @param steps Steps in one continuous list
+	 * @return Same list as input, but segmented into sublists where all steps share the same step number
+	 * @throws MomException If the steps in the input list aren't in stepNumber order
+	 */
+	public List<List<AttackResolutionStepSvr>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStepSvr> steps)
+		throws MomException;
+	
+	/**
+	 * Executes all of the steps of an attack sequence that have the same step number, i.e. all those steps such that damage is calculated and applied simultaneously.
+	 * 
+	 * @param attacker Unit making the attack; or null if the attack isn't coming from a unit 
+	 * @param defender Unit being attacked
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
+	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void processAttackResolutionStep (final MemoryUnit attacker, final MemoryUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+}

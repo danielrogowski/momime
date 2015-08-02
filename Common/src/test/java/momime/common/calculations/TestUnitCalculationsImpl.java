@@ -365,6 +365,53 @@ public final class TestUnitCalculationsImpl
 	}
 	
 	/**
+	 * Tests the calculateHitPointsRemaining method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateHitPointsRemaining () throws Exception
+	{
+		// These are all only used for the mock so doesn't matter if there's anything in them
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Unit defintion
+		final Unit unitDef = new Unit ();
+		when (db.findUnit ("A", "calculateHitPointsRemaining")).thenReturn (unitDef);
+		
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Unit with 1 HP per figure at full health of 6 figures
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("A");
+		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (6);
+
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+
+		assertEquals (6, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
+	
+		// Take 1 hit
+		unit.setDamageTaken (1);
+		assertEquals (5, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
+
+		// Now it has 4 HP per figure
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+		assertEquals (23, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
+		
+		// Take 2 more hits
+		unit.setDamageTaken (3);
+		assertEquals (21, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
+	}
+	
+	/**
 	 * Tests the calculateAliveFigureCount method
 	 * @throws Exception If there is a problem
 	 */

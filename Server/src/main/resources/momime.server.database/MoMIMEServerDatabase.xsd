@@ -1050,7 +1050,17 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 					<xsd:element minOccurs="0" maxOccurs="1" name="onlyIfHaveAlready" type="xsd:boolean" nxe:label="Only if have already?" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="maxOccurrences" type="momimesvr:heroSkillMaxOccurrences" nxe:label="Max. Occurrences" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false">
+						<xsd:annotation>
+							<xsd:documentation>Damage type dealt by attack skills, e.g. gaze, breath or touch attacks.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="damagePerFigure" type="xsd:boolean" nxe:label="Damage Per Figure?" nxe:showmaincolumn="false">
+						<xsd:annotation>
+							<xsd:documentation>False if the unit attacks as a whole (so a damaged unit deals the same damage as a fully healed unit); true if each figure
+attacks and so the rating of the unit skill is multiplied up by the number of figures left alive to get the strength of the attack.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1488,7 +1498,11 @@ Either unitAttributeID (for regular attacks) or unitSkillID (for e.g. breath att
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="stepNumber" type="xsd:unsignedShort" nxe:label="Step number" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" nxe:label="Combat side" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" nxe:label="Combat side" nxe:showmaincolumn="false">
+		        <xsd:annotation>
+        			<xsd:documentation>This is the unit *making* the attack, not the unit *being* attacked.  So the records read like e.g. "Attacker uses their breath attack".</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitAttributeID" type="momimecommon:unitAttributeID" nxe:label="Attribute" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill" nxe:showmaincolumn="false">
 				<xsd:annotation>

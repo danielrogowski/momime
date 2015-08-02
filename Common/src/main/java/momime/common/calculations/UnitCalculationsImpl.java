@@ -266,6 +266,29 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	}
 	
 	/**
+	 * @param unit Unit to calculate HP for
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How many hit points the unit as a whole has left
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	@Override
+	public final int calculateHitPointsRemaining (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		final int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateHitPointsRemaining"));
+		final int hitPointsPerFigure = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		
+		return (figures * hitPointsPerFigure) - unit.getDamageTaken ();
+	}
+	
+	/**
 	 * First figure will take full damage before the second figure takes any damage
 	 * 
 	 * @param unit Unit to calculate figure count for

@@ -139,7 +139,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final AttackDamage potentialDamageToDefenders;
 		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackAttributeID))
 		{
-			potentialDamageToDefenders = getDamageCalculator ().attackFromUnit
+			potentialDamageToDefenders = getDamageCalculator ().attackFromUnitAttribute
 				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 
@@ -147,7 +147,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		}
 		else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (attackAttributeID))
 		{
-			potentialDamageToDefenders = getDamageCalculator ().attackFromUnit
+			potentialDamageToDefenders = getDamageCalculator ().attackFromUnitAttribute
 				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 		}
@@ -247,7 +247,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final AttackDamage potentialDamageToAttacker;
 		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (attackAttributeID))
 		{
-			potentialDamageToAttacker = getDamageCalculator ().attackFromUnit
+			potentialDamageToAttacker = getDamageCalculator ().attackFromUnitAttribute
 				(defenders.get (0), attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 		}

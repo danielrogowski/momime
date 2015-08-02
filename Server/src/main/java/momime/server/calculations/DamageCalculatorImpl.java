@@ -1,6 +1,5 @@
 package momime.server.calculations;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -14,7 +13,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
-import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -25,11 +23,9 @@ import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.database.AttackResolutionConditionSvr;
-import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
-import momime.server.database.UnitAttributeSvr;
+import momime.server.database.UnitSkillSvr;
 import momime.server.utils.UnitServerUtils;
 
 import org.apache.commons.logging.Log;
@@ -94,7 +90,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 
 	/**
-	 * Calculates the strength of an attack coming from a unit, i.e. a regular melee or ranged attack.
+	 * Calculates the strength of an attack coming from a unit attribute, i.e. a regular melee or ranged attack.
 	 * 
 	 * @param attacker Unit making the attack
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
@@ -112,12 +108,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final AttackDamage attackFromUnit (final MemoryUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public final AttackDamage attackFromUnitAttribute (final MemoryUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final String attackAttributeID, final List<PlayerServerDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering attackFromUnit: Unit URN " + attacker.getUnitURN () + ", " + attackAttributeID);
+		log.trace ("Entering attackFromUnitAttribute: Unit URN " + attacker.getUnitURN () + ", " + attackAttributeID);
 		
 		// Start breakdown message
 		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
@@ -134,11 +130,79 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setPotentialHits (damageCalculationMsg.getAttackerFigures () * damageCalculationMsg.getAttackStrength ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
+		// Fill in the damage object
 		final int plusToHit = getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 
 		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE, null);
-		log.trace ("Exiting attackFromUnit = " + attackDamage);
+		log.trace ("Exiting attackFromUnitAttribute = " + attackDamage);
+		return attackDamage;
+	}
+	
+	/**
+	 * Calculates the strength of an attack coming from a unit skill, e.g. Thrown Weapons, breath and gaze attacks, or Posion Touch
+	 * 
+	 * @param attacker Unit making the attack
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackSkillID The skill being used to attack
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker, or null if the attacker doesn't even have the requested skill
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final AttackDamage attackFromUnitSkill (final MemoryUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final String attackSkillID, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering attackFromUnitSkill: Unit URN " + attacker.getUnitURN () + ", " + attackSkillID);
+
+		// The unit's skill level indicates the strength of the attack (e.g. Poison Touch 2 vs Poison Touch 4)
+		final AttackDamage attackDamage;
+		final int damage = getUnitUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), attackSkillID, players, spells, combatAreaEffects, db);
+		if (damage < 0)
+			attackDamage = null;
+		else
+		{
+			// Start breakdown message
+			final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
+			damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_DATA);
+			damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
+			damageCalculationMsg.setAttackerPlayerID (attacker.getOwningPlayerID ());
+			damageCalculationMsg.setAttackSkillID (attackSkillID);
+			
+			// Different skills deal different types of damage
+			final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
+			damageCalculationMsg.setDamageType (unitSkill.getDamageType ());
+			
+			// Some skills hit just once from the whole attacking unit, some hit once per figure
+			if ((unitSkill.isDamagePerFigure () == null) || (!unitSkill.isDamagePerFigure ()))
+				damageCalculationMsg.setPotentialHits (damage);
+			else
+			{
+				damageCalculationMsg.setAttackerFigures (getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db));
+				damageCalculationMsg.setAttackStrength (damage);
+				damageCalculationMsg.setPotentialHits (damage * damageCalculationMsg.getAttackerFigures ());
+			}
+	
+			sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+	
+			// Fill in the damage object
+			final int plusToHit = getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+	
+			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageCalculationMsg.getDamageType (), null);
+		}
+		
+		log.trace ("Exiting attackFromUnitAttribute = " + attackDamage);
 		return attackDamage;
 	}
 	
@@ -173,6 +237,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (spell.getAttackSpellDamageType ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
+		// Fill in the damage object
 		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType (), spell);
 		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
@@ -748,63 +813,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		log.trace ("Exiting calculateDisintegrateDamage = " + damageCalculationMsg.getFinalHits ());
 		return damageCalculationMsg.getFinalHits ();
-	}
-	
-	/**
-	 * When one unit initiates a unit attribute-based attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
-	 * 
-	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
-	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
-	 * @param attackAttributeID Which attribute they are attacking with (melee or ranged)
-	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
-	 * @param db Lookup lists built over the XML database
-	 * @return Chosen attack resolution
-	 * @throws RecordNotFoundException If the unit attribute or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
-	 */
-	@Override
-	public final AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackAttributeID,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		log.trace ("Entering chooseAttackResolution: Unit URN " + attacker.getUnitURN () + " hitting Unit URN " + defender.getUnitURN () + " with " + attackAttributeID);
-	
-		final UnitAttributeSvr unitAttr = db.findUnitAttribute (attackAttributeID, "chooseAttackResolution");
-		
-		// Check all possible attack resolutions to select the most appropriate one
-		AttackResolutionSvr match = null;
-		final Iterator<AttackResolutionSvr> iter = unitAttr.getAttackResolutions ().iterator ();
-		while ((match == null) && (iter.hasNext ()))
-		{
-			final AttackResolutionSvr attackResolution = iter.next ();
-			
-			// Check all the conditions
-			boolean conditionsMatch = true;
-			final Iterator<AttackResolutionConditionSvr> conditions = attackResolution.getAttackResolutionConditions ().iterator ();
-			while ((conditionsMatch) && (conditions.hasNext ()))
-			{
-				final AttackResolutionConditionSvr condition = conditions.next ();
-				
-				// Check this condition
-				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
-				if (getUnitUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (), players, spells, combatAreaEffects, db) < 0)
-					conditionsMatch = false;
-			}
-			
-			if (conditionsMatch)
-				match = attackResolution;
-		}
-		
-		// Its an error if we fail to find any match at all
-		if (match == null)
-			throw new MomException ("Unit URN " + attacker.getUnitURN () + " tried to hit Unit URN " + defender.getUnitURN () + " with attack of type " + attackAttributeID +
-				" but there are no defined attack resolutions capable of processing the attack");
-		
-		log.trace ("Exiting chooseAttackResolution = " + match);
-		return match;
 	}
 	
 	/**

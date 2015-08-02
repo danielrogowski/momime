@@ -59,7 +59,7 @@ public final class TestDamageCalculationsUI
 		box.setTinyFont (CreateFontsForTests.getTinyFont ());
 		
 		// Set up some dummy messages
-		for (int n = 1; n <= 130; n++)
+		for (int n = 1; n <= 230; n++)
 		{
 			final int n2 = n;
 			final DamageCalculationText breakdown = new DamageCalculationText ()

@@ -10,7 +10,6 @@ import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
@@ -21,6 +20,8 @@ import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
+import momime.server.database.AttackResolutionStepSvr;
+import momime.server.database.AttackResolutionSvr;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
@@ -52,6 +53,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 	
 	/** Damage calc */
 	private DamageCalculator damageCalculator;
+	
+	/** Attack resolution processing */
+	private AttackResolutionProcessing attackResolutionProcessing;
 	
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
@@ -134,164 +138,33 @@ public final class DamageProcessorImpl implements DamageProcessor
 				defender.setCombatHeading (defenderDirection);
 		}
 		
-		// Work out potential damage from the attack.
-		// This is the strength+type of the attack, so is common across all defenders if there are multiple.
-		final AttackDamage potentialDamageToDefenders;
-		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackAttributeID))
-		{
-			potentialDamageToDefenders = getDamageCalculator ().attackFromUnitAttribute
-				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-
-			getUnitCalculations ().decreaseRangedAttackAmmo (attacker);
-		}
-		else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (attackAttributeID))
-		{
-			potentialDamageToDefenders = getDamageCalculator ().attackFromUnitAttribute
-				(attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-		}
-		else if (spell != null)
-		{
-			potentialDamageToDefenders = getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer);
-		}
-		else
-			throw new MomException ("resolveAttack doesn't know how to process an attack from attribute " + attackAttributeID);
+		// If its a spell, we work out the kind of damage dealt once only (so it only appears in the client message log once)
+		// If its a regular attribute-based attack, damage is worked out inside each resolution step.
+		final AttackDamage commonPotentialDamageToDefenders = (spell == null) ? null :
+			getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer);
 		
-		// Work out how much of the damage gets through.
-		// The damageToDefenders list is kept in the same order as the defenders input list.
-		final List<Integer> damageToDefenders = new ArrayList<Integer> ();
-		if (potentialDamageToDefenders != null)
-			for (final MemoryUnit defender : defenders)
+		// Process our attack against each defender
+		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
+		for (final MemoryUnit defender : defenders)
+		{
+			final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (attacker, defender, attackAttributeID, mom.getPlayers (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+			
+			final List<List<AttackResolutionStepSvr>> steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
+			
+			// Process each step
+			for (final List<AttackResolutionStepSvr> step : steps)
 			{
-				final int damageToDefender;				
+				final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep
+					(attacker, defender, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 				
-				switch (potentialDamageToDefenders.getDamageType ())
-				{
-					case SINGLE_FIGURE:
-						damageToDefender = getDamageCalculator ().calculateSingleFigureDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-						
-					case ARMOUR_PIERCING:
-						damageToDefender = getDamageCalculator ().calculateArmourPiercingDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-						
-					case ILLUSIONARY:
-						damageToDefender = getDamageCalculator ().calculateIllusionaryDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-	
-					case MULTI_FIGURE:
-						damageToDefender = getDamageCalculator ().calculateMultiFigureDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-						
-					case DOOM:
-						damageToDefender = getDamageCalculator ().calculateDoomDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-
-					case CHANCE_OF_DEATH:
-						damageToDefender = getDamageCalculator ().calculateChanceOfDeathDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-
-					case RESIST_OR_DIE:
-						damageToDefender = getDamageCalculator ().calculateResistOrDieDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-
-					case RESIST_OR_TAKE_DAMAGE:
-						damageToDefender = getDamageCalculator ().calculateResistOrTakeDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-
-					case DISINTEGRATE:
-						damageToDefender = getDamageCalculator ().calculateDisintegrateDamage
-							(defender, attackingPlayer, defendingPlayer, potentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-						break;
-						
-					case ZEROES_AMMO:
-						damageToDefender = 0;
-						break;
-						
-					default:
-						throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamageToDefenders.getDamageType () +
-							" to the defender, which it does not know how to deal with yet");
-				}
-				
-				damageToDefenders.add (damageToDefender);
-			}
-
-		// Work out potential damage from the counterattack
-		final AttackDamage potentialDamageToAttacker;
-		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (attackAttributeID))
-		{
-			potentialDamageToAttacker = getDamageCalculator ().attackFromUnitAttribute
-				(defenders.get (0), attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-		}
-		else
-			potentialDamageToAttacker = null;
-		
-		// Work out how much of the damage gets through
-		final int damageToAttacker;
-		if (potentialDamageToAttacker == null)
-			damageToAttacker = 0;
-		else
-		{
-			if (potentialDamageToAttacker.getDamageType () != DamageTypeID.SINGLE_FIGURE)
-				throw new MomException ("resolveAttack trying to deal counterattack damage of type " + potentialDamageToAttacker.getDamageType () +
-					" back to the attacker, but only single figure damage counterattacks are supported");
-			
-			damageToAttacker = getDamageCalculator ().calculateSingleFigureDamage
-				(attacker, attackingPlayer, defendingPlayer, potentialDamageToAttacker,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
-		}
-		
-		// Now apply damage
-		for (int index = 0; index < defenders.size (); index++)
-		{
-			final MemoryUnit defender = defenders.get (index);
-			
-			// Apply regular damage
-			defender.setDamageTaken (defender.getDamageTaken () + damageToDefenders.get (index));
-			
-			// Apply special effect
-			switch (potentialDamageToDefenders.getDamageType ())
-			{
-				case ZEROES_AMMO:
-					defender.setRangedAttackAmmo (0);
-					break;
-					
-				default:
-					break;
+				for (final DamageTypeID thisSpecialDamageTypeApplied : thisSpecialDamageTypesApplied)
+					if (!specialDamageTypesApplied.contains (thisSpecialDamageTypeApplied))
+						specialDamageTypesApplied.add (thisSpecialDamageTypeApplied);
 			}
 		}
-		
-		if (attacker != null)
-			attacker.setDamageTaken (attacker.getDamageTaken () + damageToAttacker);
 		
 		// Update damage taken in player's memory on server, and on all clients who can see the unit.
 		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but
@@ -299,7 +172,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// This also sends the number of combat movement points the attacker has left.
 		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, damageCalculationMsg.getAttackerPlayerID (), defenders,
 			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackAttributeID (), damageCalculationMsg.getAttackSpellID (),
-			potentialDamageToDefenders.getDamageType (), mom.getPlayers (),
+			specialDamageTypesApplied, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose
@@ -478,6 +351,22 @@ public final class DamageProcessorImpl implements DamageProcessor
 		damageCalculator = calc;
 	}
 
+	/**
+	 * @return Attack resolution processing
+	 */
+	public final AttackResolutionProcessing getAttackResolutionProcessing ()
+	{
+		return attackResolutionProcessing;
+	}
+
+	/**
+	 * @param proc Attack resolution processing
+	 */
+	public final void setAttackResolutionProcessing (final AttackResolutionProcessing proc)
+	{
+		attackResolutionProcessing= proc;
+	}
+	
 	/**
 	 * @return Starting and ending combats
 	 */

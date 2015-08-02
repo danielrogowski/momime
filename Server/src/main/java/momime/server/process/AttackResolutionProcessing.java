@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -64,13 +65,14 @@ public interface AttackResolutionProcessing
 	 * @param spells Known spells
 	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
+	 * @return List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void processAttackResolutionStep (final MemoryUnit attacker, final MemoryUnit defender,
+	public List<DamageTypeID> processAttackResolutionStep (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
 		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)

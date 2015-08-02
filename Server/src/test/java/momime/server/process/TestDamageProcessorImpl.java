@@ -29,8 +29,9 @@ import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
+import momime.server.database.AttackResolutionStepSvr;
+import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
@@ -110,6 +111,19 @@ public final class TestDamageProcessorImpl
 		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
+
+		// Attack resolution
+		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
+
+		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
+		when (attackResolutionProc.chooseAttackResolution (attacker, defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players,
+			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db)).thenReturn (attackResolution);
+		
+		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		
+		final List<List<AttackResolutionStepSvr>> stepNumbers = new ArrayList<List<AttackResolutionStepSvr>> ();
+		stepNumbers.add (steps);
+		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ())).thenReturn (stepNumbers);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -121,29 +135,6 @@ public final class TestDamageProcessorImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
-		// Damage amounts
-		final DamageCalculator calc = mock (DamageCalculator.class);
-
-		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE, null);
-		
-		when (calc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
-			trueMap.getCombatAreaEffect (), db)).thenReturn (damageToDefender);		// Dmg to defender
-
-		when (calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
-			damageToDefender, players, trueMap.getMaintainedSpell (),
-			trueMap.getCombatAreaEffect (), db)).thenReturn (5);		// Dmg to defender
-
-		final AttackDamage damageToAttacker = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null);
-		
-		when (calc.attackFromUnitAttribute (defender, attackingPlayer, defendingPlayer,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, trueMap.getMaintainedSpell (),
-			trueMap.getCombatAreaEffect (), db)).thenReturn (damageToAttacker);		// Dmg to attacker
-
-		when (calc.calculateSingleFigureDamage (attacker, attackingPlayer, defendingPlayer,
-			damageToAttacker, players, trueMap.getMaintainedSpell (),
-			trueMap.getCombatAreaEffect (), db)).thenReturn (2);		// Dmg to attacker
-
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
@@ -153,6 +144,7 @@ public final class TestDamageProcessorImpl
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
+		final DamageCalculator calc = mock (DamageCalculator.class);
 		
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setCoordinateSystemUtils (coordinateSystemUtils);
@@ -161,6 +153,7 @@ public final class TestDamageProcessorImpl
 		proc.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
+		proc.setAttackResolutionProcessing (attackResolutionProc);
 		
 		// Need another surviving unit on each side, so the combat doesn't end
 		for (final PlayerServerDetails thisPlayer : players)
@@ -181,6 +174,15 @@ public final class TestDamageProcessorImpl
 		
 		proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
+
+		// Ensure steps were processed
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attacker, defender, attackingPlayer, defendingPlayer, steps, null, players,
+			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db);
+
+		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
+			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
+			specialDamageTypesApplied, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -198,14 +200,6 @@ public final class TestDamageProcessorImpl
 		// Check units facing each other
 		assertEquals (7, attacker.getCombatHeading ().intValue ());
 		assertEquals (3, defender.getCombatHeading ().intValue ());
-
-		// Check dmg was applied
-		assertEquals (2+2, attacker.getDamageTaken ());
-		assertEquals (3+5, defender.getDamageTaken ());
-		
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
-			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			DamageTypeID.SINGLE_FIGURE, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
 		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
@@ -276,6 +270,19 @@ public final class TestDamageProcessorImpl
 		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
+
+		// Attack resolution
+		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
+
+		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
+		when (attackResolutionProc.chooseAttackResolution (attacker, defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, players,
+			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db)).thenReturn (attackResolution);
+		
+		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		
+		final List<List<AttackResolutionStepSvr>> stepNumbers = new ArrayList<List<AttackResolutionStepSvr>> ();
+		stepNumbers.add (steps);
+		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ())).thenReturn (stepNumbers);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -287,19 +294,6 @@ public final class TestDamageProcessorImpl
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
-		// Damage amounts
-		final DamageCalculator calc = mock (DamageCalculator.class);
-
-		final AttackDamage damageToDefender = new AttackDamage (8, 0, DamageTypeID.SINGLE_FIGURE, null);
-		
-		when (calc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, players, trueMap.getMaintainedSpell (),
-			trueMap.getCombatAreaEffect (), db)).thenReturn (damageToDefender);		// Dmg to defender
-
-		when (calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer,
-			damageToDefender, players, trueMap.getMaintainedSpell (),
-			trueMap.getCombatAreaEffect (), db)).thenReturn (5);		// Dmg to defender
-		
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
@@ -309,6 +303,7 @@ public final class TestDamageProcessorImpl
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
+		final DamageCalculator calc = mock (DamageCalculator.class);
 		
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setCoordinateSystemUtils (coordinateSystemUtils);
@@ -317,6 +312,7 @@ public final class TestDamageProcessorImpl
 		proc.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
+		proc.setAttackResolutionProcessing (attackResolutionProc);
 		
 		// The 'attacker' unit is still left alive because it still took no dmg, so put a unit in the list so the combat doesn't end for them (attacker is owned by defendingPlayer)
 		final MemoryUnit survivingUnit = new MemoryUnit ();
@@ -333,6 +329,15 @@ public final class TestDamageProcessorImpl
 		
 		proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
+		
+		// Ensure steps were processed
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attacker, defender, attackingPlayer, defendingPlayer, steps, null, players,
+			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db);
+
+		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
+			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
+			specialDamageTypesApplied, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -351,14 +356,6 @@ public final class TestDamageProcessorImpl
 		assertEquals (7, attacker.getCombatHeading ().intValue ());
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 
-		// Check dmg was applied
-		assertEquals (2, attacker.getDamageTaken ());
-		assertEquals (3+5, defender.getDamageTaken ());
-		
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
-			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			DamageTypeID.SINGLE_FIGURE, players, trueTerrain, db, fogOfWarSettings);
-		
 		// Check the dead unit was killed off, and exp given to the other side
 		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);

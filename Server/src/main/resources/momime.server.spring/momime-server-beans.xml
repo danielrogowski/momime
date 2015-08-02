@@ -529,6 +529,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageCalculator" ref="damageCalculator" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
+		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
+	</bean>
+	
+	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="damageCalculator" ref="damageCalculator" />
 	</bean>
 
 	<bean id="combatStartAndEnd" class="momime.server.process.CombatStartAndEndImpl">

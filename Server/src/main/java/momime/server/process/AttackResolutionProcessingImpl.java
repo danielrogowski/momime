@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -158,6 +159,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param spells Known spells
 	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
+	 * @return List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
@@ -165,7 +167,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void processAttackResolutionStep (final MemoryUnit attacker, final MemoryUnit defender,
+	public final List<DamageTypeID> processAttackResolutionStep (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
 		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
@@ -179,6 +181,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		int damageToAttacker = 0;
 		
 		// Calculate and total up all the damage before we apply any of it
+		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		for (final AttackResolutionStepSvr step : steps)
 		{
 			// Work out potential damage from the attack
@@ -295,6 +298,10 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				{
 					case ZEROES_AMMO:
 						unitBeingAttacked.setRangedAttackAmmo (0);
+						
+						// Make sure ammo is zeroed on the client as well
+						if (!specialDamageTypesApplied.contains (potentialDamage.getDamageType ()))
+							specialDamageTypesApplied.add (potentialDamage.getDamageType ());
 						break;
 						
 					default:
@@ -316,7 +323,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		if (attacker != null)
 			attacker.setDamageTaken (attacker.getDamageTaken () + damageToAttacker);
 
-		log.trace ("Exiting processAttackResolutionStep");
+		log.trace ("Exiting processAttackResolutionStep = " + specialDamageTypesApplied.size ());
+		return specialDamageTypesApplied;
 	}
 
 	/**

@@ -324,7 +324,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
 	 * @param attackAttributeID Attribute used to make the attack, for regular melee or ranged attacks
 	 * @param attackSpellID Spell used to make the attack
-	 * @param damageType Type of damage done to defenders
+	 * @param specialDamageTypesApplied List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
 	 * @param db Lookup lists built over the XML database
@@ -335,7 +335,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final List<MemoryUnit> tuDefenders,
-		final String attackSkillID, final String attackAttributeID, final String attackSpellID, final DamageTypeID damageType,
+		final String attackSkillID, final String attackAttributeID, final String attackSpellID, final List<DamageTypeID> specialDamageTypesApplied,
 		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;

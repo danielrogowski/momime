@@ -134,7 +134,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int plusToHit = getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 
-		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE, null);
+		final AttackDamage attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE, null, 1);
 		log.trace ("Exiting attackFromUnitAttribute = " + attackDamage);
 		return attackDamage;
 	}
@@ -184,13 +184,28 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			damageCalculationMsg.setDamageType (unitSkill.getDamageType ());
 			
 			// Some skills hit just once from the whole attacking unit, some hit once per figure
-			if ((unitSkill.isDamagePerFigure () == null) || (!unitSkill.isDamagePerFigure ()))
-				damageCalculationMsg.setPotentialHits (damage);
-			else
+			final int repetitions;
+			switch (unitSkill.getDamagePerFigure ())
 			{
-				damageCalculationMsg.setAttackerFigures (getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db));
-				damageCalculationMsg.setAttackStrength (damage);
-				damageCalculationMsg.setPotentialHits (damage * damageCalculationMsg.getAttackerFigures ());
+				case PER_UNIT:
+					damageCalculationMsg.setPotentialHits (damage);
+					repetitions = 1;
+					break;
+
+				case PER_FIGURE_SEPARATE:
+					damageCalculationMsg.setPotentialHits (damage);
+					repetitions = getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db);
+					break;
+
+				case PER_FIGURE_COMBINED:
+					damageCalculationMsg.setAttackerFigures (getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db));
+					damageCalculationMsg.setAttackStrength (damage);
+					damageCalculationMsg.setPotentialHits (damage * damageCalculationMsg.getAttackerFigures ());
+					repetitions = 1;
+					break;
+					
+				default:
+					throw new MomException ("attackFromUnitSkill does not know how to handle damagePerFigure of " + unitSkill.getDamagePerFigure ());
 			}
 	
 			sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -199,7 +214,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			final int plusToHit = getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 	
-			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageCalculationMsg.getDamageType (), null);
+			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageCalculationMsg.getDamageType (), null, repetitions);
 		}
 		
 		log.trace ("Exiting attackFromUnitAttribute = " + attackDamage);
@@ -238,7 +253,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
 		// Fill in the damage object
-		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType (), spell);
+		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType (), spell, 1);
 		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
 	}

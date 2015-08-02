@@ -22,18 +22,26 @@ public final class AttackDamage
 	private final SpellSvr spell;
 	
 	/**
+	 * The number of times this damage is dealt - typically 1, but e.g. the "thrown 1" attack of a barbarian unit with 6 figures is actually made as 6 separate
+	 * strength 1 attacks, not a single strength 6 attack, according to the MoM wiki at least. 
+	 */
+	private final int repetitions;
+	
+	/**
 	 * @param aPotentialHits Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood
 	 * @param aPlusToHit Any bonus to the standard 30% hit rate
 	 * @param aDamageType Kind of damage being dealt
 	 * @param aSpell The spell that's causing the damage; or null if the attack isn't coming from a spell
+	 * @param aRepetitions The number of times this damage is dealt
 	 */
-	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageTypeID aDamageType, final SpellSvr aSpell)
+	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageTypeID aDamageType, final SpellSvr aSpell, final int aRepetitions)
 	{
 		super ();
 		potentialHits = aPotentialHits;
 		plusToHit = aPlusToHit;
 		damageType = aDamageType;
 		spell = aSpell;
+		repetitions = aRepetitions;
 	}
 	
 	/**
@@ -75,5 +83,13 @@ public final class AttackDamage
 	public final SpellSvr getSpell ()
 	{
 		return spell;
+	}
+
+	/**
+	 * @return The number of times this damage is dealt 
+	 */
+	public final int getRepetitions ()
+	{
+		return repetitions;
 	}
 }

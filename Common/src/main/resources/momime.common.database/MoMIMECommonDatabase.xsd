@@ -2016,6 +2016,23 @@ Units with special orders won't be asked for movement orders and look visibly di
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="damagePerFigureID">
+        <xsd:annotation>
+        	<xsd:documentation>Defines whether damage is dealt from a unit as a whole or individual figures.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="PER_UNIT">
+				<xsd:annotation><xsd:documentation>The unit deals the damage as a whole, no matter how many it figures it has alive or has lost</xsd:documentation></xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="PER_FIGURE_COMBINED">
+				<xsd:annotation><xsd:documentation>The damage is multiplied by the number of alive figures and dealt as a single combined attack</xsd:documentation></xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="PER_FIGURE_SEPARATE">
+				<xsd:annotation><xsd:documentation>Each alive figure makes a separate attack that can be defended against separately</xsd:documentation></xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 	<xsd:simpleType name="shortcut">
         <xsd:annotation>
         	<xsd:documentation>Defines the shortcut keys supported by this version.</xsd:documentation>

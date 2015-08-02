@@ -332,7 +332,7 @@ public final class TestAttackResolutionProcessingImpl
 		// We make 5 hit rolls with 40% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null);
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
 		when (damageCalc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
 		
@@ -418,11 +418,11 @@ public final class TestAttackResolutionProcessingImpl
 		// Attacker make 5 hit rolls with 40% chance of each one striking; defender makes 6 hit rolls with 30% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null);
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
 		when (damageCalc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
 
-		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageTypeID.SINGLE_FIGURE, null);
+		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageTypeID.SINGLE_FIGURE, null, 1);
 		when (damageCalc.attackFromUnitAttribute (defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToAttacker);
 		
@@ -502,11 +502,11 @@ public final class TestAttackResolutionProcessingImpl
 		// Two of the skills we have and so generate some damage, the other two we don't
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null);
+		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1);
 		when (damageCalc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US002",
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender1);
 		
-		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, DamageTypeID.DOOM, null);
+		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, DamageTypeID.DOOM, null, 1);
 		when (damageCalc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US004",
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender2);
 
@@ -575,7 +575,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Spell does preset damage
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null);
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
 		
 		// 3 of them actually hit
 		when (damageCalc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);

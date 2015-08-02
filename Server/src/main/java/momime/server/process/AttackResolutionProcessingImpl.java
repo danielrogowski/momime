@@ -221,77 +221,80 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				if (unitBeingAttacked == null)
 					throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitBeingAttacked, attacking side = " + step.getCombatSide ());
 			
-				final int thisDamage;				
-				switch (potentialDamage.getDamageType ())
+				for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
 				{
-					case SINGLE_FIGURE:
-						thisDamage = getDamageCalculator ().calculateSingleFigureDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-						
-					case ARMOUR_PIERCING:
-						thisDamage = getDamageCalculator ().calculateArmourPiercingDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-						
-					case ILLUSIONARY:
-						thisDamage = getDamageCalculator ().calculateIllusionaryDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
+					final int thisDamage;				
+					switch (potentialDamage.getDamageType ())
+					{
+						case SINGLE_FIGURE:
+							thisDamage = getDamageCalculator ().calculateSingleFigureDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+							
+						case ARMOUR_PIERCING:
+							thisDamage = getDamageCalculator ().calculateArmourPiercingDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+							
+						case ILLUSIONARY:
+							thisDamage = getDamageCalculator ().calculateIllusionaryDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+		
+						case MULTI_FIGURE:
+							thisDamage = getDamageCalculator ().calculateMultiFigureDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+							
+						case DOOM:
+							thisDamage = getDamageCalculator ().calculateDoomDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
 	
-					case MULTI_FIGURE:
-						thisDamage = getDamageCalculator ().calculateMultiFigureDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-						
-					case DOOM:
-						thisDamage = getDamageCalculator ().calculateDoomDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-
-					case CHANCE_OF_DEATH:
-						thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-
-					case RESIST_OR_DIE:
-						thisDamage = getDamageCalculator ().calculateResistOrDieDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-
-					case RESIST_OR_TAKE_DAMAGE:
-						thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-
-					case DISINTEGRATE:
-						thisDamage = getDamageCalculator ().calculateDisintegrateDamage
-							(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-							players, spells, combatAreaEffects, db); 
-						break;
-						
-					case ZEROES_AMMO:
-						thisDamage = 0;
-						break;
-						
-					default:
-						throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamage.getDamageType () +
-							" to the unitBeingAttacked, which it does not know how to deal with yet");
+						case CHANCE_OF_DEATH:
+							thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+	
+						case RESIST_OR_DIE:
+							thisDamage = getDamageCalculator ().calculateResistOrDieDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+	
+						case RESIST_OR_TAKE_DAMAGE:
+							thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+	
+						case DISINTEGRATE:
+							thisDamage = getDamageCalculator ().calculateDisintegrateDamage
+								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+								players, spells, combatAreaEffects, db); 
+							break;
+							
+						case ZEROES_AMMO:
+							thisDamage = 0;
+							break;
+							
+						default:
+							throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamage.getDamageType () +
+								" to the unitBeingAttacked, which it does not know how to deal with yet");
+					}
+					
+					// Add damage to running total
+					if (unitBeingAttacked == defender)
+						damageToDefender = damageToDefender + thisDamage;
+					else
+						damageToAttacker = damageToAttacker + thisDamage;
 				}
-				
-				// Add damage to running total
-				if (unitBeingAttacked == defender)
-					damageToDefender = damageToDefender + thisDamage;
-				else
-					damageToAttacker = damageToAttacker + thisDamage;
 			
 				// Apply any special effect
 				switch (potentialDamage.getDamageType ())

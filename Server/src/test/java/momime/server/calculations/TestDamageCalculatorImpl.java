@@ -11,6 +11,7 @@ import java.util.List;
 
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamagePerFigureID;
 import momime.common.database.DamageTypeID;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
@@ -213,7 +214,7 @@ public final class TestDamageCalculatorImpl
 		// The kind of damage inflicted by this skill
 		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
 		unitSkill.setDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
-		unitSkill.setDamagePerFigure (true);
+		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_FIGURE_COMBINED);
 		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
 
 		// Set up other lists
@@ -301,7 +302,7 @@ public final class TestDamageCalculatorImpl
 		// The kind of damage inflicted by this skill
 		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
 		unitSkill.setDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
-		unitSkill.setDamagePerFigure (false);
+		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_UNIT);
 		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
 
 		// Set up other lists
@@ -597,7 +598,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE, null),
+		assertEquals (3, calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE, null, 1),
 			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
@@ -689,7 +690,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (3, calc.calculateArmourPiercingDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ARMOUR_PIERCING, null),
+		assertEquals (3, calc.calculateArmourPiercingDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ARMOUR_PIERCING, null, 1),
 			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
@@ -781,7 +782,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (6, calc.calculateIllusionaryDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ILLUSIONARY, null),
+		assertEquals (6, calc.calculateIllusionaryDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ILLUSIONARY, null, 1),
 			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
@@ -879,7 +880,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (4, 1, DamageTypeID.MULTI_FIGURE, null),
+		assertEquals (5, calc.calculateMultiFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (4, 1, DamageTypeID.MULTI_FIGURE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -957,7 +958,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateDoomDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (6, 1, DamageTypeID.DOOM, null),
+		assertEquals (6, calc.calculateDoomDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (6, 1, DamageTypeID.DOOM, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1040,7 +1041,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null),
+		assertEquals (6, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1123,7 +1124,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (0, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null),
+		assertEquals (0, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1212,7 +1213,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (5, calc.calculateResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_DIE, null),
+		assertEquals (5, calc.calculateResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_DIE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1301,7 +1302,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (11, calc.calculateResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.RESIST_OR_DIE, null),
+		assertEquals (11, calc.calculateResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.RESIST_OR_DIE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1395,7 +1396,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (2, calc.calculateResistOrTakeDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null),
+		assertEquals (2, calc.calculateResistOrTakeDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1489,7 +1490,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (5, calc.calculateResistOrTakeDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (3, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null),
+		assertEquals (5, calc.calculateResistOrTakeDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (3, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1573,7 +1574,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE, null),
+		assertEquals (6, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1657,7 +1658,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (0, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE, null),
+		assertEquals (0, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker

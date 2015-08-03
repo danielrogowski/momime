@@ -6110,10 +6110,60 @@
 			<attackResolutionStep>
 				<stepNumber>1</stepNumber>
 				<combatSide>A</combatSide>
-				<unitAttributeID>UA01</unitAttributeID>
+				<unitSkillID>US126</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
 				<stepNumber>1</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US134</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>1</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US133</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>1</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>SS093B</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>2</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US131</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>2</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US026</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>2</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US130</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>3</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US131</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>3</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US026</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>3</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US130</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
+				<unitAttributeID>UA01</unitAttributeID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
 				<combatSide>D</combatSide>
 				<unitAttributeID>UA01</unitAttributeID>
 			</attackResolutionStep>
@@ -6828,6 +6878,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US026">
 		<unitSkillDescription>Stoning Gaze</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>P</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
@@ -6889,6 +6942,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US126">
 		<unitSkillDescription>Thrown Weapons</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>S</damageType>
+		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
@@ -6898,18 +6954,30 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>D</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
 		<unitSkillDescription>Death Gaze</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>P</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
 		<unitSkillDescription>Ranged Attack Ammo</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US133">
 		<unitSkillDescription>Lightning Breath</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>A</damageType>
+		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
 		<unitSkillDescription>Fire Breath</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>S</damageType>
+		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US135">
 		<unitSkillDescription>Summon Demons</unitSkillDescription>
@@ -7055,6 +7123,9 @@
 	<unitSkill unitSkillID="SS093B">
 		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Fire Breath</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>S</damageType>
+		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
 		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
@@ -19940,3 +20011,4 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
+

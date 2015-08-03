@@ -184,131 +184,137 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		for (final AttackResolutionStepSvr step : steps)
 		{
-			// Work out potential damage from the attack
-			final AttackDamage potentialDamage;
-			if (step == null)
-				potentialDamage = commonPotentialDamageToDefenders;
-			else
+			// Which unit is being attacked?
+			final MemoryUnit unitBeingAttacked = ((step == null) || (step.getCombatSide () == UnitCombatSideID.ATTACKER)) ? defender : attacker;
+			if (unitBeingAttacked == null)
+				throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitBeingAttacked, attacking side = " + step.getCombatSide ());
+
+			// If the unit being attacked is already dead, then don't bother proceeding
+			final int damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
+			if (damageTaken < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked, players, spells, combatAreaEffects, db))					
 			{
-				// Which unit is attacking?
-				final MemoryUnit unitMakingAttack = (step.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
-				if (unitMakingAttack == null)
-					throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
-				
-				// What are they attacking with?
-				if (step.getUnitAttributeID () != null)
+				// Work out potential damage from the attack
+				final AttackDamage potentialDamage;
+				if (step == null)
+					potentialDamage = commonPotentialDamageToDefenders;
+				else
 				{
-					potentialDamage = getDamageCalculator ().attackFromUnitAttribute
-						(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitAttributeID (), players, spells, combatAreaEffects, db);
+					// Which unit is attacking?
+					final MemoryUnit unitMakingAttack = (step.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
+					if (unitMakingAttack == null)
+						throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 					
-					if (step.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-						getUnitCalculations ().decreaseRangedAttackAmmo (unitMakingAttack);
+					// What are they attacking with?
+					if (step.getUnitAttributeID () != null)
+					{
+						potentialDamage = getDamageCalculator ().attackFromUnitAttribute
+							(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitAttributeID (), players, spells, combatAreaEffects, db);
+						
+						if (step.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+							getUnitCalculations ().decreaseRangedAttackAmmo (unitMakingAttack);
+					}
+					
+					else if (step.getUnitSkillID () != null)
+						potentialDamage = getDamageCalculator ().attackFromUnitSkill
+							(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, spells, combatAreaEffects, db);
+					
+					else
+						throw new MomException ("processAttackResolutionStep: Tried to process attack step that specifies neither an attribute ID or skill ID to attack with, side = " + step.getCombatSide ());
 				}
 				
-				else if (step.getUnitSkillID () != null)
-					potentialDamage = getDamageCalculator ().attackFromUnitSkill
-						(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, spells, combatAreaEffects, db);
-				
-				else
-					throw new MomException ("processAttackResolutionStep: Tried to process attack step that specifies neither an attribute ID or skill ID to attack with, side = " + step.getCombatSide ());
-			}
-			
-			// We may get null here, if the step says to attack with a skill that this unit doesn't have
-			if (potentialDamage != null)
-			{
-				// Work out how much of the damage gets through
-				final MemoryUnit unitBeingAttacked = ((step == null) || (step.getCombatSide () == UnitCombatSideID.ATTACKER)) ? defender : attacker;
-				if (unitBeingAttacked == null)
-					throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitBeingAttacked, attacking side = " + step.getCombatSide ());
-			
-				for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
+				// We may get null here, if the step says to attack with a skill that this unit doesn't have
+				if (potentialDamage != null)
 				{
-					final int thisDamage;				
+					// Work out how much of the damage gets through
+					for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
+					{
+						final int thisDamage;				
+						switch (potentialDamage.getDamageType ())
+						{
+							case SINGLE_FIGURE:
+								thisDamage = getDamageCalculator ().calculateSingleFigureDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+								
+							case ARMOUR_PIERCING:
+								thisDamage = getDamageCalculator ().calculateArmourPiercingDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+								
+							case ILLUSIONARY:
+								thisDamage = getDamageCalculator ().calculateIllusionaryDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+			
+							case MULTI_FIGURE:
+								thisDamage = getDamageCalculator ().calculateMultiFigureDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+								
+							case DOOM:
+								thisDamage = getDamageCalculator ().calculateDoomDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+		
+							case CHANCE_OF_DEATH:
+								thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+		
+							case RESIST_OR_DIE:
+								thisDamage = getDamageCalculator ().calculateResistOrDieDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+		
+							case RESIST_OR_TAKE_DAMAGE:
+								thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+		
+							case DISINTEGRATE:
+								thisDamage = getDamageCalculator ().calculateDisintegrateDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+								
+							case ZEROES_AMMO:
+								thisDamage = 0;
+								break;
+								
+							default:
+								throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamage.getDamageType () +
+									" to the unitBeingAttacked, which it does not know how to deal with yet");
+						}
+						
+						// Add damage to running total
+						if (unitBeingAttacked == defender)
+							damageToDefender = damageToDefender + thisDamage;
+						else
+							damageToAttacker = damageToAttacker + thisDamage;
+					}
+				
+					// Apply any special effect
 					switch (potentialDamage.getDamageType ())
 					{
-						case SINGLE_FIGURE:
-							thisDamage = getDamageCalculator ().calculateSingleFigureDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-							
-						case ARMOUR_PIERCING:
-							thisDamage = getDamageCalculator ().calculateArmourPiercingDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-							
-						case ILLUSIONARY:
-							thisDamage = getDamageCalculator ().calculateIllusionaryDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-		
-						case MULTI_FIGURE:
-							thisDamage = getDamageCalculator ().calculateMultiFigureDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-							
-						case DOOM:
-							thisDamage = getDamageCalculator ().calculateDoomDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-	
-						case CHANCE_OF_DEATH:
-							thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-	
-						case RESIST_OR_DIE:
-							thisDamage = getDamageCalculator ().calculateResistOrDieDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-	
-						case RESIST_OR_TAKE_DAMAGE:
-							thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-	
-						case DISINTEGRATE:
-							thisDamage = getDamageCalculator ().calculateDisintegrateDamage
-								(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-								players, spells, combatAreaEffects, db); 
-							break;
-							
 						case ZEROES_AMMO:
-							thisDamage = 0;
+							unitBeingAttacked.setRangedAttackAmmo (0);
+							
+							// Make sure ammo is zeroed on the client as well
+							if (!specialDamageTypesApplied.contains (potentialDamage.getDamageType ()))
+								specialDamageTypesApplied.add (potentialDamage.getDamageType ());
 							break;
 							
 						default:
-							throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamage.getDamageType () +
-								" to the unitBeingAttacked, which it does not know how to deal with yet");
+							break;
 					}
-					
-					// Add damage to running total
-					if (unitBeingAttacked == defender)
-						damageToDefender = damageToDefender + thisDamage;
-					else
-						damageToAttacker = damageToAttacker + thisDamage;
-				}
-			
-				// Apply any special effect
-				switch (potentialDamage.getDamageType ())
-				{
-					case ZEROES_AMMO:
-						unitBeingAttacked.setRangedAttackAmmo (0);
-						
-						// Make sure ammo is zeroed on the client as well
-						if (!specialDamageTypesApplied.contains (potentialDamage.getDamageType ()))
-							specialDamageTypesApplied.add (potentialDamage.getDamageType ());
-						break;
-						
-					default:
-						break;
 				}
 			}
 		}

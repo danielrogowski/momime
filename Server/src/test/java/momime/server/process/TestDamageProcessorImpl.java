@@ -138,7 +138,7 @@ public final class TestDamageProcessorImpl
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (0);
+		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1, 0);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -297,7 +297,7 @@ public final class TestDamageProcessorImpl
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (0);
+		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1, 0);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);

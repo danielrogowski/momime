@@ -154,16 +154,22 @@ public final class DamageProcessorImpl implements DamageProcessor
 			
 			// Process each step
 			for (final List<AttackResolutionStepSvr> step : steps)
-			{
-				final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-					(attacker, defender, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 				
-				for (final DamageTypeID thisSpecialDamageTypeApplied : thisSpecialDamageTypesApplied)
-					if (!specialDamageTypesApplied.contains (thisSpecialDamageTypeApplied))
-						specialDamageTypesApplied.add (thisSpecialDamageTypeApplied);
-			}
+				// Skip the entire step if either unit is already dead
+				if ((getUnitCalculations ().calculateAliveFigureCount (attacker, mom.getPlayers (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) > 0) &&
+					(getUnitCalculations ().calculateAliveFigureCount (defender, mom.getPlayers (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) > 0))
+				{
+					final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep
+						(attacker, defender, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+					
+					for (final DamageTypeID thisSpecialDamageTypeApplied : thisSpecialDamageTypesApplied)
+						if (!specialDamageTypesApplied.contains (thisSpecialDamageTypeApplied))
+							specialDamageTypesApplied.add (thisSpecialDamageTypeApplied);
+				}
 		}
 		
 		// Update damage taken in player's memory on server, and on all clients who can see the unit.

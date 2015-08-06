@@ -1504,7 +1504,7 @@ Either unitAttributeID (for regular attacks) or unitSkillID (for e.g. breath att
         		</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitAttributeID" type="momimecommon:unitAttributeID" nxe:label="Attribute" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>

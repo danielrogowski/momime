@@ -627,7 +627,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 
 	/**
-	 * Rolls the number of actual hits and blocks for "resist or die" damage, where each figure has to make a resistance roll.
+	 * Rolls the number of actual hits for "each figure resist or die" damage, where each figure has to make a resistance roll.  Used for stoning gaze and many others.
 	 * 
 	 * @param defender Unit being hit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
@@ -645,12 +645,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateResistOrDieDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public final int calculateEachFigureResistOrDieDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateResistOrDieDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		log.trace ("Entering calculateEachFigureResistOrDieDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
 		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -666,7 +666,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Is there a saving throw modifier?
 		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
 		
-		
 		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
 		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
 		if (attackDamage.getSpell () != null)
@@ -677,7 +676,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 				(magicRealmLifeformTypeTarget.getSavingThrowModifier () != 0))
 			{
 				if (!CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE.equals (magicRealmLifeformTypeTarget.getSavingThrowAttributeID ()))
-					throw new MomException ("calculateResistOrDieDamage from spell " + attackDamage.getSpell ().getSpellID () +
+					throw new MomException ("calculateEachFigureResistOrDieDamage from spell " + attackDamage.getSpell ().getSpellID () +
 						" has a saving throw modifier that rolls against a stat other than resistance");
 				
 				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getSavingThrowModifier ();
@@ -713,12 +712,101 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateResistOrDieDamage = " + totalHits);
+		log.trace ("Exiting calculateEachFigureResistOrDieDamage = " + totalHits);
 		return totalHits;
 	}
 	
 	/**
-	 * Rolls the number of actual hits and blocks for "resist or take damage", where the unit takes damage equal to how
+	 * Rolls the number of actual hits for "single figure resist or die" damage, where only one figure has to make a resistance roll.  Used for stoning touch.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateSingleFigureResistOrDieDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateSingleFigureResistOrDieDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setUnmodifiedDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+
+		// Is there a saving throw modifier?
+		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		
+		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
+		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
+		if (attackDamage.getSpell () != null)
+		{
+			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
+				(attackDamage.getSpell (), getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (defender, defender.getUnitHasSkill (), spells, db));
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getSavingThrowModifier () != 0))
+			{
+				if (!CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE.equals (magicRealmLifeformTypeTarget.getSavingThrowAttributeID ()))
+					throw new MomException ("calculateSingleFigureResistOrDieDamage from spell " + attackDamage.getSpell ().getSpellID () +
+						" has a saving throw modifier that rolls against a stat other than resistance");
+				
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getSavingThrowModifier ();
+			}
+		}
+		
+		// Work out the target's effective resistance score, reduced by any saving throw modifier
+		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
+		
+		// Make resistance roll
+		final int totalHits;
+		final int figuresDied;
+		if (getRandomUtils ().nextInt (10) >= damageCalculationMsg.getModifiedDefenceStrength ())
+		{
+			figuresDied = 1;
+			
+			// Kill off an entire figure, unless there's only 1 figure left in which be careful that it may already be damaged
+			if (damageCalculationMsg.getDefenderFigures () == 1)
+				totalHits = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
+			else
+				totalHits = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		}
+		else
+		{
+			figuresDied = 0;
+			totalHits = 0;
+		}
+		
+		// Store and send final totals
+		damageCalculationMsg.setActualHits (figuresDied);		
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.trace ("Exiting calculateSingleFigureResistOrDieDamage = " + totalHits);
+		return totalHits;
+	}
+	
+	/**
+	 * Rolls the number of actual hits for "resist or take damage", where the unit takes damage equal to how
 	 * much they miss a resistance roll by.  Used for Life Drain.
 	 * 
 	 * @param defender Unit being hit
@@ -774,6 +862,65 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
 		log.trace ("Exiting calculateResistOrTakeDamage = " + totalHits);
+		return totalHits;
+	}
+	
+	/**
+	 * Rolls the number of actual hits for "resistance rolls damage", where the unit has to make n resistance rolls and
+	 * loses 1 HP for each failed roll.  Used for Poison Touch.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateResistanceRollsDamage (final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering calculateResistanceRollsDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
+		
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setUnmodifiedDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+
+		// The potential hits is the number of rolls to make - this type of damage cannot have a saving throw modifier
+		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength ());
+		
+		// Make rolls
+		int totalHits = 0;
+		for (int hitNo = 0; hitNo < attackDamage.getPotentialHits (); hitNo++)
+			if (getRandomUtils ().nextInt (10) >= damageCalculationMsg.getModifiedDefenceStrength ())
+				totalHits++;
+		
+		// Store and send final totals
+		damageCalculationMsg.setActualHits (totalHits);
+		
+		// Can't overkill the unit
+		totalHits = getUnitServerUtils ().applyDamage (defender, totalHits, 0, 0, players, spells, combatAreaEffects, db);
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.trace ("Exiting calculateResistanceRollsDamage = " + totalHits);
 		return totalHits;
 	}
 	

@@ -123,8 +123,18 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 				languageEntryID = "AttackDisintegrate";
 				break;
 				
-			case RESIST_OR_DIE:
-				languageEntryID = "AttackResistOrDie";
+			case RESISTANCE_ROLLS:
+				languageEntryID = "AttackResistanceRolls";
+				break;
+				
+			case EACH_FIGURE_RESIST_OR_DIE:
+				languageEntryID = "AttackEachFigureResistOrDie";
+				if (getPotentialHits () != null)
+					setPotentialHits (-getPotentialHits ());
+				break;
+
+			case SINGLE_FIGURE_RESIST_OR_DIE:
+				languageEntryID = "AttackSingleFigureResistOrDie";
 				if (getPotentialHits () != null)
 					setPotentialHits (-getPotentialHits ());
 				break;

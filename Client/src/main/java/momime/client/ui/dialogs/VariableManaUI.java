@@ -230,8 +230,11 @@ public final class VariableManaUI extends MomClientDialogUI
 				// The slider value is the resulting damage of the spell
 				// How this label appears depends on what kind of damage the spell does - for regular damage spells like fire bolt we want this
 				// to say e.g. "15 damage" but for Banish and Life Drain we want it to say e.g. "-4 resistance"
-				final String languageEntryID = ((getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.RESIST_OR_DIE) ||
-					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.RESIST_OR_TAKE_DAMAGE)) ? "Resistance" : "Damage";
+				final String languageEntryID = ((getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.RESISTANCE_ROLLS) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.RESIST_OR_TAKE_DAMAGE) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.DISINTEGRATE)) ? "Resistance" : "Damage";
 				
 				leftLabel.setText (getLanguage ().findCategoryEntry ("VariableMana", languageEntryID).replaceAll
 					("VALUE", new Integer (slider.getValue ()).toString ()));

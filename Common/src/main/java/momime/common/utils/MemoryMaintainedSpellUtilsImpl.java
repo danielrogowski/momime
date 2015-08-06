@@ -7,6 +7,7 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -328,15 +329,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			// Combat attack spell
     			switch (spell.getAttackSpellDamageType ())
     			{
-    				case RESIST_OR_DIE:
+    				case EACH_FIGURE_RESIST_OR_DIE:
+    				case SINGLE_FIGURE_RESIST_OR_DIE:
     				case RESIST_OR_TAKE_DAMAGE:
+    				case RESISTANCE_ROLLS:
     				case DISINTEGRATE:
     					// Units with 10 or more resistance are immune to spells that roll against resistance
-    					// First need to take into account if there's a saving throw modifier
-    					final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
-    					final int resistance = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-    						UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) -
-    						((savingThrowModifier == null) ? 0 : savingThrowModifier);
+    					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
+    					int resistance = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+       						UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+    					if (spell.getAttackSpellDamageType () != DamageTypeID.RESISTANCE_ROLLS)
+    					{
+    						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
+    						if (savingThrowModifier != null)
+    							resistance = resistance - savingThrowModifier;
+    					}
     						
     					if (resistance >= 10)
     						result = TargetSpellResult.TOO_HIGH_RESISTANCE;

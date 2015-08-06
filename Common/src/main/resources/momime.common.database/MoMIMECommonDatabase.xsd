@@ -1789,12 +1789,20 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 				<xsd:appinfo><jaxb:typesafeEnumMember name="MULTI_FIGURE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="R"><xsd:annotation>
-				<xsd:documentation>Resist or take damage equal to the amount the resistance roll was missed by (poison touch)</xsd:documentation>
+				<xsd:documentation>Resist or take damage equal to the amount the resistance roll was missed by (life drain/steal)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="RESIST_OR_TAKE_DAMAGE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="T"><xsd:annotation>
+				<xsd:documentation>Make n resistance rolls, losing 1 HP for each failed roll (poison touch)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESISTANCE_ROLLS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="P"><xsd:annotation>
-				<xsd:documentation>Each figure must resist or die (petrify)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RESIST_OR_DIE" /></xsd:appinfo>
+				<xsd:documentation>Each figure must resist or die (petrify, stoning gaze)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="EACH_FIGURE_RESIST_OR_DIE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Single figure must resist or die (stoning touch)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SINGLE_FIGURE_RESIST_OR_DIE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Doom (constant damage)</xsd:documentation>

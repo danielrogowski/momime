@@ -267,14 +267,26 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									players, spells, combatAreaEffects, db); 
 								break;
 		
-							case RESIST_OR_DIE:
-								thisDamage = getDamageCalculator ().calculateResistOrDieDamage
+							case EACH_FIGURE_RESIST_OR_DIE:
+								thisDamage = getDamageCalculator ().calculateEachFigureResistOrDieDamage
 									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
 									players, spells, combatAreaEffects, db); 
 								break;
-		
+
+							case SINGLE_FIGURE_RESIST_OR_DIE:
+								thisDamage = getDamageCalculator ().calculateSingleFigureResistOrDieDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+								
 							case RESIST_OR_TAKE_DAMAGE:
 								thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+								break;
+								
+							case RESISTANCE_ROLLS:
+								thisDamage = getDamageCalculator ().calculateResistanceRollsDamage
 									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
 									players, spells, combatAreaEffects, db); 
 								break;

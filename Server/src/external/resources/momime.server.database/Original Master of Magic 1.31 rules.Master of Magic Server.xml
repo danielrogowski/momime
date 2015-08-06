@@ -6160,7 +6160,67 @@
 			<attackResolutionStep>
 				<stepNumber>4</stepNumber>
 				<combatSide>A</combatSide>
+				<unitSkillID>US031</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US030</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US027</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US129</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US032</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>SS099</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
 				<unitAttributeID>UA01</unitAttributeID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US031</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US030</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US027</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US129</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US032</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>SS099</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
 				<stepNumber>4</stepNumber>
@@ -6884,6 +6944,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>F</damageType>
+		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US028">
 		<unitSkillDescription>Armour Piercing</unitSkillDescription>
@@ -6893,12 +6956,21 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US030">
 		<unitSkillDescription>Poison Attack</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>T</damageType>
+		<damagePerFigure>PER_FIGURE_COMBINED</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillDescription>Life Stealing</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>R</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
 		<unitSkillDescription>Immolation</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>M</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
 		<unitSkillDescription>Resistance to Others</unitSkillDescription>
@@ -6951,6 +7023,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>P</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
@@ -7137,6 +7212,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS099">
 		<unitSkillDescription>Immolation</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>M</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
 		<unitSkillDescription>Bless</unitSkillDescription>
@@ -19813,19 +19891,26 @@
 		<languageEntry languageEntryID="AttackWithUnit" />
 		<languageEntry languageEntryID="AttackWithoutUnit" />
 		<languageEntry languageEntryID="AttackChanceOfDeath" />
-		<languageEntry languageEntryID="AttackResistOrDie" />
+		<languageEntry languageEntryID="AttackEachFigureResistOrDie" />
+		<languageEntry languageEntryID="AttackSingleFigureResistOrDie" />
 		<languageEntry languageEntryID="AttackResistOrTakeDamage" />
 		<languageEntry languageEntryID="AttackZeroesAmmo" />
+		<languageEntry languageEntryID="AttackResistanceRolls" />
 		<languageEntry languageEntryID="AttackDisintegrate" />
 		<languageEntry languageEntryID="DefenceStatisticsBase" />
 		<languageEntry languageEntryID="DefenceStatisticsModified" />
 		<languageEntry languageEntryID="DefenceStatisticsAutomatic" />
 		<languageEntry languageEntryID="DefenceChanceOfDeathDies" />
 		<languageEntry languageEntryID="DefenceChanceOfDeathSurvives" />
-		<languageEntry languageEntryID="DefenceResistOrDieBase" />
-		<languageEntry languageEntryID="DefenceResistOrDieModified" />
+		<languageEntry languageEntryID="DefenceEachFigureResistOrDieBase" />
+		<languageEntry languageEntryID="DefenceEachFigureResistOrDieModified" />
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieBaseDies" />
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieModifiedDies" />
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieBaseSurvives" />
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieModifiedSurvives" />
 		<languageEntry languageEntryID="DefenceResistOrTakeDamageBase" />
 		<languageEntry languageEntryID="DefenceResistOrTakeDamageModified" />
+		<languageEntry languageEntryID="DefenceDisintegrate" />
 		<languageEntry languageEntryID="DefenceDisintegrateBaseDies" />
 		<languageEntry languageEntryID="DefenceDisintegrateBaseSurvives" />
 		<languageEntry languageEntryID="DefenceDisintegrateModifiedDies" />
@@ -20011,4 +20096,3 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
-

@@ -5882,14 +5882,20 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="AttackChanceOfDeath">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE has POTENTIAL_HITS% chance of killing defender:</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="AttackResistOrDie">
-			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to survive:</languageEntryText>
+		<languageEntry languageEntryID="AttackEachFigureResistOrDie">
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires each figure to pass resistance roll with POTENTIAL_HITS modifier to survive:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackSingleFigureResistOrDie">
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires single figure to pass resistance roll with POTENTIAL_HITS modifier to survive:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackResistOrTakeDamage">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to avoid damage:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackZeroesAmmo">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE destroys remaining ranged attack ammo</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackResistanceRolls">
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE forces unit to make POTENTIAL_HITS resistance rolls:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackDisintegrate">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE destroys any unit with 9 resistance or less:</languageEntryText>
@@ -5909,17 +5915,32 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="DefenceChanceOfDeathSurvives">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME survives.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceResistOrDieBase">
+		<languageEntry languageEntryID="DefenceEachFigureResistOrDieBase">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and die, unit loses FINAL_HITS HP.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceResistOrDieModified">
+		<languageEntry languageEntryID="DefenceEachFigureResistOrDieModified">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), ACTUAL_HITS figures fail resistance roll and die, unit loses FINAL_HITS HP.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieBaseDies">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH and dies.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieModifiedDies">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) and dies.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieBaseSurvives">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH and survives.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieModifiedSurvives">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) and survives.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceResistOrTakeDamageBase">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH, dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceResistOrTakeDamageModified">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceResistanceRolls">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH, fails ACTUAL_HITS resistance rolls, unit loses FINAL_HITS HP.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceDisintegrateBaseDies">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH so dies.</languageEntryText>

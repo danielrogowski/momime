@@ -84,6 +84,10 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		final String languageEntryID;
 		switch (getDamageType ())
 		{
+			case RESISTANCE_ROLLS:
+				languageEntryID = "DefenceResistanceRolls";
+				break;
+			
 			case CHANCE_OF_DEATH:
 				languageEntryID = "DefenceChanceOfDeath" + ((getFinalHits () == 0) ? "Survives" : "Dies");
 				break;
@@ -93,8 +97,13 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 					((getFinalHits () == 0) ? "Survives" : "Dies");
 				break;
 				
-			case RESIST_OR_DIE:
-				languageEntryID = "DefenceResistOrDie" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
+			case EACH_FIGURE_RESIST_OR_DIE:
+				languageEntryID = "DefenceEachFigureResistOrDie" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
+				break;
+
+			case SINGLE_FIGURE_RESIST_OR_DIE:
+				languageEntryID = "DefenceSingleFigureResistOrDie" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified") +
+					((getFinalHits () == 0) ? "Survives" : "Dies");
 				break;
 
 			case RESIST_OR_TAKE_DAMAGE:

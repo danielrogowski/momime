@@ -9,7 +9,11 @@ import momime.server.database.SpellSvr;
  */
 public final class AttackDamage
 {
-	/** Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood */ 
+	/**
+	 * Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood.
+	 * The actual meaning of this value is different between different damage types.  e.g. can be an actual damage amount, a saving throw
+	 * modifier, or a % chance.
+	 */ 
 	private final Integer potentialHits;
 	
 	/** Any bonus to the standard 30% hit rate */

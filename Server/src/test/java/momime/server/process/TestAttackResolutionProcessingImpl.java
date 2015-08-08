@@ -16,7 +16,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.AttackResolutionConditionSvr;
@@ -53,15 +53,15 @@ public final class TestAttackResolutionProcessingImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
 
 		// Units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
-		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
-		when (unitUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -86,7 +86,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 
 		// Run method
 		final AttackResolutionSvr chosen = proc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);
@@ -113,15 +113,15 @@ public final class TestAttackResolutionProcessingImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
 
 		// Units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
-		when (unitUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
-		when (unitUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (-1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -146,7 +146,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 
 		// Run method
 		proc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);

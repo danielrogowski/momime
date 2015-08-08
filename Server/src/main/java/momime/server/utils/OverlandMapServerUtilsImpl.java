@@ -23,6 +23,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.CityNameContainerSvr;
 import momime.server.database.PlaneSvr;
@@ -55,6 +56,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -224,7 +228,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			successful = true;
 		else
 		{
-			final int attackingStrength = getUnitUtils ().getModifiedSkillValue (attackingSpirit, attackingSpirit.getUnitHasSkill (),
+			final int attackingStrength = getUnitSkillUtils ().getModifiedSkillValue (attackingSpirit, attackingSpirit.getUnitHasSkill (),
 				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 			
 			// Create test unit
@@ -232,7 +236,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			defendingSpirit.setUnitID (tc.getNodeSpiritUnitID ());
 			getUnitUtils ().initializeUnitSkills (defendingSpirit, -1, db);
 
-			final int defendingStrength = getUnitUtils ().getModifiedSkillValue (defendingSpirit, defendingSpirit.getUnitHasSkill (),
+			final int defendingStrength = getUnitSkillUtils ().getModifiedSkillValue (defendingSpirit, defendingSpirit.getUnitHasSkill (),
 				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 			
 			// Decide who wins
@@ -377,6 +381,22 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
+	}
+	
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */

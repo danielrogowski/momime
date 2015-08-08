@@ -28,6 +28,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
@@ -63,6 +64,9 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -100,10 +104,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		int scoutingRange = 1;
 
 		// Make sure we only bother to do this once
-		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit);
+		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit, db);
 
 		// Actual scouting skill
-		scoutingRange = Math.max (scoutingRange, getUnitUtils ().getModifiedSkillValue
+		scoutingRange = Math.max (scoutingRange, getUnitSkillUtils ().getModifiedSkillValue
 			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
@@ -184,9 +188,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Map indicating the doubled movement cost of entering every type of tile type for this unit stack
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering calculateDoubleMovementRatesForUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
 
@@ -626,6 +631,22 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
+	}
+	
 	/**
 	 * @return Unit calculations
 	 */

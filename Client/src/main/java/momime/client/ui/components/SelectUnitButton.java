@@ -17,6 +17,7 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitAttributeComponent;
 import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -59,6 +60,9 @@ public final class SelectUnitButton extends JToggleButton
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit being selected */
 	private MemoryUnit unit;
@@ -153,7 +157,7 @@ public final class SelectUnitButton extends JToggleButton
 				else
 				{
 					final double totalHits = getUnitUtils ().getFullFigureCount (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton")) *
-						getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+						getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 							UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
@@ -255,6 +259,22 @@ public final class SelectUnitButton extends JToggleButton
 	public final void setUnitUtils (final UnitUtils util)
 	{
 		unitUtils = util;
+	}
+
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param util Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils util)
+	{
+		unitSkillUtils = util;
 	}
 	
 	/**

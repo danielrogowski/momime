@@ -1042,6 +1042,13 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
         <xsd:annotation>
         	<xsd:documentation>For unit enchantments and curses, defines all possible "skills" the spell can grant.  When a player casts the spell, one of the listed skills will be chosen at random, e.g. Chaos Channels has 3 possible effects.</xsd:documentation>
         </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillValue" type="momimecommon:unitSkillValue" nxe:label="Skill Value" nxe:gridwidth="100">
+				<xsd:annotation>
+					<xsd:documentation>Some skills have a value or saving throw penalty (such as Fire Breath 2 or Fire Breath 20, or Life Steal -2 or Life Steal -6) whereas some skills don't have a value (such as Fire Immunity or Mountaineer).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
 		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Option for Unit Skill" nxe:gridwidth="200">
 			<xsd:annotation>
 				<xsd:appinfo>

@@ -38,7 +38,7 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
@@ -85,8 +85,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 
 	/** City calculations */
 	private CityCalculations cityCalculations;
@@ -131,7 +131,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			{
 				final UnitSvr unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
 				for (final UnitUpkeep upkeep : unitDetails.getUnitUpkeep ())
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), players, db));
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), players, db));
 			}
 
 		// Subtract the mana maintenance of all spells from the economy
@@ -247,7 +247,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
-				final int consumptionAmount = getUnitUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, db);
+				final int consumptionAmount = getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, db);
 				if (consumptionAmount > 0)
 				{
 					final MomResourceConsumerUnit consumer = getMomResourceConsumerFactory ().createUnitConsumer ();
@@ -689,19 +689,19 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Unit skill utils
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitSkillUtils getUnitSkillUtils ()
 	{
-		return unitUtils;
+		return unitSkillUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param utils Unit skill utils
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
 	{
-		unitUtils = utils;
+		unitSkillUtils = utils;
 	}
 
 	/**

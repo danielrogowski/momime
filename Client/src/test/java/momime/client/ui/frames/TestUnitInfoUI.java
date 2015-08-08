@@ -97,7 +97,7 @@ public final class TestUnitInfoUI
 
 		// Skills
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit)).thenReturn (new UnitHasSkillMergedList ());
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
@@ -198,7 +198,7 @@ public final class TestUnitInfoUI
 
 		// Skills
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit)).thenReturn (new UnitHasSkillMergedList ());
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);

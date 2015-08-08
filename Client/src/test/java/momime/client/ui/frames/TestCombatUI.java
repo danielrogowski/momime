@@ -62,7 +62,7 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 
 import org.junit.Test;
 
@@ -322,12 +322,12 @@ public final class TestCombatUI
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (selectedUnit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("High Elf Swordsmen");
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
-		when (unitUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (3);
 		
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -368,7 +368,7 @@ public final class TestCombatUI
 		combat.setMemoryGridCellUtils (memoryGridCellUtils);
 		combat.setSpellCalculations (spellCalculations);
 		combat.setUnitClientUtils (unitClientUtils);
-		combat.setUnitUtils (unitUtils);
+		combat.setUnitSkillUtils (unitSkillUtils);
 		combat.setClientUnitCalculations (clientUnitCalculations);
 		combat.setCombatLocation (new MapCoordinates3DEx (20, 10, 0));
 		combat.setMusicPlayer (mock (AudioPlayer.class));

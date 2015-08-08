@@ -37,6 +37,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.database.CityNameContainerSvr;
@@ -541,8 +542,8 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		// Unit stats
 		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()), eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE),
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()), eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE),
 			eq (players), eq (trueMap.getMaintainedSpell ()), eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2, 1);
 		
 		// Fix random result
@@ -554,9 +555,10 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setRandomUtils (randomUtils);
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run method
 		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
@@ -671,8 +673,8 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		// Unit stats
 		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()), eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE),
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()), eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE),
 			eq (players), eq (trueMap.getMaintainedSpell ()), eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2, 1);
 		
 		// Fix random result
@@ -684,8 +686,9 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setRandomUtils (randomUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run method
 		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);

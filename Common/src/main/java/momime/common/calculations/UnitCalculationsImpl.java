@@ -32,6 +32,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -68,6 +69,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
@@ -187,7 +191,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		return getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, players, spells, combatAreaEffects, db);
+		return getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, players, spells, combatAreaEffects, db);
 	}
 
 	/**
@@ -208,10 +212,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Unit caster skill is easy, this directly says how many MP the unit has
-		int total = getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db);
+		int total = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db);
 		
 		// The hero caster skill is a bit more of a pain, since we get more mana at higher experience levels
-		int heroSkillValue = getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db);
+		int heroSkillValue = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db);
 		if (heroSkillValue > 0)
 		{
 			final int expLevel = getUnitUtils ().getExperienceLevel (unit, true, players, combatAreaEffects, db).getLevelNumber ();
@@ -245,7 +249,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit);
+		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit, db);
 		
 		// Now set the values
 		unit.setRangedAttackAmmo (calculateFullRangedAttackAmmo (unit, mergedSkills, players, spells, combatAreaEffects, db));
@@ -282,7 +286,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateHitPointsRemaining"));
-		final int hitPointsPerFigure = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		final int hitPointsPerFigure = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 		
 		return (figures * hitPointsPerFigure) - unit.getDamageTaken ();
@@ -309,7 +313,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateAliveFigureCount")) -
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
-			(unit.getDamageTaken () / getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			(unit.getDamageTaken () / getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Protect against weird results
@@ -338,7 +342,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final int hitPointsPerFigure = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		final int hitPointsPerFigure = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 		
 		// Work out how much damage the first figure has taken
@@ -376,7 +380,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final boolean result;
 		
 		// First we have to actually have a ranged attack
-		if (getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		if (getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) <= 0)
 			
 			result = false;
@@ -411,10 +415,11 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	@Override
 	public final List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering listAllSkillsInUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
 
@@ -423,7 +428,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 		if (unitStack != null)
 			for (final MemoryUnit thisUnit : unitStack)
-				for (final UnitHasSkill thisSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, thisUnit))
+				for (final UnitHasSkill thisSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, thisUnit, db))
 					if (!list.contains (thisSkill.getUnitSkillID ()))
 					{
 						list.add (thisSkill.getUnitSkillID ());
@@ -445,17 +450,18 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	@Override
 	public final Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering calculateDoubleMovementToEnterTileType: " + unit.getUnitID () + ", Player ID " + unit.getOwningPlayerID () + ", " + tileTypeID);
 
 		// Only merge the units list of skills once
 		final List<UnitHasSkill> unitHasSkills;
 		if (unit instanceof MemoryUnit)
-			unitHasSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit);
+			unitHasSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, db);
 		else
 			unitHasSkills = unit.getUnitHasSkill ();
 
@@ -490,10 +496,11 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether this unit can pass over every type of possible terrain on the map; i.e. true for swimming units like Lizardmen, any flying unit, or any unit stacked with a Wind Walking unit
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	@Override
 	public final boolean areAllTerrainTypesPassable (final AvailableUnit unit, final List<String> unitStackSkills,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering areAllTerrainTypesPassable: " + unit.getUnitID ());
 
@@ -881,6 +888,22 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
+	}
+	
 	/**
 	 * @return Coordinate system utils
 	 */

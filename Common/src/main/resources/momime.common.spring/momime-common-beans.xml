@@ -179,6 +179,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
@@ -191,6 +192,7 @@
 	<bean id="memoryMaintainedSpellUtils" class="momime.common.utils.MemoryMaintainedSpellUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 	
@@ -210,6 +212,12 @@
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+	
+	<bean id="unitSkillUtils" class="momime.common.utils.UnitSkillUtilsImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	

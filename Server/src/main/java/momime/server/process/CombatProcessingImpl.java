@@ -36,6 +36,7 @@ import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CombatAI;
@@ -69,6 +70,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -180,7 +184,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final int result;
 		
 		// Does this unit have a ranged attack?
-		if (getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		if (getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) > 0)
 		{
 			// Ranged hero or regular unit?
@@ -191,7 +195,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// Does this unit have a melee attack?
-		else if (getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		else if (getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) > 0)
 		{
 			// Melee hero or regular unit?
@@ -1073,6 +1077,22 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 	
 	/**

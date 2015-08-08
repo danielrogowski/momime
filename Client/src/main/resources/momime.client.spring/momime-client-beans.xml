@@ -805,6 +805,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 	</bean>
 
 	<bean id="overlandMapBitmapGenerator" class="momime.client.calculations.OverlandMapBitmapGeneratorImpl">
@@ -827,7 +828,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
 		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
@@ -893,6 +894,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
@@ -1241,6 +1243,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
@@ -1460,6 +1463,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 	</bean>
 
 	<bean id="unitRowDisplayButton" class="momime.client.ui.components.UnitRowDisplayButton" scope="prototype">
@@ -1596,6 +1600,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
@@ -1686,6 +1691,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />

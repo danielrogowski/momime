@@ -10,6 +10,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -31,6 +32,9 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
+	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -55,7 +59,8 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		// Pre-merge in skills granted from spells (e.g. chaos channels flight) so that we only do it once time
 		final List<UnitHasSkill> mergedSkills;
 		if (unit instanceof MemoryUnit)
-			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit);
+			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				(MemoryUnit) unit, getClient ().getClientDB ());
 		else
 			mergedSkills = unit.getUnitHasSkill ();
 		
@@ -64,7 +69,7 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		for (final UnitSkillGfx thisSkill : getGraphicsDB ().getUnitSkills ())
 			if (thisSkill.getMovementIconImagePreference () != null)
 				if ((bestMatch == null) || (thisSkill.getMovementIconImagePreference () < bestMatch.getMovementIconImagePreference ()))
-					if (getUnitUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
+					if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 						bestMatch = thisSkill;
@@ -145,6 +150,22 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 
 	/**

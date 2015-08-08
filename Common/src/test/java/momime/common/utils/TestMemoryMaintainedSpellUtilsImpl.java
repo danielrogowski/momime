@@ -622,7 +622,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		// Intended target
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitURN (10);
@@ -630,14 +630,16 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		unit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit.setCombatSide (UnitCombatSideID.ATTACKER);
 		
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (12);
 		
 		// Set up object to test
 		final SpellUtils spellUtils = mock (SpellUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setUnitUtils (unitUtils);
 		
 		// Dead unit

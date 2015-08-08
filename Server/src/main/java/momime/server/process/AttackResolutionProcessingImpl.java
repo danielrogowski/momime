@@ -16,7 +16,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.AttackResolutionConditionSvr;
@@ -40,8 +40,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AttackResolutionProcessingImpl.class);
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -89,7 +89,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				
 				// Check this condition
 				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
-				if (getUnitUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (), players, spells, combatAreaEffects, db) < 0)
+				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (), players, spells, combatAreaEffects, db) < 0)
 					conditionsMatch = false;
 			}
 			
@@ -349,19 +349,19 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Unit skill utils
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitSkillUtils getUnitSkillUtils ()
 	{
-		return unitUtils;
+		return unitSkillUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param utils Unit skill utils
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
 	{
-		unitUtils = utils;
+		unitSkillUtils = utils;
 	}
 
 	/**

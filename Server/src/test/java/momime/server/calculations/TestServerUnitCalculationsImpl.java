@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
@@ -90,18 +91,20 @@ public final class TestServerUnitCalculationsImpl
 		// Unit skills
 		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 
 		// Unit with no skills and no scouting range
 		final MemoryUnit unit = new MemoryUnit ();
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit)).thenReturn (mergedSkills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit, db)).thenReturn (mergedSkills);
 		assertEquals (1, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
 		
 		// Unit with Scouting III
-		when (unitUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db)).thenReturn (3);
+		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db)).thenReturn (3);
 		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
 		
 		// Unit with two skills, one which grants Scouting II (like Flight) and one which has nothing at all to do with scouting

@@ -39,6 +39,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -73,9 +74,12 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
-	
+
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
@@ -252,7 +256,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
 			{
 				final String unitAttributeID = getClient ().getClientDB ().getUnitAttributes ().get (attrNo-1).getUnitAttributeID ();
-				final int attrValue = getUnitUtils ().getModifiedAttributeValue (unit, unitAttributeID, UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+				final int attrValue = getUnitSkillUtils ().getModifiedAttributeValue (unit, unitAttributeID, UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 				
@@ -270,7 +274,9 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			
 			// There's space on the form for up to 12 unit skills
 			int skillNo = 0;
-			final List<UnitHasSkill> mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit);
+			final List<UnitHasSkill> mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ());
+			
 			for (final UnitHasSkill thisSkill : mergedSkills)
 				if (skillNo < 12)
 				{
@@ -440,6 +446,22 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 
 	/**

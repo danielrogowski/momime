@@ -44,6 +44,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
+	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
@@ -336,7 +339,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     				case DISINTEGRATE:
     					// Units with 10 or more resistance are immune to spells that roll against resistance
     					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
-    					int resistance = getUnitUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+    					int resistance = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
        						UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
     					if (spell.getAttackSpellDamageType () != DamageTypeID.RESISTANCE_ROLLS)
     					{
@@ -456,6 +459,22 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
+	}
+	
 	/**
 	 * @return Memory building utils
 	 */

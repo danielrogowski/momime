@@ -180,9 +180,10 @@ public interface UnitCalculations
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	public List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param unit Unit that we want to move
@@ -191,9 +192,10 @@ public interface UnitCalculations
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	public Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException;
 	
 	/**
 	 * @param unit Unit that we want to move
@@ -201,9 +203,10 @@ public interface UnitCalculations
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether this unit can pass over every type of possible terrain on the map; i.e. true for swimming units like Lizardmen, any flying unit, or any unit stacked with a Wind Walking unit
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	public boolean areAllTerrainTypesPassable (final AvailableUnit unit, final List<String> unitStackSkills,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException;
 	
 	/**
 	 * Checks whether selectedUnits includes any transports, and if so whether the other units fit inside them, and whether any others in the same map cell should be added to the stack.

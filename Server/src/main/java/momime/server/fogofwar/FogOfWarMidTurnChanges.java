@@ -388,7 +388,8 @@ public interface FogOfWarMidTurnChanges
 	 * @param tileTypeID Tile type being moved onto
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	public void reduceMovementRemaining (final List<MemoryUnit> unitStack, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db);
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db) throws RecordNotFoundException;
 }

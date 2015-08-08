@@ -30,7 +30,7 @@ import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage
 import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.utils.PendingMovementUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,8 +53,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	/** Multiplayer client */
 	private MomClient client;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
@@ -228,14 +228,14 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
-					if (getUnitUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
+					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
 						CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 					
 						settlerCount++;
 					
-					if (getUnitUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
+					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
 						CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
@@ -607,19 +607,19 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Unit skill utils
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitSkillUtils getUnitSkillUtils ()
 	{
-		return unitUtils;
+		return unitSkillUtils;
 	}
 
 	/**
-	 * @param util Unit utils
+	 * @param util Unit skill utils
 	 */
-	public final void setUnitUtils (final UnitUtils util)
+	public final void setUnitSkillUtils (final UnitSkillUtils util)
 	{
-		unitUtils = util;
+		unitSkillUtils = util;
 	}
 	
 	/**

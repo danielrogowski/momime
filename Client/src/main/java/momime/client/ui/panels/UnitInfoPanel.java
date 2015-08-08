@@ -70,6 +70,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -139,6 +140,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -458,7 +462,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 						else
-							attributeValueIncludingNegatives = getUnitUtils ().getModifiedAttributeValue (unit, attr.getUnitAttributeID (),
+							attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedAttributeValue (unit, attr.getUnitAttributeID (),
 								UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
@@ -471,7 +475,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								// Work out the total value (without negative effects), and our actual current value (after negative effects),
 								// so we can show stats knocked off by e.g. Black Prayer as faded.
 								// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
-								final int totalValue = getUnitUtils ().getModifiedAttributeValue (unit, attr.getUnitAttributeID (), attrComponent,
+								final int totalValue = getUnitSkillUtils ().getModifiedAttributeValue (unit, attr.getUnitAttributeID (), attrComponent,
 									attr.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
 									getClient ().getPlayers (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
@@ -764,7 +768,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		{
 			final UnitUpkeep upkeep = new UnitUpkeep ();
 			upkeep.setProductionTypeID (upkeepValue.getProductionTypeID ());
-			upkeep.setUpkeepValue (getUnitUtils ().getModifiedUpkeepValue (unit, upkeep.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
+			upkeep.setUpkeepValue (getUnitSkillUtils ().getModifiedUpkeepValue (unit, upkeep.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
 			upkeeps.add (upkeep);
 		}
 
@@ -806,7 +810,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Find all skills to show in the list box
 		final List<UnitHasSkill> mergedSkills;
 		if (unit instanceof MemoryUnit)
-			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit);
+			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit, getClient ().getClientDB ());
 		else
 			mergedSkills = unit.getUnitHasSkill ();
 		
@@ -821,7 +826,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			{
 				final UnitHasSkill listSkill = new UnitHasSkill ();
 				listSkill.setUnitSkillID (thisSkill.getUnitSkillID ());
-				listSkill.setUnitSkillValue (getUnitUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
+				listSkill.setUnitSkillValue (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()));
 				unitSkillsItems.addElement (listSkill);
@@ -1104,6 +1109,22 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 	
 	/**

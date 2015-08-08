@@ -41,6 +41,7 @@ import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
@@ -167,35 +168,35 @@ public final class TestCombatProcessingImpl
 		settlers.setUnitID ("UN045");
 
 		// Set up test object
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
-		when (unitUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (dwarfHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 		
-		when (unitUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (spearmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 			
-		when (unitUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (archerHero, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 				
-		when (unitUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		when (unitUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (bowmen, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 					
-		when (unitUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
-		when (unitUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (settlers, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 						
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
-		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Check results
 		assertEquals (1, proc.calculateUnitCombatClass (dwarfHero, players, spells, combatAreaEffects, db));

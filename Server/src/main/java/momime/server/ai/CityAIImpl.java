@@ -27,7 +27,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
@@ -57,8 +57,8 @@ public final class CityAIImpl implements CityAI
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -252,7 +252,7 @@ public final class CityAIImpl implements CityAI
 		int rationsNeeded = 0;
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-				rationsNeeded = rationsNeeded + getUnitUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db);
+				rationsNeeded = rationsNeeded + getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db);
 
 		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations");
 
@@ -434,19 +434,19 @@ public final class CityAIImpl implements CityAI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Unit skill utils
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitSkillUtils getUnitSkillUtils ()
 	{
-		return unitUtils;
+		return unitSkillUtils;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param utils Unit skill utils
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
 	{
-		unitUtils = utils;
+		unitSkillUtils = utils;
 	}
 	
 	/**

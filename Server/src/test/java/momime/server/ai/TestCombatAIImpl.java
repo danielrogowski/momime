@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitHasSkill;
@@ -16,6 +17,8 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -124,46 +127,48 @@ public final class TestCombatAIImpl
 	@Test
 	public final void testCalculateUnitCombatAIOrder () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
+		// Other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 		
+		// Sample unit
+		final MemoryUnit unit = new MemoryUnit ();
+		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
+
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit, db)).thenReturn (skills);
+		
 		// Set up object to test
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		
 		final CombatAIImpl ai = new CombatAIImpl ();
-		ai.setUnitUtils (new UnitUtilsImpl ());
+		ai.setUnitUtils (unitUtils);
+		ai.setUnitSkillUtils (unitSkillUtils);
 		ai.setUnitCalculations (unitCalculations);
 		
 		// Caster with MP remaining
-		final MemoryUnit casterWithMP = new MemoryUnit ();
-		casterWithMP.setManaRemaining (10);
-		assertEquals (1, ai.calculateUnitCombatAIOrder (casterWithMP, players, spells, combatAreaEffects, db));
+		unit.setManaRemaining (10);
+		assertEquals (1, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
 		
 		// Unit with a ranged attack
-		final MemoryUnit ranged = new MemoryUnit ();
-		ranged.setManaRemaining (9);
-		when (unitCalculations.canMakeRangedAttack (ranged, players, spells, combatAreaEffects, db)).thenReturn (true);
-		assertEquals (2, ai.calculateUnitCombatAIOrder (ranged, players, spells, combatAreaEffects, db));
+		unit.setManaRemaining (9);
+		when (unitCalculations.canMakeRangedAttack (unit, players, spells, combatAreaEffects, db)).thenReturn (true);
+		assertEquals (2, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
 		
 		// Unit without the caster skill
-		final MemoryUnit melee = new MemoryUnit ();
-		melee.setUnitID ("UN001");		// Dwarf hero
-		assertEquals (3, ai.calculateUnitCombatAIOrder (melee, players, spells, combatAreaEffects, db));
+		when (unitCalculations.canMakeRangedAttack (unit, players, spells, combatAreaEffects, db)).thenReturn (false);
+		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db)).thenReturn (-1);
+		assertEquals (3, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
 		
 		// Caster without MP remaining
-		final MemoryUnit casterWithoutMP = new MemoryUnit ();
-		casterWithoutMP.setUnitID ("UN003");		// Sage hero
-		casterWithoutMP.setManaRemaining (9);
-		
-		final UnitHasSkill casterSkill = new UnitHasSkill ();
-		casterSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO);
-		casterSkill.setUnitSkillValue (3);
-		casterWithoutMP.getUnitHasSkill ().add (casterSkill);
-		
-		assertEquals (4, ai.calculateUnitCombatAIOrder (casterWithoutMP, players, spells, combatAreaEffects, db));
+		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db)).thenReturn (1);
+		assertEquals (4, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
 	}
 	
 	/**

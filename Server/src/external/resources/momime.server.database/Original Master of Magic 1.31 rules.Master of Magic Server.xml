@@ -6293,6 +6293,10 @@
 				<unitSkillID>US126</unitSkillID>
 				<bonusValue>1</bonusValue>
 			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
+				<bonusValue>1</bonusValue>
+			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="2">
 			<experienceRequired>60</experienceRequired>
@@ -6328,6 +6332,10 @@
 			</experienceSkillBonus>
 			<experienceSkillBonus>
 				<unitSkillID>US126</unitSkillID>
+				<bonusValue>1</bonusValue>
+			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
 				<bonusValue>1</bonusValue>
 			</experienceSkillBonus>
 		</experienceLevel>
@@ -6375,6 +6383,10 @@
 				<unitSkillID>US126</unitSkillID>
 				<bonusValue>2</bonusValue>
 			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
+				<bonusValue>2</bonusValue>
+			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="4">
 			<ringColour>FCC864</ringColour>
@@ -6419,6 +6431,10 @@
 				<unitSkillID>US126</unitSkillID>
 				<bonusValue>2</bonusValue>
 			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
+				<bonusValue>2</bonusValue>
+			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="5">
 			<ringColour>FCC864</ringColour>
@@ -6461,6 +6477,10 @@
 			</experienceSkillBonus>
 			<experienceSkillBonus>
 				<unitSkillID>US126</unitSkillID>
+				<bonusValue>3</bonusValue>
+			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
 				<bonusValue>3</bonusValue>
 			</experienceSkillBonus>
 		</experienceLevel>
@@ -6512,6 +6532,10 @@
 				<unitSkillID>US126</unitSkillID>
 				<bonusValue>1</bonusValue>
 			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
+				<bonusValue>1</bonusValue>
+			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="2">
 			<experienceRequired>60</experienceRequired>
@@ -6551,6 +6575,10 @@
 			</experienceSkillBonus>
 			<experienceSkillBonus>
 				<unitSkillID>US126</unitSkillID>
+				<bonusValue>2</bonusValue>
+			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
 				<bonusValue>2</bonusValue>
 			</experienceSkillBonus>
 		</experienceLevel>
@@ -6598,6 +6626,10 @@
 				<unitSkillID>US126</unitSkillID>
 				<bonusValue>3</bonusValue>
 			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
+				<bonusValue>3</bonusValue>
+			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="4">
 			<experienceRequired>200</experienceRequired>
@@ -6641,6 +6673,10 @@
 			</experienceSkillBonus>
 			<experienceSkillBonus>
 				<unitSkillID>US126</unitSkillID>
+				<bonusValue>4</bonusValue>
+			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
 				<bonusValue>4</bonusValue>
 			</experienceSkillBonus>
 		</experienceLevel>
@@ -6688,6 +6724,10 @@
 				<unitSkillID>US126</unitSkillID>
 				<bonusValue>5</bonusValue>
 			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
+				<bonusValue>5</bonusValue>
+			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="6">
 			<experienceRequired>450</experienceRequired>
@@ -6731,6 +6771,10 @@
 			</experienceSkillBonus>
 			<experienceSkillBonus>
 				<unitSkillID>US126</unitSkillID>
+				<bonusValue>6</bonusValue>
+			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
 				<bonusValue>6</bonusValue>
 			</experienceSkillBonus>
 		</experienceLevel>
@@ -6778,6 +6822,10 @@
 				<unitSkillID>US126</unitSkillID>
 				<bonusValue>7</bonusValue>
 			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
+				<bonusValue>7</bonusValue>
+			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="8">
 			<experienceRequired>1000</experienceRequired>
@@ -6821,6 +6869,10 @@
 			</experienceSkillBonus>
 			<experienceSkillBonus>
 				<unitSkillID>US126</unitSkillID>
+				<bonusValue>8</bonusValue>
+			</experienceSkillBonus>
+			<experienceSkillBonus>
+				<unitSkillID>SS093B</unitSkillID>
 				<bonusValue>8</bonusValue>
 			</experienceSkillBonus>
 		</experienceLevel>
@@ -15942,7 +15994,9 @@
 		<overlandCastingCost>50</overlandCastingCost>
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS093A" />
-		<unitSpellEffect unitSkillID="SS093B" />
+		<unitSpellEffect unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
+		</unitSpellEffect>
 		<unitSpellEffect unitSkillID="SS093C" />
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />

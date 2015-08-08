@@ -29,6 +29,7 @@ import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -56,6 +57,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
+	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 	
@@ -439,7 +443,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				hitsLeftToApply = hitsLeftToApply - hitsOnThisFigure;
 				totalHits = totalHits + hitsOnThisFigure;
 				defendingFiguresRemaining--;
-				hitPointsRemainingOfFirstFigure = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+				hitPointsRemainingOfFirstFigure = getUnitSkillUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 			}
 		}
@@ -464,6 +468,22 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
+	}
+	
 	/**
 	 * @return Unit calculations
 	 */

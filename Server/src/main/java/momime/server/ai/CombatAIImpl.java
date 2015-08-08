@@ -19,6 +19,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
@@ -45,6 +46,9 @@ public final class CombatAIImpl implements CombatAI
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -112,10 +116,10 @@ public final class CombatAIImpl implements CombatAI
 		// Caster skill?
 		else
 		{
-			final UnitHasSkillMergedList skills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit);
+			final UnitHasSkillMergedList skills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit, db);
 			
-			if ((getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db) < 0) &&
-				(getUnitUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db) < 0))
+			if ((getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db) < 0) &&
+				(getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db) < 0))
 				
 				result = 3;
 			else
@@ -350,6 +354,22 @@ public final class CombatAIImpl implements CombatAI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 	
 	/**

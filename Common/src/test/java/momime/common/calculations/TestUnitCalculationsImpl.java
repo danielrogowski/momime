@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,8 +45,8 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-import momime.common.utils.UnitUtilsImpl;
 
 import org.junit.Test;
 
@@ -202,20 +203,20 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Test a unit with ammo
 		final AvailableUnit unitWithAmmo = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitSkillUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (8);
 		assertEquals (8, calc.calculateFullRangedAttackAmmo (unitWithAmmo, skills, players, spells, combatAreaEffects, db));
 		
 		// Test a unit without ammo
 		final AvailableUnit unitWithoutAmmo = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitSkillUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateFullRangedAttackAmmo (unitWithoutAmmo, skills, players, spells, combatAreaEffects, db));
 	}
@@ -236,23 +237,25 @@ public final class TestUnitCalculationsImpl
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Test a non-casting unit
 		final AvailableUnit nonCaster = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateManaTotal (nonCaster, skills, players, spells, combatAreaEffects, db));
 
 		// Test an archangel
 		final AvailableUnit archangel = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (40);
-		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (40, calc.calculateManaTotal (archangel, skills, players, spells, combatAreaEffects, db));
 
@@ -261,9 +264,9 @@ public final class TestUnitCalculationsImpl
 		level2.setLevelNumber (2);
 		
 		final AvailableUnit lowHero = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (3);
 		when (unitUtils.getExperienceLevel (lowHero, true, players, combatAreaEffects, db)).thenReturn (level2);
 		assertEquals (22, calc.calculateManaTotal (lowHero, skills, players, spells, combatAreaEffects, db));
@@ -273,9 +276,9 @@ public final class TestUnitCalculationsImpl
 		level4.setLevelNumber (4);
 		
 		final AvailableUnit highHero = new AvailableUnit ();
-		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (40);
-		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (highHero, true, players, combatAreaEffects, db)).thenReturn (level4);
 		assertEquals (102, calc.calculateManaTotal (highHero, skills, players, spells, combatAreaEffects, db));
@@ -297,18 +300,20 @@ public final class TestUnitCalculationsImpl
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Test a unit that has nothing
 		final MemoryUnit melee = new MemoryUnit ();
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, melee)).thenReturn (skills);
-		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, melee, db)).thenReturn (skills);
+		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
-		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (-1);
 		calc.giveUnitFullRangedAmmoAndMana (melee, players, spells, combatAreaEffects, db);
 		
@@ -320,12 +325,12 @@ public final class TestUnitCalculationsImpl
 		level4.setLevelNumber (4);
 
 		final MemoryUnit rangedCaster = new MemoryUnit ();
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, rangedCaster)).thenReturn (skills);
-		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, rangedCaster, db)).thenReturn (skills);
+		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			players, spells, combatAreaEffects, db)).thenReturn (8);
-		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			players, spells, combatAreaEffects, db)).thenReturn (40);
-		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			players, spells, combatAreaEffects, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (rangedCaster, true, players, combatAreaEffects, db)).thenReturn (level4);
 		calc.giveUnitFullRangedAmmoAndMana (rangedCaster, players, spells, combatAreaEffects, db);
@@ -383,16 +388,18 @@ public final class TestUnitCalculationsImpl
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Unit with 1 HP per figure at full health of 6 figures
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("A");
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (6);
 
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 
 		assertEquals (6, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
@@ -402,7 +409,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (5, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
 
 		// Now it has 4 HP per figure
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (23, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
 		
@@ -431,14 +438,17 @@ public final class TestUnitCalculationsImpl
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (6);
+
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 
 		// Unit with 1 HP per figure at full health of 6 figures
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("A");
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		
 		assertEquals (6, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
@@ -456,7 +466,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (0, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
 		// Now it has 4 HP per figure, so 6x4=24 total damage
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
@@ -487,14 +497,14 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
 		final MemoryUnit unit = new MemoryUnit ();
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
@@ -504,7 +514,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 
 		// Now it has 4 HP per figure
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 		
@@ -539,27 +549,27 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Unit without even a ranged attack skill
 		final MemoryUnit noRangedAttack = new MemoryUnit ();
-		when (unitUtils.getModifiedAttributeValue (noRangedAttack, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (noRangedAttack, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 		assertFalse (calc.canMakeRangedAttack (noRangedAttack, players, spells, combatAreaEffects, db));
 		
 		// Bow with no remaining ammo
 		final MemoryUnit outOfAmmo = new MemoryUnit ();
-		when (unitUtils.getModifiedAttributeValue (outOfAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (outOfAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertFalse (calc.canMakeRangedAttack (outOfAmmo, players, spells, combatAreaEffects, db));
 
 		// Bow with remaining ammo
 		final MemoryUnit hasAmmo = new MemoryUnit ();
 		hasAmmo.setRangedAttackAmmo (1);
-		when (unitUtils.getModifiedAttributeValue (hasAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (hasAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, spells, combatAreaEffects, db));
 		
@@ -570,7 +580,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit unknownRAT = new MemoryUnit ();
 		unknownRAT.setUnitID (unknownRATUnitDef.getUnitID ());
 		unknownRAT.setManaRemaining (3);
-		when (unitUtils.getModifiedAttributeValue (unknownRAT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (unknownRAT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (unknownRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (unknownRATUnitDef);
 		assertFalse (calc.canMakeRangedAttack (unknownRAT, players, spells, combatAreaEffects, db));
@@ -586,7 +596,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit physRATUnit = new MemoryUnit ();
 		physRATUnit.setUnitID (physRATUnitDef.getUnitID ());
 		physRATUnit.setManaRemaining (3);
-		when (unitUtils.getModifiedAttributeValue (physRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (physRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (physRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (physRATUnitDef);
 		when (db.findRangedAttackType (physRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (physRAT);
@@ -604,7 +614,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit magRATUnit = new MemoryUnit ();
 		magRATUnit.setUnitID (magRATUnitDef.getUnitID ());
 		magRATUnit.setManaRemaining (3);
-		when (unitUtils.getModifiedAttributeValue (magRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (magRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
 		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);
@@ -623,114 +633,54 @@ public final class TestUnitCalculationsImpl
 
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Units and skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MemoryUnit unitOne = new MemoryUnit ();
+		final UnitHasSkillMergedList unitOneSkills = new UnitHasSkillMergedList ();
+		for (final String unitSkillID : new String [] {"US001", "US002"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			unitOneSkills.add (unitHasSkill);
+		}
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unitOne, db)).thenReturn (unitOneSkills);
+
+		final MemoryUnit unitTwo = new MemoryUnit ();
+		final UnitHasSkillMergedList unitTwoSkills = new UnitHasSkillMergedList ();
+		for (final String unitSkillID : new String [] {"US002", "US003"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			unitTwoSkills.add (unitHasSkill);
+		}
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unitTwo, db)).thenReturn (unitTwoSkills);
 
 		// Set up object to test
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Null stack
 		assertEquals (0, calc.listAllSkillsInUnitStack (null, spells, db).size ());
 
-		// Single unit with only skills from DB
+		// Single unit
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		units.add (unitOne);
 
-		final MemoryUnit longbowmenUnit = new MemoryUnit ();
-		longbowmenUnit.setUnitURN (1);
-		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "US132", "US001", "USX01"})
-		{
-			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
-			unitHasSkill.setUnitSkillID (unitSkillID);
-			longbowmenUnit.getUnitHasSkill ().add (unitHasSkill);
-		}
-		
-		units.add (longbowmenUnit);
+		final List<String> unitOneResults = calc.listAllSkillsInUnitStack (units, spells, db);
+		assertEquals (2, unitOneResults.size ());
+		assertEquals ("US001", unitOneResults.get (0));
+		assertEquals ("US002", unitOneResults.get (1));
 
-		final List<String> longbowmen = calc.listAllSkillsInUnitStack (units, spells, db);
-		assertEquals (4, longbowmen.size ());
-		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, longbowmen.get (0));
-		assertEquals ("US132", longbowmen.get (1));
-		assertEquals ("US001", longbowmen.get (2));
-		assertEquals ("USX01", longbowmen.get (3));
+		// Two units
+		units.add (unitTwo);
 
-		// Two units with skills only from DB
-		final MemoryUnit elvenLordsUnit = new MemoryUnit ();
-		elvenLordsUnit.setUnitURN (2);
-		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "US001", "USX01", "US028", "US029"})
-		{
-			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
-			unitHasSkill.setUnitSkillID (unitSkillID);
-			elvenLordsUnit.getUnitHasSkill ().add (unitHasSkill);
-		}
-		
-		units.add (elvenLordsUnit);
-
-		final List<String> elvenLords = calc.listAllSkillsInUnitStack (units, spells, db);
-		assertEquals (6, elvenLords.size ());
-		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, elvenLords.get (0));
-		assertEquals ("US132", elvenLords.get (1));
-		assertEquals ("US001", elvenLords.get (2));
-		assertEquals ("USX01", elvenLords.get (3));
-		assertEquals ("US028", elvenLords.get (4));
-		assertEquals ("US029", elvenLords.get (5));
-
-		// Three units with skills only from DB
-		final MemoryUnit hellHoundsUnit = new MemoryUnit ();
-		hellHoundsUnit.setUnitURN (3);
-		for (final String unitSkillID : new String [] {"US134", "USX01"})
-		{
-			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
-			unitHasSkill.setUnitSkillID (unitSkillID);
-			hellHoundsUnit.getUnitHasSkill ().add (unitHasSkill);
-		}
-		
-		units.add (hellHoundsUnit);
-
-		final List<String> hellHounds = calc.listAllSkillsInUnitStack (units, spells, db);
-		assertEquals (7, hellHounds.size ());
-		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, hellHounds.get (0));
-		assertEquals ("US132", hellHounds.get (1));
-		assertEquals ("US001", hellHounds.get (2));
-		assertEquals ("USX01", hellHounds.get (3));
-		assertEquals ("US028", hellHounds.get (4));
-		assertEquals ("US029", hellHounds.get (5));
-		assertEquals ("US134", hellHounds.get (6));
-
-		// Multiple units with skills both from DB and from spells
-		for (int n = 1; n <= 2; n++)
-		{
-			final MemoryMaintainedSpell endurance = new MemoryMaintainedSpell ();
-			endurance.setUnitURN (n);
-			endurance.setUnitSkillID ("SS123");
-			spells.add (endurance);
-		}
-
-		for (int n = 2; n <= 3; n++)
-		{
-			final MemoryMaintainedSpell flameBlade = new MemoryMaintainedSpell ();
-			flameBlade.setUnitURN (n);
-			flameBlade.setUnitSkillID ("SS094");
-			spells.add (flameBlade);
-		}
-
-		// Include a spell on a unit that isn't in the stack
-		final MemoryMaintainedSpell heroism = new MemoryMaintainedSpell ();
-		heroism.setUnitURN (4);
-		heroism.setUnitSkillID ("SS130");
-		spells.add (heroism);
-
-		final List<String> withSpells = calc.listAllSkillsInUnitStack (units, spells, db);
-		assertEquals (9, withSpells.size ());
-		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, withSpells.get (0));
-		assertEquals ("US132", withSpells.get (1));
-		assertEquals ("US001", withSpells.get (2));
-		assertEquals ("USX01", withSpells.get (3));
-		assertEquals ("SS123", withSpells.get (4));
-		assertEquals ("US028", withSpells.get (5));
-		assertEquals ("US029", withSpells.get (6));
-		assertEquals ("SS094", withSpells.get (7));
-		assertEquals ("US134", withSpells.get (8));
+		final List<String> unitTwoResults = calc.listAllSkillsInUnitStack (units, spells, db);
+		assertEquals (3, unitTwoResults.size ());
+		assertEquals ("US001", unitTwoResults.get (0));
+		assertEquals ("US002", unitTwoResults.get (1));
+		assertEquals ("US003", unitTwoResults.get (2));
 	}
 
 	/**
@@ -782,13 +732,15 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkill movementSkill = new UnitHasSkill ();
 		movementSkill.setUnitSkillID ("US001");
 		
+		final UnitHasSkillMergedList movementSkills = new UnitHasSkillMergedList ();
+		movementSkills.add (movementSkill);
+		
 		final MemoryUnit unit = new MemoryUnit ();
-		unit.setUnitURN (1);
-		unit.getUnitHasSkill ().add (movementSkill);
 
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit, db)).thenReturn (movementSkills);
+		
 		// Set up object to test
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 
@@ -807,19 +759,16 @@ public final class TestUnitCalculationsImpl
 		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
 		
 		// Cast flight spell - pathfinding takes preference, with how the demo rules above are ordered
-		final MemoryMaintainedSpell flightSpell = new MemoryMaintainedSpell ();
-		flightSpell.setUnitSkillID ("US002");
-		flightSpell.setUnitURN (1);
-		spells.add (flightSpell);
+		final UnitHasSkill flightSpellEffect = new UnitHasSkill ();
+		flightSpellEffect.setUnitSkillID ("US002");
+		movementSkills.add (flightSpellEffect);
 
 		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
 		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
 		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
 		
-		// Naturally flying unit
+		// Now without the pathfinding to take preference
 		unitStackSkills.clear ();
-		spells.clear ();
-		movementSkill.setUnitSkillID ("US002");
 		
 		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
 		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
@@ -828,9 +777,10 @@ public final class TestUnitCalculationsImpl
 	
 	/**
 	 * Tests the areAllTerrainTypesPassable method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAreAllTerrainTypesPassable ()
+	public final void testAreAllTerrainTypesPassable () throws Exception
 	{
 		// There are 3 tile types, first two a land tiles, third is a sea tile
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -918,11 +868,10 @@ public final class TestUnitCalculationsImpl
 	
 	/**
 	 * Tests the createUnitStack method on a unit stack which is invalid because all the units aren't in the same place
-	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
-	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=MomException.class)
-	public final void testCreateUnitStack_DifferentLocations () throws RecordNotFoundException, MomException
+	public final void testCreateUnitStack_DifferentLocations () throws Exception
 	{
 		// Unit definitions
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -948,7 +897,7 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
@@ -960,11 +909,10 @@ public final class TestUnitCalculationsImpl
 	
 	/**
 	 * Tests the createUnitStack method on a unit stack which is invalid because all the units aren't owned by the same player
-	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
-	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=MomException.class)
-	public final void testCreateUnitStack_DifferentPlayers () throws RecordNotFoundException, MomException
+	public final void testCreateUnitStack_DifferentPlayers () throws Exception
 	{
 		// Unit definitions
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -991,7 +939,7 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
@@ -1003,11 +951,10 @@ public final class TestUnitCalculationsImpl
 	
 	/**
 	 * Tests the createUnitStack method on a unit stack containing only normal units
-	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
-	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCreateUnitStack_Normal () throws RecordNotFoundException, MomException
+	public final void testCreateUnitStack_Normal () throws Exception
 	{
 		// Unit definitions
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1035,7 +982,7 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
@@ -1053,11 +1000,10 @@ public final class TestUnitCalculationsImpl
 
 	/**
 	 * Tests the createUnitStack method on a unit stack containing a trieme and a regular unit, and there's 2 other regular units at the same location
-	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
-	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCreateUnitStack_Transport () throws RecordNotFoundException, MomException
+	public final void testCreateUnitStack_Transport () throws Exception
 	{
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
 		final TileType tileType = new TileType ();
@@ -1111,7 +1057,7 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
@@ -1131,11 +1077,10 @@ public final class TestUnitCalculationsImpl
 	
 	/**
 	 * Tests the createUnitStack method on a unit stack containing a trieme and 3 regular units all preselected in the stack, so they don't fit
-	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
-	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCreateUnitStack_NotEnoughSpace () throws RecordNotFoundException, MomException
+	public final void testCreateUnitStack_NotEnoughSpace () throws Exception
 	{
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
 		final TileType tileType = new TileType ();
@@ -1188,7 +1133,7 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class))).thenReturn (skills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
@@ -1208,11 +1153,10 @@ public final class TestUnitCalculationsImpl
 
 	/**
 	 * Tests the createUnitStack method when we only select the transport to move, but there's 3 regular units and 3 flying units also all in the same location
-	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
-	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCreateUnitStack_TransportOnly () throws RecordNotFoundException, MomException
+	public final void testCreateUnitStack_TransportOnly () throws Exception
 	{
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
 		final TileType tileType = new TileType ();
@@ -1273,7 +1217,7 @@ public final class TestUnitCalculationsImpl
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 
-			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), spearmen)).thenReturn (noSkills);
+			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), spearmen, db)).thenReturn (noSkills);
 		}
 
 		for (int n = 0; n < 3; n++)
@@ -1287,7 +1231,7 @@ public final class TestUnitCalculationsImpl
 			
 			fogOfWarMemory.getUnit ().add (drake);
 			
-			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), drake)).thenReturn (yesSkills);
+			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), drake, db)).thenReturn (yesSkills);
 		}
 
 		final MemoryUnit trieme = new MemoryUnit ();
@@ -1300,7 +1244,7 @@ public final class TestUnitCalculationsImpl
 		fogOfWarMemory.getUnit ().add (trieme);
 		selectedUnits.add (trieme);
 		
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), trieme)).thenReturn (noSkills);		
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), trieme, db)).thenReturn (noSkills);		
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();

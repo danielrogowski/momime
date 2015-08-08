@@ -26,6 +26,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
@@ -243,11 +244,12 @@ public final class TestSelectUnitButton
 		expLevel.setRingColour ("0000FF");
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitUtils.getExperienceLevel (u, true, players, fow.getCombatAreaEffect (), db)).thenReturn (expLevel);
 		
 		// Hit points
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (5);
-		when (unitUtils.getModifiedAttributeValue (u, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (u, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
 		
 		// Coloured image generator
@@ -262,6 +264,7 @@ public final class TestSelectUnitButton
 		button.setClient (client);
 		button.setGraphicsDB (gfx);
 		button.setUnitUtils (unitUtils);
+		button.setUnitSkillUtils (unitSkillUtils);
 		button.setPlayerColourImageGenerator (gen);
 		button.init ();
 		

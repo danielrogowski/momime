@@ -38,6 +38,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
@@ -144,6 +145,7 @@ public final class TestUnitRowDisplayUI
 
 		// Unit
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		
 		final MemoryUnit unit = new MemoryUnit ();
@@ -155,7 +157,7 @@ public final class TestUnitRowDisplayUI
 		units.add (unit);
 		
 		// Attributes
-		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
 
 		when (unitClientUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
@@ -170,7 +172,7 @@ public final class TestUnitRowDisplayUI
 
 			when (unitClientUtils.getUnitSkillIcon (unit, "US03" + skillNo)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US03" + skillNo + "-icon.png"));
 		}
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit)).thenReturn (mergedSkills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (mergedSkills);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -212,6 +214,7 @@ public final class TestUnitRowDisplayUI
 		display.setUiComponentFactory (uiComponentFactory);
 		display.setUnitClientUtils (unitClientUtils);
 		display.setUnitUtils (unitUtils);
+		display.setUnitSkillUtils (unitSkillUtils);
 		display.setSmallFont (CreateFontsForTests.getSmallFont ());
 		display.setMediumFont (CreateFontsForTests.getMediumFont ());
 		display.setUnitRowDisplayLayout (layout);

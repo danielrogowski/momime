@@ -55,7 +55,7 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 
 import org.junit.Test;
 
@@ -377,9 +377,9 @@ public final class TestUnitInfoPanel
 		}
 		
 		// Upkeep
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUpkeepValue (unit, "RE01", players, db)).thenReturn (2);
-		when (unitUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE01", players, db)).thenReturn (2);
+		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
 		
 		// Attributes
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -395,7 +395,7 @@ public final class TestUnitInfoPanel
 					final int value = (n + attrNo) / 2;
 					total = total + value;
 				
-					when (unitUtils.getModifiedAttributeValue (unit, attrID, attrComponent,
+					when (unitSkillUtils.getModifiedAttributeValue (unit, attrID, attrComponent,
 						attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
 						players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (value);
 				}
@@ -409,7 +409,7 @@ public final class TestUnitInfoPanel
 			if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
 				when (unitCalc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 			else
-				when (unitUtils.getModifiedAttributeValue (unit, attrID,
+				when (unitSkillUtils.getModifiedAttributeValue (unit, attrID,
 					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 		}
 		
@@ -455,7 +455,7 @@ public final class TestUnitInfoPanel
 		panel.setGraphicsDB (gfx);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setAnim (anim);
-		panel.setUnitUtils (unitUtils);
+		panel.setUnitSkillUtils (unitSkillUtils);
 		panel.setUnitCalculations (unitCalc);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitClientUtils (unitClientUtils);

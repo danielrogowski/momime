@@ -38,6 +38,7 @@ import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
@@ -1359,12 +1360,12 @@ public final class TestUnitServerUtilsImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		
 		// Unit stats
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 
 		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
 		
-		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
 			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 			
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
@@ -1379,7 +1380,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setUnitCalculations (unitCalculations);
 		utils.setRandomUtils (random);
 		

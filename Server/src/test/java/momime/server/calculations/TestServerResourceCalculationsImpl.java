@@ -49,7 +49,7 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.database.BuildingSvr;
@@ -150,12 +150,12 @@ public final class TestServerResourceCalculationsImpl
 		players.add (player);
 		
 		// Set up test object
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		final CityCalculations cityCalc = mock (CityCalculations.class);
 
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setCityCalculations (cityCalc);
 		calc.setUnitServerUtils (mock (UnitServerUtils.class));
@@ -170,7 +170,7 @@ public final class TestServerResourceCalculationsImpl
 		shadowDemons.setOwningPlayerID (2);
 		trueMap.getUnit ().add (shadowDemons);
 
-		when (unitUtils.getModifiedUpkeepValue (shadowDemons, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (7);
+		when (unitSkillUtils.getModifiedUpkeepValue (shadowDemons, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (7);
 		
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
@@ -206,8 +206,8 @@ public final class TestServerResourceCalculationsImpl
 		warlocks.setOwningPlayerID (2);
 		trueMap.getUnit ().add (warlocks);
 		
-		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db)).thenReturn (1);
-		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, db)).thenReturn (5);
+		when (unitSkillUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, db)).thenReturn (5);
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (3, priv.getResourceValue ().size ());
@@ -505,10 +505,10 @@ public final class TestServerResourceCalculationsImpl
 		trueMap.getMaintainedSpell ().add (natureAwarenessOtherPlayer);
 
 		// Unit upkeep
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUpkeepValue (gargoyles, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
-		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherStatus, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
-		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherPlayer, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedUpkeepValue (gargoyles, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitSkillUtils.getModifiedUpkeepValue (gargoylesOtherStatus, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitSkillUtils.getModifiedUpkeepValue (gargoylesOtherPlayer, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
 		
 		// Create dummy implementation for the factory that is usually provided by spring
 		final MomResourceConsumerFactory factory = new MomResourceConsumerFactory ()
@@ -535,7 +535,7 @@ public final class TestServerResourceCalculationsImpl
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setMemoryBuildingUtils (buildingUtils);
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setMomResourceConsumerFactory (factory);
 		
 		// Run test

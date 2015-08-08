@@ -18,6 +18,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
@@ -52,6 +53,9 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -128,7 +132,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "Some of the units you are trying to give a special order to are not at the right location";
 			
 			// Does it have the necessary skill?
-			else if (getUnitUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID, mom.getPlayers (),
+			else if (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) >= 0)
 				
 				unitsWithNecessarySkillID.add (thisUnit);
@@ -263,6 +267,22 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 	
 	/**

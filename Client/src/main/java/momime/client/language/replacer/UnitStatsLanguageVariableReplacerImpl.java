@@ -26,6 +26,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
 
@@ -46,6 +47,9 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -182,7 +186,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 							
 							// Don't mention +1 ranged if the unit has no ranged attack
 							if ((!bonus.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) ||
-								(getUnitUtils ().getModifiedAttributeValue (getUnit (), bonus.getUnitAttributeID (), UnitAttributeComponent.BASIC,
+								(getUnitSkillUtils ().getModifiedAttributeValue (getUnit (), bonus.getUnitAttributeID (), UnitAttributeComponent.BASIC,
 									UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) > 0))
 							{
@@ -289,14 +293,14 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			default:
 				// This outputs the value of the specified skill, e.g. SKILL_VALUE_US098 outputs how much experience the unit has
 				if (code.startsWith ("SKILL_VALUE_"))
-					text = new Integer (getUnitUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (12), getClient ().getPlayers (),
+					text = new Integer (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (12), getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ())).toString ();
 				
 				// This outputs 'Super' if the value of the specified skill is 2 or more
 				else if (code.startsWith ("SUPER_"))
 				{
-					text = (getUnitUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (6), getClient ().getPlayers (),
+					text = (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (6), getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) > 1) ? "Super" : "";
 				}
@@ -399,6 +403,22 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 	
 	/**

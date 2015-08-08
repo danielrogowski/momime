@@ -823,14 +823,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			// Experience is an exception since its images are derived differently.
 			if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
 				(getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit").getUnitSkillImageFile () != null))
-			{
-				final UnitHasSkill listSkill = new UnitHasSkill ();
-				listSkill.setUnitSkillID (thisSkill.getUnitSkillID ());
-				listSkill.setUnitSkillValue (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()));
-				unitSkillsItems.addElement (listSkill);
-			}
+
+				unitSkillsItems.addElement (thisSkill);
 		}
 		
 		// Update language dependant labels

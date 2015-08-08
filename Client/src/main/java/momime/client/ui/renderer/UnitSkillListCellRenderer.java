@@ -16,9 +16,10 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.utils.UnitClientUtils;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitHasSkill;
 import momime.common.messages.AvailableUnit;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitSkillUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,8 +46,8 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	/** Multiplayer client */
 	private MomClient client;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
@@ -79,7 +80,24 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 		else
 		{
 			getUnitStatsReplacer ().setUnit (getUnit ());
-			setText (getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ()));
+			String skillText = getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ());
+			
+			// Show strength of skills, e.g. Fire Breath 2
+			if ((value.getUnitSkillValue () != null) && (value.getUnitSkillValue () > 0) &&
+				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)))
+				
+				try
+				{
+					skillText = skillText + " " + getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), value.getUnitSkillID (), getClient ().getPlayers (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			
+			setText (skillText);
 		}
 		
 		setIcon (null);
@@ -171,19 +189,19 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	}
 	
 	/**
-	 * @return Unit utils
+	 * @return Unit skill utils
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitSkillUtils getUnitSkillUtils ()
 	{
-		return unitUtils;
+		return unitSkillUtils;
 	}
 
 	/**
-	 * @param util Unit utils
+	 * @param util Unit skill utils
 	 */
-	public final void setUnitUtils (final UnitUtils util)
+	public final void setUnitSkillUtils (final UnitSkillUtils util)
 	{
-		unitUtils = util;
+		unitSkillUtils = util;
 	}
 	
 	/**

@@ -28,6 +28,7 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
+import momime.server.process.AttackResolutionUnit;
 import momime.server.utils.UnitServerUtils;
 
 import org.junit.Test;
@@ -155,6 +156,10 @@ public final class TestDamageCalculatorImpl
 		attacker.setUnitURN (22);
 		attacker.setOwningPlayerID (attackingPD.getPlayerID ());
 		
+		// 2 of the attacker figures are frozen in fear so cannot attack
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		attackerWrapper.setFiguresFrozenInFear (2);
+		
 		// Set up attacker stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -173,12 +178,12 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer,
+		final AttackDamage dmg = calc.attackFromUnitAttribute (attackerWrapper, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, spells, combatAreaEffects, db);
 		
 		// Check results
 		assertEquals (3, dmg.getPotentialHits ().intValue ());
-		assertEquals (6, dmg.getRepetitions ());
+		assertEquals (4, dmg.getRepetitions ());
 		assertEquals (1, dmg.getPlusToHit ());
 		assertEquals (DamageTypeID.SINGLE_FIGURE, dmg.getDamageType ());
 
@@ -200,6 +205,45 @@ public final class TestDamageCalculatorImpl
 	    assertNull (data.getAttackerFigures ());
 	    assertNull (data.getAttackStrength ());
 	    assertEquals (3, data.getPotentialHits ().intValue ());
+	}
+	
+	/**
+	 * Tests the attackFromUnitAttribute method when every figure in the attacking unit is frozen in fear
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttackFromUnitAttribute_FrozenInFear () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (22);
+		
+		// All of the attacker figures are frozen in fear so cannot attack
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		attackerWrapper.setFiguresFrozenInFear (6);
+		
+		// Set up attacker stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has 6 figures
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		
+		// Run test
+		final AttackDamage dmg = calc.attackFromUnitAttribute (attackerWrapper, null, null,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, spells, combatAreaEffects, db);
+		
+		// Check results
+		assertNull (dmg);
 	}
 	
 	/**
@@ -245,6 +289,10 @@ public final class TestDamageCalculatorImpl
 		attacker.setUnitURN (22);
 		attacker.setOwningPlayerID (attackingPD.getPlayerID ());
 
+		// 2 of the attacker figures are frozen in fear so cannot attack
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		attackerWrapper.setFiguresFrozenInFear (2);
+		
 		// Set up attacker stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -263,10 +311,10 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US001", players, spells, combatAreaEffects, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US001", players, spells, combatAreaEffects, db);
 		
 		// Check results
-		assertEquals (18, dmg.getPotentialHits ().intValue ());
+		assertEquals (12, dmg.getPotentialHits ().intValue ());
 		assertEquals (1, dmg.getPlusToHit ());
 		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageType ());
 
@@ -285,9 +333,9 @@ public final class TestDamageCalculatorImpl
 	    assertNull (data.getAttackSpellID ());
 	    assertNull (data.getAttackAttributeID ());
 	    assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageType ());
-	    assertEquals (6, data.getAttackerFigures ().intValue ());
+	    assertEquals (4, data.getAttackerFigures ().intValue ());
 	    assertEquals (3, data.getAttackStrength ().intValue ());
-	    assertEquals (18, data.getPotentialHits ().intValue ());
+	    assertEquals (12, data.getPotentialHits ().intValue ());
 	}
 
 	/**
@@ -333,6 +381,10 @@ public final class TestDamageCalculatorImpl
 		attacker.setUnitURN (22);
 		attacker.setOwningPlayerID (attackingPD.getPlayerID ());
 
+		// 2 of the attacker figures are frozen in fear so cannot attack
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		attackerWrapper.setFiguresFrozenInFear (2);
+		
 		// Set up attacker stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -351,7 +403,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US001", players, spells, combatAreaEffects, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US001", players, spells, combatAreaEffects, db);
 		
 		// Check results
 		assertEquals (3, dmg.getPotentialHits ().intValue ());
@@ -397,17 +449,69 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (22);
 
+		// Wrapper
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		
 		// Set up attacker stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has some figures
+		
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			players, spells, combatAreaEffects, db)).thenReturn (-1);	// Doesn't have the skill
+			players, spells, combatAreaEffects, db)).thenReturn (-1);	// But doesn't have the skill
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attacker, null, null, "US001", players, spells, combatAreaEffects, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, null, null, "US001", players, spells, combatAreaEffects, db);
+		
+		// Check results
+		assertNull (dmg);
+	}
+
+	/**
+	 * Tests the attackFromUnitSkill method when every figure of the attacking unit is frozen in fear
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttackFromUnitSkill_FrozenInFear () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Set up unit
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (22);
+
+		// Wrapper
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		attackerWrapper.setFiguresFrozenInFear (6);
+		
+		// Set up attacker stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has some figures
+		
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
+			players, spells, combatAreaEffects, db)).thenReturn (1);	// We have the skill, but can't use since all 6 figures are frozen in fear
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitSkillUtils (unitSkillUtils);
+		
+		// Run test
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, null, null, "US001", players, spells, combatAreaEffects, db);
 		
 		// Check results
 		assertNull (dmg);
@@ -571,6 +675,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 		
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -599,7 +706,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE, null, 1),
+		assertEquals (3, calc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE, null, 1),
 			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
@@ -662,6 +769,9 @@ public final class TestDamageCalculatorImpl
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
+
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
 		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
@@ -691,7 +801,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (3, calc.calculateArmourPiercingDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ARMOUR_PIERCING, null, 1),
+		assertEquals (3, calc.calculateArmourPiercingDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ARMOUR_PIERCING, null, 1),
 			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
@@ -755,6 +865,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 		
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -783,7 +896,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (6, calc.calculateIllusionaryDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ILLUSIONARY, null, 1),
+		assertEquals (6, calc.calculateIllusionaryDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ILLUSIONARY, null, 1),
 			players, spells, combatAreaEffects, db));
 		
 		// Check the message that got sent to the attacker
@@ -847,6 +960,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -881,7 +997,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (4, 1, DamageTypeID.MULTI_FIGURE, null, 1),
+		assertEquals (5, calc.calculateMultiFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (4, 1, DamageTypeID.MULTI_FIGURE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -944,6 +1060,9 @@ public final class TestDamageCalculatorImpl
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
+		
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
 
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
@@ -959,7 +1078,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateDoomDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (6, 1, DamageTypeID.DOOM, null, 1),
+		assertEquals (6, calc.calculateDoomDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (6, 1, DamageTypeID.DOOM, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1023,6 +1142,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
@@ -1042,7 +1164,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
+		assertEquals (6, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1101,11 +1223,14 @@ public final class TestDamageCalculatorImpl
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-		
+
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
@@ -1125,7 +1250,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (0, calc.calculateChanceOfDeathDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
+		assertEquals (0, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1189,6 +1314,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1214,7 +1342,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, 1),
+		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1278,6 +1406,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1303,7 +1434,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, 1),
+		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1367,6 +1498,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1392,7 +1526,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, 1),
+		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1456,6 +1590,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1481,7 +1618,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, 1),
+		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1545,6 +1682,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1575,7 +1715,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (2, calc.calculateResistOrTakeDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
+		assertEquals (2, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1639,6 +1779,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1669,7 +1812,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (5, calc.calculateResistOrTakeDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (3, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
+		assertEquals (5, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (3, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1733,6 +1876,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1758,7 +1904,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (2, calc.calculateResistanceRollsDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (6, 0, DamageTypeID.RESISTANCE_ROLLS, null, 1),
+		assertEquals (2, calc.calculateResistanceRollsDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (6, 0, DamageTypeID.RESISTANCE_ROLLS, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1822,6 +1968,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1842,7 +1991,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE, null, 1),
+		assertEquals (6, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1906,6 +2055,9 @@ public final class TestDamageCalculatorImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (33);
 
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
 		// Set up defender stats
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -1926,7 +2078,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (0, calc.calculateDisintegrateDamage (defender, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE, null, 1),
+		assertEquals (0, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE, null, 1),
 			players, spells, combatAreaEffects, db));
 
 		// Check the message that got sent to the attacker
@@ -1952,5 +2104,96 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToDefend ());
 		assertNull (data.getTenTimesAverageBlock ());
 		assertEquals (0, data.getFinalHits ());			// Takes no damage
+	}
+	
+	/**
+	 * Tests the calculateFearDamage method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateFearDamage () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up unit
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+		defenderWrapper.setFiguresFrozenInFear (2);
+		
+		// Set up defender stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (5);		// Defender has 5 figures unit but 1's dead already + 2 frozen
+
+		when (unitSkillUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (6);	// ..and 6 resistance but -2 modifier
+
+		// Fix random number generator rolls
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (10)).thenReturn (0, 4, 5);		// so 2 get frozen
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitSkillUtils (unitSkillUtils);
+		calc.setRandomUtils (random);
+	
+		// Run test
+		calc.calculateFearDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.FEAR, null, 1),
+			players, spells, combatAreaEffects, db);
+		
+		// Check value recorded on server
+		assertEquals (4, defenderWrapper.getFiguresFrozenInFear ());
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		assertSame (msg, attackingConn.getMessages ().get (0));
+
+		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
+		assertEquals (33, data.getDefenderUnitURN ());
+		
+		assertNull (data.getChanceToHit ());
+		assertNull (data.getTenTimesAverageDamage ());
+		assertEquals (2, data.getActualHits ().intValue ());
+		assertEquals (DamageTypeID.FEAR, data.getDamageType ());
+		
+		assertEquals (3, data.getDefenderFigures ());
+		assertEquals (6, data.getUnmodifiedDefenceStrength ().intValue ());
+		assertEquals (4, data.getModifiedDefenceStrength ().intValue ());
+		assertNull (data.getChanceToDefend ());
+		assertNull (data.getTenTimesAverageBlock ());
+		assertEquals (2, data.getFinalHits ());			// 2 additional figures get frozen
 	}
 }

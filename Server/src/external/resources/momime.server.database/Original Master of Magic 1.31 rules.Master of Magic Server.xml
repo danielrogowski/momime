@@ -6160,70 +6160,90 @@
 			<attackResolutionStep>
 				<stepNumber>4</stepNumber>
 				<combatSide>A</combatSide>
-				<unitSkillID>US031</unitSkillID>
+				<unitSkillID>US128</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
 				<stepNumber>4</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>SS164</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>US128</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>4</stepNumber>
+				<combatSide>D</combatSide>
+				<unitSkillID>SS164</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>5</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US031</unitSkillID>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>5</stepNumber>
 				<combatSide>A</combatSide>
 				<unitSkillID>US030</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>A</combatSide>
 				<unitSkillID>US027</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>A</combatSide>
 				<unitSkillID>US129</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>A</combatSide>
 				<unitSkillID>US032</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>A</combatSide>
 				<unitSkillID>SS099</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>A</combatSide>
 				<unitAttributeID>UA01</unitAttributeID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>D</combatSide>
 				<unitSkillID>US031</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>D</combatSide>
 				<unitSkillID>US030</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>D</combatSide>
 				<unitSkillID>US027</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>D</combatSide>
 				<unitSkillID>US129</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>D</combatSide>
 				<unitSkillID>US032</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>D</combatSide>
 				<unitSkillID>SS099</unitSkillID>
 			</attackResolutionStep>
 			<attackResolutionStep>
-				<stepNumber>4</stepNumber>
+				<stepNumber>5</stepNumber>
 				<combatSide>D</combatSide>
 				<unitAttributeID>UA01</unitAttributeID>
 			</attackResolutionStep>
@@ -7072,6 +7092,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>Y</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
@@ -7300,6 +7323,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS164">
 		<unitSkillDescription>Cloak of Fear</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>Y</damageType>
+		<damagePerFigure>PER_UNIT</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS175">
 		<unitSkillDescription>Black Channels</unitSkillDescription>
@@ -20043,6 +20069,7 @@
 		<languageEntry languageEntryID="AttackZeroesAmmo" />
 		<languageEntry languageEntryID="AttackResistanceRolls" />
 		<languageEntry languageEntryID="AttackDisintegrate" />
+		<languageEntry languageEntryID="AttackFear" />
 		<languageEntry languageEntryID="DefenceStatisticsBase" />
 		<languageEntry languageEntryID="DefenceStatisticsModified" />
 		<languageEntry languageEntryID="DefenceStatisticsAutomatic" />
@@ -20061,6 +20088,8 @@
 		<languageEntry languageEntryID="DefenceDisintegrateBaseSurvives" />
 		<languageEntry languageEntryID="DefenceDisintegrateModifiedDies" />
 		<languageEntry languageEntryID="DefenceDisintegrateModifiedSurvives" />
+		<languageEntry languageEntryID="DefenceFearBase" />
+		<languageEntry languageEntryID="DefenceFearModified" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">
 		<languageEntry languageEntryID="Title" />

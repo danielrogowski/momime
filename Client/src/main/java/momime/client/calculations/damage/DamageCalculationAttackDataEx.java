@@ -119,12 +119,20 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 				languageEntryID = "AttackZeroesAmmo";
 				break;
 
+			// Leave saving throw modifier as positive on here, so the text can say "destroys any with resistance 9 + 2 or less"
 			case DISINTEGRATE:
 				languageEntryID = "AttackDisintegrate";
 				break;
-				
+
+			// Potential hits here is the number of rolls, not a saving throw modifier, so leave positive
 			case RESISTANCE_ROLLS:
 				languageEntryID = "AttackResistanceRolls";
+				break;
+
+			case FEAR:
+				languageEntryID = "AttackFear";
+				if (getPotentialHits () != null)
+					setPotentialHits (-getPotentialHits ());
 				break;
 				
 			case EACH_FIGURE_RESIST_OR_DIE:

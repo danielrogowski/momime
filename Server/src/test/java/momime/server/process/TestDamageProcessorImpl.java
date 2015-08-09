@@ -176,7 +176,10 @@ public final class TestDamageProcessorImpl
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 
 		// Ensure steps were processed
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attacker, defender, attackingPlayer, defendingPlayer, steps, null, players,
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
 			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db);
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
@@ -331,7 +334,10 @@ public final class TestDamageProcessorImpl
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 		
 		// Ensure steps were processed
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attacker, defender, attackingPlayer, defendingPlayer, steps, null, players,
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
 			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db);
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();

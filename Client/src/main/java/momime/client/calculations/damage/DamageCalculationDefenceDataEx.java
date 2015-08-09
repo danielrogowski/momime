@@ -109,6 +109,10 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 			case RESIST_OR_TAKE_DAMAGE:
 				languageEntryID = "DefenceResistOrTakeDamage" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
 				break;
+
+			case FEAR:
+				languageEntryID = "DefenceFear" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
+				break;
 				
 			default:
 				if (getModifiedDefenceStrength () == null)

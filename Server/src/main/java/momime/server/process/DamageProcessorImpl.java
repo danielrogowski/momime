@@ -152,6 +152,11 @@ public final class DamageProcessorImpl implements DamageProcessor
 			
 			final List<List<AttackResolutionStepSvr>> steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
 			
+			// Some figures being frozen in fear lasts for the duration of one attack resolution,
+			// i.e. spans multiple resolution steps so have to keep track of it out here
+			final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+			
 			// Process each step
 			for (final List<AttackResolutionStepSvr> step : steps)
 				
@@ -162,7 +167,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) > 0))
 				{
 					final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-						(attacker, defender, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
+						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 					

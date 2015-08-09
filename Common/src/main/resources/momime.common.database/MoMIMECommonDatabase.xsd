@@ -1827,6 +1827,10 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 				<xsd:documentation>Zeroes ammo remaining (warp wood)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ZEROES_AMMO" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Y"><xsd:annotation>
+				<xsd:documentation>Each figure must resist or can make no further attacks during this attack resolution (fear)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FEAR" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 	

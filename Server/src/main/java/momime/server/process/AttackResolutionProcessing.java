@@ -72,7 +72,7 @@ public interface AttackResolutionProcessing
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public List<DamageTypeID> processAttackResolutionStep (final MemoryUnit attacker, final MemoryUnit defender,
+	public List<DamageTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
 		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)

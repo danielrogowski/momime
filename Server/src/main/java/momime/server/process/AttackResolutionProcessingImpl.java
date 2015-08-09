@@ -167,14 +167,14 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final List<DamageTypeID> processAttackResolutionStep (final MemoryUnit attacker, final MemoryUnit defender,
+	public final List<DamageTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
 		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? new Integer (attacker.getUnitURN ()).toString () : "N/A") +
-			", Defending unit URN " + defender.getUnitURN () + ", " + steps.size () + " steps");
+		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? new Integer (attacker.getUnit ().getUnitURN ()).toString () : "N/A") +
+			", Defending unit URN " + defender.getUnit ().getUnitURN () + ", " + steps.size () + " steps");
 
 		// Zero out damage taken
 		int damageToDefender = 0;
@@ -185,13 +185,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		for (final AttackResolutionStepSvr step : steps)
 		{
 			// Which unit is being attacked?
-			final MemoryUnit unitBeingAttacked = ((step == null) || (step.getCombatSide () == UnitCombatSideID.ATTACKER)) ? defender : attacker;
+			final AttackResolutionUnit unitBeingAttacked = ((step == null) || (step.getCombatSide () == UnitCombatSideID.ATTACKER)) ? defender : attacker;
 			if (unitBeingAttacked == null)
 				throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitBeingAttacked, attacking side = " + step.getCombatSide ());
 
 			// If the unit being attacked is already dead, then don't bother proceeding
 			final int damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
-			if (damageTaken < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked, players, spells, combatAreaEffects, db))					
+			if (damageTaken < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked.getUnit (), players, spells, combatAreaEffects, db))					
 			{
 				// Work out potential damage from the attack
 				final AttackDamage potentialDamage;
@@ -200,7 +200,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				else
 				{
 					// Which unit is attacking?
-					final MemoryUnit unitMakingAttack = (step.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
+					final AttackResolutionUnit unitMakingAttack = (step.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
 					if (unitMakingAttack == null)
 						throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 					
@@ -211,7 +211,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitAttributeID (), players, spells, combatAreaEffects, db);
 						
 						if (step.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-							getUnitCalculations ().decreaseRangedAttackAmmo (unitMakingAttack);
+							getUnitCalculations ().decreaseRangedAttackAmmo (unitMakingAttack.getUnit ());
 					}
 					
 					else if (step.getUnitSkillID () != null)
@@ -297,6 +297,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									players, spells, combatAreaEffects, db); 
 								break;
 								
+							case FEAR:
+								thisDamage = 0;
+								getDamageCalculator ().calculateFearDamage
+									(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									players, spells, combatAreaEffects, db); 
+							break;
+								
 							case ZEROES_AMMO:
 								thisDamage = 0;
 								break;
@@ -317,7 +324,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 					switch (potentialDamage.getDamageType ())
 					{
 						case ZEROES_AMMO:
-							unitBeingAttacked.setRangedAttackAmmo (0);
+							unitBeingAttacked.getUnit ().setRangedAttackAmmo (0);
 							
 							// Make sure ammo is zeroed on the client as well
 							if (!specialDamageTypesApplied.contains (potentialDamage.getDamageType ()))
@@ -335,14 +342,14 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// But potentially we might have dealt multiple types of damage simultaneously which now added together total more than the unit's remaining HP,
 		// so we have to check for that here.
 		// e.g. unit has 4 HP remaining and we simultaneously hit it with a thrown attack that does 3 damage and a breath attack that does 2 damage.
-		damageToDefender = Math.min (damageToDefender, getUnitCalculations ().calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db));
+		damageToDefender = Math.min (damageToDefender, getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, spells, combatAreaEffects, db));
 		if (attacker != null)
-			damageToAttacker = Math.min (damageToAttacker, getUnitCalculations ().calculateHitPointsRemaining (attacker, players, spells, combatAreaEffects, db));
+			damageToAttacker = Math.min (damageToAttacker, getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, spells, combatAreaEffects, db));
 		
 		// Apply the damage
-		defender.setDamageTaken (defender.getDamageTaken () + damageToDefender);
+		defender.getUnit ().setDamageTaken (defender.getUnit ().getDamageTaken () + damageToDefender);
 		if (attacker != null)
-			attacker.setDamageTaken (attacker.getDamageTaken () + damageToAttacker);
+			attacker.getUnit ().setDamageTaken (attacker.getUnit ().getDamageTaken () + damageToAttacker);
 
 		log.trace ("Exiting processAttackResolutionStep = " + specialDamageTypesApplied.size ());
 		return specialDamageTypesApplied;

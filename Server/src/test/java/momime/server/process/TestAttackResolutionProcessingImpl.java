@@ -329,15 +329,20 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setDamageTaken (3);
 		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
 		
+		// Wrappers
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+		
 		// We make 5 hit rolls with 40% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
-		when (damageCalc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (damageCalc.attackFromUnitAttribute (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -345,7 +350,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitCalculations (unitCalc);
 		
 		// Run method
-		proc.processAttackResolutionStep (attacker, defender, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
 		
 		// Check results
 		assertEquals (0, attacker.getDamageTaken ());
@@ -414,21 +419,27 @@ public final class TestAttackResolutionProcessingImpl
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
 		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
+
+		// Wrappers
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
 		// Attacker make 5 hit rolls with 40% chance of each one striking; defender makes 6 hit rolls with 30% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
-		when (damageCalc.attackFromUnitAttribute (attacker, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (damageCalc.attackFromUnitAttribute (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
 
 		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageTypeID.SINGLE_FIGURE, null, 1);
-		when (damageCalc.attackFromUnitAttribute (defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (damageCalc.attackFromUnitAttribute (defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
-		when (damageCalc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
-		when (damageCalc.calculateSingleFigureDamage (attacker, attackingPlayer, defendingPlayer, potentialDamageToAttacker, players, spells, combatAreaEffects, db)).thenReturn (4);
+		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (attackerWrapper, attackingPlayer, defendingPlayer,
+			potentialDamageToAttacker, players, spells, combatAreaEffects, db)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -436,7 +447,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitCalculations (unitCalc);
 		
 		// Run method
-		proc.processAttackResolutionStep (attacker, defender, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
 		
 		// Check results
 		assertEquals (2+4, attacker.getDamageTaken ());
@@ -498,21 +509,27 @@ public final class TestAttackResolutionProcessingImpl
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
 		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
+
+		// Wrappers
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
 		// Two of the skills we have and so generate some damage, the other two we don't
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
 		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1);
-		when (damageCalc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US002",
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US002",
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender1);
 		
 		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, DamageTypeID.DOOM, null, 1);
-		when (damageCalc.attackFromUnitSkill (attacker, attackingPlayer, defendingPlayer, "US004",
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US004",
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender2);
 
 		// 3+4 of them actually hit
-		when (damageCalc.calculateResistOrTakeDamage (defender, attackingPlayer, defendingPlayer, potentialDamageToDefender1, players, spells, combatAreaEffects, db)).thenReturn (3);
-		when (damageCalc.calculateDoomDamage (defender, attackingPlayer, defendingPlayer, potentialDamageToDefender2, players, spells, combatAreaEffects, db)).thenReturn (4);
+		when (damageCalc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			potentialDamageToDefender1, players, spells, combatAreaEffects, db)).thenReturn (3);
+		when (damageCalc.calculateDoomDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			potentialDamageToDefender2, players, spells, combatAreaEffects, db)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -520,7 +537,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitCalculations (unitCalc);
 		
 		// Run method
-		proc.processAttackResolutionStep (attacker, defender, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
 		
 		// Check results
 		assertEquals (0, attacker.getDamageTaken ());
@@ -572,13 +589,17 @@ public final class TestAttackResolutionProcessingImpl
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
 		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
+
+		// Wrapper
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
 		// Spell does preset damage
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (defender, attackingPlayer, defendingPlayer, potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -586,7 +607,8 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitCalculations (unitCalc);
 		
 		// Run method
-		proc.processAttackResolutionStep (null, defender, attackingPlayer, defendingPlayer, steps, potentialDamageToDefender, players, spells, combatAreaEffects, db);
+		proc.processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, steps,
+			potentialDamageToDefender, players, spells, combatAreaEffects, db);
 		
 		// Check results
 		assertEquals (3+3, defender.getDamageTaken ());

@@ -5874,7 +5874,7 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackWithUnit">
-			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to ATTACKER_FIGURES x ATTACK_STRENGTH = POTENTIAL_HITS damage:</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to POTENTIAL_HITS damage:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackWithoutUnit">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE hits for up to POTENTIAL_HITS damage:</languageEntryText>
@@ -5898,7 +5898,10 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE forces unit to make POTENTIAL_HITS resistance rolls:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackDisintegrate">
-			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE destroys any unit with 9 resistance or less:</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE destroys any unit with 9 + POTENTIAL_HITS resistance or less:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AttackFear">
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to avoid being frozen in fear:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceStatisticsBase">
 			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence UNMODIFIED_DEFENCE_STRENGTH, FINAL_HITS hit(s) damage HP.</languageEntryText>
@@ -5953,6 +5956,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceDisintegrateModifiedSurvives">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) so survives dies.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceFearBase">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and become frozen in fear.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceFearModified">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), ACTUAL_HITS figures fail resistance roll and become frozen in fear.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">

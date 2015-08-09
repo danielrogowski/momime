@@ -14303,6 +14303,11 @@
 			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT03</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LTCC</effectMagicRealm>
 			<unitSkillID>US134</unitSkillID>
 			<bonusValue>2</bonusValue>
@@ -14320,6 +14325,11 @@
 		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LTCC</effectMagicRealm>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LTCC</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Node Aura (+2 to various stats for Chaos creatures)</combatAreaEffectDescription>
@@ -14369,6 +14379,11 @@
 			<unitSkillID>US126</unitSkillID>
 			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT04</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Nature Node Aura (+2 to various stats for Nature creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CAE05">
@@ -14414,6 +14429,11 @@
 		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT05</effectMagicRealm>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT05</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Sorcery Node Aura (+2 to various stats for Sorcery creatures)</combatAreaEffectDescription>
@@ -14541,7 +14561,22 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT03</effectMagicRealm>
+			<unitSkillID>US133</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT03</effectMagicRealm>
+			<unitSkillID>US130</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT03</effectMagicRealm>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT03</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
@@ -14551,7 +14586,22 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LTCC</effectMagicRealm>
+			<unitSkillID>US133</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LTCC</effectMagicRealm>
+			<unitSkillID>US130</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LTCC</effectMagicRealm>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LTCC</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Surge</combatAreaEffectDescription>
@@ -14619,6 +14669,11 @@
 			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT01</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
+			<bonusValue>1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT02</effectMagicRealm>
 			<unitSkillID>US134</unitSkillID>
 			<bonusValue>-1</bonusValue>
@@ -14636,6 +14691,11 @@
 		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT02</effectMagicRealm>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>-1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT02</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>True Light</combatAreaEffectDescription>
@@ -14672,6 +14732,10 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Prayer</combatAreaEffectDescription>
@@ -14716,6 +14780,10 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>2</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>High Prayer</combatAreaEffectDescription>
@@ -14800,6 +14868,11 @@
 			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT02</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
+			<bonusValue>1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT01</effectMagicRealm>
 			<unitSkillID>US134</unitSkillID>
 			<bonusValue>-1</bonusValue>
@@ -14817,6 +14890,11 @@
 		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT01</effectMagicRealm>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>-1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT01</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Darkness</combatAreaEffectDescription>
@@ -14856,6 +14934,10 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>-1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Black Prayer</combatAreaEffectDescription>
@@ -14929,6 +15011,11 @@
 			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT02</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
+			<bonusValue>1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT01</effectMagicRealm>
 			<unitSkillID>US134</unitSkillID>
 			<bonusValue>-1</bonusValue>
@@ -14946,6 +15033,11 @@
 		<combatAreaEffectSkillBonus>
 			<effectMagicRealm>LT01</effectMagicRealm>
 			<unitSkillID>US126</unitSkillID>
+			<bonusValue>-1</bonusValue>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus>
+			<effectMagicRealm>LT01</effectMagicRealm>
+			<unitSkillID>SS093B</unitSkillID>
 			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Eternal Night</combatAreaEffectDescription>

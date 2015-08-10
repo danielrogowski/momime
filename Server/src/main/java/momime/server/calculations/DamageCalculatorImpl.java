@@ -145,6 +145,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 	
 			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, DamageTypeID.SINGLE_FIGURE, null, repetitions);
+			
+			// Expend ammo server side - the client expends ammo when it receives the above message, so the two stay in step
+			if (attackAttributeID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+				getUnitCalculations ().decreaseRangedAttackAmmo (attacker.getUnit ());
 		}
 		
 		log.trace ("Exiting attackFromUnitAttribute = " + attackDamage);

@@ -669,6 +669,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="damageCalculationAttackData" class="momime.client.calculations.damage.DamageCalculationAttackDataEx" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="client" ref="client" />

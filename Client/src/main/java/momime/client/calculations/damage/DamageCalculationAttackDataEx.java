@@ -11,6 +11,8 @@ import momime.client.language.database.UnitSkillLang;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
+import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.utils.UnitUtils;
@@ -41,6 +43,9 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -71,6 +76,11 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	
 		    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
 		    	(getClient ().getPlayers (), getAttackerUnit ().getOwningPlayerID (), "DamageCalculationAttackDataEx-aup"));
+		    
+		    // If its a ranged attack, then expend ammo
+			if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ()))
+				getUnitCalculations ().decreaseRangedAttackAmmo (getAttackerUnit ());
+
 		}
 		else
 		    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
@@ -250,6 +260,22 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */

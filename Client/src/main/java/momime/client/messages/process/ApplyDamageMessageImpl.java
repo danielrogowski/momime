@@ -173,9 +173,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		if (getAttackerUnitURN () != null)
 		{
 			attackerUnit = getUnitUtils ().findUnitURN (getAttackerUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-a");
-			if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ()))
-				getUnitCalculations ().decreaseRangedAttackAmmo (attackerUnit);
-			
 			attackerDamageTakenStart = attackerUnit.getDamageTaken ();
 			attackerUnit.setCombatHeading (getAttackerDirection ());
 		}

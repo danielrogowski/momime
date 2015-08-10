@@ -9,7 +9,6 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
@@ -209,13 +208,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						
 						// What are they attacking with?
 						if (step.getUnitAttributeID () != null)
-						{
 							potentialDamage = getDamageCalculator ().attackFromUnitAttribute
 								(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitAttributeID (), players, spells, combatAreaEffects, db);
-							
-							if (step.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-								getUnitCalculations ().decreaseRangedAttackAmmo (unitMakingAttack.getUnit ());
-						}
 						
 						else if (step.getUnitSkillID () != null)
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill

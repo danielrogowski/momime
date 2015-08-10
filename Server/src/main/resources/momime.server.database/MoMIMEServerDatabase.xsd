@@ -1466,7 +1466,7 @@ When e.g. a Melee attack is instigated, each possible attack resolution is check
 Its an error if we can't find any entry that defines how to resolve a particular attack, or to put another way, the final attack resolution entry should have no conditions.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="attackResolutionDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="attackResolutionDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="1500" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolutionCondition" type="momimesvr:attackResolutionCondition" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolutionStep" type="momimesvr:attackResolutionStep" />
 		</xsd:sequence>
@@ -1512,6 +1512,12 @@ Either unitAttributeID (for regular attacks) or unitSkillID (for e.g. breath att
 						<nxe:showreferencedfield>damagePerFigure</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="repetitions" type="xsd:unsignedShort" nxe:label="Repetitions">
+		        <xsd:annotation>
+        			<xsd:documentation>Allows step to be executed multiple times - this is used to implement the Haste skill, so we don't have to needlessly duplicate lots of attack steps.
+Defaults to 1 if omitted.</xsd:documentation>
+        		</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>

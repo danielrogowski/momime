@@ -325,6 +325,8 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
+		when (unitCalc.canMakeRangedAttack (attacker, players, spells, combatAreaEffects, db)).thenReturn (true);
+		
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
 		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);

@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
@@ -208,9 +209,16 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						
 						// What are they attacking with?
 						if (step.getUnitAttributeID () != null)
-							potentialDamage = getDamageCalculator ().attackFromUnitAttribute
-								(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitAttributeID (), players, spells, combatAreaEffects, db);
-						
+						{
+							// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
+							if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitAttributeID ())) &&
+								(!getUnitCalculations ().canMakeRangedAttack (unitMakingAttack.getUnit (), players, spells, combatAreaEffects, db)))
+							
+								potentialDamage = null;
+							else
+								potentialDamage = getDamageCalculator ().attackFromUnitAttribute
+									(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitAttributeID (), players, spells, combatAreaEffects, db);
+						}
 						else if (step.getUnitSkillID () != null)
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill
 								(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, spells, combatAreaEffects, db);

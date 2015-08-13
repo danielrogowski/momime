@@ -169,7 +169,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep
 						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					for (final DamageTypeID thisSpecialDamageTypeApplied : thisSpecialDamageTypesApplied)
 						if (!specialDamageTypesApplied.contains (thisSpecialDamageTypeApplied))

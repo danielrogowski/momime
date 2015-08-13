@@ -539,6 +539,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">
 		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="damageCalculator" ref="damageCalculator" />
 	</bean>
 

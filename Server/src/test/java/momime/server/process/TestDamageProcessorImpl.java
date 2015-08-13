@@ -93,8 +93,11 @@ public final class TestDamageProcessorImpl
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
+		sd.setCombatMapSize (combatMapSize);
 		
 		// General server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
@@ -106,9 +109,6 @@ public final class TestDamageProcessorImpl
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
-		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
-		sd.setCombatMapSize (combatMapCoordinateSystem);
-		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 
@@ -131,6 +131,7 @@ public final class TestDamageProcessorImpl
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -180,7 +181,7 @@ public final class TestDamageProcessorImpl
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
-			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db);
+			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), combatMapSize, db);
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
@@ -255,8 +256,11 @@ public final class TestDamageProcessorImpl
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
+		sd.setCombatMapSize (combatMapSize);
 		
 		// General server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
@@ -268,9 +272,6 @@ public final class TestDamageProcessorImpl
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
-		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
-		sd.setCombatMapSize (combatMapCoordinateSystem);
-		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 
@@ -293,6 +294,7 @@ public final class TestDamageProcessorImpl
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -338,7 +340,7 @@ public final class TestDamageProcessorImpl
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
-			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db);
+			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), combatMapSize, db);
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,

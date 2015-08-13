@@ -13,12 +13,14 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.AttackResolutionConditionSvr;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
@@ -293,6 +295,9 @@ public final class TestAttackResolutionProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
+		// Combat map
+		final CombatMapSize combatMapSize = new CombatMapSize ();
+		
 		// Set up other lists
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
@@ -346,13 +351,18 @@ public final class TestAttackResolutionProcessingImpl
 		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
 			potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
 		
+		// Range penalty
+		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
+		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
 		proc.setDamageCalculator (damageCalc);
 		proc.setUnitCalculations (unitCalc);
+		proc.setServerUnitCalculations (serverUnitCalculations);
 		
 		// Run method
-		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+			steps, null, players, spells, combatAreaEffects, combatMapSize, db);
 		
 		// Check results
 		assertEquals (0, attacker.getDamageTaken ());
@@ -381,6 +391,9 @@ public final class TestAttackResolutionProcessingImpl
 
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Combat map
+		final CombatMapSize combatMapSize = new CombatMapSize ();
 		
 		// Set up other lists
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -449,7 +462,8 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitCalculations (unitCalc);
 		
 		// Run method
-		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+			steps, null, players, spells, combatAreaEffects, combatMapSize, db);
 		
 		// Check results
 		assertEquals (2+4, attacker.getDamageTaken ());
@@ -475,6 +489,9 @@ public final class TestAttackResolutionProcessingImpl
 
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Combat map
+		final CombatMapSize combatMapSize = new CombatMapSize ();
 		
 		// Set up other lists
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -539,7 +556,8 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitCalculations (unitCalc);
 		
 		// Run method
-		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players, spells, combatAreaEffects, db);
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+			steps, null, players, spells, combatAreaEffects, combatMapSize, db);
 		
 		// Check results
 		assertEquals (0, attacker.getDamageTaken ());
@@ -559,6 +577,9 @@ public final class TestAttackResolutionProcessingImpl
 
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Combat map
+		final CombatMapSize combatMapSize = new CombatMapSize ();
 		
 		// Set up other lists
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -610,7 +631,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Run method
 		proc.processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, steps,
-			potentialDamageToDefender, players, spells, combatAreaEffects, db);
+			potentialDamageToDefender, players, spells, combatAreaEffects, combatMapSize, db);
 		
 		// Check results
 		assertEquals (3+3, defender.getDamageTaken ());

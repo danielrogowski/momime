@@ -182,6 +182,9 @@ public final class CommonDatabaseConstants
 	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
 	public static final String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
 
+	/** Limit ranged attack distance penalty to -10% */ 
+	public static final String UNIT_SKILL_ID_LONG_RANGE = "US125";
+	
 	// hero skills
 	
 	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */

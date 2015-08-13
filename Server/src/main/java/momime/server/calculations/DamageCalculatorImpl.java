@@ -415,7 +415,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setChanceToHit (3 + attackDamage.getPlusToHit ());
+		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
 		damageCalculationMsg.setTenTimesAverageDamage (attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit ());
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 		
@@ -480,7 +480,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setChanceToHit (3 + attackDamage.getPlusToHit ());
+		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 
 		// Set up defender stats

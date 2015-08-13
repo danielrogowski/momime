@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -64,6 +65,7 @@ public interface AttackResolutionProcessing
 	 * @param players Players list
 	 * @param spells Known spells
 	 * @param combatAreaEffects Known combat area effects
+	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -75,6 +77,7 @@ public interface AttackResolutionProcessing
 	public List<DamageTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects,
+		final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

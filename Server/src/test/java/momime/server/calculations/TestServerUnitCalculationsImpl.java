@@ -21,7 +21,9 @@ import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.MovementRateRule;
+import momime.common.database.RangedAttackType;
 import momime.common.database.UnitHasSkill;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -53,6 +55,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
@@ -858,5 +861,220 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Check 1 unit of spearmen was killed
 		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
+	}
+	
+	/**
+	 * Tests the calculateRangedAttackDistancePenalty method on a magic attack
+	 * @throws Exception If there if a problem
+	 */
+	@Test
+	public final void testCalculateRangedAttackDistancePenalty_Magic () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr attackerDef = new UnitSvr ();
+		attackerDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
+		
+		final RangedAttackType rat = new RangedAttackType ();
+		rat.setMagicRealmID ("A");
+		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
+
+		// Coordinate system
+		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		
+		// Lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Units
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitID ("UN001");
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		
+		// Set up object to test
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		
+		// Run method
+		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+	}
+
+	/**
+	 * Tests the calculateRangedAttackDistancePenalty method on a physical attack, but its close enough to get no penalty
+	 * @throws Exception If there if a problem
+	 */
+	@Test
+	public final void testCalculateRangedAttackDistancePenalty_Close () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr attackerDef = new UnitSvr ();
+		attackerDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
+		
+		final RangedAttackType rat = new RangedAttackType ();
+		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
+
+		// Coordinate system
+		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		
+		// Lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Units
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitID ("UN001");
+		attacker.setCombatPosition (new MapCoordinates2DEx (4, 4));
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setCombatPosition (new MapCoordinates2DEx (6, 4));
+		
+		// Set up object to test
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+	}
+
+	/**
+	 * Tests the calculateRangedAttackDistancePenalty method on a physical attack, at short range so we get a small penalty
+	 * @throws Exception If there if a problem
+	 */
+	@Test
+	public final void testCalculateRangedAttackDistancePenalty_Short () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr attackerDef = new UnitSvr ();
+		attackerDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
+		
+		final RangedAttackType rat = new RangedAttackType ();
+		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
+
+		// Coordinate system
+		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		
+		// Lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Units
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitID ("UN001");
+		attacker.setCombatPosition (new MapCoordinates2DEx (4, 4));
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setCombatPosition (new MapCoordinates2DEx (6, 6));
+		
+		// Set up object to test
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+	}
+
+	/**
+	 * Tests the calculateRangedAttackDistancePenalty method on a physical attack, at long range so we get a big penalty
+	 * @throws Exception If there if a problem
+	 */
+	@Test
+	public final void testCalculateRangedAttackDistancePenalty_Long () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr attackerDef = new UnitSvr ();
+		attackerDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
+		
+		final RangedAttackType rat = new RangedAttackType ();
+		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
+
+		// Coordinate system
+		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		
+		// Lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Units
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitID ("UN001");
+		attacker.setCombatPosition (new MapCoordinates2DEx (0, 7));
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setCombatPosition (new MapCoordinates2DEx (7, 6));
+		
+		// We don't have the Long Range skill
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		
+		// Set up object to test
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setUnitSkillUtils (unitSkillUtils);
+		
+		// Run method
+		assertEquals (3, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+	}
+
+	/**
+	 * Tests the calculateRangedAttackDistancePenalty method on a physical attack, where the long range skill applies
+	 * @throws Exception If there if a problem
+	 */
+	@Test
+	public final void testCalculateRangedAttackDistancePenalty_LongRange () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr attackerDef = new UnitSvr ();
+		attackerDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
+		
+		final RangedAttackType rat = new RangedAttackType ();
+		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
+
+		// Coordinate system
+		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		
+		// Lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Units
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitID ("UN001");
+		attacker.setCombatPosition (new MapCoordinates2DEx (0, 7));
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setCombatPosition (new MapCoordinates2DEx (7, 6));
+		
+		// We don't have the Long Range skill
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
+			players, spells, combatAreaEffects, db)).thenReturn (0);
+		
+		// Set up object to test
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setUnitSkillUtils (unitSkillUtils);
+		
+		// Run method
+		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
 	}
 }

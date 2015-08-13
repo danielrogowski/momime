@@ -16,8 +16,8 @@ public final class AttackDamage
 	 */ 
 	private final Integer potentialHits;
 	
-	/** Any bonus to the standard 30% hit rate */
-	private final int plusToHit;
+	/** To hit chance, in units of 10% */
+	private int chanceToHit;
 	
 	/** Kind of damage being dealt */
 	private final DamageTypeID damageType;
@@ -42,7 +42,7 @@ public final class AttackDamage
 	{
 		super ();
 		potentialHits = aPotentialHits;
-		plusToHit = aPlusToHit;
+		chanceToHit = aPlusToHit + 3;
 		damageType = aDamageType;
 		spell = aSpell;
 		repetitions = aRepetitions;
@@ -54,7 +54,7 @@ public final class AttackDamage
 	@Override
 	public final String toString ()
 	{
-		return "(" + getPotentialHits () + " potential damage at +" + getPlusToHit () + " to hit of type " + getDamageType () + ")"; 
+		return "(" + getPotentialHits () + " potential damage at +" + getChanceToHit () + " to hit of type " + getDamageType () + ")"; 
 	}
 
 	/**
@@ -66,13 +66,21 @@ public final class AttackDamage
 	}
 	
 	/**
-	 * @return Any bonus to the standard 30% hit rate
+	 * @return To hit chance, in units of 10%
 	 */
-	public final int getPlusToHit ()
+	public final int getChanceToHit ()
 	{
-		return plusToHit;
+		return chanceToHit;
 	}
 
+	/**
+	 * @param chance To hit chance, in units of 10%
+	 */
+	public final void setChanceToHit (final int chance)
+	{
+		chanceToHit = chance;
+	}
+	
 	/**
 	 * @return Kind of damage being dealt
 	 */

@@ -13,12 +13,14 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.AttackResolutionConditionSvr;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
@@ -45,6 +47,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
+
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/** Damage calc */
 	private DamageCalculator damageCalculator;
@@ -158,6 +163,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param players Players list
 	 * @param spells Known spells
 	 * @param combatAreaEffects Known combat area effects
+	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -170,7 +176,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public final List<DamageTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects,
+		final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? new Integer (attacker.getUnit ().getUnitURN ()).toString () : "N/A") +
@@ -230,6 +237,21 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have
 					if (potentialDamage != null)
 					{
+						// If its a non-magical ranged attack, work out any distance penalty
+						if ((step != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitAttributeID ())))
+						{
+							final int penalty = getServerUnitCalculations ().calculateRangedAttackDistancePenalty
+								(attacker.getUnit (), defender.getUnit (), combatMapCoordinateSystem, players, spells, combatAreaEffects, db);
+							
+							if (penalty > 0)
+							{
+								final int newChanceToHitWithPenalty = potentialDamage.getChanceToHit () - penalty;
+								
+								// Can't reduce chance below 10%
+								potentialDamage.setChanceToHit (Math.max (newChanceToHitWithPenalty, 1));
+							}
+						}
+						
 						// Work out how much of the damage gets through
 						for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
 						{
@@ -393,6 +415,22 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		unitCalculations = calc;
 	}
 
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
+	}
+	
 	/**
 	 * @return Damage calc
 	 */

@@ -15,8 +15,10 @@ import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -34,6 +36,7 @@ import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import org.apache.commons.logging.Log;
@@ -615,6 +618,55 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		log.trace ("Exiting recheckTransportCapacity");
 	}
 
+	/**
+	 * Non-magical ranged attack incurr a -10% to hit penalty for each 3 tiles distance between the attacking and defending unit on the combat map.
+	 * This is loosely explained in the manual and strategy guide, but the info on the MoM wiki is clearer.
+	 * 
+	 * @param attacker Unit firing the ranged attack
+	 * @param defender Unit being shot
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return To hit penalty incurred from the distance between the attacker and defender, NB. this is not capped in any way so may get very high values here
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 */
+	@Override
+	public final int calculateRangedAttackDistancePenalty (final MemoryUnit attacker, final MemoryUnit defender,
+		final CombatMapSize combatMapCoordinateSystem, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering calculateRangedAttackDistancePenalty: Attacker Unit URN " + attacker.getUnitURN () + ", Defender Unit URN " + defender.getUnitURN ());
+
+		final UnitSvr unitDef = db.findUnit (attacker.getUnitID (), "calculateRangedAttackDistancePenalty");
+		final RangedAttackType rat = db.findRangedAttackType (unitDef.getRangedAttackType (), "calculateRangedAttackDistancePenalty");
+		
+		// Magic attacks suffer no penalty
+		int penalty;
+		if (rat.getMagicRealmID () != null)
+			penalty = 0;
+		else
+		{
+			final double distance = getCoordinateSystemUtils ().determineReal2DDistanceBetween
+				(combatMapCoordinateSystem, (MapCoordinates2DEx) attacker.getCombatPosition (), (MapCoordinates2DEx) defender.getCombatPosition ());
+			
+			penalty = (int) (distance / 3);
+			
+			// Long range skill?
+			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue
+				(attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE, players, spells, combatAreaEffects, db) >= 0))
+				
+				penalty = 1;
+		}
+		
+		log.trace ("Exiting calculateRangedAttackDistancePenalty = " + penalty);
+		return penalty;
+	}
+	
 	/**
 	 * @return Unit utils
 	 */

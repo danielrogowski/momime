@@ -184,7 +184,7 @@ public final class TestDamageCalculatorImpl
 		// Check results
 		assertEquals (3, dmg.getPotentialHits ().intValue ());
 		assertEquals (4, dmg.getRepetitions ());
-		assertEquals (1, dmg.getPlusToHit ());
+		assertEquals (4, dmg.getChanceToHit ());
 		assertEquals (DamageTypeID.SINGLE_FIGURE, dmg.getDamageType ());
 
 		// Check the message that got sent to the attacker
@@ -315,7 +315,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
-		assertEquals (1, dmg.getPlusToHit ());
+		assertEquals (4, dmg.getChanceToHit ());
 		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageType ());
 
 		// Check the message that got sent to the attacker
@@ -407,7 +407,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Check results
 		assertEquals (3, dmg.getPotentialHits ().intValue ());
-		assertEquals (1, dmg.getPlusToHit ());
+		assertEquals (4, dmg.getChanceToHit ());
 		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageType ());
 
 		// Check the message that got sent to the attacker
@@ -555,7 +555,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
-		assertEquals (0, dmg.getPlusToHit ());
+		assertEquals (3, dmg.getChanceToHit ());
 		assertEquals (DamageTypeID.DOOM, dmg.getDamageType ());
 
 		// Check the message that got sent to the attacker
@@ -616,7 +616,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Check results
 		assertEquals (20, dmg.getPotentialHits ().intValue ());
-		assertEquals (0, dmg.getPlusToHit ());
+		assertEquals (3, dmg.getChanceToHit ());
 		assertEquals (DamageTypeID.DOOM, dmg.getDamageType ());
 
 		// Check the message that got sent to the attacker

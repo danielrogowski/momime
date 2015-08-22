@@ -8,6 +8,15 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.FogOfWarMemory;
@@ -25,14 +34,6 @@ import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculationsImpl;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the CityAI class
@@ -68,9 +69,13 @@ public final class TestCityAIImpl
 		// Set up test object
 		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
 		
+		final BooleanMapAreaOperations2DImpl booleanMapAreaOperations2D = new BooleanMapAreaOperations2DImpl ();
+		booleanMapAreaOperations2D.setCoordinateSystemUtils (coordinateSystemUtils);
+		
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (coordinateSystemUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setBooleanMapAreaOperations2D (booleanMapAreaOperations2D);
 		
 		final CityAIImpl ai = new CityAIImpl ();
 		ai.setCityCalculations (calc);

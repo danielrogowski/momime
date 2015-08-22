@@ -13,6 +13,19 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
+import com.ndg.map.areas.operations.MapAreaOperations2DImpl;
+import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
@@ -53,18 +66,6 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.PlayerPickUtilsImpl;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.areas.operations.MapAreaOperations2DImpl;
-import com.ndg.map.areas.storage.MapArea2D;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the calculations in the CityCalculationsImpl class
@@ -2261,8 +2262,14 @@ public final class TestCityCalculationsImpl
 	public final void testMarkWithinExistingCityRadius ()
 	{
 		// Set up object to test
+		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl ();
+				
+		final BooleanMapAreaOperations2DImpl booleanMapAreaOperations2D = new BooleanMapAreaOperations2DImpl ();
+		booleanMapAreaOperations2D.setCoordinateSystemUtils (coordinateSystemUtils);
+		
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setCoordinateSystemUtils (coordinateSystemUtils);
+		calc.setBooleanMapAreaOperations2D (booleanMapAreaOperations2D);
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();

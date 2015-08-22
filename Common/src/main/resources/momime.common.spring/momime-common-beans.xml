@@ -159,11 +159,17 @@
 
 	<bean id="objectFactoryMap" class="com.ndg.map.coordinates.ObjectFactoryMap" />	<!-- Creates Ex versions of coordinates -->
 
+	<bean id="booleanMapAreaOperations2D" class="com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl">
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+	</bean>
+
 	<bean id="cityCalculations" class="momime.common.calculations.CityCalculationsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 	</bean>
 	
 	<bean id="skillCalculations" class="momime.common.calculations.SkillCalculationsImpl" />

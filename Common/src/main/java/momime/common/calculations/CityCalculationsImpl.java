@@ -6,6 +6,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.areas.operations.BooleanMapAreaOperations2D;
+import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
@@ -54,20 +68,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
-import com.ndg.map.areas.storage.MapArea2D;
-import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
@@ -87,6 +87,9 @@ public final class CityCalculationsImpl implements CityCalculations
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Boolean operations for 2D maps */
+	private BooleanMapAreaOperations2D booleanMapAreaOperations2D;
 	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
@@ -1243,16 +1246,14 @@ public final class CityCalculationsImpl implements CityCalculations
 		final MapArea2D<Boolean> result = new MapArea2DArrayListImpl<Boolean> ();
 		result.setCoordinateSystem (overlandMapSize);
 		
-		final BooleanMapAreaOperations2DImpl op = new BooleanMapAreaOperations2DImpl ();
-		op.setCoordinateSystemUtils (getCoordinateSystemUtils ());
-		op.deselectAll (result);
+		getBooleanMapAreaOperations2D ().deselectAll (result);
 		
 		for (int x = 0; x < overlandMapSize.getWidth (); x++)
 			for (int y = 0; y < overlandMapSize.getHeight (); y++)
 			{
 				final OverlandMapCityData cityData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
 				if (cityData != null)
-					op.selectRadius (result, x, y, overlandMapSize.getCitySeparation ());
+					getBooleanMapAreaOperations2D ().selectRadius (result, x, y, overlandMapSize.getCitySeparation ());
 			}
 
 		log.trace ("Exiting markWithinExistingCityRadius");
@@ -1343,5 +1344,21 @@ public final class CityCalculationsImpl implements CityCalculations
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Boolean operations for 2D maps
+	 */
+	public final BooleanMapAreaOperations2D getBooleanMapAreaOperations2D ()
+	{
+		return booleanMapAreaOperations2D;
+	}
+
+	/**
+	 * @param op Boolean operations for 2D maps
+	 */
+	public final void setBooleanMapAreaOperations2D (final BooleanMapAreaOperations2D op)
+	{
+		booleanMapAreaOperations2D = op;
 	}
 }

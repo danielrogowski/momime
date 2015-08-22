@@ -288,11 +288,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>
 	
-	<bean id="booleanMapAreaOperations2D" class="com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl">
-		<property name="randomUtils" ref="randomUtils" />
-		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-	</bean>
-
 	<!-- Saved games support -->
 
 	<bean id="serverKnowledgeObjectFactory" class="momime.server.knowledge.MomServerKnowledgeObjectFactory" />

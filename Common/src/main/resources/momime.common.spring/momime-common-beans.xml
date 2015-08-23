@@ -238,7 +238,9 @@
 	<bean id="coordinateSystemUtils" class="com.ndg.map.CoordinateSystemUtilsImpl" />
 	
 	<bean id="booleanMapAreaOperations3D" class="com.ndg.map.areas.operations.BooleanMapAreaOperations3DImpl">
+		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 	</bean>
 
 	<bean id="zoneAI" class="momime.common.ai.ZoneAIImpl">

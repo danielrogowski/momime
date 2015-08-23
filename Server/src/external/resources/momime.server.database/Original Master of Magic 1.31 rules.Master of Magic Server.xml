@@ -21239,7 +21239,8 @@
 		<languageEntry languageEntryID="ShowFogOfWar" />
 		<languageEntry languageEntryID="SmoothTerrain" />
 		<languageEntry languageEntryID="SmoothFogOfWar" />
-		<languageEntry languageEntryID="ShowScoutedMonsters" />
+		<languageEntry languageEntryID="ShowOurBorder" />
+		<languageEntry languageEntryID="ShowEnemyBorders" />
 		<languageEntry languageEntryID="CombatMapSection" />
 		<languageEntry languageEntryID="CombatUnitScale" />
 		<languageEntry languageEntryID="DebugSection" />

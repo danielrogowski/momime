@@ -5464,8 +5464,11 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="SmoothFogOfWar">
 			<languageEntryText>Smooth edges of visible area</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ShowScoutedMonsters">
-			<languageEntryText>Show type of monster in scouted nodes/lairs/towers</languageEntryText>
+		<languageEntry languageEntryID="ShowOurBorder">
+			<languageEntryText>Show border of territory that we control</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ShowEnemyBorders">
+			<languageEntryText>Show borders of territory that others wizards control</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="CombatMapSection">
 			<languageEntryText>Combat Map</languageEntryText>

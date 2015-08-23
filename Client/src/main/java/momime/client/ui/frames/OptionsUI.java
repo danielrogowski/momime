@@ -147,6 +147,12 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	
 	/** Whether to slightly darken terrain which we have seen, but cannot see now, so we're just remembering what we saw there before */
 	private JCheckBox overlandShowPartialFogOfWar;
+
+	/** Whether to draw a border around the area we control */
+	private JCheckBox overlandShowOurBorder;
+	
+	/** Whether to draw borders around the area other wizards control */
+	private JCheckBox overlandShowEnemyBorders;
 	
 	/** True to use the full FOW tileset so the FOW border slightly enchroaches into tiles we can see and so looks smooth; false to use hard square edges */
 	private JCheckBox overlandSmoothFogOfWar;	
@@ -269,7 +275,13 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		
 		overlandSmoothFogOfWar = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (overlandSmoothFogOfWar, "frmOptionsOverlandSmoothFogOfWar");
+		
+		overlandShowOurBorder = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (overlandShowOurBorder, "frmOptionsOverlandShowOurBorder");
 
+		overlandShowEnemyBorders = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (overlandShowEnemyBorders, "frmOptionsOverlandShowEnemyBorders");
+		
 		combatSmoothTerrain = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (combatSmoothTerrain, "frmOptionsSmoothCombatTerrain");
 
@@ -342,6 +354,8 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandSmoothTextures.setSelected			(getClientConfig ().isOverlandSmoothTextures ());
 		overlandShowPartialFogOfWar.setSelected	(getClientConfig ().isOverlandShowPartialFogOfWar ());
 		overlandSmoothFogOfWar.setSelected			(getClientConfig ().isOverlandSmoothFogOfWar ());
+		overlandShowOurBorder.setSelected			(getClientConfig ().isOverlandShowOurBorder ());
+		overlandShowEnemyBorders.setSelected		(getClientConfig ().isOverlandShowEnemyBorders ());
 		combatSmoothTerrain.setSelected				(getClientConfig ().isCombatSmoothTerrain ());
 		debugShowURNs.setSelected						(getClientConfig ().isDebugShowURNs ());
 		debugShowEdgesOfMap.setSelected			(getClientConfig ().isDebugShowEdgesOfMap ());
@@ -447,6 +461,26 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			}
 		});
 	
+		overlandShowOurBorder.addItemListener (new ItemListener ()
+		{
+			@Override
+			public final void itemStateChanged (final ItemEvent ev)
+			{
+				getClientConfig ().setOverlandShowOurBorder (overlandShowOurBorder.isSelected ());
+				saveConfigFile ();
+			}
+		});
+
+		overlandShowEnemyBorders.addItemListener (new ItemListener ()
+		{
+			@Override
+			public final void itemStateChanged (final ItemEvent ev)
+			{
+				getClientConfig ().setOverlandShowEnemyBorders (overlandShowEnemyBorders.isSelected ());
+				saveConfigFile ();
+			}
+		});
+		
 		combatSmoothTerrain.addItemListener (new ItemListener ()
 		{
 			@Override
@@ -528,6 +562,8 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandSmoothTextures.setText			(getLanguage ().findCategoryEntry ("frmOptions", "LinearTextureFilter"));
 		overlandShowPartialFogOfWar.setText	(getLanguage ().findCategoryEntry ("frmOptions", "ShowFogOfWar"));
 		overlandSmoothFogOfWar.setText		(getLanguage ().findCategoryEntry ("frmOptions", "SmoothFogOfWar"));
+		overlandShowOurBorder.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowOurBorder"));
+		overlandShowEnemyBorders.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowEnemyBorders"));
 		combatSmoothTerrain.setText				(getLanguage ().findCategoryEntry ("frmOptions", "SmoothTerrain"));
 		debugShowURNs.setText						(getLanguage ().findCategoryEntry ("frmOptions", "ShowUnitURNs"));
 		debugShowEdgesOfMap.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowEdgesOfMap"));

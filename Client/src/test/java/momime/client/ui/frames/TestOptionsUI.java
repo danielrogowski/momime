@@ -63,6 +63,9 @@ public final class TestOptionsUI
 		when (lang.findCategoryEntry ("frmOptions", "LinearTextureFilter")).thenReturn ("Smooth textures when zooming in on overland map");
 		when (lang.findCategoryEntry ("frmOptions", "ShowFogOfWar")).thenReturn ("Darken areas of the map not currently visible");
 		when (lang.findCategoryEntry ("frmOptions", "SmoothFogOfWar")).thenReturn ("Smooth edges of visible area");
+		when (lang.findCategoryEntry ("frmOptions", "ShowOurBorder")).thenReturn ("Show border of territory that we control");
+		when (lang.findCategoryEntry ("frmOptions", "ShowEnemyBorders")).thenReturn ("Show borders of territory that others wizards control");
+		
 		when (lang.findCategoryEntry ("frmOptions", "ShowUnitURNs")).thenReturn ("Show Unit, Building and Spell URNs");
 		when (lang.findCategoryEntry ("frmOptions", "ShowEdgesOfMap")).thenReturn ("Show edges of map");
 		when (lang.findCategoryEntry ("frmOptions", "CombatUnitScale")).thenReturn ("Unit scale (visual only; showing 4x figures does not mean 4x attacks):");

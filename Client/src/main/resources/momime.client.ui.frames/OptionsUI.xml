@@ -22,31 +22,43 @@
 	</component>
 	<component name="frmOptionsOverlandMapSection">
 		<left>20</left>
-		<top>170</top>
+		<top>160</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsLinearTextureFilter">
 		<left>20</left>
-		<top>200</top>
+		<top>190</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsOverlandShowPartialFogOfWar">
 		<left>20</left>
-		<top>215</top>
+		<top>205</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsOverlandSmoothTerrain">
 		<left>20</left>
-		<top>230</top>
+		<top>220</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsOverlandSmoothFogOfWar">
 		<left>20</left>
-		<top>245</top>
+		<top>235</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsOverlandShowOurBorder">
+		<left>20</left>
+		<top>250</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmOptionsOverlandShowEnemyBorders">
+		<left>20</left>
+		<top>265</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

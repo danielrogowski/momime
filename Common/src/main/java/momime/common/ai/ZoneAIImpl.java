@@ -23,9 +23,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryGridCell;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
-import momime.common.messages.UnitStatusID;
 
 /**
  * Calculates zones / national borders from what a player knows about the overland map.
@@ -158,15 +156,17 @@ public final class ZoneAIImpl implements ZoneAI
 				}
 		
 		// Remove any area close to enemy units
+		// Taking this out - or how will the AI detect that its being invaded if their border automatically shrinks as enemy units get close? :)
+		/*
 		for (final MemoryUnit unit : fogOfWarMemory.getUnit ())
-			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () != playerID))
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () != playerID) && (unit.getUnitLocation () != null))
 			{
 				final MapArea3Dto2D<Boolean> zone2D = new MapArea3Dto2D<Boolean> ();
 				zone2D.setStorage (zone);
 				zone2D.setZ (unit.getUnitLocation ().getZ ());
 				
 				getBooleanMapAreaOperations2D ().deselectRadius (zone2D, unit.getUnitLocation ().getX (), unit.getUnitLocation ().getY (), 1);
-			}
+			} */
 		
 		// Reselect our cities, in case those cells were deselected by an enemy standing next to one of them
 		for (final MapCoordinates3DEx cityLocation : cityLocations)

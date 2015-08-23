@@ -33,6 +33,8 @@
 						<xsd:documentation>True to use the full FOW tileset so the FOW border slightly enchroaches into tiles we can see and so looks smooth; false to use hard square edges.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandShowOurBorder" type="xsd:boolean" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandShowEnemyBorders" type="xsd:boolean" />
 				
 				<!-- Combat map options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="combatSmoothTerrain" type="xsd:boolean">

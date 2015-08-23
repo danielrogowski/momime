@@ -7,16 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.NdgUIUtils;
+
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
 
 /**
  * Various items like unit backgrounds and city flags are displayed in the player's colour.
@@ -53,6 +53,12 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 
 	/** Uncoloured wizard gem image */
 	private BufferedImage wizardGemImage;
+	
+	/** Uncoloured friendly zone borders */
+	private Map<Integer, BufferedImage> friendlyZoneBorderImages = new HashMap<Integer, BufferedImage> ();
+	
+	/** Colour multiplied friendly zone borders */
+	private Map<String, BufferedImage> colouredFriendlyZoneBorderImages = new HashMap<String, BufferedImage> ();
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -168,6 +174,39 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 			wizardGemImage = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/gem.png");
 
 		return getImage (playerID, wizardGemImage, wizardGemImages);
+	}
+
+	/**
+	 * @param d Direction of border edge to draw
+	 * @param playerID ID of player whose border we are drawing
+	 * @return Border edge in player colour
+	 * @throws IOException If there is a problem loading the border image
+	 */
+	@Override
+	public final BufferedImage getFriendlyZoneBorderImage (final int d, final int playerID) throws IOException
+	{
+		// 2nd map is keyed by playerID - direction
+		final String key = playerID + "-" + d;
+		BufferedImage image = colouredFriendlyZoneBorderImages.get (key);
+		if (image == null)
+		{
+			// Get uncoloured image
+			image = friendlyZoneBorderImages.get (d);
+			if (image == null)
+			{
+				image = getUtils ().loadImage ("/momime.client.graphics/overland/friendlyZoneBorder/border-d" + d + ".png");
+				friendlyZoneBorderImages.put (d, image);
+			}
+			
+			// Generate coloured image
+			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "PlayerColourImageGeneratorImpl");
+			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+
+			image = getUtils ().multiplyImageByColour (image, Integer.parseInt (trans.getFlagColour (), 16));
+			colouredFriendlyZoneBorderImages.put (key, image);
+		}
+		
+		return image;
 	}
 	
 	/**

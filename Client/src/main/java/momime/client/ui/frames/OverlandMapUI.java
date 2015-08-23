@@ -34,6 +34,19 @@ import javax.swing.WindowConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.areas.operations.BooleanMapAreaOperations3D;
+import com.ndg.map.areas.storage.MapArea;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.GridBagConstraintsNoFill;
+
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfigEx;
@@ -52,6 +65,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
+import momime.common.ai.ZoneAI;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
@@ -59,6 +73,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
@@ -68,16 +83,8 @@ import momime.common.messages.servertoclient.MapVolumeOfOverlandMoveType;
 import momime.common.messages.servertoclient.OverlandMoveTypeID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.TargetSpellResult;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Screen for displaying the overland map, including the buttons and side panels and so on that appear in the same frame
@@ -149,6 +156,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Zone AI */
+	private ZoneAI zoneAI;
+	
+	/** Operations for 3D boolean map areas */
+	private BooleanMapAreaOperations3D booleanMapAreaOperations3D;
 	
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
@@ -477,6 +490,59 @@ public final class OverlandMapUI extends MomClientFrameUI
 								(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
 								mapZoomedWidth, mapZoomedHeight, null);
 					}
+				
+				// Draw any borders?
+				for (final PlayerPublicDetails thisPlayer : getClient ().getPlayers ())
+				{
+					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
+					if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+					{
+						if (((thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowOurBorder ())) ||
+							((!thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowEnemyBorders ())))
+							
+							try
+							{
+								final int borderZoomedWidth = (overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+								final int borderZoomedHeight = (overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
+
+								// Generate border
+								final MapArea3D<Boolean> friendlyZone = getZoneAI ().calculateFriendlyZone (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+									getClient ().getSessionDescription ().getOverlandMapSize (), thisPlayer.getPlayerDescription ().getPlayerID (),
+									getClient ().getSessionDescription ().getOverlandMapSize ().getCitySeparation () + 3, getClient ().getClientDB ());
+								
+								final MapArea<List<SquareMapDirection>, MapCoordinates3DEx> friendlyZoneBorders = getBooleanMapAreaOperations3D ().traceBorders (friendlyZone);
+								
+								// Draw border
+								for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+									for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+									{
+										final List<SquareMapDirection> directions = friendlyZoneBorders.get (new MapCoordinates3DEx (x, y, mapViewPlane));
+										if (directions != null)
+										{
+											final int borderX = (x * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+											final int borderY = (y * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
+
+											for (final SquareMapDirection d : directions)
+											{
+												final BufferedImage borderImage = getPlayerColourImageGenerator ().getFriendlyZoneBorderImage
+													(d.getDirectionID (), thisPlayer.getPlayerDescription ().getPlayerID ());
+
+												for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+													for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+														
+														g.drawImage (borderImage,
+															(mapZoomedWidth * xRepeat) - mapViewX + borderX, (mapZoomedHeight * yRepeat) - mapViewY + borderY,
+															borderZoomedWidth, borderZoomedHeight, null);
+											}
+										}
+									}
+							}
+							catch (final IOException e)
+							{
+								log.error ("Error trying to calculate and draw friendly zone for player ID " + thisPlayer.getPlayerDescription ().getPlayerID (), e);
+							}
+					}
+				}
 				
 				// Draw units dynamically, over the bitmap.
 				
@@ -1776,6 +1842,38 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+	
+	/**
+	 * @return Zone AI
+	 */
+	public final ZoneAI getZoneAI ()
+	{
+		return zoneAI;
+	}
+
+	/**
+	 * @param ai Zone AI
+	 */
+	public final void setZoneAI (final ZoneAI ai)
+	{
+		zoneAI = ai;
+	}
+	
+	/**
+	 * @return Operations for 3D boolean map areas
+	 */
+	public final BooleanMapAreaOperations3D getBooleanMapAreaOperations3D ()
+	{
+		return booleanMapAreaOperations3D;
+	}
+
+	/**
+	 * @param op Operations for 3D boolean map areas
+	 */
+	public final void setBooleanMapAreaOperations3D (final BooleanMapAreaOperations3D op)
+	{
+		booleanMapAreaOperations3D = op;
 	}
 	
 	/**

@@ -44,4 +44,12 @@ public interface PlayerColourImageGenerator
 	 * @throws IOException If there is a problem loading the background image
 	 */
 	public BufferedImage getWizardGemImage (final int playerID) throws IOException;
+	
+	/**
+	 * @param d Direction of border edge to draw
+	 * @param playerID ID of player whose border we are drawing
+	 * @return Border edge in player colour
+	 * @throws IOException If there is a problem loading the border image
+	 */
+	public BufferedImage getFriendlyZoneBorderImage (final int d, final int playerID) throws IOException;
 }

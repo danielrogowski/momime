@@ -78,10 +78,10 @@ public final class TestOverlandMapServerUtilsImpl
 	{
 		// Mock some tile types
 		final TileTypeSvr grass = new TileTypeSvr ();
-		grass.setIsLand (true);
+		grass.setLand (true);
 		
 		final TileTypeSvr ocean = new TileTypeSvr ();
-		ocean.setIsLand (false);
+		ocean.setLand (false);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("G", "setContinentalRace")).thenReturn (grass);
@@ -136,10 +136,10 @@ public final class TestOverlandMapServerUtilsImpl
 	{
 		// Mock some tile types
 		final TileTypeSvr grass = new TileTypeSvr ();
-		grass.setIsLand (true);
+		grass.setLand (true);
 		
 		final TileTypeSvr ocean = new TileTypeSvr ();
-		ocean.setIsLand (false);
+		ocean.setLand (false);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findTileType ("G", "setContinentalRace")).thenReturn (grass);

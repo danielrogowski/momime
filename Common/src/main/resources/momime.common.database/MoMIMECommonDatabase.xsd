@@ -343,6 +343,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines the types of terrain tiles that make up the map, e.g. Grassland, Forest, Mountains, Ocean, Nodes, plus some special entries which aren't really "terrain" - roads and fog of war - for defining movement rate rules.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="land" type="xsd:boolean" nxe:label="Is Solid Land?" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionBonus" type="momimecommon:percentage" nxe:label="Production Bonus %" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonus" type="momimecommon:percentage" nxe:label="Gold Bonus %" nxe:gridwidth="90" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonusSurroundingTiles" type="xsd:boolean" nxe:label="Gold Bonus from Surrounding Tiles?" nxe:gridwidth="200" />

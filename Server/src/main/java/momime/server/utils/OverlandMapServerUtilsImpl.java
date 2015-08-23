@@ -106,7 +106,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 
 				// NB. IsLand is Boolean so could be null, but should be set for all tile types produced by the map generator
 				// the only tile types for which it is null are those which are special references for the movement tables, e.g. road tiles
-				if ((db.findTileType (terrain.getTileTypeID (), "setContinentalRace").isIsLand ()) && (continentalRace.get (coords) == null))
+				if ((db.findTileType (terrain.getTileTypeID (), "setContinentalRace").isLand ()) && (continentalRace.get (coords) == null))
 					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db);
 			}
 		}
@@ -142,7 +142,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 
 					// NB. IsLand is Boolean so could be null, but should be set for all tile types produced by the map generator
 					// the only tile types for which it is null are those which are special references for the movement tables, e.g. road tiles
-					if ((db.findTileType (terrain.getTileTypeID (), "decideAllContinentalRaces").isIsLand ()) &&
+					if ((db.findTileType (terrain.getTileTypeID (), "decideAllContinentalRaces").isLand ()) &&
 						(continentalRace.get (x, y, plane.getPlaneNumber ()) == null))
 
 						setContinentalRace (map, continentalRace, x, y, plane.getPlaneNumber (),

@@ -301,10 +301,10 @@
 		</mapFeatureMagicRealm>
 	</mapFeature>
 	<tileType tileTypeID="TT01">
+		<land>true</land>
 		<productionBonus>5</productionBonus>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Mountain</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>true</canPlaceLair>
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
@@ -366,11 +366,11 @@
 		</tileTypeFeatureChance>
 	</tileType>
 	<tileType tileTypeID="TT02">
+		<land>true</land>
 		<productionBonus>3</productionBonus>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Hills</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>true</canPlaceLair>
 		<combatDarkTiles>25</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
@@ -432,11 +432,11 @@
 		</tileTypeFeatureChance>
 	</tileType>
 	<tileType tileTypeID="TT03">
+		<land>true</land>
 		<productionBonus>3</productionBonus>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Forest</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>true</canPlaceLair>
 		<combatDarkTiles>35</combatDarkTiles>
 		<combatRidgeTiles>25</combatRidgeTiles>
@@ -453,10 +453,10 @@
 		</tileTypeFeatureChance>
 	</tileType>
 	<tileType tileTypeID="TT04">
+		<land>true</land>
 		<productionBonus>3</productionBonus>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Desert</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>true</canPlaceLair>
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>40</combatRidgeTiles>
@@ -488,10 +488,10 @@
 		</tileTypeFeatureChance>
 	</tileType>
 	<tileType tileTypeID="TT05">
+		<land>true</land>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Swamp</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>250</combatDarkTiles>
 		<combatRidgeTiles>8</combatRidgeTiles>
@@ -508,66 +508,66 @@
 		</tileTypeFeatureChance>
 	</tileType>
 	<tileType tileTypeID="TT06">
+		<land>true</land>
 		<doubleFood>3</doubleFood>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Grasslands</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>true</canPlaceLair>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
 	</tileType>
 	<tileType tileTypeID="TT07">
+		<land>true</land>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Tundra</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>30</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
 	</tileType>
 	<tileType tileTypeID="TT08">
+		<land>false</land>
 		<goldBonus>10</goldBonus>
 		<goldBonusSurroundingTiles>true</goldBonusSurroundingTiles>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>false</canBuildCity>
 		<tileTypeDescription>Shore</tileTypeDescription>
-		<isLand>false</isLand>
 		<canPlaceLair>false</canPlaceLair>
 	</tileType>
 	<tileType tileTypeID="TT09">
+		<land>false</land>
 		<canBuildCity>false</canBuildCity>
 		<tileTypeDescription>Ocean</tileTypeDescription>
-		<isLand>false</isLand>
 		<canPlaceLair>false</canPlaceLair>
 	</tileType>
 	<tileType tileTypeID="TT10">
+		<land>true</land>
 		<goldBonus>20</goldBonus>
 		<goldBonusSurroundingTiles>false</goldBonusSurroundingTiles>
 		<doubleFood>4</doubleFood>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>River</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>true</canPlaceLair>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
 	</tileType>
 	<tileType tileTypeID="TT11">
+		<land>false</land>
 		<goldBonus>10</goldBonus>
 		<goldBonusSurroundingTiles>true</goldBonusSurroundingTiles>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>false</canBuildCity>
 		<tileTypeDescription>Shore (Oceanside River Mouth)</tileTypeDescription>
-		<isLand>false</isLand>
 		<canPlaceLair>false</canPlaceLair>
 	</tileType>
 	<tileType tileTypeID="TT12">
+		<land>true</land>
 		<doubleFood>3</doubleFood>
 		<canBuildCity>false</canBuildCity>
 		<magicRealmID>LT05</magicRealmID>
 		<tileTypeDescription>Grasslands (Sorcery Node)</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
@@ -578,12 +578,12 @@
 		</tileTypeAreaEffect>
 	</tileType>
 	<tileType tileTypeID="TT13">
+		<land>true</land>
 		<productionBonus>3</productionBonus>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>false</canBuildCity>
 		<magicRealmID>LT04</magicRealmID>
 		<tileTypeDescription>Forest (Nature Node)</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>35</combatDarkTiles>
 		<combatRidgeTiles>25</combatRidgeTiles>
@@ -594,11 +594,11 @@
 		</tileTypeAreaEffect>
 	</tileType>
 	<tileType tileTypeID="TT14">
+		<land>true</land>
 		<productionBonus>5</productionBonus>
 		<canBuildCity>false</canBuildCity>
 		<magicRealmID>LT03</magicRealmID>
 		<tileTypeDescription>Volcano/Mountain (Chaos Node)</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
@@ -609,12 +609,12 @@
 		</tileTypeAreaEffect>
 	</tileType>
 	<tileType tileTypeID="TT15">
+		<land>true</land>
 		<goldBonus>30</goldBonus>
 		<goldBonusSurroundingTiles>false</goldBonusSurroundingTiles>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>River Mouth (Landside River Mouth)</tileTypeDescription>
-		<isLand>true</isLand>
 		<canPlaceLair>true</canPlaceLair>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>

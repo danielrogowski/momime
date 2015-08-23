@@ -810,7 +810,6 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:extension base="momimecommon:tileType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="tileTypeDescription" type="momimecommon:description" nxe:label="Tile Type Description" nxe:gridwidth="200" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="isLand" type="xsd:boolean" nxe:label="Is Solid Land?" nxe:gridwidth="80" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="canPlaceLair" type="xsd:boolean" nxe:label="Can place a Monster Lair on this Terrain?" nxe:gridwidth="220" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatDarkTiles" type="momimesvr:combatMapTileCount" nxe:label="Combat Dark Tiles" nxe:gridwidth="120" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatRidgeTiles" type="momimesvr:combatMapTileCount" nxe:label="Combat Ridge Tiles" nxe:gridwidth="120" />

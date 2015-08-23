@@ -241,4 +241,10 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
+	<bean id="zoneAI" class="momime.common.ai.ZoneAIImpl">
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
+		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
+	</bean>
+
 </beans>

@@ -1462,6 +1462,7 @@ public final class GenerateTestData
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
 		sys.setWidth (60);
 		sys.setHeight (40);
+		sys.setDepth (2);
 		sys.setWrapsLeftToRight (true);
 		return sys;
 	}

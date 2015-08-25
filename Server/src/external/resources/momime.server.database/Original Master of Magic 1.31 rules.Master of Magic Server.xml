@@ -21414,6 +21414,7 @@
 		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieModifiedSurvives" />
 		<languageEntry languageEntryID="DefenceResistOrTakeDamageBase" />
 		<languageEntry languageEntryID="DefenceResistOrTakeDamageModified" />
+		<languageEntry languageEntryID="DefenceResistanceRolls" />
 		<languageEntry languageEntryID="DefenceDisintegrateBaseDies" />
 		<languageEntry languageEntryID="DefenceDisintegrateBaseSurvives" />
 		<languageEntry languageEntryID="DefenceDisintegrateModifiedDies" />

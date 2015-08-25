@@ -1,4 +1,4 @@
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
 	xmlns:momimecommon="http://momime/common/database" xmlns:momimesvr="http://momime/server/database/v0_9_6" 
 	xmlns:momimedummy="http://momime/unittests/dummy" targetNamespace="http://momime/unittests/dummy">
 	
@@ -17,4 +17,3 @@
 	</xsd:element>
 	
 </xsd:schema>
-

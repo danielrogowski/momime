@@ -1,4 +1,4 @@
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
 	xmlns:map="http://www.ndg.com/map" xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase"
 	xmlns:momimecommon="http://momime/common/database"
 	xmlns:momimeclient="http://momime/client/database" xmlns:momimemsgs="http://momime/common/messages"

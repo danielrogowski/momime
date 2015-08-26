@@ -2,8 +2,8 @@ BODY
 {
     BACKGROUND-COLOR: #282828;
     COLOR: #A0A0B0;
-    FONT-FAMILY: 'sans-serif';
-    FONT-SIZE: 'x-small'
+    FONT-FAMILY: calibri, sans-serif;
+    FONT-SIZE: 14px
 }
 A
 {
@@ -13,45 +13,45 @@ TD
 {
     BACKGROUND-COLOR: #282828;
     COLOR: #A0A0B0;
-    FONT-FAMILY: 'sans-serif';
-    FONT-SIZE: 'x-small'
+    FONT-FAMILY: calibri, sans-serif;
+    FONT-SIZE: 14px
 }
 H1
 {
     COLOR: #6666CC;
-    FONT-FAMILY: 'sans-serif';
+    FONT-FAMILY: georgia, serif;
     TEXT-TRANSFORM: capitalize
 }
 H2
 {
     COLOR: #6666CC;
-    FONT-FAMILY: 'sans-serif';
+    FONT-FAMILY: georgia, serif;
     TEXT-TRANSFORM: capitalize
 }
 H3
 {
     COLOR: #6666CC;
-    FONT-FAMILY: 'sans-serif';
+    FONT-FAMILY: georgia, serif;
     TEXT-TRANSFORM: capitalize
 }
 
 H4
 {
     COLOR: #6666CC;
-    FONT-FAMILY: 'sans-serif';
+    FONT-FAMILY: calibri, sans-serif;
     TEXT-TRANSFORM: capitalize
 }
 
 H5
 {
     COLOR: #6666CC;
-    FONT-FAMILY: 'sans-serif';
+    FONT-FAMILY: calibri, sans-serif;
     TEXT-TRANSFORM: capitalize
 }
 H6
 {
     COLOR: #6666CC;
-    FONT-FAMILY: 'sans-serif';
+    FONT-FAMILY: calibri, sans-serif;
     TEXT-TRANSFORM: capitalize
 }
 TH

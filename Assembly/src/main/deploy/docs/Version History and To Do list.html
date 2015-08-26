@@ -103,8 +103,7 @@
 			<td align=left><b>Planned features:</b>
 				<ul>
 					<li>All uncommon spells working (including that the AI will cast them)
-					<li>Heroes equipping items
-					<li>Create item and create artifact spells
+					<li>Overland mini-map
 					<li>Non-corporeal units should appear translucent in combat
 					<li>Buildings and population being destroyed during city combats
 					<li>Roads
@@ -116,36 +115,60 @@
 			<td align=left></td>
 			<td align=left><b>Planned features:</b>
 				<ul>
-					<li>Overland AI for AI wizards and Raiders (AI building units, moving around the map, attacking cities and lairs/nodes/towers)
+					<li>Unify unit skills and attributes so the only place any distinction is made is what images are specified for them in the graphics XML and how they appear on the unit info screen
+					<li>Generic handling of which unit abilities and spell effects negate each other, e.g. Negate First Strike negates First Strike, Poison Immunity negates Poison, Fire Immunity negates Immolation (and a whole lot more besides), Elemental Armour negates Resist Elements
 					<li>All unit skills and abilities working
-					<li>All common spells working (including that the AI will cast them)
+					<li>Create item and create artifact spells
+					<li>Heroes equipping items
 					<li>Treasure rewards from capturing nodes/lairs/towers
-					<li>Overland mini-map
+					<li>All common spells working (including that the AI will cast them)
 					<li>Some kind of cleanup of old saved game files so they don't sit on the server forever
-				</ul>
-			</td>
-		</tr>
-		<tr>
-			<td align=left>0.9.6.2</td>
-			<td align=left>?? ?? 2015</td>
-			<td align=left>
-				<b>Planned features:</b>
-				<ul>
-					<li>Calculate position of national borders/friendly zones from each player's memory independantly, and allow viewing own border via a new checkbox on the Options screen
+					<li>If you start on Myrror and find a tower it appears empty, but if you hit the Plane button you can see the units inside from Arcanus
 					<li>AI calculates unit factory rating for its cities and thus can choose the best city to build units at
 					<li>AI calculates defence rating for its cities and thus knows the friendly zones in which it needs to build more units
-					<li>Special attacks now work correctly: First Strike, Armour Piercing, Poison, Breath, Thrown, Gaze, Touch attacks
-					<li>Generic handling of which unit abilities and spell effects negate each other, e.g. Negate First Strike negates First Strike, Poison Immunity negates Poison, Fire Immunity negates Immolation (and a whole lot more besides), Elemental Armour negates Resist Elements
-					<li>Range penalties for non-magic range attacks; Long Range and Large Shield skills
-					<li>Combat tile border images, for wall of stone/darkness/fire
-					<li>When a city is captured, any effort they'd put towards a construction project is now lost like the original MoM
+					<li>Overland AI for AI wizards and Raiders (AI building units, moving around the map, attacking cities and lairs/nodes/towers)
 				</ul>
 			</td>
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.6.1</b></td>
-			<td align=left><b>31 May 2015</b></td>
+			<td align=left><b>Current version: 0.9.6.2</b></td>
+			<td align=left><b>25 Aug 2015</b></td>
+			<td align=left>
+				<b>Major new features:</b>
+				<ul>
+					<li>Special attacks now work correctly: Armour Piercing, Poison, Breath, Thrown, Gaze, Touch attacks, Cause Fear
+					<li>First Strike and Haste correctly alter attack resolution sequence
+					<li>Range penalties for non-magic range attacks, plus range penalty limitation by Long Range skill
+					<li>Melee and ranged attacks are now processed from each figure separately (as per the MoM Wiki) rather than a combined attack (as the MoM strategy guide incorrectly states)
+					<li>Calculate position of national borders/friendly zones from each player's memory independantly, and allow viewing borders via new checkboxes on the Options screen
+				</ul>
+					
+				<b>Minor new features:</b>
+				<ul>
+					<li>Proper z-sorting of combat map elements, so it doesn't look glitchy when units walk past each other
+					<li>When a city is captured, any effort they'd put towards a construction project is now lost like the original MoM, and the chosen construction resets to default (housing)
+					<li>Casting city enchantments in combat (wall of fire/wall of darkness) now work correctly
+					<li>"Can see what enemy cities are constructing?" new game Fog of War option now actually lets you see what enemy cities are constructing
+					<li>Tripled size of damage calculation breakdown box given how much more data is shown now that figures attack separately
+					<li>Skills with an attack rating such as Fire Breath and Thrown Weapons now display it correctly
+				</ul>
+
+				<b>Features from 0.9.4 Delphi client added back in:</b>
+				<ul>
+					<li>Combat tile border images, for wall of stone/darkness/fire
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Units coming into view that have enchantments cast on them no longer show the spell animation
+					<li>Prevent casting the same combat enchantment (e.g. Prayer) multiple times
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.6.1</td>
+			<td align=left>31 May 2015</td>
 			<td align=left>
 				<b>Major new features:</b>
 				<ul>

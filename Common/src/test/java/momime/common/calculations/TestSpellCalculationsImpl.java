@@ -8,22 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.MomException;
-import momime.common.database.CastingReductionCombination;
-import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.GenerateTestData;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.SpellSetting;
-import momime.common.database.SwitchResearch;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.PlayerPick;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.SpellUtilsImpl;
-
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
@@ -31,6 +15,24 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
+import momime.common.MomException;
+import momime.common.database.CastingReductionCombination;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.GenerateTestData;
+import momime.common.database.Pick;
+import momime.common.database.PickProductionBonus;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellSetting;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.PlayerPick;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.SpellUtils;
 
 /**
  * Tests the calculations in the SpellCalculationsImpl class
@@ -41,55 +43,6 @@ public final class TestSpellCalculationsImpl
 	private static final double DOUBLE_TOLERANCE = 0.0000000000001;
 
 	/**
-	 * @return None of the pre-defined spell settings use multiplicative for research, so this creates special test settings with 8% per book multiplicative, 1000% cap
-	 */
-	private final SpellSetting createSpecialSpellSettings ()
-	{
-		final SpellSetting settings = new SpellSetting ();
-		settings.setSwitchResearch (SwitchResearch.FREE);
-		settings.setSpellBooksToObtainFirstReduction (8);
-		settings.setSpellBooksCastingReduction (8);
-		settings.setSpellBooksCastingReductionCap (90);
-		settings.setSpellBooksCastingReductionCombination (CastingReductionCombination.MULTIPLICATIVE);
-		settings.setSpellBooksResearchBonus (8);
-		settings.setSpellBooksResearchBonusCap (1000);
-		settings.setSpellBooksResearchBonusCombination (CastingReductionCombination.MULTIPLICATIVE);
-		return settings;
-	}
-
-	/**
-	 * @return Sample player picks - Tauron gets 10 Chaos books + Chaos mastery
-	 */
-	private final List<PlayerPick> createPlayerPicks ()
-	{
-		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
-
-		final PlayerPick chaosBooks = new PlayerPick ();
-		chaosBooks.setPickID (GenerateTestData.CHAOS_BOOK);
-		chaosBooks.setQuantity (10);
-		picks.add (chaosBooks);
-
-		final PlayerPick chaosMastery = new PlayerPick ();
-		chaosMastery.setPickID (GenerateTestData.CHAOS_MASTERY);
-		chaosMastery.setQuantity (1);
-		picks.add (chaosMastery);
-
-		return picks;
-	}
-
-	/**
-	 * @param picks Pick list to add to
-	 * @param pickID ID of retort to add to list
-	 */
-	private final void addRetort (final List<PlayerPick> picks, final String pickID)
-	{
-		final PlayerPick retort = new PlayerPick ();
-		retort.setPickID (pickID);
-		retort.setQuantity (1);
-		picks.add (retort);
-	}
-
-	/**
 	 * Tests the calculateCastingCostReduction method with adding bonuses together
 	 * @throws MomException If there is a problem
 	 * @throws RecordNotFoundException If we encounter a record that can't be found in the DB
@@ -97,118 +50,119 @@ public final class TestSpellCalculationsImpl
 	@Test
 	public final void testCalculateCastingCostReductionAdditive () throws MomException, RecordNotFoundException
 	{
-		final SpellSetting spellSettings = GenerateTestData.createOriginalSpellSettings ();
-		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabase db = GenerateTestData.createDB ();
-
-		// Set up object to test
-		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
-		calc.setSpellUtils (new SpellUtilsImpl ());
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Tests for different spells and whether we pass in the retort list or not
-		assertEquals ("10 books at standard settings should give 3x casting cost reduction", 30, calc.calculateCastingCostReduction (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
-
-		assertEquals ("Chaos mastery shouldn't apply when we don't specify a spell", 30, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, no extra retorts", 45, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, no extra retorts", 45, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-
-		// Add in Summoner (25% bonus to summoning only)
-		addRetort (picks, GenerateTestData.SUMMONER);
-		assertEquals ("Summoner shouldn't apply when we don't specify a spell", 30, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner", 45, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner", 70, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-
-		// Add in Runemaster (25% bonus to Arcane)
-		addRetort (picks, GenerateTestData.RUNEMASTER);
-		assertEquals ("Runemaster shouldn't apply when we don't specify a spell", 30, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster", 50, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster", 45, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster", 70, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-
-		// Sage Master does nothing for casting
-		addRetort (picks, GenerateTestData.SAGE_MASTER);
-		assertEquals ("Sage Master should have no effect on casting cost", 30, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster + Sage Master", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster + Sage Master", 50, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster + Sage Master", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster + Sage Master", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster + Sage Master", 45, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster + Sage Master", 70, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-
-		// Cap... 100 books should do it ;-)
-		assertEquals ("Cap", 100, calc.calculateCastingCostReduction (100, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-	}
-
-	/**
-	 * Tests the calculateResearchBonus method with adding bonuses together
-	 * @throws MomException If there is a problem
-	 * @throws RecordNotFoundException If we encounter a record that can't be found in the DB
-	 */
-	@Test
-	public final void testCalculateResearchBonusAdditive () throws MomException, RecordNotFoundException
-	{
-		final SpellSetting spellSettings = GenerateTestData.createOriginalSpellSettings ();
-		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabase db = GenerateTestData.createDB ();
-
-		// Set up object to test
-		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
-		calc.setSpellUtils (new SpellUtilsImpl ());
+		final PickProductionBonus bonusToEverythingValue = new PickProductionBonus ();
+		bonusToEverythingValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToEverythingValue.setPercentageBonus (10);
 		
-		// Tests for different spells and whether we pass in the retort list or not
-		assertEquals ("10 books at standard settings should give 3x research bonus", 30, calc.calculateResearchBonus (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		final Pick bonusToEverythingDef = new Pick ();
+		bonusToEverythingDef.getPickProductionBonus ().add (bonusToEverythingValue);
+		when (db.findPick ("RT01", "calculateCastingCostReduction")).thenReturn (bonusToEverythingDef);
 
-		assertEquals ("Chaos mastery shouldn't apply when we don't specify a spell", 30, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, no extra retorts", 45, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, no extra retorts", 45, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToMagicRealmValue = new PickProductionBonus ();
+		bonusToMagicRealmValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToMagicRealmValue.setPercentageBonus (15);
+		bonusToMagicRealmValue.setMagicRealmID ("MB01");
+		
+		final Pick bonusToMagicRealmDef = new Pick ();
+		bonusToMagicRealmDef.getPickProductionBonus ().add (bonusToMagicRealmValue);
+		when (db.findPick ("RT02", "calculateCastingCostReduction")).thenReturn (bonusToMagicRealmDef);
+		
+		final PickProductionBonus bonusToArcaneValue = new PickProductionBonus ();
+		bonusToArcaneValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToArcaneValue.setPercentageBonus (20);
+		bonusToArcaneValue.setMagicRealmIdBlank (true);
+		
+		final Pick bonusToArcaneDef = new Pick ();
+		bonusToArcaneDef.getPickProductionBonus ().add (bonusToArcaneValue);
+		when (db.findPick ("RT03", "calculateCastingCostReduction")).thenReturn (bonusToArcaneDef);
 
-		// Add in Summoner (25% bonus to summoning only)
-		addRetort (picks, GenerateTestData.SUMMONER);
-		assertEquals ("Summoner shouldn't apply when we don't specify a spell", 30, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner", 45, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner", 70, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToUnitTypeValue = new PickProductionBonus ();
+		bonusToUnitTypeValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToUnitTypeValue.setPercentageBonus (25);
+		bonusToUnitTypeValue.setUnitTypeID ("X");
+		
+		final Pick bonusToUnitTypeDef = new Pick ();
+		bonusToUnitTypeDef.getPickProductionBonus ().add (bonusToUnitTypeValue);
+		when (db.findPick ("RT04", "calculateCastingCostReduction")).thenReturn (bonusToUnitTypeDef);
+		
+		// Spell settings
+		final SpellSetting spellSettings = new SpellSetting ();
+		spellSettings.setSpellBooksCastingReductionCombination (CastingReductionCombination.ADDITIVE);
+		spellSettings.setSpellBooksToObtainFirstReduction (4);
+		spellSettings.setSpellBooksCastingReduction (8);
+		spellSettings.setSpellBooksCastingReductionCap (80);
+		
+		// Set up object to test
+		final SpellUtils spellUtils = mock (SpellUtils.class);
 
-		// Add in Runemaster (25% bonus to Arcane)
-		addRetort (picks, GenerateTestData.RUNEMASTER);
-		assertEquals ("Runemaster shouldn't apply when we don't specify a spell", 30, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster", 50, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster", 45, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster", 70, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
+		calc.setSpellUtils (spellUtils);
 
-		// Sage Master (25% research bonus to everything)
-		addRetort (picks, GenerateTestData.SAGE_MASTER);
-		assertEquals ("Sage Master should work even without a spell specified", 55, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster + Sage Master", 50, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster + Sage Master", 75, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster + Sage Master", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster + Sage Master", 50, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster + Sage Master", 70, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster + Sage Master", 95, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		// Not enough books to gain any bonus
+		assertEquals (0, calc.calculateCastingCostReduction (3, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Single bonus
+		assertEquals (8, calc.calculateCastingCostReduction (4, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Additive bonus
+		assertEquals (7 * 8, calc.calculateCastingCostReduction (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Capped - otherwise it would be 12 * 8 = 96%
+		assertEquals (80, calc.calculateCastingCostReduction (15, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Now supply list of picks and specify the spell being cast
+		final Spell spell = new Spell ();
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
-		// Cap... 100 books should do it ;-)
-		assertEquals ("Cap", 1000, calc.calculateResearchBonus (100, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		assertEquals (8, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +10% regardless of the spell being cast
+		final PlayerPick bonusToEverything = new PlayerPick ();
+		bonusToEverything.setPickID ("RT01");
+		bonusToEverything.setQuantity (1);
+		picks.add (bonusToEverything);
+		
+		assertEquals (18, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+
+		// Retort that gives +15% only when casting spells of particular magic realm
+		final PlayerPick bonusToMagicRealm = new PlayerPick ();
+		bonusToMagicRealm.setPickID ("RT02");
+		bonusToMagicRealm.setQuantity (1);
+		picks.add (bonusToMagicRealm);
+		
+		assertEquals (18, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (18, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB01");
+		assertEquals (33, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +20% only when casting arcane spells
+		final PlayerPick bonusToArcane = new PlayerPick ();
+		bonusToArcane.setPickID ("RT03");
+		bonusToArcane.setQuantity (1);
+		picks.add (bonusToArcane);
+		
+		assertEquals (33, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (18, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm (null);
+		assertEquals (38, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+
+		// Retort that gives +25% only when summoning units of a particular type
+		final PlayerPick bonusToUnitType = new PlayerPick ();
+		bonusToUnitType.setPickID ("RT04");
+		bonusToUnitType.setQuantity (1);
+		picks.add (bonusToUnitType);
+		
+		assertEquals (18, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("Y");
+		assertEquals (18, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("X");
+		assertEquals (43, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
 	}
 
 	/**
@@ -219,57 +173,242 @@ public final class TestSpellCalculationsImpl
 	@Test
 	public final void testCalculateCastingCostReductionMultiplicative () throws MomException, RecordNotFoundException
 	{
-		final SpellSetting spellSettings = GenerateTestData.createRecommendedSpellSettings ();
-		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabase db = GenerateTestData.createDB ();
-
-		// Set up object to test
-		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
-		calc.setSpellUtils (new SpellUtilsImpl ());
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Tests for different spells and whether we pass in the retort list or not
-		assertEquals ("10 books at standard settings should give 3x casting cost reduction", 22.1312, calc.calculateCastingCostReduction (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToEverythingValue = new PickProductionBonus ();
+		bonusToEverythingValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToEverythingValue.setPercentageBonus (10);
+		
+		final Pick bonusToEverythingDef = new Pick ();
+		bonusToEverythingDef.getPickProductionBonus ().add (bonusToEverythingValue);
+		when (db.findPick ("RT01", "calculateCastingCostReduction")).thenReturn (bonusToEverythingDef);
 
-		assertEquals ("Chaos mastery shouldn't apply when we don't specify a spell", 22.1312, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, no extra retorts", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, no extra retorts", 33.81152, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, no extra retorts", 33.81152, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToMagicRealmValue = new PickProductionBonus ();
+		bonusToMagicRealmValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToMagicRealmValue.setPercentageBonus (15);
+		bonusToMagicRealmValue.setMagicRealmID ("MB01");
+		
+		final Pick bonusToMagicRealmDef = new Pick ();
+		bonusToMagicRealmDef.getPickProductionBonus ().add (bonusToMagicRealmValue);
+		when (db.findPick ("RT02", "calculateCastingCostReduction")).thenReturn (bonusToMagicRealmDef);
+		
+		final PickProductionBonus bonusToArcaneValue = new PickProductionBonus ();
+		bonusToArcaneValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToArcaneValue.setPercentageBonus (20);
+		bonusToArcaneValue.setMagicRealmIdBlank (true);
+		
+		final Pick bonusToArcaneDef = new Pick ();
+		bonusToArcaneDef.getPickProductionBonus ().add (bonusToArcaneValue);
+		when (db.findPick ("RT03", "calculateCastingCostReduction")).thenReturn (bonusToArcaneDef);
 
-		// Add in Summoner (25% bonus to summoning only)
-		addRetort (picks, GenerateTestData.SUMMONER);
-		assertEquals ("Summoner shouldn't apply when we don't specify a spell", 22.1312, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner", 33.81152, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner", 50.35864, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToUnitTypeValue = new PickProductionBonus ();
+		bonusToUnitTypeValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION);
+		bonusToUnitTypeValue.setPercentageBonus (25);
+		bonusToUnitTypeValue.setUnitTypeID ("X");
+		
+		final Pick bonusToUnitTypeDef = new Pick ();
+		bonusToUnitTypeDef.getPickProductionBonus ().add (bonusToUnitTypeValue);
+		when (db.findPick ("RT04", "calculateCastingCostReduction")).thenReturn (bonusToUnitTypeDef);
+		
+		// Spell settings
+		final SpellSetting spellSettings = new SpellSetting ();
+		spellSettings.setSpellBooksCastingReductionCombination (CastingReductionCombination.MULTIPLICATIVE);
+		spellSettings.setSpellBooksToObtainFirstReduction (4);
+		spellSettings.setSpellBooksCastingReduction (8);
+		spellSettings.setSpellBooksCastingReductionCap (80);
+		
+		// Set up object to test
+		final SpellUtils spellUtils = mock (SpellUtils.class);
 
-		// Add in Runemaster (25% bonus to Arcane)
-		addRetort (picks, GenerateTestData.RUNEMASTER);
-		assertEquals ("Runemaster shouldn't apply when we don't specify a spell", 22.1312, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster", 43.75, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster", 33.81152, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster", 50.35864, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
+		calc.setSpellUtils (spellUtils);
 
-		// Sage Master does nothing for casting
-		addRetort (picks, GenerateTestData.SAGE_MASTER);
-		assertEquals ("Sage Master should have no effect on casting cost", 22.1312, calc.calculateCastingCostReduction (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster + Sage Master", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster + Sage Master", 43.75, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster + Sage Master", 0, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster + Sage Master", 25, calc.calculateCastingCostReduction (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster + Sage Master", 33.81152, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster + Sage Master", 50.35864, calc.calculateCastingCostReduction (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		// Not enough books to gain any bonus
+		assertEquals (0, calc.calculateCastingCostReduction (3, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Single bonus
+		assertEquals (8, calc.calculateCastingCostReduction (4, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Multiplicative bonus
+		assertEquals (100 * (1 - Math.pow (0.92d, 7)), calc.calculateCastingCostReduction (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Capped - otherwise it would be 100 * (1 - (0.92 ^ 20)) = 81.13%
+		assertEquals (80, calc.calculateCastingCostReduction (23, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Now supply list of picks and specify the spell being cast
+		final Spell spell = new Spell ();
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
-		// Cap... 100 books should do it ;-)
-		assertEquals ("Cap", 90, calc.calculateCastingCostReduction (100, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		assertEquals (8, calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +10% regardless of the spell being cast
+		final PlayerPick bonusToEverything = new PlayerPick ();
+		bonusToEverything.setPickID ("RT01");
+		bonusToEverything.setQuantity (1);
+		picks.add (bonusToEverything);
+		
+		assertEquals (100 * (1 - (0.92d * 0.9d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+
+		// Retort that gives +15% only when casting spells of particular magic realm
+		final PlayerPick bonusToMagicRealm = new PlayerPick ();
+		bonusToMagicRealm.setPickID ("RT02");
+		bonusToMagicRealm.setQuantity (1);
+		picks.add (bonusToMagicRealm);
+		
+		assertEquals (100 * (1 - (0.92d * 0.9d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (100 * (1 - (0.92d * 0.9d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB01");
+		assertEquals (100 * (1 - (0.92d * 0.9d * 0.85d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +20% only when casting arcane spells
+		final PlayerPick bonusToArcane = new PlayerPick ();
+		bonusToArcane.setPickID ("RT03");
+		bonusToArcane.setQuantity (1);
+		picks.add (bonusToArcane);
+		
+		assertEquals (100 * (1 - (0.92d * 0.9d * 0.85d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (100 * (1 - (0.92d * 0.9d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm (null);
+		assertEquals (100 * (1 - (0.92d * 0.9d * 0.8d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+
+		// Retort that gives +25% only when summoning units of a particular type
+		final PlayerPick bonusToUnitType = new PlayerPick ();
+		bonusToUnitType.setPickID ("RT04");
+		bonusToUnitType.setQuantity (1);
+		picks.add (bonusToUnitType);
+		
+		assertEquals (100 * (1 - (0.92d * 0.9d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("Y");
+		assertEquals (100 * (1 - (0.92d * 0.9d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("X");
+		assertEquals (100 * (1 - (0.92d * 0.9d * 0.75d)), calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+	}
+
+	/**
+	 * Tests the calculateResearchBonus method with adding bonuses together - when additive, this is basically the same as calculateCastingCostReduction
+	 * @throws MomException If there is a problem
+	 * @throws RecordNotFoundException If we encounter a record that can't be found in the DB
+	 */
+	@Test
+	public final void testCalculateResearchBonusAdditive () throws MomException, RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final PickProductionBonus bonusToEverythingValue = new PickProductionBonus ();
+		bonusToEverythingValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToEverythingValue.setPercentageBonus (10);
+		
+		final Pick bonusToEverythingDef = new Pick ();
+		bonusToEverythingDef.getPickProductionBonus ().add (bonusToEverythingValue);
+		when (db.findPick ("RT01", "calculateResearchBonus")).thenReturn (bonusToEverythingDef);
+
+		final PickProductionBonus bonusToMagicRealmValue = new PickProductionBonus ();
+		bonusToMagicRealmValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToMagicRealmValue.setPercentageBonus (15);
+		bonusToMagicRealmValue.setMagicRealmID ("MB01");
+		
+		final Pick bonusToMagicRealmDef = new Pick ();
+		bonusToMagicRealmDef.getPickProductionBonus ().add (bonusToMagicRealmValue);
+		when (db.findPick ("RT02", "calculateResearchBonus")).thenReturn (bonusToMagicRealmDef);
+		
+		final PickProductionBonus bonusToArcaneValue = new PickProductionBonus ();
+		bonusToArcaneValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToArcaneValue.setPercentageBonus (20);
+		bonusToArcaneValue.setMagicRealmIdBlank (true);
+		
+		final Pick bonusToArcaneDef = new Pick ();
+		bonusToArcaneDef.getPickProductionBonus ().add (bonusToArcaneValue);
+		when (db.findPick ("RT03", "calculateResearchBonus")).thenReturn (bonusToArcaneDef);
+
+		final PickProductionBonus bonusToUnitTypeValue = new PickProductionBonus ();
+		bonusToUnitTypeValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToUnitTypeValue.setPercentageBonus (25);
+		bonusToUnitTypeValue.setUnitTypeID ("X");
+		
+		final Pick bonusToUnitTypeDef = new Pick ();
+		bonusToUnitTypeDef.getPickProductionBonus ().add (bonusToUnitTypeValue);
+		when (db.findPick ("RT04", "calculateResearchBonus")).thenReturn (bonusToUnitTypeDef);
+		
+		// Spell settings
+		final SpellSetting spellSettings = new SpellSetting ();
+		spellSettings.setSpellBooksResearchBonusCombination (CastingReductionCombination.ADDITIVE);
+		spellSettings.setSpellBooksToObtainFirstReduction (4);
+		spellSettings.setSpellBooksResearchBonus (8);
+		spellSettings.setSpellBooksResearchBonusCap (80);
+		
+		// Set up object to test
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
+		calc.setSpellUtils (spellUtils);
+
+		// Not enough books to gain any bonus
+		assertEquals (0, calc.calculateResearchBonus (3, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Single bonus
+		assertEquals (8, calc.calculateResearchBonus (4, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Additive bonus
+		assertEquals (7 * 8, calc.calculateResearchBonus (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Capped - otherwise it would be 12 * 8 = 96%
+		assertEquals (80, calc.calculateResearchBonus (15, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Now supply list of picks and specify the spell being cast
+		final Spell spell = new Spell ();
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+
+		assertEquals (8, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +10% regardless of the spell being cast
+		final PlayerPick bonusToEverything = new PlayerPick ();
+		bonusToEverything.setPickID ("RT01");
+		bonusToEverything.setQuantity (1);
+		picks.add (bonusToEverything);
+		
+		assertEquals (18, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+
+		// Retort that gives +15% only when casting spells of particular magic realm
+		final PlayerPick bonusToMagicRealm = new PlayerPick ();
+		bonusToMagicRealm.setPickID ("RT02");
+		bonusToMagicRealm.setQuantity (1);
+		picks.add (bonusToMagicRealm);
+		
+		assertEquals (18, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (18, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB01");
+		assertEquals (33, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +20% only when casting arcane spells
+		final PlayerPick bonusToArcane = new PlayerPick ();
+		bonusToArcane.setPickID ("RT03");
+		bonusToArcane.setQuantity (1);
+		picks.add (bonusToArcane);
+		
+		assertEquals (33, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (18, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm (null);
+		assertEquals (38, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+
+		// Retort that gives +25% only when summoning units of a particular type
+		final PlayerPick bonusToUnitType = new PlayerPick ();
+		bonusToUnitType.setPickID ("RT04");
+		bonusToUnitType.setQuantity (1);
+		picks.add (bonusToUnitType);
+		
+		assertEquals (18, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("Y");
+		assertEquals (18, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("X");
+		assertEquals (43, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
 	}
 
 	/**
@@ -280,57 +419,119 @@ public final class TestSpellCalculationsImpl
 	@Test
 	public final void testCalculateResearchBonusMultiplicative () throws MomException, RecordNotFoundException
 	{
-		final SpellSetting spellSettings = createSpecialSpellSettings ();
-		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabase db = GenerateTestData.createDB ();
-
-		// Set up object to test
-		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
-		calc.setSpellUtils (new SpellUtilsImpl ());
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Tests for different spells and whether we pass in the retort list or not
-		assertEquals ("10 books at standard settings should give 3x research bonus", 25.9712, calc.calculateResearchBonus (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToEverythingValue = new PickProductionBonus ();
+		bonusToEverythingValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToEverythingValue.setPercentageBonus (10);
+		
+		final Pick bonusToEverythingDef = new Pick ();
+		bonusToEverythingDef.getPickProductionBonus ().add (bonusToEverythingValue);
+		when (db.findPick ("RT01", "calculateResearchBonus")).thenReturn (bonusToEverythingDef);
 
-		assertEquals ("Chaos mastery shouldn't apply when we don't specify a spell", 25.9712, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, no extra retorts", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, no extra retorts", 44.86688, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, no extra retorts", 44.86688, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToMagicRealmValue = new PickProductionBonus ();
+		bonusToMagicRealmValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToMagicRealmValue.setPercentageBonus (15);
+		bonusToMagicRealmValue.setMagicRealmID ("MB01");
+		
+		final Pick bonusToMagicRealmDef = new Pick ();
+		bonusToMagicRealmDef.getPickProductionBonus ().add (bonusToMagicRealmValue);
+		when (db.findPick ("RT02", "calculateResearchBonus")).thenReturn (bonusToMagicRealmDef);
+		
+		final PickProductionBonus bonusToArcaneValue = new PickProductionBonus ();
+		bonusToArcaneValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToArcaneValue.setPercentageBonus (20);
+		bonusToArcaneValue.setMagicRealmIdBlank (true);
+		
+		final Pick bonusToArcaneDef = new Pick ();
+		bonusToArcaneDef.getPickProductionBonus ().add (bonusToArcaneValue);
+		when (db.findPick ("RT03", "calculateResearchBonus")).thenReturn (bonusToArcaneDef);
 
-		// Add in Summoner (25% bonus to summoning only)
-		addRetort (picks, GenerateTestData.SUMMONER);
-		assertEquals ("Summoner shouldn't apply when we don't specify a spell", 25.9712, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner", 44.86688, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner", 81.0836, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final PickProductionBonus bonusToUnitTypeValue = new PickProductionBonus ();
+		bonusToUnitTypeValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+		bonusToUnitTypeValue.setPercentageBonus (25);
+		bonusToUnitTypeValue.setUnitTypeID ("X");
+		
+		final Pick bonusToUnitTypeDef = new Pick ();
+		bonusToUnitTypeDef.getPickProductionBonus ().add (bonusToUnitTypeValue);
+		when (db.findPick ("RT04", "calculateResearchBonus")).thenReturn (bonusToUnitTypeDef);
+		
+		// Spell settings
+		final SpellSetting spellSettings = new SpellSetting ();
+		spellSettings.setSpellBooksResearchBonusCombination (CastingReductionCombination.MULTIPLICATIVE);
+		spellSettings.setSpellBooksToObtainFirstReduction (4);
+		spellSettings.setSpellBooksResearchBonus (8);
+		spellSettings.setSpellBooksResearchBonusCap (80);
+		
+		// Set up object to test
+		final SpellUtils spellUtils = mock (SpellUtils.class);
 
-		// Add in Runemaster (25% bonus to Arcane)
-		addRetort (picks, GenerateTestData.RUNEMASTER);
-		assertEquals ("Runemaster shouldn't apply when we don't specify a spell", 25.9712, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster", 56.25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster", 0, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster", 44.86688, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster", 81.0836, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		final SpellCalculationsImpl calc = new SpellCalculationsImpl ();
+		calc.setSpellUtils (spellUtils);
 
-		// Sage Master (25% research bonus to everything)
-		addRetort (picks, GenerateTestData.SAGE_MASTER);
-		assertEquals ("Sage Master should have no effect on casting cost", 57.464, calc.calculateResearchBonus (10, spellSettings, null, picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Normal, Summoner + Runemaster + Sage Master", 56.25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Arcane, Summoning, Summoner + Runemaster + Sage Master", 95.3125, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Normal, Summoner + Runemaster + Sage Master", 25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Nature, Summoning, Summoner + Runemaster + Sage Master", 56.25, calc.calculateResearchBonus (0, spellSettings, GenerateTestData.createNatureSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Normal, Summoner + Runemaster + Sage Master", 81.0836, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosNormalSpell (), picks, db), DOUBLE_TOLERANCE);
-		assertEquals ("Chaos, Summoning, Summoner + Runemaster + Sage Master", 126.3545, calc.calculateResearchBonus (10, spellSettings, GenerateTestData.createChaosSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		// Not enough books to gain any bonus
+		assertEquals (0, calc.calculateResearchBonus (3, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Single bonus
+		assertEquals (8, calc.calculateResearchBonus (4, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Multiplicative bonus
+		assertEquals (100 * (Math.pow (1.08d, 7) - 1), calc.calculateResearchBonus (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Capped - otherwise it would be 100 * ((1.08 ^ 8) - 1) = 85.09%
+		assertEquals (80, calc.calculateResearchBonus (11, spellSettings, null, null, db), DOUBLE_TOLERANCE);
+		
+		// Now supply list of picks and specify the spell being cast
+		final Spell spell = new Spell ();
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
-		// Cap... 100 books should do it ;-)
-		assertEquals ("Cap", 1000, calc.calculateResearchBonus (100, spellSettings, GenerateTestData.createArcaneSummoningSpell (), picks, db), DOUBLE_TOLERANCE);
+		assertEquals (8, calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +10% regardless of the spell being cast
+		final PlayerPick bonusToEverything = new PlayerPick ();
+		bonusToEverything.setPickID ("RT01");
+		bonusToEverything.setQuantity (1);
+		picks.add (bonusToEverything);
+		
+		assertEquals (100 * ((1.08d * 1.1d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+
+		// Retort that gives +15% only when casting spells of particular magic realm
+		final PlayerPick bonusToMagicRealm = new PlayerPick ();
+		bonusToMagicRealm.setPickID ("RT02");
+		bonusToMagicRealm.setQuantity (1);
+		picks.add (bonusToMagicRealm);
+		
+		assertEquals (100 * ((1.08d * 1.1d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (100 * ((1.08d * 1.1d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB01");
+		assertEquals (100 * ((1.08d * 1.1d * 1.15d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		
+		// Retort that gives +20% only when casting arcane spells
+		final PlayerPick bonusToArcane = new PlayerPick ();
+		bonusToArcane.setPickID ("RT03");
+		bonusToArcane.setQuantity (1);
+		picks.add (bonusToArcane);
+		
+		assertEquals (100 * ((1.08d * 1.1d * 1.15d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+		assertEquals (100 * ((1.08d * 1.1d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm (null);
+		assertEquals (100 * ((1.08d * 1.1d * 1.2d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		spell.setSpellRealm ("MB02");
+
+		// Retort that gives +25% only when summoning units of a particular type
+		final PlayerPick bonusToUnitType = new PlayerPick ();
+		bonusToUnitType.setPickID ("RT04");
+		bonusToUnitType.setQuantity (1);
+		picks.add (bonusToUnitType);
+		
+		assertEquals (100 * ((1.08d * 1.1d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("Y");
+		assertEquals (100 * ((1.08d * 1.1d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
+		when (spellUtils.spellSummonsUnitTypeID (spell, db)).thenReturn ("X");
+		assertEquals (100 * ((1.08d * 1.1d * 1.25d) - 1), calc.calculateResearchBonus (4, spellSettings, spell, picks, db), DOUBLE_TOLERANCE);
 	}
 	
 	/**

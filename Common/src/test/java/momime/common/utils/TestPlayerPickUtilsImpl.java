@@ -1,24 +1,25 @@
 package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.GenerateTestData;
+import org.junit.Test;
+
 import momime.common.database.CommonDatabase;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Pick;
 import momime.common.database.PickExclusiveFrom;
 import momime.common.database.PickPrerequisite;
+import momime.common.database.PickProductionBonus;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.PlayerPick;
-
-import org.junit.Test;
 
 /**
  * Tests the PlayerPickUtils class
@@ -26,49 +27,41 @@ import org.junit.Test;
 public final class TestPlayerPickUtilsImpl
 {
 	/**
-	 * @return Ariel's standard picks for 20 picks
-	 */
-	private final List<PlayerPick> createAriel20PicksList ()
-	{
-		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
-
-		final PlayerPick lifeBooks = new PlayerPick ();
-		lifeBooks.setPickID (GenerateTestData.LIFE_BOOK);
-		lifeBooks.setQuantity (14);
-		picks.add (lifeBooks);
-
-		for (int n = 9; n <= 12; n++)
-		{
-			// This loop is a fudge to get retorts 5, 9, 10 and 12 added, without having to write the code out 4 times
-			final int retortNumber;
-			if (n == 11)
-				retortNumber = 5;
-			else
-				retortNumber = n;
-
-			final PlayerPick retort = new PlayerPick ();
-
-			if (retortNumber < 10)
-				retort.setPickID ("RT0" + retortNumber);
-			else
-				retort.setPickID ("RT" + retortNumber);
-
-			retort.setQuantity (1);
-			picks.add (retort);
-		}
-
-		return picks;
-	}
-
-	/**
 	 * Tests the getTotalPickCost method
 	 * @throws RecordNotFoundException If there is a problem
 	 */
 	@Test
 	public final void testGetTotalPickCost () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Pick pickOneDef = new Pick ();
+		pickOneDef.setPickCost (3);
+		when (db.findPick ("A", "getTotalPickCost")).thenReturn (pickOneDef);
+
+		final Pick pickTwoDef = new Pick ();
+		pickTwoDef.setPickCost (2);
+		when (db.findPick ("B", "getTotalPickCost")).thenReturn (pickTwoDef);
+		
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setQuantity (1);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setQuantity (8);
+		
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+		
+		// Set up object to test
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		assertEquals ("Ariel's standard 20 picks did not total 20", 20, utils.getTotalPickCost (createAriel20PicksList (), GenerateTestData.createDB ()));
+
+		// Run method
+		assertEquals ((1*3) + (2*8), utils.getTotalPickCost (picks, db));
 	}
 
 	/**
@@ -77,8 +70,26 @@ public final class TestPlayerPickUtilsImpl
 	@Test
 	public final void testGetQuantityOfPick ()
 	{
-		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		assertEquals ("Ariel's standard 20 picks did include 14 life books", 14, utils.getQuantityOfPick (createAriel20PicksList (), "MB01"));
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setQuantity (1);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setQuantity (8);
+		
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl ();
+		
+		// Run method
+		assertEquals (1, utils.getQuantityOfPick (picks, "A"));
+		assertEquals (8, utils.getQuantityOfPick (picks, "B"));
+		assertEquals (0, utils.getQuantityOfPick (picks, "C"));
 	}
 
 	/**
@@ -87,35 +98,38 @@ public final class TestPlayerPickUtilsImpl
 	@Test
 	public final void testUpdatePickQuantity ()
 	{
-		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
+		// Start with empty list
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 
 		// Add one
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 3);
+		utils.updatePickQuantity (picks, "A", 3);
 		assertEquals (1, picks.size ());
-		assertEquals (GenerateTestData.LIFE_BOOK, picks.get (0).getPickID ());
+		assertEquals ("A", picks.get (0).getPickID ());
 		assertEquals (3, picks.get (0).getQuantity ());
 
 		// Add another
-		utils.updatePickQuantity (picks, GenerateTestData.CHAOS_BOOK, 2);
+		utils.updatePickQuantity (picks, "B", 2);
 		assertEquals (2, picks.size ());
-		assertEquals (GenerateTestData.LIFE_BOOK, picks.get (0).getPickID ());
+		assertEquals ("A", picks.get (0).getPickID ());
 		assertEquals (3, picks.get (0).getQuantity ());
-		assertEquals (GenerateTestData.CHAOS_BOOK, picks.get (1).getPickID ());
+		assertEquals ("B", picks.get (1).getPickID ());
 		assertEquals (2, picks.get (1).getQuantity ());
 
 		// Increase quantity of existing pick
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 2);
+		utils.updatePickQuantity (picks, "A", 2);
 		assertEquals (2, picks.size ());
-		assertEquals (GenerateTestData.LIFE_BOOK, picks.get (0).getPickID ());
+		assertEquals ("A", picks.get (0).getPickID ());
 		assertEquals (5, picks.get (0).getQuantity ());
-		assertEquals (GenerateTestData.CHAOS_BOOK, picks.get (1).getPickID ());
+		assertEquals ("B", picks.get (1).getPickID ());
 		assertEquals (2, picks.get (1).getQuantity ());
 
 		// Reduce quantity of existing pick to 0 so it gets removed
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, -5);
+		utils.updatePickQuantity (picks, "A", -5);
 		assertEquals (1, picks.size ());
-		assertEquals (GenerateTestData.CHAOS_BOOK, picks.get (0).getPickID ());
+		assertEquals ("B", picks.get (0).getPickID ());
 		assertEquals (2, picks.get (0).getQuantity ());
 	}
 
@@ -126,8 +140,48 @@ public final class TestPlayerPickUtilsImpl
 	@Test
 	public final void testCountPicksOfType () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Pick pickOneDef = new Pick ();
+		pickOneDef.setPickType ("Y");
+		when (db.findPick ("A", "countPicksOfType")).thenReturn (pickOneDef);
+
+		final Pick pickTwoDef = new Pick ();
+		pickTwoDef.setPickType ("Z");
+		when (db.findPick ("B", "countPicksOfType")).thenReturn (pickTwoDef);
+
+		final Pick pickThreeDef = new Pick ();
+		pickThreeDef.setPickType ("Y");
+		when (db.findPick ("C", "countPicksOfType")).thenReturn (pickThreeDef);
+		
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setOriginalQuantity (1);
+		pickOne.setQuantity (2);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setOriginalQuantity (3);
+		pickTwo.setQuantity (4);
+
+		final PlayerPick pickThree = new PlayerPick ();
+		pickThree.setPickID ("C");
+		pickThree.setOriginalQuantity (5);
+		pickThree.setQuantity (7);
+		
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+		picks.add (pickThree);
+		
+		// Set up object to test
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		assertEquals ("Ariel's standard 20 picks did include 14 books", 14, utils.countPicksOfType (createAriel20PicksList (), "B", false, GenerateTestData.createDB ()));
+
+		// Run method
+		assertEquals (2+7, utils.countPicksOfType (picks, "Y", false, db));
+		assertEquals (1+5, utils.countPicksOfType (picks, "Y", true, db));
 	}
 
 	/**
@@ -234,19 +288,46 @@ public final class TestPlayerPickUtilsImpl
 	@Test
 	public final void testCanSafelyRemove () throws RecordNotFoundException
 	{
-		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final CommonDatabase db = GenerateTestData.createDB ();
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick pickOneDef = new Pick ();
+		when (db.findPick ("A", "meetsPickRequirements")).thenReturn (pickOneDef);
+
+		final PickPrerequisite prereq = new PickPrerequisite ();
+		prereq.setPrerequisiteID ("A");
+		prereq.setPrerequisiteCount (4);
+		
+		final Pick pickTwoDef = new Pick ();
+		pickTwoDef.getPickPrerequisite ().add (prereq);		
+		when (db.findPick ("B", "meetsPickRequirements")).thenReturn (pickTwoDef);
+		
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setQuantity (4);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setQuantity (1);
+		
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+		
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl ();
+		
+		// We cannot remove a book that we don't have
+		assertFalse (utils.canSafelyRemove ("C", picks, db));
 
-		// Archmage needs 4 of any book so should return false if we try to remove a life book
-		utils.updatePickQuantity (picks, GenerateTestData.ARCHMAGE, 1);
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 4);
-		assertEquals ("Allowed to remove a book even though we have Archmage", false, utils.canSafelyRemove (GenerateTestData.LIFE_BOOK, picks, db));
-		assertEquals ("Allowed to remove a book that we don't have", false, utils.canSafelyRemove (GenerateTestData.SORCERY_BOOK, picks, db));
-
+		// We cannot remove one of our 4 A's since we have a book B that requires all 4 A's, but we can remove the B
+		assertFalse (utils.canSafelyRemove ("A", picks, db));
+		assertTrue (utils.canSafelyRemove ("B", picks, db));
+		
 		// If we add another book first, then should be able to remove it
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 1);
-		assertEquals ("Not allowed to remove a book even though we have 5 of them", true, utils.canSafelyRemove (GenerateTestData.LIFE_BOOK, picks, db));
+		pickOne.setQuantity (5);
+		assertTrue (utils.canSafelyRemove ("A", picks, db));
 	}
 
 	/**
@@ -286,37 +367,140 @@ public final class TestPlayerPickUtilsImpl
 	@Test
 	public final void testGetHighestWeaponGradeGrantedByPicks () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick pickOneDef = new Pick ();
+		pickOneDef.setPickMagicWeapons (1);
+		when (db.findPick ("A", "getHighestWeaponGradeGrantedByPicks")).thenReturn (pickOneDef);
+
+		final Pick pickTwoDef = new Pick ();
+		when (db.findPick ("B", "getHighestWeaponGradeGrantedByPicks")).thenReturn (pickTwoDef);
+
+		final Pick pickThreeDef = new Pick ();
+		pickThreeDef.setPickMagicWeapons (2);
+		when (db.findPick ("C", "getHighestWeaponGradeGrantedByPicks")).thenReturn (pickThreeDef);
+		
+		// Set up object to test
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final CommonDatabase db = GenerateTestData.createDB ();
-
-		// Ariel at 20 picks - she has a pile of retorts, but Alchemy isn't one of them
-		final List<PlayerPick> picks = createAriel20PicksList ();
-		assertEquals ("Ariel has magic weapons", 0, utils.getHighestWeaponGradeGrantedByPicks (picks, db));
-
-		utils.updatePickQuantity (picks, CommonDatabaseConstants.RETORT_ID_ALCHEMY, 1);
-		assertEquals ("Ariel still has no magic weapons even with Alchemy retort", 1, utils.getHighestWeaponGradeGrantedByPicks (picks, db));
+		
+		// Test having no picks that grant a weapon grade
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");		
+		picks.add (pickTwo);
+		
+		assertEquals (0, utils.getHighestWeaponGradeGrantedByPicks (picks, db));
+		
+		// Use the lower weapon grade
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");		
+		picks.add (pickOne);
+		
+		assertEquals (1, utils.getHighestWeaponGradeGrantedByPicks (picks, db));
+		
+		// Use the higher weapon grade
+		final PlayerPick pickThree = new PlayerPick ();
+		pickThree.setPickID ("C");		
+		picks.add (pickThree);
+		
+		assertEquals (2, utils.getHighestWeaponGradeGrantedByPicks (picks, db));
 	}
 
 	/**
-	 * Tests the totalReligiousBuildingBonus & pickIdsContributingToReligiousBuildingBonus methods
+	 * Tests the totalReligiousBuildingBonus method
 	 * @throws RecordNotFoundException If there is a problem
 	 */
 	@Test
 	public final void testTotalReligiousBuildingBonus () throws RecordNotFoundException
 	{
-		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final CommonDatabase db = GenerateTestData.createDB ();
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick pickOneDef = new Pick ();
+		pickOneDef.setPickReligiousBuildingBonus (2);
+		when (db.findPick ("A", "totalReligiousBuildingBonus")).thenReturn (pickOneDef);
+
+		final Pick pickTwoDef = new Pick ();
+		when (db.findPick ("B", "totalReligiousBuildingBonus")).thenReturn (pickTwoDef);
+
+		final Pick pickThreeDef = new Pick ();
+		pickThreeDef.setPickReligiousBuildingBonus (10);
+		when (db.findPick ("C", "totalReligiousBuildingBonus")).thenReturn (pickThreeDef);
+		
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setQuantity (1);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setQuantity (2);
+
+		final PlayerPick pickThree = new PlayerPick ();
+		pickThree.setPickID ("C");
+		pickThree.setQuantity (3);
+		
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+		picks.add (pickThree);
+		
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl ();
+		
+		// Run method
+		assertEquals (32, utils.totalReligiousBuildingBonus (picks, db));
+	}
 
-		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 5);
-		assertEquals ("Life books shouldn't give religious buildings bonus", 0, utils.totalReligiousBuildingBonus (picks, db));
+	/**
+	 * Tests the pickIdsContributingToReligiousBuildingBonus method
+	 * @throws RecordNotFoundException If there is a problem
+	 */
+	@Test
+	public final void testPickIdsContributingToReligiousBuildingBonus () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		utils.updatePickQuantity (picks, GenerateTestData.DIVINE_POWER, 1);
-		assertEquals ("Divine power should give religious buildings bonus", 50, utils.totalReligiousBuildingBonus (picks, db));
+		final Pick pickOneDef = new Pick ();
+		pickOneDef.setPickReligiousBuildingBonus (2);
+		when (db.findPick ("A", "pickIdsContributingToReligiousBuildingBonus")).thenReturn (pickOneDef);
 
+		final Pick pickTwoDef = new Pick ();
+		when (db.findPick ("B", "pickIdsContributingToReligiousBuildingBonus")).thenReturn (pickTwoDef);
+
+		final Pick pickThreeDef = new Pick ();
+		pickThreeDef.setPickReligiousBuildingBonus (10);
+		when (db.findPick ("C", "pickIdsContributingToReligiousBuildingBonus")).thenReturn (pickThreeDef);
+		
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setQuantity (1);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setQuantity (2);
+
+		final PlayerPick pickThree = new PlayerPick ();
+		pickThree.setPickID ("C");
+		pickThree.setQuantity (3);
+		
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+		picks.add (pickThree);
+		
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl ();
+		
+		// Run method
 		final List<String> pickIDs = utils.pickIdsContributingToReligiousBuildingBonus (picks, db);
-		assertEquals ("Array Pick IDs for religious buildings bonus not correct length", 1, pickIDs.size ());
-		assertEquals ("Array Pick IDs for religious buildings bonus not correct contents", GenerateTestData.DIVINE_POWER, pickIDs.get (0));
+		assertEquals (2, pickIDs.size ());
+		assertEquals ("A", pickIDs.get (0));
+		assertEquals ("C", pickIDs.get (1));
 	}
 
 	/**
@@ -326,22 +510,57 @@ public final class TestPlayerPickUtilsImpl
 	@Test
 	public final void testTotalProductionBonus () throws RecordNotFoundException
 	{
-		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final CommonDatabase db = GenerateTestData.createDB ();
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Pick pickOneDef = new Pick ();
+		when (db.findPick ("A", "totalProductionBonus")).thenReturn (pickOneDef);
+
+		final Pick pickTwoDef = new Pick ();
+		when (db.findPick ("B", "totalProductionBonus")).thenReturn (pickTwoDef);
+
+		final Pick pickThreeDef = new Pick ();
+		when (db.findPick ("C", "totalProductionBonus")).thenReturn (pickThreeDef);
+		
+		final PickProductionBonus bonusToAllUnitTypes = new PickProductionBonus ();
+		bonusToAllUnitTypes.setProductionTypeID ("PT01");
+		bonusToAllUnitTypes.setPercentageBonus (10);
+		pickOneDef.getPickProductionBonus ().add (bonusToAllUnitTypes);
+		
+		final PickProductionBonus bonusToWrongProductionType = new PickProductionBonus ();
+		bonusToWrongProductionType.setProductionTypeID ("PT02");
+		bonusToWrongProductionType.setPercentageBonus (10);
+		pickTwoDef.getPickProductionBonus ().add (bonusToWrongProductionType);
+
+		final PickProductionBonus bonusToSpecificUnitType = new PickProductionBonus ();
+		bonusToSpecificUnitType.setProductionTypeID ("PT01");
+		bonusToSpecificUnitType.setUnitTypeID ("Z");
+		bonusToSpecificUnitType.setPercentageBonus (25);
+		pickThreeDef.getPickProductionBonus ().add (bonusToSpecificUnitType);
+		
+		// Set up pick list
+		final PlayerPick pickOne = new PlayerPick ();
+		pickOne.setPickID ("A");
+		pickOne.setQuantity (1);
+
+		final PlayerPick pickTwo = new PlayerPick ();
+		pickTwo.setPickID ("B");
+		pickTwo.setQuantity (2);
+
+		final PlayerPick pickThree = new PlayerPick ();
+		pickThree.setPickID ("C");
+		pickThree.setQuantity (3);
+		
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		picks.add (pickOne);
+		picks.add (pickTwo);
+		picks.add (pickThree);
+		
+		// Set up object to test
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl ();
 
-		// Archmage gives +50% to magic power spent on improving skill; whatever unit type we pass in is irrelevant
-		utils.updatePickQuantity (picks, GenerateTestData.ARCHMAGE, 1);
-		assertEquals ("Archmage didn't give +50% to magic power spent on improving skill", 50, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, picks, db));
-		assertEquals ("Archmage didn't give +50% to magic power spent on improving skill with a unit type supplied", 50, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED, picks, db));
-
-		// Summoner gives +25% to unit upkeep reduction but only on unit type = Summoned
-		utils.updatePickQuantity (picks, GenerateTestData.SUMMONER, 1);
-		assertEquals ("Summoner didn't give +25% to unit upkeep reduction on summoning spells", 25, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED, picks, db));
-		assertEquals ("Summoner still gave +25% to unit upkeep reduction on spells for the wrong unit type", 0, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "N", picks, db));
-		assertEquals ("Summoner still gave +25% to unit upkeep reduction with a null unit type", 0, utils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, null, picks, db));
-
-		// NB. Most of the other bonuses are to spell research and/or casting cost reduction, which can't be tested with this method since they
-		// take into account the session description settings for whether to add or multiply the bonuses together
+		// Run method
+		assertEquals (10, utils.totalProductionBonus ("PT01", "Y", picks, db));
+		assertEquals (85, utils.totalProductionBonus ("PT01", "Z", picks, db));
 	}
 }

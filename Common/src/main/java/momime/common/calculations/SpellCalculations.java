@@ -21,6 +21,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public interface SpellCalculations
 {
 	/**
+	 * The ability to pass nulls in for spell+picks is a leftover from the Delphi client/editor having a preview screen showing the
+	 * calculated cost reduction given a particular set of spell settings, during the new game process before we have chosen
+	 * any picks or are researching/casting anything. 
+	 * 
 	 * @param bookCount The number of books we have in the magic realm of the spell for which we want to calculate the reduction, e.g. to calculate reductions for life spells, pass in how many life books we have
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param spell Cache object of the spell we want to check the reduction for (need this since certain retorts give bonuses to certain types of spells), can pass in null for this
@@ -35,6 +39,10 @@ public interface SpellCalculations
 		throws MomException, RecordNotFoundException;
 
 	/**
+	 * The ability to pass nulls in for spell+picks is a leftover from the Delphi client/editor having a preview screen showing the
+	 * calculated research bonus given a particular set of spell settings, during the new game process before we have chosen
+	 * any picks or are researching/casting anything.
+	 *
 	 * @param bookCount The number of books we have in the magic realm of the spell for which we want to calculate the reduction, e.g. to calculate reductions for life spells, pass in how many life books we have
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param spell Cache object of the spell we want to check the reduction for (need this since certain retorts give bonuses to certain types of spells), can pass in null for this

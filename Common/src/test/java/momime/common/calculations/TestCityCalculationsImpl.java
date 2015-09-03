@@ -29,6 +29,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.BuildingRequiresTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
@@ -44,9 +45,13 @@ import momime.common.database.ProductionType;
 import momime.common.database.Race;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RacePopulationTaskProduction;
+import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.RoundingDirectionID;
+import momime.common.database.TaxRate;
 import momime.common.database.TileType;
+import momime.common.database.Unit;
+import momime.common.database.UnitMagicRealm;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
@@ -63,9 +68,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.PlayerPickUtilsImpl;
 
 /**
  * Tests the calculations in the CityCalculationsImpl class
@@ -278,10 +281,14 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testBuildingPassesTileTypeRequirements_DistanceTwo () throws RecordNotFoundException
 	{
-		// Set up object to test
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		// Building we're trying to place
+		final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
+		buildingRequiresTileType.setDistance (2);
+		buildingRequiresTileType.setTileTypeID ("TT01");
 		
+		final Building building = new Building ();
+		building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
+
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
@@ -289,17 +296,19 @@ public final class TestCityCalculationsImpl
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
 		// Building which has no pre-requisites
-		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation,
-			GenerateTestData.createDB ().findBuilding (GenerateTestData.SAGES_GUILD, "testBuildingPassesTileTypeRequirements_DistanceTwo"), sys));
+		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, new Building (), sys));
 
 		// Can't pass yet, since there's no tiles
-		final Building building = GenerateTestData.createDB ().findBuilding (GenerateTestData.MINERS_GUILD, "testBuildingPassesTileTypeRequirements_DistanceTwo");
 		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 
 		// 2 requirements, but its an 'or', so setting one of them should be enough
 		final OverlandMapTerrainData mountainsTerrain = new OverlandMapTerrainData ();
-		mountainsTerrain.setTileTypeID (GenerateTestData.MOUNTAINS_TILE);
+		mountainsTerrain.setTileTypeID ("TT01");
 		map.getPlane ().get (0).getRow ().get (1).getCell ().get (4).setTerrainData (mountainsTerrain);
 		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 	}
@@ -311,9 +320,13 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testBuildingPassesTileTypeRequirements_DistanceOne () throws RecordNotFoundException
 	{
-		// Set up object to test
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		// Building we're trying to place
+		final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
+		buildingRequiresTileType.setDistance (1);
+		buildingRequiresTileType.setTileTypeID ("TT01");
+		
+		final Building building = new Building ();
+		building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
 		
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
@@ -321,20 +334,23 @@ public final class TestCityCalculationsImpl
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
 		// Can't pass yet, since there's no tiles
-		final Building building = GenerateTestData.createDB ().findBuilding (GenerateTestData.SHIP_WRIGHTS_GUILD, "testBuildingPassesTileTypeRequirements_DistanceOne");
 		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 
 		// Putting it 2 tiles away doesn't help
 		final OverlandMapTerrainData twoAway = new OverlandMapTerrainData ();
-		twoAway.setTileTypeID (GenerateTestData.RIVER_TILE);
+		twoAway.setTileTypeID ("TT01");
 		map.getPlane ().get (0).getRow ().get (1).getCell ().get (4).setTerrainData (twoAway);
 		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 
 		// Putting it 1 tile away does
 		final OverlandMapTerrainData oneAway = new OverlandMapTerrainData ();
-		oneAway.setTileTypeID (GenerateTestData.RIVER_TILE);
+		oneAway.setTileTypeID ("TT01");
 		map.getPlane ().get (0).getRow ().get (1).getCell ().get (3).setTerrainData (oneAway);
 		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 	}
@@ -346,6 +362,20 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testListCityFoodProductionFromTerrainTiles () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileType hillsDef = new TileType ();
+		hillsDef.setDoubleFood (1);
+		when (db.findTileType ("TT01", "listCityFoodProductionFromTerrainTiles")).thenReturn (hillsDef);
+		
+		final TileType riverDef = new TileType ();
+		riverDef.setDoubleFood (4);
+		when (db.findTileType ("TT02", "listCityFoodProductionFromTerrainTiles")).thenReturn (riverDef);
+		
+		final TileType mountainsDef = new TileType ();
+		when (db.findTileType ("TT03", "listCityFoodProductionFromTerrainTiles")).thenReturn (mountainsDef);
+		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
@@ -361,7 +391,7 @@ public final class TestCityCalculationsImpl
 		final CoordinateSystem overlandMapCoordinateSystem = GenerateTestData.createOverlandMapCoordinateSystem ();
 		
 		// 0 so far
-		final CityProductionBreakdown breakdown1 = calc.listCityFoodProductionFromTerrainTiles (map, cityLocation, overlandMapCoordinateSystem, GenerateTestData.createDB ());
+		final CityProductionBreakdown breakdown1 = calc.listCityFoodProductionFromTerrainTiles (map, cityLocation, overlandMapCoordinateSystem, db);
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, breakdown1.getProductionTypeID ());
 		assertEquals (0, breakdown1.getDoubleProductionAmount ());
 		assertEquals (0, breakdown1.getTileTypeProduction ().size ());
@@ -372,27 +402,27 @@ public final class TestCityCalculationsImpl
 		for (int x = 0; x <= 4; x++)
 		{
 			final OverlandMapTerrainData hillsTerrain = new OverlandMapTerrainData ();
-			hillsTerrain.setTileTypeID (GenerateTestData.HILLS_TILE);
+			hillsTerrain.setTileTypeID ("TT01");
 			map.getPlane ().get (0).getRow ().get (0).getCell ().get (x).setTerrainData (hillsTerrain);
 
 			final OverlandMapTerrainData riverTile = new OverlandMapTerrainData ();
-			riverTile.setTileTypeID (GenerateTestData.RIVER_TILE);
+			riverTile.setTileTypeID ("TT02");
 			map.getPlane ().get (0).getRow ().get (1).getCell ().get (x).setTerrainData (riverTile);
 
 			final OverlandMapTerrainData mountainsTile = new OverlandMapTerrainData ();
-			mountainsTile.setTileTypeID (GenerateTestData.MOUNTAINS_TILE);
+			mountainsTile.setTileTypeID ("TT03");
 			map.getPlane ().get (0).getRow ().get (2).getCell ().get (x).setTerrainData (mountainsTile);
 		}
 
-		final CityProductionBreakdown breakdown2 = calc.listCityFoodProductionFromTerrainTiles (map, cityLocation, overlandMapCoordinateSystem, GenerateTestData.createDB ());
+		final CityProductionBreakdown breakdown2 = calc.listCityFoodProductionFromTerrainTiles (map, cityLocation, overlandMapCoordinateSystem, db);
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, breakdown2.getProductionTypeID ());
 		assertEquals (23, breakdown2.getDoubleProductionAmount ());
 		assertEquals (2, breakdown2.getTileTypeProduction ().size ());
-		assertEquals (GenerateTestData.RIVER_TILE, breakdown2.getTileTypeProduction ().get (0).getTileTypeID ());
+		assertEquals ("TT02", breakdown2.getTileTypeProduction ().get (0).getTileTypeID ());
 		assertEquals (5, breakdown2.getTileTypeProduction ().get (0).getCount ());
 		assertEquals (4, breakdown2.getTileTypeProduction ().get (0).getDoubleProductionAmountEachTile ());
 		assertEquals (20, breakdown2.getTileTypeProduction ().get (0).getDoubleProductionAmountAllTiles ());
-		assertEquals (GenerateTestData.HILLS_TILE, breakdown2.getTileTypeProduction ().get (1).getTileTypeID ());
+		assertEquals ("TT01", breakdown2.getTileTypeProduction ().get (1).getTileTypeID ());
 		assertEquals (3, breakdown2.getTileTypeProduction ().get (1).getCount ());
 		assertEquals (1, breakdown2.getTileTypeProduction ().get (1).getDoubleProductionAmountEachTile ());
 		assertEquals (3, breakdown2.getTileTypeProduction ().get (1).getDoubleProductionAmountAllTiles ());
@@ -405,6 +435,31 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testCalculateCityGrowthRate () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Race standardRace = new Race ();
+		when (db.findRace ("RC01", "calculateCityGrowthRate")).thenReturn (standardRace);
+
+		final Race raceWithBonus = new Race ();
+		raceWithBonus.setGrowthRateModifier (20);
+		when (db.findRace ("RC02", "calculateCityGrowthRate")).thenReturn (raceWithBonus);
+		
+		final Race raceWithPenalty = new Race ();
+		raceWithPenalty.setGrowthRateModifier (-20);
+		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
+
+		final Building granaryDef = new Building ();
+		granaryDef.setGrowthRateBonus (20);
+		when (db.findBuilding ("BL01", "calculateCityGrowthRate")).thenReturn (granaryDef);
+
+		final Building farmersMarketDef = new Building ();
+		farmersMarketDef.setGrowthRateBonus (30);
+		when (db.findBuilding ("BL02", "calculateCityGrowthRate")).thenReturn (farmersMarketDef);
+		
+		final Building sagesGuildDef = new Building ();
+		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
+		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
@@ -417,7 +472,7 @@ public final class TestCityCalculationsImpl
 
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityRaceID (GenerateTestData.HIGH_MEN);
+		cityData.setCityRaceID ("RC01");
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		// Buildings
@@ -425,7 +480,7 @@ public final class TestCityCalculationsImpl
 
 		// At max size
 		cityData.setCityPopulation (10000);
-		final CityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (map, buildings, cityLocation, 10, GenerateTestData.createDB ());
+		final CityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (map, buildings, cityLocation, 10, db);
 		assertEquals (CityGrowthRateBreakdown.class.getName (), maximum.getClass ().getName ());
 		assertEquals (10000, maximum.getCurrentPopulation ());
 		assertEquals (10000, maximum.getMaximumPopulation ());
@@ -433,7 +488,7 @@ public final class TestCityCalculationsImpl
 
 		// Growing (this is the example quoted in the strategy guide, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1)
 		cityData.setCityPopulation (12000);
-		final CityGrowthRateBreakdown growingEvenBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		final CityGrowthRateBreakdown growingEvenBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingEvenBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing growingEven = (CityGrowthRateBreakdownGrowing) growingEvenBreakdown;
 		assertEquals (12000, growingEven.getCurrentPopulation ());
@@ -445,7 +500,7 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, growingEven.getCappedGrowthRate ());
 		assertEquals (50, growingEven.getFinalTotal ());
 
-		final CityGrowthRateBreakdown growingOddBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 23, GenerateTestData.createDB ());
+		final CityGrowthRateBreakdown growingOddBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 23, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingOddBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing growingOdd = (CityGrowthRateBreakdownGrowing) growingOddBreakdown;
 		assertEquals (12000, growingOdd.getCurrentPopulation ());
@@ -458,8 +513,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, growingOdd.getFinalTotal ());
 
 		// Bonus from race - positive
-		cityData.setCityRaceID (GenerateTestData.BARBARIAN);
-		final CityGrowthRateBreakdown barbarianBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		cityData.setCityRaceID ("RC02");
+		final CityGrowthRateBreakdown barbarianBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), barbarianBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing barbarian = (CityGrowthRateBreakdownGrowing) barbarianBreakdown;
 		assertEquals (12000, barbarian.getCurrentPopulation ());
@@ -472,8 +527,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (70, barbarian.getFinalTotal ());
 
 		// Bonus from race - negative
-		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
-		final CityGrowthRateBreakdown highElfBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		cityData.setCityRaceID ("RC03");
+		final CityGrowthRateBreakdown highElfBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), highElfBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing highElf = (CityGrowthRateBreakdownGrowing) highElfBreakdown;
 		assertEquals (12000, highElf.getCurrentPopulation ());
@@ -487,21 +542,21 @@ public final class TestCityCalculationsImpl
 
 		// Bonus from buildings
 		final MemoryBuilding granary = new MemoryBuilding ();
-		granary.setBuildingID (GenerateTestData.GRANARY);
+		granary.setBuildingID ("BL01");
 		granary.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (granary);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
-		farmersMarket.setBuildingID (GenerateTestData.FARMERS_MARKET);
+		farmersMarket.setBuildingID ("BL02");
 		farmersMarket.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (farmersMarket);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
-		sagesGuild.setBuildingID (GenerateTestData.SAGES_GUILD);
+		sagesGuild.setBuildingID ("BL03");
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (sagesGuild);
 
-		final CityGrowthRateBreakdown withBuildingsBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		final CityGrowthRateBreakdown withBuildingsBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), withBuildingsBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing withBuildings = (CityGrowthRateBreakdownGrowing) withBuildingsBreakdown;
 		assertEquals (12000, withBuildings.getCurrentPopulation ());
@@ -509,9 +564,9 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, withBuildings.getBaseGrowthRate ());
 		assertEquals (-20, withBuildings.getRacialGrowthModifier ());
 		assertEquals (2, withBuildings.getBuildingModifier ().size ());
-		assertEquals (GenerateTestData.GRANARY, withBuildings.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals ("BL01", withBuildings.getBuildingModifier ().get (0).getBuildingID ());
 		assertEquals (20, withBuildings.getBuildingModifier ().get (0).getGrowthRateBonus ());
-		assertEquals (GenerateTestData.FARMERS_MARKET, withBuildings.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals ("BL02", withBuildings.getBuildingModifier ().get (1).getBuildingID ());
 		assertEquals (30, withBuildings.getBuildingModifier ().get (1).getGrowthRateBonus ());
 		assertEquals (80, withBuildings.getTotalGrowthRate ());
 		assertEquals (80, withBuildings.getCappedGrowthRate ());
@@ -519,7 +574,7 @@ public final class TestCityCalculationsImpl
 
 		// With all those buildings, at almost max size we still get a reasonable increase
 		cityData.setCityPopulation (21960);
-		final CityGrowthRateBreakdown almostCappedBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		final CityGrowthRateBreakdown almostCappedBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), almostCappedBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing almostCapped = (CityGrowthRateBreakdownGrowing) almostCappedBreakdown;
 		assertEquals (21960, almostCapped.getCurrentPopulation ());
@@ -527,9 +582,9 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, almostCapped.getBaseGrowthRate ());
 		assertEquals (-20, almostCapped.getRacialGrowthModifier ());
 		assertEquals (2, almostCapped.getBuildingModifier ().size ());
-		assertEquals (GenerateTestData.GRANARY, almostCapped.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals ("BL01", almostCapped.getBuildingModifier ().get (0).getBuildingID ());
 		assertEquals (20, almostCapped.getBuildingModifier ().get (0).getGrowthRateBonus ());
-		assertEquals (GenerateTestData.FARMERS_MARKET, almostCapped.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals ("BL02", almostCapped.getBuildingModifier ().get (1).getBuildingID ());
 		assertEquals (30, almostCapped.getBuildingModifier ().get (1).getGrowthRateBonus ());
 		assertEquals (30, almostCapped.getTotalGrowthRate ());
 		assertEquals (30, almostCapped.getCappedGrowthRate ());
@@ -537,7 +592,7 @@ public final class TestCityCalculationsImpl
 
 		// +30 with only 20 to spare would push us over max size
 		cityData.setCityPopulation (21980);
-		final CityGrowthRateBreakdown overCapBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		final CityGrowthRateBreakdown overCapBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), overCapBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing overCap = (CityGrowthRateBreakdownGrowing) overCapBreakdown;
 		assertEquals (21980, overCap.getCurrentPopulation ());
@@ -545,16 +600,16 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, overCap.getBaseGrowthRate ());
 		assertEquals (-20, overCap.getRacialGrowthModifier ());
 		assertEquals (2, overCap.getBuildingModifier ().size ());
-		assertEquals (GenerateTestData.GRANARY, overCap.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals ("BL01", overCap.getBuildingModifier ().get (0).getBuildingID ());
 		assertEquals (20, overCap.getBuildingModifier ().get (0).getGrowthRateBonus ());
-		assertEquals (GenerateTestData.FARMERS_MARKET, overCap.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals ("BL02", overCap.getBuildingModifier ().get (1).getBuildingID ());
 		assertEquals (30, overCap.getBuildingModifier ().get (1).getGrowthRateBonus ());
 		assertEquals (30, overCap.getTotalGrowthRate ());
 		assertEquals (20, overCap.getCappedGrowthRate ());
 		assertEquals (20, overCap.getFinalTotal ());
 
 		// Dying - note the race and building modifiers don't apply, because we can't by virtue of bonuses force a city to go over max size
-		final CityGrowthRateBreakdown dyingBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 18, GenerateTestData.createDB ());
+		final CityGrowthRateBreakdown dyingBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 18, db);
 		assertEquals (CityGrowthRateBreakdownDying.class.getName (), dyingBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownDying dying = (CityGrowthRateBreakdownDying) dyingBreakdown;
 		assertEquals (21980, dying.getCurrentPopulation ());
@@ -572,6 +627,78 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testCalculateCityRebels () throws PlayerNotFoundException, RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building animstsGuildDef = new Building ();
+		animstsGuildDef.setBuildingUnrestReduction (1);
+		animstsGuildDef.setBuildingUnrestReductionImprovedByRetorts (false);
+		when (db.findBuilding ("BL02", "calculateCityRebels")).thenReturn (animstsGuildDef);
+		
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		// Tax rates
+		final TaxRate taxRate1 = new TaxRate ();
+		when (db.findTaxRate ("TR01", "calculateCityRebels")).thenReturn (taxRate1);
+
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+
+		final TaxRate taxRate3 = new TaxRate ();
+		taxRate3.setTaxUnrestPercentage (75);
+		when (db.findTaxRate ("TR03", "calculateCityRebels")).thenReturn (taxRate3);
+		
+		// Units
+		final Unit normalUnitDef = new Unit ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+		
+		final UnitMagicRealm normalMagicRealm = new UnitMagicRealm ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findUnitMagicRealm ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+
+		final Unit summonedUnitDef = new Unit ();
+		summonedUnitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN002", "calculateCityRebels")).thenReturn (summonedUnitDef);
+		
+		final UnitMagicRealm summonedMagicRealm = new UnitMagicRealm ();
+		summonedMagicRealm.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
+		when (db.findUnitMagicRealm ("MB01", "calculateCityRebels")).thenReturn (summonedMagicRealm);
+		
+		final Unit heroUnitDef = new Unit ();
+		heroUnitDef.setUnitMagicRealm ("LTH");
+		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
+		
+		final UnitMagicRealm heroMagicRealm = new UnitMagicRealm ();
+		heroMagicRealm.setUnitTypeID ("H");
+		when (db.findUnitMagicRealm ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+		
+		// Races
+		final RaceUnrest klackonUnrest = new RaceUnrest ();
+		klackonUnrest.setCapitalRaceID ("RC01");
+		klackonUnrest.setUnrestLiteral (-2);
+		
+		final Race klackonsDef = new Race ();
+		klackonsDef.getRaceUnrest ().add (klackonUnrest);
+		when (db.findRace ("RC01", "calculateCityRebels")).thenReturn (klackonsDef);
+		
+		final RaceUnrest highElfDwarfUnrest = new RaceUnrest ();
+		highElfDwarfUnrest.setCapitalRaceID ("RC03");
+		highElfDwarfUnrest.setUnrestPercentage (30);
+		
+		final Race highElvesDef = new Race ();
+		highElvesDef.getRaceUnrest ().add (highElfDwarfUnrest);
+		when (db.findRace ("RC02", "calculateCityRebels")).thenReturn (highElvesDef);
+		
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
@@ -581,7 +708,7 @@ public final class TestCityCalculationsImpl
 
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityRaceID (GenerateTestData.KLACKONS);
+		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (17900);
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
@@ -609,14 +736,17 @@ public final class TestCityCalculationsImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Tax rate with no rebels!  and no gold...
 		final CityUnrestBreakdown zeroPercent = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_0_GOLD_0_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR01", db);
 		assertEquals (17, zeroPercent.getPopulation ());
 		assertEquals (0, zeroPercent.getTaxPercentage ());
 		assertEquals (0, zeroPercent.getRacialPercentage ());
@@ -639,7 +769,7 @@ public final class TestCityCalculationsImpl
 
 		// Harsh 45% tax rate = 7.65, prove that it rounds down
 		final CityUnrestBreakdown highPercent = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, highPercent.getPopulation ());
 		assertEquals (45, highPercent.getTaxPercentage ());
 		assertEquals (0, highPercent.getRacialPercentage ());
@@ -661,13 +791,10 @@ public final class TestCityCalculationsImpl
 		assertEquals (7, highPercent.getFinalTotal ());
 
 		// Worst 75% tax rate = 12.75, but we have 6 minimum farmers so would be 18 population in a size 17 city - prove rebels will revert to farmers to avoid starving
-		final PlayerPick divinePower = new PlayerPick ();
-		divinePower.setPickID (GenerateTestData.DIVINE_POWER);
-		divinePower.setQuantity (1);
-		ppk.getPick ().add (divinePower);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
 		
 		final CityUnrestBreakdown maxPercent = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_3_GOLD_75_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR03", db);
 		assertEquals (17, maxPercent.getPopulation ());
 		assertEquals (75, maxPercent.getTaxPercentage ());
 		assertEquals (0, maxPercent.getRacialPercentage ());
@@ -690,14 +817,14 @@ public final class TestCityCalculationsImpl
 
 		// Add some buildings that reduce unrest - and back to 45% tax rate = 7.65
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
-		shrineBuilding.setBuildingID (GenerateTestData.SHRINE);
+		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (shrineBuilding);
 
-		ppk.getPick ().remove (divinePower);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (0);
 		
 		final CityUnrestBreakdown shrine = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, shrine.getPopulation ());
 		assertEquals (45, shrine.getTaxPercentage ());
 		assertEquals (0, shrine.getRacialPercentage ());
@@ -705,7 +832,7 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, shrine.getTotalPercentage ());
 		assertEquals (7, shrine.getBaseValue ());
 		assertEquals (1, shrine.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, shrine.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", shrine.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, shrine.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
 		assertEquals (0, shrine.getReligiousBuildingRetortPercentage ());
 		assertEquals (0, shrine.getPickIdContributingToReligiousBuildingBonus ().size ());
@@ -721,15 +848,19 @@ public final class TestCityCalculationsImpl
 		assertEquals (6, shrine.getFinalTotal ());
 
 		// Divine power doesn't work on non-religious building
-		ppk.getPick ().add (divinePower);
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
 
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
-		secondBuilding.setBuildingID (GenerateTestData.ANIMISTS_GUILD);
+		secondBuilding.setBuildingID ("BL02");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (secondBuilding);
 
 		final CityUnrestBreakdown animistsGuild = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, animistsGuild.getPopulation ());
 		assertEquals (45, animistsGuild.getTaxPercentage ());
 		assertEquals (0, animistsGuild.getRacialPercentage ());
@@ -737,13 +868,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, animistsGuild.getTotalPercentage ());
 		assertEquals (7, animistsGuild.getBaseValue ());
 		assertEquals (2, animistsGuild.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, animistsGuild.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", animistsGuild.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, animistsGuild.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.ANIMISTS_GUILD, animistsGuild.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL02", animistsGuild.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, animistsGuild.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, animistsGuild.getReligiousBuildingRetortPercentage ());						// Now the 50% comes out, because of the shrine
 		assertEquals (1, animistsGuild.getPickIdContributingToReligiousBuildingBonus ().size ());	// Likewise
-		assertEquals (GenerateTestData.DIVINE_POWER, animistsGuild.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", animistsGuild.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-1, animistsGuild.getReligiousBuildingReduction ());									// Now the shrine gets counted
 		assertEquals (0, animistsGuild.getReligiousBuildingRetortValue ());									// 1 religious building isn't enough to get the 50% bonus
 		assertEquals (0, animistsGuild.getUnitCount ());
@@ -756,9 +887,9 @@ public final class TestCityCalculationsImpl
 		assertEquals (5, animistsGuild.getFinalTotal ());
 
 		// Divine power does work on 2nd religious building
-		secondBuilding.setBuildingID (GenerateTestData.TEMPLE);
+		secondBuilding.setBuildingID ("BL03");
 		final CityUnrestBreakdown temple = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, temple.getPopulation ());
 		assertEquals (45, temple.getTaxPercentage ());
 		assertEquals (0, temple.getRacialPercentage ());
@@ -766,13 +897,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, temple.getTotalPercentage ());
 		assertEquals (7, temple.getBaseValue ());
 		assertEquals (2, temple.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, temple.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", temple.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, temple.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, temple.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", temple.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, temple.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, temple.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, temple.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, temple.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", temple.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, temple.getReligiousBuildingReduction ());
 		assertEquals (-1, temple.getReligiousBuildingRetortValue ());			// Now with 2 religious buildings we get the bonus
 		assertEquals (0, temple.getUnitCount ());
@@ -786,13 +917,13 @@ public final class TestCityCalculationsImpl
 
 		// 1 unit does nothing
 		final MemoryUnit normalUnit = new MemoryUnit ();
-		normalUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (normalUnit);
 
 		final CityUnrestBreakdown firstUnit = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, firstUnit.getPopulation ());
 		assertEquals (45, firstUnit.getTaxPercentage ());
 		assertEquals (0, firstUnit.getRacialPercentage ());
@@ -800,13 +931,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, firstUnit.getTotalPercentage ());
 		assertEquals (7, firstUnit.getBaseValue ());
 		assertEquals (2, firstUnit.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, firstUnit.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", firstUnit.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, firstUnit.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, firstUnit.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", firstUnit.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, firstUnit.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, firstUnit.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, firstUnit.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, firstUnit.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", firstUnit.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, firstUnit.getReligiousBuildingReduction ());
 		assertEquals (-1, firstUnit.getReligiousBuildingRetortValue ());
 		assertEquals (1, firstUnit.getUnitCount ());
@@ -820,13 +951,13 @@ public final class TestCityCalculationsImpl
 
 		// 2nd unit reduces unrest, even if one is normal and one a hero
 		final MemoryUnit heroUnit = new MemoryUnit ();
-		heroUnit.setUnitID (GenerateTestData.DWARF_HERO);
+		heroUnit.setUnitID ("UN003");
 		heroUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (heroUnit);
 
 		final CityUnrestBreakdown secondUnit = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, secondUnit.getPopulation ());
 		assertEquals (45, secondUnit.getTaxPercentage ());
 		assertEquals (0, secondUnit.getRacialPercentage ());
@@ -834,13 +965,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, secondUnit.getTotalPercentage ());
 		assertEquals (7, secondUnit.getBaseValue ());
 		assertEquals (2, secondUnit.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, secondUnit.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", secondUnit.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, secondUnit.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, secondUnit.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", secondUnit.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, secondUnit.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, secondUnit.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, secondUnit.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, secondUnit.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", secondUnit.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, secondUnit.getReligiousBuildingReduction ());
 		assertEquals (-1, secondUnit.getReligiousBuildingRetortValue ());
 		assertEquals (2, secondUnit.getUnitCount ());
@@ -856,20 +987,20 @@ public final class TestCityCalculationsImpl
 		for (int n = 0; n < 2; n++)
 		{
 			final MemoryUnit deadUnit = new MemoryUnit ();
-			deadUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+			deadUnit.setUnitID ("UN001");
 			deadUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 			deadUnit.setStatus (UnitStatusID.DEAD);
 			units.add (deadUnit);
 
 			final MemoryUnit summonedUnit = new MemoryUnit ();
-			summonedUnit.setUnitID (GenerateTestData.WAR_BEARS_UNIT);
+			summonedUnit.setUnitID ("UN002");
 			summonedUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 			summonedUnit.setStatus (UnitStatusID.ALIVE);
 			units.add (summonedUnit);
 		}
 
 		final CityUnrestBreakdown extraUnits = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, extraUnits.getPopulation ());
 		assertEquals (45, extraUnits.getTaxPercentage ());
 		assertEquals (0, extraUnits.getRacialPercentage ());
@@ -877,13 +1008,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, extraUnits.getTotalPercentage ());
 		assertEquals (7, extraUnits.getBaseValue ());
 		assertEquals (2, extraUnits.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, extraUnits.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", extraUnits.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, extraUnits.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, extraUnits.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", extraUnits.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, extraUnits.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, extraUnits.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, extraUnits.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, extraUnits.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", extraUnits.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, extraUnits.getReligiousBuildingReduction ());
 		assertEquals (-1, extraUnits.getReligiousBuildingRetortValue ());
 		assertEquals (2, extraUnits.getUnitCount ());
@@ -899,10 +1030,11 @@ public final class TestCityCalculationsImpl
 		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
-		buildings.add (fortressBuilding);
+
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
 
 		final CityUnrestBreakdown klackons = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, klackons.getPopulation ());
 		assertEquals (45, klackons.getTaxPercentage ());
 		assertEquals (0, klackons.getRacialPercentage ());
@@ -910,13 +1042,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, klackons.getTotalPercentage ());
 		assertEquals (7, klackons.getBaseValue ());
 		assertEquals (2, klackons.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, klackons.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", klackons.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, klackons.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, klackons.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", klackons.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, klackons.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, klackons.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, klackons.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, klackons.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", klackons.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, klackons.getReligiousBuildingReduction ());
 		assertEquals (-1, klackons.getReligiousBuildingRetortValue ());
 		assertEquals (2, klackons.getUnitCount ());
@@ -929,10 +1061,10 @@ public final class TestCityCalculationsImpl
 		assertEquals (1, klackons.getFinalTotal ());
 		
 		// Other races get no bonus from being same as capital race
-		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
+		cityData.setCityRaceID ("RC02");
 
 		final CityUnrestBreakdown highElves = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, highElves.getPopulation ());
 		assertEquals (45, highElves.getTaxPercentage ());
 		assertEquals (0, highElves.getRacialPercentage ());
@@ -940,13 +1072,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (45, highElves.getTotalPercentage ());
 		assertEquals (7, highElves.getBaseValue ());
 		assertEquals (2, highElves.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, highElves.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", highElves.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, highElves.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, highElves.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", highElves.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, highElves.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, highElves.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, highElves.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, highElves.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", highElves.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, highElves.getReligiousBuildingReduction ());
 		assertEquals (-1, highElves.getReligiousBuildingRetortValue ());
 		assertEquals (2, highElves.getUnitCount ());
@@ -960,7 +1092,7 @@ public final class TestCityCalculationsImpl
 
 		// If reduce the tax rate from only having 3 rebels, they're so happy that we get a negative number of rebels
 		final CityUnrestBreakdown forcePositive = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_0_GOLD_0_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR01", db);
 		assertEquals (17, forcePositive.getPopulation ());
 		assertEquals (0, forcePositive.getTaxPercentage ());
 		assertEquals (0, forcePositive.getRacialPercentage ());
@@ -968,13 +1100,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, forcePositive.getTotalPercentage ());
 		assertEquals (0, forcePositive.getBaseValue ());
 		assertEquals (2, forcePositive.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, forcePositive.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", forcePositive.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, forcePositive.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, forcePositive.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", forcePositive.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, forcePositive.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, forcePositive.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, forcePositive.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, forcePositive.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", forcePositive.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, forcePositive.getReligiousBuildingReduction ());
 		assertEquals (-1, forcePositive.getReligiousBuildingRetortValue ());
 		assertEquals (2, forcePositive.getUnitCount ());
@@ -988,7 +1120,7 @@ public final class TestCityCalculationsImpl
 		
 		// Move capital to a different city with a different race
 		final OverlandMapCityData capitalCityData = new OverlandMapCityData ();
-		capitalCityData.setCityRaceID (GenerateTestData.DWARVES);
+		capitalCityData.setCityRaceID ("RC03");
 		capitalCityData.setCityOwnerID (1);
 		capitalCityData.setCityPopulation (1000);
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (20).setCityData (capitalCityData);
@@ -996,7 +1128,7 @@ public final class TestCityCalculationsImpl
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 2, 0));
 
 		final CityUnrestBreakdown racialUnrest = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR02", db);
 		assertEquals (17, racialUnrest.getPopulation ());
 		assertEquals (45, racialUnrest.getTaxPercentage ());
 		assertEquals (30, racialUnrest.getRacialPercentage ());
@@ -1004,13 +1136,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (75, racialUnrest.getTotalPercentage ());
 		assertEquals (12, racialUnrest.getBaseValue ());
 		assertEquals (2, racialUnrest.getBuildingReducingUnrest ().size ());
-		assertEquals (GenerateTestData.SHRINE, racialUnrest.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals ("BL01", racialUnrest.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, racialUnrest.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, racialUnrest.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals ("BL03", racialUnrest.getBuildingReducingUnrest ().get (1).getBuildingID ());
 		assertEquals (1, racialUnrest.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
 		assertEquals (50, racialUnrest.getReligiousBuildingRetortPercentage ());
 		assertEquals (1, racialUnrest.getPickIdContributingToReligiousBuildingBonus ().size ());
-		assertEquals (GenerateTestData.DIVINE_POWER, racialUnrest.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals ("RT01", racialUnrest.getPickIdContributingToReligiousBuildingBonus ().get (0));
 		assertEquals (-2, racialUnrest.getReligiousBuildingReduction ());
 		assertEquals (-1, racialUnrest.getReligiousBuildingRetortValue ());
 		assertEquals (2, racialUnrest.getUnitCount ());
@@ -1030,7 +1162,7 @@ public final class TestCityCalculationsImpl
 		cityData.setCityPopulation (24890);		// Has to be over 20 for 105% to round down to >1 person
 		
 		final CityUnrestBreakdown forceAll = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_3_GOLD_75_UNREST, GenerateTestData.createDB ());
+			(players, map, units, buildings, cityLocation, "TR03", db);
 		assertEquals (24, forceAll.getPopulation ());
 		assertEquals (75, forceAll.getTaxPercentage ());
 		assertEquals (30, forceAll.getRacialPercentage ());
@@ -1376,6 +1508,260 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testCalculateAllCityProductions () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Tile types
+		final TileType hillsDef = new TileType ();
+		hillsDef.setDoubleFood (1);
+		hillsDef.setProductionBonus (3);
+		when (db.findTileType (eq ("TT01"), anyString ())).thenReturn (hillsDef);
+
+		final TileType riverDef = new TileType ();
+		riverDef.setDoubleFood (4);
+		riverDef.setGoldBonus (20);
+		when (db.findTileType (eq ("TT02"), anyString ())).thenReturn (riverDef);
+
+		// Map features
+		final MapFeatureProduction wildGameFood = new MapFeatureProduction ();
+		wildGameFood.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		wildGameFood.setDoubleAmount (4);		
+		
+		final MapFeatureProduction wildGameRations = new MapFeatureProduction ();
+		wildGameRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		wildGameRations.setDoubleAmount (4);
+		
+		final MapFeature wildGame = new MapFeature ();
+		wildGame.getMapFeatureProduction ().add (wildGameFood);
+		wildGame.getMapFeatureProduction ().add (wildGameRations);
+		when (db.findMapFeature ("MF01", "addProductionFromMapFeatures")).thenReturn (wildGame);
+
+		final MapFeatureProduction gemsGold = new MapFeatureProduction ();
+		gemsGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		gemsGold.setDoubleAmount (10);
+		
+		final MapFeature gems = new MapFeature ();
+		gems.setRaceMineralMultiplerApplies (true);
+		gems.getMapFeatureProduction ().add (gemsGold);
+		when (db.findMapFeature ("MF02", "addProductionFromMapFeatures")).thenReturn (gems);
+
+		final MapFeatureProduction adamantiumMagicPower = new MapFeatureProduction ();
+		adamantiumMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		adamantiumMagicPower.setDoubleAmount (4);
+		
+		final MapFeature adamantium = new MapFeature ();
+		adamantium.setRaceMineralMultiplerApplies (true);
+		adamantium.getMapFeatureProduction ().add (adamantiumMagicPower);
+		when (db.findMapFeature ("MF03", "addProductionFromMapFeatures")).thenReturn (adamantium);		
+
+		// Production types
+		final ProductionType rationProduction = new ProductionType ();
+		rationProduction.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "halveAddPercentageBonusAndCapProduction")).thenReturn (rationProduction);
+
+		final ProductionType foodProduction = new ProductionType ();
+		foodProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "halveAddPercentageBonusAndCapProduction")).thenReturn (foodProduction);
+
+		final ProductionType productionProduction = new ProductionType ();
+		productionProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, "halveAddPercentageBonusAndCapProduction")).thenReturn (productionProduction);
+
+		final ProductionType goldProduction = new ProductionType ();
+		goldProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "halveAddPercentageBonusAndCapProduction")).thenReturn (goldProduction);
+
+		final ProductionType magicPowerProduction = new ProductionType ();
+		magicPowerProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, "halveAddPercentageBonusAndCapProduction")).thenReturn (magicPowerProduction);
+		
+		// Standard race
+		final RacePopulationTaskProduction raceFarmerRations = new RacePopulationTaskProduction ();
+		raceFarmerRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		raceFarmerRations.setDoubleAmount (4);
+
+		final RacePopulationTaskProduction raceFarmerProduction = new RacePopulationTaskProduction ();
+		raceFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+		raceFarmerProduction.setDoubleAmount (1);
+		
+		final RacePopulationTask raceFarmers = new RacePopulationTask ();
+		raceFarmers.getRacePopulationTaskProduction ().add (raceFarmerRations);
+		raceFarmers.getRacePopulationTaskProduction ().add (raceFarmerProduction);
+		raceFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final RacePopulationTaskProduction raceWorkerProduction = new RacePopulationTaskProduction ();
+		raceWorkerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+		raceWorkerProduction.setDoubleAmount (4);
+		
+		final RacePopulationTask raceWorkers = new RacePopulationTask ();
+		raceWorkers.getRacePopulationTaskProduction ().add (raceWorkerProduction);
+		raceWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
+		
+		final Race raceDef = new Race ();
+		raceDef.setMineralBonusMultiplier (1);
+		raceDef.getRacePopulationTask ().add (raceFarmers);
+		raceDef.getRacePopulationTask ().add (raceWorkers);
+		when (db.findRace ("RC01", "calculateAllCityProductions")).thenReturn (raceDef);
+		
+		// Dwarves
+		final RacePopulationTaskProduction dwarvesFarmerRations = new RacePopulationTaskProduction ();
+		dwarvesFarmerRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		dwarvesFarmerRations.setDoubleAmount (4);
+
+		final RacePopulationTaskProduction dwarvesFarmerProduction = new RacePopulationTaskProduction ();
+		dwarvesFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+		dwarvesFarmerProduction.setDoubleAmount (1);
+		
+		final RacePopulationTask dwarvesFarmers = new RacePopulationTask ();
+		dwarvesFarmers.getRacePopulationTaskProduction ().add (dwarvesFarmerRations);
+		dwarvesFarmers.getRacePopulationTaskProduction ().add (dwarvesFarmerProduction);
+		dwarvesFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final RacePopulationTaskProduction dwarvesWorkerProduction = new RacePopulationTaskProduction ();
+		dwarvesWorkerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+		dwarvesWorkerProduction.setDoubleAmount (6);
+		
+		final RacePopulationTask dwarvesWorkers = new RacePopulationTask ();
+		dwarvesWorkers.getRacePopulationTaskProduction ().add (dwarvesWorkerProduction);
+		dwarvesWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
+		
+		final Race dwarvesDef = new Race ();
+		dwarvesDef.setMineralBonusMultiplier (2);
+		dwarvesDef.getRacePopulationTask ().add (dwarvesFarmers);
+		dwarvesDef.getRacePopulationTask ().add (dwarvesWorkers);
+		when (db.findRace ("RC02", "calculateAllCityProductions")).thenReturn (dwarvesDef);
+		
+		// High elves
+		final RacePopulationTaskProduction highElfFarmerRations = new RacePopulationTaskProduction ();
+		highElfFarmerRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		highElfFarmerRations.setDoubleAmount (4);
+
+		final RacePopulationTaskProduction highElfFarmerProduction = new RacePopulationTaskProduction ();
+		highElfFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+		highElfFarmerProduction.setDoubleAmount (1);
+
+		final RacePopulationTaskProduction highElfFarmerMagicPower = new RacePopulationTaskProduction ();
+		highElfFarmerMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		highElfFarmerMagicPower.setDoubleAmount (1);
+		
+		final RacePopulationTask highElfFarmers = new RacePopulationTask ();
+		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmerRations);
+		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmerProduction);
+		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmerMagicPower);
+		highElfFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final RacePopulationTaskProduction highElfWorkerProduction = new RacePopulationTaskProduction ();
+		highElfWorkerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+		highElfWorkerProduction.setDoubleAmount (4);
+
+		final RacePopulationTaskProduction highElfWorkerMagicPower = new RacePopulationTaskProduction ();
+		highElfWorkerMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		highElfWorkerMagicPower.setDoubleAmount (1);
+		
+		final RacePopulationTask highElfWorkers = new RacePopulationTask ();
+		highElfWorkers.getRacePopulationTaskProduction ().add (highElfWorkerProduction);
+		highElfWorkers.getRacePopulationTaskProduction ().add (highElfWorkerMagicPower);
+		highElfWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
+
+		final RacePopulationTaskProduction highElfRebelMagicPower = new RacePopulationTaskProduction ();
+		highElfRebelMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		highElfRebelMagicPower.setDoubleAmount (1);
+		
+		final RacePopulationTask highElfRebels = new RacePopulationTask ();
+		highElfRebels.getRacePopulationTaskProduction ().add (highElfRebelMagicPower);
+		highElfRebels.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL);
+		
+		final Race highElfDef = new Race ();
+		highElfDef.setMineralBonusMultiplier (1);
+		highElfDef.getRacePopulationTask ().add (highElfFarmers);
+		highElfDef.getRacePopulationTask ().add (highElfWorkers);
+		highElfDef.getRacePopulationTask ().add (highElfRebels);
+		when (db.findRace ("RC03", "calculateAllCityProductions")).thenReturn (highElfDef);
+		
+		// Tax rate
+		final TaxRate taxRate = new TaxRate ();
+		taxRate.setDoubleTaxGold (4);
+		when (db.findTaxRate ("TR01", "calculateAllCityProductions")).thenReturn (taxRate);
+		
+		// Buildings
+		final Building fortressDef = new Building ();
+		fortressDef.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
+
+		final BuildingPopulationProductionModifier sagesGuildResearch = new BuildingPopulationProductionModifier ();
+		sagesGuildResearch.setDoubleAmount (6);
+		sagesGuildResearch.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
+
+		final BuildingPopulationProductionModifier sagesGuildUpkeep = new BuildingPopulationProductionModifier ();
+		sagesGuildUpkeep.setDoubleAmount (-4);
+		sagesGuildUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		
+		final Building sagesGuildDef = new Building ();
+		sagesGuildDef.setBuildingID ("BL01");
+		sagesGuildDef.getBuildingPopulationProductionModifier ().add (sagesGuildResearch);
+		sagesGuildDef.getBuildingPopulationProductionModifier ().add (sagesGuildUpkeep);
+
+		final BuildingPopulationProductionModifier sawmillProduction = new BuildingPopulationProductionModifier ();
+		sawmillProduction.setPercentageBonus (25);
+		sawmillProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+
+		final BuildingPopulationProductionModifier sawmillUpkeep = new BuildingPopulationProductionModifier ();
+		sawmillUpkeep.setDoubleAmount (-4);
+		sawmillUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		
+		final Building sawmillDef = new Building ();
+		sawmillDef.getBuildingPopulationProductionModifier ().add (sawmillProduction);
+		sawmillDef.getBuildingPopulationProductionModifier ().add (sawmillUpkeep);
+		sawmillDef.setBuildingID ("BL02");
+
+		final BuildingPopulationProductionModifier minersGuildProduction = new BuildingPopulationProductionModifier ();
+		minersGuildProduction.setPercentageBonus (50);
+		minersGuildProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+		
+		final BuildingPopulationProductionModifier minersGuildMapFeatureBonus = new BuildingPopulationProductionModifier ();
+		minersGuildMapFeatureBonus.setPercentageBonus (50);
+		minersGuildMapFeatureBonus.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
+		
+		final BuildingPopulationProductionModifier minersGuildUpkeep = new BuildingPopulationProductionModifier ();
+		minersGuildUpkeep.setDoubleAmount (-6);
+		minersGuildUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		
+		final Building minersGuildDef = new Building ();
+		minersGuildDef.getBuildingPopulationProductionModifier ().add (minersGuildProduction);
+		minersGuildDef.getBuildingPopulationProductionModifier ().add (minersGuildMapFeatureBonus);
+		minersGuildDef.getBuildingPopulationProductionModifier ().add (minersGuildUpkeep);
+		minersGuildDef.setBuildingID ("BL03");
+		
+		final List<Building> buildingDefs = new ArrayList<Building> ();
+		buildingDefs.add (fortressDef);
+		buildingDefs.add (sagesGuildDef);
+		buildingDefs.add (sawmillDef);
+		buildingDefs.add (minersGuildDef);
+		
+		doReturn (buildingDefs).when (db).getBuildings ();
+		
+		// Planes
+		final FortressPlaneProduction fortressPlaneProduction = new FortressPlaneProduction ();
+		fortressPlaneProduction.setDoubleAmount (10);
+		fortressPlaneProduction.setFortressProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		
+		final Plane myrror = new Plane ();
+		myrror.getFortressPlaneProduction ().add (fortressPlaneProduction);
+		when (db.findPlane (1, "calculateAllCityProductions")).thenReturn (myrror);
+		
+		// Pick types
+		final FortressPickTypeProduction fortressPickTypeProduction = new FortressPickTypeProduction ();
+		fortressPickTypeProduction.setDoubleAmount (2);
+		fortressPickTypeProduction.setFortressProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		
+		final PickType books = new PickType ();
+		books.setPickTypeID ("B");
+		books.getFortressPickTypeProduction ().add (fortressPickTypeProduction);
+		
+		final List<PickType> pickTypes = new ArrayList<PickType> ();
+		pickTypes.add (books);
+		
+		doReturn (pickTypes).when (db).getPickTypes ();
+		
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
 
@@ -1388,22 +1774,22 @@ public final class TestCityCalculationsImpl
 		for (int x = 0; x <= 4; x++)
 		{
 			final OverlandMapTerrainData hillsTerrain = new OverlandMapTerrainData ();
-			hillsTerrain.setTileTypeID (GenerateTestData.HILLS_TILE);
+			hillsTerrain.setTileTypeID ("TT01");
 			map.getPlane ().get (1).getRow ().get (0).getCell ().get (x).setTerrainData (hillsTerrain);
 
 			final OverlandMapTerrainData riverTile = new OverlandMapTerrainData ();
-			riverTile.setTileTypeID (GenerateTestData.RIVER_TILE);
+			riverTile.setTileTypeID ("TT02");
 			map.getPlane ().get (1).getRow ().get (1).getCell ().get (x).setTerrainData (riverTile);
 		}
 
 		// Put river right on the city too, to get the gold bonus
 		final OverlandMapTerrainData riverTile = new OverlandMapTerrainData ();
-		riverTile.setTileTypeID (GenerateTestData.RIVER_TILE);
+		riverTile.setTileTypeID ("TT02");
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (2).setTerrainData (riverTile);
 
 		// Add some wild game
 		for (int y = 0; y <= 1; y++)
-			map.getPlane ().get (1).getRow ().get (y).getCell ().get (2).getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
+			map.getPlane ().get (1).getRow ().get (y).getCell ().get (2).getTerrainData ().setMapFeatureID ("MF01");
 
 		// Session description
 		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
@@ -1422,7 +1808,7 @@ public final class TestCityCalculationsImpl
 
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityRaceID (GenerateTestData.HIGH_MEN);
+		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (17900);
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
@@ -1449,9 +1835,12 @@ public final class TestCityCalculationsImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateAllCityProductions")).thenReturn (player);
 
 		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
@@ -1461,7 +1850,7 @@ public final class TestCityCalculationsImpl
 		// c) people eating food
 		// d) gold from taxes
 		final CityProductionBreakdownsEx baseNoPeople = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, false, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, false, false, db);
 		assertEquals (4, baseNoPeople.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, baseNoPeople.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (8, baseNoPeople.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1489,7 +1878,7 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, baseNoPeople.getProductionType ().get (3).getConsumptionAmount ());
 
 		final CityProductionBreakdownsEx baseWithPeople = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (4, baseWithPeople.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, baseWithPeople.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, baseWithPeople.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1518,24 +1907,22 @@ public final class TestCityCalculationsImpl
 
 		// Wizard fortress produces +1 mana per book, and +5 for being on myrror
 		final PlayerPick lifeBook = new PlayerPick ();
-		lifeBook.setPickID (GenerateTestData.LIFE_BOOK);
+		lifeBook.setPickID ("MB01");
 		lifeBook.setOriginalQuantity (8);
 		lifeBook.setQuantity (9);
 		ppk.getPick ().add (lifeBook);
 
 		final PlayerPick summoner = new PlayerPick ();
-		summoner.setPickID (GenerateTestData.SUMMONER);
+		summoner.setPickID ("RT01");
 		summoner.setOriginalQuantity (1);
 		summoner.setQuantity (1);
 		ppk.getPick ().add (summoner);
 
-		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
-		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
-		fortressBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
-		buildings.add (fortressBuilding);
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 1), CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
+		when (playerPickUtils.countPicksOfType (ppk.getPick (), "B", true, db)).thenReturn (8);
 
 		final CityProductionBreakdownsEx fortress = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (5, fortress.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, fortress.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, fortress.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1569,18 +1956,11 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, fortress.getProductionType ().get (4).getConsumptionAmount ());
 
 		// Add some buildings that give production (both regular like sages guild, and percentage like sawmill), and consumption
-		final MemoryBuilding sagesGuildBuilding = new MemoryBuilding ();
-		sagesGuildBuilding.setBuildingID (GenerateTestData.SAGES_GUILD);
-		sagesGuildBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
-		buildings.add (sagesGuildBuilding);
-
-		final MemoryBuilding sawmillBuilding = new MemoryBuilding ();
-		sawmillBuilding.setBuildingID (GenerateTestData.SAWMILL);
-		sawmillBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
-		buildings.add (sawmillBuilding);
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 1), "BL01")).thenReturn (new MemoryBuilding ());
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 1), "BL02")).thenReturn (new MemoryBuilding ());
 
 		final CityProductionBreakdownsEx sawmill = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (6, sawmill.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, sawmill.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, sawmill.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1620,11 +2000,11 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, sawmill.getProductionType ().get (5).getConsumptionAmount ());
 
 		// Add some map features, note there's already 2 wild game been added above
-		map.getPlane ().get (1).getRow ().get (0).getCell ().get (3).getTerrainData ().setMapFeatureID (GenerateTestData.GEMS);
-		map.getPlane ().get (1).getRow ().get (1).getCell ().get (3).getTerrainData ().setMapFeatureID (GenerateTestData.ADAMANTIUM_ORE);
+		map.getPlane ().get (1).getRow ().get (0).getCell ().get (3).getTerrainData ().setMapFeatureID ("MF02");
+		map.getPlane ().get (1).getRow ().get (1).getCell ().get (3).getTerrainData ().setMapFeatureID ("MF03");
 
 		final CityProductionBreakdownsEx minerals = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (6, minerals.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, minerals.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, minerals.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1664,13 +2044,10 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, minerals.getProductionType ().get (5).getConsumptionAmount ());
 
 		// Miners' guild boosting bonuses from map features
-		final MemoryBuilding minersGuildBuilding = new MemoryBuilding ();
-		minersGuildBuilding.setBuildingID (GenerateTestData.MINERS_GUILD);
-		minersGuildBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
-		buildings.add (minersGuildBuilding);
-
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 1), "BL03")).thenReturn (new MemoryBuilding ());
+		
 		final CityProductionBreakdownsEx minersGuild = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, minersGuild.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, minersGuild.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, minersGuild.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1710,10 +2087,10 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, minersGuild.getProductionType ().get (5).getConsumptionAmount ());
 
 		// Dwarves double bonuses from map features, and also workers produce 3 production instead of 2
-		cityData.setCityRaceID (GenerateTestData.DWARVES);
+		cityData.setCityRaceID ("RC02");
 
 		final CityProductionBreakdownsEx dwarves = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, dwarves.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, dwarves.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, dwarves.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1753,10 +2130,10 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, dwarves.getProductionType ().get (5).getConsumptionAmount ());
 
 		// High elf rebels produce mana too
-		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
+		cityData.setCityRaceID ("RC03");
 
 		final CityProductionBreakdownsEx highElves = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, highElves.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, highElves.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, highElves.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1802,7 +2179,7 @@ public final class TestCityCalculationsImpl
 		cityData.setNumberOfRebels (1);		// 6 -1 -1 -1 = 3 workers
 
 		final CityProductionBreakdownsEx shrunk = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, shrunk.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, shrunk.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (16, shrunk.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1848,11 +2225,11 @@ public final class TestCityCalculationsImpl
 			if (mc.getTerrainData () == null)
 				mc.setTerrainData (new OverlandMapTerrainData ());
 
-			mc.getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
+			mc.getTerrainData ().setMapFeatureID ("MF01");
 		}
 
 		final CityProductionBreakdownsEx maxSize = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, maxSize.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, maxSize.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (36, maxSize.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2102,8 +2479,39 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testCalculateSingleCityProduction () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		// This is the same initial setup as the calculateAllCityProductions test
-		// Location
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileType hillsDef = new TileType ();
+		when (db.findTileType (eq ("TT01"), anyString ())).thenReturn (hillsDef);
+
+		final TileType riverDef = new TileType ();
+		when (db.findTileType (eq ("TT02"), anyString ())).thenReturn (riverDef);
+		
+		final MapFeatureProduction wildGameProduction = new MapFeatureProduction ();
+		wildGameProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		wildGameProduction.setDoubleAmount (4);
+		
+		final MapFeature wildGame = new MapFeature ();
+		wildGame.getMapFeatureProduction ().add (wildGameProduction);
+		when (db.findMapFeature ("MF01", "addProductionFromMapFeatures")).thenReturn (wildGame);
+
+		final RacePopulationTaskProduction raceFarmerProduction = new RacePopulationTaskProduction ();
+		raceFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		raceFarmerProduction.setDoubleAmount (4);
+		
+		final RacePopulationTask raceFarmers = new RacePopulationTask ();
+		raceFarmers.getRacePopulationTaskProduction ().add (raceFarmerProduction);
+		raceFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final Race raceDef = new Race ();
+		raceDef.getRacePopulationTask ().add (raceFarmers);
+		when (db.findRace ("RC01", "calculateAllCityProductions")).thenReturn (raceDef);
+		
+		final TaxRate taxRate = new TaxRate ();
+		when (db.findTaxRate ("TR01", "calculateAllCityProductions")).thenReturn (taxRate);
+		
+		// This is the same initial setup as the calculateAllCityProductions test location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
 
 		// Map
@@ -2115,22 +2523,22 @@ public final class TestCityCalculationsImpl
 		for (int x = 0; x <= 4; x++)
 		{
 			final OverlandMapTerrainData hillsTerrain = new OverlandMapTerrainData ();
-			hillsTerrain.setTileTypeID (GenerateTestData.HILLS_TILE);
+			hillsTerrain.setTileTypeID ("TT01");
 			map.getPlane ().get (1).getRow ().get (0).getCell ().get (x).setTerrainData (hillsTerrain);
 
 			final OverlandMapTerrainData riverTile = new OverlandMapTerrainData ();
-			riverTile.setTileTypeID (GenerateTestData.RIVER_TILE);
+			riverTile.setTileTypeID ("TT02");
 			map.getPlane ().get (1).getRow ().get (1).getCell ().get (x).setTerrainData (riverTile);
 		}
 
 		// Put river right on the city too, to get the gold bonus
 		final OverlandMapTerrainData riverTile = new OverlandMapTerrainData ();
-		riverTile.setTileTypeID (GenerateTestData.RIVER_TILE);
+		riverTile.setTileTypeID ("TT02");
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (2).setTerrainData (riverTile);
 
 		// Add some wild game
 		for (int y = 0; y <= 1; y++)
-			map.getPlane ().get (1).getRow ().get (y).getCell ().get (2).getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
+			map.getPlane ().get (1).getRow ().get (y).getCell ().get (2).getTerrainData ().setMapFeatureID ("MF01");
 
 		// Session description
 		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
@@ -2149,7 +2557,7 @@ public final class TestCityCalculationsImpl
 
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityRaceID (GenerateTestData.HIGH_MEN);
+		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (17900);
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
@@ -2176,14 +2584,16 @@ public final class TestCityCalculationsImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateAllCityProductions")).thenReturn (player);
 
 		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// 20 production - 17 consumption = 3
 		assertEquals (3, calc.calculateSingleCityProduction (players, map, buildings, cityLocation,
-			GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS));
+			"TR01", sd, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS));
 	}
 
 	/**
@@ -2192,9 +2602,6 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testBlankBuildingsSoldThisTurn_OnePlayer ()
 	{
-		// Set up object to test
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -2209,17 +2616,22 @@ public final class TestCityCalculationsImpl
 
 				final MemoryGridCell mc = map.getPlane ().get (0).getRow ().get (y).getCell ().get (x);
 				mc.setCityData (cityData);
-				mc.setBuildingIdSoldThisTurn (GenerateTestData.SAWMILL);
+				mc.setBuildingIdSoldThisTurn ("X");
 			}
 
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+
+		// Run method
 		calc.blankBuildingsSoldThisTurn (map, 4);
 
+		// Check results
 		for (int x = 1; x <= 3; x++)
 			for (int y = 1; y <= 3; y++)
 				if (x + y == 4)
 					assertNull (map.getPlane ().get (0).getRow ().get (y).getCell ().get (x).getBuildingIdSoldThisTurn ());
 				else
-					assertEquals (GenerateTestData.SAWMILL, map.getPlane ().get (0).getRow ().get (y).getCell ().get (x).getBuildingIdSoldThisTurn ());
+					assertEquals ("X", map.getPlane ().get (0).getRow ().get (y).getCell ().get (x).getBuildingIdSoldThisTurn ());
 	}
 
 	/**
@@ -2228,9 +2640,6 @@ public final class TestCityCalculationsImpl
 	@Test
 	public final void testBlankBuildingsSoldThisTurn_AllPlayers ()
 	{
-		// Set up object to test
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -2245,11 +2654,16 @@ public final class TestCityCalculationsImpl
 
 				final MemoryGridCell mc = map.getPlane ().get (0).getRow ().get (y).getCell ().get (x);
 				mc.setCityData (cityData);
-				mc.setBuildingIdSoldThisTurn (GenerateTestData.SAWMILL);
+				mc.setBuildingIdSoldThisTurn ("BL01");
 			}
 
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+
+		// Run method
 		calc.blankBuildingsSoldThisTurn (map, 0);
 
+		// Check results
 		for (int x = 1; x <= 3; x++)
 			for (int y = 1; y <= 3; y++)
 				assertNull (map.getPlane ().get (0).getRow ().get (y).getCell ().get (x).getBuildingIdSoldThisTurn ());

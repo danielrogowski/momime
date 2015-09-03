@@ -4,6 +4,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemType;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
@@ -15,9 +27,9 @@ import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -34,18 +46,6 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemType;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Common calculations pertaining to units
@@ -191,7 +191,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		return getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, players, spells, combatAreaEffects, db);
+		return getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 	}
 
 	/**
@@ -212,10 +213,12 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Unit caster skill is easy, this directly says how many MP the unit has
-		int total = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, players, spells, combatAreaEffects, db);
+		int total = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 		
 		// The hero caster skill is a bit more of a pain, since we get more mana at higher experience levels
-		int heroSkillValue = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, players, spells, combatAreaEffects, db);
+		int heroSkillValue = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 		if (heroSkillValue > 0)
 		{
 			final int expLevel = getUnitUtils ().getExperienceLevel (unit, true, players, combatAreaEffects, db).getLevelNumber ();
@@ -286,8 +289,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateHitPointsRemaining"));
-		final int hitPointsPerFigure = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		return (figures * hitPointsPerFigure) - unit.getDamageTaken ();
 	}
@@ -313,8 +316,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateAliveFigureCount")) -
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
-			(unit.getDamageTaken () / getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			(unit.getDamageTaken () / Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
 		
 		// Protect against weird results
 		if (figures < 0)
@@ -342,8 +345,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final int hitPointsPerFigure = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Work out how much damage the first figure has taken
 		final int damageTaken;
@@ -380,8 +383,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final boolean result;
 		
 		// First we have to actually have a ranged attack
-		if (getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db) <= 0)
+		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) <= 0)
 			
 			result = false;
 		

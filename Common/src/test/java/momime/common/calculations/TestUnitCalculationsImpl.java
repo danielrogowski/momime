@@ -14,22 +14,32 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
+import momime.common.database.Building;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.GenerateTestData;
+import momime.common.database.MapFeature;
 import momime.common.database.MovementRateRule;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -44,16 +54,9 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtilsImpl;
-import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Tests the UnitCalculationsImpl object
@@ -67,9 +70,25 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Building otherBuilding = new Building ();
+		when (db.findBuilding ("BL01", "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort")).thenReturn (otherBuilding);
+
+		final Building wepGradeBuilding = new Building ();
+		wepGradeBuilding.setBuildingMagicWeapons (1);
+		when (db.findBuilding ("BL02", "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort")).thenReturn (wepGradeBuilding);
+		
+		final MapFeature adamantium = new MapFeature ();
+		adamantium.setFeatureMagicWeapons (3);
+		when (db.findMapFeature ("MF01", "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort")).thenReturn (adamantium);
+		
 		// Set up object to test
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Buildings
@@ -86,42 +105,38 @@ public final class TestUnitCalculationsImpl
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
 		// Do basic calc where nothing gives mag weps
-		assertEquals (0, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
+		assertEquals (0, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, db));
 
 		// Adamantium next to city, but we can't use it without an alchemists' guild
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setMapFeatureID (GenerateTestData.ADAMANTIUM_ORE);
+		terrainData.setMapFeatureID ("MF01");
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (3).setTerrainData (terrainData);
 
-		assertEquals (0, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
+		assertEquals (0, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, db));
 
 		// Alchemy retort grants us grade 1, but still can't use that adamantium
-		final PlayerPick alchemy = new PlayerPick ();
-		alchemy.setPickID (CommonDatabaseConstants.RETORT_ID_ALCHEMY);
-		alchemy.setQuantity (1);
-		picks.add (alchemy);
-
-		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
+		when (playerPickUtils.getHighestWeaponGradeGrantedByPicks (picks, db)).thenReturn (1);
+		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, db));
 
 		// Add the wrong type of building, to prove that it doesn't help
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
-		sagesGuild.setBuildingID (GenerateTestData.SAGES_GUILD);
+		sagesGuild.setBuildingID ("BL01");
 		buildings.add (sagesGuild);
 
-		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
+		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, db));
 
 		// Add an alchemists' guild, in the wrong place
 		final MemoryBuilding alchemistsGuild = new MemoryBuilding ();
 		alchemistsGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
-		alchemistsGuild.setBuildingID (GenerateTestData.ALCHEMISTS_GUILD);
+		alchemistsGuild.setBuildingID ("BL02");
 		buildings.add (alchemistsGuild);
 
-		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
+		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, db));
 
 		// Move it to the right place
 		alchemistsGuild.getCityLocation ().setZ (0);
-		assertEquals (3, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
+		assertEquals (3, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, db));
 	}
 	
 	/**
@@ -131,7 +146,35 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateDoubleMovementToEnterCombatTile () throws Exception
 	{
-		final CommonDatabase db = GenerateTestData.createDB ();
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType tileDef = new CombatTileType ();			// Normal movement
+		tileDef.setDoubleMovement (2);
+		when (db.findCombatTileType ("CTL01", "calculateDoubleMovementToEnterCombatTile")).thenReturn (tileDef);
+
+		final CombatTileType buildingDef = new CombatTileType ();		// Blocks movement
+		buildingDef.setDoubleMovement (-1);
+		when (db.findCombatTileType ("CBL03", "calculateDoubleMovementToEnterCombatTile")).thenReturn (buildingDef);
+
+		final CombatTileType rockDef = new CombatTileType ();			// No effect on movement
+		when (db.findCombatTileType ("CBL01", "calculateDoubleMovementToEnterCombatTile")).thenReturn (rockDef);
+
+		final CombatTileType roadDef = new CombatTileType ();			// Cheap movement
+		roadDef.setDoubleMovement (1);
+		when (db.findCombatTileType ("CRL03", "calculateDoubleMovementToEnterCombatTile")).thenReturn (roadDef);
+		
+		final CombatTileBorder edgeBlockingBorder = new CombatTileBorder ();
+		edgeBlockingBorder.setBlocksMovement (CombatTileBorderBlocksMovementID.CANNOT_CROSS_SPECIFIED_BORDERS);
+		when (db.findCombatTileBorder ("CTB01", "calculateDoubleMovementToEnterCombatTile")).thenReturn (edgeBlockingBorder);
+		
+		final CombatTileBorder impassableBorder = new CombatTileBorder ();
+		impassableBorder.setBlocksMovement (CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE);
+		when (db.findCombatTileBorder ("CTB02", "calculateDoubleMovementToEnterCombatTile")).thenReturn (impassableBorder);
+		
+		final CombatTileBorder passableBorder = new CombatTileBorder ();
+		passableBorder.setBlocksMovement (CombatTileBorderBlocksMovementID.NO);
+		when (db.findCombatTileBorder ("CTB03", "calculateDoubleMovementToEnterCombatTile")).thenReturn (passableBorder);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
@@ -195,12 +238,14 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateFullRangedAttackAmmo () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final List<UnitHasSkill> skills = new ArrayList<UnitHasSkill> ();
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up object to test
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -211,13 +256,13 @@ public final class TestUnitCalculationsImpl
 		// Test a unit with ammo
 		final AvailableUnit unitWithAmmo = new AvailableUnit ();
 		when (unitSkillUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
-			players, spells, combatAreaEffects, db)).thenReturn (8);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (8);
 		assertEquals (8, calc.calculateFullRangedAttackAmmo (unitWithAmmo, skills, players, spells, combatAreaEffects, db));
 		
 		// Test a unit without ammo
 		final AvailableUnit unitWithoutAmmo = new AvailableUnit ();
 		when (unitSkillUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateFullRangedAttackAmmo (unitWithoutAmmo, skills, players, spells, combatAreaEffects, db));
 	}
 	
@@ -228,12 +273,14 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateManaTotal () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final List<UnitHasSkill> skills = new ArrayList<UnitHasSkill> ();
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -246,17 +293,17 @@ public final class TestUnitCalculationsImpl
 		// Test a non-casting unit
 		final AvailableUnit nonCaster = new AvailableUnit ();
 		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateManaTotal (nonCaster, skills, players, spells, combatAreaEffects, db));
 
 		// Test an archangel
 		final AvailableUnit archangel = new AvailableUnit ();
 		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			players, spells, combatAreaEffects, db)).thenReturn (40);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (40);
 		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		assertEquals (40, calc.calculateManaTotal (archangel, skills, players, spells, combatAreaEffects, db));
 
 		// Test a low hero, lv 3 caster skill * lv 2 (+1=3) exp * 2½ = 22½
@@ -265,9 +312,9 @@ public final class TestUnitCalculationsImpl
 		
 		final AvailableUnit lowHero = new AvailableUnit ();
 		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			players, spells, combatAreaEffects, db)).thenReturn (3);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);
 		when (unitUtils.getExperienceLevel (lowHero, true, players, combatAreaEffects, db)).thenReturn (level2);
 		assertEquals (22, calc.calculateManaTotal (lowHero, skills, players, spells, combatAreaEffects, db));
 		
@@ -277,9 +324,9 @@ public final class TestUnitCalculationsImpl
 		
 		final AvailableUnit highHero = new AvailableUnit ();
 		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			players, spells, combatAreaEffects, db)).thenReturn (40);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (40);
 		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			players, spells, combatAreaEffects, db)).thenReturn (5);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (highHero, true, players, combatAreaEffects, db)).thenReturn (level4);
 		assertEquals (102, calc.calculateManaTotal (highHero, skills, players, spells, combatAreaEffects, db));
 	}
@@ -291,12 +338,14 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testGiveUnitFullRangedAmmoAndMana () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -310,11 +359,11 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit melee = new MemoryUnit ();
 		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, melee, db)).thenReturn (skills);
 		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		calc.giveUnitFullRangedAmmoAndMana (melee, players, spells, combatAreaEffects, db);
 		
 		assertEquals (-1, melee.getRangedAttackAmmo ());
@@ -327,11 +376,11 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit rangedCaster = new MemoryUnit ();
 		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, rangedCaster, db)).thenReturn (skills);
 		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
-			players, spells, combatAreaEffects, db)).thenReturn (8);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (8);
 		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			players, spells, combatAreaEffects, db)).thenReturn (40);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (40);
 		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			players, spells, combatAreaEffects, db)).thenReturn (5);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (rangedCaster, true, players, combatAreaEffects, db)).thenReturn (level4);
 		calc.giveUnitFullRangedAmmoAndMana (rangedCaster, players, spells, combatAreaEffects, db);
 		
@@ -376,11 +425,13 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateHitPointsRemaining () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Unit defintion
 		final Unit unitDef = new Unit ();
@@ -399,8 +450,8 @@ public final class TestUnitCalculationsImpl
 		unit.setUnitID ("A");
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (6);
 
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 
 		assertEquals (6, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
 	
@@ -409,8 +460,8 @@ public final class TestUnitCalculationsImpl
 		assertEquals (5, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
 
 		// Now it has 4 HP per figure
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (23, calc.calculateHitPointsRemaining (unit, players, spells, combatAreaEffects, db));
 		
 		// Take 2 more hits
@@ -425,11 +476,13 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateAliveFigureCount () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Unit defintion
 		final Unit unitDef = new Unit ();
@@ -448,8 +501,8 @@ public final class TestUnitCalculationsImpl
 		// Unit with 1 HP per figure at full health of 6 figures
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("A");
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		
 		assertEquals (6, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
@@ -466,8 +519,8 @@ public final class TestUnitCalculationsImpl
 		assertEquals (0, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
 		// Now it has 4 HP per figure, so 6x4=24 total damage
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
 		
 		// With 11 dmg taken, there's still only 2 figures dead, since it rounds down
@@ -490,11 +543,13 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateHitPointsRemainingOfFirstFigure () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Set up object to test
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -504,8 +559,8 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
 		final MemoryUnit unit = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 	
@@ -514,8 +569,8 @@ public final class TestUnitCalculationsImpl
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 
 		// Now it has 4 HP per figure
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
 		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
 		
 		// Take 2 more hits
@@ -542,11 +597,13 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCanMakeRangedAttack () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Set up object to test
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -556,21 +613,21 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit without even a ranged attack skill
 		final MemoryUnit noRangedAttack = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedAttributeValue (noRangedAttack, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+		when (unitSkillUtils.getModifiedSkillValue (noRangedAttack, noRangedAttack.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
 		assertFalse (calc.canMakeRangedAttack (noRangedAttack, players, spells, combatAreaEffects, db));
 		
 		// Bow with no remaining ammo
 		final MemoryUnit outOfAmmo = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedAttributeValue (outOfAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (outOfAmmo, outOfAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertFalse (calc.canMakeRangedAttack (outOfAmmo, players, spells, combatAreaEffects, db));
 
 		// Bow with remaining ammo
 		final MemoryUnit hasAmmo = new MemoryUnit ();
 		hasAmmo.setRangedAttackAmmo (1);
-		when (unitSkillUtils.getModifiedAttributeValue (hasAmmo, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (hasAmmo, hasAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, spells, combatAreaEffects, db));
 		
 		// Ranged attack of unknown type with mana (maybe this should actually be an exception)
@@ -580,8 +637,8 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit unknownRAT = new MemoryUnit ();
 		unknownRAT.setUnitID (unknownRATUnitDef.getUnitID ());
 		unknownRAT.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedAttributeValue (unknownRAT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (unknownRAT, unknownRAT.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (unknownRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (unknownRATUnitDef);
 		assertFalse (calc.canMakeRangedAttack (unknownRAT, players, spells, combatAreaEffects, db));
 
@@ -596,8 +653,8 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit physRATUnit = new MemoryUnit ();
 		physRATUnit.setUnitID (physRATUnitDef.getUnitID ());
 		physRATUnit.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedAttributeValue (physRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (physRATUnit, physRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (physRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (physRATUnitDef);
 		when (db.findRangedAttackType (physRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (physRAT);
 		assertFalse (calc.canMakeRangedAttack (physRATUnit, players, spells, combatAreaEffects, db));
@@ -614,8 +671,8 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit magRATUnit = new MemoryUnit ();
 		magRATUnit.setUnitID (magRATUnitDef.getUnitID ());
 		magRATUnit.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedAttributeValue (magRATUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (magRATUnit, magRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
 		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);
 		assertTrue (calc.canMakeRangedAttack (magRATUnit, players, spells, combatAreaEffects, db));
@@ -690,12 +747,13 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCalculateDoubleMovementToEnterTileType () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// Set up some movement rate rules to say:
 		// 1) Regular units on foot (US001) can move over TT01 at cost of 4 points and TT02 at cost of 6 points
 		// 2) Flying (US002) units move over everything at a cost of 2 points, including water (TT03)
 		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
 		for (int n = 1; n <= 2; n++)
 		{
@@ -782,8 +840,10 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testAreAllTerrainTypesPassable () throws Exception
 	{
-		// There are 3 tile types, first two a land tiles, third is a sea tile
+		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// There are 3 tile types, first two a land tiles, third is a sea tile
 		final List<TileType> tileTypes = new ArrayList<TileType> ();
 		for (int n = 1; n <= 3; n++)
 		{
@@ -847,6 +907,7 @@ public final class TestUnitCalculationsImpl
 	@Test(expected=MomException.class)
 	public final void testCreateUnitStack_Empty () throws RecordNotFoundException, MomException
 	{
+		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Player's memory
@@ -873,7 +934,7 @@ public final class TestUnitCalculationsImpl
 	@Test(expected=MomException.class)
 	public final void testCreateUnitStack_DifferentLocations () throws Exception
 	{
-		// Unit definitions
+		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Unit spearmenDef = new Unit ();
@@ -914,7 +975,7 @@ public final class TestUnitCalculationsImpl
 	@Test(expected=MomException.class)
 	public final void testCreateUnitStack_DifferentPlayers () throws Exception
 	{
-		// Unit definitions
+		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Unit spearmenDef = new Unit ();
@@ -956,7 +1017,7 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCreateUnitStack_Normal () throws Exception
 	{
-		// Unit definitions
+		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Unit spearmenDef = new Unit ();
@@ -1005,6 +1066,9 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCreateUnitStack_Transport () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
 		final TileType tileType = new TileType ();
 		tileType.setTileTypeID ("TT01");
@@ -1012,7 +1076,6 @@ public final class TestUnitCalculationsImpl
 		final List<TileType> tileTypes = new ArrayList<TileType> ();
 		tileTypes.add (tileType);
 		
-		final CommonDatabase db = mock (CommonDatabase.class);
 		doReturn (tileTypes).when (db).getTileTypes ();
 		
 		// Unit definitions
@@ -1082,6 +1145,9 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCreateUnitStack_NotEnoughSpace () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
 		final TileType tileType = new TileType ();
 		tileType.setTileTypeID ("TT01");
@@ -1089,7 +1155,6 @@ public final class TestUnitCalculationsImpl
 		final List<TileType> tileTypes = new ArrayList<TileType> ();
 		tileTypes.add (tileType);
 		
-		final CommonDatabase db = mock (CommonDatabase.class);
 		doReturn (tileTypes).when (db).getTileTypes ();
 		
 		// Unit defintions
@@ -1158,6 +1223,9 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCreateUnitStack_TransportOnly () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
 		final TileType tileType = new TileType ();
 		tileType.setTileTypeID ("TT01");
@@ -1165,7 +1233,6 @@ public final class TestUnitCalculationsImpl
 		final List<TileType> tileTypes = new ArrayList<TileType> ();
 		tileTypes.add (tileType);
 		
-		final CommonDatabase db = mock (CommonDatabase.class);
 		doReturn (tileTypes).when (db).getTileTypes ();
 		
 		// Unit definitions
@@ -1272,6 +1339,7 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testOkToCrossCombatTileBorder () throws RecordNotFoundException
 	{
+		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// One type of border that doesn't block movement, another that does

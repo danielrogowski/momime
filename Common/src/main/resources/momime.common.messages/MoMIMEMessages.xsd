@@ -628,7 +628,7 @@ to show them moving from one cell to another have their GridCell set to null.</x
 					<xsd:element minOccurs="0" maxOccurs="1" name="unitName" type="momimecommon:description" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackAmmo" type="momimecommon:unitSkillValue" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="manaRemaining" type="momimecommon:unitSkillValue" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="damageTaken" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="1" maxOccurs="1" name="damageTaken" type="momimecommon:unitSkillValue">
 					    <xsd:annotation>
     						<xsd:documentation>Number of hits damage this unit has taken (all hits are removed from the first figure
 until it is dead and disappears, then from the second, and so on).</xsd:documentation>

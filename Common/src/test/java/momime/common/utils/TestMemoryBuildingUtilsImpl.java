@@ -14,12 +14,16 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
@@ -27,11 +31,6 @@ import momime.common.database.UnitPrerequisite;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the MemoryBuildingUtils class
@@ -1065,15 +1064,21 @@ public final class TestMemoryBuildingUtilsImpl
 
 	/**
 	 * Tests the goldFromSellingBuilding method
-	 * @throws RecordNotFoundException If one of the buildings we try to test with can't be found in the test data
 	 */
 	@Test
-	public final void testGoldFromSellingBuilding () throws RecordNotFoundException
+	public final void testGoldFromSellingBuilding ()
 	{
-		final CommonDatabase db = GenerateTestData.createDB ();
-
+		// Set up some sample builds
+		final Building buildingOne = new Building ();
+		
+		final Building buildingTwo = new Building ();
+		buildingTwo.setProductionCost (360);
+		
+		// Set up object to test
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertEquals (100, utils.goldFromSellingBuilding (db.findBuilding (GenerateTestData.ANIMISTS_GUILD, "testGoldFromSellingBuilding")));
-		assertEquals (0, utils.goldFromSellingBuilding (db.findBuilding (CommonDatabaseConstants.BUILDING_FORTRESS, "testGoldFromSellingBuilding")));
+		
+		// Run method
+		assertEquals (0, utils.goldFromSellingBuilding (buildingOne));
+		assertEquals (120, utils.goldFromSellingBuilding (buildingTwo));
 	}
 }

@@ -352,7 +352,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			// This checks them all so we aren't relying on them being defined in the correct orer
 			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getExperienceLevel").getUnitMagicRealm ();
 			final String unitTypeID = db.findUnitMagicRealm (unitMagicRealmID, "getExperienceLevel").getUnitTypeID ();
-			final UnitType unitType = db.findUnitType (unitTypeID, "unitMagicRealmID");
+			final UnitType unitType = db.findUnitType (unitTypeID, "getExperienceLevel");
 
 			ExperienceLevel levelFromExperience = null;
 			for (final ExperienceLevel experienceLevel : unitType.getExperienceLevel ())

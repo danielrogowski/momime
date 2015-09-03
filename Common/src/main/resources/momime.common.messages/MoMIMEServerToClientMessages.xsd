@@ -629,7 +629,7 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 	<xsd:complexType name="damageCalculationHeaderData">
 	    <xsd:annotation>
     		<xsd:documentation>Header about how the source and target of an attack, before any attacks or counterattacks are rolled.
-Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID will be filled in to denote what initiated the attack;
+Exactly one and only one of attackSkillID or attackSpellID will be filled in to denote what initiated the attack;
 or all 3 being blank indicates this is a counterattack in response to a melee attack.
 (Usually a counterattack won't have its own header, but there are situations where it can, e.g. in response to previous First Strike header).</xsd:documentation>
 		</xsd:annotation>
@@ -644,7 +644,6 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -654,7 +653,7 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 	<xsd:complexType name="damageCalculationAttackData">
 	    <xsd:annotation>
     		<xsd:documentation>Breakdown about how a number of potential hits was calculated.
-Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID will be filled in to denote what initiated the attack;
+Exactly one and only one of attackSkillID or attackSpellID will be filled in to denote what initiated the attack;
 or all 3 being blank indicates this is a counterattack in response to a melee attack.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
@@ -663,12 +662,11 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerFigures" type="momimecommon:figureCount" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="potentialHits" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitSkillValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="potentialHits" type="momimecommon:unitSkillValue">
 					    <xsd:annotation>
     						<xsd:documentation>Figures * Melee/Ranged attack stat, i.e. maximum possible hits if every one hits and none get blocked.
 This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation>
@@ -689,22 +687,22 @@ This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation
 					<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="defenderFigures" type="momimecommon:figureCount" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="unmodifiedDefenceStrength" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="modifiedDefenceStrength" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="0" maxOccurs="1" name="unmodifiedDefenceStrength" type="momimecommon:unitSkillValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="modifiedDefenceStrength" type="momimecommon:unitSkillValue">
 					    <xsd:annotation>
     						<xsd:documentation>May be equal to unmodifiedDefenceStrength, halved, or zero depending on the damage type.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToHit" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToDefend" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageDamage" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageBlock" type="momimecommon:unitAttributeValue" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="actualHits" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToHit" type="momimecommon:unitSkillValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="chanceToDefend" type="momimecommon:unitSkillValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageDamage" type="momimecommon:unitSkillValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="tenTimesAverageBlock" type="momimecommon:unitSkillValue" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="actualHits" type="momimecommon:unitSkillValue">
 					    <xsd:annotation>
     						<xsd:documentation>How many of potentialHits actually strike the unit, i.e. chanceToHit% chance per each hit of potentialDamage.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="1" maxOccurs="1" name="finalHits" type="momimecommon:unitAttributeValue">
+					<xsd:element minOccurs="1" maxOccurs="1" name="finalHits" type="momimecommon:unitSkillValue">
 					    <xsd:annotation>
     						<xsd:documentation>Final HP loss the defender suffers, after some of actualHits may have been blocked and hence do no damage.</xsd:documentation>
 						</xsd:annotation>
@@ -1121,7 +1119,7 @@ hit units at once, so that the animation shows all units being hit at once, rath
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defenderDamageTaken" type="momimecommon:unitAttributeValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defenderDamageTaken" type="momimecommon:unitSkillValue" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="defenderDirection" type="map:mapDirection" />
 		</xsd:sequence>
 	</xsd:complexType>
@@ -1135,7 +1133,7 @@ not the other - in that situation one of the UnitURNs (and other values associat
 
 It is also possible that there may be no attacking unit, in the case of a player being hit by spell damage; this is why attackerPlayerID is separate + mandatory.
 
-Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID will be filled in to denote what initiated the attack.</xsd:documentation>
+Exactly one and only one of attackSkillID or attackSpellID will be filled in to denote what initiated the attack.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
@@ -1143,12 +1141,11 @@ Exactly one and only one of attackSkillID, attackAttributeID or attackSpellID wi
 					<xsd:sequence>
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDamageTaken" type="momimecommon:unitAttributeValue" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDamageTaken" type="momimecommon:unitSkillValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDirection" type="map:mapDirection" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDoubleCombatMovesLeft" type="momimecommon:integerMapDistance" />
 						
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="attackAttributeID" type="momimecommon:unitAttributeID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="specialDamageType" type="momimecommon:damageTypeID">
 						    <xsd:annotation>
@@ -1174,7 +1171,7 @@ Used when units heal and gain experience at the start of a turn, and when units 
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="damageTaken" type="momimecommon:unitAttributeValue" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="damageTaken" type="momimecommon:unitSkillValue" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="experience" type="momimecommon:experiencePoints" />
 					</xsd:sequence>
 				</xsd:extension>

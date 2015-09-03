@@ -11,27 +11,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.MomException;
-import momime.common.calculations.UnitHasSkillMergedList;
-import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.GenerateTestData;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.Spell;
-import momime.common.database.Unit;
-import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitHasSkill;
-import momime.common.database.UnitSkill;
-import momime.common.database.UnitSpellEffect;
-import momime.common.messages.AvailableUnit;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.PlayerPick;
-import momime.common.messages.UnitStatusID;
-
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -39,7 +18,31 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
+import momime.common.MomException;
+import momime.common.calculations.UnitHasSkillMergedList;
+import momime.common.database.CombatAreaAffectsPlayersID;
+import momime.common.database.CombatAreaEffect;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.Unit;
+import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitMagicRealm;
+import momime.common.database.UnitSkill;
+import momime.common.database.UnitSpellEffect;
+import momime.common.database.UnitType;
+import momime.common.database.UnitUpkeep;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Tests the UnitUtils class
@@ -134,14 +137,23 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testInitializeUnitSkills_NoSkills () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Unit unitDef = new Unit ();
+		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
+		
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+		// Run method
+		assertSame (unitDef, utils.initializeUnitSkills (unit, -1, db));
 
-		assertEquals (GenerateTestData.BARBARIAN_SPEARMEN,
-			utils.initializeUnitSkills (unit, -1, GenerateTestData.createDB ()).getUnitID ());
-
+		// Check results
 		assertEquals (0, unit.getUnitHasSkill ().size ());
 	}
 
@@ -152,14 +164,31 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testInitializeUnitSkills_ExpOnUnitThatCannotHaveAny () throws RecordNotFoundException
 	{
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
+		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
+		
+		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.MAGIC_SPIRIT_UNIT);
+		unit.setUnitID ("UN001");
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
-		assertEquals (GenerateTestData.MAGIC_SPIRIT_UNIT,
-			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
+		// Run method
+		assertSame (unitDef, utils.initializeUnitSkills (unit, 100, db));
 
+		// Check results
 		assertEquals (0, unit.getUnitHasSkill ().size ());
 	}
 
@@ -170,14 +199,32 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testInitializeUnitSkills_ExpOnly () throws RecordNotFoundException
 	{
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
+		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		unitType.getExperienceLevel ().add (null);		// Any record here is good enough
+		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
+		
+		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+		unit.setUnitID ("UN001");
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
-		assertEquals (GenerateTestData.BARBARIAN_SPEARMEN,
-			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
+		// Run method
+		assertSame (unitDef, utils.initializeUnitSkills (unit, 100, db));
 
+		// Check results
 		assertEquals (1, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
 		assertEquals (100, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
@@ -190,19 +237,39 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testInitializeUnitSkills_SkillsOnly () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final UnitHasSkill unitDefSkill = new UnitHasSkill ();
+		unitDefSkill.setUnitSkillID ("US001");
+		unitDefSkill.setUnitSkillValue (5);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("MB01");
+		unitDef.getUnitHasSkill ().add (unitDefSkill);
+		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
+		
+		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
+		
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
+		// Run method
+		assertSame (unitDef, utils.initializeUnitSkills (unit, 100, db));
 
-		assertEquals (GenerateTestData.DARK_ELF_WARLOCKS,
-			utils.initializeUnitSkills (unit, -1, GenerateTestData.createDB ()).getUnitID ());
-
-		assertEquals (2, unit.getUnitHasSkill ().size ());
-		assertEquals (GenerateTestData.WALKING, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (0).getUnitSkillValue ());
-		assertEquals (GenerateTestData.RANGED_ATTACK_AMMO, unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertEquals (4, unit.getUnitHasSkill ().get (1).getUnitSkillValue ().intValue ());
+		// Check results
+		assertEquals (1, unit.getUnitHasSkill ().size ());
+		assertEquals ("US001", unit.getUnitHasSkill ().get (0).getUnitSkillID ());
+		assertEquals (5, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
 	}
 
 	/**
@@ -212,21 +279,43 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testInitializeUnitSkills_ExpAndSkills () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final UnitHasSkill unitDefSkill = new UnitHasSkill ();
+		unitDefSkill.setUnitSkillID ("US001");
+		unitDefSkill.setUnitSkillValue (5);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("MB01");
+		unitDef.getUnitHasSkill ().add (unitDefSkill);
+		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
+		
+		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		unitType.getExperienceLevel ().add (null);		// Any record here is good enough
+		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
+		
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
+		// Run method
+		assertSame (unitDef, utils.initializeUnitSkills (unit, 100, db));
 
-		assertEquals (GenerateTestData.DARK_ELF_WARLOCKS,
-			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
-
-		assertEquals (3, unit.getUnitHasSkill ().size ());
+		// Check results
+		assertEquals (2, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
 		assertEquals (100, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals (GenerateTestData.WALKING, unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
-		assertEquals (GenerateTestData.RANGED_ATTACK_AMMO, unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertEquals (4, unit.getUnitHasSkill ().get (2).getUnitSkillValue ().intValue ());
+
+		assertEquals ("US001", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
+		assertEquals (5, unit.getUnitHasSkill ().get (1).getUnitSkillValue ().intValue ());
 	}
 
 	/**
@@ -422,151 +511,6 @@ public final class TestUnitUtilsImpl
 	}
 
 	/**
-	 * Tests the getExperienceLevel method with a normal unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	@Test
-	public final void testGetExperienceLevel_Normal () throws RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		// Create player
-		final MomPersistentPlayerPublicKnowledge pk = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (1);
-		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pk, null);
-		
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (player);
-
-		// Session utils
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getExperienceLevel")).thenReturn (player);
-		
-		// Create CAEs
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-
-		// Set up object to test
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
-		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
-
-		// Create normal unit
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		unit.setOwningPlayerID (1);
-
-		final UnitHasSkill unitExperience = new UnitHasSkill ();
-		unitExperience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-		unitExperience.setUnitSkillValue (20);
-		unit.getUnitHasSkill ().add (unitExperience);
-
-		assertEquals (2, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (2, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-
-		// Give player warlord
-		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
-		warlord.setQuantity (1);
-		pk.getPick ().add (warlord);
-
-		assertEquals (2, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (3, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-
-		// Give player crusade
-		final MemoryCombatAreaEffect crusade = new MemoryCombatAreaEffect ();
-		crusade.setCastingPlayerID (1);
-		crusade.setCombatAreaEffectID (CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE);
-		combatAreaEffects.add (crusade);
-
-		assertEquals (2, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (4, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-
-		// Give it lots of exp - show that 3 is the highest level we can attain through experience
-		unitExperience.setUnitSkillValue (100);
-		assertEquals (3, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (5, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-	}
-
-	/**
-	 * Tests the getExperienceLevel method with a hero unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	@Test
-	public final void testGetExperienceLevel_Hero () throws RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		// Create player
-		final MomPersistentPlayerPublicKnowledge pk = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (1);
-		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pk, null);
-		
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (player);
-
-		// Session utils
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getExperienceLevel")).thenReturn (player);
-
-		// Create CAEs
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
-
-		// Set up object to test
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
-		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
-		
-		// Create normal unit
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.DWARF_HERO);
-		unit.setOwningPlayerID (1);
-
-		final UnitHasSkill unitExperience = new UnitHasSkill ();
-		unitExperience.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-		unitExperience.setUnitSkillValue (20);
-		unit.getUnitHasSkill ().add (unitExperience);
-
-		assertEquals (2, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (2, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-
-		// Give player warlord
-		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
-		warlord.setQuantity (1);
-		pk.getPick ().add (warlord);
-
-		assertEquals (2, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (3, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-
-		// Give player crusade
-		final MemoryCombatAreaEffect crusade = new MemoryCombatAreaEffect ();
-		crusade.setCastingPlayerID (1);
-		crusade.setCombatAreaEffectID (CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE);
-		combatAreaEffects.add (crusade);
-
-		assertEquals (2, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (4, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-
-		// Give it lots of exp
-		unitExperience.setUnitSkillValue (60);
-		assertEquals (6, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (8, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-
-		// Give it even more exp, to prove that we can't get level 9 through warlord+crusade
-		unitExperience.setUnitSkillValue (70);
-		assertEquals (7, utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-		assertEquals (8, utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()).getLevelNumber ());
-	}
-
-	/**
 	 * Tests the getExperienceLevel method with a summoned unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on
@@ -575,34 +519,107 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testGetExperienceLevel_Summoned () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		// Create player
-		final MomPersistentPlayerPublicKnowledge pk = new MomPersistentPlayerPublicKnowledge ();
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
+		// Create other lists
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		final PlayerPublicDetails player = new PlayerPublicDetails (new PlayerDescription (), pk, null);
-		player.getPlayerDescription ().setPlayerID (1);
-		players.add (player);
-
-		// Create CAEs
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
-		// Create summoned unit
+		// Create test unit
 		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.WAR_BEARS_UNIT);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		assertNull (utils.getExperienceLevel (unit, false, players, combatAreaEffects, db));
+		assertNull (utils.getExperienceLevel (unit, true, players, combatAreaEffects, db));
+	}
+
+	/**
+	 * Tests the getExperienceLevel method with a normal unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 */
+	@Test
+	public final void testGetExperienceLevel_Normal () throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN001", "getExperienceLevel")).thenReturn (unitDef);
+		
+		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findUnitMagicRealm ("MB01", "getExperienceLevel")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "getExperienceLevel")).thenReturn (unitType);
+		
+		for (int n = 0; n <= 7; n++)
+		{
+			final ExperienceLevel expLvl = new ExperienceLevel ();
+			expLvl.setLevelNumber (n);
+			
+			// Levels 6 and 7 can only be attained via Warlord+Crusade
+			if (n <= 5)
+				expLvl.setExperienceRequired (n * 20);
+			
+			unitType.getExperienceLevel ().add (expLvl);
+		}
+		
+		// Players
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getExperienceLevel")).thenReturn (player);
+		
+		// Create other lists
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+
+		// Create test unit
+		final UnitHasSkill exp = new UnitHasSkill ();
+		exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		exp.setUnitSkillValue (95);
+		
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		unit.getUnitHasSkill ().add (exp);
 		unit.setOwningPlayerID (1);
 
+		// Set up object to test
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertNull (utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()));
-		assertNull (utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()));
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setMemoryCombatAreaEffectUtils (caeUtils);
+		
+		// Run method
+		// So lv 0=0..19, 1=20..39, 2=40..59, 3=60..79, 4=80..99, 5=100+
+		assertEquals (4, utils.getExperienceLevel (unit, false, players, combatAreaEffects, db).getLevelNumber ());
+		assertEquals (4, utils.getExperienceLevel (unit, true, players, combatAreaEffects, db).getLevelNumber ());
+		
+		// Now give the player warlord+crusade
+		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_WARLORD)).thenReturn (1);
+		when (caeUtils.findCombatAreaEffect (combatAreaEffects, null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, 1)).thenReturn
+			(new MemoryCombatAreaEffect ());
 
-		// Give player warlord, to prove that this doesn't raise the -1 to 0
-		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.RETORT_ID_WARLORD);
-		warlord.setQuantity (1);
-		pk.getPick ().add (warlord);
-
-		assertNull (utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()));
-		assertNull (utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()));
+		assertEquals (4, utils.getExperienceLevel (unit, false, players, combatAreaEffects, db).getLevelNumber ());
+		assertEquals (6, utils.getExperienceLevel (unit, true, players, combatAreaEffects, db).getLevelNumber ());
+		
+		// Give unit masses of exp
+		exp.setUnitSkillValue (1000);
+		assertEquals (5, utils.getExperienceLevel (unit, false, players, combatAreaEffects, db).getLevelNumber ());
+		assertEquals (7, utils.getExperienceLevel (unit, true, players, combatAreaEffects, db).getLevelNumber ());
 	}
 
 	/**
@@ -612,18 +629,26 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsBlank () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test unit
 		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		unit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		unit.setOwningPlayerID (1);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_BLANK);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
-		// Even though CAE is global and for the right player, with affects blank it shouldn't apply
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (unit, effect, GenerateTestData.createDB ()));
+		
+		// Even though CAE is global and for the right player, with affects blank it shouldn't apply
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (unit, effect, db));
 	}
 
 	/**
@@ -633,34 +658,42 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsAll () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final AvailableUnit ourUnit = new AvailableUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
-		// Global all players CAE should affect all players - don't need to worry about in combat or not, since available units can't be in combat
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		
+		// Global all players CAE should affect all players - don't need to worry about in combat or not, since available units can't be in combat
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units - should still apply
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units - should no longer apply
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -670,34 +703,42 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsCaster () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.CASTER_ONLY);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final AvailableUnit ourUnit = new AvailableUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_CASTER);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
-		// Global caster CAE should affect only the caster
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		
+		// Global caster CAE should affect only the caster
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units - however for Caster Only, this means the units also have to be in combat, which they aren't so it still doesn't apply
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units - should no longer apply
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -707,36 +748,44 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsBothInCombat () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.BOTH_PLAYERS_IN_COMBAT);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final AvailableUnit ourUnit = new AvailableUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_BOTH);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
 		// Any settings make no difference, since available units cannot be in combat
 
-		// Global both CAE should affect both combat players, but available units can't be in combat
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		
+		// Global both CAE should affect both combat players, but available units can't be in combat
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -746,36 +795,42 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Available_AffectsOpponent () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.COMBAT_OPPONENT);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final AvailableUnit ourUnit = new AvailableUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_OPPONENT);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
 		// Any settings make no difference, since available units cannot be in combat so there can be no opponent
 
 		// Global opponent CAE should only combat opponent, but available units can't be in combat
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -785,18 +840,26 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsBlank () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
-		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		unit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		unit.setOwningPlayerID (1);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_BLANK);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
-		// Even though CAE is global and for the right player, with affects blank it shouldn't apply
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (unit, effect, GenerateTestData.createDB ()));
+
+		// Even though CAE is global and for the right player, with affects blank it shouldn't apply
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (unit, effect, db));
 	}
 
 	/**
@@ -806,34 +869,42 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsAll () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final MemoryUnit ourUnit = new MemoryUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
-		// Global all CAE should affect all players regardless of location or whether in combat or not
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+
+		// Global all CAE should affect all players regardless of location or whether in combat or not
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units - should still apply
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units - should no longer apply
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Put the unit into combat - Note the units are at 15,10,1 but in a combat at 16,10,1 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
@@ -846,13 +917,13 @@ public final class TestUnitUtilsImpl
 		theirUnit.setCombatHeading (5);
 		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
 		
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
 		effect.getMapLocation ().setX (15);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -862,34 +933,42 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsCaster () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.CASTER_ONLY);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final MemoryUnit ourUnit = new MemoryUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_CASTER);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
 
-		// Global caster CAE should affect only the caster
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+
+		// Global caster CAE should affect only the caster
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units - however for Caster Only, this means the units also have to be in combat, which they aren't so it still doesn't apply
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units - should no longer apply
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
@@ -902,13 +981,13 @@ public final class TestUnitUtilsImpl
 		theirUnit.setCombatHeading (5);
 		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
 		
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
 		effect.getMapLocation ().setX (15);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -918,36 +997,44 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsBothInCombat () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.BOTH_PLAYERS_IN_COMBAT);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final MemoryUnit ourUnit = new MemoryUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_BOTH);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
 		// Any settings make no difference until we put the unit into combat
 
 		// Global both CAE should affect both combat players, but available units can't be in combat
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
@@ -960,13 +1047,13 @@ public final class TestUnitUtilsImpl
 		theirUnit.setCombatHeading (5);
 		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
 		
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
 		effect.getMapLocation ().setX (15);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -976,36 +1063,44 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testDoesCombatAreaEffectApplyToUnit_Real_AffectsOpponent () throws RecordNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.COMBAT_OPPONENT);
+		when (db.findCombatAreaEffect ("CAE01", "doesCombatAreaEffectApplyToUnit")).thenReturn (caeDef);
+		
+		// Create test units
 		final MemoryUnit ourUnit = new MemoryUnit ();
-		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
-		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
-
+		
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
-		effect.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_OPPONENT);
+		effect.setCombatAreaEffectID ("CAE01");
 		effect.setCastingPlayerID (1);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
 		// Any settings make no difference until we put the unit into combat
 
 		// Global opponent CAE should only combat opponent, but available units can't be in combat
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Localise the CAE in the same spot as the units
 		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE to a different spot than the units
 		effect.getMapLocation ().setX (16);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
 		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
@@ -1018,13 +1113,13 @@ public final class TestUnitUtilsImpl
 		theirUnit.setCombatHeading (5);
 		theirUnit.setCombatSide (UnitCombatSideID.DEFENDER);
 		
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
 		effect.getMapLocation ().setX (15);
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
-		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, db));
+		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, db));
 	}
 
 	/**
@@ -1151,20 +1246,33 @@ public final class TestUnitUtilsImpl
 	@Test
 	public final void testGetBasicUpkeepValue () throws RecordNotFoundException
 	{
-		final AvailableUnit warlocks = new AvailableUnit ();
-		warlocks.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitUpkeep upkeepA = new UnitUpkeep ();
+		upkeepA.setProductionTypeID ("A");
+		upkeepA.setUpkeepValue (1);
 
-		final AvailableUnit stoneGiant = new AvailableUnit ();
-		stoneGiant.setUnitID (GenerateTestData.STONE_GIANT_UNIT);
+		final UnitUpkeep upkeepB = new UnitUpkeep ();
+		upkeepB.setProductionTypeID ("B");
+		upkeepB.setUpkeepValue (5);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.getUnitUpkeep ().add (upkeepA);
+		unitDef.getUnitUpkeep ().add (upkeepB);
+		when (db.findUnit ("UN001", "getBasicUpkeepValue")).thenReturn (unitDef);
+		
+		// Create test units
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
 
+		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertEquals (1, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, GenerateTestData.createDB ()));
-		assertEquals (5, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, GenerateTestData.createDB ()));
-
-		assertEquals (0, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, GenerateTestData.createDB ()));
-		assertEquals (0, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, GenerateTestData.createDB ()));
-		assertEquals (9, utils.getBasicUpkeepValue (stoneGiant, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, GenerateTestData.createDB ()));
+		
+		// Run method
+		assertEquals (1, utils.getBasicUpkeepValue (unit, "A", db));
+		assertEquals (5, utils.getBasicUpkeepValue (unit, "B", db));
+		assertEquals (0, utils.getBasicUpkeepValue (unit, "C", db));
 	}
 
 	/**

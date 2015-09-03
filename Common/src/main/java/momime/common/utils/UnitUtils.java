@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
- * Simple unit lookups of basic skill, attribute and upkeep values
+ * Simple unit lookups of basic skill and upkeep values
  */
 public interface UnitUtils
 {

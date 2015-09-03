@@ -16,8 +16,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -630,8 +630,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		unit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit.setCombatSide (UnitCombatSideID.ATTACKER);
 		
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (12);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (12);
 		
 		// Set up object to test
 		final SpellUtils spellUtils = mock (SpellUtils.class);

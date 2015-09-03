@@ -76,7 +76,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final String spellSummonsUnitTypeID (final Spell spell, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering calculateCastingCostReduction: " + spell.getSpellID ());
+		log.trace ("Entering spellSummonsUnitTypeID: " + spell.getSpellID ());
 
 		// for War Bears, Sky Drakes, etc. we want "S", and for Summon Hero, Champion & Incarnation we want "H"
 		String result = null;
@@ -96,7 +96,7 @@ public final class SpellUtilsImpl implements SpellUtils
 					throw new MomException ("Summoning spell " + spell.getSpellID () + " can summon units of more than one Unit Type");
 			}
 
-		log.trace ("Exiting calculateCastingCostReduction = " + result);
+		log.trace ("Exiting spellSummonsUnitTypeID = " + result);
 		return result;
 	}
 

@@ -691,20 +691,9 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
         	<xsd:documentation>Defines the wepaon grades available for normal units, such as that units can have Adamantium instead of regular weapons.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeAttributeBonus" type="momimecommon:weaponGradeAttributeBonus" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeSkillBonus" type="momimecommon:weaponGradeSkillBonus" />
 		</xsd:sequence>
 		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120" />
-	</xsd:complexType>
-
-	<xsd:complexType name="weaponGradeAttributeBonus" nxe:singular="Attribute Bonus" nxe:plural="Attribute Bonuses">
-        <xsd:annotation>
-        	<xsd:documentation>Lists the bonuses to attributes that units get from having a particular grade of weapons, e.g. that Mithril weapons give +1 to Melee &amp; Ranged attack strength, Defence and To Hit..</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeID" type="momimecommon:unitAttributeID" nxe:label="Attribute" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="bonusValue" type="momimecommon:unitAttributeValue" nxe:label="Value" nxe:gridwidth="50" />
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="weaponGradeSkillBonus" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses">
@@ -723,20 +712,15 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 		</xsd:sequence>
 	</xsd:complexType>
 	
-	<xsd:complexType name="unitAttribute" nxe:singular="Unit Attribute" nxe:plural="Unit Attributes" nxe:submenu="Units">
-        <xsd:annotation>
-        	<xsd:documentation>Defines the attributes that units can gave, e.g. Melee Attack Strength, Defence, Resistance.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:attribute name="unitAttributeID" type="momimecommon:unitAttributeID" use="required" nxe:label="Unit Attribute ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-
 	<xsd:complexType name="unitSkill" nxe:singular="Unit Skill" nxe:plural="Unit Skills" nxe:submenu="Units">
         <xsd:annotation>
-        	<xsd:documentation>Defines all the unit skills available, e.g. First Strike, Flame Breath, Flying, Scouting, as well as skill-like effects from spells (both enchantments and curses), 
-e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of special icons that appear on the lower half of the unit info screen.</xsd:documentation>
+        	<xsd:documentation>Defines all the unit attributes and skills available, e.g. Melee Attack Strength, Defence, Resistance, First Strike, Flame Breath,
+Flying, Scouting, as well as skill-like effects from spells (both enchantments and curses), e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep -
+i.e. both the lists of top half and bottom half of the unit info screen.  Their only difference is where they appear on the unit info screen, which
+is defined in the graphics XML file.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="addsToAttributeID" type="momimecommon:unitAttributeID" nxe:label="Adds to Attribute" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="addsToSkillID" type="momimecommon:unitSkillID" nxe:label="Adds to Skill" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="addsToAttributeDivisor" type="momimecommon:attributeDivisor" nxe:label="Attribute Divisor" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
@@ -772,20 +756,9 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringColour" type="momimecommon:colour" nxe:label="Ring Colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringCount" type="momimecommon:experienceLevelRingCount" nxe:label="Nbr. Rings" nxe:gridwidth="70" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceAttributeBonus" type="momimecommon:experienceAttributeBonus" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceSkillBonus" type="momimecommon:experienceSkillBonus" />
 		</xsd:sequence>
 		<xsd:attribute name="levelNumber" type="momimecommon:experienceLevelNumber" use="required" nxe:label="Level" nxe:gridwidth="50" />
-	</xsd:complexType>
-
-	<xsd:complexType name="experienceAttributeBonus" nxe:singular="Attribute Bonus" nxe:plural="Attribute Bonuses">
-        <xsd:annotation>
-        	<xsd:documentation>Lists the bonuses to attributes that units get at a particular skill level, e.g. that Veteran units gain +1 Melee and Ranged attack, +1 Defence and +2 Resistance.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeID" type="momimecommon:unitAttributeID" nxe:label="Attribute" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="bonusValue" type="momimecommon:unitAttributeValue" nxe:label="Value" nxe:gridwidth="50" />
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="experienceSkillBonus" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses">
@@ -857,7 +830,6 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="transportCapacity" type="momimecommon:transportCapacity" nxe:label="Transport Capacity" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttributeValue" type="momimecommon:unitHasAttributeValue" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitUpkeep" type="momimecommon:unitUpkeep" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPrerequisite" type="momimecommon:unitPrerequisite" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitHasSkill" type="momimecommon:unitHasSkill" />
@@ -865,16 +837,6 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 		<xsd:attribute name="unitID" type="momimecommon:unitID" use="required" nxe:label="Unit ID" nxe:gridwidth="50" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="unitHasAttributeValue" nxe:singular="Attribute Value" nxe:plural="Attribute Values">
-        <xsd:annotation>
-        	<xsd:documentation>Defines the attribute values that a particular unit has, e.g. their Melee Attack Strength, Defence and Resistance.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="attributeValue" type="momimecommon:unitAttributeValue" nxe:label="Value" nxe:gridwidth="50" />
-		</xsd:sequence>
-		<xsd:attribute name="unitAttributeID" type="momimecommon:unitAttributeID" use="required" nxe:label="Attribute" nxe:showmaincolumn="false" />
-	</xsd:complexType>
-
 	<xsd:complexType name="unitHasSkill" nxe:singular="Unit has Skill" nxe:plural="Unit has Skills">
         <xsd:annotation>
         	<xsd:documentation>Defines which skills a particular unit has, e.g. First Strike, Flame Breath, Flying, Scouting.</xsd:documentation>
@@ -926,7 +888,8 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 	
 	<xsd:complexType name="combatAreaEffect" nxe:singular="Combat Area Effect" nxe:plural="Combat Area Effects" nxe:submenu="Magic">
         <xsd:annotation>
-        	<xsd:documentation>Defines area effects that affect an entire combat, or the entire map, e.g. Prayer, Darkness, Crusade, Eternal Night and Node Auras.</xsd:documentation>
+        	<xsd:documentation>Defines area effects that affect an entire combat, or the entire map, e.g. Prayer, Darkness, Crusade, Eternal Night and Node Auras.
+"Affects Players" is null for CAEs that don't modify unit stats, e.g. Counter Magic or the dispelling auras of nodes.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaAffectsPlayers" type="momimecommon:combatAreaAffectsPlayersID" nxe:label="Bonuses apply to units belonging to" nxe:showmaincolumn="false">
@@ -936,27 +899,9 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffectAttributeBonus" type="momimecommon:combatAreaEffectAttributeBonus" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffectSkillBonus" type="momimecommon:combatAreaEffectSkillBonus" />
 		</xsd:sequence>
 		<xsd:attribute name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" use="required" nxe:label="Effect ID" nxe:gridwidth="80" />
-	</xsd:complexType>
-
-	<xsd:complexType name="combatAreaEffectAttributeBonus" nxe:singular="Attribute Bonus" nxe:plural="Attribute Bonuses">
-        <xsd:annotation>
-        	<xsd:documentation>Lists the bonuses or penalties to attributes that units get from a particular combat area effect, e.g. Chaos creatures getting various bonuses from Chaos nodes, Life creatures getting a bonus and Death creatures getting a penalty from True Light.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeID" type="momimecommon:unitAttributeID" nxe:label="Attribute" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="bonusValue" type="momimecommon:unitAttributeValue" nxe:label="Value" nxe:gridwidth="50" />
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="combatAreaEffectSkillBonus" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses">
@@ -1013,8 +958,8 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellCombatTarget" type="momimecommon:attackSpellCombatTargetID" nxe:label="Atk Spell Combat Target" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageType" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitAttributeValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitAttributeValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="MP per +1 dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:summonedUnit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSpellEffect" />
@@ -1101,7 +1046,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 Can have different saving throw depending on the type of unit.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowAttributeID" type="momimecommon:unitAttributeID" nxe:label="Saving Throw rolls against Target Attribute" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowSkillID" type="momimecommon:unitSkillID" nxe:label="Saving Throw rolls against Target Skill" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowModifier" type="momimecommon:savingThrowModifier" nxe:label="Saving Throw Modifier" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="targetMagicRealmID" type="momimecommon:unitMagicRealmID" use="optional" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
@@ -1260,10 +1205,6 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 	
 	<xsd:simpleType name="weaponGradeNumber">
 		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="unitAttributeID">
-		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="unitSkillID">
@@ -1676,10 +1617,6 @@ This is a reduction value - so an Oracle with a calming effect of 2 is stored as
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="unitAttributeValue">
-		<xsd:restriction base="xsd:int" />
-	</xsd:simpleType>
-	
 	<xsd:simpleType name="unitSkillValue">
         <xsd:annotation>
         	<xsd:documentation>MoM IME by convention uses positive skill values for ALL skills (in the original MoM it was dubious whether saving throw penalty skills like Death Gaze -2 or Death Gaze -4 were stored as -2 or +2).
@@ -1868,9 +1805,9 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
-	<xsd:simpleType name="unitAttributeComponent">
+	<xsd:simpleType name="unitSkillComponent">
 	    <xsd:annotation>
-			<xsd:documentation>Different things that can contribute to a unit's attribute values; defined so we can colour them separately on the Unit Info screen.</xsd:documentation>
+			<xsd:documentation>Different things that can contribute to a unit's skill values; defined so we can colour them separately on the Unit Info screen.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="A"><xsd:annotation>
@@ -1900,7 +1837,7 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<xsd:simpleType name="unitAttributePositiveNegative">
+	<xsd:simpleType name="unitSkillPositiveNegative">
 	    <xsd:annotation>
 			<xsd:documentation>This is used on the unit info screen to show when stats have been reduced, e.g. by Black Prayer, Vertigo, Warp Reality.</xsd:documentation>
 		</xsd:annotation>

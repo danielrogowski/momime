@@ -12,8 +12,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -339,8 +339,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     				case DISINTEGRATE:
     					// Units with 10 or more resistance are immune to spells that roll against resistance
     					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
-    					int resistance = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-       						UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+    					int resistance = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+       						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
     					if (spell.getAttackSpellDamageType () != DamageTypeID.RESISTANCE_ROLLS)
     					{
     						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;

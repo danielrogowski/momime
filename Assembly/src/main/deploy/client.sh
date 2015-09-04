@@ -1,0 +1,1 @@
+java -Xmx1024m -classpath lib/momime-client-${momime.client.version}.jar:$(cat lib/classpaths/client-classpath-unix.txt) momime.client.MomClientKickOff client

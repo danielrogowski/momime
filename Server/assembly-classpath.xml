@@ -9,7 +9,11 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<files>
 		<file>
-			<source>target/server-classpath.txt</source>
+			<source>target/server-classpath-windows.txt</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
+			<source>target/server-classpath-unix.txt</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>

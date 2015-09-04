@@ -23,7 +23,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Client config XML -->
 	
 	<bean id="clientConfigSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg value="/momime.client.config/MoMIMEClientConfig.xsd"/>
+		<constructor-arg type="java.net.URL" value="/momime.client.config/MoMIMEClientConfig.xsd"/>
 	</bean>
 	
 	<bean id="clientConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
@@ -75,7 +75,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Graphics XML -->
 	
 	<bean id="graphicsDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg value="/momime.client.graphics/MoMIMEGraphicsDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in graphics XML -->
+		<constructor-arg type="java.net.URL" value="/momime.client.graphics/MoMIMEGraphicsDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in graphics XML -->
 	</bean>
 	
 	<bean id="graphicsDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
@@ -144,7 +144,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Language XML -->
 
 	<bean id="languageDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg value="/momime.client.language/MoMIMELanguageDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in language XML -->
+		<constructor-arg type="java.net.URL" value="/momime.client.language/MoMIMELanguageDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in language XML -->
 	</bean>
 	
 	<bean id="languageDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
@@ -185,7 +185,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- XML layouts -->
 
 	<bean id="xmlLayoutSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg value="/com.ndg.swing.layoutmanagers/XmlLayout.xsd"/>
+		<constructor-arg type="java.net.URL" value="/com.ndg.swing.layoutmanagers/XmlLayout.xsd"/>
 	</bean>
 	
 	<bean id="xmlLayoutJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">

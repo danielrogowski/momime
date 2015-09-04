@@ -9,7 +9,11 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<files>
 		<file>
-			<source>target/editors-classpath.txt</source>
+			<source>target/editors-classpath-windows.txt</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
+			<source>target/editors-classpath-unix.txt</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>

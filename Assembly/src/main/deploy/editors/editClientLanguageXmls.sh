@@ -1,0 +1,1 @@
+java -Xmx1024m -classpath ../lib/momime-editors-${momime.editors.version}.jar:$(cat ../lib/classpaths/editors-classpath-unix.txt) momime.editors.client.language.LanguageEditor

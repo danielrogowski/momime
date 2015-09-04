@@ -319,14 +319,30 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>build-classpath</id>
+						<id>build-classpath-windows</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<outputFile>target/client-classpath.txt</outputFile>
+							<outputFile>target/client-classpath-windows.txt</outputFile>
 							<prefix>lib</prefix>
+							<pathSeparator>;</pathSeparator>
+							<fileSeparator>\</fileSeparator>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+					<execution>
+						<id>build-classpath-unix</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<outputFile>target/client-classpath-unix.txt</outputFile>
+							<prefix>lib</prefix>
+							<pathSeparator>:</pathSeparator>
+							<fileSeparator>/</fileSeparator>
 							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>

@@ -40,29 +40,6 @@ public interface DamageCalculator
 		throws JAXBException, XMLStreamException;
 	
 	/**
-	 * Calculates the strength of an attack coming from a unit attribute, i.e. a regular melee or ranged attack.
-	 * 
-	 * @param attacker Unit making the attack
-	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
-	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
-	 * @param attackAttributeID The attribute being used to attack, i.e. UA01 (swords) or UA02 (ranged)
-	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
-	 * @param db Lookup lists built over the XML database
-	 * @return How much damage defender takes as a result of being attacked by attacker
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws JAXBException If there is a problem converting the object into XML
-	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 */
-	public AttackDamage attackFromUnitAttribute (final AttackResolutionUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final String attackAttributeID, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
-
-	/**
 	 * Calculates the strength of an attack coming from a unit skill, e.g. Thrown Weapons, breath and gaze attacks, or Posion Touch
 	 * 
 	 * @param attacker Unit making the attack

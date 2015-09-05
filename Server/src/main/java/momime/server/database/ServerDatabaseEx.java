@@ -138,21 +138,6 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public UnitSkillSvr findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException;
 
 	/**
-	 * @return Complete list of all unit attributes in game
-	 */
-	@Override
-	public List<UnitAttributeSvr> getUnitAttributes ();
-	
-	/**
-	 * @param unitAttributeID Unit attribute ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit attribute object
-	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
-	 */
-	@Override
-	public UnitAttributeSvr findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException;
-	
-	/**
 	 * @return Complete list of all races in game
 	 */
 	@Override

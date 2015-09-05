@@ -18,6 +18,8 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -111,7 +113,8 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 		// Actual scouting skill
 		scoutingRange = Math.max (scoutingRange, getUnitSkillUtils ().getModifiedSkillValue
-			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db));
+			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
 		for (final UnitHasSkill thisSkill : mergedSkills)
@@ -657,8 +660,8 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			penalty = (int) (distance / 3);
 			
 			// Long range skill?
-			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue
-				(attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE, players, spells, combatAreaEffects, db) >= 0))
+			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) >= 0))
 				
 				penalty = 1;
 		}

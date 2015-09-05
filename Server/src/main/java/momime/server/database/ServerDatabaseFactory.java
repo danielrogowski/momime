@@ -2,49 +2,48 @@ package momime.server.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import momime.server.database.v0_9_6.AttackResolution;
-import momime.server.database.v0_9_6.AttackResolutionCondition;
-import momime.server.database.v0_9_6.AttackResolutionStep;
-import momime.server.database.v0_9_6.Building;
-import momime.server.database.v0_9_6.CityNameContainer;
-import momime.server.database.v0_9_6.CitySize;
-import momime.server.database.v0_9_6.CitySpellEffect;
-import momime.server.database.v0_9_6.CombatAreaEffect;
-import momime.server.database.v0_9_6.CombatMapElement;
-import momime.server.database.v0_9_6.CombatTileBorder;
-import momime.server.database.v0_9_6.CombatTileType;
-import momime.server.database.v0_9_6.DifficultyLevel;
-import momime.server.database.v0_9_6.FogOfWarSetting;
-import momime.server.database.v0_9_6.LandProportion;
-import momime.server.database.v0_9_6.MapFeature;
-import momime.server.database.v0_9_6.MapFeatureMagicRealm;
-import momime.server.database.v0_9_6.NodeStrength;
-import momime.server.database.v0_9_6.ObjectFactory;
-import momime.server.database.v0_9_6.OverlandMapSize;
-import momime.server.database.v0_9_6.Pick;
-import momime.server.database.v0_9_6.PickFreeSpell;
-import momime.server.database.v0_9_6.PickType;
-import momime.server.database.v0_9_6.PickTypeCountContainer;
-import momime.server.database.v0_9_6.PickTypeGrantsSpells;
-import momime.server.database.v0_9_6.Plane;
-import momime.server.database.v0_9_6.ProductionType;
-import momime.server.database.v0_9_6.Race;
-import momime.server.database.v0_9_6.RangedAttackType;
-import momime.server.database.v0_9_6.ServerDatabase;
-import momime.server.database.v0_9_6.Spell;
-import momime.server.database.v0_9_6.SpellSetting;
-import momime.server.database.v0_9_6.TileType;
-import momime.server.database.v0_9_6.TileTypeAreaEffect;
-import momime.server.database.v0_9_6.TileTypeFeatureChance;
-import momime.server.database.v0_9_6.Unit;
-import momime.server.database.v0_9_6.UnitAttribute;
-import momime.server.database.v0_9_6.UnitMagicRealm;
-import momime.server.database.v0_9_6.UnitSetting;
-import momime.server.database.v0_9_6.UnitSkill;
-import momime.server.database.v0_9_6.UnitType;
-import momime.server.database.v0_9_6.WeaponGrade;
-import momime.server.database.v0_9_6.Wizard;
-import momime.server.database.v0_9_6.WizardPickCount;
+import momime.server.database.v0_9_7.AttackResolution;
+import momime.server.database.v0_9_7.AttackResolutionCondition;
+import momime.server.database.v0_9_7.AttackResolutionStep;
+import momime.server.database.v0_9_7.Building;
+import momime.server.database.v0_9_7.CityNameContainer;
+import momime.server.database.v0_9_7.CitySize;
+import momime.server.database.v0_9_7.CitySpellEffect;
+import momime.server.database.v0_9_7.CombatAreaEffect;
+import momime.server.database.v0_9_7.CombatMapElement;
+import momime.server.database.v0_9_7.CombatTileBorder;
+import momime.server.database.v0_9_7.CombatTileType;
+import momime.server.database.v0_9_7.DifficultyLevel;
+import momime.server.database.v0_9_7.FogOfWarSetting;
+import momime.server.database.v0_9_7.LandProportion;
+import momime.server.database.v0_9_7.MapFeature;
+import momime.server.database.v0_9_7.MapFeatureMagicRealm;
+import momime.server.database.v0_9_7.NodeStrength;
+import momime.server.database.v0_9_7.ObjectFactory;
+import momime.server.database.v0_9_7.OverlandMapSize;
+import momime.server.database.v0_9_7.Pick;
+import momime.server.database.v0_9_7.PickFreeSpell;
+import momime.server.database.v0_9_7.PickType;
+import momime.server.database.v0_9_7.PickTypeCountContainer;
+import momime.server.database.v0_9_7.PickTypeGrantsSpells;
+import momime.server.database.v0_9_7.Plane;
+import momime.server.database.v0_9_7.ProductionType;
+import momime.server.database.v0_9_7.Race;
+import momime.server.database.v0_9_7.RangedAttackType;
+import momime.server.database.v0_9_7.ServerDatabase;
+import momime.server.database.v0_9_7.Spell;
+import momime.server.database.v0_9_7.SpellSetting;
+import momime.server.database.v0_9_7.TileType;
+import momime.server.database.v0_9_7.TileTypeAreaEffect;
+import momime.server.database.v0_9_7.TileTypeFeatureChance;
+import momime.server.database.v0_9_7.Unit;
+import momime.server.database.v0_9_7.UnitMagicRealm;
+import momime.server.database.v0_9_7.UnitSetting;
+import momime.server.database.v0_9_7.UnitSkill;
+import momime.server.database.v0_9_7.UnitType;
+import momime.server.database.v0_9_7.WeaponGrade;
+import momime.server.database.v0_9_7.Wizard;
+import momime.server.database.v0_9_7.WizardPickCount;
 
 /**
  * Creates our custom extended ServerDatabase when it is unmarshalled with JAXB
@@ -149,15 +148,6 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	public final CitySize createCitySize ()
 	{
 		return new CitySizeSvr ();
-	}
-
-	/**
-	 * @return Custom extended UnitAttribute 
-	 */
-	@Override
-	public final UnitAttribute createUnitAttribute ()
-	{
-		return new UnitAttributeSvr ();
 	}
 
 	/**

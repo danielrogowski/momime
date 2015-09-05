@@ -7,12 +7,20 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -25,13 +33,7 @@ import momime.server.database.AttackResolutionConditionSvr;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitAttributeSvr;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
+import momime.server.database.UnitSkillSvr;
 
 /**
  * Methods for processing attack resolutions.  This would all just be part of DamageProcessor, these methods
@@ -55,32 +57,32 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	private DamageCalculator damageCalculator;
 	
 	/**
-	 * When one unit initiates a unit attribute-based attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
+	 * When one unit initiates a basic attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
 	 * 
 	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
-	 * @param attackAttributeID Which attribute they are attacking with (melee or ranged)
+	 * @param attackSkillID Which skillthey are attacking with (melee or ranged)
 	 * @param players Players list
 	 * @param spells Known spells
 	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
 	 * @return Chosen attack resolution
-	 * @throws RecordNotFoundException If the unit attribute or so on can't be found in the XML database
+	 * @throws RecordNotFoundException If the unit skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
 	 */
 	@Override
-	public final AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackAttributeID,
+	public AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackSkillID,
 		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering chooseAttackResolution: Unit URN " + attacker.getUnitURN () + " hitting Unit URN " + defender.getUnitURN () + " with " + attackAttributeID);
+		log.trace ("Entering chooseAttackResolution: Unit URN " + attacker.getUnitURN () + " hitting Unit URN " + defender.getUnitURN () + " with " + attackSkillID);
 	
-		final UnitAttributeSvr unitAttr = db.findUnitAttribute (attackAttributeID, "chooseAttackResolution");
+		final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "chooseAttackResolution");
 		
 		// Check all possible attack resolutions to select the most appropriate one
 		AttackResolutionSvr match = null;
-		final Iterator<AttackResolutionSvr> iter = unitAttr.getAttackResolutions ().iterator ();
+		final Iterator<AttackResolutionSvr> iter = unitSkill.getAttackResolutions ().iterator ();
 		while ((match == null) && (iter.hasNext ()))
 		{
 			final AttackResolutionSvr attackResolution = iter.next ();
@@ -94,7 +96,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				
 				// Check this condition
 				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
-				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (), players, spells, combatAreaEffects, db) < 0)
+				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (),
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) < 0)
+					
 					conditionsMatch = false;
 			}
 			
@@ -104,7 +108,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		
 		// Its an error if we fail to find any match at all
 		if (match == null)
-			throw new MomException ("Unit URN " + attacker.getUnitURN () + " tried to hit Unit URN " + defender.getUnitURN () + " with attack of type " + attackAttributeID +
+			throw new MomException ("Unit URN " + attacker.getUnitURN () + " tried to hit Unit URN " + defender.getUnitURN () + " with attack of type " + attackSkillID +
 				" but there are no defined attack resolutions capable of processing the attack");
 		
 		log.trace ("Exiting chooseAttackResolution = " + match);
@@ -214,31 +218,21 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if (unitMakingAttack == null)
 							throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 						
-						// What are they attacking with?
-						if (step.getUnitAttributeID () != null)
-						{
-							// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
-							if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitAttributeID ())) &&
-								(!getUnitCalculations ().canMakeRangedAttack (unitMakingAttack.getUnit (), players, spells, combatAreaEffects, db)))
+						// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
+						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())) &&
+							(!getUnitCalculations ().canMakeRangedAttack (unitMakingAttack.getUnit (), players, spells, combatAreaEffects, db)))
 							
-								potentialDamage = null;
-							else
-								potentialDamage = getDamageCalculator ().attackFromUnitAttribute
-									(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitAttributeID (), players, spells, combatAreaEffects, db);
-						}
-						else if (step.getUnitSkillID () != null)
+							potentialDamage = null;
+						else
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill
 								(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, spells, combatAreaEffects, db);
-						
-						else
-							throw new MomException ("processAttackResolutionStep: Tried to process attack step that specifies neither an attribute ID or skill ID to attack with, side = " + step.getCombatSide ());
 					}
 					
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have
 					if (potentialDamage != null)
 					{
 						// If its a non-magical ranged attack, work out any distance penalty
-						if ((step != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitAttributeID ())))
+						if ((step != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())))
 						{
 							final int penalty = getServerUnitCalculations ().calculateRangedAttackDistancePenalty
 								(attacker.getUnit (), defender.getUnit (), combatMapCoordinateSystem, players, spells, combatAreaEffects, db);

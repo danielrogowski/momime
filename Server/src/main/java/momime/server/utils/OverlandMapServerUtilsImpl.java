@@ -11,6 +11,8 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -229,7 +231,8 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		else
 		{
 			final int attackingStrength = getUnitSkillUtils ().getModifiedSkillValue (attackingSpirit, attackingSpirit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, UnitSkillComponent.ALL,
+				UnitSkillPositiveNegative.BOTH, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 			
 			// Create test unit
 			final AvailableUnit defendingSpirit = new AvailableUnit ();
@@ -237,7 +240,8 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			getUnitUtils ().initializeUnitSkills (defendingSpirit, -1, db);
 
 			final int defendingStrength = getUnitSkillUtils ().getModifiedSkillValue (defendingSpirit, defendingSpirit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, UnitSkillComponent.ALL,
+				UnitSkillPositiveNegative.BOTH, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 			
 			// Decide who wins
 			successful = (getRandomUtils ().nextInt (defendingStrength + attackingStrength) < attackingStrength);

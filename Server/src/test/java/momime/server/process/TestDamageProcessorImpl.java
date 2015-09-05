@@ -185,7 +185,7 @@ public final class TestDamageProcessorImpl
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
-			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
 			specialDamageTypesApplied, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
@@ -196,7 +196,7 @@ public final class TestDamageProcessorImpl
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
 		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
-		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackAttributeID ());
+		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackSkillID ());
 		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
@@ -344,7 +344,7 @@ public final class TestDamageProcessorImpl
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
-			null, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			specialDamageTypesApplied, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
@@ -355,7 +355,7 @@ public final class TestDamageProcessorImpl
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
 		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
-		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, data.getAttackAttributeID ());
+		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, data.getAttackSkillID ());
 		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());

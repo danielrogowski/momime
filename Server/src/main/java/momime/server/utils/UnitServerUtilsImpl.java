@@ -11,8 +11,8 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSpecialOrder;
@@ -443,8 +443,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				hitsLeftToApply = hitsLeftToApply - hitsOnThisFigure;
 				totalHits = totalHits + hitsOnThisFigure;
 				defendingFiguresRemaining--;
-				hitPointsRemainingOfFirstFigure = getUnitSkillUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+				hitPointsRemainingOfFirstFigure = getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (),
+					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
 			}
 		}
 		

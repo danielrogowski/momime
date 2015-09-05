@@ -209,9 +209,6 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		for (final BuildingSvr building : src.getBuildings ())
 			dest.getBuilding ().add (building);
 
-		for (final UnitAttributeSvr unitAttribute : src.getUnitAttributes ())
-			dest.getUnitAttribute ().add (unitAttribute);
-
 		for (final UnitTypeSvr unitType : src.getUnitTypes ())
 			dest.getUnitType ().add (unitType);
 

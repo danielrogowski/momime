@@ -73,7 +73,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender; or null if the attack isn't coming from a unit
-	 * @param attackAttributeID The attribute being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
+	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
 	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
@@ -87,7 +87,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 */
 	@Override
 	public final void resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackAttributeID,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackSkillID,
 		final SpellSvr spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
@@ -108,7 +108,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// We send this a couple of times for different parts of the calculation, so initialize it here
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.HEADER);
-		damageCalculationMsg.setAttackAttributeID (attackAttributeID);
+		damageCalculationMsg.setAttackSkillID (attackSkillID);
 
 		if ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))
 			damageCalculationMsg.setDefenderUnitURN (defenders.get (0).getUnitURN ());
@@ -147,7 +147,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		for (final MemoryUnit defender : defenders)
 		{
-			final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (attacker, defender, attackAttributeID, mom.getPlayers (),
+			final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (attacker, defender, attackSkillID, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 			
 			final List<List<AttackResolutionStepSvr>> steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
@@ -182,7 +182,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// can see the units fighting (who will update the damage immediately).
 		// This also sends the number of combat movement points the attacker has left.
 		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, damageCalculationMsg.getAttackerPlayerID (), defenders,
-			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackAttributeID (), damageCalculationMsg.getAttackSpellID (),
+			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackSpellID (),
 			specialDamageTypesApplied, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		

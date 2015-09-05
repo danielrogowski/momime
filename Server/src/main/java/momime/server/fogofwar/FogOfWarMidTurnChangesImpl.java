@@ -1046,7 +1046,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param attackerPlayerID Player owning tuAttacker unit; supplied in case tuAttacker is null
 	 * @param tuDefenders Server's true memory of unit(s) that got hit
 	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
-	 * @param attackAttributeID Attribute used to make the attack, for regular melee or ranged attacks
 	 * @param attackSpellID Spell used to make the attack
 	 * @param specialDamageTypesApplied List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @param players List of players in the session
@@ -1060,7 +1059,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final List<MemoryUnit> tuDefenders,
-		final String attackSkillID, final String attackAttributeID, final String attackSpellID, final List<DamageTypeID> specialDamageTypesApplied,
+		final String attackSkillID, final String attackSpellID, final List<DamageTypeID> specialDamageTypesApplied,
 		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
@@ -1137,7 +1136,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if ((msg.getAttackerUnitURN () != null) || (msg.getDefenderUnit ().size () > 0))
 				{
 					msg.setAttackSkillID (attackSkillID);
-					msg.setAttackAttributeID (attackAttributeID);
 					msg.setAttackSpellID (attackSpellID);
 					thisPlayer.getConnection ().sendMessageToClient (msg);
 				}

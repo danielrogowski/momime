@@ -1,7 +1,7 @@
 package momime.server.knowledge;
 
 import momime.common.messages.PendingMovement;
-import momime.server.messages.v0_9_6.ServerGridCell;
+import momime.server.messages.v0_9_7.ServerGridCell;
 
 /**
  * Server-side only additional storage required at every map cell, that doesn't need to be persisted into save game files

@@ -13,6 +13,8 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -25,7 +27,7 @@ import momime.server.database.AttackResolutionConditionSvr;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitAttributeSvr;
+import momime.server.database.UnitSkillSvr;
 
 import org.junit.Test;
 
@@ -59,11 +61,13 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -81,10 +85,10 @@ public final class TestAttackResolutionProcessingImpl
 		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
 		res2.getAttackResolutionConditions ().add (condition2);
 		
-		final UnitAttributeSvr unitAttr = new UnitAttributeSvr ();
+		final UnitSkillSvr unitAttr = new UnitSkillSvr ();
 		unitAttr.getAttackResolutions ().add (res1);
 		unitAttr.getAttackResolutions ().add (res2);
-		when (db.findUnitAttribute ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
+		when (db.findUnitSkill ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -119,11 +123,13 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -141,10 +147,10 @@ public final class TestAttackResolutionProcessingImpl
 		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
 		res2.getAttackResolutionConditions ().add (condition2);
 		
-		final UnitAttributeSvr unitAttr = new UnitAttributeSvr ();
+		final UnitSkillSvr unitAttr = new UnitSkillSvr ();
 		unitAttr.getAttackResolutions ().add (res1);
 		unitAttr.getAttackResolutions ().add (res2);
-		when (db.findUnitAttribute ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
+		when (db.findUnitSkill ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -287,7 +293,7 @@ public final class TestAttackResolutionProcessingImpl
 		// Attack resolution steps
 		final AttackResolutionStepSvr attackStep = new AttackResolutionStepSvr ();
 		attackStep.setCombatSide (UnitCombatSideID.ATTACKER);
-		attackStep.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		attackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 		
 		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
 		steps.add (attackStep);
@@ -344,7 +350,7 @@ public final class TestAttackResolutionProcessingImpl
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
-		when (damageCalc.attackFromUnitAttribute (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
@@ -379,11 +385,11 @@ public final class TestAttackResolutionProcessingImpl
 		// Attack resolution steps
 		final AttackResolutionStepSvr attackStep = new AttackResolutionStepSvr ();
 		attackStep.setCombatSide (UnitCombatSideID.ATTACKER);
-		attackStep.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		attackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 
 		final AttackResolutionStepSvr counterattackStep = new AttackResolutionStepSvr ();
 		counterattackStep.setCombatSide (UnitCombatSideID.DEFENDER);
-		counterattackStep.setUnitAttributeID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		counterattackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 		
 		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
 		steps.add (attackStep);
@@ -443,11 +449,11 @@ public final class TestAttackResolutionProcessingImpl
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
-		when (damageCalc.attackFromUnitAttribute (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
 
 		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageTypeID.SINGLE_FIGURE, null, 1);
-		when (damageCalc.attackFromUnitAttribute (defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (damageCalc.attackFromUnitSkill (defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage

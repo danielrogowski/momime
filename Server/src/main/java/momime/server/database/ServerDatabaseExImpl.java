@@ -4,34 +4,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.TaxRate;
-import momime.server.database.v0_9_6.Building;
-import momime.server.database.v0_9_6.CitySize;
-import momime.server.database.v0_9_6.CitySpellEffect;
-import momime.server.database.v0_9_6.CombatAreaEffect;
-import momime.server.database.v0_9_6.CombatTileBorder;
-import momime.server.database.v0_9_6.CombatTileType;
-import momime.server.database.v0_9_6.MapFeature;
-import momime.server.database.v0_9_6.Pick;
-import momime.server.database.v0_9_6.PickType;
-import momime.server.database.v0_9_6.Plane;
-import momime.server.database.v0_9_6.ProductionType;
-import momime.server.database.v0_9_6.Race;
-import momime.server.database.v0_9_6.RangedAttackType;
-import momime.server.database.v0_9_6.ServerDatabase;
-import momime.server.database.v0_9_6.Spell;
-import momime.server.database.v0_9_6.TileType;
-import momime.server.database.v0_9_6.Unit;
-import momime.server.database.v0_9_6.UnitAttribute;
-import momime.server.database.v0_9_6.UnitMagicRealm;
-import momime.server.database.v0_9_6.UnitSkill;
-import momime.server.database.v0_9_6.UnitType;
-import momime.server.database.v0_9_6.WeaponGrade;
-import momime.server.database.v0_9_6.Wizard;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.TaxRate;
+import momime.server.database.v0_9_7.Building;
+import momime.server.database.v0_9_7.CitySize;
+import momime.server.database.v0_9_7.CitySpellEffect;
+import momime.server.database.v0_9_7.CombatAreaEffect;
+import momime.server.database.v0_9_7.CombatTileBorder;
+import momime.server.database.v0_9_7.CombatTileType;
+import momime.server.database.v0_9_7.MapFeature;
+import momime.server.database.v0_9_7.Pick;
+import momime.server.database.v0_9_7.PickType;
+import momime.server.database.v0_9_7.Plane;
+import momime.server.database.v0_9_7.ProductionType;
+import momime.server.database.v0_9_7.Race;
+import momime.server.database.v0_9_7.RangedAttackType;
+import momime.server.database.v0_9_7.ServerDatabase;
+import momime.server.database.v0_9_7.Spell;
+import momime.server.database.v0_9_7.TileType;
+import momime.server.database.v0_9_7.Unit;
+import momime.server.database.v0_9_7.UnitMagicRealm;
+import momime.server.database.v0_9_7.UnitSkill;
+import momime.server.database.v0_9_7.UnitType;
+import momime.server.database.v0_9_7.WeaponGrade;
+import momime.server.database.v0_9_7.Wizard;
 
 /**
  * Adds maps for faster key lookups over the server-side database read in via JAXB
@@ -77,9 +76,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	/** Map of unit skill IDs to unit skill XML objects */
 	private Map<String, UnitSkillSvr> unitSkillsMap;
 
-	/** Map of unit attribute IDs to unit attribute XML objects */
-	private Map<String, UnitAttributeSvr> unitAttributesMap;
-	
 	/** Map of weapon grade numbers to weapon grade XML objects */
 	private Map<Integer, WeaponGrade> weaponGradesMap;
 
@@ -177,11 +173,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
 			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillSvr) thisUnitSkill);
 
-		// Create unit attributes map
-		unitAttributesMap = new HashMap<String, UnitAttributeSvr> ();
-		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
-			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), (UnitAttributeSvr) thisUnitAttribute);
-		
 		// Create weaponGrades map
 		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
@@ -546,32 +537,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		return found;
 	}
 
-	/**
-	 * @return Complete list of all unit attributes in game
-	 */
-	@Override
-	@SuppressWarnings ("unchecked")
-	public final List<UnitAttributeSvr> getUnitAttributes ()
-	{
-		return (List<UnitAttributeSvr>) (List<?>) getUnitAttribute ();
-	}
-
-	/**
-	 * @param unitAttributeID Unit attribute ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit attribute object
-	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
-	 */
-	@Override
-	public final UnitAttributeSvr findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException
-	{
-		final UnitAttributeSvr found = unitAttributesMap.get (unitAttributeID);
-		if (found == null)
-			throw new RecordNotFoundException (UnitAttribute.class, unitAttributeID, caller);
-
-		return found;
-	}
-	
 	/**
 	 * @return Complete list of all weapon grades in game
 	 */

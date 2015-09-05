@@ -1,1 +1,1 @@
-PUBLIC "http://momime/server/database/v0_9_6" "MoMIMEServerDatabase.xsd"
+PUBLIC "http://momime/server/database/v0_9_7" "MoMIMEServerDatabase.xsd"

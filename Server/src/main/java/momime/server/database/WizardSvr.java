@@ -2,7 +2,7 @@ package momime.server.database;
 
 import java.util.List;
 
-import momime.server.database.v0_9_6.Wizard;
+import momime.server.database.v0_9_7.Wizard;
 
 /**
  * Extended server side wizard class, just for typecasting the pick count list

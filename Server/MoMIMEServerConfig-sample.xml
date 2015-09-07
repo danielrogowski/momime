@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config:momImeServerConfig xmlns:config="http://momime/server/config/v0_9_6">
+<config:momImeServerConfig xmlns:config="http://momime/server/config/v0_9_7">
 	<portNumber>18250</portNumber>
 	<userRegistryFilename>server/userRegistry/MoMIMEServerUserRegistry.xml</userRegistryFilename>
 	<pathToServerXmlDatabases>server/databases</pathToServerXmlDatabases>

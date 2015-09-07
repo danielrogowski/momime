@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config:momImeClientConfig xmlns:config="http://momime/client/config/v0_9_6">
+<config:momImeClientConfig xmlns:config="http://momime/client/config/v0_9_7">
 	<graphicsXmlFilename>client/graphics/Default.Master of Magic Graphics.xml</graphicsXmlFilename>
 	<pathToLanguageXmlFiles>client/languages</pathToLanguageXmlFiles>
 	<chosenLanguage>English</chosenLanguage>
@@ -11,6 +11,7 @@
 	<overlandShowEnemyBorders>false</overlandShowEnemyBorders>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
 	<unitCombatScale>D</unitCombatScale>
+	<displayUnitSkillsAsAttributes>A</displayUnitSkillsAsAttributes>
 	<debugShowURNs>false</debugShowURNs>
 	<debugShowEdgesOfMap>false</debugShowEdgesOfMap>
 </config:momImeClientConfig>

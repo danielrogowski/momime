@@ -28,11 +28,10 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeGfx;
 import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
-import momime.client.graphics.database.UnitAttributeGfx;
-import momime.client.graphics.database.UnitAttributeWeaponGradeGfx;
+import momime.client.graphics.database.UnitSkillGfx;
+import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
 import momime.client.graphics.database.UnitCombatActionGfx;
 import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.graphics.database.UnitTypeGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -187,18 +186,18 @@ public final class TestUnitClientUtilsImpl
 	}
 	
 	/**
-	 * Tests the getUnitAttributeIcon method
+	 * Tests the getUnitSkillComponentBreakdownIcon method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetUnitAttributeIcon () throws Exception
+	public final void testGetUnitSkillComponentBreakdownIcon () throws Exception
 	{
 		// Unit def
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final Unit unitDef = new Unit ();
 		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "getUnitAttributeIcon")).thenReturn (unitDef);
+		when (db.findUnit ("UN001", "getUnitSkillComponentBreakdownIcon")).thenReturn (unitDef);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -234,32 +233,32 @@ public final class TestUnitClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// + to hit doesn't vary by weapon grade
-		final UnitAttributeGfx plusToHit = new UnitAttributeGfx ();
+		final UnitSkillGfx plusToHit = new UnitSkillGfx ();
 
-		final UnitAttributeWeaponGradeGfx plusToHitIcon = new UnitAttributeWeaponGradeGfx ();
-		plusToHitIcon.setAttributeImageFile ("plusToHit.png");
-		plusToHit.getUnitAttributeWeaponGrade ().add (plusToHitIcon);
+		final UnitSkillWeaponGradeGfx plusToHitIcon = new UnitSkillWeaponGradeGfx ();
+		plusToHitIcon.setSkillImageFile ("plusToHit.png");
+		plusToHit.getUnitSkillWeaponGrade ().add (plusToHitIcon);
 		
 		plusToHit.buildMap ();;
-		when (gfx.findUnitAttribute (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitAttributeIcon")).thenReturn (plusToHit);
+		when (gfx.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitSkillComponentBreakdownIcon")).thenReturn (plusToHit);
 		
 		// melee varies by weapon grade
-		final UnitAttributeGfx melee = new UnitAttributeGfx ();
+		final UnitSkillGfx melee = new UnitSkillGfx ();
 
 		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
 		{
-			final UnitAttributeWeaponGradeGfx meleeIcon = new UnitAttributeWeaponGradeGfx ();
-			meleeIcon.setAttributeImageFile ("melee" + wepGrade + ".png");
+			final UnitSkillWeaponGradeGfx meleeIcon = new UnitSkillWeaponGradeGfx ();
+			meleeIcon.setSkillImageFile ("melee" + wepGrade + ".png");
 			meleeIcon.setWeaponGradeNumber (wepGrade);
-			melee.getUnitAttributeWeaponGrade ().add (meleeIcon);
+			melee.getUnitSkillWeaponGrade ().add (meleeIcon);
 		}
 		
 		melee.buildMap ();
-		when (gfx.findUnitAttribute (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitAttributeIcon")).thenReturn (melee);
+		when (gfx.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitSkillComponentBreakdownIcon")).thenReturn (melee);
 		
 		// RAT that doesn't vary by weapon grade
 		final RangedAttackTypeGfx rat1 = new RangedAttackTypeGfx ();
-		when (gfx.findRangedAttackType ("RAT01", "getUnitAttributeIcon")).thenReturn (rat1);
+		when (gfx.findRangedAttackType ("RAT01", "getUnitSkillComponentBreakdownIcon")).thenReturn (rat1);
 
 		final RangedAttackTypeWeaponGradeGfx rat1Icon = new RangedAttackTypeWeaponGradeGfx ();
 		rat1Icon.setUnitDisplayRangedImageFile ("rat1.png");
@@ -279,15 +278,15 @@ public final class TestUnitClientUtilsImpl
 		unitUtils.setClient (client);
 		
 		// Run tests
-		assertSame (plusToHitImage, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
-		assertSame (meleeWepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK));
-		assertSame (rat1Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		assertSame (plusToHitImage, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertSame (meleeWepGrade2Image, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK));
+		assertSame (rat1Image, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 
 		// RAT that does vary by weapon grade
 		unitDef.setRangedAttackType ("RAT02");
 
 		final RangedAttackTypeGfx rat2 = new RangedAttackTypeGfx ();
-		when (gfx.findRangedAttackType ("RAT02", "getUnitAttributeIcon")).thenReturn (rat2);
+		when (gfx.findRangedAttackType ("RAT02", "getUnitSkillComponentBreakdownIcon")).thenReturn (rat2);
 
 		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
 		{
@@ -299,26 +298,26 @@ public final class TestUnitClientUtilsImpl
 		
 		rat2.buildMap ();
 
-		assertSame (rat2wepGrade2Image, unitUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		assertSame (rat2wepGrade2Image, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 	}
 	
 	/**
-	 * Tests the getUnitSkillIcon method
+	 * Tests the getUnitSkillSingleIcon method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetUnitSkillIcon () throws Exception
+	public final void testGetUnitSkillSingleIcon () throws Exception
 	{
 		// Unit def
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final Unit unitDef = new Unit ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		when (db.findUnit ("UN001", "getUnitSkillIcon")).thenReturn (unitDef);
+		when (db.findUnit ("UN001", "getUnitSkillSingleIcon")).thenReturn (unitDef);
 		
 		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillIcon")).thenReturn (unitMagicRealm);
+		when (db.findUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillSingleIcon")).thenReturn (unitMagicRealm);
 
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
@@ -343,7 +342,7 @@ public final class TestUnitClientUtilsImpl
 		
 		final UnitSkillGfx skillGfx = new UnitSkillGfx ();
 		skillGfx.setUnitSkillImageFile ("skill.png");
-		when (gfx.findUnitSkill ("US001", "getUnitSkillIcon")).thenReturn (skillGfx);
+		when (gfx.findUnitSkill ("US001", "getUnitSkillSingleIcon")).thenReturn (skillGfx);
 
 		final UnitTypeGfx unitType = new UnitTypeGfx ();
 		
@@ -357,7 +356,7 @@ public final class TestUnitClientUtilsImpl
 		
 		unitType.buildMap ();
 		
-		when (gfx.findUnitType ("N", "getUnitSkillIcon")).thenReturn (unitType);
+		when (gfx.findUnitType ("N", "getUnitSkillSingleIcon")).thenReturn (unitType);
 		
 		// Player list
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -393,8 +392,8 @@ public final class TestUnitClientUtilsImpl
 		unitClientUtils.setClient (client);
 
 		// Run tests
-		assertSame (skillImage, unitClientUtils.getUnitSkillIcon (unit, "US001"));
-		assertSame (exp2Image, unitClientUtils.getUnitSkillIcon (unit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		assertSame (skillImage, unitClientUtils.getUnitSkillSingleIcon (unit, "US001"));
+		assertSame (exp2Image, unitClientUtils.getUnitSkillSingleIcon (unit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
 	}
 	
 	/**

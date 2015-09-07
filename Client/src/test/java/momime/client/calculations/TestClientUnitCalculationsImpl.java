@@ -12,6 +12,8 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -69,11 +71,16 @@ public final class TestClientUnitCalculationsImpl
 
 		// Give the unit skills US02 and US03
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US02", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US03", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US04", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US02",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US03",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US04",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
@@ -128,11 +135,16 @@ public final class TestClientUnitCalculationsImpl
 
 		// Give the unit skills US02 and US03
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US02", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US03", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US04", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US02",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US03",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US04",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (-1);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
@@ -183,7 +195,8 @@ public final class TestClientUnitCalculationsImpl
 
 		// Give the unit skills US02 and US03
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
@@ -233,7 +246,8 @@ public final class TestClientUnitCalculationsImpl
 
 		// Give the unit skills US02 and US03
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01",
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (0);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();

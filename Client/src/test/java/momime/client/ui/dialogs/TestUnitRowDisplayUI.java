@@ -8,11 +8,23 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -29,10 +41,11 @@ import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.UnitAttribute;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -40,17 +53,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the UnitRowDisplayUI class
@@ -68,7 +70,8 @@ public final class TestUnitRowDisplayUI
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
-		final BufferedImage meleeIcon = utils.loadImage ("/momime.client.graphics/unitAttributes/meleeNormal.png");
+		final BufferedImage meleeIcon = utils.loadImage ("/momime.client.graphics/unitSkills/meleeNormal.png");
+		final BufferedImage hpIcon = utils.loadImage ("/momime.client.graphics/unitSkills/hitPoints.png");
 		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -109,15 +112,19 @@ public final class TestUnitRowDisplayUI
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Unit attributes
-		final List<UnitAttribute> unitAttributes = new ArrayList<UnitAttribute> ();
+		final List<UnitSkill> unitSkills = new ArrayList<UnitSkill> ();
 		for (int attrNo = 1; attrNo <= 6; attrNo++)
 		{
-			final UnitAttribute attrDef = new UnitAttribute ();
-			attrDef.setUnitAttributeID ("UA0" + attrNo);
-			unitAttributes.add (attrDef);
+			final UnitSkill attrDef = new UnitSkill ();
+			attrDef.setUnitSkillID ("UA0" + attrNo);
+			unitSkills.add (attrDef);
+			
+			final UnitSkillGfx attrGfx = new UnitSkillGfx ();
+			attrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
+			when (gfx.findUnitSkill (attrDef.getUnitSkillID (), "UnitRowDisplayUI")).thenReturn (attrGfx);
 		}
 		
-		doReturn (unitAttributes).when (db).getUnitAttributes ();
+		doReturn (unitSkills).when (db).getUnitSkills ();
 		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -156,12 +163,6 @@ public final class TestUnitRowDisplayUI
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		units.add (unit);
 		
-		// Attributes
-		when (unitSkillUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
-
-		when (unitClientUtils.getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
-		
 		// Skills
 		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
 		for (int skillNo = 1; skillNo <= 3; skillNo++)
@@ -170,10 +171,25 @@ public final class TestUnitRowDisplayUI
 			skill.setUnitSkillID ("US03" + skillNo);
 			mergedSkills.add (skill);
 
-			when (unitClientUtils.getUnitSkillIcon (unit, "US03" + skillNo)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US03" + skillNo + "-icon.png"));
+			when (unitClientUtils.getUnitSkillSingleIcon (unit, "US03" + skillNo)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US03" + skillNo + "-icon.png"));
+			
+			final UnitSkillGfx skillGfx = new UnitSkillGfx ();
+			skillGfx.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
+			when (gfx.findUnitSkill (skill.getUnitSkillID (), "UnitRowDisplayUI")).thenReturn (skillGfx);
 		}
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (mergedSkills);
+
+		// Attributes
+		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
+
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
 		
+		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (15);
+
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (hpIcon);
+			
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "PlayerColourImageGeneratorImpl")).thenReturn (player1);
@@ -208,6 +224,7 @@ public final class TestUnitRowDisplayUI
 		display.setUtils (utils);
 		display.setLanguageHolder (langHolder);
 		display.setLanguageChangeMaster (langMaster);
+		display.setGraphicsDB (gfx);
 		display.setUnits (units);
 		display.setTargetSpell (ntm);
 		display.setClient (client);

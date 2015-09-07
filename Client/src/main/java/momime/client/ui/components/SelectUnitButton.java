@@ -14,8 +14,8 @@ import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -157,8 +157,8 @@ public final class SelectUnitButton extends JToggleButton
 				else
 				{
 					final double totalHits = getUnitUtils ().getFullFigureCount (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton")) *
-						getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-							UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+						getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 					

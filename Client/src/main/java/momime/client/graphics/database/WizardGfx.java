@@ -1,7 +1,7 @@
 package momime.client.graphics.database;
 
-import momime.client.graphics.database.v0_9_6.Wizard;
-import momime.client.graphics.database.v0_9_6.WizardCombatPlayList;
+import momime.client.graphics.database.v0_9_7.Wizard;
+import momime.client.graphics.database.v0_9_7.WizardCombatPlayList;
 import momime.common.database.RecordNotFoundException;
 
 import org.apache.commons.logging.Log;

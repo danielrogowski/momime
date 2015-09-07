@@ -3,7 +3,7 @@ package momime.client.graphics.database;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import momime.client.graphics.database.v0_9_6.Animation;
+import momime.client.graphics.database.v0_9_7.Animation;
 import momime.common.MomException;
 
 import org.apache.commons.logging.Log;

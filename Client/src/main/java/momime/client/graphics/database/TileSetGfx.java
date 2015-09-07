@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_6.SmoothedTile;
-import momime.client.graphics.database.v0_9_6.SmoothedTileType;
-import momime.client.graphics.database.v0_9_6.SmoothingSystem;
-import momime.client.graphics.database.v0_9_6.TileSet;
+import momime.client.graphics.database.v0_9_7.SmoothedTile;
+import momime.client.graphics.database.v0_9_7.SmoothedTileType;
+import momime.client.graphics.database.v0_9_7.SmoothingSystem;
+import momime.client.graphics.database.v0_9_7.TileSet;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.utils.CompareUtils;

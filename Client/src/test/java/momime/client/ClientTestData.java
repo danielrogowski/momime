@@ -23,7 +23,7 @@ import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.SmoothedTileTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.WizardGfx;
-import momime.client.graphics.database.v0_9_6.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_7.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
@@ -73,7 +73,7 @@ public final class ClientTestData
 	 * @return Location of "Default.Master of Magic Graphics.xml" to test with
 	 * @throws IOException If we are unable to locate the default graphics XML file
 	 */
-	private final static File locateDefaultGraphicsXmlFile () throws IOException
+	public final static File locateDefaultGraphicsXmlFile () throws IOException
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location

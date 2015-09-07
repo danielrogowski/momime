@@ -2,7 +2,6 @@ package momime.client.ui.panels;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +14,13 @@ import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
@@ -25,13 +31,12 @@ import momime.client.graphics.database.ProductionTypeGfx;
 import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.client.graphics.database.RangedAttackTypeGfx;
 import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
-import momime.client.graphics.database.UnitAttributeComponentImageGfx;
+import momime.client.graphics.database.UnitSkillComponentImageGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.UnitAttributeLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
@@ -46,23 +51,16 @@ import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Unit;
-import momime.common.database.UnitAttribute;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSkillTypeID;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.UnitSkillUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
 
 /**
  * Tests the UnitInfoPanel class
@@ -219,24 +217,6 @@ public final class TestUnitInfoPanel
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "UnitURN")).thenReturn ("Unit URN");
 		
-		int unitAttrNo = 0;
-		for (final String unitAttributeDesc : new String [] {"Melee", "Ranged", "+ to Hit", "Defence", "Resistance", "Hit Points", "+ to Block"})
-		{
-			final UnitAttributeLang unitAttrLang = new UnitAttributeLang ();
-			unitAttrLang.setUnitAttributeDescription (unitAttributeDesc);
-
-			unitAttrNo++;
-			when (lang.findUnitAttribute ("UA0" + unitAttrNo)).thenReturn (unitAttrLang);
-		}
-
-		for (int n = 1; n <= 5; n++)
-		{
-			final UnitSkillLang skill = new UnitSkillLang ();
-			skill.setUnitSkillDescription ("Name of skill US0" + n);
-			
-			when (lang.findUnitSkill ("US0" + n)).thenReturn (skill);
-		}
-		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
 		
@@ -279,35 +259,26 @@ public final class TestUnitInfoPanel
 		rat.buildMap ();
 		when (gfx.findRangedAttackType ("RAT01", "unitInfoPanel.paintComponent")).thenReturn (rat);
 
-		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
-		for (int n = 1; n <= 5; n++)
-		{
-			final UnitSkillGfx skill = new UnitSkillGfx ();
-			skill.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
-			
-			when (gfx.findUnitSkill (eq ("US0" + n), anyString ())).thenReturn (skill);
-		}
-		
 		// Unit attribute component backgrounds
-		final UnitAttributeComponentImageGfx basicBackground = new UnitAttributeComponentImageGfx ();
-		basicBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/basic.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.BASIC, "UnitInfoPanel")).thenReturn (basicBackground);
+		final UnitSkillComponentImageGfx basicBackground = new UnitSkillComponentImageGfx ();
+		basicBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/basic.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.BASIC, "UnitInfoPanel")).thenReturn (basicBackground);
 		
-		final UnitAttributeComponentImageGfx weaponGradeBackground = new UnitAttributeComponentImageGfx ();
-		weaponGradeBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/weaponGrade.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.WEAPON_GRADE, "UnitInfoPanel")).thenReturn (weaponGradeBackground);
+		final UnitSkillComponentImageGfx weaponGradeBackground = new UnitSkillComponentImageGfx ();
+		weaponGradeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/weaponGrade.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.WEAPON_GRADE, "UnitInfoPanel")).thenReturn (weaponGradeBackground);
 		
-		final UnitAttributeComponentImageGfx experienceBackground = new UnitAttributeComponentImageGfx ();
-		experienceBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/experience.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.EXPERIENCE, "UnitInfoPanel")).thenReturn (experienceBackground);
+		final UnitSkillComponentImageGfx experienceBackground = new UnitSkillComponentImageGfx ();
+		experienceBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/experience.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.EXPERIENCE, "UnitInfoPanel")).thenReturn (experienceBackground);
 		
-		final UnitAttributeComponentImageGfx heroSkillsBackground = new UnitAttributeComponentImageGfx ();
-		heroSkillsBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/heroSkills.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.HERO_SKILLS, "UnitInfoPanel")).thenReturn (heroSkillsBackground);
+		final UnitSkillComponentImageGfx heroSkillsBackground = new UnitSkillComponentImageGfx ();
+		heroSkillsBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/heroSkills.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "UnitInfoPanel")).thenReturn (heroSkillsBackground);
 		
-		final UnitAttributeComponentImageGfx caeBackground = new UnitAttributeComponentImageGfx ();
-		caeBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/combatAreaEffect.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.COMBAT_AREA_EFFECTS, "UnitInfoPanel")).thenReturn (caeBackground);
+		final UnitSkillComponentImageGfx caeBackground = new UnitSkillComponentImageGfx ();
+		caeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/combatAreaEffect.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "UnitInfoPanel")).thenReturn (caeBackground);
 		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
@@ -326,15 +297,6 @@ public final class TestUnitInfoPanel
 		longbowmen.getUnitUpkeep ().add (rationsUpkeep);
 		
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (longbowmen);
-		
-		final List<UnitAttribute> unitAttributes = new ArrayList<UnitAttribute> ();
-		for (int n = 1; n <= 7; n++)
-		{
-			final UnitAttribute attr = new UnitAttribute ();
-			attr.setUnitAttributeID ("UA0" + n);
-			unitAttributes.add (attr);
-		}
-		doReturn (unitAttributes).when (db).getUnitAttributes ();
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -367,36 +329,66 @@ public final class TestUnitInfoPanel
 		unit.setWeaponGrade (2);
 		
 		// Skills
+		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		for (int n = 1; n <= 5; n++)
 		{
+			// Lang
+			final UnitSkillLang skillLang = new UnitSkillLang ();
+			skillLang.setUnitSkillDescription ("Name of skill US0" + n);
+			when (lang.findUnitSkill ("US0" + n)).thenReturn (skillLang);
+
+			// Gfx
+			final UnitSkillGfx skillGfx = new UnitSkillGfx ();
+			skillGfx.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
+			skillGfx.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
+			
+			when (gfx.findUnitSkill (eq ("US0" + n), anyString ())).thenReturn (skillGfx);
+			
+			// Unit stat
 			final UnitHasSkill skill = new UnitHasSkill ();
 			skill.setUnitSkillID ("US0" + n);
 			unit.getUnitHasSkill ().add (skill);
 
-			when (unitClientUtils.getUnitSkillIcon (unit, "US0" + n)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
+			// Icon
+			when (unitClientUtils.getUnitSkillSingleIcon (unit, "US0" + n)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
 		}
 		
-		// Upkeep
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE01", players, db)).thenReturn (2);
-		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
-		
 		// Attributes
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		for (int n = 1; n <= 7; n++)
+
+		int unitAttrNo = 0;
+		for (final String unitAttributeDesc : new String [] {"Melee", "Ranged", "+ to Hit", "Defence", "Resistance", "Hit Points", "+ to Block"})
 		{
-			final String attrID = "UA0" + n;
+			unitAttrNo++;
+			final String attrID = "UA0" + unitAttrNo;
+
+			// Lang
+			final UnitSkillLang unitAttrLang = new UnitSkillLang ();
+			unitAttrLang.setUnitSkillDescription (unitAttributeDesc);
+			when (lang.findUnitSkill (attrID)).thenReturn (unitAttrLang);
+
+			// Gfx
+			final UnitSkillGfx unitAttrGfx = new UnitSkillGfx ();
+			unitAttrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
+			when (gfx.findUnitSkill (eq (attrID), anyString ())).thenReturn (unitAttrGfx);
+			
+			// Unit stat
+			final UnitHasSkill attr = new UnitHasSkill ();
+			attr.setUnitSkillID (attrID);
+			unit.getUnitHasSkill ().add (attr);
+			
 			int attrNo = 0;
 			int total = 0;
-			for (final UnitAttributeComponent attrComponent : UnitAttributeComponent.values ())
-				if (attrComponent != UnitAttributeComponent.ALL)
+			for (final UnitSkillComponent attrComponent : UnitSkillComponent.values ())
+				if (attrComponent != UnitSkillComponent.ALL)
 				{
 					attrNo++;
-					final int value = (n + attrNo) / 2;
+					final int value = (unitAttrNo + attrNo) / 2;
 					total = total + value;
 				
-					when (unitSkillUtils.getModifiedAttributeValue (unit, attrID, attrComponent,
-						attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitAttributePositiveNegative.BOTH : UnitAttributePositiveNegative.POSITIVE,
+					when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), attrID, attrComponent,
+						attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
 						players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (value);
 				}
 
@@ -409,9 +401,13 @@ public final class TestUnitInfoPanel
 			if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
 				when (unitCalc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 			else
-				when (unitSkillUtils.getModifiedAttributeValue (unit, attrID,
-					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
+				when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), attrID,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 		}
+		
+		// Upkeep
+		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE01", players, db)).thenReturn (2);
+		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
 		
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
@@ -428,10 +424,10 @@ public final class TestUnitInfoPanel
 		for (final String unitAttributeImage : new String [] {"meleeNormal", null, "plusToHit", "defenceNormal", "resist", "hitPoints", "plusToBlock"})
 		{
 			unitAttrNo++;
-			final String useAttributeImage = (unitAttributeImage != null) ? "/momime.client.graphics/unitAttributes/" + unitAttributeImage + ".png" :
+			final String useAttributeImage = (unitAttributeImage != null) ? "/momime.client.graphics/unitSkills/" + unitAttributeImage + ".png" :
 				"/momime.client.graphics/rangedAttacks/rock/iconNormal.png";
 			
-			when (unitClientUtils.getUnitAttributeIcon (unit, "UA0" + unitAttrNo)).thenReturn (utils.loadImage (useAttributeImage));
+			when (unitClientUtils.getUnitSkillComponentBreakdownIcon (unit, "UA0" + unitAttrNo)).thenReturn (utils.loadImage (useAttributeImage));
 		}
 		
 		// Cell renderer

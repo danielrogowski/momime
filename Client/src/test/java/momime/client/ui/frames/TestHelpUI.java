@@ -8,6 +8,15 @@ import static org.mockito.Mockito.when;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import org.junit.Test;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
@@ -16,9 +25,9 @@ import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
-import momime.client.graphics.database.UnitAttributeComponentImageGfx;
-import momime.client.graphics.database.UnitAttributeGfx;
-import momime.client.graphics.database.v0_9_6.UnitAttributeWeaponGrade;
+import momime.client.graphics.database.UnitSkillComponentImageGfx;
+import momime.client.graphics.database.UnitSkillGfx;
+import momime.client.graphics.database.v0_9_7.UnitSkillWeaponGrade;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.CombatAreaEffectLang;
@@ -28,7 +37,6 @@ import momime.client.language.database.PickLang;
 import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.database.SpellBookSectionLang;
 import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitAttributeLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.SpringExpressionReplacerImpl;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
@@ -39,20 +47,11 @@ import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitSkillComponent;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.SpellUtils;
-
-import org.junit.Test;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the HelpUI class
@@ -94,31 +93,10 @@ public final class TestHelpUI
 		unitSkill.setUnitSkillHelpText ("PFText");
 		when (lang.findUnitSkill ("US020")).thenReturn (unitSkill);
 		
-		final UnitAttributeLang unitAttribute = new UnitAttributeLang ();
-		unitAttribute.setUnitAttributeDescription ("Melee");
-		unitAttribute.setUnitAttributeHelpText ("Each icon represents one chance that each figure has to strike a blow in a hand to hand attack.  The base chance that each sword icon will score a hit is 30%, although this can be modified by the attacker's + to Hit attribute." +
-			System.lineSeparator () + System.lineSeparator () +
-			"The unit being attacked can then use its Defence attribute to try to block some of the hits.  The base chance that each shield icon will block a hit is 30%, although this can be modified by the defender's + to Block attribute." +
-			System.lineSeparator () + System.lineSeparator () +
-			"Melee weapons are available in a number of weapon grades which confer improved stats:" + System.lineSeparator () +
-			"#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon" + System.lineSeparator () +
-			"#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon" + System.lineSeparator () +
-			"#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon" + System.lineSeparator () +
-			"#{findUnitAttribute ('UA01', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon" +
-			System.lineSeparator () + System.lineSeparator () +
-			"The background colour of each icon depicts the source of the attribute:" + System.lineSeparator () +
-			"#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).BASIC, 'HelpText').unitAttributeComponentImageFile} Basic statistic of the unit" + System.lineSeparator () +
-			"#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).WEAPON_GRADE, 'HelpText').unitAttributeComponentImageFile} Bonus from an improved weapon grade" + System.lineSeparator () +
-			"#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).EXPERIENCE, 'HelpText').unitAttributeComponentImageFile} Bonus from experience" + System.lineSeparator () +
-			"#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).HERO_SKILLS, 'HelpText').unitAttributeComponentImageFile} Bonus from Might hero skill" + System.lineSeparator () +
-			"#{findUnitAttributeComponent (T(momime.common.database.UnitAttributeComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitAttributeComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)" +
-			System.lineSeparator () + System.lineSeparator () +
-			"A darkened icon represents a minus, for example from a curse type spell." +
-			System.lineSeparator () + System.lineSeparator () +
-			"And some extra text on the end" + System.lineSeparator () +
-			"to make the help text long enough" + System.lineSeparator () +
-			"to require a scroll bar to appear.");
-		when (lang.findUnitAttribute ("UA01")).thenReturn (unitAttribute);
+		final UnitSkillLang unitAttribute = new UnitSkillLang ();
+		unitAttribute.setUnitSkillDescription ("MeleeTitle");
+		unitAttribute.setUnitSkillHelpText ("MeleeText");
+		when (lang.findUnitSkill ("UA01")).thenReturn (unitAttribute);
 		
 		final CombatAreaEffectLang cae = new CombatAreaEffectLang ();
 		cae.setCombatAreaEffectDescription ("Counter Magic");
@@ -196,52 +174,76 @@ public final class TestHelpUI
 		when (gfx.findCitySpellEffect ("SE110", "showCitySpellEffectID")).thenReturn (citySpellEffectGfx);
 		
 		// Images for inline text in EL expressions
-		final UnitAttributeGfx meleeGfx = new UnitAttributeGfx ();
+		final UnitSkillGfx meleeGfx = new UnitSkillGfx ();
 		int weaponGradeNumber = 0;
 		for (final String imageFilename : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
 		{
-			final UnitAttributeWeaponGrade weaponGrade = new UnitAttributeWeaponGrade ();
+			final UnitSkillWeaponGrade weaponGrade = new UnitSkillWeaponGrade ();
 			weaponGrade.setWeaponGradeNumber (weaponGradeNumber);
-			weaponGrade.setAttributeImageFile ("/momime.client.graphics/unitAttributes/melee" + imageFilename + ".png");
-			meleeGfx.getUnitAttributeWeaponGrade ().add (weaponGrade);
+			weaponGrade.setSkillImageFile ("/momime.client.graphics/unitSkills/melee" + imageFilename + ".png");
+			meleeGfx.getUnitSkillWeaponGrade ().add (weaponGrade);
 			
 			weaponGradeNumber++;
 		}
 		
 		meleeGfx.buildMap ();
-		when (gfx.findUnitAttribute (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "HelpText")).thenReturn (meleeGfx);
+		when (gfx.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "HelpText")).thenReturn (meleeGfx);
 		
 		// Unit attribute component backgrounds
-		final UnitAttributeComponentImageGfx basicBackground = new UnitAttributeComponentImageGfx ();
-		basicBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/basic.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.BASIC, "HelpText")).thenReturn (basicBackground);
+		final UnitSkillComponentImageGfx basicBackground = new UnitSkillComponentImageGfx ();
+		basicBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/basic.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.BASIC, "HelpText")).thenReturn (basicBackground);
 		
-		final UnitAttributeComponentImageGfx weaponGradeBackground = new UnitAttributeComponentImageGfx ();
-		weaponGradeBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/weaponGrade.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.WEAPON_GRADE, "HelpText")).thenReturn (weaponGradeBackground);
+		final UnitSkillComponentImageGfx weaponGradeBackground = new UnitSkillComponentImageGfx ();
+		weaponGradeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/weaponGrade.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.WEAPON_GRADE, "HelpText")).thenReturn (weaponGradeBackground);
 		
-		final UnitAttributeComponentImageGfx experienceBackground = new UnitAttributeComponentImageGfx ();
-		experienceBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/experience.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.EXPERIENCE, "HelpText")).thenReturn (experienceBackground);
+		final UnitSkillComponentImageGfx experienceBackground = new UnitSkillComponentImageGfx ();
+		experienceBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/experience.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.EXPERIENCE, "HelpText")).thenReturn (experienceBackground);
 		
-		final UnitAttributeComponentImageGfx heroSkillsBackground = new UnitAttributeComponentImageGfx ();
-		heroSkillsBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/heroSkills.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.HERO_SKILLS, "HelpText")).thenReturn (heroSkillsBackground);
+		final UnitSkillComponentImageGfx heroSkillsBackground = new UnitSkillComponentImageGfx ();
+		heroSkillsBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/heroSkills.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "HelpText")).thenReturn (heroSkillsBackground);
 		
-		final UnitAttributeComponentImageGfx caeBackground = new UnitAttributeComponentImageGfx ();
-		caeBackground.setUnitAttributeComponentImageFile ("/momime.client.graphics/unitAttributes/combatAreaEffect.png");
-		when (gfx.findUnitAttributeComponent (UnitAttributeComponent.COMBAT_AREA_EFFECTS, "HelpText")).thenReturn (caeBackground);
+		final UnitSkillComponentImageGfx caeBackground = new UnitSkillComponentImageGfx ();
+		caeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/combatAreaEffect.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "HelpText")).thenReturn (caeBackground);
 		
 		// Unit skills
 		final BufferedImage skillIcon = utils.loadImage ("/momime.client.graphics/unitSkills/US020-icon.png");
 		
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
-		when (unitClientUtils.getUnitSkillIcon (any (AvailableUnit.class), eq ("US020"))).thenReturn (skillIcon);
+		when (unitClientUtils.getUnitSkillSingleIcon (any (AvailableUnit.class), eq ("US020"))).thenReturn (skillIcon);
 		
 		// Unit variable stats in help text
 		final UnitStatsLanguageVariableReplacer unitStatsReplacer = mock (UnitStatsLanguageVariableReplacer.class);
 		when (unitStatsReplacer.replaceVariables ("PFTitle")).thenReturn ("Path Finding");
 		when (unitStatsReplacer.replaceVariables ("PFText")).thenReturn ("Pathfinding allows the unit and other land units stacked with it to move across any land square at the cost of ½ movement point, as if they were on a road.");
+		
+		when (unitStatsReplacer.replaceVariables ("MeleeTitle")).thenReturn ("Melee");
+		when (unitStatsReplacer.replaceVariables ("MeleeText")).thenReturn ("Each icon represents one chance that each figure has to strike a blow in a hand to hand attack.  The base chance that each sword icon will score a hit is 30%, although this can be modified by the attacker's + to Hit attribute." +
+			System.lineSeparator () + System.lineSeparator () +
+			"The unit being attacked can then use its Defence attribute to try to block some of the hits.  The base chance that each shield icon will block a hit is 30%, although this can be modified by the defender's + to Block attribute." +
+			System.lineSeparator () + System.lineSeparator () +
+			"Melee weapons are available in a number of weapon grades which confer improved stats:" + System.lineSeparator () +
+			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon" + System.lineSeparator () +
+			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon" + System.lineSeparator () +
+			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon" + System.lineSeparator () +
+			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon" +
+			System.lineSeparator () + System.lineSeparator () +
+			"The background colour of each icon depicts the source of the attribute:" + System.lineSeparator () +
+			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').UnitSkillComponentImageFile} Basic statistic of the unit" + System.lineSeparator () +
+			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').UnitSkillComponentImageFile} Bonus from an improved weapon grade" + System.lineSeparator () +
+			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').UnitSkillComponentImageFile} Bonus from experience" + System.lineSeparator () +
+			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').UnitSkillComponentImageFile} Bonus from Might hero skill" + System.lineSeparator () +
+			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').UnitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)" +
+			System.lineSeparator () + System.lineSeparator () +
+			"A darkened icon represents a minus, for example from a curse type spell." +
+			System.lineSeparator () + System.lineSeparator () +
+			"And some extra text on the end" + System.lineSeparator () +
+			"to make the help text long enough" + System.lineSeparator () +
+			"to require a scroll bar to appear.");
 		
 		// Spells
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
@@ -335,7 +337,7 @@ public final class TestHelpUI
 		final AvailableUnit unit = new AvailableUnit ();
 		
 		final HelpUI help = createHelpUI ();
-		help.showUnitAttributeID ("UA01", unit);
+		help.showUnitSkillID ("UA01", unit);
 		Thread.sleep (5000);
 		help.setVisible (false);
 	}

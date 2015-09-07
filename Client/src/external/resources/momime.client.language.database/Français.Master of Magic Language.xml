@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_7" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<plane planeNumber="0">
 		<planeDescription>Arcanus</planeDescription>
 		<planeRacesTitle>Races Arcaniennes</planeRacesTitle>
@@ -1249,9 +1249,9 @@ Cela signifie également qu'ils ne peuvent bâtir de Guildes d'Alchimistes et do
 		<unitSkillDescription>Sommeil Noir</unitSkillDescription>
 		<unitSkillHelpText>L'unité affecté dort pour le restant du combat, fournissant une cible sans défense à ses ennemis. Si elle se trouve attaquée par une unité ennemie pendant qu'elle se trouve dans cet état, une unité endormie subit la pleine puissance des dégâts de l'attaque (c.a.d. ses boucliers sont réduits à zéro).</unitSkillHelpText>
 	</unitSkill>
-	<unitAttribute unitAttributeID="UA01">
-		<unitAttributeDescription>Mélée</unitAttributeDescription>
-		<unitAttributeHelpText>Chaque icone représente une chance qu'a chaque personnage de frapper au combat au corps-à-corps. La réussite de base est qu'il y a 30% que chaque icone épée atteigne sa cible, cependant ceci peut être modifié par l'attribut +Frappe de l'attaquant.
+	<unitSkill unitSkillID="UA01">
+		<unitSkillDescription>Mélée</unitSkillDescription>
+		<unitSkillHelpText>Chaque icone représente une chance qu'a chaque personnage de frapper au combat au corps-à-corps. La réussite de base est qu'il y a 30% que chaque icone épée atteigne sa cible, cependant ceci peut être modifié par l'attribut +Frappe de l'attaquant.
 
 L'unité étant attaquée peut alors utiliser son attribut Défense pour essayer de bloquer certains de ces coups. La réussite de base est qu'il y a 30% que chaque icone bouclier bloque un coup, cependant ceci peut être modifié par l'attribut +Bloque du défenseur.
 
@@ -1268,11 +1268,11 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus provenant de l'expérience
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus provenant de la Force d'un Héros
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant d'un effet de la zone de combat (ex: aura d'un noeud ou sort Prière)
 
-Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitAttributeHelpText>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA02">
-		<unitAttributeDescription>A distance</unitAttributeDescription>
-		<unitAttributeHelpText>Chaque icone représente une chance qu'a chaque personnage de frapper au combat au corps-à-corps. La réussite de base est qu'il y a 30% que chaque icone attaque à distance atteigne sa cible, cependant ceci peut être modifié par l'attribut +Frappe de l'attaquant et, pour les armes à distance standard, par la proximité de la cible.
+Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitSkillHelpText>
+	</unitSkill>
+	<unitSkill unitSkillID="UA02">
+		<unitSkillDescription>A distance</unitSkillDescription>
+		<unitSkillHelpText>Chaque icone représente une chance qu'a chaque personnage de frapper au combat au corps-à-corps. La réussite de base est qu'il y a 30% que chaque icone attaque à distance atteigne sa cible, cependant ceci peut être modifié par l'attribut +Frappe de l'attaquant et, pour les armes à distance standard, par la proximité de la cible.
 
 L'unité étant attaquée peut alors utiliser son attribut Défense pour essayer de bloquer certains de ces coups. La réussite de base est qu'il y a 30% que chaque icone bouclier bloque un coup, cependant ceci peut être modifié par l'attribut +Bloque du défenseur.
 
@@ -1294,11 +1294,11 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus provenant de l'expérience
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus provenant de la Puissance Arcane d'un Héros
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant d'un effet de la zone de combat (ex: aura d'un noeud ou sort Prière)
 
-Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitAttributeHelpText>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA03">
-		<unitAttributeDescription>+ Frappe</unitAttributeDescription>
-		<unitAttributeHelpText>Chaque icone représente une amélioration de 10% à la chance que chaque personnage a de frapper un coup dans une attaque de mélée ou à distance. La réussite de base, si une unité ne bénéfice pas d'icone +Frappe, est de 30%.
+Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitSkillHelpText>
+	</unitSkill>
+	<unitSkill unitSkillID="UA03">
+		<unitSkillDescription>+ Frappe</unitSkillDescription>
+		<unitSkillHelpText>Chaque icone représente une amélioration de 10% à la chance que chaque personnage a de frapper un coup dans une attaque de mélée ou à distance. La réussite de base, si une unité ne bénéfice pas d'icone +Frappe, est de 30%.
 
 Les armes à distance standards (arcs, lances et rochers) subissent de même d'autant de pénalités de Frappe qu'ils sont éloignées de la cible. Les attaques à distance magiques ne subissent les pénalitées de distance.
 
@@ -1308,11 +1308,11 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus provenant de l'expérience
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus provenant de Maîtrise des Lames d'un Héros
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant d'un effet de la zone de combat (ex: aura d'un noeud ou sort Prière)
 
-Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitAttributeHelpText>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA04">
-		<unitAttributeDescription>Défense</unitAttributeDescription>
-		<unitAttributeHelpText>Chaque icone représente une chance qu'a chaque personnage de bloquer une attaque au combat au corps-à-corps ou à distance. La réussite de base est qu'il y a 30% que chaque icone bouclier bloque un coup, cependant ceci peut être modifié par l'attribut +Bloque de l'unité.
+Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitSkillHelpText>
+	</unitSkill>
+	<unitSkill unitSkillID="UA04">
+		<unitSkillDescription>Défense</unitSkillDescription>
+		<unitSkillHelpText>Chaque icone représente une chance qu'a chaque personnage de bloquer une attaque au combat au corps-à-corps ou à distance. La réussite de base est qu'il y a 30% que chaque icone bouclier bloque un coup, cependant ceci peut être modifié par l'attribut +Bloque de l'unité.
 
 Lorqu'une unité est attaquée, le premier personnage va essayer de bloquer des dégâts en se servant des attributs Défense et +Bloque. Tous les points de dégâts restants sont retirés de ses Points de Frappe (Points de Vie). Si le premier personnage meure et qu'il reste des points de dégâts non attribués, le second personnage va à son tour essayer de bloquer l'attaque en se servant des attributs Défense et +Bloque de l'unité avant de subir les dégâts et ainsi de suite. Ainsi la valeur Défense est par personnage, mais chaque personnage ne tentera pas de bloquer les attaques tant que les premiers personnages n'auront pas subit les dégâts.
 
@@ -1330,22 +1330,22 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus provenant de l'expérience
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_HERO_SKILLS Bonus provenant de l'Agilité d'un Héros
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant d'un effet de la zone de combat (ex: aura d'un noeud ou sort Prière)
 
-Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitAttributeHelpText>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA05">
-		<unitAttributeDescription>Résistance</unitAttributeDescription>
-		<unitAttributeHelpText>Chaque icone représente 10% de chance de résister aux effets négatifs d'un sort. Une valeur de résistance de 10 ne rend pas l'unité immunisée contre la magie, puisque de nombreux sorts imposent une pénalité de résistance à la magie ou ne peuvent autoriser de résistance du tout.
+Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitSkillHelpText>
+	</unitSkill>
+	<unitSkill unitSkillID="UA05">
+		<unitSkillDescription>Résistance</unitSkillDescription>
+		<unitSkillHelpText>Chaque icone représente 10% de chance de résister aux effets négatifs d'un sort. Une valeur de résistance de 10 ne rend pas l'unité immunisée contre la magie, puisque de nombreux sorts imposent une pénalité de résistance à la magie ou ne peuvent autoriser de résistance du tout.
 
 La couleur de fond de chaque icone dépaint la source de l'attribut :
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Statistique de base de l'unité
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_EXPERIENCE Bonus provenant de l'expérience
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant d'un effet de la zone de combat (ex: aura d'un noeud ou sort Prière)
 
-Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitAttributeHelpText>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA06">
-		<unitAttributeDescription>Points Vie</unitAttributeDescription>
-		<unitAttributeHelpText>Chaque icone représente un point de frappe, ou de santé, dont chaque personnage dans l'unité dispose, soit la quantité de dégâts que le personnage peut subir.
+Une icone assombrie représente un malus, par exemple provenant d'un sort de type malédiction.</unitSkillHelpText>
+	</unitSkill>
+	<unitSkill unitSkillID="UA06">
+		<unitSkillDescription>Points Vie</unitSkillDescription>
+		<unitSkillHelpText>Chaque icone représente un point de frappe, ou de santé, dont chaque personnage dans l'unité dispose, soit la quantité de dégâts que le personnage peut subir.
 
 La couleur de fond de chaque icone dépaint la source de l'attribut :
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_NORMAL Statistique de base de l'unité
@@ -1355,15 +1355,15 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant d'un effet de la zone de com
 
 Une icone assombrie représente les dégâts déjà subis par le premier personnage de l'unité. Les autres personnages toujours en vie dans l'unité sont en pleine santé.
 
-Par exemple une unité de 6 personnages avec 3 points de frappe chacun peut subir un total de dégâts de 18 points. Si seul un icone Coeur est affiché, mais qu'il reste 6 personnages de montrés, alors l'unité dispose encore de 16 points de frappe.</unitAttributeHelpText>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA07">
-		<unitAttributeDescription>+ Bloque</unitAttributeDescription>
-		<unitAttributeHelpText>Chaque icone représente une amélioration de 10% à la chance que chaque personnage a de bloquer une attaque. La réussite de base de se défendre est de 30% et il y a très peu de situations dans le jeu qui peuvent modifier cela.
+Par exemple une unité de 6 personnages avec 3 points de frappe chacun peut subir un total de dégâts de 18 points. Si seul un icone Coeur est affiché, mais qu'il reste 6 personnages de montrés, alors l'unité dispose encore de 16 points de frappe.</unitSkillHelpText>
+	</unitSkill>
+	<unitSkill unitSkillID="UA07">
+		<unitSkillDescription>+ Bloque</unitSkillDescription>
+		<unitSkillHelpText>Chaque icone représente une amélioration de 10% à la chance que chaque personnage a de bloquer une attaque. La réussite de base de se défendre est de 30% et il y a très peu de situations dans le jeu qui peuvent modifier cela.
 
 La couleur de fond de chaque icone dépaint la source de l'attribut :
-IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant du sort Haute Prière</unitAttributeHelpText>
-	</unitAttribute>
+IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant du sort Haute Prière</unitSkillHelpText>
+	</unitSkill>
 	<unitMagicRealm unitMagicRealmID="LTN">
 		<unitMagicRealmPlural>Unités Normales</unitMagicRealmPlural>
 	</unitMagicRealm>

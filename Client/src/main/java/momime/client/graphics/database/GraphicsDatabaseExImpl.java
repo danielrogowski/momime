@@ -8,35 +8,34 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_6.Animation;
-import momime.client.graphics.database.v0_9_6.CityImage;
-import momime.client.graphics.database.v0_9_6.CityImagePrerequisite;
-import momime.client.graphics.database.v0_9_6.CityViewElement;
-import momime.client.graphics.database.v0_9_6.CombatAction;
-import momime.client.graphics.database.v0_9_6.CombatAreaEffect;
-import momime.client.graphics.database.v0_9_6.CombatTileBorderImage;
-import momime.client.graphics.database.v0_9_6.CombatTileUnitRelativeScale;
-import momime.client.graphics.database.v0_9_6.GraphicsDatabase;
-import momime.client.graphics.database.v0_9_6.MapFeature;
-import momime.client.graphics.database.v0_9_6.Pick;
-import momime.client.graphics.database.v0_9_6.PlayList;
-import momime.client.graphics.database.v0_9_6.ProductionType;
-import momime.client.graphics.database.v0_9_6.Race;
-import momime.client.graphics.database.v0_9_6.RangedAttackType;
-import momime.client.graphics.database.v0_9_6.Spell;
-import momime.client.graphics.database.v0_9_6.TileSet;
-import momime.client.graphics.database.v0_9_6.Unit;
-import momime.client.graphics.database.v0_9_6.UnitAttribute;
-import momime.client.graphics.database.v0_9_6.UnitAttributeComponentImage;
-import momime.client.graphics.database.v0_9_6.UnitSkill;
-import momime.client.graphics.database.v0_9_6.UnitSpecialOrderImage;
-import momime.client.graphics.database.v0_9_6.UnitType;
-import momime.client.graphics.database.v0_9_6.WeaponGrade;
-import momime.client.graphics.database.v0_9_6.Wizard;
+import momime.client.graphics.database.v0_9_7.Animation;
+import momime.client.graphics.database.v0_9_7.CityImage;
+import momime.client.graphics.database.v0_9_7.CityImagePrerequisite;
+import momime.client.graphics.database.v0_9_7.CityViewElement;
+import momime.client.graphics.database.v0_9_7.CombatAction;
+import momime.client.graphics.database.v0_9_7.CombatAreaEffect;
+import momime.client.graphics.database.v0_9_7.CombatTileBorderImage;
+import momime.client.graphics.database.v0_9_7.CombatTileUnitRelativeScale;
+import momime.client.graphics.database.v0_9_7.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_7.MapFeature;
+import momime.client.graphics.database.v0_9_7.Pick;
+import momime.client.graphics.database.v0_9_7.PlayList;
+import momime.client.graphics.database.v0_9_7.ProductionType;
+import momime.client.graphics.database.v0_9_7.Race;
+import momime.client.graphics.database.v0_9_7.RangedAttackType;
+import momime.client.graphics.database.v0_9_7.Spell;
+import momime.client.graphics.database.v0_9_7.TileSet;
+import momime.client.graphics.database.v0_9_7.Unit;
+import momime.client.graphics.database.v0_9_7.UnitSkillComponentImage;
+import momime.client.graphics.database.v0_9_7.UnitSkill;
+import momime.client.graphics.database.v0_9_7.UnitSpecialOrderImage;
+import momime.client.graphics.database.v0_9_7.UnitType;
+import momime.client.graphics.database.v0_9_7.WeaponGrade;
+import momime.client.graphics.database.v0_9_7.Wizard;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
@@ -83,10 +82,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	private Map<String, UnitTypeGfx> unitTypesMap;
 
 	/** Map of unit attribute component IDs to unit attribute component objects */
-	private Map<UnitAttributeComponent, UnitAttributeComponentImageGfx> unitAttributeComponentsMap;
-	
-	/** Map of unit attribute IDs to unit attribute objects */
-	private Map<String, UnitAttributeGfx> unitAttributesMap;
+	private Map<UnitSkillComponent, UnitSkillComponentImageGfx> UnitSkillComponentsMap;
 	
 	/** Map of unit skill IDs to unit skill objects */
 	private Map<String, UnitSkillGfx> unitSkillsMap;
@@ -203,23 +199,18 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		}
 		
 		// Create unit attribute components map
-		unitAttributeComponentsMap = new HashMap<UnitAttributeComponent, UnitAttributeComponentImageGfx> ();
-		for (final UnitAttributeComponentImage thisComponent : getUnitAttributeComponentImage ())
-			unitAttributeComponentsMap.put (thisComponent.getUnitAttributeComponentID (), (UnitAttributeComponentImageGfx) thisComponent);
-		
-		// Create unit attributes map
-		unitAttributesMap = new HashMap<String, UnitAttributeGfx> ();
-		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
-		{
-			final UnitAttributeGfx attrEx = (UnitAttributeGfx) thisUnitAttribute;
-			attrEx.buildMap ();
-			unitAttributesMap.put (attrEx.getUnitAttributeID (), attrEx);
-		}
+		UnitSkillComponentsMap = new HashMap<UnitSkillComponent, UnitSkillComponentImageGfx> ();
+		for (final UnitSkillComponentImage thisComponent : getUnitSkillComponentImage ())
+			UnitSkillComponentsMap.put (thisComponent.getUnitSkillComponentID (), (UnitSkillComponentImageGfx) thisComponent);
 
 		// Create unit skills map
 		unitSkillsMap = new HashMap<String, UnitSkillGfx> ();
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
-			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillGfx) thisUnitSkill);
+		{
+			final UnitSkillGfx skillEx = (UnitSkillGfx) thisUnitSkill;
+			skillEx.buildMap ();
+			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), skillEx);
+		}
 		
 		// Create units map
 		unitsMap = new HashMap<String, UnitGfx> ();
@@ -517,34 +508,18 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 	
 	/**
-	 * @param unitAttributeComponentID Unit attribute component ID to search for
+	 * @param UnitSkillComponentID Unit attribute component ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit attribute component object
-	 * @throws RecordNotFoundException If the unitAttributeComponentID doesn't exist
+	 * @throws RecordNotFoundException If the UnitSkillComponentID doesn't exist
 	 */
 	@Override
-	public final UnitAttributeComponentImageGfx findUnitAttributeComponent (final UnitAttributeComponent unitAttributeComponentID, final String caller)
+	public final UnitSkillComponentImageGfx findUnitSkillComponent (final UnitSkillComponent UnitSkillComponentID, final String caller)
 		throws RecordNotFoundException
 	{
-		final UnitAttributeComponentImageGfx found = unitAttributeComponentsMap.get (unitAttributeComponentID);
+		final UnitSkillComponentImageGfx found = UnitSkillComponentsMap.get (UnitSkillComponentID);
 		if (found == null)
-			throw new RecordNotFoundException (UnitAttributeComponentImage.class, unitAttributeComponentID.toString (), caller);
-
-		return found;
-	}
-	
-	/**
-	 * @param unitAttributeID Unit attribute ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit attribute object
-	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
-	 */
-	@Override
-	public final UnitAttributeGfx findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException
-	{
-		final UnitAttributeGfx found = unitAttributesMap.get (unitAttributeID);
-		if (found == null)
-			throw new RecordNotFoundException (UnitAttribute.class, unitAttributeID, caller);
+			throw new RecordNotFoundException (UnitSkillComponentImage.class, UnitSkillComponentID.toString (), caller);
 
 		return found;
 	}

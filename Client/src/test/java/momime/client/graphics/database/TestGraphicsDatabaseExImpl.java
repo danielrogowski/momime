@@ -15,7 +15,7 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
@@ -446,86 +446,46 @@ public final class TestGraphicsDatabaseExImpl
 	}
 	
 	/**
-	 * Tests the findUnitAttributeComponent method to find a unit attribute ID that does exist
+	 * Tests the findUnitSkillComponent method to find a unit attribute ID that does exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindUnitAttributeComponent_Exists () throws RecordNotFoundException
+	public final void testFindUnitSkillComponent_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 65; n <= 67; n++)
 		{
-			final UnitAttributeComponentImageGfx newUnitAttributeComponent = new UnitAttributeComponentImageGfx ();
-			newUnitAttributeComponent.setUnitAttributeComponentID (UnitAttributeComponent.fromValue (new String (new char [] {(char) n})));
-			db.getUnitAttributeComponentImage ().add (newUnitAttributeComponent);
+			final UnitSkillComponentImageGfx newUnitSkillComponent = new UnitSkillComponentImageGfx ();
+			newUnitSkillComponent.setUnitSkillComponentID (UnitSkillComponent.fromValue (new String (new char [] {(char) n})));
+			db.getUnitSkillComponentImage ().add (newUnitSkillComponent);
 		}
 
 		db.buildMaps ();
 
-		assertEquals (UnitAttributeComponent.BASIC,
-			db.findUnitAttributeComponent (UnitAttributeComponent.BASIC, "testFindUnitAttributeComponent_Exists").getUnitAttributeComponentID ());
+		assertEquals (UnitSkillComponent.BASIC,
+			db.findUnitSkillComponent (UnitSkillComponent.BASIC, "testFindUnitSkillComponent_Exists").getUnitSkillComponentID ());
 	}
 
 	/**
-	 * Tests the findUnitAttributeComponent method to find a unit attribute ID that doesn't exist
+	 * Tests the findUnitSkillComponent method to find a unit attribute ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnitAttributeComponent_NotExists () throws RecordNotFoundException
+	public final void testFindUnitSkillComponent_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 65; n <= 67; n++)
 		{
-			final UnitAttributeComponentImageGfx newUnitAttributeComponent = new UnitAttributeComponentImageGfx ();
-			newUnitAttributeComponent.setUnitAttributeComponentID (UnitAttributeComponent.fromValue (new String (new char [] {(char) n})));
-			db.getUnitAttributeComponentImage ().add (newUnitAttributeComponent);
+			final UnitSkillComponentImageGfx newUnitSkillComponent = new UnitSkillComponentImageGfx ();
+			newUnitSkillComponent.setUnitSkillComponentID (UnitSkillComponent.fromValue (new String (new char [] {(char) n})));
+			db.getUnitSkillComponentImage ().add (newUnitSkillComponent);
 		}
 
 		db.buildMaps ();
 
-		db.findUnitAttributeComponent (UnitAttributeComponent.HERO_SKILLS, "testFindUnitAttributeComponent_NotExists");
+		db.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "testFindUnitSkillComponent_NotExists");
 	}
 	
-	/**
-	 * Tests the findUnitAttribute method to find a unit attribute ID that does exist
-	 * @throws RecordNotFoundException If the record is not found
-	 */
-	@Test
-	public final void testFindUnitAttribute_Exists () throws RecordNotFoundException
-	{
-		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitAttributeGfx newUnitAttribute = new UnitAttributeGfx ();
-			newUnitAttribute.setUnitAttributeID ("UA0" + n);
-			db.getUnitAttribute ().add (newUnitAttribute);
-		}
-
-		db.buildMaps ();
-
-		assertEquals ("UA02", db.findUnitAttribute ("UA02", "testFindUnitAttribute_Exists").getUnitAttributeID ());
-	}
-
-	/**
-	 * Tests the findUnitAttribute method to find a unit attribute ID that doesn't exist
-	 * @throws RecordNotFoundException If the record is not found
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnitAttribute_NotExists () throws RecordNotFoundException
-	{
-		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitAttributeGfx newUnitAttribute = new UnitAttributeGfx ();
-			newUnitAttribute.setUnitAttributeID ("UA0" + n);
-			db.getUnitAttribute ().add (newUnitAttribute);
-		}
-
-		db.buildMaps ();
-
-		db.findUnitAttribute ("UA04", "testFindUnitAttribute_NotExists");
-	}
-
 	/**
 	 * Tests the findUnitSkill method to find a unit skill ID that does exist
 	 * @throws RecordNotFoundException If the record is not found

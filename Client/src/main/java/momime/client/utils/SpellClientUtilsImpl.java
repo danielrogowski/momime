@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
+
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.CityViewElementGfx;
@@ -17,8 +22,8 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.UnitAttributeLang;
 import momime.client.language.database.UnitMagicRealmLang;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -31,11 +36,6 @@ import momime.common.database.SummonedUnit;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerPickUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.NdgUIUtils;
 
 /**
  * Client side only helper methods for dealing with spells
@@ -140,7 +140,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	/**
 	 * @param spell Spell to list saving throws of
 	 * @return Descriptive list of all the saving throws of the specified curse spell; always returns some text, never null
-	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes
+	 * @throws MomException If there are multiple saving throws listed, but against different unit skills
 	 */
 	@Override
 	public final String listSavingThrowsOfSpell (final Spell spell) throws MomException
@@ -148,42 +148,42 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		log.trace ("Entering listSavingThrowsOfSpell: " + spell.getSpellID ());
 		
 		final List<Integer> savingThrowModifiers = new ArrayList<Integer> ();
-		String unitAttributeID = null;
+		String unitSkillID = null;
 		
 		// Just because there are some ValidUnitTarget entries doesn't necessarily mean the spell gives a saving throw,
 		// the records may just be indicating that the spell can only be used on e.g. chaos+death creatures
 		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
 		{
-			// unitAttributeID must be the same for all of them
-			if (unitAttributeID == null)
-				unitAttributeID = target.getSavingThrowAttributeID ();
-			else if (!unitAttributeID.equals (target.getSavingThrowAttributeID ()))
+			// unitSkillID must be the same for all of them
+			if (unitSkillID == null)
+				unitSkillID = target.getSavingThrowSkillID ();
+			else if (!unitSkillID.equals (target.getSavingThrowSkillID ()))
 				throw new MomException ("listSavingThrowsOfSpell can't generate text for spell " + spell.getSpellID () +
-					" because it has saving throws defined against different unit attributes");
+					" because it has saving throws defined against different unit skills");
 			
 			if (target.getSavingThrowModifier () != null)
 				savingThrowModifiers.add (target.getSavingThrowModifier ());
 		}
 		
 		final String result;
-		if (unitAttributeID == null)
+		if (unitSkillID == null)
 			result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookNoSavingThrow");
 		else
 		{
-			final UnitAttributeLang unitAttribute = getLanguage ().findUnitAttribute (unitAttributeID);
-			final String unitAttributeDescription = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeDescription ();
+			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (unitSkillID);
+			final String unitSkillDescription = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
 			if (savingThrowModifiers.size () == 0)
 				result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookNoSavingThrowModifier").replaceAll
-					("UNIT_ATTRIBUTE", (unitAttributeDescription != null) ? unitAttributeDescription : unitAttributeID);
+					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID);
 			else if (savingThrowModifiers.size () == 1)
 				result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookSingleSavingThrowModifier").replaceAll
-					("UNIT_ATTRIBUTE", (unitAttributeDescription != null) ? unitAttributeDescription : unitAttributeID).replaceAll
+					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID).replaceAll
 					("SAVING_THROW_MODIFIER", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (0)));
 			else
 			{
 				Collections.sort (savingThrowModifiers);
 				result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookMultipleSavingThrowModifiers").replaceAll
-					("UNIT_ATTRIBUTE", (unitAttributeDescription != null) ? unitAttributeDescription : unitAttributeID).replaceAll
+					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID).replaceAll
 					("SAVING_THROW_MODIFIER_MINIMUM", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (0))).replaceAll
 					("SAVING_THROW_MODIFIER_MAXIMUM", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (savingThrowModifiers.size () - 1)));
 			}

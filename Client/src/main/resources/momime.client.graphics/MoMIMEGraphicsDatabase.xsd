@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
 	xmlns:momimecommon="http://momime/common/database"
-	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_6" xmlns:map="http://www.ndg.com/map" 
-	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_6" targetNamespace="http://momime/client/graphics/database/v0_9_6"
+	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_7" xmlns:map="http://www.ndg.com/map" 
+	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_7" targetNamespace="http://momime/client/graphics/database/v0_9_7"
 	jaxb:version="2.0">
 	
 	<xsd:import namespace="http://www.ndg.com/map" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
 	<xsd:import namespace="http://momime/common/database" />
-	<xsd:import namespace="http://momime/server/database/v0_9_6" />
+	<xsd:import namespace="http://momime/server/database/v0_9_7" />
 
     <xsd:annotation>
 		<xsd:appinfo>
 			<nxe:backuponopen>Y</nxe:backuponopen>
-			<nxe:database namespaceURI="http://momime/client/graphics/database/v0_9_6">
+			<nxe:database namespaceURI="http://momime/client/graphics/database/v0_9_7">
 				<nxe:title>Master of Magic Graphics File</nxe:title>
 				<nxe:xmlfilename>../client/graphics/Default.Master of Magic Graphics.xml</nxe:xmlfilename>
 			</nxe:database>
-			<nxe:database namespaceURI="http://momime/server/database/v0_9_6">
+			<nxe:database namespaceURI="http://momime/server/database/v0_9_7">
 				<nxe:title>Master of Magic Server Database</nxe:title>
 				<nxe:xmlfilename>../server/databases/Original Master of Magic 1.31 rules.Master of Magic Server.xml</nxe:xmlfilename>
 			</nxe:database>
@@ -40,13 +40,7 @@
 				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimegfx:pick" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttributeComponentImage" type="momimegfx:unitAttributeComponentImage" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttribute" type="momimegfx:unitAttribute">
-				<xsd:key name="unitAttributeWeaponGradePK">
-					<xsd:selector xpath="unitAttributeWeaponGrade" />
-					<xsd:field xpath="@weaponGradeNumber" />
-				</xsd:key>
-			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillComponentImage" type="momimegfx:unitSkillComponentImage" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimegfx:rangedAttackType">
 				<xsd:key name="rangedAttackTypeWeaponGradePK">
 					<xsd:selector xpath="rangedAttackTypeWeaponGrade" />
@@ -68,7 +62,12 @@
 					<xsd:field xpath="@levelNumber" />
 				</xsd:key>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimegfx:unitSkill" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimegfx:unitSkill">
+				<xsd:key name="unitSkillWeaponGradePK">
+					<xsd:selector xpath="unitSkillWeaponGrade" />
+					<xsd:field xpath="@weaponGradeNumber" />
+				</xsd:key>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpecialOrderImage" type="momimegfx:unitSpecialOrderImage" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimegfx:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
@@ -102,17 +101,13 @@
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="@pickID" />
 		</xsd:key>
-		<xsd:key name="unitAttributeComponentImagePK">
-			<xsd:selector xpath="unitAttributeComponentImage" />
-			<xsd:field xpath="@unitAttributeComponentID" />
+		<xsd:key name="unitSkillComponentImagePK">
+			<xsd:selector xpath="unitSkillComponentImage" />
+			<xsd:field xpath="@unitSkillComponentID" />
 		</xsd:key>
 		<xsd:key name="unitSpecialOrderImagePK">
 			<xsd:selector xpath="unitSpecialOrderImage" />
 			<xsd:field xpath="@unitSpecialOrderID" />
-		</xsd:key>
-		<xsd:key name="unitAttributePK">
-			<xsd:selector xpath="unitAttribute" />
-			<xsd:field xpath="@unitAttributeID" />
 		</xsd:key>
 		<xsd:key name="rangedAttackTypePK">
 			<xsd:selector xpath="rangedAttackType" />
@@ -200,10 +195,6 @@
 		<xsd:keyref refer="momimesvr:pickPK" name="pickFKpick">
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="@pickID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitAttributePK" name="unitAttributeFKunitAttribute">
-			<xsd:selector xpath="unitAttribute" />
-			<xsd:field xpath="@unitAttributeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:rangedAttackTypePK" name="rangedAttackTypeFKrangedAttackType">
 			<xsd:selector xpath="rangedAttackType" />
@@ -422,23 +413,16 @@
 		</xsd:sequence>
 	</xsd:complexType>
 	
-	<xsd:complexType name="unitAttributeComponentImage" nxe:singular="Unit Attribute Component" nxe:plural="Unit Attribute Components" nxe:submenu="Units">
+	<xsd:complexType name="unitSkillComponentImage" nxe:singular="Unit Skill Component" nxe:plural="Unit Skill Components" nxe:submenu="Units">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeComponentImageFile" type="momimegfx:imageFilename" nxe:label="Component image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillComponentImageFile" type="momimegfx:imageFilename" nxe:label="Component image file" nxe:gridwidth="250" />
 		</xsd:sequence>
-		<xsd:attribute name="unitAttributeComponentID" type="momimecommon:unitAttributeComponent" use="required" nxe:label="Component" nxe:gridwidth="100" />
+		<xsd:attribute name="unitSkillComponentID" type="momimecommon:unitSkillComponent" use="required" nxe:label="Component" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="unitAttribute" nxe:singular="Unit Attribute" nxe:plural="Unit Attributes" nxe:submenu="Units">
+	<xsd:complexType name="unitSkillWeaponGrade" nxe:singular="Attr Weapon Grade" nxe:plural="Attr Weapon Grades">
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttributeWeaponGrade" type="momimegfx:unitAttributeWeaponGrade" />
-		</xsd:sequence>
-		<xsd:attribute name="unitAttributeID" type="momimecommon:unitAttributeID" use="required" nxe:label="Unit Attribute ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-
-	<xsd:complexType name="unitAttributeWeaponGrade" nxe:singular="Attr Weapon Grade" nxe:plural="Attr Weapon Grades">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="attributeImageFile" type="momimegfx:imageFilename" nxe:label="Unit Attribute image file" nxe:gridwidth="290" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="skillImageFile" type="momimegfx:imageFilename" nxe:label="Unit Skill image file" nxe:gridwidth="290" />
 		</xsd:sequence>
 		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120">
 			<xsd:annotation>
@@ -720,6 +704,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 	
 	<xsd:complexType name="unitSkill" nxe:singular="Unit Skill" nxe:plural="Unit Skills" nxe:submenu="Units">
 		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillTypeID" type="momimecommon:unitSkillTypeID" nxe:label="Skill type" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillImageFile" type="momimegfx:imageFilename" nxe:label="Unit skill image file" nxe:gridwidth="270" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImageFile" type="momimegfx:imageFilename" nxe:label="Movement icon image file" nxe:gridwidth="270" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImagePreference" type="momimegfx:rulePreferenceWeighting" nxe:label="Movement icon image preference weighting" nxe:gridwidth="200" />
@@ -738,6 +723,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillWeaponGrade" type="momimegfx:unitSkillWeaponGrade" />
 		</xsd:sequence>
 		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Unit Skill ID" nxe:gridwidth="100">
 			<xsd:annotation>

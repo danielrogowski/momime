@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_7" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<wizard wizardID="MONSTERS">
 		<flagColour>442404</flagColour>
 		<combatPlayList playListID="COMBAT_GENERAL_102" />
@@ -395,70 +395,21 @@
 	<pick pickID="RT16" />
 	<pick pickID="RT17" />
 	<pick pickID="RT18" />
-	<unitAttributeComponentImage unitAttributeComponentID="B">
-		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/basic.png</unitAttributeComponentImageFile>
-	</unitAttributeComponentImage>
-	<unitAttributeComponentImage unitAttributeComponentID="W">
-		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/weaponGrade.png</unitAttributeComponentImageFile>
-	</unitAttributeComponentImage>
-	<unitAttributeComponentImage unitAttributeComponentID="E">
-		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/experience.png</unitAttributeComponentImageFile>
-	</unitAttributeComponentImage>
-	<unitAttributeComponentImage unitAttributeComponentID="H">
-		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/heroSkills.png</unitAttributeComponentImageFile>
-	</unitAttributeComponentImage>
-	<unitAttributeComponentImage unitAttributeComponentID="C">
-		<unitAttributeComponentImageFile>/momime.client.graphics/unitAttributes/combatAreaEffect.png</unitAttributeComponentImageFile>
-	</unitAttributeComponentImage>
-	<unitAttribute unitAttributeID="UA01">
-		<unitAttributeWeaponGrade weaponGradeNumber="0">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeNormal.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-		<unitAttributeWeaponGrade weaponGradeNumber="1">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeAlchemy.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-		<unitAttributeWeaponGrade weaponGradeNumber="2">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeMithril.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-		<unitAttributeWeaponGrade weaponGradeNumber="3">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeAdamantium.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA02" />
-	<unitAttribute unitAttributeID="UA03">
-		<unitAttributeWeaponGrade weaponGradeNumber="0">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/plusToHit.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA04">
-		<unitAttributeWeaponGrade weaponGradeNumber="0">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceNormal.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-		<unitAttributeWeaponGrade weaponGradeNumber="1">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceAlchemy.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-		<unitAttributeWeaponGrade weaponGradeNumber="2">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceMithril.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-		<unitAttributeWeaponGrade weaponGradeNumber="3">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceAdamantium.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA05">
-		<unitAttributeWeaponGrade weaponGradeNumber="0">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/resist.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA06">
-		<unitAttributeWeaponGrade weaponGradeNumber="0">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/hitPoints.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-	</unitAttribute>
-	<unitAttribute unitAttributeID="UA07">
-		<unitAttributeWeaponGrade weaponGradeNumber="0">
-			<attributeImageFile>/momime.client.graphics/unitAttributes/plusToBlock.png</attributeImageFile>
-		</unitAttributeWeaponGrade>
-	</unitAttribute>
+	<unitSkillComponentImage unitSkillComponentID="B">
+		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/basic.png</unitSkillComponentImageFile>
+	</unitSkillComponentImage>
+	<unitSkillComponentImage unitSkillComponentID="W">
+		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/weaponGrade.png</unitSkillComponentImageFile>
+	</unitSkillComponentImage>
+	<unitSkillComponentImage unitSkillComponentID="E">
+		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/experience.png</unitSkillComponentImageFile>
+	</unitSkillComponentImage>
+	<unitSkillComponentImage unitSkillComponentID="H">
+		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/heroSkills.png</unitSkillComponentImageFile>
+	</unitSkillComponentImage>
+	<unitSkillComponentImage unitSkillComponentID="C">
+		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/combatAreaEffect.png</unitSkillComponentImageFile>
+	</unitSkillComponentImage>
 	<rangedAttackType rangedAttackTypeID="RAT0A">
 		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_015_000 - Rock.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
@@ -39706,7 +39657,65 @@
 		</experienceLevel>
 	</unitType>
 	<unitType unitTypeID="S" />
+	<unitSkill unitSkillID="UA01">
+		<unitSkillTypeID>A</unitSkillTypeID>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/meleeNormal.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="1">
+			<skillImageFile>/momime.client.graphics/unitSkills/meleeAlchemy.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="2">
+			<skillImageFile>/momime.client.graphics/unitSkills/meleeMithril.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="3">
+			<skillImageFile>/momime.client.graphics/unitSkills/meleeAdamantium.png</skillImageFile>
+		</unitSkillWeaponGrade>
+	</unitSkill>
+	<unitSkill unitSkillID="UA02">
+		<unitSkillTypeID>A</unitSkillTypeID>
+	</unitSkill>
+	<unitSkill unitSkillID="UA03">
+		<unitSkillTypeID>A</unitSkillTypeID>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/plusToHit.png</skillImageFile>
+		</unitSkillWeaponGrade>
+	</unitSkill>
+	<unitSkill unitSkillID="UA04">
+		<unitSkillTypeID>A</unitSkillTypeID>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/defenceNormal.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="1">
+			<skillImageFile>/momime.client.graphics/unitSkills/defenceAlchemy.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="2">
+			<skillImageFile>/momime.client.graphics/unitSkills/defenceMithril.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="3">
+			<skillImageFile>/momime.client.graphics/unitSkills/defenceAdamantium.png</skillImageFile>
+		</unitSkillWeaponGrade>
+	</unitSkill>
+	<unitSkill unitSkillID="UA05">
+		<unitSkillTypeID>A</unitSkillTypeID>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/resist.png</skillImageFile>
+		</unitSkillWeaponGrade>
+	</unitSkill>
+	<unitSkill unitSkillID="UA06">
+		<unitSkillTypeID>A</unitSkillTypeID>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/hitPoints.png</skillImageFile>
+		</unitSkillWeaponGrade>
+	</unitSkill>
+	<unitSkill unitSkillID="UA07">
+		<unitSkillTypeID>A</unitSkillTypeID>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/plusToBlock.png</skillImageFile>
+		</unitSkillWeaponGrade>
+	</unitSkill>
 	<unitSkill unitSkillID="USX01">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX01-move.png</movementIconImageFile>
 		<movementIconImagePreference>6</movementIconImagePreference>
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png</sampleTileImageFile>
@@ -39714,6 +39723,7 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="USX02">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX02-move.png</movementIconImageFile>
 		<movementIconImagePreference>4</movementIconImagePreference>
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/ocean/standard/00000000a-frame1.png</sampleTileImageFile>
@@ -39721,6 +39731,7 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="USX03">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX02-move.png</movementIconImageFile>
 		<movementIconImagePreference>5</movementIconImagePreference>
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png</sampleTileImageFile>
@@ -39728,6 +39739,7 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="USX04">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX04-move.png</movementIconImageFile>
 		<movementIconImagePreference>1</movementIconImagePreference>
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png</sampleTileImageFile>
@@ -39735,63 +39747,83 @@
 		<moveActionID>FLY</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="US000">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US000-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US001">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US001-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US002">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US002-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US004">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US004-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US005">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US005-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US006">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US006-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US007">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US007-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US008">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US008-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US009">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US009-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US010">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US010-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US011">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US011-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US012">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US012-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US014">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US014-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US015">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US015-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US016">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US016-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US017">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US017-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US018">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US018-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US019">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US019-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US020">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US020-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US022">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US022-icon.png</unitSkillImageFile>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX01-move.png</movementIconImageFile>
 		<movementIconImagePreference>3</movementIconImagePreference>
@@ -39800,6 +39832,7 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="US023">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US023-icon.png</unitSkillImageFile>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX04-move.png</movementIconImageFile>
 		<movementIconImagePreference>2</movementIconImagePreference>
@@ -39808,151 +39841,202 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="US024">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US024-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US025">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US025-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US026">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US026-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US027-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US028">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US028-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US029">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US029-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US030">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US030-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US031-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US032-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US033-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US034">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US034-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US035">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US035-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US036">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US036-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US037">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US037-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US040">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US040-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US046">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US046-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US047">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US047-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US051">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US051-icon.png</unitSkillImageFile>
 	</unitSkill>
-	<unitSkill unitSkillID="US098" />
+	<unitSkill unitSkillID="US098">
+		<unitSkillTypeID>N</unitSkillTypeID>
+	</unitSkill>
 	<unitSkill unitSkillID="US122">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US122-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US123">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US123-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US125">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US125-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US126">
+		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US126-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US128-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US129-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
+		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US130-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US131-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US132-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US133">
+		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US133-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
+		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US134-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US135">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US135-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="US169">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US169-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS01">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS01-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS02">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS02-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS03">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS03-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS04">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS04-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS05">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS05-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS06">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS06-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS07">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS07-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS08">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS08-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS09">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS09-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS10">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS10-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS11">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS11-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS12">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS12-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS13">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS13-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="HS14">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS14-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS002">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS002-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS004">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS004-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS007">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS007-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS008">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS008-icon.png</unitSkillImageFile>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX02-move.png</movementIconImageFile>
 		<movementIconImagePreference>5</movementIconImagePreference>
@@ -39961,27 +40045,35 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="SS016">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS016-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS021">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS021-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS024">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS024-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS031">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS031-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS041">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS041-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS044">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS044-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS054">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS054-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS056">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS056-icon.png</unitSkillImageFile>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX04-move.png</movementIconImageFile>
 		<movementIconImagePreference>1</movementIconImagePreference>
@@ -39990,9 +40082,11 @@
 		<moveActionID>FLY</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="SS062">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS062-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS063">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS063-icon.png</unitSkillImageFile>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX04-move.png</movementIconImageFile>
 		<movementIconImagePreference>2</movementIconImagePreference>
@@ -40001,21 +40095,27 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="SS069">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS069-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS070">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS070-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS086">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS086-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093A">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS093A-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093B">
+		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS093B-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS093C-icon.png</unitSkillImageFile>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX04-move.png</movementIconImageFile>
 		<movementIconImagePreference>1</movementIconImagePreference>
@@ -40024,51 +40124,67 @@
 		<moveActionID>FLY</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="SS094">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS094-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS099">
+		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS099-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS121-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS123">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS123-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS124">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS124-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS126">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS126-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS130">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS130-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS131">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS131-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS138">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS138-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS141">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS141-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS143">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS143-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS144">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS144-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS164">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS164-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS175">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS175-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS179">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS179-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SS181">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS181-icon.png</unitSkillImageFile>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX01-move.png</movementIconImageFile>
 		<movementIconImagePreference>3</movementIconImagePreference>
@@ -40077,36 +40193,47 @@
 		<moveActionID>WALK</moveActionID>
 	</unitSkill>
 	<unitSkill unitSkillID="SC005">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC005-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC046">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC046-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC053">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC053-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC067">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC067-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC088">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC088-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC089A">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC089A-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC089B">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC089B-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC089C">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC089C-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC162">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC162-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC165">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC165-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSkill unitSkillID="SC172">
+		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC172-icon.png</unitSkillImageFile>
 	</unitSkill>
 	<unitSpecialOrderImage unitSpecialOrderID="P">

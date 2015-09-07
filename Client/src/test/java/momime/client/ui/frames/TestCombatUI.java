@@ -13,6 +13,17 @@ import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
 
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -41,12 +52,13 @@ import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtilsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.TileType;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -63,17 +75,7 @@ import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitSkillUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import momime.common.utils.UnitUtils;
 
 /**
  * Tests the CombatUI class
@@ -322,22 +324,27 @@ public final class TestCombatUI
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (selectedUnit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("High Elf Swordsmen");
 		
+		// Unit skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList (); 
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), selectedUnit, db)).thenReturn (mergedSkills);
+		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
-		when (unitSkillUtils.getModifiedAttributeValue (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (3);
+		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
+		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (3);
 		
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateAliveFigureCount (selectedUnit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (6);
 		
 		// Unit icons
-		when (unitClientUtils.getUnitAttributeIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn
-			(utils.loadImage ("/momime.client.graphics/unitAttributes/meleeNormal.png"));
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn
+			(utils.loadImage ("/momime.client.graphics/unitSkills/meleeNormal.png"));
 
-		when (unitClientUtils.getUnitAttributeIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
 			(utils.loadImage ("/momime.client.graphics/rangedAttacks/rock/iconNormal.png"));
 		
 		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
@@ -374,6 +381,7 @@ public final class TestCombatUI
 		combat.setMusicPlayer (mock (AudioPlayer.class));
 		combat.setCombatMapProcessing (mock (CombatMapProcessing.class));
 		combat.setUnitCalculations (unitCalc);
+		combat.setUnitUtils (unitUtils);
 		combat.setTextUtils (new TextUtilsImpl ());
 		combat.setSpellBookUI (new SpellBookUI ());
 		combat.setSmallFont (CreateFontsForTests.getSmallFont ());

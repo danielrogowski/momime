@@ -1,7 +1,7 @@
 package momime.client.config;
 
-import momime.client.config.v0_9_6.MomImeClientConfig;
-import momime.client.config.v0_9_6.ObjectFactory;
+import momime.client.config.v0_9_7.MomImeClientConfig;
+import momime.client.config.v0_9_7.ObjectFactory;
 
 /**
  * Creates our custom extended client config when it is unmarshalled with JAXB

@@ -18,6 +18,8 @@ import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.utils.UnitSkillUtils;
 
@@ -91,7 +93,8 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 				
 				try
 				{
-					skillText = skillText + " " + getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), value.getUnitSkillID (), getClient ().getPlayers (),
+					skillText = skillText + " " + getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), value.getUnitSkillID (),
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 				}
@@ -107,7 +110,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 		try
 		{
 			// Look up the image for the skill
-			final BufferedImage image = getUnitClientUtils ().getUnitSkillIcon (unit, value.getUnitSkillID ());
+			final BufferedImage image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, value.getUnitSkillID ());
 				setIcon (new ImageIcon (image));
 		}
 		catch (final Exception e)

@@ -2,39 +2,38 @@ package momime.client.graphics.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import momime.client.graphics.database.v0_9_6.Animation;
-import momime.client.graphics.database.v0_9_6.CityImage;
-import momime.client.graphics.database.v0_9_6.CityViewElement;
-import momime.client.graphics.database.v0_9_6.CombatAction;
-import momime.client.graphics.database.v0_9_6.CombatAreaEffect;
-import momime.client.graphics.database.v0_9_6.CombatTileBorderImage;
-import momime.client.graphics.database.v0_9_6.CombatTileFigurePositions;
-import momime.client.graphics.database.v0_9_6.CombatTileUnitRelativeScale;
-import momime.client.graphics.database.v0_9_6.FigurePositionsForFigureCount;
-import momime.client.graphics.database.v0_9_6.GraphicsDatabase;
-import momime.client.graphics.database.v0_9_6.MapFeature;
-import momime.client.graphics.database.v0_9_6.ObjectFactory;
-import momime.client.graphics.database.v0_9_6.Pick;
-import momime.client.graphics.database.v0_9_6.PlayList;
-import momime.client.graphics.database.v0_9_6.ProductionType;
-import momime.client.graphics.database.v0_9_6.Race;
-import momime.client.graphics.database.v0_9_6.RangedAttackType;
-import momime.client.graphics.database.v0_9_6.RangedAttackTypeCombatImage;
-import momime.client.graphics.database.v0_9_6.SmoothedTile;
-import momime.client.graphics.database.v0_9_6.SmoothedTileType;
-import momime.client.graphics.database.v0_9_6.SmoothingSystem;
-import momime.client.graphics.database.v0_9_6.Spell;
-import momime.client.graphics.database.v0_9_6.TileSet;
-import momime.client.graphics.database.v0_9_6.Unit;
-import momime.client.graphics.database.v0_9_6.UnitAttribute;
-import momime.client.graphics.database.v0_9_6.UnitAttributeComponentImage;
-import momime.client.graphics.database.v0_9_6.UnitCombatAction;
-import momime.client.graphics.database.v0_9_6.UnitCombatImage;
-import momime.client.graphics.database.v0_9_6.UnitSkill;
-import momime.client.graphics.database.v0_9_6.UnitSpecialOrderImage;
-import momime.client.graphics.database.v0_9_6.UnitType;
-import momime.client.graphics.database.v0_9_6.WeaponGrade;
-import momime.client.graphics.database.v0_9_6.Wizard;
+import momime.client.graphics.database.v0_9_7.Animation;
+import momime.client.graphics.database.v0_9_7.CityImage;
+import momime.client.graphics.database.v0_9_7.CityViewElement;
+import momime.client.graphics.database.v0_9_7.CombatAction;
+import momime.client.graphics.database.v0_9_7.CombatAreaEffect;
+import momime.client.graphics.database.v0_9_7.CombatTileBorderImage;
+import momime.client.graphics.database.v0_9_7.CombatTileFigurePositions;
+import momime.client.graphics.database.v0_9_7.CombatTileUnitRelativeScale;
+import momime.client.graphics.database.v0_9_7.FigurePositionsForFigureCount;
+import momime.client.graphics.database.v0_9_7.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_7.MapFeature;
+import momime.client.graphics.database.v0_9_7.ObjectFactory;
+import momime.client.graphics.database.v0_9_7.Pick;
+import momime.client.graphics.database.v0_9_7.PlayList;
+import momime.client.graphics.database.v0_9_7.ProductionType;
+import momime.client.graphics.database.v0_9_7.Race;
+import momime.client.graphics.database.v0_9_7.RangedAttackType;
+import momime.client.graphics.database.v0_9_7.RangedAttackTypeCombatImage;
+import momime.client.graphics.database.v0_9_7.SmoothedTile;
+import momime.client.graphics.database.v0_9_7.SmoothedTileType;
+import momime.client.graphics.database.v0_9_7.SmoothingSystem;
+import momime.client.graphics.database.v0_9_7.Spell;
+import momime.client.graphics.database.v0_9_7.TileSet;
+import momime.client.graphics.database.v0_9_7.Unit;
+import momime.client.graphics.database.v0_9_7.UnitSkillComponentImage;
+import momime.client.graphics.database.v0_9_7.UnitCombatAction;
+import momime.client.graphics.database.v0_9_7.UnitCombatImage;
+import momime.client.graphics.database.v0_9_7.UnitSkill;
+import momime.client.graphics.database.v0_9_7.UnitSpecialOrderImage;
+import momime.client.graphics.database.v0_9_7.UnitType;
+import momime.client.graphics.database.v0_9_7.WeaponGrade;
+import momime.client.graphics.database.v0_9_7.Wizard;
 
 /**
  * Creates our custom extended GraphicsDatabase when it is unmarshalled with JAXB
@@ -115,15 +114,6 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final ProductionType createProductionType ()
 	{
 		return new ProductionTypeGfx ();
-	}
-	
-	/**
-	 * @return Custom extended Unit attribute
-	 */
-	@Override
-	public final UnitAttribute createUnitAttribute ()
-	{
-		return new UnitAttributeGfx ();
 	}
 	
 	/**
@@ -310,9 +300,9 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	 * @return Custom extended Unit attribute component images
 	 */
 	@Override
-	public final UnitAttributeComponentImage createUnitAttributeComponentImage ()
+	public final UnitSkillComponentImage createUnitSkillComponentImage ()
 	{
-		return new UnitAttributeComponentImageGfx ();
+		return new UnitSkillComponentImageGfx ();
 	}
 
 	/**

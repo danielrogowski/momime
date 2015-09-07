@@ -20,6 +20,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeature;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
@@ -229,14 +231,16 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
 					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST, getClient ().getPlayers (),
+						CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST,
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 					
 						settlerCount++;
 					
 					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, getClient ().getPlayers (),
+						CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE,
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 						

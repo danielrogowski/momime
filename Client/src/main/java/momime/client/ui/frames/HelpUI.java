@@ -35,7 +35,6 @@ import momime.client.language.database.PickLang;
 import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.database.SpellBookSectionLang;
 import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitAttributeLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.SpringExpressionReplacer;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
@@ -138,9 +137,6 @@ public final class HelpUI extends MomClientFrameUI
 	/** Unit skill ID we're displaying help text about, null if displaying help text about something other than a unit skill */
 	private String unitSkillID;
 
-	/** Unit attribute we're displaying help text about, null if displaying help text about something other than a unit attribute */
-	private String unitAttributeID;
-	
 	/** Unit whose skills or attributes we're displaying help text about, null if displaying help text about something other than a unit skill or attribute */
 	private AvailableUnit unit;
 
@@ -339,8 +335,15 @@ public final class HelpUI extends MomClientFrameUI
 			title.setText ((unitSkillTitle != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillTitle) : unitSkillID);
 			indentedText.setText ((unitSkillHelpText != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillHelpText) : unitSkillID);
 			
+			// If the icons are included in the help text, then don't indent it as well (for unit attributes)
+			if (indentedText.getText ().contains ("#{"))
+			{
+				text = indentedText.getText ();
+				indentedText.setText (null);
+			}
+			
 			// If this unit skill is the result of a spell, show how much upkeep it is costing
-			if (unit instanceof MemoryUnit)
+			else if (unit instanceof MemoryUnit)
 			{
 				final MemoryUnit mu = (MemoryUnit) unit;
 				final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
@@ -381,14 +384,6 @@ public final class HelpUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 			}
-		}
-		else if (unitAttributeID != null)
-		{
-			final UnitAttributeLang unitAttribute = getLanguage ().findUnitAttribute (unitAttributeID);
-			final String unitAttributeTitle = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeDescription ();
-			final String unitAttributeHelpText = (unitAttribute == null) ? null : unitAttribute.getUnitAttributeHelpText ();
-			title.setText ((unitAttributeTitle != null) ? unitAttributeTitle : unitAttributeID);
-			text = (unitAttributeHelpText != null) ? unitAttributeHelpText : unitAttributeID;
 		}
 		else if (combatAreaEffectID != null)
 		{
@@ -550,7 +545,6 @@ public final class HelpUI extends MomClientFrameUI
 		// Clear identifiers
 		pickID = null;
 		unitSkillID = null;
-		unitAttributeID = null;
 		unit = null;
 		spellID = null;
 		castingPlayer = null;
@@ -625,7 +619,7 @@ public final class HelpUI extends MomClientFrameUI
 		unitSkillID = id;
 		unit = u;
 
-		final BufferedImage image = getUnitClientUtils ().getUnitSkillIcon (unit, unitSkillID);
+		final BufferedImage image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, unitSkillID);
 		if (image != null)
 		{
 			imageLabel.setIcon (new ImageIcon (image));
@@ -638,25 +632,6 @@ public final class HelpUI extends MomClientFrameUI
 		log.trace ("Exiting showUnitSkillID");
 	}
 	
-	/**
-	 * @param id Unit attribute ID to display help text about
-	 * @param u Unit who owns the skill
-	 * @throws IOException If a resource cannot be found
-	 */
-	public final void showUnitAttributeID (final String id, final AvailableUnit u) throws IOException
-	{
-		log.trace ("Entering showUnitAttributeID: " + id + ", " + u.getUnitID ());
-
-		clear ();
-		unitAttributeID = id;
-		unit = u;
-		
-		languageChanged ();
-		setVisible (true);
-
-		log.trace ("Exiting showUnitAttributeID");
-	}
-
 	/**
 	 * @param id Combat area effect ID to display help text about
 	 * @throws IOException If a resource cannot be found

@@ -203,7 +203,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			getCombatUI ().setAttackAnim (this);
 			combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
 			
-			if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ())) && (getDefenderUnits ().size () == 1))
+			if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackSkillID ())) && (getDefenderUnits ().size () == 1))
 			{
 				// Start a ranged attack animation - firstly, after a brief frame of showing the unit firing, it'll be back to standing still
 				// To animate the missiles, first we need the locations (in pixels) of the two units involved
@@ -255,7 +255,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						log.error (e, e);
 					}
 			}
-			else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAttributeID ()))
+			else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackSkillID ()))
 			{
 				// Start a close combat attack animation
 				getUnitClientUtils ().playCombatActionSound (attackerUnit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK);
@@ -356,7 +356,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	@Override
 	public final void tick (final int tickNumber)
 	{
-		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAttributeID ()))
+		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackSkillID ()))
 		{
 			// Animate a ranged attack
 			if (tickNumber >= RANGED_ATTACK_LAUNCH_TICKS)
@@ -373,7 +373,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			
 			ratCurrentImage = (tickNumber >= tickCount - RANGED_ATTACK_IMPACT_TICKS) ? ratStrikeImage : ratFlyImage;
 		}
-		else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAttributeID ()))
+		else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackSkillID ()))
 		{
 			// Animate a close combat attack - gradually ramp up the damage taken by both units.
 			// Don't even need to force a repaint, because registering the 'melee' animation will do it for us.

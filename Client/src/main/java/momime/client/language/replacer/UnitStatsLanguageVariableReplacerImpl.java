@@ -3,22 +3,27 @@ package momime.client.language.replacer;
 import java.io.IOException;
 import java.util.List;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.client.MomClient;
 import momime.client.language.database.CombatAreaEffectLang;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.PickLang;
-import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.language.database.UnitTypeLang;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ExperienceAttributeBonus;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.ExperienceSkillBonus;
+import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -29,10 +34,6 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Replacer for replacing language strings to do with unit stats
@@ -161,7 +162,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			// This outputs a phrase describing the bonuses (if any) the unit gets from its current (modified) experience level, either similar to:
 			// 'Normal troops begin as recruits.' or
 			// 'Veteran troops have the following enhanced combat factors: +1 to hit, +2 defence and +3 resistance.'
-			case "EXPERIENCE_ATTRIBUTE_BONUSES":
+			case "EXPERIENCE_SKILL_BONUSES":
 			{
 				// Work this out only once
 				final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (getUnit (), true, getClient ().getPlayers (),
@@ -182,13 +183,20 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 						final StringBuilder bonuses = new StringBuilder ();
 						
 						// List out all the bonuses this exp level gives
-						for (final ExperienceAttributeBonus bonus : expLvl.getExperienceAttributeBonus ())
+						final List<UnitHasSkill> mergedSkills;
+						if (getUnit () instanceof MemoryUnit)
+							mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+								(MemoryUnit) getUnit (), getClient ().getClientDB ());
+						else
+							mergedSkills = getUnit ().getUnitHasSkill ();
 							
-							// Don't mention +1 ranged if the unit has no ranged attack
-							if ((!bonus.getUnitAttributeID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) ||
-								(getUnitSkillUtils ().getModifiedAttributeValue (getUnit (), bonus.getUnitAttributeID (), UnitAttributeComponent.BASIC,
-									UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) > 0))
+						for (final ExperienceSkillBonus bonus : expLvl.getExperienceSkillBonus ())
+							
+							// Don't mention skills that the unit does not have
+							if (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, bonus.getUnitSkillID (),
+								UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH,
+								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 							{
 								if (bonuses.length () > 0)
 									bonuses.append (", ");
@@ -197,11 +205,11 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 								bonuses.append (bonus.getBonusValue ());
 								bonuses.append (" ");
 								
-								final UnitAttributeLang attr = getLanguage ().findUnitAttribute (bonus.getUnitAttributeID ());
-								final String attrDescription = (attr == null) ? null : attr.getUnitAttributeDescription ();
+								final UnitSkillLang attr = getLanguage ().findUnitSkill (bonus.getUnitSkillID ());
+								final String attrDescription = (attr == null) ? null : attr.getUnitSkillDescription ();
 								
 								// Strip off the "+ " prefix from "+ to Hit" and "+ to Block" otherwise we end up with "+2 + to Hit" which looks silly
-								bonuses.append ((attrDescription != null) ? attrDescription.replaceAll ("\\+ ", "") : bonus.getUnitAttributeID ());
+								bonuses.append ((attrDescription != null) ? attrDescription.replaceAll ("\\+ ", "") : bonus.getUnitSkillID ());
 							}
 
 						text = unitType.getUnitTypeExperienced () + " " + getTextUtils ().replaceFinalCommaByAnd (bonuses.toString ()) + ".";
@@ -293,14 +301,16 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			default:
 				// This outputs the value of the specified skill, e.g. SKILL_VALUE_US098 outputs how much experience the unit has
 				if (code.startsWith ("SKILL_VALUE_"))
-					text = new Integer (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (12), getClient ().getPlayers (),
+					text = new Integer (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (12),
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ())).toString ();
 				
 				// This outputs 'Super' if the value of the specified skill is 2 or more
 				else if (code.startsWith ("SUPER_"))
 				{
-					text = (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (6), getClient ().getPlayers (),
+					text = (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (6),
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) > 1) ? "Super" : "";
 				}

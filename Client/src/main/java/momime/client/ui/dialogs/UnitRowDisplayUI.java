@@ -17,6 +17,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.SpellBookSectionLang;
@@ -32,21 +38,17 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Popup that displays each of the units in a particular map cell so we can select one.
@@ -253,20 +255,28 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			unitNames.add (unitName);
 			
 			// There's space on the form for up to 6 unit attributes
+			final List<String> unitAttributeIDs = new ArrayList<String> ();
+			for (final UnitSkill thisSkill : getClient ().getClientDB ().getUnitSkills ())
+				if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitRowDisplayUI").getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
+					unitAttributeIDs.add (thisSkill.getUnitSkillID ());
+			
+			final List<UnitHasSkill> mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ());
+			
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
 			{
-				final String unitAttributeID = getClient ().getClientDB ().getUnitAttributes ().get (attrNo-1).getUnitAttributeID ();
-				final int attrValue = getUnitSkillUtils ().getModifiedAttributeValue (unit, unitAttributeID, UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				final String unitAttributeID = unitAttributeIDs.get (attrNo-1);
+				final int attrValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitAttributeID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 				
-				if (attrValue != 0)
+				if (attrValue > 0)
 				{
 					// Show number and icon for this unit attribute
 					contentPane.add (getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont (), new Integer (attrValue).toString ()),
 						"frmUnitRowUnit" + row + "Attribute" + attrNo + "Value");
 					
-					final BufferedImage attributeImage = getUnitClientUtils ().getUnitAttributeIcon (unit, unitAttributeID);
+					final BufferedImage attributeImage = getUnitClientUtils ().getUnitSkillComponentBreakdownIcon (unit, unitAttributeID); 
 					if (attributeImage != null)
 						contentPane.add (getUtils ().createImage (attributeImage), "frmUnitRowUnit" + row + "Attribute" + attrNo + "Icon");
 				}
@@ -274,19 +284,18 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			
 			// There's space on the form for up to 12 unit skills
 			int skillNo = 0;
-			final List<UnitHasSkill> mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ());
 			
 			for (final UnitHasSkill thisSkill : mergedSkills)
-				if (skillNo < 12)
-				{
-					final BufferedImage skillImage = getUnitClientUtils ().getUnitSkillIcon (unit, thisSkill.getUnitSkillID ());
-					if (skillImage != null)
+				if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitRowDisplayUI").getUnitSkillTypeID () != UnitSkillTypeID.ATTRIBUTE)
+					if (skillNo < 12)
 					{
-						skillNo++;
-						contentPane.add (getUtils ().createImage (skillImage), "frmUnitRowUnit" + row + "Skill" + skillNo);
-					}
-				}			
+						final BufferedImage skillImage = getUnitClientUtils ().getUnitSkillSingleIcon (unit, thisSkill.getUnitSkillID ());
+						if (skillImage != null)
+						{
+							skillNo++;
+							contentPane.add (getUtils ().createImage (skillImage), "frmUnitRowUnit" + row + "Skill" + skillNo);
+						}
+					}			
 		}
 		
 		// Lock frame size

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-	xmlns:momimecltconfig="http://momime/client/config/v0_9_6" xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/client/config/v0_9_6"
+	xmlns:momimecltconfig="http://momime/client/config/v0_9_7" xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/client/config/v0_9_7"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://momime/common/database"/>
@@ -43,6 +43,9 @@
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecommon:unitCombatScale" />
+				
+				<!-- Unit info display options -->
+				<xsd:element minOccurs="1" maxOccurs="1" name="displayUnitSkillsAsAttributes" type="momimecommon:unitSkillTypeID" />
 				
 				<!-- Debug options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="debugShowURNs" type="xsd:boolean" />

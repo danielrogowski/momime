@@ -26,7 +26,7 @@ import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.UnitAttributeLang;
+import momime.client.language.database.UnitSkillLang;
 import momime.client.language.database.UnitMagicRealmLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
@@ -312,11 +312,11 @@ public final class TestSpellClientUtilsImpl
 	{
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookNoSavingThrowModifier")).thenReturn ("Saves against UNIT_ATTRIBUTE");
+		when (lang.findCategoryEntry ("frmHelp", "SpellBookNoSavingThrowModifier")).thenReturn ("Saves against UNIT_SKILL");
 		
-		final UnitAttributeLang attr = new UnitAttributeLang ();
-		attr.setUnitAttributeDescription ("Resistance");
-		when (lang.findUnitAttribute ("UA01")).thenReturn (attr);
+		final UnitSkillLang attr = new UnitSkillLang ();
+		attr.setUnitSkillDescription ("Resistance");
+		when (lang.findUnitSkill ("UA01")).thenReturn (attr);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -325,7 +325,7 @@ public final class TestSpellClientUtilsImpl
 		final Spell spell = new Spell ();
 		
 		final SpellValidUnitTarget target = new SpellValidUnitTarget ();
-		target.setSavingThrowAttributeID ("UA01");
+		target.setSavingThrowSkillID ("UA01");
 		spell.getSpellValidUnitTarget ().add (target);
 
 		// Set up object to test
@@ -345,11 +345,11 @@ public final class TestSpellClientUtilsImpl
 	{
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookSingleSavingThrowModifier")).thenReturn ("Saves against UNIT_ATTRIBUTE at SAVING_THROW_MODIFIER");
+		when (lang.findCategoryEntry ("frmHelp", "SpellBookSingleSavingThrowModifier")).thenReturn ("Saves against UNIT_SKILL at SAVING_THROW_MODIFIER");
 		
-		final UnitAttributeLang attr = new UnitAttributeLang ();
-		attr.setUnitAttributeDescription ("Resistance");
-		when (lang.findUnitAttribute ("UA01")).thenReturn (attr);
+		final UnitSkillLang attr = new UnitSkillLang ();
+		attr.setUnitSkillDescription ("Resistance");
+		when (lang.findUnitSkill ("UA01")).thenReturn (attr);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -358,7 +358,7 @@ public final class TestSpellClientUtilsImpl
 		final Spell spell = new Spell ();
 		
 		final SpellValidUnitTarget target = new SpellValidUnitTarget ();
-		target.setSavingThrowAttributeID ("UA01");
+		target.setSavingThrowSkillID ("UA01");
 		target.setSavingThrowModifier (5);
 		spell.getSpellValidUnitTarget ().add (target);
 
@@ -380,11 +380,11 @@ public final class TestSpellClientUtilsImpl
 	{
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookMultipleSavingThrowModifiers")).thenReturn ("Saves against UNIT_ATTRIBUTE from SAVING_THROW_MODIFIER_MINIMUM to SAVING_THROW_MODIFIER_MAXIMUM");
+		when (lang.findCategoryEntry ("frmHelp", "SpellBookMultipleSavingThrowModifiers")).thenReturn ("Saves against UNIT_SKILL from SAVING_THROW_MODIFIER_MINIMUM to SAVING_THROW_MODIFIER_MAXIMUM");
 		
-		final UnitAttributeLang attr = new UnitAttributeLang ();
-		attr.setUnitAttributeDescription ("Resistance");
-		when (lang.findUnitAttribute ("UA01")).thenReturn (attr);
+		final UnitSkillLang attr = new UnitSkillLang ();
+		attr.setUnitSkillDescription ("Resistance");
+		when (lang.findUnitSkill ("UA01")).thenReturn (attr);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -393,17 +393,17 @@ public final class TestSpellClientUtilsImpl
 		final Spell spell = new Spell ();
 		
 		final SpellValidUnitTarget target1 = new SpellValidUnitTarget ();
-		target1.setSavingThrowAttributeID ("UA01");
+		target1.setSavingThrowSkillID ("UA01");
 		target1.setSavingThrowModifier (5);
 		spell.getSpellValidUnitTarget ().add (target1);
 
 		final SpellValidUnitTarget target2 = new SpellValidUnitTarget ();
-		target2.setSavingThrowAttributeID ("UA01");
+		target2.setSavingThrowSkillID ("UA01");
 		target2.setSavingThrowModifier (6);
 		spell.getSpellValidUnitTarget ().add (target2);
 
 		final SpellValidUnitTarget target3 = new SpellValidUnitTarget ();
-		target3.setSavingThrowAttributeID ("UA01");
+		target3.setSavingThrowSkillID ("UA01");
 		target3.setSavingThrowModifier (3);
 		spell.getSpellValidUnitTarget ().add (target3);
 

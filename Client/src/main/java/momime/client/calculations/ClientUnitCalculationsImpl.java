@@ -8,6 +8,8 @@ import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
@@ -69,7 +71,8 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		for (final UnitSkillGfx thisSkill : getGraphicsDB ().getUnitSkills ())
 			if (thisSkill.getMovementIconImagePreference () != null)
 				if ((bestMatch == null) || (thisSkill.getMovementIconImagePreference () < bestMatch.getMovementIconImagePreference ()))
-					if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
+					if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (),
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 						bestMatch = thisSkill;

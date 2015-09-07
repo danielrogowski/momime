@@ -77,12 +77,6 @@ public interface LanguageDatabaseEx
 	public UnitTypeLang findUnitType (final String unitTypeID);
 	
 	/**
-	 * @param unitAttributeID Unit attribute ID to search for
-	 * @return Unit attribute descriptions object; or null if not found
-	 */
-	public UnitAttributeLang findUnitAttribute (final String unitAttributeID);
-
-	/**
 	 * @param unitSkillID Unit skill ID to search for
 	 * @return Unit skill descriptions object; or null if not found
 	 */

@@ -8342,13 +8342,13 @@
 		<unitSkillDescription>Stoning Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>P</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>F</damageType>
-		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
+		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US028">
 		<unitSkillDescription>Armour Piercing</unitSkillDescription>
@@ -8360,19 +8360,19 @@
 		<unitSkillDescription>Poison Attack</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>T</damageType>
-		<damagePerFigure>PER_FIGURE_COMBINED</damagePerFigure>
+		<damagePerFigure>C</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillDescription>Life Stealing</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>R</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
 		<unitSkillDescription>Immolation</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>M</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
 		<unitSkillDescription>Resistance to Others</unitSkillDescription>
@@ -8418,31 +8418,31 @@
 		<unitSkillDescription>Thrown Weapons</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>S</damageType>
-		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
+		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>Y</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>P</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>D</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
 		<unitSkillDescription>Death Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>P</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
 		<unitSkillDescription>Ranged Attack Ammo</unitSkillDescription>
@@ -8451,13 +8451,13 @@
 		<unitSkillDescription>Lightning Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>A</damageType>
-		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
+		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
 		<unitSkillDescription>Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>S</damageType>
-		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
+		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US135">
 		<unitSkillDescription>Summon Demons</unitSkillDescription>
@@ -8605,7 +8605,7 @@
 		<unitSkillDescription>Chaos Channels - Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>S</damageType>
-		<damagePerFigure>PER_FIGURE_SEPARATE</damagePerFigure>
+		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
 		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
@@ -8619,7 +8619,7 @@
 		<unitSkillDescription>Immolation</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>M</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
 		<unitSkillDescription>Bless</unitSkillDescription>
@@ -8655,7 +8655,7 @@
 		<unitSkillDescription>Cloak of Fear</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>Y</damageType>
-		<damagePerFigure>PER_UNIT</damagePerFigure>
+		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS175">
 		<unitSkillDescription>Black Channels</unitSkillDescription>

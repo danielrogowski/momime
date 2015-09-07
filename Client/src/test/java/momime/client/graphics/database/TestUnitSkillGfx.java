@@ -6,9 +6,9 @@ import momime.common.database.RecordNotFoundException;
 import org.junit.Test;
 
 /**
- * Tests the UnitAttributeGfx class
+ * Tests the UnitSkillGfx class
  */
-public final class TestUnitAttributeGfx
+public final class TestUnitSkillGfx
 {
 	/**
 	 * Tests the findWeaponGradeImageFile method to look for a weapon grade that does exist
@@ -18,14 +18,14 @@ public final class TestUnitAttributeGfx
 	public final void testFindWeaponGradeImageFile_Exists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
-		final UnitAttributeGfx attr = new UnitAttributeGfx ();
+		final UnitSkillGfx attr = new UnitSkillGfx ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitAttributeWeaponGradeGfx image = new UnitAttributeWeaponGradeGfx ();
+			final UnitSkillWeaponGradeGfx image = new UnitSkillWeaponGradeGfx ();
 			image.setWeaponGradeNumber (n);
-			image.setAttributeImageFile ("Blah" + n + ".png");
+			image.setSkillImageFile ("Blah" + n + ".png");
 			
-			attr.getUnitAttributeWeaponGrade ().add (image);
+			attr.getUnitSkillWeaponGrade ().add (image);
 		}
 		
 		attr.buildMap ();
@@ -42,14 +42,14 @@ public final class TestUnitAttributeGfx
 	public final void testFindWeaponGradeImageFile_NotExists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
-		final UnitAttributeGfx attr = new UnitAttributeGfx ();
+		final UnitSkillGfx attr = new UnitSkillGfx ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitAttributeWeaponGradeGfx image = new UnitAttributeWeaponGradeGfx ();
+			final UnitSkillWeaponGradeGfx image = new UnitSkillWeaponGradeGfx ();
 			image.setWeaponGradeNumber (n);
-			image.setAttributeImageFile ("Blah" + n + ".png");
+			image.setSkillImageFile ("Blah" + n + ".png");
 			
-			attr.getUnitAttributeWeaponGrade ().add (image);
+			attr.getUnitSkillWeaponGrade ().add (image);
 		}
 		
 		attr.buildMap ();

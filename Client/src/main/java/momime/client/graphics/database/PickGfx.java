@@ -2,8 +2,8 @@ package momime.client.graphics.database;
 
 import java.util.List;
 
-import momime.client.graphics.database.v0_9_6.BookImage;
-import momime.client.graphics.database.v0_9_6.Pick;
+import momime.client.graphics.database.v0_9_7.BookImage;
+import momime.client.graphics.database.v0_9_7.Pick;
 import momime.common.database.RecordNotFoundException;
 
 import org.apache.commons.logging.Log;

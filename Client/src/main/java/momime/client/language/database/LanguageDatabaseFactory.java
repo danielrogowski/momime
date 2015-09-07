@@ -2,29 +2,28 @@ package momime.client.language.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import momime.client.language.database.v0_9_6.Building;
-import momime.client.language.database.v0_9_6.CitySpellEffect;
-import momime.client.language.database.v0_9_6.CombatAreaEffect;
-import momime.client.language.database.v0_9_6.KnownServer;
-import momime.client.language.database.v0_9_6.LanguageCategory;
-import momime.client.language.database.v0_9_6.LanguageDatabase;
-import momime.client.language.database.v0_9_6.MapFeature;
-import momime.client.language.database.v0_9_6.ObjectFactory;
-import momime.client.language.database.v0_9_6.Pick;
-import momime.client.language.database.v0_9_6.PickType;
-import momime.client.language.database.v0_9_6.Plane;
-import momime.client.language.database.v0_9_6.PopulationTask;
-import momime.client.language.database.v0_9_6.ProductionType;
-import momime.client.language.database.v0_9_6.Race;
-import momime.client.language.database.v0_9_6.ShortcutKey;
-import momime.client.language.database.v0_9_6.Spell;
-import momime.client.language.database.v0_9_6.SpellBookSection;
-import momime.client.language.database.v0_9_6.TileType;
-import momime.client.language.database.v0_9_6.Unit;
-import momime.client.language.database.v0_9_6.UnitAttribute;
-import momime.client.language.database.v0_9_6.UnitMagicRealm;
-import momime.client.language.database.v0_9_6.UnitSkill;
-import momime.client.language.database.v0_9_6.UnitType;
+import momime.client.language.database.v0_9_7.Building;
+import momime.client.language.database.v0_9_7.CitySpellEffect;
+import momime.client.language.database.v0_9_7.CombatAreaEffect;
+import momime.client.language.database.v0_9_7.KnownServer;
+import momime.client.language.database.v0_9_7.LanguageCategory;
+import momime.client.language.database.v0_9_7.LanguageDatabase;
+import momime.client.language.database.v0_9_7.MapFeature;
+import momime.client.language.database.v0_9_7.ObjectFactory;
+import momime.client.language.database.v0_9_7.Pick;
+import momime.client.language.database.v0_9_7.PickType;
+import momime.client.language.database.v0_9_7.Plane;
+import momime.client.language.database.v0_9_7.PopulationTask;
+import momime.client.language.database.v0_9_7.ProductionType;
+import momime.client.language.database.v0_9_7.Race;
+import momime.client.language.database.v0_9_7.ShortcutKey;
+import momime.client.language.database.v0_9_7.Spell;
+import momime.client.language.database.v0_9_7.SpellBookSection;
+import momime.client.language.database.v0_9_7.TileType;
+import momime.client.language.database.v0_9_7.Unit;
+import momime.client.language.database.v0_9_7.UnitMagicRealm;
+import momime.client.language.database.v0_9_7.UnitSkill;
+import momime.client.language.database.v0_9_7.UnitType;
 
 /**
  * Creates our custom extended LanguageDatabase when it is unmarshalled with JAXB
@@ -138,15 +137,6 @@ public final class LanguageDatabaseFactory extends ObjectFactory
 	public final Building createBuilding ()
 	{
 		return new BuildingLang ();
-	}
-
-	/**
-	 * @return Custom extended UnitAttribute
-	 */
-	@Override
-	public final UnitAttribute createUnitAttribute ()
-	{
-		return new UnitAttributeLang ();
 	}
 
 	/**

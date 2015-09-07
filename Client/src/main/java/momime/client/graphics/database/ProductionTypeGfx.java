@@ -3,8 +3,8 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_6.ProductionType;
-import momime.client.graphics.database.v0_9_6.ProductionTypeImage;
+import momime.client.graphics.database.v0_9_7.ProductionType;
+import momime.client.graphics.database.v0_9_7.ProductionTypeImage;
 
 /**
  * Adds a map over the production values, so we can find their images faster

@@ -3,13 +3,13 @@ package momime.client.graphics.database;
 import java.awt.Dimension;
 import java.util.List;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
 import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitAttributeComponent;
+import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Describes operations that we need to support over the graphics XML file
@@ -88,21 +88,13 @@ public interface GraphicsDatabaseEx
 	public UnitTypeGfx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException;
 
 	/**
-	 * @param unitAttributeComponentID Unit attribute component ID to search for
+	 * @param UnitSkillComponentID Unit attribute component ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit attribute component object
-	 * @throws RecordNotFoundException If the unitAttributeComponentID doesn't exist
+	 * @throws RecordNotFoundException If the UnitSkillComponentID doesn't exist
 	 */
-	public UnitAttributeComponentImageGfx findUnitAttributeComponent (final UnitAttributeComponent unitAttributeComponentID, final String caller) throws RecordNotFoundException;
+	public UnitSkillComponentImageGfx findUnitSkillComponent (final UnitSkillComponent UnitSkillComponentID, final String caller) throws RecordNotFoundException;
 	
-	/**
-	 * @param unitAttributeID Unit attribute ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit attribute object
-	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
-	 */
-	public UnitAttributeGfx findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException;
-
 	/**
 	 * @return List of all unit skill graphics
 	 */

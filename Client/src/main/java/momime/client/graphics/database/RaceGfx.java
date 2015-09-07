@@ -3,8 +3,8 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_6.Race;
-import momime.client.graphics.database.v0_9_6.RacePopulationTask;
+import momime.client.graphics.database.v0_9_7.Race;
+import momime.client.graphics.database.v0_9_7.RacePopulationTask;
 import momime.common.database.RecordNotFoundException;
 
 /**

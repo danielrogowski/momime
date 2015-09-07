@@ -6,7 +6,6 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitAttributeLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
@@ -111,17 +110,11 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 			final String spellName = (spell == null) ? null : spell.getSpellName ();
 			attackType = (spellName != null) ? spellName : getAttackSpellID ();
 		}
-		else if (getAttackSkillID () != null)
+		else
 		{
 			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (getAttackSkillID ());
 			final String unitSkillDescription = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
 			attackType = (unitSkillDescription != null) ? unitSkillDescription : getAttackSkillID ();
-		}
-		else
-		{
-			final UnitAttributeLang unitAttr = getLanguage ().findUnitAttribute (getAttackAttributeID ());
-			final String unitAttrDescription = (unitAttr == null) ? null : unitAttr.getUnitAttributeDescription ();
-			attackType = (unitAttrDescription != null) ? unitAttrDescription : getAttackAttributeID ();
 		}
 
 		// Now work out the rest of the text

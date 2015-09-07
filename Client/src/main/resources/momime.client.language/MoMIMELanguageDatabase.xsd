@@ -1,20 +1,20 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
 	xmlns:momimecommon="http://momime/common/database"
-	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_6" 
-	xmlns:momimelang="http://momime/client/language/database/v0_9_6" targetNamespace="http://momime/client/language/database/v0_9_6">
+	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_7" 
+	xmlns:momimelang="http://momime/client/language/database/v0_9_7" targetNamespace="http://momime/client/language/database/v0_9_7">
 	
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
 	<xsd:import namespace="http://momime/common/database" />
-	<xsd:import namespace="http://momime/server/database/v0_9_6" />
+	<xsd:import namespace="http://momime/server/database/v0_9_7" />
 
     <xsd:annotation>
 		<xsd:appinfo>
 			<nxe:backuponopen>Y</nxe:backuponopen>
-			<nxe:database namespaceURI="http://momime/client/language/database/v0_9_6">
+			<nxe:database namespaceURI="http://momime/client/language/database/v0_9_7">
 				<nxe:title>Master of Magic Language File</nxe:title>
 				<nxe:xmlfilename>../client/languages/English.Master of Magic Language.xml</nxe:xmlfilename>
 			</nxe:database>
-			<nxe:database namespaceURI="http://momime/server/database/v0_9_6">
+			<nxe:database namespaceURI="http://momime/server/database/v0_9_7">
 				<nxe:title>Master of Magic Server Database</nxe:title>
 				<nxe:xmlfilename>../server/databases/Original Master of Magic 1.31 rules.Master of Magic Server.xml</nxe:xmlfilename>
 			</nxe:database>
@@ -46,7 +46,6 @@
 				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimelang:unitSkill" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttribute" type="momimelang:unitAttribute" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimelang:unitMagicRealm" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimelang:rangedAttackType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimelang:unit" />
@@ -128,10 +127,6 @@
 		<xsd:key name="unitSkillPK">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="@unitSkillID" />
-		</xsd:key>
-		<xsd:key name="unitAttributePK">
-			<xsd:selector xpath="unitAttribute" />
-			<xsd:field xpath="@unitAttributeID" />
 		</xsd:key>
 		<xsd:key name="unitMagicRealmPK">
 			<xsd:selector xpath="unitMagicRealm" />
@@ -267,10 +262,6 @@
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="unitSkillFKunitSkill">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="@unitSkillID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitAttributePK" name="unitAttributeFKunitAttribute">
-			<xsd:selector xpath="unitAttribute" />
-			<xsd:field xpath="@unitAttributeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="unitMagicRealmFKunitMagicRealm">
 			<xsd:selector xpath="unitMagicRealm" />
@@ -520,14 +511,6 @@
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
-	</xsd:complexType>
-	
-	<xsd:complexType name="unitAttribute" nxe:singular="Unit Attribute" nxe:plural="Unit Attributes" nxe:submenu="Units">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitAttributeHelpText" type="momimelang:helpText" nxe:label="Help Text" nxe:gridwidth="600" />
-		</xsd:sequence>
-		<xsd:attribute name="unitAttributeID" type="momimecommon:unitAttributeID" use="required" nxe:label="Unit Attribute ID" nxe:gridwidth="120" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitMagicRealm" nxe:singular="Unit Magic Realm/Lifeform Type" nxe:plural="Unit Magic Realms/Lifeform Types" nxe:submenu="Units">

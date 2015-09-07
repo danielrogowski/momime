@@ -1978,15 +1978,39 @@ Units with special orders won't be asked for movement orders and look visibly di
         	<xsd:documentation>Defines whether damage is dealt from a unit as a whole or individual figures.</xsd:documentation>
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="PER_UNIT">
-				<xsd:annotation><xsd:documentation>The unit deals the damage as a whole, no matter how many it figures it has alive or has lost</xsd:documentation></xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="PER_FIGURE_COMBINED">
-				<xsd:annotation><xsd:documentation>The damage is multiplied by the number of alive figures and dealt as a single combined attack</xsd:documentation></xsd:annotation>
-			</xsd:enumeration>
-			<xsd:enumeration value="PER_FIGURE_SEPARATE">
-				<xsd:annotation><xsd:documentation>Each alive figure makes a separate attack that can be defended against separately</xsd:documentation></xsd:annotation>
-			</xsd:enumeration>
+			<xsd:enumeration value="U"><xsd:annotation>
+				<xsd:documentation>The unit deals the damage as a whole, no matter how many it figures it has alive or has lost</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PER_UNIT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>The damage is multiplied by the number of alive figures and dealt as a single combined attack</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PER_FIGURE_COMBINED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Each alive figure makes a separate attack that can be defended against separately</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PER_FIGURE_SEPARATE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="unitSkillTypeID">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Unit attributes such as Melee attack Strength, Resistance and Hit Points.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTRIBUTE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Skills alterable by modifiers such as node auras, prayer, weapon grade bonuses, or experience, e.g. Thrown Weapons or Breath attacks.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MODIFYABLE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Skills that have a fixed unmodifyable value, e.g. Poison Attack or Immolation.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FIXED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Skills that have no value, e.g. Create Outpost or Invisibility.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NO_VALUE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 

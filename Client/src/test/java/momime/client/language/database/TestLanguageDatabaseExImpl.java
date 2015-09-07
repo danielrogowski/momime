@@ -244,27 +244,6 @@ public final class TestLanguageDatabaseExImpl
 	}
 	
 	/**
-	 * Tests the findUnitAttribute method
-	 */
-	@Test
-	public final void testFindUnitAttribute ()
-	{
-		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitAttributeLang newUnitAttribute = new UnitAttributeLang ();
-			newUnitAttribute.setUnitAttributeID ("UA0" + n);
-			newUnitAttribute.setUnitAttributeDescription ("UADesc0" + n);
-			lang.getUnitAttribute ().add (newUnitAttribute);
-		}
-
-		lang.buildMaps ();
-
-		assertEquals ("UADesc02", lang.findUnitAttribute ("UA02").getUnitAttributeDescription ());
-		assertNull (lang.findUnitAttribute ("UA04"));
-	}
-	
-	/**
 	 * Tests the findUnitSkill method
 	 */
 	@Test

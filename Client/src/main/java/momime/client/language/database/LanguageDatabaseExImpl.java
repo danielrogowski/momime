@@ -4,39 +4,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import momime.client.language.database.v0_9_6.Building;
-import momime.client.language.database.v0_9_6.CitySize;
-import momime.client.language.database.v0_9_6.CitySpellEffect;
-import momime.client.language.database.v0_9_6.CombatAreaEffect;
-import momime.client.language.database.v0_9_6.DifficultyLevel;
-import momime.client.language.database.v0_9_6.FogOfWarSetting;
-import momime.client.language.database.v0_9_6.Hero;
-import momime.client.language.database.v0_9_6.LandProportion;
-import momime.client.language.database.v0_9_6.LanguageCategory;
-import momime.client.language.database.v0_9_6.LanguageDatabase;
-import momime.client.language.database.v0_9_6.MapFeature;
-import momime.client.language.database.v0_9_6.NodeStrength;
-import momime.client.language.database.v0_9_6.OverlandMapSize;
-import momime.client.language.database.v0_9_6.Pick;
-import momime.client.language.database.v0_9_6.PickType;
-import momime.client.language.database.v0_9_6.Plane;
-import momime.client.language.database.v0_9_6.PopulationTask;
-import momime.client.language.database.v0_9_6.ProductionType;
-import momime.client.language.database.v0_9_6.Race;
-import momime.client.language.database.v0_9_6.RangedAttackType;
-import momime.client.language.database.v0_9_6.ShortcutKey;
-import momime.client.language.database.v0_9_6.Spell;
-import momime.client.language.database.v0_9_6.SpellBookSection;
-import momime.client.language.database.v0_9_6.SpellRank;
-import momime.client.language.database.v0_9_6.SpellSetting;
-import momime.client.language.database.v0_9_6.TileType;
-import momime.client.language.database.v0_9_6.Unit;
-import momime.client.language.database.v0_9_6.UnitAttribute;
-import momime.client.language.database.v0_9_6.UnitMagicRealm;
-import momime.client.language.database.v0_9_6.UnitSetting;
-import momime.client.language.database.v0_9_6.UnitSkill;
-import momime.client.language.database.v0_9_6.UnitType;
-import momime.client.language.database.v0_9_6.Wizard;
+import momime.client.language.database.v0_9_7.Building;
+import momime.client.language.database.v0_9_7.CitySize;
+import momime.client.language.database.v0_9_7.CitySpellEffect;
+import momime.client.language.database.v0_9_7.CombatAreaEffect;
+import momime.client.language.database.v0_9_7.DifficultyLevel;
+import momime.client.language.database.v0_9_7.FogOfWarSetting;
+import momime.client.language.database.v0_9_7.Hero;
+import momime.client.language.database.v0_9_7.LandProportion;
+import momime.client.language.database.v0_9_7.LanguageCategory;
+import momime.client.language.database.v0_9_7.LanguageDatabase;
+import momime.client.language.database.v0_9_7.MapFeature;
+import momime.client.language.database.v0_9_7.NodeStrength;
+import momime.client.language.database.v0_9_7.OverlandMapSize;
+import momime.client.language.database.v0_9_7.Pick;
+import momime.client.language.database.v0_9_7.PickType;
+import momime.client.language.database.v0_9_7.Plane;
+import momime.client.language.database.v0_9_7.PopulationTask;
+import momime.client.language.database.v0_9_7.ProductionType;
+import momime.client.language.database.v0_9_7.Race;
+import momime.client.language.database.v0_9_7.RangedAttackType;
+import momime.client.language.database.v0_9_7.ShortcutKey;
+import momime.client.language.database.v0_9_7.Spell;
+import momime.client.language.database.v0_9_7.SpellBookSection;
+import momime.client.language.database.v0_9_7.SpellRank;
+import momime.client.language.database.v0_9_7.SpellSetting;
+import momime.client.language.database.v0_9_7.TileType;
+import momime.client.language.database.v0_9_7.Unit;
+import momime.client.language.database.v0_9_7.UnitMagicRealm;
+import momime.client.language.database.v0_9_7.UnitSetting;
+import momime.client.language.database.v0_9_7.UnitSkill;
+import momime.client.language.database.v0_9_7.UnitType;
+import momime.client.language.database.v0_9_7.Wizard;
 import momime.common.database.Shortcut;
 import momime.common.database.SpellBookSectionID;
 
@@ -83,9 +82,6 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 
 	/** Map of unit type IDs to unit type objects */
 	private Map<String, UnitTypeLang> unitTypesMap;
-	
-	/** Map of unit attribute IDs to unit attribute objects */
-	private Map<String, UnitAttributeLang> unitAttributesMap;
 	
 	/** Map of unit skill IDs to unit skill objects */
 	private Map<String, UnitSkillLang> unitSkillsMap;
@@ -213,11 +209,6 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			unitTypesMap.put (utex.getUnitTypeID (), utex);
 		}
 		
-		// Create unit attributes map
-		unitAttributesMap = new HashMap<String, UnitAttributeLang> ();
-		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
-			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), (UnitAttributeLang) thisUnitAttribute);
-
 		// Create unit skills map
 		unitSkillsMap = new HashMap<String, UnitSkillLang> ();
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
@@ -435,16 +426,6 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final UnitTypeLang findUnitType (final String unitTypeID)
 	{
 		return unitTypesMap.get (unitTypeID);
-	}
-	
-	/**
-	 * @param unitAttributeID Unit attribute ID to search for
-	 * @return Unit attribute descriptions object; or null if not found
-	 */
-	@Override
-	public final UnitAttributeLang findUnitAttribute (final String unitAttributeID)
-	{
-		return unitAttributesMap.get (unitAttributeID);
 	}
 	
 	/**

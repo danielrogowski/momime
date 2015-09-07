@@ -48,26 +48,35 @@ public interface UnitClientUtils
 	public String getUnitName (final AvailableUnit unit, final UnitNameType unitNameType) throws RecordNotFoundException;
 
 	/**
-	 * Rules for finding the right icon for a unit attribute aren't totally straightforward; ranged attacks have their own images and some
-	 * unit attributes (and some RATs) have different icons for different weapon types and some do not.  So this method deals with all that.
+	 * Finds the right icon for skills displayed in the top half of the unit info screen, where we display one icon per each "point"
+	 * of the skill, so e.g. Melee 5 displays 5 swords.  The image returned here is transparent, so we can superimpose it over a
+	 * background showing which component provided that value, so you can tell the difference between e.g. a unit's base
+	 * stat and the bonus being granted from experience.  These were previously referred to as unit attributes.
 	 * 
-	 * @param unit Unit whose attributes we're drawing
-	 * @param unitAttributeID Which attribute to draw
-	 * @return Icon for this unit attribute, or null if there isn't one
-	 * @throws IOException If there's a problem finding the unit attribute icon
-	 */
-	public BufferedImage getUnitAttributeIcon (final AvailableUnit unit, final String unitAttributeID) throws IOException;
-	
-	/**
-	 * Rules for finding the right icon for a unit skills aren't totally straightforward; experience icon changes as units
-	 * gain level, and some skills (particularly movement type skills like walking/flying) have no icon at all.  So this method deals with all that.
+	 * Rules for finding the right icon for these aren't totally straightforward; ranged attacks have their own images and some
+	 * unit attributes (and some RATs) have different icons for different weapon grades and some do not.  So this method deals with all that.
 	 * 
 	 * @param unit Unit whose skills we're drawing
-	 * @param unitSkillID Which attribute to draw
+	 * @param unitSkillID Which skill to draw
 	 * @return Icon for this unit skill, or null if there isn't one
 	 * @throws IOException If there's a problem finding the unit skill icon
 	 */
-	public BufferedImage getUnitSkillIcon (final AvailableUnit unit, final String unitSkillID) throws IOException;
+	public BufferedImage getUnitSkillComponentBreakdownIcon (final AvailableUnit unit, final String unitSkillID) throws IOException;
+	
+	/**
+	 * Finds the right icon for skills displayed in the bottom half of the unit info screen, where we just display a single icon for
+	 * the skill no matter what its numeric value is, or if it has no value.  So the image returned here already includes a background.
+	 * These were previously referred to as unit skills.
+	 * 
+	 * Rules for finding the right icon for these aren't totally straightforward; experience icon changes as units
+	 * gain level, and some skills (particularly movement type skills like walking/flying) have no icon at all.  So this method deals with all that.
+	 * 
+	 * @param unit Unit whose skills we're drawing
+	 * @param unitSkillID Which skill to draw
+	 * @return Icon for this unit skill, or null if there isn't one
+	 * @throws IOException If there's a problem finding the unit skill icon
+	 */
+	public BufferedImage getUnitSkillSingleIcon (final AvailableUnit unit, final String unitSkillID) throws IOException;
 	
 	/**
 	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later

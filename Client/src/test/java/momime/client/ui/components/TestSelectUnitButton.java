@@ -19,8 +19,8 @@ import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -249,8 +249,8 @@ public final class TestSelectUnitButton
 		
 		// Hit points
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (5);
-		when (unitSkillUtils.getModifiedAttributeValue (u, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
+		when (unitSkillUtils.getModifiedSkillValue (u, u.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
 		
 		// Coloured image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();

@@ -26,6 +26,19 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.JPanelWithConstantRepaints;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.zorder.ZOrderGraphicsImpl;
+
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
@@ -59,6 +72,7 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FrontOrBack;
@@ -66,8 +80,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.UnitAttributeComponent;
-import momime.common.database.UnitAttributePositiveNegative;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -88,19 +102,6 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.JPanelWithConstantRepaints;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImpl;
 
 /**
  * Combat UI.  Note there's only one of these - I played with the idea of allowing multiple combats going on at once (for simultaneous
@@ -658,7 +659,7 @@ public final class CombatUI extends MomClientFrameUI
 								if (getAttackAnim () != null)
 								{
 									// Ranged attack animation
-									if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackAttributeID ()))
+									if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
 									{
 										// Show firing unit going 'pew'
 										if ((unit == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
@@ -666,7 +667,7 @@ public final class CombatUI extends MomClientFrameUI
 									}
 									
 									// Melee attack animation
-									else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackAttributeID ()))
+									else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
 									{
 										if ((unit == getAttackAnim ().getAttackerUnit ()) || (unit == getAttackAnim ().getDefenderUnit ()))
 											combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
@@ -771,7 +772,7 @@ public final class CombatUI extends MomClientFrameUI
 				
 				// Draw ranged attack missiles?
 				if ((getAttackAnim () != null) && (getAttackAnim ().getCurrent () != null) &&
-					(CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackAttributeID ())))
+					(CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackSkillID ())))
 					
 					try
 					{
@@ -1532,9 +1533,12 @@ public final class CombatUI extends MomClientFrameUI
 				combatMapSize, getClient ().getPlayers (), getClient ().getClientDB ());
 			
 			// Calculate unit stats
+			final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ());
+			
 			final int chanceToHit = Math.min (10, 3 +
-				getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+				getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()));
 			
@@ -1542,14 +1546,9 @@ public final class CombatUI extends MomClientFrameUI
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 						
-				getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-					UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
-			
 			// Melee attack / average hits / image
-			final int meleeAttack = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+			final int meleeAttack = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 			
@@ -1563,12 +1562,13 @@ public final class CombatUI extends MomClientFrameUI
 			{
 				selectedUnitMeleeValue.setText (new Integer (meleeAttack).toString ());
 				selectedUnitMeleeAverage = getTextUtils ().insertDecimalPoint (meleeAttack * chanceToHitTimesFigures, 1);
-				selectedUnitMeleeImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)));
+				selectedUnitMeleeImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitSkillComponentBreakdownIcon
+					(unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)));
 			}
 			
 			// Ranged attack / average hits / image
-			final int rangedAttack = getUnitSkillUtils ().getModifiedAttributeValue (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-				UnitAttributeComponent.ALL, UnitAttributePositiveNegative.BOTH, getClient ().getPlayers (),
+			final int rangedAttack = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 			
@@ -1582,7 +1582,8 @@ public final class CombatUI extends MomClientFrameUI
 			{
 				selectedUnitRangedValue.setText (new Integer (rangedAttack).toString ());
 				selectedUnitRangedAverage = getTextUtils ().insertDecimalPoint (rangedAttack * chanceToHitTimesFigures, 1);
-				selectedUnitRangedImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitAttributeIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)));
+				selectedUnitRangedImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitSkillComponentBreakdownIcon
+					(unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)));
 			}
 			
 			// Movement

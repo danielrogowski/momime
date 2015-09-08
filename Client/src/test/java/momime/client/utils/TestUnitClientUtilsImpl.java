@@ -1,6 +1,7 @@
 package momime.client.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -17,9 +18,19 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
+import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfigEx;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.CombatActionGfx;
@@ -28,10 +39,10 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeGfx;
 import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
 import momime.client.graphics.database.UnitCombatActionGfx;
 import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.UnitSkillGfx;
+import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
 import momime.client.graphics.database.UnitTypeGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -49,15 +60,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.UnitUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
-
 /**
  * Tests the UnitClientUtilsImpl class
  */
@@ -65,6 +67,12 @@ public final class TestUnitClientUtilsImpl
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (TestUnitClientUtilsImpl.class);
+	
+	/** Colour for a transparent pixel */
+	private static final int TRANSPARENT = 0;
+	
+	/** Colour for a movement icon pixel */
+	private static final int MOVEMENT_ICON = 0xFFFF0000;
 	
 	/**
 	 * Tests the getUnitName method
@@ -642,5 +650,64 @@ public final class TestUnitClientUtilsImpl
 		
 		// Check results
 		verify (soundPlayer).playAudioFile ("OverrideActionSound.mp3");
+	}
+	
+	/**
+	 * Tests the generateMovementImage method
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	@Test
+	public final void testGenerateMovementImage () throws IOException
+	{
+		// Mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final Unit unitDef = new Unit ();
+		when (db.findUnit ("UN001", "generateMovementImage")).thenReturn (unitDef);
+		
+		// Unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Create sample movement image
+		final BufferedImage movementImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		movementImage.setRGB (0, 0, MOVEMENT_ICON);
+		
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
+		when (utils.loadImage ("m.png")).thenReturn (movementImage);
+		
+		// Movement skill
+		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
+		movementSkill.setMovementIconImageFile ("m.png");
+		
+		final ClientUnitCalculations unitCalc = mock (ClientUnitCalculations.class);
+		when (unitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
+		
+		// Client
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+
+		// Set up object to test
+		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
+		obj.setClient (client);
+		obj.setUtils (utils);
+		obj.setClientUnitCalculations (unitCalc);
+		
+		// Try when unit has 0 movement
+		assertNull (obj.generateMovementImage (unit));
+		
+		// Try when unit has 1 movement
+		unitDef.setDoubleMovement (2);
+		assertSame (movementImage, obj.generateMovementImage (unit));
+		
+		// Try when unit has multiple movement
+		unitDef.setDoubleMovement (6);
+		final BufferedImage image = obj.generateMovementImage (unit);
+		
+		assertEquals (5, image.getWidth ());
+		assertEquals (1, image.getHeight ());
+		
+		for (int x = 0; x < image.getWidth (); x++)
+			assertEquals ((x % 2) == 0 ? MOVEMENT_ICON : TRANSPARENT, image.getRGB (x,  0)); 
 	}
 }

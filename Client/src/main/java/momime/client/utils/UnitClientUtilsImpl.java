@@ -1,5 +1,6 @@
 package momime.client.utils;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -728,6 +729,51 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}
 		
 		log.trace ("Exiting playCombatActionSound");
+	}
+	
+	/**
+	 * 
+	 * @param unit Unit to generate movement icons for
+	 * @return Combined image showing correct number of movement icons; or null if the unit has zero movement
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	@Override
+	public final BufferedImage generateMovementImage (final AvailableUnit unit) throws IOException
+	{
+		log.trace ("Entering generateMovementImage: " + unit.getUnitID ());
+
+		final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "generateMovementImage");
+		final int movementCount = unitDef.getDoubleMovement () / 2;
+		
+		final BufferedImage image;
+		if (movementCount <= 0)
+			image = null;
+		else
+		{
+			final BufferedImage singleMovementImage = getUtils ().loadImage (getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ());
+
+			if (movementCount == 1)
+				image = singleMovementImage;
+			else
+			{
+				// Create a merged image showing, 2,3, etc movement icons side-by-side
+				image = new BufferedImage ((singleMovementImage.getWidth () * movementCount) + movementCount - 1,
+					singleMovementImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+				final Graphics2D g = image.createGraphics ();
+				try
+				{
+					for (int movementNo = 0; movementNo < movementCount; movementNo++)
+						g.drawImage (singleMovementImage, (singleMovementImage.getWidth () + 1) * movementNo, 0, null);
+				}
+				finally
+				{
+					g.dispose ();
+				}
+			}
+		}
+		
+		log.trace ("Exiting generateMovementImage: " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
+		return image;
 	}
 	
 	/**

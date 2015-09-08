@@ -133,7 +133,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 			image = generateProductionImageFromLists (productionImages, null);
 		}
 		
-		log.trace ("Exiting generateUpkeepImage: " + ((upkeeps == null) ? "null" : new Integer (upkeeps.size ()).toString ()) + ", " + halveManaUpkeep);
+		log.trace ("Exiting generateUpkeepImage: " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
 		return image;
 	}
 

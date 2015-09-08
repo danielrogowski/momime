@@ -5,7 +5,10 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -410,11 +413,18 @@ public final class TestUnitInfoPanel
 		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
 		
 		// Movement
-		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
-		
-		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
-		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
-		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
+		final BufferedImage movementImage = new BufferedImage (49, 8, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g = movementImage.createGraphics ();
+		try
+		{
+			g.setColor (Color.BLUE);
+			g.fillRect (0, 0, 49, 8);
+		}
+		finally
+		{
+			g.dispose ();
+		}		
+		when (unitClientUtils.generateMovementImage (unit)).thenReturn (movementImage);
 		
 		// Unit name
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
@@ -443,6 +453,8 @@ public final class TestUnitInfoPanel
 		renderer.setUnitClientUtils (unitClientUtils);
 
 		// Set up panel
+		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
+
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
 		panel.setLanguageHolder (langHolder);

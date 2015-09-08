@@ -194,4 +194,12 @@ public interface UnitClientUtils
 	 * @throws RecordNotFoundException If the unit or its action can't be found in the graphics XML
 	 */
 	public void playCombatActionSound (final AvailableUnit unit, final String combatActionID) throws RecordNotFoundException;
+
+	/**
+	 * 
+	 * @param unit Unit to generate movement icons for
+	 * @return Combined image showing correct number of movement icons; or null if the unit has zero movement
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	public BufferedImage generateMovementImage (final AvailableUnit unit) throws IOException;
 }

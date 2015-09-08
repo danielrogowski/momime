@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -658,30 +657,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		upkeepLabel.setVisible (upkeepImage != null);
 		
 		// Generate an image showing movement
-		final BufferedImage singleMovementImage = getUtils ().loadImage (getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ());
-		final int movementCount = unitInfo.getDoubleMovement () / 2;
-		
-		final BufferedImage movementImage;
-		if (movementCount <= 0)
-			movementImage = null;
-		else if (movementCount == 1)
-			movementImage = singleMovementImage;
-		else
-		{
-			// Create a merged image showing, 2,3, etc movement icons side-by-side
-			movementImage = new BufferedImage ((singleMovementImage.getWidth () * movementCount) + movementCount - 1,
-				singleMovementImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
-			final Graphics2D g = movementImage.createGraphics ();
-			try
-			{
-				for (int movementNo = 0; movementNo < movementCount; movementNo++)
-					g.drawImage (singleMovementImage, (singleMovementImage.getWidth () + 1) * movementNo, 0, null);
-			}
-			finally
-			{
-				g.dispose ();
-			}
-		}
+		final BufferedImage movementImage = getUnitClientUtils ().generateMovementImage (getUnit ());
 
 		currentlyConstructingMoves.setIcon ((movementImage == null) ? null : new ImageIcon (movementImage));
 		movesLabel.setVisible (movementImage != null);

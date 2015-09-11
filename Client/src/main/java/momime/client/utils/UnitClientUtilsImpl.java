@@ -1,8 +1,10 @@
 package momime.client.utils;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.xml.bind.JAXBException;
@@ -39,11 +41,15 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
+import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -59,6 +65,18 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitClientUtilsImpl.class);
+
+	/** Attribute icons leave a gap every so often to make them easier to count */
+	private final static int ATTRIBUTE_ICONS_PER_GROUP = 5;
+	
+	/** How many groups make up one row */
+	private final static int ATTRIBUTE_ICON_GROUPS_PER_ROW = 4;
+
+	/** How many attribute icons per row */
+	private final static int ATTRIBUTE_ICONS_PER_ROW = ATTRIBUTE_ICONS_PER_GROUP * ATTRIBUTE_ICON_GROUPS_PER_ROW;
+	
+	/** Darkening colour drawn over the top of attributes that are being reduced by a negative effect, e.g. Black Prayer */
+	private final static Color COLOUR_NEGATIVE_ATTRIBUTES = new Color (0, 0, 0, 0xA0);
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -74,6 +92,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -732,7 +753,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	}
 	
 	/**
-	 * 
 	 * @param unit Unit to generate movement icons for
 	 * @return Combined image showing correct number of movement icons; or null if the unit has zero movement
 	 * @throws IOException If there is a problem loading any of the images
@@ -773,6 +793,128 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		}
 		
 		log.trace ("Exiting generateMovementImage: " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
+		return image;
+	}
+	
+	/**
+	 * @param unit Unit to generate attribute icons for
+	 * @param unitSkillID Skill ID to generate attribute icons for
+	 * @return Combined image showing icons for this unit attribute, with appropriate background colours; or null if the unit doesn't have this skill or it is value-less
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	@Override
+	public final BufferedImage generateAttributeImage (final AvailableUnit unit, final String unitSkillID) throws IOException
+	{
+		log.trace ("Entering generateAttributeImage: " + unit.getUnitID () + ", " + unitSkillID);
+
+		// If the unit doesn't even have the skill, then just return a null image.
+		// Also if it is a value-less skill like a movement skill then there's nothing to draw.
+		final List<UnitHasSkill> mergedSkills;
+		if (unit instanceof MemoryUnit)
+			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit, getClient ().getClientDB ());
+		else
+			mergedSkills = unit.getUnitHasSkill ();
+		
+		final BufferedImage image;
+		if (getUnitUtils ().getBasicSkillValue (mergedSkills, unitSkillID) <= 0)
+			image = null;
+		else
+		{
+			// What's the total number of icons we need to draw - before taking negatives off?  e.g. if we have base 5 but
+			// Black Prayer is giving us a -1 penalty, we still draw 5 icons, just the 5th one is greyed out.
+			final int iconCount = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, UnitSkillComponent.ALL,
+				unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
+				getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			
+			// Now can figure out how big the image needs to be
+			final BufferedImage basicComponentBackgroundImage = getUtils ().loadImage
+				(getGraphicsDB ().findUnitSkillComponent (UnitSkillComponent.BASIC, "generateAttributeImage").getUnitSkillComponentImageFile ()); 
+
+			final int iconsPerRow = Math.min (iconCount, ATTRIBUTE_ICONS_PER_ROW);
+			
+			image = new BufferedImage
+				((basicComponentBackgroundImage.getWidth () * iconsPerRow) + Math.max (iconsPerRow - 1, 0) +		// Space for icons themselves + 1 pixel gap between each
+					Math.max (((iconsPerRow-1) / ATTRIBUTE_ICONS_PER_GROUP) * 2, 0) +									// Additional 2 pixel gap between each block of 5
+					Math.max (((iconCount-1) / ATTRIBUTE_ICONS_PER_ROW) * 4, 0),												// Indent 2nd, 3rd and so on rows by 4 pixels
+					
+				basicComponentBackgroundImage.getHeight () +
+					Math.max (((iconCount-1) / ATTRIBUTE_ICONS_PER_ROW) * 3, 0), BufferedImage.TYPE_INT_ARGB);
+					
+			// Work out the icon to use to display this type of unit attribute
+			final BufferedImage attributeImage = getUnitSkillComponentBreakdownIcon (unit, unitSkillID);
+
+			// Do we need to draw any icons faded, due to negative spells (e.g. Black Prayer) or losing hitpoints?
+			final int attributeValueIncludingNegatives;
+			if (unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
+				attributeValueIncludingNegatives = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure
+					(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			else
+				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			
+			final Graphics2D g = image.createGraphics ();
+			try
+			{
+				// Calculate and draw each component separately
+				int drawnAttributeCount = 0;
+				for (final UnitSkillComponent attrComponent : UnitSkillComponent.values ())
+					if (attrComponent != UnitSkillComponent.ALL)
+					{
+						// Work out the total value (without negative effects), and our actual current value (after negative effects),
+						// so we can show stats knocked off by e.g. Black Prayer as faded.
+						// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
+						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, attrComponent,
+							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
+							getClient ().getPlayers (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+						
+						if (totalValue > 0)
+						{
+							// Work out background image according to the component that the bonus is coming from
+							final BufferedImage backgroundImage = getUtils ().loadImage
+								(getGraphicsDB ().findUnitSkillComponent (attrComponent, "generateAttributeImage").getUnitSkillComponentImageFile ()); 
+							
+							// Draw right number of attribute icons
+							for (int n = 0; n < totalValue; n++)
+							{
+								final int attrX = ((drawnAttributeCount % ATTRIBUTE_ICONS_PER_ROW) * (backgroundImage.getWidth () + 1)) +
+									
+									// Leave a slightly bigger gap each 5
+									(((drawnAttributeCount / ATTRIBUTE_ICONS_PER_GROUP) % ATTRIBUTE_ICON_GROUPS_PER_ROW) * 2) +
+											
+									// Indent 2nd, 3rd rows (i.e. after 15 or 20) slightly
+									((drawnAttributeCount / ATTRIBUTE_ICONS_PER_ROW) * 4);
+								
+								final int attrY = (drawnAttributeCount / ATTRIBUTE_ICONS_PER_ROW) * 3;
+								
+								g.drawImage (backgroundImage, attrX, attrY, null);
+								g.drawImage (attributeImage, attrX, attrY, null);
+								
+								// Dark hit points when we have lost health
+								drawnAttributeCount++;
+								if (drawnAttributeCount > attributeValueIncludingNegatives)
+								{
+									g.setColor (COLOUR_NEGATIVE_ATTRIBUTES);
+									g.fillRect (attrX, attrY, backgroundImage.getWidth (), backgroundImage.getHeight ());
+								}
+							}
+						}
+					}
+			}
+			finally
+			{
+				g.dispose ();
+			}
+		}
+		
+		log.trace ("Exiting generateAttributeImage: " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
 		return image;
 	}
 	
@@ -865,6 +1007,22 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		unitUtils = util;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param util Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils util)
+	{
+		unitSkillUtils = util;
+	}
+	
 	/**
 	 * @return Unit calculations
 	 */

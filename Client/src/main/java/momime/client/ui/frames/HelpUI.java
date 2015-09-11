@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
@@ -21,6 +22,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.GridBagConstraintsHorizontalFill;
+import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
@@ -54,17 +66,6 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsHorizontalFill;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Scroll that displays help text when we right click on various elements in the game
@@ -333,36 +334,36 @@ public final class HelpUI extends MomClientFrameUI
 			final String unitSkillTitle = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
 			final String unitSkillHelpText = (unitSkill == null) ? null : unitSkill.getUnitSkillHelpText ();
 			title.setText ((unitSkillTitle != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillTitle) : unitSkillID);
-			indentedText.setText ((unitSkillHelpText != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillHelpText) : unitSkillID);
 			
 			// If the icons are included in the help text, then don't indent it as well (for unit attributes)
-			if (indentedText.getText ().contains ("#{"))
+			if ((unitSkillHelpText != null) && (unitSkillHelpText.contains ("#{")))
+				text = unitSkillHelpText;
+			else
 			{
-				text = indentedText.getText ();
-				indentedText.setText (null);
-			}
+				indentedText.setText ((unitSkillHelpText != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillHelpText) : unitSkillID);
 			
-			// If this unit skill is the result of a spell, show how much upkeep it is costing
-			else if (unit instanceof MemoryUnit)
-			{
-				final MemoryUnit mu = (MemoryUnit) unit;
-				final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					null, null, mu.getUnitURN (), unitSkillID, null, null);
-				if (spell != null)
-					try
-					{
-						text = indentedText.getText ();
-						
-						final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "HelpUI");
-						final PlayerPublicDetails thisPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "HelpUI");
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-						indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+				// If this unit skill is the result of a spell, show how much upkeep it is costing
+				if (unit instanceof MemoryUnit)
+				{
+					final MemoryUnit mu = (MemoryUnit) unit;
+					final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+						null, null, mu.getUnitURN (), unitSkillID, null, null);
+					if (spell != null)
+						try
+						{
+							text = indentedText.getText ();
+							
+							final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "HelpUI");
+							final PlayerPublicDetails thisPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "HelpUI");
+							final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
+							indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
 			}
 		}
 		else if (citySpellEffectID != null)
@@ -580,7 +581,7 @@ public final class HelpUI extends MomClientFrameUI
 			}
 			
 			final BufferedImage mergedImage = new BufferedImage (totalWidth, maxHeight, BufferedImage.TYPE_INT_ARGB);
-			final Graphics g = mergedImage.getGraphics ();
+			final Graphics2D g = mergedImage.createGraphics ();
 			try
 			{
 				int x = 0;

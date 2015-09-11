@@ -3,11 +3,20 @@ package momime.client.ui.frames;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -36,17 +45,6 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
-
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the OverlandMapUI class
@@ -189,38 +187,7 @@ public final class TestOverlandMapUI
 		// Give it some dummy images for the terrain
 		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];
 		for (int n = 0; n < overlandMapBitmaps.length; n++)
-		{
-			final BufferedImage bitmap = new BufferedImage (60 * 20, 40 * 18, BufferedImage.TYPE_INT_ARGB);
-			final Graphics2D g = bitmap.createGraphics ();
-			try
-			{
-				switch (n)
-				{
-					case 0:
-						g.setColor (new Color (0x200000));
-						break;
-						
-					case 1:
-						g.setColor (new Color (0x002000));
-						break;
-						
-					case 2:
-						g.setColor (new Color (0x000020));
-						break;
-				}
-				
-				g.fillRect (0, 0, 60 * 20, 40 * 18);
-				
-				// Draw a white outline so we can see the wrapping borders
-				g.setColor (Color.WHITE);
-				g.drawRect (0, 0, (60 * 20) - 1, (40 * 18) - 1);
-			}
-			finally
-			{
-				g.dispose ();
-			}
-			overlandMapBitmaps [n] = bitmap;
-		}
+			overlandMapBitmaps [n] = ClientTestData.createSolidImage (60 * 20, 40 * 18, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
 		
 		final OverlandMapBitmapGenerator gen = mock (OverlandMapBitmapGenerator.class);
 		when (gen.generateOverlandMapBitmaps (0, 0, 0, overlandMapSize.getWidth (), overlandMapSize.getHeight ())).thenReturn (overlandMapBitmaps);

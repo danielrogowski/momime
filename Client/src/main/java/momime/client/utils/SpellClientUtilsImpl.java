@@ -1,6 +1,5 @@
 package momime.client.utils;
 
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -354,7 +353,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				}
 				
 				image = new BufferedImage (totalWidth + (sizeDivisor * (imageFilenames.size () - 1)), maxHeight, BufferedImage.TYPE_INT_ARGB);
-				final Graphics g = image.getGraphics ();
+				final Graphics2D g = image.createGraphics ();
 				try
 				{
 					int x = 0;

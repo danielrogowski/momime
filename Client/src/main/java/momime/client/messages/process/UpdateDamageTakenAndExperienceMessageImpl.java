@@ -5,17 +5,17 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.UpdateDamageTakenAndExperienceMessage;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to to update these values without showing any animations.
@@ -46,14 +46,18 @@ public final class UpdateDamageTakenAndExperienceMessageImpl extends UpdateDamag
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "UpdateDamageTakenAndExperienceMessageImpl");
 		
 		mu.setDamageTaken (getDamageTaken ());
-		
+
+		// Is there a unit info screen open showing this unit?
+		final UnitInfoUI ui = getClient ().getUnitInfos ().get (getUnitURN ());
+
+		// Does this unit have an experience value?  (i.e. is it a normal or hero unit, not summoned)
 		if (getExperience () >= 0)
 			getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, getExperience ());
 		
-		// Do we have a unit info screen up showing details about this unit?  If so then we need to force the greyed out hearts to redraw
-		final UnitInfoUI ui = getClient ().getUnitInfos ().get (getUnitURN ());
+		// Do we have a unit info screen up showing details about this unit?  If so then we need to force the greyed out hearts to redraw,
+		// and possibly other attributes as well if its experience level changed
 		if (ui != null)
-			ui.getUnitInfoPanel ().getPanel ().repaint ();
+			ui.getUnitInfoPanel ().showUnit (ui.getUnit ());
 		
 		log.trace ("Exiting start");
 	}

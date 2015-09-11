@@ -2,6 +2,9 @@ package momime.client;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -11,6 +14,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemType;
+import com.ndg.random.RandomUtils;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -36,16 +49,6 @@ import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomCombatTile;
-
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemType;
-import com.ndg.random.RandomUtils;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 
 /**
  * Since the tests in the common project can't use the XML file (since the classes generated from the server XSD that allow
@@ -285,6 +288,29 @@ public final class ClientTestData
 		unmarshaller.setSchema (schema);
 		
 		return unmarshaller;
+	}
+	
+	/**
+	 * @param width Width to create image as
+	 * @param height Height to create image as
+	 * @param colour Colour to fill in image
+	 * @return Solid colour image to test with 
+	 */
+	public final static BufferedImage createSolidImage (final int width, final int height, final int colour)
+	{
+		final BufferedImage image = new BufferedImage (width, height, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g = image.createGraphics ();
+		try
+		{
+			g.setColor (new Color (colour));
+			g.fillRect (0, 0, 640, 362);
+		}
+		finally
+		{
+			g.dispose ();
+		}
+		
+		return image;
 	}
 	
 	/**

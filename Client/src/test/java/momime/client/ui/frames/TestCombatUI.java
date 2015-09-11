@@ -3,8 +3,6 @@ package momime.client.ui.frames;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -277,34 +275,7 @@ public final class TestCombatUI
 		// Give it some dummy images for the terrain
 		final BufferedImage [] combatMapBitmaps = new BufferedImage [combatMapTileSet.getAnimationFrameCount ()];
 		for (int n = 0; n < combatMapBitmaps.length; n++)
-		{
-			final BufferedImage bitmap = new BufferedImage (640, 362, BufferedImage.TYPE_INT_ARGB);
-			final Graphics2D g = bitmap.createGraphics ();
-			try
-			{
-				switch (n)
-				{
-					case 0:
-						g.setColor (new Color (0x200000));
-						break;
-						
-					case 1:
-						g.setColor (new Color (0x002000));
-						break;
-						
-					case 2:
-						g.setColor (new Color (0x000020));
-						break;
-				}
-				
-				g.fillRect (0, 0, 640, 362);
-			}
-			finally
-			{
-				g.dispose ();
-			}
-			combatMapBitmaps [n] = bitmap;
-		}
+			combatMapBitmaps [n] = ClientTestData.createSolidImage (640, 362, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
 		
 		final CombatMapBitmapGenerator gen = mock (CombatMapBitmapGenerator.class);
 		when (gen.generateCombatMapBitmaps ()).thenReturn (combatMapBitmaps);

@@ -41,9 +41,11 @@ import momime.client.graphics.database.RangedAttackTypeGfx;
 import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
 import momime.client.graphics.database.UnitCombatActionGfx;
 import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.UnitSkillComponentImageGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
 import momime.client.graphics.database.UnitTypeGfx;
+import momime.client.graphics.database.v0_9_7.UnitSkillWeaponGrade;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.RaceLang;
@@ -54,10 +56,13 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatScale;
 import momime.common.database.UnitMagicRealm;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -73,6 +78,24 @@ public final class TestUnitClientUtilsImpl
 	
 	/** Colour for a movement icon pixel */
 	private static final int MOVEMENT_ICON = 0xFFFF0000;
+
+	/** Background colour for basic stats */
+	private static final int BACKGROUND_BASIC = 0xFF800000;
+	
+	/** Background colour for weapon grade bonuses */
+	private static final int BACKGROUND_WEAPON_GRADE = 0xFF00FF00;
+
+	/** Background colour for experience bonuses */
+	private static final int BACKGROUND_EXPERIENCE = 0xFF008000;
+
+	/** Background colour for hero skill bonuses */
+	private static final int BACKGROUND_HERO_SKILLS = 0xFF0000FF;
+	
+	/** Background colour for CAE bonuses */
+	private static final int BACKGROUND_CAE = 0xFFEE0000;
+	
+	/** Colour for a skill icon pixel */
+	private static final int SKILL_ICON = 0xFF00EE00;
 	
 	/**
 	 * Tests the getUnitName method
@@ -709,5 +732,219 @@ public final class TestUnitClientUtilsImpl
 		
 		for (int x = 0; x < image.getWidth (); x++)
 			assertEquals ((x % 2) == 0 ? MOVEMENT_ICON : TRANSPARENT, image.getRGB (x,  0)); 
+	}
+	
+	/**
+	 * Tests the generateAttributeImage method
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	@Test
+	public final void testGenerateAttributeImage () throws IOException
+	{
+		// Mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+
+		// Mock graphics
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
+		
+		final UnitSkillWeaponGrade skillWeaponGradeGfx = new UnitSkillWeaponGrade ();
+		skillWeaponGradeGfx.setSkillImageFile ("s.png");
+		
+		final UnitSkillGfx skillGfx = new UnitSkillGfx ();
+		skillGfx.getUnitSkillWeaponGrade ().add (skillWeaponGradeGfx);
+		when (gfx.findUnitSkill ("UA01", "getUnitSkillComponentBreakdownIcon")).thenReturn (skillGfx);
+		when (utils.loadImage ("s.png")).thenReturn (ClientTestData.createSolidImage (1, 1, SKILL_ICON));
+		
+		// Attribute component backgrounds
+		final UnitSkillComponentImageGfx basicComponentBackground = new UnitSkillComponentImageGfx ();
+		basicComponentBackground.setUnitSkillComponentImageFile ("b.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.BASIC, "generateAttributeImage")).thenReturn (basicComponentBackground);
+		when (utils.loadImage ("b.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_BASIC));
+
+		final UnitSkillComponentImageGfx weaponGradeComponentBackground = new UnitSkillComponentImageGfx ();
+		weaponGradeComponentBackground.setUnitSkillComponentImageFile ("w.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.WEAPON_GRADE, "generateAttributeImage")).thenReturn (weaponGradeComponentBackground);
+		when (utils.loadImage ("w.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_WEAPON_GRADE));
+
+		final UnitSkillComponentImageGfx experienceComponentBackground = new UnitSkillComponentImageGfx ();
+		experienceComponentBackground.setUnitSkillComponentImageFile ("e.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.EXPERIENCE, "generateAttributeImage")).thenReturn (experienceComponentBackground);
+		when (utils.loadImage ("e.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_EXPERIENCE));
+
+		final UnitSkillComponentImageGfx heroSkillsComponentBackground = new UnitSkillComponentImageGfx ();
+		heroSkillsComponentBackground.setUnitSkillComponentImageFile ("h.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "generateAttributeImage")).thenReturn (heroSkillsComponentBackground);
+		when (utils.loadImage ("h.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_HERO_SKILLS));
+
+		final UnitSkillComponentImageGfx caeComponentBackground = new UnitSkillComponentImageGfx ();
+		caeComponentBackground.setUnitSkillComponentImageFile ("c.png");
+		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "generateAttributeImage")).thenReturn (caeComponentBackground);
+		when (utils.loadImage ("c.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_CAE));
+		
+		// Player's memory
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
+		
+		// Player's list
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
+		// Unit stats
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+
+		// Client
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		// Set up object to test
+		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
+		obj.setClient (client);
+		obj.setUtils (utils);
+		obj.setGraphicsDB (gfx);
+		obj.setUnitUtils (unitUtils);
+		obj.setUnitSkillUtils (unitSkillUtils);
+		
+		// Generate image for when the unit doesn't have the attribute at all
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "UA01")).thenReturn (-1);
+		assertNull (obj.generateAttributeImage (unit, "UA01"));
+
+		// Generate image for when the unit has a zero value of the attribute
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "UA01")).thenReturn (0);
+		assertNull (obj.generateAttributeImage (unit, "UA01"));
+		
+		// Generate image for when the unit has a single basic stat value of 1
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "UA01")).thenReturn (1);
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);		
+		
+		checkImage (obj.generateAttributeImage (unit, "UA01"), "SB");
+
+		// Generate image for when the unit has a makeup of 3 basic + 4 wep grade + 5 experience + 6 hero skills + 2 CAE = 20
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (20);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (20);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (3);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (4);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (5);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (6);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);		
+
+		checkImage (obj.generateAttributeImage (unit, "UA01"), "SB SB SB SW SW   SW SW SE SE SE   SE SE SH SH SH   SH SH SH SC SC");
+
+		// Generate image for when the unit has a makeup of 4 basic + 5 wep grade + 7 experience + 8 hero skills + 3 CAE = 27 - 6 penalty = 21
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (27);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (21);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (4);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (5);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (7);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (8);		
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.POSITIVE,
+			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (3);		
+
+		checkImage (obj.generateAttributeImage (unit, "UA01"),
+			"SB SB SB SB SW   SW SW SW SW SE   SE SE SE SE SE   SE SH SH SH SH    " + System.lineSeparator () +
+			"                                                                     " + System.lineSeparator () +
+			"                                                                     " + System.lineSeparator () +
+			"    SH sh sh sh sc   sc sc                                           ");
+	}
+
+	/**
+	 * Checks that a generated image was as expected, using a pattern where
+	 * S = Skill icon
+	 * B = Basic component
+	 * W = Weapon grade component
+	 * E = Experience component
+	 * H = Hero skills component
+	 * C = CAE component
+	 * space = transparent
+	 * 
+	 * For generateUpkeepImage, mana upkeep uses the same letters in lower case
+	 * 
+	 * @param image Image generated by unit test
+	 * @param pattern Pattern that the generated image should look like
+	 */
+	private final void checkImage (final BufferedImage image, final String pattern)
+	{
+		final String [] lines = pattern.split (System.lineSeparator ());
+		
+		assertEquals (lines [0].length (), image.getWidth ());
+		assertEquals (lines.length, image.getHeight ());
+		
+		for (int y = 0; y < image.getHeight (); y++)
+			for (int x = 0; x < image.getWidth (); x++)
+			{
+				final int expectedColour;
+				switch (lines [y].charAt (x))
+				{
+					case 'S':
+						expectedColour = SKILL_ICON;
+						break;
+						
+					case 'B':
+						expectedColour = BACKGROUND_BASIC;
+						break;
+	
+					case 'W':
+						expectedColour = BACKGROUND_WEAPON_GRADE;
+						break;
+						
+					case 'E':
+						expectedColour = BACKGROUND_EXPERIENCE;
+						break;
+	
+					case 'H':
+						expectedColour = BACKGROUND_HERO_SKILLS;
+						break;
+						
+					case 'C':
+						expectedColour = BACKGROUND_CAE;
+						break;
+						
+					case ' ':
+						expectedColour = TRANSPARENT;
+						break;
+
+					case 's':
+						expectedColour = 0xFF005900;
+						break;
+						
+					case 'h':
+						expectedColour = 0xFF00005F;
+						break;
+						
+					case 'c':
+						expectedColour = 0xFF590000;
+						break;
+						
+					default:
+						throw new RuntimeException ("pattern contained an unhandled char \"" + pattern.charAt (x) + "\"");
+				}
+				
+				assertEquals ("Mismatching colour at " + x + ", " + y, expectedColour, image.getRGB (x, y));
+			}
 	}
 }

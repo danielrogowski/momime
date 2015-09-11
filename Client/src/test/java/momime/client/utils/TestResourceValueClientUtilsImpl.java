@@ -10,15 +10,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.swing.NdgUIUtils;
+
+import momime.client.ClientTestData;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeGfx;
 import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitUpkeep;
-
-import org.junit.Test;
-
-import com.ndg.swing.NdgUIUtils;
 
 /**
  * Tests the ResourceValueClientUtilsImpl class
@@ -66,11 +67,8 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateProductionImage_WithoutTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusOneImage.setRGB (0, 0, PLUS_ONE);
-
-		final BufferedImage minusOneImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		minusOneImage.setRGB (0, 0, MINUS_ONE);
+		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage minusOneImage = ClientTestData.createSolidImage (1, 1, MINUS_ONE);
 
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
@@ -131,17 +129,10 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateProductionImage_WithTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusOneImage.setRGB (0, 0, PLUS_ONE);
-
-		final BufferedImage minusOneImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		minusOneImage.setRGB (0, 0, MINUS_ONE);
-
-		final BufferedImage plusTenImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusTenImage.setRGB (0, 0, PLUS_TEN);
-
-		final BufferedImage minusTenImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		minusTenImage.setRGB (0, 0, MINUS_TEN);
+		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage minusOneImage = ClientTestData.createSolidImage (1, 1, MINUS_ONE);
+		final BufferedImage plusTenImage = ClientTestData.createSolidImage (1, 1, PLUS_TEN);
+		final BufferedImage minusTenImage = ClientTestData.createSolidImage (1, 1, MINUS_TEN);
 		
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
@@ -214,17 +205,10 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateUpkeepImage_WithoutTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusOneImage.setRGB (0, 0, PLUS_ONE);
-
-		final BufferedImage plusHalfImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusHalfImage.setRGB (0, 0, PLUS_HALF);
-
-		final BufferedImage plusOneMana = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusOneMana.setRGB (0, 0, PLUS_ONE_MANA);
-
-		final BufferedImage plusHalfMana = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusHalfMana.setRGB (0, 0, PLUS_HALF_MANA);
+		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage plusHalfImage = ClientTestData.createSolidImage (1, 1, PLUS_HALF);
+		final BufferedImage plusOneMana = ClientTestData.createSolidImage (1, 1, PLUS_ONE_MANA);
+		final BufferedImage plusHalfMana = ClientTestData.createSolidImage (1, 1, PLUS_HALF_MANA);
 		
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
@@ -334,23 +318,12 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateUpkeepImage_WithTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusOneImage.setRGB (0, 0, PLUS_ONE);
-
-		final BufferedImage plusTenImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusTenImage.setRGB (0, 0, PLUS_TEN);
-		
-		final BufferedImage plusHalfImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusHalfImage.setRGB (0, 0, PLUS_HALF);
-
-		final BufferedImage plusOneMana = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusOneMana.setRGB (0, 0, PLUS_ONE_MANA);
-
-		final BufferedImage plusTenMana = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusTenMana.setRGB (0, 0, PLUS_TEN_MANA);
-		
-		final BufferedImage plusHalfMana = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		plusHalfMana.setRGB (0, 0, PLUS_HALF_MANA);
+		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage plusTenImage = ClientTestData.createSolidImage (1, 1, PLUS_TEN);
+		final BufferedImage plusHalfImage = ClientTestData.createSolidImage (1, 1, PLUS_HALF);
+		final BufferedImage plusOneMana = ClientTestData.createSolidImage (1, 1, PLUS_ONE_MANA);
+		final BufferedImage plusTenMana = ClientTestData.createSolidImage (1, 1, PLUS_TEN_MANA);
+		final BufferedImage plusHalfMana = ClientTestData.createSolidImage (1, 1, PLUS_HALF_MANA);
 		
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);

@@ -1,7 +1,6 @@
 package momime.client.ui.panels;
 
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -29,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -67,8 +67,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitHasSkill;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
@@ -100,9 +98,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Card layout key for when we're displaying a building */
 	private final static String KEY_BUILDINGS = "B";
-	
-	/** Darkening colour drawn over the top of attributes that are being reduced by a negative effect, e.g. Black Prayer */
-	private final static Color COLOUR_NEGATIVE_ATTRIBUTES = new Color (0, 0, 0, 0xA0);
 	
 	/** How many pixels of the buttons backgrounds overlap the main background */
 	private final int BUTTONS_OVERLAP = 5;
@@ -217,6 +212,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Map containing all the unit attribute labels */
 	private Map<String, JLabel> unitAttributeLabels = new HashMap<String, JLabel> ();
+	
+	/** List containing all the unit attribute images */
+	private List<JLabel> unitAttributeImages = new ArrayList<JLabel> ();
 	
 	/** Building being displayed */
 	private MemoryBuilding building;
@@ -542,6 +540,22 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 	
 	/**
+	 * Clears old dynamically created controls
+	 */
+	private final void clear ()
+	{
+		for (final JLabel attrLabel : unitAttributeLabels.values ())
+			unitAttributesPanel.remove (attrLabel);
+		
+		for (final JLabel attrImage : unitAttributeImages)
+			unitAttributesPanel.remove (attrImage);
+		
+		unitAttributeLabels.clear ();
+		unitAttributeImages.clear ();
+		unitSkillsItems.clear ();
+	}
+	
+	/**
 	 * @param showBuilding Building to show info about
 	 * @throws IOException If there is a problem
 	 */
@@ -549,6 +563,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	{
 		log.trace ("Entering showBuilding");
 
+		clear ();
 		topCardLayout.show (topCards, KEY_BUILDINGS);
 		bottomCardLayout.show (bottomCards, KEY_BUILDINGS);
 
@@ -629,10 +644,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	{
 		log.trace ("Entering showUnit");
 		
+		clear ();
 		topCardLayout.show (topCards, KEY_UNITS);
 		bottomCardLayout.show (bottomCards, KEY_UNITS);
 
-		// Find details about this kind of building
+		// Find details about this kind of unit
 		unit = showUnit;
 		building = null;
 		final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "showUnit");
@@ -686,91 +702,18 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				unitAttributeLabels.put (thisSkill.getUnitSkillID (), attrLabel);
 				
 				// Value
-				final JPanel attrValue = new JPanel ()
-				{
-					/**
-					 * Draws icons representing a particular unit attribute
-					 */
-					@Override
-					protected final void paintComponent (final Graphics g)
-					{
-						try
-						{
-							// Work out the icon to use to display this type of unit attribute
-							final BufferedImage attributeImage = getUnitClientUtils ().getUnitSkillComponentBreakdownIcon (unit, thisSkill.getUnitSkillID ());
-	
-							// Do we need to draw any icons faded, due to negative spells (e.g. Black Prayer) or losing hitpoints?
-							final int attributeValueIncludingNegatives;
-							if (thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
-								attributeValueIncludingNegatives = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure
-									(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
-							else
-								attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (),
-									UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
-							
-							// Calculate and draw each component separately
-							int drawnAttributeCount = 0;
-							for (final UnitSkillComponent attrComponent : UnitSkillComponent.values ())
-								if (attrComponent != UnitSkillComponent.ALL)
-								{
-									// Work out the total value (without negative effects), and our actual current value (after negative effects),
-									// so we can show stats knocked off by e.g. Black Prayer as faded.
-									// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
-									final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), attrComponent,
-										thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-										getClient ().getPlayers (),
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
-									
-									if (totalValue > 0)
-									{
-										// Work out background image according to the component that the bonus is coming from
-										final BufferedImage backgroundImage = getUtils ().loadImage
-											(getGraphicsDB ().findUnitSkillComponent (attrComponent, "UnitInfoPanel").getUnitSkillComponentImageFile ()); 
-										
-										// Draw right number of attribute icons
-										for (int n = 0; n < totalValue; n++)
-										{
-											final int attrX = ((drawnAttributeCount % 5) * (backgroundImage.getWidth () + 1)) +
-												
-												// Leave a slightly bigger gap each 5
-												(((drawnAttributeCount / 5) % 4) * ((backgroundImage.getWidth () * 5) + 7)) +
-														
-												// Indent 2nd, 3rd rows (i.e. after 15 or 20) slightly
-												((drawnAttributeCount / 20) * 4);
-											
-											final int attrY = (drawnAttributeCount / 20) * 3;
-											
-											g.drawImage (backgroundImage, attrX, attrY, null);
-											g.drawImage (attributeImage, attrX, attrY, null);
-											
-											// Dark hit points when we have lost health
-											drawnAttributeCount++;
-											if (drawnAttributeCount > attributeValueIncludingNegatives)
-											{
-												g.setColor (COLOUR_NEGATIVE_ATTRIBUTES);
-												g.fillRect (attrX, attrY, backgroundImage.getWidth (), backgroundImage.getHeight ());
-											}
-										}
-									}
-								}
-						}
-						catch (final IOException e)
-						{
-							log.error (e, e);
-						}
-					}
-				};
+				final BufferedImage attrImage = getUnitClientUtils ().generateAttributeImage (getUnit (), thisSkill.getUnitSkillID ());
+				final JLabel attrValue = new JLabel ((attrImage == null) ? null : new ImageIcon (attrImage));
 				
 				attrValue.setOpaque (false);
 				attrValue.setMinimumSize (attrValuePanelSize);
 				attrValue.setMaximumSize (attrValuePanelSize);
 				attrValue.setPreferredSize (attrValuePanelSize);
+				attrValue.setHorizontalAlignment (SwingConstants.LEFT);
+				attrValue.setVerticalAlignment (SwingConstants.TOP);
 				
 				unitAttributesPanel.add (attrValue, getUtils ().createConstraintsNoFill (1, y, 1, 1, new Insets (1, 0, 1, 0), GridBagConstraintsNoFill.EAST));
+				unitAttributeImages.add (attrValue);
 				y++;
 				
 				// Right clicking on unit attribute labels or icon area gives help about that attribute
@@ -796,7 +739,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			}
 		
 		// Find all skills to show in the list box
-		unitSkillsItems.clear ();
 		getUnitSkillListCellRenderer ().setUnit (unit);
 		for (final UnitHasSkill thisSkill : mergedSkills)
 		{

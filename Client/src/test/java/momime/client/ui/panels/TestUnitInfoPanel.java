@@ -24,6 +24,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
+import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
@@ -32,9 +33,6 @@ import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeGfx;
 import momime.client.graphics.database.ProductionTypeImageGfx;
-import momime.client.graphics.database.RangedAttackTypeGfx;
-import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
-import momime.client.graphics.database.UnitSkillComponentImageGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.BuildingLang;
@@ -52,11 +50,8 @@ import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Unit;
 import momime.common.database.UnitHasSkill;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
@@ -247,42 +242,6 @@ public final class TestUnitInfoPanel
 		rationsImages.buildMap ();
 		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (rationsImages);
 		
-		final RangedAttackTypeGfx rat = new RangedAttackTypeGfx ();
-		int wepGradeNbr = 0;
-		for (final String weaponGrade : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
-		{
-			final RangedAttackTypeWeaponGradeGfx ratWeaponGrade = new RangedAttackTypeWeaponGradeGfx ();
-			ratWeaponGrade.setWeaponGradeNumber (wepGradeNbr);
-			ratWeaponGrade.setUnitDisplayRangedImageFile ("/momime.client.graphics/rangedAttacks/arrow/icon" + weaponGrade + ".png");					
-			rat.getRangedAttackTypeWeaponGrade ().add (ratWeaponGrade);
-			
-			wepGradeNbr++;
-		}
-
-		rat.buildMap ();
-		when (gfx.findRangedAttackType ("RAT01", "unitInfoPanel.paintComponent")).thenReturn (rat);
-
-		// Unit attribute component backgrounds
-		final UnitSkillComponentImageGfx basicBackground = new UnitSkillComponentImageGfx ();
-		basicBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/basic.png");
-		when (gfx.findUnitSkillComponent (UnitSkillComponent.BASIC, "UnitInfoPanel")).thenReturn (basicBackground);
-		
-		final UnitSkillComponentImageGfx weaponGradeBackground = new UnitSkillComponentImageGfx ();
-		weaponGradeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/weaponGrade.png");
-		when (gfx.findUnitSkillComponent (UnitSkillComponent.WEAPON_GRADE, "UnitInfoPanel")).thenReturn (weaponGradeBackground);
-		
-		final UnitSkillComponentImageGfx experienceBackground = new UnitSkillComponentImageGfx ();
-		experienceBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/experience.png");
-		when (gfx.findUnitSkillComponent (UnitSkillComponent.EXPERIENCE, "UnitInfoPanel")).thenReturn (experienceBackground);
-		
-		final UnitSkillComponentImageGfx heroSkillsBackground = new UnitSkillComponentImageGfx ();
-		heroSkillsBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/heroSkills.png");
-		when (gfx.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "UnitInfoPanel")).thenReturn (heroSkillsBackground);
-		
-		final UnitSkillComponentImageGfx caeBackground = new UnitSkillComponentImageGfx ();
-		caeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/combatAreaEffect.png");
-		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "UnitInfoPanel")).thenReturn (caeBackground);
-		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
@@ -376,36 +335,12 @@ public final class TestUnitInfoPanel
 			unitAttrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
 			when (gfx.findUnitSkill (eq (attrID), anyString ())).thenReturn (unitAttrGfx);
 			
+			when (unitClientUtils.generateAttributeImage (unit, attrID)).thenReturn (ClientTestData.createSolidImage (219 + (unitAttrNo*10), 15, unitAttrNo * 35));
+			
 			// Unit stat
 			final UnitHasSkill attr = new UnitHasSkill ();
 			attr.setUnitSkillID (attrID);
 			unit.getUnitHasSkill ().add (attr);
-			
-			int attrNo = 0;
-			int total = 0;
-			for (final UnitSkillComponent attrComponent : UnitSkillComponent.values ())
-				if (attrComponent != UnitSkillComponent.ALL)
-				{
-					attrNo++;
-					final int value = (unitAttrNo + attrNo) / 2;
-					total = total + value;
-				
-					when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), attrID, attrComponent,
-						attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-						players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (value);
-				}
-
-			// Lets say we're losing -5 defence from some curse like Black Prayer, and taken -7 damage from HP
-			if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE))
-				total = total - 5;
-			else if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
-				total = total - 7;
-			
-			if (attrID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
-				when (unitCalc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
-			else
-				when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), attrID,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 		}
 		
 		// Upkeep

@@ -3,19 +3,12 @@ package momime.client.ui.panels;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
@@ -26,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -35,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
@@ -48,11 +40,12 @@ import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.BuildingLang;
 import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitSkillLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.HelpUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.renderer.UnitAttributeListCellRenderer;
+import momime.client.ui.renderer.UnitAttributeWithBreakdownImage;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
@@ -93,9 +86,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** XML layout */
 	private XmlLayoutContainerEx unitInfoLayout;
 
-	/** There's a lot of pixel precision positionining going on here so the panel typically uses no insets or custom insets per component */
-	private final static int INSET = 0;
-	
 	/** How many pixels of the buttons backgrounds overlap the main background */
 	private final int BUTTONS_OVERLAP = 5;
 	
@@ -188,18 +178,15 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** List of what building allows us to construct once we complete it */
 	private JTextArea currentlyConstructingAllows;
+
+	/** List model of unit attributes */
+	private DefaultListModel<UnitAttributeWithBreakdownImage> unitAttributesItems;
 	
 	/** List model of unit skills */
 	private DefaultListModel<UnitHasSkill> unitSkillsItems;
-	
-	/** Unit attributes panel */
-	private JPanel unitAttributesPanel;
-	
-	/** Map containing all the unit attribute labels */
-	private Map<String, JLabel> unitAttributeLabels = new HashMap<String, JLabel> ();
-	
-	/** List containing all the unit attribute images */
-	private List<JLabel> unitAttributeImages = new ArrayList<JLabel> ();
+
+	/** Scroll pane containing the list of unit attributes */
+	private JScrollPane unitAttributesScrollPane;
 	
 	/** Scroll pane containing the list of unit skills */
 	private JScrollPane unitSkillsScrollPane;
@@ -209,6 +196,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Unit being displayed */
 	private AvailableUnit unit;
+
+	/** Cell renderer for drawing the unit attribute text and component breakdowns */
+	private UnitAttributeListCellRenderer unitAttributeListCellRenderer;
 	
 	/** Cell renderer for drawing the unit skill icons and generating the correct descriptions (some, notably the experience 'skill', aren't straightforward static text) */
 	private UnitSkillListCellRenderer unitSkillListCellRenderer;
@@ -354,10 +344,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		getPanel ().add (currentlyConstructingDescription, "frmUnitInfoCurrentlyConstructingDescription");
 		
 		// Top area  - units
-		unitAttributesPanel = new JPanel ();
-		unitAttributesPanel.setOpaque (false);
-		unitAttributesPanel.setLayout (new GridBagLayout ());
-		getPanel ().add (unitAttributesPanel, "frmUnitInfoAttributes");
+		getUnitAttributeListCellRenderer ().setFont (getSmallFont ());
+		getUnitAttributeListCellRenderer ().setForeground (MomUIConstants.AQUA);
+		getUnitAttributeListCellRenderer ().init ();
+		
+		unitAttributesItems = new DefaultListModel<UnitAttributeWithBreakdownImage> ();
+		
+		final JList<UnitAttributeWithBreakdownImage> unitAttributesList = new JList<UnitAttributeWithBreakdownImage> ();
+		unitAttributesList.setOpaque (false);
+		unitAttributesList.setModel (unitAttributesItems);
+		unitAttributesList.setCellRenderer (getUnitAttributeListCellRenderer ());
+		unitAttributesList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
+		
+		unitAttributesScrollPane = getUtils ().createTransparentScrollPane (unitAttributesList);
+		unitAttributesScrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		getPanel ().add (unitAttributesScrollPane, "frmUnitInfoAttributes");
 		
 		// Bottom area - units
 		getUnitSkillListCellRenderer ().setFont (getSmallFont ());
@@ -373,6 +374,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitSkillsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
 		unitSkillsScrollPane = getUtils ().createTransparentScrollPane (unitSkillsList);
+		unitSkillsScrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		getPanel ().add (unitSkillsScrollPane, "frmUnitInfoSkills");
 		
 		// Clicking a unit skill from a spell asks about cancelling it
@@ -422,6 +424,31 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			}
 		});
 		
+		// Right clicking on attributes shows help text about them
+		unitAttributesList.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isRightMouseButton (ev))
+				{
+					final int row = unitAttributesList.locationToIndex (ev.getPoint ());
+					if ((row >= 0) && (row < unitAttributesItems.size ()))
+					{
+						final UnitAttributeWithBreakdownImage unitAttribute = unitAttributesItems.get (row);
+						try
+						{
+							getHelpUI ().showUnitSkillID (unitAttribute.getUnitSkillID (), getUnit ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				}
+			}
+		});
+		
 		// Right clicking on skills shows help text about them
 		unitSkillsList.addMouseListener (new MouseAdapter ()
 		{
@@ -464,18 +491,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 	
 	/**
-	 * Clears old dynamically created controls
+	 * Clears out old list items
 	 */
 	private final void clear ()
 	{
-		for (final JLabel attrLabel : unitAttributeLabels.values ())
-			unitAttributesPanel.remove (attrLabel);
-		
-		for (final JLabel attrImage : unitAttributeImages)
-			unitAttributesPanel.remove (attrImage);
-		
-		unitAttributeLabels.clear ();
-		unitAttributeImages.clear ();
+		unitAttributesItems.clear ();
 		unitSkillsItems.clear ();
 	}
 	
@@ -488,7 +508,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		log.trace ("Entering showBuilding");
 
 		clear ();
-		unitAttributesPanel.setVisible (false);
+		unitAttributesScrollPane.setVisible (false);
 		unitSkillsScrollPane.setVisible (false);
 		currentlyConstructingAllows.setVisible (true);
 		currentlyConstructingDescription.setVisible (true);
@@ -573,7 +593,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		clear ();
 		currentlyConstructingAllows.setVisible (false);
 		currentlyConstructingDescription.setVisible (false);
-		unitAttributesPanel.setVisible (true);
+		unitAttributesScrollPane.setVisible (true);
 		unitSkillsScrollPane.setVisible (true);
 
 		// Find details about this kind of unit
@@ -607,7 +627,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		movesLabel.setVisible (movementImage != null);
 		currentlyConstructingMoves.setVisible (movementImage != null);
 		
-		// Create labels and icons to display unit attributes
+		// Add list items to display unit attributes and skills
 		final List<UnitHasSkill> mergedSkills;
 		if (unit instanceof MemoryUnit)
 			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
@@ -615,68 +635,26 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		else
 			mergedSkills = unit.getUnitHasSkill ();
 		
-		final Dimension attrValuePanelSize = new Dimension (289, 15);
-		
-		int y = 0;
-		for (final UnitHasSkill thisSkill : mergedSkills)
-			if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel").getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
-			{
-				// Label
-				final JLabel attrLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-				
-				final GridBagConstraints attrConstraints = getUtils ().createConstraintsNoFill (0, y, 1, 1, INSET, GridBagConstraintsNoFill.WEST);
-				attrConstraints.weightx = 1;
-				unitAttributesPanel.add (attrLabel, attrConstraints);
-				unitAttributeLabels.put (thisSkill.getUnitSkillID (), attrLabel);
-				
-				// Value
-				final BufferedImage attrImage = getUnitClientUtils ().generateAttributeImage (getUnit (), thisSkill.getUnitSkillID ());
-				final JLabel attrValue = new JLabel ((attrImage == null) ? null : new ImageIcon (attrImage));
-				
-				attrValue.setOpaque (false);
-				attrValue.setMinimumSize (attrValuePanelSize);
-				attrValue.setMaximumSize (attrValuePanelSize);
-				attrValue.setPreferredSize (attrValuePanelSize);
-				attrValue.setHorizontalAlignment (SwingConstants.LEFT);
-				attrValue.setVerticalAlignment (SwingConstants.TOP);
-				
-				unitAttributesPanel.add (attrValue, getUtils ().createConstraintsNoFill (1, y, 1, 1, new Insets (1, 0, 1, 0), GridBagConstraintsNoFill.EAST));
-				unitAttributeImages.add (attrValue);
-				y++;
-				
-				// Right clicking on unit attribute labels or icon area gives help about that attribute
-				final MouseListener unitAttributeHelpListener = new MouseAdapter ()
-				{
-					@Override
-					public final void mouseClicked (final MouseEvent ev)
-					{
-						if (SwingUtilities.isRightMouseButton (ev))
-							try
-							{
-								getHelpUI ().showUnitSkillID (thisSkill.getUnitSkillID (), getUnit ());
-							}
-							catch (final Exception e)
-							{
-								log.error (e, e);
-							}
-					}
-				};
-				
-				attrLabel.addMouseListener (unitAttributeHelpListener);
-				attrValue.addMouseListener (unitAttributeHelpListener);
-			}
-		
-		// Find all skills to show in the list box
 		getUnitSkillListCellRenderer ().setUnit (unit);
 		for (final UnitHasSkill thisSkill : mergedSkills)
-		{
-			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
-			// Experience is an exception since its images are derived differently.
-			if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
-				(getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit").getUnitSkillImageFile () != null))
-
-				unitSkillsItems.addElement (thisSkill);
-		}
+			
+			// Which list do we display it in?
+			if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel").getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
+			{
+				// Display as unit attribute
+				unitAttributesItems.addElement (new UnitAttributeWithBreakdownImage (thisSkill.getUnitSkillID (),
+					getUnitClientUtils ().generateAttributeImage (getUnit (), thisSkill.getUnitSkillID ())));
+			}
+			else
+			{
+				// Display as unit skill.				
+				// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
+				// Experience is an exception since its images are derived differently.
+				if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
+					(getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit").getUnitSkillImageFile () != null))
+	
+					unitSkillsItems.addElement (thisSkill);
+			}
 		
 		// Update language dependant labels
 		languageChanged ();
@@ -732,13 +710,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		movesLabel.setText	(getLanguage ().findCategoryEntry ("frmChangeConstruction", "Moves"));
 		costLabel.setText		(getLanguage ().findCategoryEntry ("frmChangeConstruction", "Cost"));
 
-		// Unit attribute labels
-		for (final Entry<String, JLabel> unitAttr : unitAttributeLabels.entrySet ())
-		{
-			final UnitSkillLang unitAttrLang = getLanguage ().findUnitSkill (unitAttr.getKey ());
-			unitAttr.getValue ().setText ((unitAttrLang != null) ? unitAttrLang.getUnitSkillDescription () : unitAttr.getKey ());
-		}
-		
 		// Update text about unit or building being displayed
 		currentConstructionChanged ();
 		
@@ -1020,6 +991,22 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitClientUtils = util;
 	}
 	
+	/**
+	 * @return Cell renderer for drawing the unit attribute text and component breakdowns
+	 */
+	public final UnitAttributeListCellRenderer getUnitAttributeListCellRenderer ()
+	{
+		return unitAttributeListCellRenderer;
+	}
+
+	/**
+	 * @param rend Cell renderer for drawing the unit attribute text and component breakdowns
+	 */
+	public final void setUnitAttributeListCellRenderer (final UnitAttributeListCellRenderer rend)
+	{
+		unitAttributeListCellRenderer = rend;
+	}
+
 	/**
 	 * @return Cell renderer for drawing the unit skill icons and generating the correct descriptions (some, notably the experience 'skill', aren't straightforward static text)
 	 */

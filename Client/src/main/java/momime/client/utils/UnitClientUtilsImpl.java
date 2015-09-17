@@ -821,27 +821,16 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			image = null;
 		else
 		{
-			// What's the total number of icons we need to draw - before taking negatives off?  e.g. if we have base 5 but
-			// Black Prayer is giving us a -1 penalty, we still draw 5 icons, just the 5th one is greyed out.
-			final int iconCount = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, UnitSkillComponent.ALL,
-				unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-				getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
-			
-			// Now can figure out how big the image needs to be
+			// Create all images the same size, since it makes laying them out in the list simpler
+			// But we still need to know the size of an image to base this off
 			final BufferedImage basicComponentBackgroundImage = getUtils ().loadImage
 				(getGraphicsDB ().findUnitSkillComponent (UnitSkillComponent.BASIC, "generateAttributeImage").getUnitSkillComponentImageFile ()); 
 
-			final int iconsPerRow = Math.min (iconCount, ATTRIBUTE_ICONS_PER_ROW);
-			
 			image = new BufferedImage
-				((basicComponentBackgroundImage.getWidth () * iconsPerRow) + Math.max (iconsPerRow - 1, 0) +		// Space for icons themselves + 1 pixel gap between each
-					Math.max (((iconsPerRow-1) / ATTRIBUTE_ICONS_PER_GROUP) * 2, 0) +									// Additional 2 pixel gap between each block of 5
-					Math.max (((iconCount-1) / ATTRIBUTE_ICONS_PER_ROW) * 4, 0),												// Indent 2nd, 3rd and so on rows by 4 pixels
-					
-				basicComponentBackgroundImage.getHeight () +
-					Math.max (((iconCount-1) / ATTRIBUTE_ICONS_PER_ROW) * 3, 0), BufferedImage.TYPE_INT_ARGB);
+				((basicComponentBackgroundImage.getWidth () * ATTRIBUTE_ICONS_PER_ROW) + ATTRIBUTE_ICONS_PER_ROW - 1 +		// Space for icons themselves + 1 pixel gap between each
+					((ATTRIBUTE_ICON_GROUPS_PER_ROW - 1) * 2) +																										// Additional 2 pixel gap between each block of 5
+					4,																																													// Indent 2nd row by 4 pixels
+				basicComponentBackgroundImage.getHeight () + 3, BufferedImage.TYPE_INT_ARGB);
 					
 			// Work out the icon to use to display this type of unit attribute
 			final BufferedImage attributeImage = getUnitSkillComponentBreakdownIcon (unit, unitSkillID);

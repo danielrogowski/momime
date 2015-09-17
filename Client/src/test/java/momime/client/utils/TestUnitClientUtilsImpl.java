@@ -829,7 +829,11 @@ public final class TestUnitClientUtilsImpl
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE,
 			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (1);		
 		
-		checkImage (obj.generateAttributeImage (unit, "UA01"), "SB");
+		checkImage (obj.generateAttributeImage (unit, "UA01"),
+			"SB                                                                   " + System.lineSeparator () +
+			"                                                                     " + System.lineSeparator () +
+			"                                                                     " + System.lineSeparator () +
+			"                                                                     ");
 
 		// Generate image for when the unit has a makeup of 3 basic + 4 wep grade + 5 experience + 6 hero skills + 2 CAE = 20
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,
@@ -847,7 +851,11 @@ public final class TestUnitClientUtilsImpl
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.POSITIVE,
 			players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);		
 
-		checkImage (obj.generateAttributeImage (unit, "UA01"), "SB SB SB SW SW   SW SW SE SE SE   SE SE SH SH SH   SH SH SH SC SC");
+		checkImage (obj.generateAttributeImage (unit, "UA01"),
+			"SB SB SB SW SW   SW SW SE SE SE   SE SE SH SH SH   SH SH SH SC SC    " + System.lineSeparator () +
+			"                                                                     " + System.lineSeparator () +
+			"                                                                     " + System.lineSeparator () +
+			"                                                                     ");
 
 		// Generate image for when the unit has a makeup of 4 basic + 5 wep grade + 7 experience + 8 hero skills + 3 CAE = 27 - 6 penalty = 21
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,

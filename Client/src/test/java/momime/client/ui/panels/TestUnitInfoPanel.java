@@ -42,6 +42,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.renderer.UnitAttributeListCellRenderer;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
@@ -147,11 +148,14 @@ public final class TestUnitInfoPanel
 		building.setBuildingID ("BL01");
 		building.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 
-		// Cell renderer
-		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
-		renderer.setLanguageHolder (langHolder);
-		renderer.setGraphicsDB (gfx);
-		renderer.setUtils (utils);
+		// Cell renderers
+		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
+		attributeRenderer.setLanguageHolder (langHolder);
+
+		final UnitSkillListCellRenderer skillRenderer = new UnitSkillListCellRenderer ();
+		skillRenderer.setLanguageHolder (langHolder);
+		skillRenderer.setGraphicsDB (gfx);
+		skillRenderer.setUtils (utils);
 		
 		// Create some dummy actions for buttons
 		final Action blahAction = new AbstractAction ("Blah")
@@ -181,7 +185,8 @@ public final class TestUnitInfoPanel
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setAnim (anim);
 		panel.setClientCityCalculations (clientCityCalc);
-		panel.setUnitSkillListCellRenderer (renderer);
+		panel.setUnitAttributeListCellRenderer (attributeRenderer);
+		panel.setUnitSkillListCellRenderer (skillRenderer);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
@@ -341,7 +346,7 @@ public final class TestUnitInfoPanel
 			unitAttrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
 			when (gfx.findUnitSkill (eq (attrID), anyString ())).thenReturn (unitAttrGfx);
 			
-			when (unitClientUtils.generateAttributeImage (unit, attrID)).thenReturn (ClientTestData.createSolidImage (219 + (unitAttrNo*10), 15, unitAttrNo * 35));
+			when (unitClientUtils.generateAttributeImage (unit, attrID)).thenReturn (ClientTestData.createSolidImage (289, 15, unitAttrNo * 35));
 			
 			// Unit stat
 			final UnitHasSkill attr = new UnitHasSkill ();
@@ -381,17 +386,21 @@ public final class TestUnitInfoPanel
 			when (unitClientUtils.getUnitSkillComponentBreakdownIcon (unit, "UA0" + unitAttrNo)).thenReturn (utils.loadImage (useAttributeImage));
 		}
 		
-		// Cell renderer
+		// Cell renderers
 		final UnitStatsLanguageVariableReplacer replacer = mock (UnitStatsLanguageVariableReplacer.class);
 		for (int n = 1; n <= 5; n++)
 			when (replacer.replaceVariables ("Name of skill US0" + n)).thenReturn ("Name of skill US0" + n);
 		
-		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
-		renderer.setUnitStatsReplacer (replacer);
-		renderer.setLanguageHolder (langHolder);
-		renderer.setGraphicsDB (gfx);
-		renderer.setUtils (utils);
-		renderer.setUnitClientUtils (unitClientUtils);
+		// Cell renderers
+		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
+		attributeRenderer.setLanguageHolder (langHolder);
+
+		final UnitSkillListCellRenderer skillRenderer = new UnitSkillListCellRenderer ();
+		skillRenderer.setUnitStatsReplacer (replacer);
+		skillRenderer.setLanguageHolder (langHolder);
+		skillRenderer.setGraphicsDB (gfx);
+		skillRenderer.setUtils (utils);
+		skillRenderer.setUnitClientUtils (unitClientUtils);
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
@@ -413,7 +422,8 @@ public final class TestUnitInfoPanel
 		panel.setUnitCalculations (unitCalc);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitClientUtils (unitClientUtils);
-		panel.setUnitSkillListCellRenderer (renderer);
+		panel.setUnitAttributeListCellRenderer (attributeRenderer);
+		panel.setUnitSkillListCellRenderer (skillRenderer);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());

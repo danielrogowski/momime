@@ -1428,6 +1428,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 	</bean>
 
+	<bean id="unitAttributeListCellRenderer" class="momime.client.ui.renderer.UnitAttributeListCellRenderer" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+
 	<bean id="unitSkillListCellRenderer" class="momime.client.ui.renderer.UnitSkillListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -1615,7 +1619,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />		<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
+		<property name="unitAttributeListCellRenderer" ref="unitAttributeListCellRenderer" />		<!-- So Spring will create and inject a new attribute list renderer for each unitInfoPanel -->
+		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />					<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="helpUI" ref="helpUI" />
 	</bean>	

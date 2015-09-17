@@ -1,6 +1,5 @@
 package momime.client.ui.panels;
 
-import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.Action;
-import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -38,6 +36,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
@@ -83,21 +83,18 @@ import momime.common.utils.UnitUtils;
  * 
  * For the change construction screen, this also has to be able to display buildings, in which
  * case the two areas showing unit attributes + skills and replaced by two text areas
- * showing a description of the building and what it allows.  This switching is done via two CardLayouts.
+ * showing a description of the building and what it allows.
  */
 public final class UnitInfoPanel extends MomClientPanelUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitInfoPanel.class);
 
+	/** XML layout */
+	private XmlLayoutContainerEx unitInfoLayout;
+
 	/** There's a lot of pixel precision positionining going on here so the panel typically uses no insets or custom insets per component */
 	private final static int INSET = 0;
-	
-	/** Card layout key for when we're displaying a unit */
-	private final static String KEY_UNITS = "U";
-	
-	/** Card layout key for when we're displaying a building */
-	private final static String KEY_BUILDINGS = "B";
 	
 	/** How many pixels of the buttons backgrounds overlap the main background */
 	private final int BUTTONS_OVERLAP = 5;
@@ -186,18 +183,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** URN value */
 	private JLabel urnValue;
 	
-	/** Card layout for top section */
-	private CardLayout topCardLayout;
-	
-	/** Panel that the top card layout is the layout manager for */
-	private JPanel topCards;
-
-	/** Panel that the bottom card layout is the layout manager for */
-	private JPanel bottomCards;
-
-	/** Card layout for bottom section */
-	private CardLayout bottomCardLayout;
-	
 	/** Long description of building */
 	private JTextArea currentlyConstructingDescription;
 	
@@ -215,6 +200,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** List containing all the unit attribute images */
 	private List<JLabel> unitAttributeImages = new ArrayList<JLabel> ();
+	
+	/** Scroll pane containing the list of unit skills */
+	private JScrollPane unitSkillsScrollPane;
 	
 	/** Building being displayed */
 	private MemoryBuilding building;
@@ -270,11 +258,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		getPanel ().setPreferredSize (backgroundSize);
 
 		// Set up layout
-		getPanel ().setLayout (new GridBagLayout ());
+		getPanel ().setLayout (new XmlLayoutManager (getUnitInfoLayout ()));
 		getPanel ().setOpaque (false);
 	
-		final Dimension currentlyConstructingImageSize = new Dimension (62, 60);
-		
 		final ZOrderGraphicsImmediateImpl zOrderGraphics = new ZOrderGraphicsImmediateImpl ();		
 		currentlyConstructingImage = new JPanel ()
 		{
@@ -313,124 +299,67 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		};
 		
 		currentlyConstructingImage.setOpaque (false);
-		currentlyConstructingImage.setMinimumSize (currentlyConstructingImageSize);
-		currentlyConstructingImage.setMaximumSize (currentlyConstructingImageSize);
-		currentlyConstructingImage.setPreferredSize (currentlyConstructingImageSize);
-		
-		getPanel ().add (currentlyConstructingImage, getUtils ().createConstraintsNoFill (0, 0, 1, 5, new Insets (0, 0, 0, 6), GridBagConstraintsNoFill.CENTRE));
+		getPanel ().add (currentlyConstructingImage, "frmUnitInfoCurrentlyConstructing");
 		
 		currentlyConstructingName = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (currentlyConstructingName, getUtils ().createConstraintsNoFill (1, 0, 2, 1, INSET, GridBagConstraintsNoFill.WEST));
+		getPanel ().add (currentlyConstructingName, "frmUnitInfoCurrentlyConstructingName");
 
 		costLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (costLabel, getUtils ().createConstraintsNoFill (1, 1, 1, 1, new Insets (0, 0, 0, 4), GridBagConstraintsNoFill.WEST));
+		getPanel ().add (costLabel, "frmUnitInfoCost");
 		
 		upkeepLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (upkeepLabel, getUtils ().createConstraintsNoFill (1, 2, 1, 1, new Insets (0, 0, 0, 4), GridBagConstraintsNoFill.WEST));
+		getPanel ().add (upkeepLabel, "frmUnitInfoUpkeep");
 		
 		movesLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (movesLabel, getUtils ().createConstraintsNoFill (1, 3, 1, 1, new Insets (0, 0, 0, 4), GridBagConstraintsNoFill.WEST));
+		getPanel ().add (movesLabel, "frmUnitInfoMoves");
 		
 		currentlyConstructingProductionCost = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (currentlyConstructingProductionCost, getUtils ().createConstraintsNoFill (2, 1, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		getPanel ().add (currentlyConstructingProductionCost, "frmUnitInfoCurrentlyConstructingCost");
 		
 		currentlyConstructingUpkeep = new JLabel ();
-		getPanel ().add (currentlyConstructingUpkeep, getUtils ().createConstraintsNoFill (2, 2, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		getPanel ().add (currentlyConstructingUpkeep, "frmUnitInfoCurrentlyConstructingUpkeep");
 		
 		currentlyConstructingMoves = new JLabel ();
-		getPanel ().add (currentlyConstructingMoves, getUtils ().createConstraintsNoFill (2, 3, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		getPanel ().add (currentlyConstructingMoves, "frmUnitInfoCurrentlyConstructingMoves");
 
 		urnLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (urnLabel, getUtils ().createConstraintsNoFill (1, 4, 1, 1, new Insets (0, 0, 0, 4), GridBagConstraintsNoFill.WEST));
+		getPanel ().add (urnLabel, "frmUnitInfoURNLabel");
 
 		urnValue = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (urnValue, getUtils ().createConstraintsNoFill (2, 4, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
-		
-		// Card layouts
-		topCardLayout = new CardLayout ();
-		
-		topCards = new JPanel (topCardLayout);
-		topCards.setOpaque (false);
-		getPanel ().add (topCards, getUtils ().createConstraintsNoFill (0, 5, 3, 1, new Insets (6, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
-
-		bottomCardLayout = new CardLayout ();
-		
-		bottomCards = new JPanel (bottomCardLayout);
-		bottomCards.setOpaque (false);
-		getPanel ().add (bottomCards, getUtils ().createConstraintsNoFill (0, 6, 3, 1, new Insets (6, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
+		getPanel ().add (urnValue, "frmUnitInfoURNValue");
 		
 		// Mini panel at the bottom or right containing the 2 red buttons.
-		// The constraints to position these correctly are so different that its a mess trying to do this in 1 block; just keep them separate.
 		if (getActions ().size () > 0)
 		{
 			if (isButtonsPositionRight ())
 			{
-				final JPanel redButtonsPanel = new JPanel ();
-				redButtonsPanel.setOpaque (false);
-				getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (3, 0, 1, 7, new Insets (0, 10, 0, 0), GridBagConstraintsNoFill.SOUTH));
-		
-				redButtonsPanel.setLayout (new GridBagLayout ());
-				redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (0), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 0, 3, 0), GridBagConstraintsNoFill.SOUTH));
-
-				for (int n = 1; n < getActions ().size (); n++)
-					redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (n), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-						buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, n, 1, 1, new Insets (4, 0, 3, 0), GridBagConstraintsNoFill.SOUTH));
-
-				redButtonsPanel.add (Box.createRigidArea (new Dimension (3, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 2, INSET, GridBagConstraintsNoFill.SOUTH));
+				for (int n = 0; n < getActions ().size (); n++)
+					getPanel ().add (getUtils ().createImageButton (getActions ().get (n), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+						buttonNormal, buttonPressed, buttonNormal), "frmUnitInfoRedButtonsRight" + (n + (4 - getActions ().size ())));
 			}
 			else
 			{
-				final JPanel redButtonsPanel = new JPanel ();
-				redButtonsPanel.setOpaque (false);
-				getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (0, 7, 3, 1, new Insets (4, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
-		
-				redButtonsPanel.setLayout (new GridBagLayout ());
-				redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (0), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
-
-				redButtonsPanel.add (Box.createRigidArea (new Dimension (24, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
-
-				redButtonsPanel.add (getUtils ().createImageButton (getActions ().get (1), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
-
-				redButtonsPanel.add (Box.createRigidArea (new Dimension (0, 1)), getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.NORTH));
+				for (int n = 0; n < getActions ().size (); n++)
+					getPanel ().add (getUtils ().createImageButton (getActions ().get (n), MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+							buttonNormal, buttonPressed, buttonNormal), "frmUnitInfoRedButtonsBottom" + (n+1));
 			}
 		}
 		
-		// Top card - buildings
-		final Dimension topCardSize = new Dimension (360, 119);
-
+		// Top area - buildings
 		currentlyConstructingAllows = getUtils ().createWrappingLabel (MomUIConstants.AQUA, getMediumFont ());
-		currentlyConstructingAllows.setMinimumSize (topCardSize);
-		currentlyConstructingAllows.setMaximumSize (topCardSize);
-		currentlyConstructingAllows.setPreferredSize (topCardSize);
+		getPanel ().add (currentlyConstructingAllows, "frmUnitInfoCurrentlyConstructingAllows");
 
-		topCards.add (currentlyConstructingAllows, KEY_BUILDINGS);
-
-		// Bottom card - buildings
-		final Dimension bottomCardSize = new Dimension (360, 71);
-
+		// Bottom area - buildings
 		currentlyConstructingDescription = getUtils ().createWrappingLabel (MomUIConstants.AQUA, getMediumFont ());
-		currentlyConstructingDescription.setMinimumSize (bottomCardSize);
-		currentlyConstructingDescription.setMaximumSize (bottomCardSize);
-		currentlyConstructingDescription.setPreferredSize (bottomCardSize);
+		getPanel ().add (currentlyConstructingDescription, "frmUnitInfoCurrentlyConstructingDescription");
 		
-		bottomCards.add (currentlyConstructingDescription, KEY_BUILDINGS);
-		
-		// Top card - units
+		// Top area  - units
 		unitAttributesPanel = new JPanel ();
-		
 		unitAttributesPanel.setOpaque (false);
-		unitAttributesPanel.setMinimumSize (topCardSize);
-		unitAttributesPanel.setMaximumSize (topCardSize);
-		unitAttributesPanel.setPreferredSize (topCardSize);
-		
 		unitAttributesPanel.setLayout (new GridBagLayout ());
+		getPanel ().add (unitAttributesPanel, "frmUnitInfoAttributes");
 		
-		topCards.add (unitAttributesPanel, KEY_UNITS);
-		
-		// Bottom card - units
+		// Bottom area - units
 		getUnitSkillListCellRenderer ().setFont (getSmallFont ());
 		getUnitSkillListCellRenderer ().setForeground (MomUIConstants.AQUA);
 		getUnitSkillListCellRenderer ().init ();
@@ -443,13 +372,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitSkillsList.setCellRenderer (getUnitSkillListCellRenderer ());
 		unitSkillsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
-		final JScrollPane unitSkillsScrollPane = getUtils ().createTransparentScrollPane (unitSkillsList);
-		
-		unitSkillsScrollPane.setMinimumSize (bottomCardSize);
-		unitSkillsScrollPane.setMaximumSize (bottomCardSize);
-		unitSkillsScrollPane.setPreferredSize (bottomCardSize);
-
-		bottomCards.add (unitSkillsScrollPane, KEY_UNITS);
+		unitSkillsScrollPane = getUtils ().createTransparentScrollPane (unitSkillsList);
+		getPanel ().add (unitSkillsScrollPane, "frmUnitInfoSkills");
 		
 		// Clicking a unit skill from a spell asks about cancelling it
 		unitSkillsList.addListSelectionListener (new ListSelectionListener ()
@@ -564,8 +488,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		log.trace ("Entering showBuilding");
 
 		clear ();
-		topCardLayout.show (topCards, KEY_BUILDINGS);
-		bottomCardLayout.show (bottomCards, KEY_BUILDINGS);
+		unitAttributesPanel.setVisible (false);
+		unitSkillsScrollPane.setVisible (false);
+		currentlyConstructingAllows.setVisible (true);
+		currentlyConstructingDescription.setVisible (true);
 
 		// Find details about this kind of building
 		building = showBuilding;
@@ -645,8 +571,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		log.trace ("Entering showUnit");
 		
 		clear ();
-		topCardLayout.show (topCards, KEY_UNITS);
-		bottomCardLayout.show (bottomCards, KEY_UNITS);
+		currentlyConstructingAllows.setVisible (false);
+		currentlyConstructingDescription.setVisible (false);
+		unitAttributesPanel.setVisible (true);
+		unitSkillsScrollPane.setVisible (true);
 
 		// Find details about this kind of unit
 		unit = showUnit;
@@ -1194,5 +1122,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setHelpUI (final HelpUI ui)
 	{
 		helpUI = ui;
+	}
+
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getUnitInfoLayout ()
+	{
+		return unitInfoLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setUnitInfoLayout (final XmlLayoutContainerEx layout)
+	{
+		unitInfoLayout = layout;
 	}
 }

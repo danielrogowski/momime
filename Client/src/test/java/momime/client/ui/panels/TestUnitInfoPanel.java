@@ -23,6 +23,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -164,9 +165,14 @@ public final class TestUnitInfoPanel
 			@Override
 			public final void actionPerformed (final ActionEvent ev) {}
 		};
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		layout.buildMaps ();
 		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
+		panel.setUnitInfoLayout (layout);
 		panel.setUtils (utils);
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
@@ -387,10 +393,15 @@ public final class TestUnitInfoPanel
 		renderer.setUtils (utils);
 		renderer.setUnitClientUtils (unitClientUtils);
 
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		layout.buildMaps ();
+		
 		// Set up panel
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 
 		final UnitInfoPanel panel = new UnitInfoPanel ();
+		panel.setUnitInfoLayout (layout);
 		panel.setUtils (utils);
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);

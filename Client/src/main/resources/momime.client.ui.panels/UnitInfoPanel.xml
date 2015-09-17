@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>372</formWidth>
+	<formHeight>274</formHeight>
+	<component name="frmUnitInfoCurrentlyConstructing">
+		<left>6</left>
+		<top>6</top>
+		<width>62</width>
+		<height>60</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoCurrentlyConstructingName">
+		<left>74</left>
+		<top>6</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoCost">
+		<left>74</left>
+		<top>18</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoUpkeep">
+		<left>74</left>
+		<top>30</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoMoves">
+		<left>74</left>
+		<top>42</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoURNLabel">
+		<left>74</left>
+		<top>54</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoCurrentlyConstructingCost">
+		<left>118</left>
+		<top>18</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoCurrentlyConstructingUpkeep">
+		<left>118</left>
+		<top>31</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoCurrentlyConstructingMoves">
+		<left>118</left>
+		<top>44</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoURNValue">
+		<left>118</left>
+		<top>54</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoRedButtonsRight1">
+		<left>376</left>
+		<top>215</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoRedButtonsRight2">
+		<left>376</left>
+		<top>234</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoRedButtonsRight3">
+		<left>376</left>
+		<top>253</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoRedButtonsBottom1">
+		<left>125</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoRedButtonsBottom2">
+		<left>198</left>
+		<top>272</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	
+	<!-- Buildings -->
+	
+	<component name="frmUnitInfoCurrentlyConstructingAllows">
+		<left>6</left>
+		<top>72</top>
+		<width>360</width>
+		<height>119</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoCurrentlyConstructingDescription">
+		<left>6</left>
+		<top>197</top>
+		<width>360</width>
+		<height>71</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+
+	<!-- Units -->
+	
+	<component name="frmUnitInfoAttributes">
+		<left>6</left>
+		<top>72</top>
+		<width>360</width>
+		<height>119</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmUnitInfoSkills">
+		<left>6</left>
+		<top>197</top>
+		<width>360</width>
+		<height>71</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	
+</ns2:xmlLayoutContainer>

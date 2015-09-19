@@ -39847,10 +39847,16 @@
 	<unitSkill unitSkillID="US025">
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US025-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/stoningGaze.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US026">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US026-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/stoningTouch.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillTypeID>F</unitSkillTypeID>
@@ -39867,22 +39873,37 @@
 	<unitSkill unitSkillID="US030">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US030-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/poisonTouch.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US031-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/lifeSteal.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US032-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/immolation.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US033-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/resistanceToOthers.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US034">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US034-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/holyBonus.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US035">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -39895,6 +39916,9 @@
 	<unitSkill unitSkillID="US037">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US037-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/scouting.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US040">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -39961,6 +39985,9 @@
 	<unitSkill unitSkillID="US131">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US131-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/deathGaze.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -39983,6 +40010,9 @@
 	<unitSkill unitSkillID="US135">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US135-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/summonDemon.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US169">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -40154,6 +40184,9 @@
 	<unitSkill unitSkillID="SS099">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS099-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/immolation.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
 		<unitSkillTypeID>N</unitSkillTypeID>

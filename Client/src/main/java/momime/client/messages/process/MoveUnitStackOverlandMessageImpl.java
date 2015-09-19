@@ -224,7 +224,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 				// the unit moves around the map in and out of CAEs that affect it
 				final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (thisUnitURN);
 				if (unitInfo != null)
-					unitInfo.getUnitInfoPanel ().getPanel ().repaint ();
+					unitInfo.getUnitInfoPanel ().showUnit (u);
 			}
 		}
 		

@@ -21252,6 +21252,11 @@
 		<languageEntry languageEntryID="ResolutionDescription" />
 		<languageEntry languageEntryID="LanguageSection" />
 		<languageEntry languageEntryID="ChooseLanguage" />
+		<languageEntry languageEntryID="UnitInfoSection" />
+		<languageEntry languageEntryID="UnitAttributes" />
+		<languageEntry languageEntryID="UnitAttributesA" />
+		<languageEntry languageEntryID="UnitAttributesM" />
+		<languageEntry languageEntryID="UnitAttributesF" />
 		<languageEntry languageEntryID="OK" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSurveyor">

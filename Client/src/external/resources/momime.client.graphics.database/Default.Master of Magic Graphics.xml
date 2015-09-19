@@ -39930,6 +39930,18 @@
 	<unitSkill unitSkillID="US126">
 		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US126-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/thrownNormal.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="1">
+			<skillImageFile>/momime.client.graphics/unitSkills/thrownAlchemy.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="2">
+			<skillImageFile>/momime.client.graphics/unitSkills/thrownMithril.png</skillImageFile>
+		</unitSkillWeaponGrade>
+		<unitSkillWeaponGrade weaponGradeNumber="3">
+			<skillImageFile>/momime.client.graphics/unitSkills/thrownAdamantium.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -39942,6 +39954,9 @@
 	<unitSkill unitSkillID="US130">
 		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US130-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/doomGaze.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
 		<unitSkillTypeID>F</unitSkillTypeID>
@@ -39954,10 +39969,16 @@
 	<unitSkill unitSkillID="US133">
 		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US133-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/lightningBreath.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
 		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US134-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/fireBreath.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US135">
 		<unitSkillTypeID>F</unitSkillTypeID>
@@ -40113,6 +40134,9 @@
 	<unitSkill unitSkillID="SS093B">
 		<unitSkillTypeID>M</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS093B-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/fireBreath.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
 		<unitSkillTypeID>N</unitSkillTypeID>

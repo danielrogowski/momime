@@ -637,9 +637,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		getUnitSkillListCellRenderer ().setUnit (unit);
 		for (final UnitHasSkill thisSkill : mergedSkills)
-			
+		{
 			// Which list do we display it in?
-			if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel").getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
+			final UnitSkillTypeID skillType = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel").getUnitSkillTypeID ();
+			
+			if ((skillType == UnitSkillTypeID.ATTRIBUTE) ||
+				((skillType == UnitSkillTypeID.MODIFYABLE) && ((getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.MODIFYABLE) ||
+																						(getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED))) ||
+				((skillType == UnitSkillTypeID.FIXED) && (getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED)))
 			{
 				// Display as unit attribute
 				unitAttributesItems.addElement (new UnitAttributeWithBreakdownImage (thisSkill.getUnitSkillID (),
@@ -655,6 +660,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 					unitSkillsItems.addElement (thisSkill);
 			}
+		}
 		
 		// Update language dependant labels
 		languageChanged ();

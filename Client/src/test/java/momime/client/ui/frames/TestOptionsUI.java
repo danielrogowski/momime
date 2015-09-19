@@ -9,8 +9,17 @@ import java.net.URLDecoder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.v0_9_7.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -19,14 +28,7 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.UnitClientUtilsImpl;
 import momime.common.database.UnitCombatScale;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import momime.common.database.UnitSkillTypeID;
 
 /**
  * Tests the OptionsUI class
@@ -58,6 +60,7 @@ public final class TestOptionsUI
 		when (lang.findCategoryEntry ("frmOptions", "OverlandMapSection")).thenReturn ("Overland Map");
 		when (lang.findCategoryEntry ("frmOptions", "CombatMapSection")).thenReturn ("Combat Map");
 		when (lang.findCategoryEntry ("frmOptions", "LanguageSection")).thenReturn ("Language");
+		when (lang.findCategoryEntry ("frmOptions", "UnitInfoSection")).thenReturn ("Unit Info Display");
 		
 		when (lang.findCategoryEntry ("frmOptions", "SmoothTerrain")).thenReturn ("Smooth edges of terrain");
 		when (lang.findCategoryEntry ("frmOptions", "LinearTextureFilter")).thenReturn ("Smooth textures when zooming in on overland map");
@@ -70,6 +73,11 @@ public final class TestOptionsUI
 		when (lang.findCategoryEntry ("frmOptions", "ShowEdgesOfMap")).thenReturn ("Show edges of map");
 		when (lang.findCategoryEntry ("frmOptions", "CombatUnitScale")).thenReturn ("Unit scale (visual only; showing 4x figures does not mean 4x attacks):");
 		when (lang.findCategoryEntry ("frmOptions", "ChooseLanguage")).thenReturn ("Choose Language:");
+
+		when (lang.findCategoryEntry ("frmOptions", "UnitAttributes")).thenReturn ("Show full breakdown (in top list) for:");
+		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesA")).thenReturn ("Only standard attributes Melee, HP, etc");
+		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesM")).thenReturn ("Skills with values modifyable by exp, auras, etc");
+		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesF")).thenReturn ("All skills with values");
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -91,6 +99,7 @@ public final class TestOptionsUI
 		config.setOverlandSmoothTextures (true);
 		config.setDebugShowEdgesOfMap (true);
 		config.setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);
+		config.setDisplayUnitSkillsAsAttributes (UnitSkillTypeID.MODIFYABLE);
 		
 		// Find the test folder containing empty language files
 		String path = getClass ().getResource ("/momime.client.language/Lang 1.Master of Magic Language.xml").toString ();
@@ -102,8 +111,8 @@ public final class TestOptionsUI
 		final String clientConfigLocation = File.createTempFile ("MomImeClientConfigEx", ".xml").getAbsolutePath ();
 		log.info ("Saving test updates to config file to \"" + clientConfigLocation + "\"");
 		
-		// Marshaller
-		final Marshaller marshaller = JAXBContext.newInstance (MomImeClientConfigEx.class).createMarshaller ();
+		// Marshaller - have to specify the exact class here (not MomImeClientConfigEx) or saving the config does not work
+		final Marshaller marshaller = JAXBContext.newInstance (MomImeClientConfig.class).createMarshaller ();
 		marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		
 		// Unit animations

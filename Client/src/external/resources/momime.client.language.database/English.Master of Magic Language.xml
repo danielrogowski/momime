@@ -945,7 +945,13 @@ EXPERIENCE_NEXT_LEVEL.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US126">
 		<unitSkillDescription>Thrown Weapons</unitSkillDescription>
-		<unitSkillHelpText>Thrown weapons allows an attacking unit to hurl its thrown weapons before engaging in hand-to-hand.</unitSkillHelpText>
+		<unitSkillHelpText>Thrown weapons allows an attacking unit to hurl its thrown weapons before engaging in hand-to-hand.
+
+Thrown weapons are available in a number of weapon grades which confer improved stats:
+#{findUnitSkill ('US126', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon
+#{findUnitSkill ('US126', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon
+#{findUnitSkill ('US126', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon
+#{findUnitSkill ('US126', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
@@ -1298,7 +1304,6 @@ When a unit is hit, the first figure will try to block some of the damage using 
 
 Shields are available in a number of weapon grades which confer improved stats:
 #{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard shield
-#{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic shield
 #{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril shield
 #{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium shield
 
@@ -5502,6 +5507,21 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="ChooseLanguage">
 			<languageEntryText>Choose Language:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UnitInfoSection">
+			<languageEntryText>Unit Info Display</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UnitAttributes">
+			<languageEntryText>Show full breakdown (in top list) for:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UnitAttributesA">
+			<languageEntryText>Only standard attributes Melee, HP, etc</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UnitAttributesM">
+			<languageEntryText>Skills with values modifyable by exp, auras, etc</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UnitAttributesF">
+			<languageEntryText>All skills with values</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>

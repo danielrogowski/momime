@@ -49,15 +49,18 @@ import momime.server.database.v0_9_7.WizardPickCount;
  * Creates our custom extended ServerDatabase when it is unmarshalled with JAXB
  */
 @XmlRegistry
-public final class ServerDatabaseFactory extends ObjectFactory
+public final class ServerDatabaseObjectFactory extends ObjectFactory
 {
+	/** Factory for creating prototype message beans from spring */
+	private ServerDatabaseFactory factory;
+	
 	/**
 	 * @return Custom extended ServerDatabase 
 	 */
 	@Override
 	public final ServerDatabase createServerDatabase ()
 	{
-		return new ServerDatabaseExImpl ();
+		return getFactory ().createDatabase ();
 	}
 
 	/**
@@ -418,5 +421,21 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	public final AttackResolutionStep createAttackResolutionStep ()
 	{
 		return new AttackResolutionStepSvr ();
+	}
+
+	/**
+	 * @return Factory for creating prototype message beans from spring
+	 */
+	public final ServerDatabaseFactory getFactory ()
+	{
+		return factory;
+	}
+	
+	/**
+	 * @param fac Factory for creating prototype message beans from spring
+	 */
+	public final void setFactory (final ServerDatabaseFactory fac)
+	{
+		factory = fac;
 	}
 }

@@ -7,8 +7,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
+import momime.common.utils.UnitUtils;
 import momime.server.database.v0_9_7.Building;
 import momime.server.database.v0_9_7.CitySize;
 import momime.server.database.v0_9_7.CitySpellEffect;
@@ -39,6 +42,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ServerDatabaseExImpl.class);
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** Map of city size IDs to city size XML objects */
 	private Map<String, CitySize> citySizesMap;
@@ -226,6 +232,22 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		log.trace ("Exiting buildMaps");
 	}
 
+	/**
+	 * Derives values from the received database
+	 * @throws MomException If any of the consistency checks fail
+	 */
+	public final void consistencyChecks () throws MomException
+	{
+		log.trace ("Entering consistencyChecks");
+		
+		// Check all units have an HP "skill" value defined
+		for (final Unit unitDef : getUnit ())
+			if (getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) < 1)
+				throw new MomException ("Unit " + unitDef.getUnitID () + " has no HP value defined");
+
+		log.trace ("Exiting consistencyChecks");
+	}
+	
 	/**
 	 * @return Complete list of all city sizes in game
 	 */
@@ -855,5 +877,21 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	public final List<SpellSettingSvr> getSpellSettings ()
 	{
 		return (List<SpellSettingSvr>) (List<?>) getSpellSetting ();
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

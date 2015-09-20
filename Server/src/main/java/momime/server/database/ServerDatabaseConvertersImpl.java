@@ -151,11 +151,12 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 				// Attempt to load it in
 				final ServerDatabaseExImpl db = (ServerDatabaseExImpl) serverDatabaseUnmarshaller.unmarshal (thisXmlFile.getValue ());
 				db.buildMaps ();
+				db.consistencyChecks ();
 
 				// Loaded ok, add relevant parts to the new game database
 				newGameDatabase.getMomimeXmlDatabase ().add (convertServerToAvailableDatabase (db, thisXmlFile.getKey ()));
 			}
-			catch (final JAXBException e)
+			catch (final Exception e)
 			{
 				log.warn ("Server XML database \"" + thisXmlFile.getKey () + "\" can't be used because of: " + e.getMessage ());
 			}

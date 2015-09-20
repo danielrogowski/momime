@@ -1,6 +1,7 @@
 package momime.server;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +12,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemType;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
@@ -33,6 +42,7 @@ import momime.common.messages.MapVolumeOfStrings;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.utils.UnitUtils;
 import momime.server.database.DifficultyLevelSvr;
 import momime.server.database.FogOfWarSettingSvr;
 import momime.server.database.LandProportionSvr;
@@ -42,18 +52,11 @@ import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseExImpl;
 import momime.server.database.ServerDatabaseFactory;
+import momime.server.database.ServerDatabaseObjectFactory;
 import momime.server.database.SpellSettingSvr;
 import momime.server.database.UnitSettingSvr;
 import momime.server.database.v0_9_7.ServerDatabase;
 import momime.server.knowledge.ServerGridCellEx;
-
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemType;
 
 /**
  * Common constants for server test cases
@@ -66,6 +69,19 @@ public final class ServerTestData
 	 */
 	public final static ServerDatabaseEx loadServerDatabase () throws Exception
 	{
+		// Need to set up a proper factory to create classes with spring injections
+		final ServerDatabaseObjectFactory factory = new ServerDatabaseObjectFactory ();
+		factory.setFactory (new ServerDatabaseFactory ()
+		{
+			@Override
+			public final ServerDatabaseExImpl createDatabase ()
+			{
+				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+				db.setUnitUtils (mock (UnitUtils.class));
+				return db;
+			}
+		});
+
 		// XSD
 		final URL xsdResource = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
 		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
@@ -76,7 +92,7 @@ public final class ServerTestData
 		final Schema schema = schemaFactory.newSchema (xsdResource);
 
 		final Unmarshaller unmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();		
-		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
 		unmarshaller.setSchema (schema);
 		
 		// XML - not straightforward to find this, because its in src/external/resources so isn't on the classpath

@@ -107,8 +107,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
 
 		// Create hash maps to look up all the values from the DB
-		getSessionLogger ().info ("Building maps over XML data...");
+		getSessionLogger ().info ("Building maps and running checks over XML data...");
 		sdb.buildMaps ();
+		sdb.consistencyChecks ();
 		setServerDB (sdb); 
 		
 		// Create client database
@@ -154,8 +155,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
 		
 		// Create hash maps to look up all the values from the DB
-		getSessionLogger ().info ("Building maps over XML data...");
+		getSessionLogger ().info ("Building maps and running checks over XML data...");
 		sdb.buildMaps ();
+		sdb.consistencyChecks ();
 		setServerDB (sdb); 
 
 		// If its a single player game, then start it immediately

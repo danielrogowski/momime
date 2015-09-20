@@ -4,6 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,19 +22,21 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+
 import momime.client.database.AvailableDatabase;
 import momime.client.database.ClientDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitHasSkill;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
+import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.database.v0_9_7.ServerDatabase;
-
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
  * Tests the ServerDatabaseConverters class
@@ -44,6 +50,23 @@ public final class TestServerDatabaseConvertersImpl
 	@Test
 	public final void testBuildNewGameDatabase () throws Exception
 	{
+		// Need to set up a proper factory to create classes with spring injections
+		final ServerDatabaseObjectFactory factory = new ServerDatabaseObjectFactory ();
+		factory.setFactory (new ServerDatabaseFactory ()
+		{
+			@Override
+			public final ServerDatabaseExImpl createDatabase ()
+			{
+				// Make make all the consistency checks pass
+				final UnitUtils unitUtils = mock (UnitUtils.class);
+				when (unitUtils.getBasicSkillValue (anyListOf (UnitHasSkill.class), anyString ())).thenReturn (2);
+				
+				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+				db.setUnitUtils (unitUtils);
+				return db;
+			}
+		});
+		
 		// Read XSD
 		final URL xsdResource = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
 		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
@@ -66,7 +89,7 @@ public final class TestServerDatabaseConvertersImpl
 		// Build it
 		// Locate the server XML file, then go one level up to the folder that it is in
 		final Unmarshaller serverDatabaseUnmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();
-		serverDatabaseUnmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+		serverDatabaseUnmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
 		serverDatabaseUnmarshaller.setSchema (xsd);
 		
 		final NewGameDatabaseMessage msg = conv.buildNewGameDatabase (map, serverDatabaseUnmarshaller);

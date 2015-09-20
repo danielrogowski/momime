@@ -63,8 +63,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     		</list>
    		</constructor-arg>
 	</bean>
+
+	<bean id="serverDatabaseFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.server.database.ServerDatabaseFactory" />
+	</bean>			
 	
-	<bean id="serverDatabaseFactory" class="momime.server.database.ServerDatabaseFactory" />	<!-- Creates ServerDatabaseExImpl instead of ServerDatabase -->
+	<bean id="serverDatabaseObjectFactory" class="momime.server.database.ServerDatabaseObjectFactory">	<!-- Creates ServerDatabaseExImpl instead of ServerDatabase -->
+		<property name="factory" ref="serverDatabaseFactory" />
+	</bean>	
 	
 	<bean id="serverDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="serverDatabaseJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="serverDatabaseSchema" />
@@ -77,11 +83,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			<list>
 				<value>com.sun.xml.bind.ObjectFactory</value>
 				<array>
-					<ref bean="serverDatabaseFactory" />
+					<ref bean="serverDatabaseObjectFactory" />
 				</array>
 			</list>
 		</property>
-	</bean>	
+	</bean>
+	
+	<bean id="serverDatabase" class="momime.server.database.ServerDatabaseExImpl" scope="prototype">
+		<property name="unitUtils" ref="unitUtils" />
+	</bean>
 	
 	<!-- Create extended versions of client to server messages which include message implementations -->
 

@@ -644,7 +644,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
 				
 				// Give this player all their movement for this turn
-				getUnitUtils ().resetUnitCombatMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), tc.getCombatCurrentPlayer (), combatLocation, mom.getServerDB ());
+				getUnitCalculations ().resetUnitCombatMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), tc.getCombatCurrentPlayer (), combatLocation, mom.getServerDB ());
 				
 				// Allow the player to cast a spell this turn
 				tc.setSpellCastThisCombatTurn (null);

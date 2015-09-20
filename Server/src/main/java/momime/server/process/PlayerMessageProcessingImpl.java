@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.WizardPick;
@@ -85,6 +86,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
@@ -652,7 +656,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Give units their full movement back again
-		getUnitUtils ().resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDB ());
+		getUnitCalculations ().resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDB ());
 
 		// Heal hurt units 1pt and gain 1exp
 		getFogOfWarMidTurnMultiChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
@@ -1418,6 +1422,22 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+	
 	/**
 	 * @return MemoryGridCell utils
 	 */

@@ -5,18 +5,18 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.process.CombatMapProcessing;
-import momime.client.ui.frames.CombatUI;
-import momime.common.messages.clienttoserver.CombatAutoControlMessage;
-import momime.common.messages.servertoclient.SetCombatPlayerMessage;
-import momime.common.utils.UnitUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
+import momime.client.MomClient;
+import momime.client.process.CombatMapProcessing;
+import momime.client.ui.frames.CombatUI;
+import momime.common.calculations.UnitCalculations;
+import momime.common.messages.clienttoserver.CombatAutoControlMessage;
+import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 
 /**
  * Server sends this to clients involved in particular combat to tell them whose turn it is next
@@ -32,8 +32,8 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** Combat map processing */
 	private CombatMapProcessing combatMapProcessing;
@@ -68,7 +68,7 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 			{
 				// Our turn with manual control
 				// Give all units their movement for this turn
-				getUnitUtils ().resetUnitCombatMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
+				getUnitCalculations ().resetUnitCombatMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
 					getPlayerID (), (MapCoordinates3DEx) getCombatLocation (), getClient ().getClientDB ());
 				
 				// Build a list of the units we need to move
@@ -117,19 +117,19 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Unit calculations
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitCalculations getUnitCalculations ()
 	{
-		return unitUtils;
+		return unitCalculations;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param calc Unit calculations
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
-		unitUtils = utils;
+		unitCalculations = calc;
 	}
 
 	/**

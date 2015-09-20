@@ -5,6 +5,11 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.newturnmessages.NewTurnMessageProcessing;
 import momime.client.newturnmessages.NewTurnMessageStatus;
@@ -12,13 +17,8 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
-import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to all clients at the start of a new turn in a simultaneous turns game
@@ -46,8 +46,8 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -78,7 +78,7 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 			getNewTurnMessagesUI ().setVisible (true);
 		
 		// Give units full movement
-		getUnitUtils ().resetUnitOverlandMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), 0, getClient ().getClientDB ());
+		getUnitCalculations ().resetUnitOverlandMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), 0, getClient ().getClientDB ());
 
 		// Simultaneous turns games have no 'continued movement' at the start of a turn, since its all processed at the end of the previous turn
 		getOverlandMapProcessing ().setProcessingContinuedMovement (false);
@@ -185,18 +185,18 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Unit calculations
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitCalculations getUnitCalculations ()
 	{
-		return unitUtils;
+		return unitCalculations;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param calc Unit calculations
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
-		unitUtils = utils;
+		unitCalculations = calc;
 	}
 }

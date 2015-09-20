@@ -5,6 +5,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.client.MomClient;
 import momime.client.newturnmessages.NewTurnMessageProcessing;
 import momime.client.newturnmessages.NewTurnMessageStatus;
@@ -13,15 +20,8 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
-import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Server sends this to all clients at the start of a new players' turn in a one-at-a-time turns game
@@ -40,8 +40,8 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	/** City calculations */
 	private CityCalculations cityCalculations;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
@@ -101,7 +101,7 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 
 		// Give units full movement
 		if (getCurrentPlayerID () == getClient ().getOurPlayerID ())
-			getUnitUtils ().resetUnitOverlandMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
+			getUnitCalculations ().resetUnitOverlandMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
 				getCurrentPlayerID (), getClient ().getClientDB ());
 
 		// This gets triggered before the server sends us any continued movement
@@ -164,19 +164,19 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return Unit calculations
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitCalculations getUnitCalculations ()
 	{
-		return unitUtils;
+		return unitCalculations;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param calc Unit calculations
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
-		unitUtils = utils;
+		unitCalculations = calc;
 	}
 
 	/**

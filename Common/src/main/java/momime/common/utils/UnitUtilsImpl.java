@@ -559,51 +559,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
-	 * Gives all units full movement back again
-	 *
-	 * @param units List of units to update
-	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
-	 */
-	@Override
-	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabase db)
-		throws RecordNotFoundException
-	{
-		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
-
-		for (final MemoryUnit thisUnit : units)
-			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
-				thisUnit.setDoubleOverlandMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitOverlandMovement").getDoubleMovement ());
-
-		log.trace ("Exiting resetUnitOverlandMovement");
-	}
-
-	/**
-	 * Gives all units full movement back again for their combat turn
-	 *
-	 * @param units List of units to update
-	 * @param playerID Player whose units to update 
-	 * @param combatLocation Where the combat is taking place
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
-	 */
-	@Override
-	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation, final CommonDatabase db)
-		throws RecordNotFoundException
-	{
-		log.trace ("Entering resetUnitCombatMovement: Player ID " + playerID + ", " + combatLocation);
-
-		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
-				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-					
-				thisUnit.setDoubleCombatMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitCombatMovement").getDoubleMovement ());
-
-		log.trace ("Exiting resetUnitCombatMovement");
-	}
-	
-	/**
 	 * @param units Unit stack
 	 * @return Comma delimited list of their unit URNs, for debug messages
 	 */

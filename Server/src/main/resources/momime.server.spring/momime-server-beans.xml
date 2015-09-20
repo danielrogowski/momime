@@ -463,6 +463,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />

@@ -3,15 +3,25 @@ package momime.server.process;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.any;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
@@ -19,9 +29,9 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -57,16 +67,6 @@ import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the CombatProcessingImpl class
@@ -615,11 +615,11 @@ public final class TestCombatProcessingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 				
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
-		proc.setUnitUtils (unitUtils);
+		proc.setUnitCalculations (unitCalc);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
@@ -637,7 +637,7 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
 	}
 
 	/**
@@ -708,12 +708,12 @@ public final class TestCombatProcessingImpl
 		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
 				
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatAI ai = mock (CombatAI.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
-		proc.setUnitUtils (unitUtils);
+		proc.setUnitCalculations (unitCalc);
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
@@ -741,7 +741,7 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
 	}
 
 	/**
@@ -812,12 +812,12 @@ public final class TestCombatProcessingImpl
 		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
 		
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatAI ai = mock (CombatAI.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
-		proc.setUnitUtils (unitUtils);
+		proc.setUnitCalculations (unitCalc);
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
@@ -847,8 +847,8 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
-		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
 	}
 	
 	/**
@@ -918,12 +918,12 @@ public final class TestCombatProcessingImpl
 		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
 				
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatAI ai = mock (CombatAI.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
-		proc.setUnitUtils (unitUtils);
+		proc.setUnitCalculations (unitCalc);
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
@@ -939,8 +939,8 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitUtils, times (2)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
-		verify (unitUtils, times (2)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
 	}
 	
 	/**

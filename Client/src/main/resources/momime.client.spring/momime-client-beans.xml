@@ -309,7 +309,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
@@ -321,7 +321,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
@@ -414,7 +414,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 	</bean>

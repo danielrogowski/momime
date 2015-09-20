@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
-	<formWidth>372</formWidth>
+	<formWidth>422</formWidth>
 	<formHeight>274</formHeight>
 	<component name="frmUnitInfoCurrentlyConstructing">
 		<left>6</left>
@@ -65,31 +65,31 @@
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmUnitInfoRedButtonsRight1">
-		<left>376</left>
+		<left>426</left>
 		<top>215</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmUnitInfoRedButtonsRight2">
-		<left>376</left>
+		<left>426</left>
 		<top>234</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmUnitInfoRedButtonsRight3">
-		<left>376</left>
+		<left>426</left>
 		<top>253</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmUnitInfoRedButtonsBottom1">
-		<left>125</left>
+		<left>150</left>
 		<top>272</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmUnitInfoRedButtonsBottom2">
-		<left>198</left>
+		<left>223</left>
 		<top>272</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -100,7 +100,7 @@
 	<component name="frmUnitInfoCurrentlyConstructingAllows">
 		<left>6</left>
 		<top>72</top>
-		<width>360</width>
+		<width>410</width>
 		<height>119</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -108,7 +108,7 @@
 	<component name="frmUnitInfoCurrentlyConstructingDescription">
 		<left>6</left>
 		<top>197</top>
-		<width>360</width>
+		<width>410</width>
 		<height>71</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -119,7 +119,7 @@
 	<component name="frmUnitInfoAttributes">
 		<left>6</left>
 		<top>72</top>
-		<width>360</width>
+		<width>410</width>
 		<height>119</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -127,7 +127,7 @@
 	<component name="frmUnitInfoSkills">
 		<left>6</left>
 		<top>197</top>
-		<width>360</width>
+		<width>410</width>
 		<height>71</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>

@@ -39847,20 +39847,20 @@
 	<unitSkill unitSkillID="US025">
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US025-icon.png</unitSkillImageFile>
-		<unitSkillWeaponGrade weaponGradeNumber="0">
-			<skillImageFile>/momime.client.graphics/unitSkills/stoningGaze.png</skillImageFile>
-		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US026">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US026-icon.png</unitSkillImageFile>
 		<unitSkillWeaponGrade weaponGradeNumber="0">
-			<skillImageFile>/momime.client.graphics/unitSkills/stoningTouch.png</skillImageFile>
+			<skillImageFile>/momime.client.graphics/unitSkills/stoningGaze.png</skillImageFile>
 		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillTypeID>F</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US027-icon.png</unitSkillImageFile>
+		<unitSkillWeaponGrade weaponGradeNumber="0">
+			<skillImageFile>/momime.client.graphics/unitSkills/stoningTouch.png</skillImageFile>
+		</unitSkillWeaponGrade>
 	</unitSkill>
 	<unitSkill unitSkillID="US028">
 		<unitSkillTypeID>N</unitSkillTypeID>

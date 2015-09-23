@@ -30,7 +30,6 @@ import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfigEx;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.CombatActionGfx;
@@ -76,9 +75,6 @@ public final class TestUnitClientUtilsImpl
 	/** Colour for a transparent pixel */
 	private static final int TRANSPARENT = 0;
 	
-	/** Colour for a movement icon pixel */
-	private static final int MOVEMENT_ICON = 0xFFFF0000;
-
 	/** Background colour for basic stats */
 	private static final int BACKGROUND_BASIC = 0xFF800000;
 	
@@ -673,65 +669,6 @@ public final class TestUnitClientUtilsImpl
 		
 		// Check results
 		verify (soundPlayer).playAudioFile ("OverrideActionSound.mp3");
-	}
-	
-	/**
-	 * Tests the generateMovementImage method
-	 * @throws IOException If there is a problem loading any of the images
-	 */
-	@Test
-	public final void testGenerateMovementImage () throws IOException
-	{
-		// Mock database
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
-		final Unit unitDef = new Unit ();
-		when (db.findUnit ("UN001", "generateMovementImage")).thenReturn (unitDef);
-		
-		// Unit
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID ("UN001");
-		
-		// Create sample movement image
-		final BufferedImage movementImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		movementImage.setRGB (0, 0, MOVEMENT_ICON);
-		
-		final NdgUIUtils utils = mock (NdgUIUtils.class);
-		when (utils.loadImage ("m.png")).thenReturn (movementImage);
-		
-		// Movement skill
-		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
-		movementSkill.setMovementIconImageFile ("m.png");
-		
-		final ClientUnitCalculations unitCalc = mock (ClientUnitCalculations.class);
-		when (unitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
-		
-		// Client
-		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
-
-		// Set up object to test
-		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
-		obj.setClient (client);
-		obj.setUtils (utils);
-		obj.setClientUnitCalculations (unitCalc);
-		
-		// Try when unit has 0 movement
-		assertNull (obj.generateMovementImage (unit));
-		
-		// Try when unit has 1 movement
-		unitDef.setDoubleMovement (2);
-		assertSame (movementImage, obj.generateMovementImage (unit));
-		
-		// Try when unit has multiple movement
-		unitDef.setDoubleMovement (6);
-		final BufferedImage image = obj.generateMovementImage (unit);
-		
-		assertEquals (5, image.getWidth ());
-		assertEquals (1, image.getHeight ());
-		
-		for (int x = 0; x < image.getWidth (); x++)
-			assertEquals ((x % 2) == 0 ? MOVEMENT_ICON : TRANSPARENT, image.getRGB (x,  0)); 
 	}
 	
 	/**

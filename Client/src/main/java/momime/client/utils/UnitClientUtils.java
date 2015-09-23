@@ -196,13 +196,6 @@ public interface UnitClientUtils
 	public void playCombatActionSound (final AvailableUnit unit, final String combatActionID) throws RecordNotFoundException;
 
 	/**
-	 * @param unit Unit to generate movement icons for
-	 * @return Combined image showing correct number of movement icons; or null if the unit has zero movement
-	 * @throws IOException If there is a problem loading any of the images
-	 */
-	public BufferedImage generateMovementImage (final AvailableUnit unit) throws IOException;
-
-	/**
 	 * @param unit Unit to generate attribute icons for
 	 * @param unitSkillID Skill ID to generate attribute icons for
 	 * @return Combined image showing icons for this unit attribute, with appropriate background colours; or null if the unit doesn't have this skill or it is value-less

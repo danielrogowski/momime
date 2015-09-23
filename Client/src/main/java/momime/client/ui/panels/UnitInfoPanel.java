@@ -146,9 +146,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Upkeep label */
 	private JLabel upkeepLabel;
 	
-	/** Moves label */
-	private JLabel movesLabel;
-	
 	/** Cost label */
 	private JLabel costLabel;
 
@@ -163,9 +160,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 	/** Image of upkeep in coins */
 	private JLabel currentlyConstructingUpkeep;
-
-	/** Image of unit movement */
-	private JLabel currentlyConstructingMoves;
 
 	/** URN label */
 	private JLabel urnLabel;
@@ -300,18 +294,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		upkeepLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
 		getPanel ().add (upkeepLabel, "frmUnitInfoUpkeep");
 		
-		movesLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
-		getPanel ().add (movesLabel, "frmUnitInfoMoves");
-		
 		currentlyConstructingProductionCost = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
 		getPanel ().add (currentlyConstructingProductionCost, "frmUnitInfoCurrentlyConstructingCost");
 		
 		currentlyConstructingUpkeep = new JLabel ();
 		getPanel ().add (currentlyConstructingUpkeep, "frmUnitInfoCurrentlyConstructingUpkeep");
 		
-		currentlyConstructingMoves = new JLabel ();
-		getPanel ().add (currentlyConstructingMoves, "frmUnitInfoCurrentlyConstructingMoves");
-
 		urnLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
 		getPanel ().add (urnLabel, "frmUnitInfoURNLabel");
 
@@ -521,8 +509,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Update language independant labels
 		currentlyConstructingProductionCost.setText ((buildingInfo.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (buildingInfo.getProductionCost ()));
 		costLabel.setVisible (buildingInfo.getProductionCost () != null);
-		movesLabel.setText (" ");		// Space ensures the line where the movement goes for units is still occupied so the URN line goes in the right place
-		currentlyConstructingMoves.setVisible (false);
 
 		// Search for upkeep values (i.e. no population task specified, and the value is negative)
 		final List<UnitUpkeep> upkeeps = new ArrayList<UnitUpkeep> ();
@@ -620,13 +606,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		currentlyConstructingUpkeep.setIcon ((upkeepImage == null) ? null : new ImageIcon (upkeepImage));
 		upkeepLabel.setVisible (upkeepImage != null);
 		
-		// Generate an image showing movement
-		final BufferedImage movementImage = getUnitClientUtils ().generateMovementImage (getUnit ());
-
-		currentlyConstructingMoves.setIcon ((movementImage == null) ? null : new ImageIcon (movementImage));
-		movesLabel.setVisible (movementImage != null);
-		currentlyConstructingMoves.setVisible (movementImage != null);
-		
 		// Add list items to display unit attributes and skills
 		final List<UnitHasSkill> mergedSkills;
 		if (unit instanceof MemoryUnit)
@@ -713,7 +692,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Fixed labels
 		upkeepLabel.setText	(getLanguage ().findCategoryEntry ("frmChangeConstruction", "Upkeep"));
-		movesLabel.setText	(getLanguage ().findCategoryEntry ("frmChangeConstruction", "Moves"));
 		costLabel.setText		(getLanguage ().findCategoryEntry ("frmChangeConstruction", "Cost"));
 
 		// Update text about unit or building being displayed

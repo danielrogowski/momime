@@ -1348,6 +1348,12 @@ For example a unit with 6 figures with 3 hit points each can take a total of 18 
 The background colour of each icon depicts the source of the attribute:
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from High Prayer spell</unitSkillHelpText>
 	</unitSkill>
+	<unitSkill unitSkillID="UA08">
+		<unitSkillDescription>Movement</unitSkillDescription>
+		<unitSkillHelpText>The number of movement icons indicate the number of map cells or combat tiles that the unit is able to move during one overland or combat turn.
+		
+The type of movment icon indicates the unit's primary movement skill, although it may have multiple, especially if it has enchantments cast upon on.</unitSkillHelpText>
+	</unitSkill>
 	<unitMagicRealm unitMagicRealmID="LTN">
 		<unitMagicRealmPlural>Normal units</unitMagicRealmPlural>
 	</unitMagicRealm>
@@ -5390,9 +5396,6 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="Upkeep">
 			<languageEntryText>Upkeep</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="Moves">
-			<languageEntryText>Moves</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Cost">
 			<languageEntryText>Cost</languageEntryText>

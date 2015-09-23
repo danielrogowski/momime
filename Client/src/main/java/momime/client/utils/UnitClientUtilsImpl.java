@@ -226,6 +226,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					skillImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade (), "getUnitSkillComponentBreakdownIcon");
 			}
 		}
+		else if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED))
+		{
+			// Movement has its own special rules, so we show a boot or wings or sailing icon
+			skillImageName = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ();
+		}
 		else
 		{
 			// Some skill other than ranged attack; same behaviour as above with weapon grades
@@ -753,50 +758,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	}
 	
 	/**
-	 * @param unit Unit to generate movement icons for
-	 * @return Combined image showing correct number of movement icons; or null if the unit has zero movement
-	 * @throws IOException If there is a problem loading any of the images
-	 */
-	@Override
-	public final BufferedImage generateMovementImage (final AvailableUnit unit) throws IOException
-	{
-		log.trace ("Entering generateMovementImage: " + unit.getUnitID ());
-
-		final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "generateMovementImage");
-		final int movementCount = unitDef.getDoubleMovement () / 2;
-		
-		final BufferedImage image;
-		if (movementCount <= 0)
-			image = null;
-		else
-		{
-			final BufferedImage singleMovementImage = getUtils ().loadImage (getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ());
-
-			if (movementCount == 1)
-				image = singleMovementImage;
-			else
-			{
-				// Create a merged image showing, 2,3, etc movement icons side-by-side
-				image = new BufferedImage ((singleMovementImage.getWidth () * movementCount) + movementCount - 1,
-					singleMovementImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
-				final Graphics2D g = image.createGraphics ();
-				try
-				{
-					for (int movementNo = 0; movementNo < movementCount; movementNo++)
-						g.drawImage (singleMovementImage, (singleMovementImage.getWidth () + 1) * movementNo, 0, null);
-				}
-				finally
-				{
-					g.dispose ();
-				}
-			}
-		}
-		
-		log.trace ("Exiting generateMovementImage: " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
-		return image;
-	}
-	
-	/**
 	 * @param unit Unit to generate attribute icons for
 	 * @param unitSkillID Skill ID to generate attribute icons for
 	 * @return Combined image showing icons for this unit attribute, with appropriate background colours; or null if the unit doesn't have this skill or it is value-less
@@ -821,6 +782,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			image = null;
 		else
 		{
+			// Movement is stored double, but displayed singly
+			final int attributeValueDivisor = unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED) ? 2 : 1;
+			
 			// Create all images the same size, since it makes laying them out in the list simpler
 			// But we still need to know the size of an image to base this off
 			final BufferedImage basicComponentBackgroundImage = getUtils ().loadImage
@@ -845,7 +809,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) / attributeValueDivisor;
 			
 			final Graphics2D g = image.createGraphics ();
 			try
@@ -860,9 +824,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
 						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, attrComponent,
 							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-							getClient ().getPlayers (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) / attributeValueDivisor;
 						
 						if (totalValue > 0)
 						{

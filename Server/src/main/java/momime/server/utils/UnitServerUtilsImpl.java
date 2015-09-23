@@ -97,9 +97,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		newUnit.setWeaponGrade (weaponGrade);
 		newUnit.setStatus (UnitStatusID.ALIVE);		// Assume unit is alive - heroes being initialized will reset this value
 
-		final momime.common.database.Unit unitDefinition = getUnitUtils ().initializeUnitSkills (newUnit, startingExperience, db);
-
-		newUnit.setDoubleOverlandMovesLeft (unitDefinition.getDoubleMovement ());
+		getUnitUtils ().initializeUnitSkills (newUnit, startingExperience, db);
 
 		log.trace ("Exiting createMemoryUnit");
 		return newUnit;

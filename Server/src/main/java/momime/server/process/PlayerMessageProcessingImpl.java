@@ -13,6 +13,8 @@ import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.WizardPick;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -47,6 +49,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
@@ -86,6 +89,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -656,7 +662,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Give units their full movement back again
-		getUnitCalculations ().resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDB ());
+		getUnitCalculations ().resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
+			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 
 		// Heal hurt units 1pt and gain 1exp
 		getFogOfWarMidTurnMultiChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
@@ -1184,7 +1192,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					
-					final int unitDoubleMovementTotal = mom.getServerDB ().findUnit (thisUnit.getUnitID (), "findAndProcessOneCellPendingMovement").getDoubleMovement ();
+					final int unitDoubleMovementTotal = getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
+						CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 					if (unitDoubleMovementTotal < doubleMovementTotal)
 						doubleMovementTotal = unitDoubleMovementTotal;
 				}
@@ -1422,6 +1433,22 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
+	}
+	
 	/**
 	 * @return Unit calculations
 	 */

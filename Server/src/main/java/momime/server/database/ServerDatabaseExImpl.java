@@ -240,10 +240,19 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		log.trace ("Entering consistencyChecks");
 		
-		// Check all units have an HP "skill" value defined
+		// Check all units have an HP and double movement speed "skill" value defined
 		for (final Unit unitDef : getUnit ())
+		{
 			if (getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) < 1)
 				throw new MomException ("Unit " + unitDef.getUnitID () + " has no HP value defined");
+			
+			final int doubleMovementSpeed = getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED);
+			if (doubleMovementSpeed < 1)
+				throw new MomException ("Unit " + unitDef.getUnitID () + " has no movement speed defined");
+			
+			if (doubleMovementSpeed % 2 != 0)
+				throw new MomException ("Unit " + unitDef.getUnitID () + "'s movement speed is not a multiple of 2 (" + doubleMovementSpeed + ")");
+		}
 
 		log.trace ("Exiting consistencyChecks");
 	}

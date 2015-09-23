@@ -5,10 +5,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +79,6 @@ public final class TestUnitInfoPanel
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
-		when (lang.findCategoryEntry ("frmChangeConstruction", "Moves")).thenReturn ("Moves");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "BuildingURN")).thenReturn ("Building URN");
 
@@ -222,7 +218,6 @@ public final class TestUnitInfoPanel
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
-		when (lang.findCategoryEntry ("frmChangeConstruction", "Moves")).thenReturn ("Moves");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "UnitURN")).thenReturn ("Unit URN");
 		
@@ -259,7 +254,6 @@ public final class TestUnitInfoPanel
 		final Unit longbowmen = new Unit ();
 		longbowmen.setProductionCost (80);
 		longbowmen.setRangedAttackType ("RAT01");
-		longbowmen.setDoubleMovement (4);
 
 		final UnitUpkeep goldUpkeep = new UnitUpkeep ();
 		goldUpkeep.setProductionTypeID ("RE01");
@@ -357,20 +351,6 @@ public final class TestUnitInfoPanel
 		// Upkeep
 		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE01", players, db)).thenReturn (2);
 		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
-		
-		// Movement
-		final BufferedImage movementImage = new BufferedImage (49, 8, BufferedImage.TYPE_INT_ARGB);
-		final Graphics2D g = movementImage.createGraphics ();
-		try
-		{
-			g.setColor (Color.BLUE);
-			g.fillRect (0, 0, 49, 8);
-		}
-		finally
-		{
-			g.dispose ();
-		}		
-		when (unitClientUtils.generateMovementImage (unit)).thenReturn (movementImage);
 		
 		// Unit name
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");

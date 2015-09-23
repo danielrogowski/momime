@@ -4,6 +4,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
@@ -13,6 +15,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.UnitInfoPanel;
+import momime.client.ui.renderer.UnitAttributeListCellRenderer;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtilsImpl;
@@ -29,6 +32,7 @@ import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the UnitInfoUI class
@@ -80,6 +84,9 @@ public final class TestUnitInfoUI
 		// Cell renderer
 		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
 		
+		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
+		attributeRenderer.setLanguageHolder (langHolder);
+		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
 
@@ -106,13 +113,19 @@ public final class TestUnitInfoUI
 		// Animation controller
 		final AnimationController anim = mock (AnimationController.class);
 		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		layout.buildMaps ();
+		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
+		panel.setUnitInfoLayout (layout);
 		panel.setUtils (utils);
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
 		panel.setUnitSkillListCellRenderer (renderer);
+		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
@@ -181,6 +194,9 @@ public final class TestUnitInfoUI
 		// Cell renderer
 		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
 		
+		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
+		attributeRenderer.setLanguageHolder (langHolder);
+		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
 
@@ -206,14 +222,20 @@ public final class TestUnitInfoUI
 
 		// Animation controller
 		final AnimationController anim = mock (AnimationController.class);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		layout.buildMaps ();
 		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
+		panel.setUnitInfoLayout (layout);
 		panel.setUtils (utils);
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
 		panel.setUnitSkillListCellRenderer (renderer);
+		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);

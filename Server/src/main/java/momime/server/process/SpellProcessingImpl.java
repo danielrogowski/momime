@@ -14,6 +14,8 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -34,6 +36,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -79,6 +82,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -407,7 +413,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 				
 				// Allow it to be moved this combat turn
-				tu.setDoubleCombatMovesLeft (mom.getServerDB ().findUnit (tu.getUnitID (), "castCombatNow").getDoubleMovement ());
+				tu.setDoubleCombatMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
+					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()));
 				
 				// Make sure we remove it after combat
 				tu.setWasSummonedInCombat (true);
@@ -603,6 +612,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
+	}
+	
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 	
 	/**

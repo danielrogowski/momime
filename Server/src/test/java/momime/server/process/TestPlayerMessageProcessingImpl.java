@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,7 +15,21 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -25,24 +42,14 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
-
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the PlayerMessageProcessingImpl class
@@ -514,12 +521,8 @@ public final class TestPlayerMessageProcessingImpl
 	@Test
 	public final void testFindAndProcessOneCellPendingMovement_NoneApplicable () throws Exception
 	{
-		// Unit def
+		// Mock empty database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr unitDef = new UnitSvr ();
-		unitDef.setDoubleMovement (2);
-		when (db.findUnit ("UN001", "findAndProcessOneCellPendingMovement")).thenReturn (unitDef);
 		
 		// Players
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
@@ -605,11 +608,18 @@ public final class TestPlayerMessageProcessingImpl
 		when (unitUtils.findUnitURN (move3Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move3Unit);
 		
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (null);	// <--
+
+		// Movement speed
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (players), eq (fow.getMaintainedSpell ()), eq (fow.getCombatAreaEffect ()), eq (db))).thenReturn (2);
 		
 		// Set up test object
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
 		assertFalse (proc.findAndProcessOneCellPendingMovement (mom));
@@ -630,12 +640,8 @@ public final class TestPlayerMessageProcessingImpl
 	@Test
 	public final void testFindAndProcessOneCellPendingMovement_Step () throws Exception
 	{
-		// Unit def
+		// Mock empty database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr unitDef = new UnitSvr ();
-		unitDef.setDoubleMovement (2);
-		when (db.findUnit ("UN001", "findAndProcessOneCellPendingMovement")).thenReturn (unitDef);
 		
 		// Players
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
@@ -723,6 +729,12 @@ public final class TestPlayerMessageProcessingImpl
 		final OneCellPendingMovement move3Cell = new OneCellPendingMovement (player2, move3, null, false);
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (move3Cell);
 		
+		// Movement speed
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (players), eq (fow.getMaintainedSpell ()), eq (fow.getCombatAreaEffect ()), eq (db))).thenReturn (2);
+		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)
 		final RandomUtils random = mock (RandomUtils.class);
@@ -736,6 +748,7 @@ public final class TestPlayerMessageProcessingImpl
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 		proc.setRandomUtils (random);
 		
 		// Run method
@@ -764,12 +777,8 @@ public final class TestPlayerMessageProcessingImpl
 	@Test
 	public final void testFindAndProcessOneCellPendingMovement_Reach () throws Exception
 	{
-		// Unit def
+		// Mock empty database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr unitDef = new UnitSvr ();
-		unitDef.setDoubleMovement (2);
-		when (db.findUnit ("UN001", "findAndProcessOneCellPendingMovement")).thenReturn (unitDef);
 		
 		// Players
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
@@ -856,6 +865,12 @@ public final class TestPlayerMessageProcessingImpl
 		
 		final OneCellPendingMovement move3Cell = new OneCellPendingMovement (player2, move3, null, false);
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (move3Cell);
+
+		// Movement speed
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (players), eq (fow.getMaintainedSpell ()), eq (fow.getCombatAreaEffect ()), eq (db))).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)
@@ -870,6 +885,7 @@ public final class TestPlayerMessageProcessingImpl
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 		proc.setRandomUtils (random);
 		
 		// Run method
@@ -1059,12 +1075,8 @@ public final class TestPlayerMessageProcessingImpl
 	@Test
 	public final void testFindAndProcessOneCombat_Normal () throws Exception
 	{
-		// Unit def
+		// Mock empty database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr unitDef = new UnitSvr ();
-		unitDef.setDoubleMovement (2);
-		when (db.findUnit ("UN001", "findAndProcessOneCombat")).thenReturn (unitDef);
 
 		// Players
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
@@ -1204,12 +1216,8 @@ public final class TestPlayerMessageProcessingImpl
 	@Test
 	public final void testFindAndProcessOneCombat_BorderConflict () throws Exception
 	{
-		// Unit def
+		// Mock empty database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr unitDef = new UnitSvr ();
-		unitDef.setDoubleMovement (2);
-		when (db.findUnit ("UN001", "findAndProcessOneCombat")).thenReturn (unitDef);
 
 		// Players
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();

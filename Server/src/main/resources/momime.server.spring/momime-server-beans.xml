@@ -463,6 +463,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="skillCalculations" ref="skillCalculations" />
@@ -506,6 +507,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="combatProcessing" ref="combatProcessing" />

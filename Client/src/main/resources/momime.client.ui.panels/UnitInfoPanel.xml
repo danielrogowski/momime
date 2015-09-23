@@ -28,12 +28,6 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmUnitInfoMoves">
-		<left>74</left>
-		<top>42</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
 	<component name="frmUnitInfoURNLabel">
 		<left>74</left>
 		<top>54</top>
@@ -49,12 +43,6 @@
 	<component name="frmUnitInfoCurrentlyConstructingUpkeep">
 		<left>118</left>
 		<top>31</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmUnitInfoCurrentlyConstructingMoves">
-		<left>118</left>
-		<top>44</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

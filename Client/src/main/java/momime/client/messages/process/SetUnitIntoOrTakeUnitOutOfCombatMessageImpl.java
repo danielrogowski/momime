@@ -16,8 +16,12 @@ import momime.client.graphics.database.SpellGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -36,6 +40,9 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -174,7 +181,10 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 			getCombatUI ().getUnitToDrawAtEachLocation () [getCombatPosition ().getY ()] [getCombatPosition ().getX ()] = unit;
 	
 			// Give it movement this turn
-			unit.setDoubleCombatMovesLeft (getClient ().getClientDB ().findUnit (unit.getUnitID (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl").getDoubleMovement ());
+			unit.setDoubleCombatMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()));
 			
 			// Prompt for it to move
 			getCombatMapProcessing ().moveToFrontOfList (unit);
@@ -199,6 +209,22 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */

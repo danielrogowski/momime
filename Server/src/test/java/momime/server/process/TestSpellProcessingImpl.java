@@ -10,12 +10,24 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -36,6 +48,7 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
@@ -48,16 +61,6 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the SpellProcessingImpl class
@@ -872,12 +875,8 @@ public final class TestSpellProcessingImpl
 	@Test
 	public final void testCastCombatNow_Summoning () throws Exception
 	{
-		// Database, session description and so on
-		final UnitSvr unitDef = new UnitSvr ();
-		unitDef.setDoubleMovement (98);
-		
+		// Empty mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.findUnit ("UN004", "castCombatNow")).thenReturn (unitDef);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -955,6 +954,12 @@ public final class TestSpellProcessingImpl
 		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, attackingFrom,
 			combatLocation, attackingPlayer, UnitStatusID.ALIVE, players, sd, db)).thenReturn (summonedUnit);
 		
+		// Mock unit speed
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (summonedUnit, summonedUnit.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (98);
+		
 		// Set up test object
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final ServerResourceCalculations serverResourceCalc = mock (ServerResourceCalculations.class);
@@ -967,6 +972,7 @@ public final class TestSpellProcessingImpl
 		proc.setServerResourceCalculations (serverResourceCalc);
 		proc.setOverlandMapServerUtils (overlandMapServerUtils);
 		proc.setCombatProcessing (combatProcessing);
+		proc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run test
 		proc.castCombatNow (castingPlayer, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);

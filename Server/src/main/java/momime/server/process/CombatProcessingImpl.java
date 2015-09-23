@@ -644,7 +644,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 					((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
 				
 				// Give this player all their movement for this turn
-				getUnitCalculations ().resetUnitCombatMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), tc.getCombatCurrentPlayer (), combatLocation, mom.getServerDB ());
+				getUnitCalculations ().resetUnitCombatMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), tc.getCombatCurrentPlayer (), combatLocation,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 				
 				// Allow the player to cast a spell this turn
 				tc.setSpellCastThisCombatTurn (null);
@@ -1019,7 +1021,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// If the unit it making an attack, that takes half its total movement
 			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
-				reduceMovementRemaining (tu, mom.getServerDB ().findUnit (tu.getUnitID (), "okToMoveUnitInCombat").getDoubleMovement () / 2);
+				reduceMovementRemaining (tu, getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
+					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) / 2);				
 			
 			// Actually put the units in that location on the server
 			tu.setCombatPosition (movePath);

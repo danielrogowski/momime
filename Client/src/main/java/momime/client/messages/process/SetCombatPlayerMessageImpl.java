@@ -69,7 +69,9 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 				// Our turn with manual control
 				// Give all units their movement for this turn
 				getUnitCalculations ().resetUnitCombatMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-					getPlayerID (), (MapCoordinates3DEx) getCombatLocation (), getClient ().getClientDB ());
+					getPlayerID (), (MapCoordinates3DEx) getCombatLocation (), getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 				
 				// Build a list of the units we need to move
 				getCombatMapProcessing ().buildUnitsLeftToMoveList ();			

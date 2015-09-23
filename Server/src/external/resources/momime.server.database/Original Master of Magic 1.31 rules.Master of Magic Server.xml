@@ -8255,6 +8255,9 @@
 	<unitSkill unitSkillID="UA07">
 		<unitSkillDescription>+ to Block</unitSkillDescription>
 	</unitSkill>
+	<unitSkill unitSkillID="UA08">
+		<unitSkillDescription>Double movement speed</unitSkillDescription>
+	</unitSkill>
 	<unitSkill unitSkillID="USX01">
 		<unitSkillDescription>Movement: Walking</unitSkillDescription>
 	</unitSkill>
@@ -8758,7 +8761,6 @@
 	</rangedAttackType>
 	<unit unitID="UN001">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -8775,6 +8777,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -8794,7 +8799,6 @@
 	</unit>
 	<unit unitID="UN002">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -8811,6 +8815,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>9</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>3</unitSkillValue>
@@ -8832,7 +8839,6 @@
 	</unit>
 	<unit unitID="UN003">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT20</rangedAttackType>
@@ -8854,6 +8860,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS14">
 			<unitSkillValue>1</unitSkillValue>
@@ -8874,7 +8883,6 @@
 	</unit>
 	<unit unitID="UN004">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -8896,6 +8904,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -8916,7 +8927,6 @@
 	</unit>
 	<unit unitID="UN005">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -8933,6 +8943,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>7</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US037">
 			<unitSkillValue>3</unitSkillValue>
@@ -8955,7 +8968,6 @@
 	</unit>
 	<unit unitID="UN006">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -8972,6 +8984,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS08">
@@ -8993,7 +9008,6 @@
 	</unit>
 	<unit unitID="UN007">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9010,6 +9024,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>3</unitSkillValue>
@@ -9031,7 +9048,6 @@
 	</unit>
 	<unit unitID="UN008">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -9053,6 +9069,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
 		<unitHasSkill unitSkillID="HS05">
@@ -9073,7 +9092,6 @@
 	</unit>
 	<unit unitID="UN009">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -9094,6 +9112,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>7</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -9118,7 +9139,6 @@
 	</unit>
 	<unit unitID="UN010">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9135,6 +9155,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>7</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS01">
@@ -9156,7 +9179,6 @@
 	</unit>
 	<unit unitID="UN011">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT26</rangedAttackType>
@@ -9177,6 +9199,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US037">
 			<unitSkillValue>3</unitSkillValue>
@@ -9199,7 +9224,6 @@
 	</unit>
 	<unit unitID="UN012">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9216,6 +9240,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS01">
@@ -9236,7 +9263,6 @@
 	</unit>
 	<unit unitID="UN013">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -9258,6 +9284,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
@@ -9276,7 +9305,6 @@
 	</unit>
 	<unit unitID="UN014">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -9297,6 +9325,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -9321,7 +9352,6 @@
 	</unit>
 	<unit unitID="UN015">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9338,6 +9368,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US030">
@@ -9361,7 +9394,6 @@
 	</unit>
 	<unit unitID="UN016">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT22</rangedAttackType>
@@ -9383,6 +9415,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US009" />
 		<unitHasSkill unitSkillID="US023" />
 		<unitHasSkill unitSkillID="HS05">
@@ -9403,7 +9438,6 @@
 	</unit>
 	<unit unitID="UN017">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -9424,6 +9458,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US037">
 			<unitSkillValue>2</unitSkillValue>
@@ -9452,7 +9489,6 @@
 	</unit>
 	<unit unitID="UN018">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9469,6 +9505,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
@@ -9492,7 +9531,6 @@
 	</unit>
 	<unit unitID="UN019">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -9513,6 +9551,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -9537,7 +9578,6 @@
 	</unit>
 	<unit unitID="UN020">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -9559,6 +9599,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
@@ -9577,7 +9620,6 @@
 	</unit>
 	<unit unitID="UN021">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9594,6 +9636,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>7</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US018" />
@@ -9615,7 +9660,6 @@
 	</unit>
 	<unit unitID="UN022">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9632,6 +9676,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS08">
@@ -9655,7 +9702,6 @@
 	</unit>
 	<unit unitID="UN023">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9672,6 +9718,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>4</unitSkillValue>
@@ -9701,7 +9750,6 @@
 	</unit>
 	<unit unitID="UN024">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<rangedAttackType>RAT1E</rangedAttackType>
@@ -9723,6 +9771,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
 		<unitHasSkill unitSkillID="HS05">
@@ -9743,7 +9794,6 @@
 	</unit>
 	<unit unitID="UN025">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -9765,6 +9815,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
@@ -9783,7 +9836,6 @@
 	</unit>
 	<unit unitID="UN026">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT20</rangedAttackType>
@@ -9804,6 +9856,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -9826,7 +9881,6 @@
 	</unit>
 	<unit unitID="UN027">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9843,6 +9897,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS07">
@@ -9875,7 +9932,6 @@
 	</unit>
 	<unit unitID="UN028">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -9896,6 +9952,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
@@ -9928,7 +9987,6 @@
 	</unit>
 	<unit unitID="UN029">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9945,6 +10003,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US012" />
@@ -9975,7 +10036,6 @@
 	</unit>
 	<unit unitID="UN030">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -9992,6 +10052,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US012" />
@@ -10024,7 +10087,6 @@
 	</unit>
 	<unit unitID="UN031">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -10045,6 +10107,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -10068,7 +10133,6 @@
 	</unit>
 	<unit unitID="UN032">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10085,6 +10149,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>9</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS07">
@@ -10114,7 +10181,6 @@
 	</unit>
 	<unit unitID="UN033">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
@@ -10135,6 +10201,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -10160,7 +10229,6 @@
 	</unit>
 	<unit unitID="UN034">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT1E</rangedAttackType>
@@ -10181,6 +10249,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US028" />
@@ -10207,7 +10278,6 @@
 	</unit>
 	<unit unitID="UN035">
 		<unitMagicRealm>LTH</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>600</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -10224,6 +10294,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>12</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -10257,7 +10330,6 @@
 	</unit>
 	<unit unitID="UN036">
 		<unitMagicRealm>LTN</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<transportCapacity>2</transportCapacity>
@@ -10280,12 +10352,14 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX02" />
 		<unitName>Trireme</unitName>
 	</unit>
 	<unit unitID="UN037">
 		<unitMagicRealm>LTN</unitMagicRealm>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -10312,6 +10386,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -10320,7 +10397,6 @@
 	</unit>
 	<unit unitID="UN038">
 		<unitMagicRealm>LTN</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -10343,6 +10419,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
@@ -10353,7 +10432,6 @@
 	</unit>
 	<unit unitID="UN039">
 		<unitMagicRealm>LTN</unitMagicRealm>
-		<doubleMovement>8</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>160</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -10381,6 +10459,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>99</unitSkillValue>
 		</unitHasSkill>
@@ -10392,7 +10473,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC01</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>15</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -10410,6 +10490,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -10421,7 +10504,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC01</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10444,6 +10526,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -10456,7 +10541,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC01</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -10483,6 +10567,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -10493,7 +10580,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC01</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10516,6 +10602,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -10527,7 +10616,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC01</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>50</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -10553,6 +10641,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -10565,7 +10656,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC01</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10583,6 +10673,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -10590,7 +10683,6 @@
 	<unit unitID="UN046">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC01</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10612,6 +10704,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
@@ -10622,7 +10717,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -10640,6 +10734,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
 		<freeAtStartCount>1</freeAtStartCount>
@@ -10648,7 +10745,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10671,6 +10767,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitName>Swordsmen</unitName>
@@ -10680,7 +10779,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10702,6 +10800,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
 	</unit>
@@ -10709,7 +10810,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -10736,6 +10836,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -10746,7 +10849,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -10772,6 +10874,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -10787,7 +10892,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -10813,6 +10917,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -10827,7 +10934,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10849,6 +10955,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US015" />
@@ -10858,7 +10967,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10879,6 +10987,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -10886,7 +10997,6 @@
 	<unit unitID="UN055">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -10913,6 +11023,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
@@ -10922,7 +11035,6 @@
 	<unit unitID="UN056">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10945,6 +11057,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US030">
 			<unitSkillValue>6</unitSkillValue>
@@ -10954,7 +11069,6 @@
 	<unit unitID="UN057">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC10</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -10979,6 +11093,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitName>Minotaurs</unitName>
@@ -10987,7 +11104,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>25</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
@@ -11009,6 +11125,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11020,7 +11139,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>50</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
@@ -11047,6 +11165,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11059,7 +11180,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
@@ -11085,6 +11205,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11095,7 +11218,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
@@ -11122,6 +11244,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11133,7 +11258,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -11159,6 +11283,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11174,7 +11301,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11192,6 +11318,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -11199,7 +11328,6 @@
 	<unit unitID="UN064">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11221,6 +11349,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US018" />
 		<unitHasSkill unitSkillID="US030">
@@ -11231,7 +11362,6 @@
 	<unit unitID="UN065">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>240</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -11257,6 +11387,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11270,7 +11403,6 @@
 	<unit unitID="UN066">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC11</unitRaceID>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>160</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
@@ -11297,6 +11429,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11307,7 +11442,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>25</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -11325,6 +11459,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -11336,7 +11473,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>50</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11359,6 +11495,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -11371,7 +11510,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11393,6 +11531,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -11403,7 +11544,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>45</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -11430,6 +11570,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -11440,7 +11583,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>75</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -11466,6 +11608,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11478,7 +11623,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -11504,6 +11648,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -11518,7 +11665,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11541,6 +11687,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -11553,7 +11702,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11571,6 +11719,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -11578,7 +11729,6 @@
 	<unit unitID="UN075">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11601,6 +11751,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
@@ -11610,7 +11763,6 @@
 	<unit unitID="UN076">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC12</unitRaceID>
-		<doubleMovement>8</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -11636,6 +11788,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
@@ -11647,7 +11802,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC13</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>50</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -11667,6 +11821,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -11677,7 +11834,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC13</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11699,6 +11855,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
@@ -11707,7 +11866,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC13</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11729,6 +11887,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
@@ -11740,7 +11901,6 @@
 	<unit unitID="UN080">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC13</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11762,6 +11922,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Hammerhands</unitName>
@@ -11769,7 +11932,6 @@
 	<unit unitID="UN081">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC13</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -11793,6 +11955,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
@@ -11803,7 +11968,6 @@
 	<unit unitID="UN082">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC13</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11825,6 +11989,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US047" />
 		<unitHasSkill unitSkillID="US005" />
@@ -11834,7 +12001,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC13</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11852,6 +12018,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -11860,7 +12029,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC02</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -11878,6 +12046,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
 		<freeAtStartCount>1</freeAtStartCount>
@@ -11886,7 +12057,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC02</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11909,6 +12079,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitName>Swordsmen</unitName>
@@ -11918,7 +12091,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC02</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -11940,6 +12112,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US046" />
 		<unitName>Halberdiers</unitName>
@@ -11948,7 +12123,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC02</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -11975,6 +12149,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -11985,7 +12162,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC02</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12006,6 +12182,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -12013,7 +12192,6 @@
 	<unit unitID="UN089">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC02</unitRaceID>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12036,6 +12214,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Wolf Riders</unitName>
 	</unit>
@@ -12043,7 +12224,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC03</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>15</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -12061,6 +12241,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US123" />
 		<unitName>Spearmen</unitName>
@@ -12070,7 +12253,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC03</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12093,6 +12275,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US123" />
 		<unitHasSkill unitSkillID="US014" />
@@ -12103,7 +12288,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC03</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>45</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -12130,6 +12314,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -12141,7 +12328,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC03</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>75</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -12167,6 +12353,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -12180,7 +12369,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC03</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>90</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12198,6 +12386,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US123" />
 		<unitHasSkill unitSkillID="US017" />
@@ -12206,7 +12397,6 @@
 	<unit unitID="UN095">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC03</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT15</rangedAttackType>
@@ -12232,6 +12422,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
@@ -12243,7 +12436,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>15</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -12264,6 +12456,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -12273,7 +12468,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12299,6 +12493,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -12309,7 +12506,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12334,6 +12530,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
@@ -12342,7 +12541,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12368,6 +12566,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US029" />
@@ -12377,7 +12578,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -12406,6 +12606,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -12421,7 +12624,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>90</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12442,6 +12644,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -12450,7 +12655,6 @@
 	<unit unitID="UN102">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -12480,6 +12684,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -12490,7 +12697,6 @@
 	<unit unitID="UN103">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12515,6 +12721,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US028" />
@@ -12524,7 +12733,6 @@
 	<unit unitID="UN104">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC04</unitRaceID>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>160</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -12554,6 +12762,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -12564,7 +12775,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -12582,6 +12792,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
 		<freeAtStartCount>1</freeAtStartCount>
@@ -12590,7 +12803,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12613,6 +12825,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitName>Swordsmen</unitName>
@@ -12622,7 +12837,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -12649,6 +12863,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -12659,7 +12876,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12682,6 +12898,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US029" />
 		<unitName>Cavalry</unitName>
@@ -12690,7 +12909,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -12716,6 +12934,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -12731,7 +12952,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -12757,6 +12977,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -12771,7 +12994,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12793,6 +13015,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US015" />
@@ -12802,7 +13027,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12820,6 +13044,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -12827,7 +13054,6 @@
 	<unit unitID="UN113">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12849,6 +13075,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US046" />
 		<unitHasSkill unitSkillID="US028" />
@@ -12857,7 +13086,6 @@
 	<unit unitID="UN114">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC05</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12880,6 +13108,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US012" />
 		<unitHasSkill unitSkillID="US034">
@@ -12893,7 +13124,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC06</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -12911,6 +13141,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
 		<freeAtStartCount>1</freeAtStartCount>
@@ -12919,7 +13152,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC06</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12942,6 +13174,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitName>Swordsmen</unitName>
@@ -12951,7 +13186,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC06</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -12973,6 +13207,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
 	</unit>
@@ -12980,7 +13217,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC06</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13002,6 +13238,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US015" />
@@ -13011,7 +13250,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC06</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13029,6 +13267,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -13036,7 +13277,6 @@
 	<unit unitID="UN120">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC06</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13059,6 +13299,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
@@ -13069,7 +13312,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC07</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -13087,6 +13329,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -13096,7 +13341,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC07</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13119,6 +13363,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -13129,7 +13376,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC07</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13151,6 +13397,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US046" />
@@ -13159,7 +13408,6 @@
 	<unit unitID="UN124">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC07</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -13185,6 +13433,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
@@ -13196,7 +13447,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC07</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -13222,6 +13472,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -13235,7 +13488,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC07</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13253,6 +13505,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -13261,7 +13516,6 @@
 	<unit unitID="UN127">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC07</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13284,6 +13538,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>15</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
@@ -13295,7 +13552,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -13313,6 +13569,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
 		<freeAtStartCount>1</freeAtStartCount>
@@ -13321,7 +13580,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13344,6 +13602,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitName>Swordsmen</unitName>
@@ -13353,7 +13614,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -13380,6 +13640,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -13390,7 +13653,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -13416,6 +13678,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -13431,7 +13696,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -13457,6 +13721,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -13471,7 +13738,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13489,6 +13755,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -13496,7 +13765,6 @@
 	<unit unitID="UN134">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -13523,6 +13791,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -13532,7 +13803,6 @@
 	<unit unitID="UN135">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13554,6 +13824,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US046" />
 		<unitHasSkill unitSkillID="US028" />
@@ -13562,7 +13835,6 @@
 	<unit unitID="UN136">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -13589,6 +13861,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -13599,7 +13874,6 @@
 	<unit unitID="UN137">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC08</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13622,6 +13896,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US028" />
 		<unitHasSkill unitSkillID="US029" />
@@ -13631,7 +13908,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -13649,6 +13925,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
 		<freeAtStartCount>1</freeAtStartCount>
@@ -13657,7 +13936,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13680,6 +13958,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitName>Swordsmen</unitName>
@@ -13689,7 +13970,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13711,6 +13991,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
 	</unit>
@@ -13718,7 +14001,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
@@ -13745,6 +14027,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -13755,7 +14040,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13778,6 +14062,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Cavalry</unitName>
 	</unit>
@@ -13785,7 +14072,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -13811,6 +14097,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -13823,7 +14112,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -13849,6 +14137,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -13863,7 +14154,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13885,6 +14175,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US015" />
@@ -13894,7 +14187,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13912,6 +14204,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitName>Settlers</unitName>
@@ -13919,7 +14214,6 @@
 	<unit unitID="UN147">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC09</unitRaceID>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -13942,6 +14236,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US030">
 			<unitSkillValue>6</unitSkillValue>
@@ -13952,7 +14249,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC14</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE01">
@@ -13970,6 +14266,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US024" />
 		<unitName>Spearmen</unitName>
@@ -13979,7 +14278,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC14</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -14002,6 +14300,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
 		<unitHasSkill unitSkillID="US024" />
@@ -14012,7 +14313,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC14</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -14034,6 +14334,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US024" />
 		<unitHasSkill unitSkillID="US046" />
@@ -14043,7 +14346,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC14</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
@@ -14069,6 +14371,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -14082,7 +14387,6 @@
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC14</unitRaceID>
 		<includeRaceInUnitName>true</includeRaceInUnitName>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>180</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -14100,6 +14404,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>40</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
 		<unitHasSkill unitSkillID="US024" />
@@ -14108,7 +14415,6 @@
 	<unit unitID="UN153">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC14</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -14130,6 +14436,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US024" />
 		<unitName>War Trolls</unitName>
@@ -14137,7 +14446,6 @@
 	<unit unitID="UN154">
 		<unitMagicRealm>LTN</unitMagicRealm>
 		<unitRaceID>RC14</unitRaceID>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>240</productionCost>
 		<unitUpkeep productionTypeID="RE03">
@@ -14160,6 +14468,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US015" />
 		<unitHasSkill unitSkillID="US029" />
@@ -14167,7 +14478,6 @@
 	</unit>
 	<unit unitID="UN155">
 		<unitMagicRealm>LT06</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14185,6 +14495,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US040">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -14193,7 +14506,6 @@
 	</unit>
 	<unit unitID="UN156">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14214,6 +14526,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
@@ -14222,7 +14537,6 @@
 	</unit>
 	<unit unitID="UN157">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14243,6 +14557,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US005" />
@@ -14250,7 +14567,6 @@
 	</unit>
 	<unit unitID="UN158">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -14275,6 +14591,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>15</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
@@ -14286,7 +14605,6 @@
 	</unit>
 	<unit unitID="UN159">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14304,6 +14622,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US006" />
 		<unitHasSkill unitSkillID="US007" />
@@ -14312,7 +14633,6 @@
 	</unit>
 	<unit unitID="UN160">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>400</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14329,6 +14649,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>15</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US026">
 			<unitSkillValue>4</unitSkillValue>
@@ -14348,7 +14671,6 @@
 	</unit>
 	<unit unitID="UN161">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>350</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14369,6 +14691,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -14377,7 +14702,6 @@
 	</unit>
 	<unit unitID="UN162">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>8</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14398,6 +14722,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US032">
 			<unitSkillValue>4</unitSkillValue>
@@ -14406,7 +14733,6 @@
 	</unit>
 	<unit unitID="UN163">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>550</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -14431,6 +14757,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US006" />
 		<unitHasSkill unitSkillID="US051">
@@ -14440,7 +14769,6 @@
 	</unit>
 	<unit unitID="UN164">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>9</figureCount>
 		<productionCost>650</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14461,6 +14789,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
@@ -14470,7 +14801,6 @@
 	</unit>
 	<unit unitID="UN165">
 		<unitMagicRealm>LT03</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>900</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14491,6 +14821,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
@@ -14499,7 +14832,6 @@
 	</unit>
 	<unit unitID="UN166">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>25</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14520,6 +14852,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
 		<unitHasSkill unitSkillID="US010" />
@@ -14530,7 +14865,6 @@
 	</unit>
 	<unit unitID="UN167">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14551,6 +14885,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US010" />
 		<unitHasSkill unitSkillID="US011" />
@@ -14564,7 +14901,6 @@
 	</unit>
 	<unit unitID="UN168">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14585,6 +14921,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US131">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
@@ -14598,7 +14937,6 @@
 	</unit>
 	<unit unitID="UN169">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14619,6 +14957,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US010" />
 		<unitHasSkill unitSkillID="US011" />
@@ -14630,7 +14971,6 @@
 	</unit>
 	<unit unitID="UN170">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14651,6 +14991,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US009" />
 		<unitHasSkill unitSkillID="US010" />
@@ -14662,7 +15005,6 @@
 	</unit>
 	<unit unitID="UN171">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14683,6 +15025,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
 		<unitHasSkill unitSkillID="US011" />
@@ -14697,7 +15042,6 @@
 	</unit>
 	<unit unitID="UN172">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>325</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
@@ -14722,6 +15066,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -14738,7 +15085,6 @@
 	</unit>
 	<unit unitID="UN173">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>600</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14759,6 +15105,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
 		<unitHasSkill unitSkillID="US011" />
@@ -14774,7 +15123,6 @@
 	</unit>
 	<unit unitID="UN174">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>900</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
@@ -14799,6 +15147,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
@@ -14819,7 +15170,6 @@
 	</unit>
 	<unit unitID="UN175">
 		<unitMagicRealm>LT02</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<unitHasSkill unitSkillID="UA01">
@@ -14837,6 +15187,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US010" />
 		<unitHasSkill unitSkillID="US011" />
@@ -14846,7 +15199,6 @@
 	</unit>
 	<unit unitID="UN176">
 		<unitMagicRealm>LT01</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14867,6 +15219,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US000" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US005" />
@@ -14877,7 +15232,6 @@
 	</unit>
 	<unit unitID="UN177">
 		<unitMagicRealm>LT01</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>50</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14895,6 +15249,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US033">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -14906,7 +15263,6 @@
 	</unit>
 	<unit unitID="UN178">
 		<unitMagicRealm>LT01</unitMagicRealm>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>550</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14927,6 +15283,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>15</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
 		<unitHasSkill unitSkillID="US034">
@@ -14937,7 +15296,6 @@
 	</unit>
 	<unit unitID="UN179">
 		<unitMagicRealm>LT01</unitMagicRealm>
-		<doubleMovement>8</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>950</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14958,6 +15316,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>18</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
 		<unitHasSkill unitSkillID="US051">
@@ -14970,7 +15331,6 @@
 	</unit>
 	<unit unitID="UN180">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>70</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -14988,13 +15348,15 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>War Bears</unitName>
 	</unit>
 	<unit unitID="UN181">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT25</rangedAttackType>
@@ -15019,6 +15381,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -15028,7 +15393,6 @@
 	</unit>
 	<unit unitID="UN182">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>275</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15049,6 +15413,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US027">
 			<unitSkillValue>3</unitSkillValue>
@@ -15057,7 +15424,6 @@
 	</unit>
 	<unit unitID="UN183">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>325</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15078,6 +15444,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US026">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -15086,7 +15455,6 @@
 	</unit>
 	<unit unitID="UN184">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15107,6 +15475,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US030">
 			<unitSkillValue>4</unitSkillValue>
@@ -15118,7 +15489,6 @@
 	</unit>
 	<unit unitID="UN185">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>450</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -15143,6 +15513,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
@@ -15155,7 +15528,6 @@
 	</unit>
 	<unit unitID="UN186">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>800</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -15180,6 +15552,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
@@ -15192,7 +15567,6 @@
 	</unit>
 	<unit unitID="UN187">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>4</figureCount>
 		<productionCost>599</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15213,6 +15587,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>9</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US026">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
@@ -15221,7 +15598,6 @@
 	</unit>
 	<unit unitID="UN188">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15242,6 +15618,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US005" />
@@ -15250,7 +15629,6 @@
 	</unit>
 	<unit unitID="UN189">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>700</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15271,12 +15649,14 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>45</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Behemoth</unitName>
 	</unit>
 	<unit unitID="UN190">
 		<unitMagicRealm>LT04</unitMagicRealm>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>1000</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15297,6 +15677,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>45</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US169" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US030">
@@ -15306,7 +15689,6 @@
 	</unit>
 	<unit unitID="UN191">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<transportCapacity>8</transportCapacity>
 		<unitUpkeep productionTypeID="RE09">
@@ -15318,6 +15700,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>45</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX02" />
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US047" />
@@ -15326,7 +15711,6 @@
 	</unit>
 	<unit unitID="UN192">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>225</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15344,6 +15728,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US047" />
 		<unitHasSkill unitSkillID="US005" />
@@ -15353,7 +15740,6 @@
 	</unit>
 	<unit unitID="UN193">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15368,6 +15754,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US047" />
 		<unitHasSkill unitSkillID="US005" />
@@ -15377,7 +15766,6 @@
 	</unit>
 	<unit unitID="UN194">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>4</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT1E</rangedAttackType>
@@ -15402,6 +15790,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
@@ -15412,7 +15803,6 @@
 	</unit>
 	<unit unitID="UN195">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>10</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>170</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15433,6 +15823,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>10</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US005" />
@@ -15442,7 +15835,6 @@
 	</unit>
 	<unit unitID="UN196">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>6</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>650</productionCost>
 		<rangedAttackType>RAT22</rangedAttackType>
@@ -15467,6 +15859,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US000" />
 		<unitHasSkill unitSkillID="US051">
@@ -15477,7 +15872,6 @@
 	</unit>
 	<unit unitID="UN197">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>8</doubleMovement>
 		<figureCount>1</figureCount>
 		<productionCost>1000</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15498,6 +15892,9 @@
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>25</unitSkillValue>
 		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>8</unitSkillValue>
+		</unitHasSkill>
 		<unitHasSkill unitSkillID="US133">
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
@@ -15508,7 +15905,6 @@
 	</unit>
 	<unit unitID="UN198">
 		<unitMagicRealm>LT05</unitMagicRealm>
-		<doubleMovement>2</doubleMovement>
 		<figureCount>2</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -15528,6 +15924,9 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA06">
 			<unitSkillValue>6</unitSkillValue>
+		</unitHasSkill>
+		<unitHasSkill unitSkillID="UA08">
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -21209,7 +21608,6 @@
 	<languageCategory languageCategoryID="frmChangeConstruction">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Upkeep" />
-		<languageEntry languageEntryID="Moves" />
 		<languageEntry languageEntryID="Cost" />
 		<languageEntry languageEntryID="Allows" />
 		<languageEntry languageEntryID="OK" />

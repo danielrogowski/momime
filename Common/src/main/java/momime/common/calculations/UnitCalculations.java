@@ -32,11 +32,17 @@ public interface UnitCalculations
 	 *
 	 * @param units List of units to update
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabase db)
-		throws RecordNotFoundException;
+	public void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
 	 * Gives all units full movement back again for their combat turn
@@ -44,11 +50,18 @@ public interface UnitCalculations
 	 * @param units List of units to update
 	 * @param playerID Player whose units to update 
 	 * @param combatLocation Where the combat is taking place
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation, final CommonDatabase db)
-		throws RecordNotFoundException;
+	public void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation,
+		final List<? extends PlayerPublicDetails> players, final List<MemoryMaintainedSpell> spells,
+		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
 	 * @param map Our knowledge of the surrounding terrain

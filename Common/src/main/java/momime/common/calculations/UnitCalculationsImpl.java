@@ -77,22 +77,30 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
-	 * Gives all units full movement back again
+	 * Gives all units full movement back again overland
 	 *
 	 * @param units List of units to update
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabase db)
-		throws RecordNotFoundException
+	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
 
 		for (final MemoryUnit thisUnit : units)
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
-				thisUnit.setDoubleOverlandMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitOverlandMovement").getDoubleMovement ());
+				thisUnit.setDoubleOverlandMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
+					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					players, spells, combatAreaEffects, db));
 
 		log.trace ("Exiting resetUnitOverlandMovement");
 	}
@@ -103,12 +111,19 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param units List of units to update
 	 * @param playerID Player whose units to update 
 	 * @param combatLocation Where the combat is taking place
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation, final CommonDatabase db)
-		throws RecordNotFoundException
+	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation,
+		final List<? extends PlayerPublicDetails> players, final List<MemoryMaintainedSpell> spells,
+		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering resetUnitCombatMovement: Player ID " + playerID + ", " + combatLocation);
 
@@ -116,7 +131,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					
-				thisUnit.setDoubleCombatMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitCombatMovement").getDoubleMovement ());
+				thisUnit.setDoubleCombatMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
+					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					players, spells, combatAreaEffects, db));
 
 		log.trace ("Exiting resetUnitCombatMovement");
 	}

@@ -102,7 +102,8 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 		// Give units full movement
 		if (getCurrentPlayerID () == getClient ().getOurPlayerID ())
 			getUnitCalculations ().resetUnitOverlandMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-				getCurrentPlayerID (), getClient ().getClientDB ());
+				getCurrentPlayerID (), getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
 
 		// This gets triggered before the server sends us any continued movement
 		// (i.e. before the server processes pending movements).		

@@ -18,6 +18,7 @@ import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
+import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
 import momime.client.config.v0_9_7.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -140,6 +141,7 @@ public final class TestOptionsUI
 		options.setClientConfig (config);
 		options.setClientConfigLocation (clientConfigLocation);
 		options.setClientConfigMarshaller (marshaller);
+		options.setClient (mock (MomClient.class));
 
 		// Display form		
 		options.setVisible (true);

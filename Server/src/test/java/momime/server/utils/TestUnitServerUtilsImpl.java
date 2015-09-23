@@ -75,11 +75,7 @@ public final class TestUnitServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Initialize skills method returns the unit definition
-		final UnitSvr unitDef = new UnitSvr ();
-		unitDef.setDoubleMovement (123);
-
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.initializeUnitSkills (any (AvailableUnit.class), eq (100), eq (db))).thenReturn (unitDef);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
@@ -91,9 +87,11 @@ public final class TestUnitServerUtilsImpl
 		// Check results
 		assertEquals (1, unit.getUnitURN ());
 		assertEquals ("UN001", unit.getUnitID ());
-		assertEquals (123, unit.getDoubleOverlandMovesLeft ());		// This proves that initializeUnitSkills was called correctly
 		assertEquals (3, unit.getWeaponGrade ().intValue ());
 		assertEquals (UnitStatusID.ALIVE, unit.getStatus ());
+		
+		// Ensure skills were initialized
+		verify (unitUtils).initializeUnitSkills (any (AvailableUnit.class), eq (100), eq (db));
 	}
 	
 	/**

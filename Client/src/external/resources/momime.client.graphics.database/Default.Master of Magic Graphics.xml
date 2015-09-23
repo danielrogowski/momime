@@ -39714,6 +39714,9 @@
 			<skillImageFile>/momime.client.graphics/unitSkills/plusToBlock.png</skillImageFile>
 		</unitSkillWeaponGrade>
 	</unitSkill>
+	<unitSkill unitSkillID="UA08">
+		<unitSkillTypeID>A</unitSkillTypeID>
+	</unitSkill>
 	<unitSkill unitSkillID="USX01">
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX01-move.png</movementIconImageFile>

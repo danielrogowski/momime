@@ -148,7 +148,7 @@
 	</component>
 	<component name="frmCombatCurrentUnitMovementImage">
 		<left>218</left>
-		<top>56</top>
+		<top>54</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

@@ -9,6 +9,13 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
@@ -25,6 +32,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
+import momime.client.ui.renderer.UnitAttributeListCellRenderer;
 import momime.client.ui.renderer.UnitListCellRenderer;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
@@ -45,12 +53,6 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
 
 /**
  * Tests the ChangeConstructionUI class
@@ -234,14 +236,22 @@ public final class TestChangeConstructionUI
 		final UnitListCellRenderer unitRenderer = new UnitListCellRenderer ();
 		unitRenderer.setGraphicsDB (gfx);
 		unitRenderer.setLanguageHolder (langHolder);
+
+		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
+		attributeRenderer.setLanguageHolder (langHolder);
 		
 		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
 		renderer.setLanguageHolder (langHolder);
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
 		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		layout.buildMaps ();
+		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
+		panel.setUnitInfoLayout (layout);
 		panel.setUtils (utils);
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
@@ -250,6 +260,7 @@ public final class TestChangeConstructionUI
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientCityCalculations (clientCityCalc);
 		panel.setUnitSkillListCellRenderer (renderer);
+		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());

@@ -67,43 +67,49 @@ public final class TestUnitCalculationsImpl
 {
 	/**
 	 * Tests the resetUnitOverlandMovement method for all players
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testResetUnitOverlandMovement_AllPlayers ()
-		throws RecordNotFoundException
+	public final void testResetUnitOverlandMovement_AllPlayers () throws Exception
 	{
-		// Mock some database movement values
+		// Empty mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitA = new Unit ();
-		unitA.setDoubleMovement (2);
-		when (db.findUnit ("A", "resetUnitOverlandMovement")).thenReturn (unitA);
-		
-		final Unit unitB = new Unit ();
-		unitB.setDoubleMovement (4);
-		when (db.findUnit ("B", "resetUnitOverlandMovement")).thenReturn (unitB);
+		// Other lists
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 		
 		// Set up some test units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Create units owned by 3 players
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("A");
 			spearmen.setOwningPlayerID (playerID);
 			units.add (spearmen);
+			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, spells, combatAreaEffects, db)).thenReturn (2);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
-			hellHounds.setUnitID ("B");
 			hellHounds.setOwningPlayerID (playerID);
 			units.add (hellHounds);
+			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, spells, combatAreaEffects, db)).thenReturn (4);
 		}
 
+		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.resetUnitOverlandMovement (units, 0, db);
+		calc.setUnitSkillUtils (unitSkillUtils);
+		
+		// Run method
+		calc.resetUnitOverlandMovement (units, 0, players, spells, combatAreaEffects, db);
 
+		// Check results
 		assertEquals (2, units.get (0).getDoubleOverlandMovesLeft ());
 		assertEquals (4, units.get (1).getDoubleOverlandMovesLeft ());
 		assertEquals (2, units.get (2).getDoubleOverlandMovesLeft ());
@@ -114,43 +120,49 @@ public final class TestUnitCalculationsImpl
 
 	/**
 	 * Tests the resetUnitOverlandMovement method for a single player
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testResetUnitOverlandMovement_OnePlayer ()
-		throws RecordNotFoundException
+	public final void testResetUnitOverlandMovement_OnePlayer () throws Exception
 	{
-		// Mock some database movement values
+		// Empty mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitA = new Unit ();
-		unitA.setDoubleMovement (2);
-		when (db.findUnit ("A", "resetUnitOverlandMovement")).thenReturn (unitA);
-		
-		final Unit unitB = new Unit ();
-		unitB.setDoubleMovement (4);
-		when (db.findUnit ("B", "resetUnitOverlandMovement")).thenReturn (unitB);
+		// Other lists
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 		
 		// Set up some test units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Create units owned by 3 players
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("A");
 			spearmen.setOwningPlayerID (playerID);
 			units.add (spearmen);
+			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, spells, combatAreaEffects, db)).thenReturn (2);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
-			hellHounds.setUnitID ("B");
 			hellHounds.setOwningPlayerID (playerID);
 			units.add (hellHounds);
+			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, spells, combatAreaEffects, db)).thenReturn (4);
 		}
 
+		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.resetUnitOverlandMovement (units, 2, db);
+		calc.setUnitSkillUtils (unitSkillUtils);
 
+		// Run method
+		calc.resetUnitOverlandMovement (units, 2, players, spells, combatAreaEffects, db);
+
+		// Check results
 		assertEquals (0, units.get (0).getDoubleOverlandMovesLeft ());
 		assertEquals (0, units.get (1).getDoubleOverlandMovesLeft ());
 		assertEquals (2, units.get (2).getDoubleOverlandMovesLeft ());
@@ -161,86 +173,94 @@ public final class TestUnitCalculationsImpl
 
 	/**
 	 * Tests the resetUnitCombatMovement method
-	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testResetUnitCombatMovement ()
-		throws RecordNotFoundException
+	public final void testResetUnitCombatMovement () throws Exception
 	{
-		// Mock some database movement values
+		// Empty mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitA = new Unit ();
-		unitA.setDoubleMovement (2);
-		when (db.findUnit ("A", "resetUnitCombatMovement")).thenReturn (unitA);
-		
-		final Unit unitB = new Unit ();
-		unitB.setDoubleMovement (4);
-		when (db.findUnit ("B", "resetUnitCombatMovement")).thenReturn (unitB);
+		// Other lists
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 		
 		// Set up some test units
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Unit A that matches
 		final MemoryUnit u1 = new MemoryUnit ();
 		u1.setStatus (UnitStatusID.ALIVE);
-		u1.setUnitID ("A");
 		u1.setOwningPlayerID (1);
 		u1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u1.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		u1.setCombatSide (UnitCombatSideID.ATTACKER);
 		u1.setCombatHeading (1);
 		units.add (u1);
+		when (unitSkillUtils.getModifiedSkillValue (u1, u1.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, spells, combatAreaEffects, db)).thenReturn (2);
 
 		// Wrong location
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setStatus (UnitStatusID.ALIVE);
-		u2.setUnitID ("A");
 		u2.setOwningPlayerID (1);
 		u2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		u2.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		u2.setCombatSide (UnitCombatSideID.ATTACKER);
 		u2.setCombatHeading (1);
 		units.add (u2);
+		when (unitSkillUtils.getModifiedSkillValue (u2, u2.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, spells, combatAreaEffects, db)).thenReturn (2);
 
 		// No combat position
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setStatus (UnitStatusID.ALIVE);
-		u3.setUnitID ("A");
 		u3.setOwningPlayerID (1);
 		u3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u3.setCombatSide (UnitCombatSideID.ATTACKER);
 		u3.setCombatHeading (1);
 		units.add (u3);
+		when (unitSkillUtils.getModifiedSkillValue (u3, u3.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, spells, combatAreaEffects, db)).thenReturn (2);
 		
 		// Wrong player
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setStatus (UnitStatusID.ALIVE);
-		u4.setUnitID ("A");
 		u4.setOwningPlayerID (2);
 		u4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u4.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		u4.setCombatSide (UnitCombatSideID.ATTACKER);
 		u4.setCombatHeading (1);
 		units.add (u4);
+		when (unitSkillUtils.getModifiedSkillValue (u4, u4.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, spells, combatAreaEffects, db)).thenReturn (2);
 		
 		// Unit B that matches
 		final MemoryUnit u5 = new MemoryUnit ();
 		u5.setStatus (UnitStatusID.ALIVE);
-		u5.setUnitID ("B");
 		u5.setOwningPlayerID (1);
 		u5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		u5.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		u5.setCombatSide (UnitCombatSideID.ATTACKER);
 		u5.setCombatHeading (1);
 		units.add (u5);
+		when (unitSkillUtils.getModifiedSkillValue (u5, u5.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, spells, combatAreaEffects, db)).thenReturn (4);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
 		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
-		calc.resetUnitCombatMovement (units, 1, loc, db);
+		calc.resetUnitCombatMovement (units, 1, loc, players, spells, combatAreaEffects, db);
 
 		// Check results
 		assertEquals (2, u1.getDoubleCombatMovesLeft ().intValue ());

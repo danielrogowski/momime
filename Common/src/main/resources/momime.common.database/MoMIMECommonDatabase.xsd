@@ -813,7 +813,6 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="includeRaceInUnitName" type="xsd:boolean" nxe:label="Race in Unit Name?" nxe:gridwidth="110" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleMovement" type="momimecommon:doubleMovement" nxe:label="2x Movement" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="figureCount" type="momimecommon:figureCount" nxe:label="Figure Count" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionCost" type="momimecommon:productionCost" nxe:label="Cost" nxe:gridwidth="50">
 				<xsd:annotation>

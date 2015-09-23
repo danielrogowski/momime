@@ -637,7 +637,8 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db); 
 	}
 
 	/**
@@ -741,7 +742,8 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 	}
 
 	/**
@@ -847,8 +849,11 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+		
+		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 	}
 	
 	/**
@@ -939,8 +944,11 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
-		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
+		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+		
+		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 	}
 	
 	/**
@@ -3683,10 +3691,6 @@ public final class TestCombatProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		final UnitSvr unit = new UnitSvr ();
-		unit.setDoubleMovement (6);
-		when (db.findUnit ("UN001", "okToMoveUnitInCombat")).thenReturn (unit);
-		
 		// General server knowledge
 		final CoordinateSystem overlandMapCoordinateSystem = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapCoordinateSystem);
@@ -3755,6 +3759,12 @@ public final class TestCombatProcessingImpl
 		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx (1, 7);
 		tu.setCombatPosition (tuMoveFrom);
 		
+		// Unit speed
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (tu, tu.getUnitHasSkill (),
+			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (6);
+		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
 		attackingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
@@ -3812,6 +3822,7 @@ public final class TestCombatProcessingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 		proc.setDamageProcessor (damageProcessor);
 		
 		// Run method

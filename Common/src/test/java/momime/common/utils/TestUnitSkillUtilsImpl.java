@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import momime.common.database.AddsToSkill;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
@@ -87,13 +88,25 @@ public final class TestUnitSkillUtilsImpl
 		}
 		when (db.findCombatAreaEffect ("CAE01", "getModifiedSkillValue")).thenReturn (caeDef);
 		
+		final AddsToSkill heroSkillBonus = new AddsToSkill ();
+		heroSkillBonus.setAddsToSkillID ("US004");
+		heroSkillBonus.setAddsToSkillDivisor (2);
+		
 		final UnitSkill heroSkill = new UnitSkill ();
 		heroSkill.setUnitSkillID ("HS001");
-		heroSkill.setAddsToSkillID ("US004");
-		heroSkill.setAddsToAttributeDivisor (2);
+		heroSkill.getAddsToSkill ().add (heroSkillBonus);
+
+		final AddsToSkill spellSkillBonus = new AddsToSkill ();
+		spellSkillBonus.setAddsToSkillID ("US004");
+		spellSkillBonus.setAddsToSkillFixed (10000);
+		
+		final UnitSkill spellSkill = new UnitSkill ();
+		spellSkill.setUnitSkillID ("SS001");
+		spellSkill.getAddsToSkill ().add (spellSkillBonus);
 		
 		final List<UnitSkill> skills = new ArrayList<UnitSkill> ();
 		skills.add (heroSkill);
+		skills.add (spellSkill);
 		doReturn (skills).when (db).getUnitSkills ();
 		
 		// Lists
@@ -114,6 +127,7 @@ public final class TestUnitSkillUtilsImpl
 		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "US003")).thenReturn (1);
 		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "US004")).thenReturn (1);
 		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "HS001")).thenReturn (1);
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "SS001")).thenReturn (0);
 		
 		// Experience level
 		final ExperienceLevel expLvl = new ExperienceLevel ();
@@ -152,7 +166,7 @@ public final class TestUnitSkillUtilsImpl
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Skill that we do have, and has weapon grade, experience and CAE bonuses
-		assertEquals (1114, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
+		assertEquals (11114, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 		
 		// Test asking for specific breakdown components		
@@ -168,6 +182,9 @@ public final class TestUnitSkillUtilsImpl
 		assertEquals (1000, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
 			UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 
+		assertEquals (10000, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
+			UnitSkillComponent.SPELL_EFFECTS, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+		
 		assertEquals (3, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
 			UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
 	}

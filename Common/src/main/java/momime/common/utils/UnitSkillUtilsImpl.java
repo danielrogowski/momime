@@ -11,6 +11,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
+import momime.common.database.AddsToSkill;
 import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -89,7 +90,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * 	Returns -1 if the unit doesn't have the skill
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
 	 */
 	@Override
 	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID,
@@ -158,31 +159,55 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 					for (final ExperienceSkillBonus bonus : expLvl.getExperienceSkillBonus ())
 						if (bonus.getUnitSkillID ().equals (unitSkillID))
 							total = total + addToSkillValue (bonus.getBonusValue (), positiveNegative);
-
-				// Any bonuses from hero skills? (Might gives +melee, Constitution gives +hit points, Agility gives +defence, and so on)
-				if ((expLvl != null) &&
-					((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.ALL)))
+				
+				// Any bonuses from skills that add to another skill, either hero skills or spell effects?
+				if ((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.ALL))
 					
 					// Read down all the skills defined in the database looking for skills that grant a bonus to the attribute we're calculating
 					for (final UnitSkill skillDef : db.getUnitSkills ())
-						if (unitSkillID.equals (skillDef.getAddsToSkillID ()))
-						{
-							// Now see if the unit has that skill
-							int multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (),
-								UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
-							if (multiplier > 0)
+						for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
+							if (unitSkillID.equals (addsToSkill.getAddsToSkillID ()))
 							{
-								// Multiplier will either equal 1 or 2, indicating whether we have the regular or super version of the skill - change this to be 2 for regular or 3 for super
-								multiplier++;
-								
-								// Some skills take more than 1 level to gain 1 attribute point, so get this value
-								final int divisor = (skillDef.getAddsToAttributeDivisor () == null) ? 1 : skillDef.getAddsToAttributeDivisor ();
-								
-								// Now can do the calculation
-								final int bonus = ((expLvl.getLevelNumber () + 1) * multiplier) / (divisor*2);
-								total = total + addToSkillValue (bonus, positiveNegative);
+								// Now see if the unit has that skill
+								int multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (),
+									UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+								if (multiplier >= 0)
+								{
+									// Defining both isn't valid
+									if ((addsToSkill.getAddsToSkillDivisor () != null) && (addsToSkill.getAddsToSkillFixed () != null))
+										throw new MomException ("Unit skill " + skillDef.getUnitSkillID () + " adds to skill " + addsToSkill.getAddsToSkillID () +
+											" but specifies both a level divisor and a fixed amount");
+									
+									// Any bonuses from hero skills? (Might gives +melee, Constitution gives +hit points, Agility gives +defence, and so on)
+									else if (addsToSkill.getAddsToSkillDivisor () != null)
+									{
+										if ((expLvl != null) && (multiplier > 0) &&
+											((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.ALL)))
+										{
+											// Multiplier will either equal 1 or 2, indicating whether we have the regular or super version of the skill - change this to be 2 for regular or 3 for super
+											multiplier++;
+											
+											// Some skills take more than 1 level to gain 1 attribute point, so get this value
+											final int divisor = (addsToSkill.getAddsToSkillDivisor () == null) ? 1 : addsToSkill.getAddsToSkillDivisor ();
+											
+											// Now can do the calculation
+											final int bonus = ((expLvl.getLevelNumber () + 1) * multiplier) / (divisor*2);
+											total = total + addToSkillValue (bonus, positiveNegative);
+										}
+									}
+									
+									// Any fixed bonuses from one skill to another?  e.g. Holy Armour gives +2 to defence
+									else if (addsToSkill.getAddsToSkillFixed () != null)
+									{
+										if ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.ALL))
+											total = total + addToSkillValue (addsToSkill.getAddsToSkillFixed (), positiveNegative);
+									}
+									
+									// Neither divisor nor fixed value specified, so the value must come from the skill itself
+									else if ((multiplier > 0) && ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.ALL)))
+										total = total + multiplier;
+								}
 							}
-						}
 				
 				// Any bonuses from CAEs?
 				if ((component == UnitSkillComponent.COMBAT_AREA_EFFECTS) || (component == UnitSkillComponent.ALL))

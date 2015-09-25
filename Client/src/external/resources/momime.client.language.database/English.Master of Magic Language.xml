@@ -888,8 +888,8 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 		<unitSkillHelpText>Immolation strikes all enemy units engaged in hand-to-hand with a fire attack of strength 4.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
-		<unitSkillDescription>Resistance to Others</unitSkillDescription>
-		<unitSkillHelpText>Resistance to Others increases the resistance of all friendly units in the combat by the listed bonus level. The bonus is not cumulative with other creatures with the same ability.</unitSkillHelpText>
+		<unitSkillDescription>Resistance to All</unitSkillDescription>
+		<unitSkillHelpText>Resistance to All increases the resistance of all friendly units in the combat by the listed bonus level. The bonus is not cumulative with other creatures with the same ability.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US034">
 		<unitSkillDescription>Holy Bonus</unitSkillDescription>
@@ -1079,7 +1079,7 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 	</unitSkill>
 	<unitSkill unitSkillID="SS041">
 		<unitSkillDescription>Resist Magic</unitSkillDescription>
-		<unitSkillHelpText>Endows the unit with a tremendously improved resistance (+3 crosses) to negative spells from all magic realms!</unitSkillHelpText>
+		<unitSkillHelpText>Endows the unit with a tremendously improved resistance (+5 crosses) to negative spells from all magic realms!</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="SS044">
 		<unitSkillDescription>Guardian Wind</unitSkillDescription>
@@ -1147,7 +1147,7 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 	</unitSkill>
 	<unitSkill unitSkillID="SS126">
 		<unitSkillDescription>Holy Armour</unitSkillDescription>
-		<unitSkillHelpText>The units' defense is increased by +3.</unitSkillHelpText>
+		<unitSkillHelpText>The units' defense is increased by +2.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="SS130">
 		<unitSkillDescription>Heroism</unitSkillDescription>
@@ -1211,7 +1211,7 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 	</unitSkill>
 	<unitSkill unitSkillID="SC089A">
 		<unitSkillDescription>Warp Creature - Half strength attacks</unitSkillDescription>
-		<unitSkillHelpText>Reduces the attack strength of the unit by half.  [Assume this includes melee, ranged and thrown attacks.  What about breath attacks?  Doom Gaze?  Poison?  etc etc]</unitSkillHelpText>
+		<unitSkillHelpText>Reduces the melee attack strength of the unit by half.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="SC089B">
 		<unitSkillDescription>Warp Creature - Half strength defence</unitSkillDescription>

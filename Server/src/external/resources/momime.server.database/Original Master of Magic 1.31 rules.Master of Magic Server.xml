@@ -8308,6 +8308,11 @@
 		<unitSkillDescription>Immunity: Magic</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US014">
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Large Shield</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US015">
@@ -8378,9 +8383,25 @@
 		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
-		<unitSkillDescription>Resistance to Others</unitSkillDescription>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>true</affectsEntireStack>
+		</addsToSkill>
+		<unitSkillDescription>Resistance to All</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US034">
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>true</affectsEntireStack>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>true</affectsEntireStack>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>true</affectsEntireStack>
+		</addsToSkill>
 		<unitSkillDescription>Holy Bonus</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US035">
@@ -8412,6 +8433,21 @@
 		<unitSkillDescription>Undead (killed by Ghouls/Life Steal)</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US123">
+		<addsToSkill>
+			<addsToSkillID>UA03</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA07</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Lucky (Unit version)</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US125">
@@ -8469,15 +8505,21 @@
 		<unitSkillDescription>Movement: Merging</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="HS01">
-		<addsToSkillID>UA04</addsToSkillID>
-		<addsToAttributeDivisor>1</addsToAttributeDivisor>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillDivisor>1</addsToSkillDivisor>
+		</addsToSkill>
 		<unitSkillDescription>Agility</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS02">
-		<addsToSkillID>UA02</addsToSkillID>
-		<addsToAttributeDivisor>1</addsToAttributeDivisor>
+		<addsToSkill>
+			<addsToSkillID>UA02</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillDivisor>1</addsToSkillDivisor>
+		</addsToSkill>
 		<unitSkillDescription>Arcane Power</unitSkillDescription>
 		<heroSkillTypeID>M</heroSkillTypeID>
 		<onlyIfHaveAlready>true</onlyIfHaveAlready>
@@ -8489,8 +8531,11 @@
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS04">
-		<addsToSkillID>UA03</addsToSkillID>
-		<addsToAttributeDivisor>2</addsToAttributeDivisor>
+		<addsToSkill>
+			<addsToSkillID>UA03</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillDivisor>2</addsToSkillDivisor>
+		</addsToSkill>
 		<unitSkillDescription>Blademaster</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
@@ -8505,8 +8550,11 @@
 		<maxOccurrences>1</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS07">
-		<addsToSkillID>UA06</addsToSkillID>
-		<addsToAttributeDivisor>1</addsToAttributeDivisor>
+		<addsToSkill>
+			<addsToSkillID>UA06</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillDivisor>1</addsToSkillDivisor>
+		</addsToSkill>
 		<unitSkillDescription>Constitution</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
@@ -8522,12 +8570,30 @@
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS10">
+		<addsToSkill>
+			<addsToSkillID>UA03</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA07</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Lucky</unitSkillDescription>
 		<maxOccurrences>1</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="HS11">
-		<addsToSkillID>UA01</addsToSkillID>
-		<addsToAttributeDivisor>1</addsToAttributeDivisor>
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillDivisor>1</addsToSkillDivisor>
+		</addsToSkill>
 		<unitSkillDescription>Might</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
@@ -8547,12 +8613,32 @@
 		<maxOccurrences>2</maxOccurrences>
 	</unitSkill>
 	<unitSkill unitSkillID="SS002">
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Resist Elements</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS004">
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Giant Strength</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS007">
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Stone Skin</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS008">
@@ -8562,15 +8648,35 @@
 		<unitSkillDescription>Path Finding</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS021">
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>10</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>10</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Elemental Armour</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS024">
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>5</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Iron Skin</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS031">
 		<unitSkillDescription>Regeneration</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS041">
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>5</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Resist Magic</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS044">
@@ -8601,6 +8707,11 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS093A">
 		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Chaos Channels - Demon Skin Armour</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093B">
@@ -8616,6 +8727,21 @@
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
 	<unitSkill unitSkillID="SS094">
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA02</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>US126</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Flame Blade</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS099">
@@ -8625,18 +8751,48 @@
 		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Bless</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS123">
+		<addsToSkill>
+			<addsToSkillID>UA08</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Endurance</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS124">
+		<addsToSkill>
+			<addsToSkillID>UA03</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Holy Weapon</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS126">
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Holy Armour</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS130">
+		<addsToSkill>
+			<addsToSkillID>US098</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>120</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Heroism</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS131">
@@ -8646,6 +8802,31 @@
 		<unitSkillDescription>Planar Travel</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS141">
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA02</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA06</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>US126</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Lionheart</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS143">
@@ -8661,6 +8842,51 @@
 		<damagePerFigure>U</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS175">
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA02</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA06</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>US126</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>US134</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>US133</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>SS093B</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>1</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Black Channels</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS179">
@@ -8676,9 +8902,44 @@
 		<unitSkillDescription>Confusion</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC053">
+		<addsToSkill>
+			<addsToSkillID>UA03</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-2</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-1</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Vertigo</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC067">
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-5</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA02</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-5</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-5</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-5</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>US126</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-5</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Mind Storm</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC088">
@@ -8694,6 +8955,21 @@
 		<unitSkillDescription>Warp Creature - Zero resistance</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC162">
+		<addsToSkill>
+			<addsToSkillID>UA01</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-2</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA02</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-2</addsToSkillFixed>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>US126</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>-2</addsToSkillFixed>
+		</addsToSkill>
 		<unitSkillDescription>Weakness</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC165">

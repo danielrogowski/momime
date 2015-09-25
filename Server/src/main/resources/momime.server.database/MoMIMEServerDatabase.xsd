@@ -499,8 +499,8 @@
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="heroSkillTypeID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitSkillPK" name="unitSkillFKunitSkill">
-			<xsd:selector xpath="unitSkill" />
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="addsToSkillFKunitSkill">
+			<xsd:selector xpath="unitSkill/addsToSkill" />
 			<xsd:field xpath="addsToSkillID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="unitSkillFKunitMagicRealm">

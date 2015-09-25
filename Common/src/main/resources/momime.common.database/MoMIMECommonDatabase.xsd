@@ -720,8 +720,6 @@ i.e. both the lists of top half and bottom half of the unit info screen.  Their 
 is defined in the graphics XML file.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="addsToSkillID" type="momimecommon:unitSkillID" nxe:label="Adds to Skill" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="addsToAttributeDivisor" type="momimecommon:attributeDivisor" nxe:label="Attribute Divisor" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -729,8 +727,48 @@ is defined in the graphics XML file.</xsd:documentation>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="addsToSkill" type="momimecommon:addsToSkill" />
 		</xsd:sequence>
 		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Unit Skill ID" nxe:gridwidth="80" />
+	</xsd:complexType>
+
+	<xsd:complexType name="addsToSkill" nxe:singular="Adds to Skill" nxe:plural="Adds to Skills">
+		<xsd:annotation>
+			<xsd:documentation>Defines when having one skill adds some bonus value to another skill.  This includes hero skills,
+e.g. Agility adds to the hero's Defence score, and spell effects e.g. Holy Armour also adds to the unit's Defence score.
+A single skill can add a bonus to multiple skills, as is the case with Holy Bonus.  There is no unique key here - it would in theory be
+possible to define one skill that adds say +2 defence to ourselves, but +1 to all other units in our stack, so addsToSkillID may be repeated.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="addsToSkillID" type="momimecommon:unitSkillID" nxe:label="Adds to Skill">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="affectsEntireStack" type="xsd:boolean" nxe:label="Affects entire stack?" nxe:gridwidth="150">
+		        <xsd:annotation>
+        			<xsd:documentation>Usually false.  Set to true if a unit possessing this skill provides the bonus to the entire stack as well as this unit.
+Used for Resistance to All and Holy Bonus.  Note in the original MoM, such skills only worked inside combat.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="addsToSkillDivisor" type="momimecommon:skillDivisor" nxe:label="Skill Level Divisor" nxe:gridwidth="100">
+		        <xsd:annotation>
+        			<xsd:documentation>This is for hero skills, where the amount of bonus added depends on the level of the hero.  It is 1 for most hero skills,
+e.g. Agility adds Level / 1 to the hero's Defence score; the exception is Blademaster which only adds Level / 2 to the hero's +to Hit score.
+If addsToSkillID is non-null, either addsToSkillDivisor or addsToSkillFixed must be filled in, but not both.  If both are null, the amount of the
+bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2".</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="addsToSkillFixed" type="momimecommon:unitSkillValue" nxe:label="Skill Fixed Bonus" nxe:gridwidth="100">
+		        <xsd:annotation>
+        			<xsd:documentation>This is typically for spell effects, where a fixed amount is added to another skill, e.g. Holy Armour adds +2 to Defence.
+If addsToSkillID is non-null, either addsToSkillDivisor or addsToSkillFixed must be filled in, but not both.  If both are null, the amount of the
+bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2".</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitType" nxe:singular="Unit Type" nxe:plural="Unit Types" nxe:submenu="Units">
@@ -1624,7 +1662,7 @@ However we still need to record negative skill modification values, e.g. True Li
         <xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="attributeDivisor">
+	<xsd:simpleType name="skillDivisor">
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
@@ -1828,6 +1866,10 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 			<xsd:enumeration value="H"><xsd:annotation>
 				<xsd:documentation>Bonus from the types of hero skills that simply add to an attribute, e.g. Might +5 simply adds +5 to melee attack strength</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO_SKILLS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Bonus from other skills or spell effects, e.g. Holy Armour adding +2 to defence</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_EFFECTS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="C"><xsd:annotation>
 				<xsd:documentation>Bonus from combat area effects, including CAE-type spells, e.g. node auras or prayer</xsd:documentation>

@@ -410,6 +410,9 @@
 	<unitSkillComponentImage unitSkillComponentID="C">
 		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/combatAreaEffect.png</unitSkillComponentImageFile>
 	</unitSkillComponentImage>
+	<unitSkillComponentImage unitSkillComponentID="S">
+		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/spellEffects.png</unitSkillComponentImageFile>
+	</unitSkillComponentImage>
 	<rangedAttackType rangedAttackTypeID="RAT0A">
 		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_015_000 - Rock.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">

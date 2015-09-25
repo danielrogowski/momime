@@ -34,7 +34,7 @@ public interface UnitSkillUtils
 	 * 	Returns -1 if the unit doesn't have the skill
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
 	 */
 	public int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID,
 		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,

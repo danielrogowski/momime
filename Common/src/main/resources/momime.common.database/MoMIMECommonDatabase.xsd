@@ -1871,6 +1871,10 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 				<xsd:documentation>Bonus from other skills or spell effects, e.g. Holy Armour adding +2 to defence</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_EFFECTS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="T"><xsd:annotation>
+				<xsd:documentation>Bonus from other skills or spell effects that affect the whole unit stack, e.g. Resistance to All or Holy Bonus</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_EFFECTS_STACK" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="C"><xsd:annotation>
 				<xsd:documentation>Bonus from combat area effects, including CAE-type spells, e.g. node auras or prayer</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_AREA_EFFECTS" /></xsd:appinfo>

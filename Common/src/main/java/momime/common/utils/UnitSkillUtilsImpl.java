@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -30,6 +31,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Calculates modified values over and above basic skill, attribute and upkeep values
@@ -160,16 +162,29 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 							total = total + addToSkillValue (bonus.getBonusValue (), positiveNegative);
 				
 				// Any bonuses from skills that add to another skill, either hero skills or spell effects?
-				if ((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.ALL))
+				if ((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.SPELL_EFFECTS) ||
+					(component == UnitSkillComponent.SPELL_EFFECTS_STACK) || (component == UnitSkillComponent.ALL))
+				{
+					final MapCoordinates3DEx unitCombatLocation = (unit instanceof MemoryUnit) ? (MapCoordinates3DEx) ((MemoryUnit) unit).getCombatLocation () : null;
 					
 					// Read down all the skills defined in the database looking for skills that grant a bonus to the attribute we're calculating
 					for (final UnitSkill skillDef : db.getUnitSkills ())
 						for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
-							if (unitSkillID.equals (addsToSkill.getAddsToSkillID ()))
+							
+							// Does this skill add to the skill we're calculating?  Also filter out skills that aren't the type (breakdown component) that we're looking for
+							if ((unitSkillID.equals (addsToSkill.getAddsToSkillID ())) &&
+								((component == UnitSkillComponent.ALL) ||
+								(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
+								(!addsToSkill.isAffectsEntireStack () && ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.HERO_SKILLS)))))
 							{
-								// Now see if the unit has that skill
-								int multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (),
-									UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
+								// Now see if the unit has that skill; or any unit in the stack, as appropriate
+								int multiplier;
+								if (addsToSkill.isAffectsEntireStack ())
+									multiplier = getHighestModifiedSkillValue ((MapCoordinates3DEx) unit.getUnitLocation (), unitCombatLocation, unit.getOwningPlayerID (),
+										skillDef.getUnitSkillID (), players, mem, db);
+								else
+									multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (), UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
+								
 								if (multiplier >= 0)
 								{
 									// Defining both isn't valid
@@ -198,15 +213,22 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 									// Any fixed bonuses from one skill to another?  e.g. Holy Armour gives +2 to defence
 									else if (addsToSkill.getAddsToSkillFixed () != null)
 									{
-										if ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.ALL))
+										if ((component == UnitSkillComponent.ALL) ||
+											(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
+											(!addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS)))
+													
 											total = total + addToSkillValue (addsToSkill.getAddsToSkillFixed (), positiveNegative);
 									}
 									
 									// Neither divisor nor fixed value specified, so the value must come from the skill itself
-									else if ((multiplier > 0) && ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.ALL)))
+									else if ((multiplier > 0) && ((component == UnitSkillComponent.ALL) ||
+										(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
+										(!addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS))))
+										
 										total = total + multiplier;
 								}
 							}
+				}
 				
 				// Any bonuses from CAEs?
 				if ((component == UnitSkillComponent.COMBAT_AREA_EFFECTS) || (component == UnitSkillComponent.ALL))
@@ -229,6 +251,38 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 
 		log.trace ("Exiting getModifiedSkillValue = " + total);
 		return total;
+	}
+	
+	/**
+	 * @param unitLocation Location where the unit stack is
+	 * @param unitCombatLocation The combat the unit stack is in, if any
+	 * @param owningPlayerID The player who owns the unit stack
+	 * @param unitSkillID Unique identifier for this skill
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Highest value of the specified skill from any unit in the stack; or -1 if no unit in the stack has the skill
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
+	 */
+	final int getHighestModifiedSkillValue (final MapCoordinates3DEx unitLocation, final MapCoordinates3DEx unitCombatLocation, final int owningPlayerID,
+		final String unitSkillID, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering getHighestModifiedSkillValue: " + unitLocation + ", " + unitCombatLocation + ", " + owningPlayerID + ", " + unitSkillID);
+		
+		int highest = -1;
+		for (final MemoryUnit thisUnit : mem.getUnit ())
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == owningPlayerID) && (unitLocation.equals (thisUnit.getUnitLocation ())) &&
+				(((unitCombatLocation == null) && (thisUnit.getCombatLocation () == null)) ||
+				((unitCombatLocation != null) && (unitCombatLocation.equals (thisUnit.getCombatLocation ())))))
+				
+				highest = Math.max (highest, getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), unitSkillID,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
+
+		log.trace ("Exiting getHighestModifiedSkillValue = " + highest);
+		return highest;
 	}
 	
 	/**

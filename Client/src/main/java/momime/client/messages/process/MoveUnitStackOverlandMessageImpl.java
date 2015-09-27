@@ -217,15 +217,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 			if (isFreeAfterMoving ())
 				getUnitClientUtils ().killUnit (thisUnitURN, KillUnitActionID.FREE, null);
 			else
-			{
 				u.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getMoveTo ()));
-				
-				// If we've got a unit info screen for this unit, force it to redraw, because the attributes may be affected as
-				// the unit moves around the map in and out of CAEs that affect it
-				final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (thisUnitURN);
-				if (unitInfo != null)
-					unitInfo.getUnitInfoPanel ().showUnit (u);
-			}
 		}
 		
 		getOverlandMapUI ().setUnitStackMoving (null);
@@ -235,6 +227,13 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		final CityViewUI cityView = getClient ().getCityViews ().get (getMoveTo ().toString ());
 		if (cityView != null)
 			cityView.unitsChanged ();
+
+		// Update all unit info screens that we have open, because the attributes may be affected as units move around the map
+		// in and out of CAEs that affect it, and also if the unit being moved has a skill like Resistance to All or Holy Bonus, then
+		// every other unit in the cell it moved from or the cell it moved to all need updating (maybe we could make this more
+		// clever and only update units in either the moveFrom or moveTo locations, but just leave it safe / simple for now)
+		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
+			unitInfo.getUnitInfoPanel ().showUnit (unitInfo.getUnit ());
 		
 		log.trace ("Exiting finish");
 	}

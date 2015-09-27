@@ -283,11 +283,11 @@ public final class TestFogOfWarProcessingImpl
 		
 		// Unit scouting ranges
 		final ServerUnitCalculations unitCalc = mock (ServerUnitCalculations.class);
-		when (unitCalc.calculateUnitScoutingRange (unitOne, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1);
-		when (unitCalc.calculateUnitScoutingRange (unitTwo, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (2);
-		when (unitCalc.calculateUnitScoutingRange (unitThree, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
-		when (unitCalc.calculateUnitScoutingRange (unitFour, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1);
-		when (unitCalc.calculateUnitScoutingRange (unitFive, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (unitOne, players, trueMap, db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (unitTwo, players, trueMap, db)).thenReturn (2);
+		when (unitCalc.calculateUnitScoutingRange (unitThree, players, trueMap, db)).thenReturn (3);
+		when (unitCalc.calculateUnitScoutingRange (unitFour, players, trueMap, db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (unitFive, players, trueMap, db)).thenReturn (1);
 
 		// Nature's eye spell
 		final MemoryMaintainedSpell naturesEye = new MemoryMaintainedSpell ();

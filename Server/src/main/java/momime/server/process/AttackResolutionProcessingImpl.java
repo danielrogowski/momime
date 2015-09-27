@@ -22,8 +22,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
 import momime.server.calculations.AttackDamage;
@@ -63,8 +62,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
 	 * @param attackSkillID Which skillthey are attacking with (melee or ranged)
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Chosen attack resolution
 	 * @throws RecordNotFoundException If the unit skill or so on can't be found in the XML database
@@ -73,7 +71,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 */
 	@Override
 	public AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackSkillID,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering chooseAttackResolution: Unit URN " + attacker.getUnitURN () + " hitting Unit URN " + defender.getUnitURN () + " with " + attackSkillID);
@@ -97,7 +95,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				// Check this condition
 				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
 				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (),
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) < 0)
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) < 0)
 					
 					conditionsMatch = false;
 			}
@@ -165,8 +163,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
@@ -180,8 +177,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public final List<DamageTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects,
-		final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? new Integer (attacker.getUnit ().getUnitURN ()).toString () : "N/A") +
@@ -205,7 +201,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			{
 				// If the unit being attacked is already dead, then don't bother proceeding
 				final int damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
-				if (damageTaken < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked.getUnit (), players, spells, combatAreaEffects, db))					
+				if (damageTaken < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked.getUnit (), players, mem, db))					
 				{
 					// Work out potential damage from the attack
 					final AttackDamage potentialDamage;
@@ -220,12 +216,12 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						
 						// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
 						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())) &&
-							(!getUnitCalculations ().canMakeRangedAttack (unitMakingAttack.getUnit (), players, spells, combatAreaEffects, db)))
+							(!getUnitCalculations ().canMakeRangedAttack (unitMakingAttack.getUnit (), players, mem, db)))
 							
 							potentialDamage = null;
 						else
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill
-								(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, spells, combatAreaEffects, db);
+								(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, mem, db);
 					}
 					
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have
@@ -235,7 +231,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if ((step != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())))
 						{
 							final int penalty = getServerUnitCalculations ().calculateRangedAttackDistancePenalty
-								(attacker.getUnit (), defender.getUnit (), combatMapCoordinateSystem, players, spells, combatAreaEffects, db);
+								(attacker.getUnit (), defender.getUnit (), combatMapCoordinateSystem, players, mem, db);
 							
 							if (penalty > 0)
 							{
@@ -255,74 +251,74 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 								case SINGLE_FIGURE:
 									thisDamage = getDamageCalculator ().calculateSingleFigureDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 									
 								case ARMOUR_PIERCING:
 									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 									
 								case ILLUSIONARY:
 									thisDamage = getDamageCalculator ().calculateIllusionaryDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 				
 								case MULTI_FIGURE:
 									thisDamage = getDamageCalculator ().calculateMultiFigureDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 									
 								case DOOM:
 									thisDamage = getDamageCalculator ().calculateDoomDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 			
 								case CHANCE_OF_DEATH:
 									thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 			
 								case EACH_FIGURE_RESIST_OR_DIE:
 									thisDamage = getDamageCalculator ().calculateEachFigureResistOrDieDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 	
 								case SINGLE_FIGURE_RESIST_OR_DIE:
 									thisDamage = getDamageCalculator ().calculateSingleFigureResistOrDieDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 									
 								case RESIST_OR_TAKE_DAMAGE:
 									thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 									
 								case RESISTANCE_ROLLS:
 									thisDamage = getDamageCalculator ().calculateResistanceRollsDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 			
 								case DISINTEGRATE:
 									thisDamage = getDamageCalculator ().calculateDisintegrateDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 									break;
 									
 								case FEAR:
 									thisDamage = 0;
 									getDamageCalculator ().calculateFearDamage
 										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, spells, combatAreaEffects, db); 
+										players, mem, db); 
 								break;
 									
 								case ZEROES_AMMO:
@@ -364,9 +360,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// But potentially we might have dealt multiple types of damage simultaneously which now added together total more than the unit's remaining HP,
 		// so we have to check for that here.
 		// e.g. unit has 4 HP remaining and we simultaneously hit it with a thrown attack that does 3 damage and a breath attack that does 2 damage.
-		damageToDefender = Math.min (damageToDefender, getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageToDefender = Math.min (damageToDefender, getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, mem, db));
 		if (attacker != null)
-			damageToAttacker = Math.min (damageToAttacker, getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, spells, combatAreaEffects, db));
+			damageToAttacker = Math.min (damageToAttacker, getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, mem, db));
 		
 		// Apply the damage
 		defender.getUnit ().setDamageTaken (defender.getUnit ().getDamageTaken () + damageToDefender);

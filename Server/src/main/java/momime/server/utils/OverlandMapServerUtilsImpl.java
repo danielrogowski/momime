@@ -232,7 +232,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		{
 			final int attackingStrength = getUnitSkillUtils ().getModifiedSkillValue (attackingSpirit, attackingSpirit.getUnitHasSkill (),
 				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, UnitSkillComponent.ALL,
-				UnitSkillPositiveNegative.BOTH, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+				UnitSkillPositiveNegative.BOTH, players, trueMap, db);
 			
 			// Create test unit
 			final AvailableUnit defendingSpirit = new AvailableUnit ();
@@ -241,7 +241,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 
 			final int defendingStrength = getUnitSkillUtils ().getModifiedSkillValue (defendingSpirit, defendingSpirit.getUnitHasSkill (),
 				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, UnitSkillComponent.ALL,
-				UnitSkillPositiveNegative.BOTH, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+				UnitSkillPositiveNegative.BOTH, players, trueMap, db);
 			
 			// Decide who wins
 			successful = (getRandomUtils ().nextInt (defendingStrength + attackingStrength) < attackingStrength);

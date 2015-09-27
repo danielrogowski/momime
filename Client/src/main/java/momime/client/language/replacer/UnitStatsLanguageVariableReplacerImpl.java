@@ -105,8 +105,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			// Used by skill descriptions
 			case "MANA_TOTAL":
 				text = new Integer (getUnitCalculations ().calculateManaTotal (getUnit (), getUnit ().getUnitHasSkill (), getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ())).toString ();
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ())).toString ();
 				break;
 
 			case "MANA_REMAINING":
@@ -118,8 +117,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 
 			case "AMMO_TOTAL":
 				text = new Integer (getUnitCalculations ().calculateFullRangedAttackAmmo (getUnit (), getUnit ().getUnitHasSkill (), getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ())).toString ();
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ())).toString ();
 				break;
 				
 			case "AMMO_REMAINING":
@@ -195,8 +193,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 							// Don't mention skills that the unit does not have
 							if (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, bonus.getUnitSkillID (),
 								UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH,
-								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
+								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
 							{
 								if (bonuses.length () > 0)
 									bonuses.append (", ");
@@ -303,16 +300,14 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				if (code.startsWith ("SKILL_VALUE_"))
 					text = new Integer (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (12),
 						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ())).toString ();
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ())).toString ();
 				
 				// This outputs 'Super' if the value of the specified skill is 2 or more
 				else if (code.startsWith ("SUPER_"))
 				{
 					text = (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (6),
 						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) > 1) ? "Super" : "";
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 1) ? "Super" : "";
 				}
 				
 				else

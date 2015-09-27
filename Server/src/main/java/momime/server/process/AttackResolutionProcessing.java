@@ -5,20 +5,19 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.DamageTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.server.calculations.AttackDamage;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Methods for processing attack resolutions.  This would all just be part of DamageProcessor, these methods
@@ -33,8 +32,7 @@ public interface AttackResolutionProcessing
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
 	 * @param attackSkillID Which skillthey are attacking with (melee or ranged)
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Chosen attack resolution
 	 * @throws RecordNotFoundException If the unit skill or so on can't be found in the XML database
@@ -42,7 +40,7 @@ public interface AttackResolutionProcessing
 	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
 	 */
 	public AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackSkillID,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -63,8 +61,7 @@ public interface AttackResolutionProcessing
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
@@ -77,7 +74,6 @@ public interface AttackResolutionProcessing
 	public List<DamageTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects,
-		final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

@@ -148,7 +148,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		for (final MemoryUnit defender : defenders)
 		{
 			final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (attacker, defender, attackSkillID, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			final List<List<AttackResolutionStepSvr>> steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
 			
@@ -161,15 +161,12 @@ public final class DamageProcessorImpl implements DamageProcessor
 			for (final List<AttackResolutionStepSvr> step : steps)
 				
 				// Skip the entire step if either unit is already dead
-				if ((getUnitCalculations ().calculateAliveFigureCount (attacker, mom.getPlayers (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) > 0) &&
-					(getUnitCalculations ().calculateAliveFigureCount (defender, mom.getPlayers (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) > 0))
+				if ((getUnitCalculations ().calculateAliveFigureCount (attacker, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0) &&
+					(getUnitCalculations ().calculateAliveFigureCount (defender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0))
 				{
 					final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep
 						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					for (final DamageTypeID thisSpecialDamageTypeApplied : thisSpecialDamageTypesApplied)
 						if (!specialDamageTypesApplied.contains (thisSpecialDamageTypeApplied))
@@ -218,9 +215,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		{
 			boolean anyAttackingPlayerUnitsSurvived = false;
 			for (final MemoryUnit attackingPlayerUnit : attackingPlayerUnits)
-				if (getUnitCalculations ().calculateAliveFigureCount (attackingPlayerUnit, mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) > 0)
-					
+				if (getUnitCalculations ().calculateAliveFigureCount (attackingPlayerUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0)
 					anyAttackingPlayerUnitsSurvived = true;
 				else
 				{
@@ -245,9 +240,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		{
 			boolean anyDefendingPlayerUnitsSurvived = false;
 			for (final MemoryUnit defendingPlayerUnit : defendingPlayerUnits)
-				if (getUnitCalculations ().calculateAliveFigureCount (defendingPlayerUnit, mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) > 0)
-					
+				if (getUnitCalculations ().calculateAliveFigureCount (defendingPlayerUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0)
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{

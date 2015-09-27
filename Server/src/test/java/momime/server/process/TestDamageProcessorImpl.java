@@ -117,7 +117,7 @@ public final class TestDamageProcessorImpl
 
 		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
 		when (attackResolutionProc.chooseAttackResolution (attacker, defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players,
-			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db)).thenReturn (attackResolution);
+			trueMap, db)).thenReturn (attackResolution);
 		
 		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
 		
@@ -138,8 +138,8 @@ public final class TestDamageProcessorImpl
 		
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1, 0);
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap, db)).thenReturn (3);
+		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap, db)).thenReturn (1, 0);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -181,7 +181,7 @@ public final class TestDamageProcessorImpl
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
-			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), combatMapSize, db);
+			trueMap, combatMapSize, db);
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
@@ -280,7 +280,7 @@ public final class TestDamageProcessorImpl
 
 		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
 		when (attackResolutionProc.chooseAttackResolution (attacker, defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, players,
-			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), db)).thenReturn (attackResolution);
+			trueMap, db)).thenReturn (attackResolution);
 		
 		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
 		
@@ -301,8 +301,8 @@ public final class TestDamageProcessorImpl
 		
 		// Damage taken
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1, 0);
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap, db)).thenReturn (3);
+		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap, db)).thenReturn (1, 0);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -340,7 +340,7 @@ public final class TestDamageProcessorImpl
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
-			gsk.getTrueMap ().getMaintainedSpell (), gsk.getTrueMap ().getCombatAreaEffect (), combatMapSize, db);
+			trueMap, combatMapSize, db);
 
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,

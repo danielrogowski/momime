@@ -642,9 +642,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		if (unit instanceof MemoryUnit)
 		{
 			aliveFigureCount = getUnitCalculations ().calculateAliveFigureCount ((MemoryUnit) unit, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
-				getClient ().getClientDB ());
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 		}
 		else
 			aliveFigureCount = totalFigureCount;
@@ -803,13 +801,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			final int attributeValueIncludingNegatives;
 			if (unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
 				attributeValueIncludingNegatives = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure
-					(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+					(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			else
 				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) / attributeValueDivisor;
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) / attributeValueDivisor;
 			
 			final Graphics2D g = image.createGraphics ();
 			try
@@ -824,8 +820,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
 						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, attrComponent,
 							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) / attributeValueDivisor;
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) / attributeValueDivisor;
 						
 						if (totalValue > 0)
 						{

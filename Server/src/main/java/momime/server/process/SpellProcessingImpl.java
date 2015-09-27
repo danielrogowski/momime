@@ -415,8 +415,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Allow it to be moved this combat turn
 				tu.setDoubleCombatMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()));
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 				
 				// Make sure we remove it after combat
 				tu.setWasSummonedInCombat (true);
@@ -433,8 +432,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			else
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-						variableDamage, thisUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						variableDamage, thisUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						targetUnits.add (thisUnit);
 			

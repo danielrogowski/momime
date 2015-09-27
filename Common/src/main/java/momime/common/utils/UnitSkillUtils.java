@@ -12,8 +12,7 @@ import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.FogOfWarMemory;
 
 /**
  * Calculates modified values over and above basic skill, attribute and upkeep values
@@ -27,8 +26,7 @@ public interface UnitSkillUtils
 	 * @param component Which component(s) making up this attribute to calculate
 	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Value of the specified skill - base value can be improved by weapon grades, experience or CAEs (e.g. Node Auras or Prayer), or can be reduced by curses or enemy CAEs (e.g. Black Prayer);
 	 * 	Returns -1 if the unit doesn't have the skill
@@ -38,7 +36,7 @@ public interface UnitSkillUtils
 	 */
 	public int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID,
 		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

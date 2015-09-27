@@ -594,8 +594,7 @@ public final class CombatUI extends MomClientFrameUI
 								validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 									(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
 									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
-									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 									getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 							}
 							
@@ -1016,9 +1015,7 @@ public final class CombatUI extends MomClientFrameUI
 								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 									(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
 									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
-									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
-									getClient ().getClientDB ());
+									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 								
 								if (validTarget == TargetSpellResult.VALID_TARGET)
 								{
@@ -1539,18 +1536,15 @@ public final class CombatUI extends MomClientFrameUI
 			final int chanceToHit = Math.min (10, 3 +
 				getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()));
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()));
 			
 			final int chanceToHitTimesFigures = chanceToHit * getUnitCalculations ().calculateAliveFigureCount (unit, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 			// Melee attack / average hits / image
 			final int meleeAttack = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			if (meleeAttack <= 0)
 			{
@@ -1569,8 +1563,7 @@ public final class CombatUI extends MomClientFrameUI
 			// Ranged attack / average hits / image
 			final int rangedAttack = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			if (rangedAttack <= 0)
 			{

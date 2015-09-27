@@ -28,8 +28,8 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.WeaponGrade;
 import momime.common.database.WeaponGradeSkillBonus;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
 /**
@@ -111,15 +111,14 @@ public final class TestUnitSkillUtilsImpl
 		
 		// Lists
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 
 		// Sample unit
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setWeaponGrade (1);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db)).thenReturn ("A");
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), fow.getMaintainedSpell (), db)).thenReturn ("A");
 		
 		// Base skill values
 		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "US001")).thenReturn (-1);
@@ -140,14 +139,14 @@ public final class TestUnitSkillUtilsImpl
 			bonus.setBonusValue (100);
 			expLvl.getExperienceSkillBonus ().add (bonus);
 		}
-		when (unitUtils.getExperienceLevel (unit, true, players, combatAreaEffects, db)).thenReturn (expLvl);
+		when (unitUtils.getExperienceLevel (unit, true, players, fow.getCombatAreaEffect (), db)).thenReturn (expLvl);
 		
 		// CAE
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
 		cae.setCombatAreaEffectID ("CAE01");
 		
 		when (unitUtils.doesCombatAreaEffectApplyToUnit (unit, cae, db)).thenReturn (true);
-		combatAreaEffects.add (cae);
+		fow.getCombatAreaEffect ().add (cae);
 		
 		// Set up object to test
 		final UnitSkillUtilsImpl utils = new UnitSkillUtilsImpl ();
@@ -155,38 +154,38 @@ public final class TestUnitSkillUtilsImpl
 
 		// Skill that we don't have
 		assertEquals (-1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
 		
 		// Skill that we don't have so bonuses to it still don't apply
 		assertEquals (-1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US002",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
 
 		// Skill that we do have, to which no bonuses apply
 		assertEquals (1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US003",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
 		
 		// Skill that we do have, and has weapon grade, experience and CAE bonuses
 		assertEquals (11114, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
 		
 		// Test asking for specific breakdown components		
 		assertEquals (1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH, players, fow, db));
 
 		assertEquals (10, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-				UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+				UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.BOTH, players, fow, db));
 
 		assertEquals (100, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-				UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+				UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.BOTH, players, fow, db));
 		
 		assertEquals (1000, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.BOTH, players, fow, db));
 
 		assertEquals (10000, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.SPELL_EFFECTS, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.SPELL_EFFECTS, UnitSkillPositiveNegative.BOTH, players, fow, db));
 		
 		assertEquals (3, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.BOTH, players, fow, db));
 	}
 	
 	/**

@@ -7,20 +7,27 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSetting;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -36,15 +43,6 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.messages.ServerMemoryGridCellUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
 
 /**
  * Server side only helper methods for dealing with units
@@ -395,8 +393,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -405,7 +402,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 */
 	@Override
 	public final int applyDamage (final MemoryUnit defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
-		final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering applyDamage: Unit URN " + defender.getUnitURN () + " hit by " + hitsToApply + " vs defence " + defenderDefenceStrength + " at " + chanceToDefend + "0%");
@@ -415,8 +412,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
 		// However only the first unit gets to use its shield, even if it blocks 1 hit it will be killed by the 2nd hit.
 		int totalHits = 0;
-		int defendingFiguresRemaining = getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db);
-		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
+		int defendingFiguresRemaining = getUnitCalculations ().calculateAliveFigureCount (defender, players, mem, db);
+		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, mem, db);
 		int hitsLeftToApply = hitsToApply;
 		
 		while ((defendingFiguresRemaining > 0) && (hitsLeftToApply > 0))
@@ -443,7 +440,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				defendingFiguresRemaining--;
 				hitPointsRemainingOfFirstFigure = getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 			}
 		}
 		

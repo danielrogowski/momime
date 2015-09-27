@@ -20,8 +20,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
@@ -101,8 +100,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackSkillID The skill being used to attack
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker, or null if the attacker doesn't even have the requested skill
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -113,17 +111,16 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final String attackSkillID, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering attackFromUnitSkill: Unit URN " + attacker.getUnit ().getUnitURN () + ", " + attackSkillID);
 
 		// The unit's skill level indicates the strength of the attack (e.g. Poison Touch 2 vs Poison Touch 4)
 		final AttackDamage attackDamage;
-		final int figureCount = getUnitCalculations ().calculateAliveFigureCount (attacker.getUnit (), players, spells, combatAreaEffects, db) - attacker.getFiguresFrozenInFear ();
+		final int figureCount = getUnitCalculations ().calculateAliveFigureCount (attacker.getUnit (), players, mem, db) - attacker.getFiguresFrozenInFear ();
 		final int damage = getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (), attackSkillID,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 		if ((damage < 0) || (figureCount <= 0))
 			attackDamage = null;
 		else
@@ -173,7 +170,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			// Fill in the damage object
 			final int plusToHit = getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (),
 				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 	
 			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageCalculationMsg.getDamageType (), null, repetitions);
 		}
@@ -229,8 +226,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -242,16 +238,15 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	@Override
 	public final int calculateSingleFigureDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateSingleFigureDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
 		
 		final int defenderDefenceStrength = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength,
-			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
+			attackingPlayer, defendingPlayer, attackDamage, players, mem, db);
 		
 		log.trace ("Exiting calculateSingleFigureDamage = " + totalHits);
 		return totalHits;
@@ -266,8 +261,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -278,17 +272,16 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateArmourPiercingDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateArmourPiercingDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
 		
 		final int defenderDefenceStrength = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength / 2,
-			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
+			attackingPlayer, defendingPlayer, attackDamage, players, mem, db);
 		
 		log.trace ("Exiting calculateArmourPiercingDamage = " + totalHits);
 		return totalHits;
@@ -303,8 +296,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -315,14 +307,13 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateIllusionaryDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateIllusionaryDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, 0,
-			attackingPlayer, defendingPlayer, attackDamage, players, spells, combatAreaEffects, db);
+			attackingPlayer, defendingPlayer, attackDamage, players, mem, db);
 		
 		log.trace ("Exiting calculateIllusionaryDamage = " + totalHits);
 		return totalHits;
@@ -337,8 +328,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -349,8 +339,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	private final int calculateSingleFigureDamageInternal (final AttackResolutionUnit defender, final int defenderDefenceStrength,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateSingleFigureDamageInternal: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -372,21 +361,21 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualHits (actualDamage);
 		
 		// Set up defender stats
-		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, defender.getUnit (), db);
+		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), defender.getUnit (), db);
 		
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 		damageCalculationMsg.setModifiedDefenceStrength (defenderDefenceStrength);
 
 		damageCalculationMsg.setChanceToDefend (3 + Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 		
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 		
 		// Dish out damage
 		final int totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), actualDamage, damageCalculationMsg.getModifiedDefenceStrength (),
-			damageCalculationMsg.getChanceToDefend (), players, spells, combatAreaEffects, db);
+			damageCalculationMsg.getChanceToDefend (), players, mem, db);
 		
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -404,8 +393,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -416,8 +404,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateMultiFigureDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateMultiFigureDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -430,15 +417,15 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 
 		// Set up defender stats
-		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, defender.getUnit (), db);
+		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), defender.getUnit (), db);
 
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength ());
 
 		damageCalculationMsg.setChanceToDefend (3 + Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 			
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 
@@ -447,7 +434,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			(attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit () * damageCalculationMsg.getDefenderFigures ());
 
 		// Keep track of how many HP the current figure has
-		int hitPointsThisFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender.getUnit (), players, spells, combatAreaEffects, db);
+		int hitPointsThisFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender.getUnit (), players, mem, db);
 		
 		// Attack each figure individually
 		int actualDamage = 0;
@@ -481,7 +468,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			// Keep track of how many HP the next figure has
 			if ((figureNo == 0) && (damageCalculationMsg.getDefenderFigures () > 1))
 				hitPointsThisFigure = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 		}
 		
 		// Store and send final totals
@@ -501,8 +488,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -513,8 +499,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateDoomDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateDoomDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -529,10 +514,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualHits (attackDamage.getPotentialHits ());
 		
 		// No defence hit rolls - they automatically hit
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 
 		// Dish out damage
-		final int totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), attackDamage.getPotentialHits (), 0, 0, players, spells, combatAreaEffects, db);
+		final int totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), attackDamage.getPotentialHits (), 0, 0, players, mem, db);
 		
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -549,8 +534,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -561,8 +545,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateChanceOfDeathDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateChanceOfDeathDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -577,12 +560,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualHits (getRandomUtils ().nextInt (100));
 		
 		// No defence hit rolls - they automatically hit
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 
 		// Unit either takes no damage, or dies outright
 		if (damageCalculationMsg.getActualHits () < attackDamage.getPotentialHits ())
 		{
-			final int totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), Integer.MAX_VALUE, 0, 0, players, spells, combatAreaEffects, db);
+			final int totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), Integer.MAX_VALUE, 0, 0, players, mem, db);
 			damageCalculationMsg.setFinalHits (totalHits);
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -599,8 +582,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -611,8 +593,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateEachFigureResistOrDieDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateEachFigureResistOrDieDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -624,11 +605,11 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 
 		// Set up defender stats
-		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, defender.getUnit (), db);
+		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), defender.getUnit (), db);
 
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 
 		// Is there a saving throw modifier?
 		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
@@ -638,7 +619,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		if (attackDamage.getSpell () != null)
 		{
 			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
-				(attackDamage.getSpell (), getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (defender.getUnit (), defender.getUnit ().getUnitHasSkill (), spells, db));
+				(attackDamage.getSpell (), getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (defender.getUnit (), defender.getUnit ().getUnitHasSkill (), mem.getMaintainedSpell (), db));
 			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getSavingThrowModifier () != null) &&
 				(magicRealmLifeformTypeTarget.getSavingThrowModifier () != 0))
 			{
@@ -654,7 +635,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
 		
 		// Keep track of how many HP the current figure has
-		int hitPointsThisFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender.getUnit (), players, spells, combatAreaEffects, db);
+		int hitPointsThisFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender.getUnit (), players, mem, db);
 		
 		// Each figure individually
 		int figuresDied = 0;
@@ -671,7 +652,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			// Keep track of how many HP the next figure has
 			if ((figureNo == 0) && (damageCalculationMsg.getDefenderFigures () > 1))
 				hitPointsThisFigure = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 		}
 		
 		// Store and send final totals
@@ -691,8 +672,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -703,8 +683,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateSingleFigureResistOrDieDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateSingleFigureResistOrDieDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -716,11 +695,11 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 
 		// Set up defender stats
-		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, defender.getUnit (), db);
+		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), defender.getUnit (), db);
 
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 
 		// Is there a saving throw modifier?
 		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
@@ -730,7 +709,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		if (attackDamage.getSpell () != null)
 		{
 			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
-				(attackDamage.getSpell (), getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (defender.getUnit (), defender.getUnit ().getUnitHasSkill (), spells, db));
+				(attackDamage.getSpell (), getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (defender.getUnit (), defender.getUnit ().getUnitHasSkill (), mem.getMaintainedSpell (), db));
 			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getSavingThrowModifier () != null) &&
 				(magicRealmLifeformTypeTarget.getSavingThrowModifier () != 0))
 			{
@@ -754,10 +733,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			
 			// Kill off an entire figure, unless there's only 1 figure left in which be careful that it may already be damaged
 			if (damageCalculationMsg.getDefenderFigures () == 1)
-				totalHits = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender.getUnit (), players, spells, combatAreaEffects, db);
+				totalHits = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender.getUnit (), players, mem, db);
 			else
 				totalHits = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 		}
 		else
 		{
@@ -783,8 +762,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -795,8 +773,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateResistOrTakeDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateResistOrTakeDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -808,9 +785,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 
 		// Set up defender stats
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 
 		// Is there a saving throw modifier?
 		final int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
@@ -824,7 +801,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		if (totalHits < 0)
 			totalHits = 0;
 		else
-			totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), totalHits, 0, 0, players, spells, combatAreaEffects, db);
+			totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), totalHits, 0, 0, players, mem, db);
 			
 		// Store and send final totals
 		damageCalculationMsg.setFinalHits (totalHits);
@@ -843,8 +820,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -855,8 +831,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateResistanceRollsDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateResistanceRollsDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -868,9 +843,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 
 		// Set up defender stats
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 
 		// The potential hits is the number of rolls to make - this type of damage cannot have a saving throw modifier
 		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength ());
@@ -885,7 +860,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualHits (totalHits);
 		
 		// Can't overkill the unit
-		totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), totalHits, 0, 0, players, spells, combatAreaEffects, db);
+		totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), totalHits, 0, 0, players, mem, db);
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
@@ -901,8 +876,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -913,8 +887,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateDisintegrateDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateDisintegrateDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -926,9 +899,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 		
 		// Set up defender stats
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 
 		// Is there a saving throw modifier?
 		final int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
@@ -937,7 +910,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Unit either takes no damage, or dies outright
 		if (damageCalculationMsg.getModifiedDefenceStrength () < 10)
 		{
-			final int totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), Integer.MAX_VALUE, 0, 0, players, spells, combatAreaEffects, db);
+			final int totalHits = getUnitServerUtils ().applyDamage (defender.getUnit (), Integer.MAX_VALUE, 0, 0, players, mem, db);
 			damageCalculationMsg.setFinalHits (totalHits);
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -955,8 +928,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
@@ -966,8 +938,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final void calculateFearDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateFearDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
@@ -979,9 +950,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
 
 		// Set up defender stats - note the minus here, so if 2 figures are already frozen, we can't roll for them again and use those rolls to freeze other figures
-		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, spells, combatAreaEffects, db) - defender.getFiguresFrozenInFear ());
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db) - defender.getFiguresFrozenInFear ());
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 
 		// Is there a saving throw modifier?
 		final int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();

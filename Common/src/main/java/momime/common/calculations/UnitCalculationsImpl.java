@@ -35,7 +35,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
@@ -79,28 +78,25 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/**
 	 * Gives all units full movement back again overland
 	 *
-	 * @param units List of units to update
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
 
-		for (final MemoryUnit thisUnit : units)
+		for (final MemoryUnit thisUnit : mem.getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 				thisUnit.setDoubleOverlandMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					players, spells, combatAreaEffects, db));
+					players, mem, db));
 
 		log.trace ("Exiting resetUnitOverlandMovement");
 	}
@@ -108,32 +104,29 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/**
 	 * Gives all units full movement back again for their combat turn
 	 *
-	 * @param units List of units to update
 	 * @param playerID Player whose units to update 
 	 * @param combatLocation Where the combat is taking place
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation,
-		final List<? extends PlayerPublicDetails> players, final List<MemoryMaintainedSpell> spells,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+	public final void resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering resetUnitCombatMovement: Player ID " + playerID + ", " + combatLocation);
 
-		for (final MemoryUnit thisUnit : units)
+		for (final MemoryUnit thisUnit : mem.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					
 				thisUnit.setDoubleCombatMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					players, spells, combatAreaEffects, db));
+					players, mem, db));
 
 		log.trace ("Exiting resetUnitCombatMovement");
 	}
@@ -240,8 +233,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param unit Unit we want to check
 	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much ranged ammo this unit has when fully loaded
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
@@ -250,19 +242,17 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final int calculateFullRangedAttackAmmo (final AvailableUnit unit, final List<UnitHasSkill> skills, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		return getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 	}
 
 	/**
 	 * @param unit Unit we want to check
 	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much mana the unit has total, before any is spent in combat
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
@@ -271,19 +261,18 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final int calculateManaTotal (final AvailableUnit unit, final List<UnitHasSkill> skills, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Unit caster skill is easy, this directly says how many MP the unit has
 		int total = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 		
 		// The hero caster skill is a bit more of a pain, since we get more mana at higher experience levels
 		int heroSkillValue = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 		if (heroSkillValue > 0)
 		{
-			final int expLevel = getUnitUtils ().getExperienceLevel (unit, true, players, combatAreaEffects, db).getLevelNumber ();
+			final int expLevel = getUnitUtils ().getExperienceLevel (unit, true, players, mem.getCombatAreaEffect (), db).getLevelNumber ();
 			heroSkillValue = (heroSkillValue * 5 * (expLevel+1)) / 2;
 			
 			if (total < 0)
@@ -302,8 +291,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * 
 	 * @param unit Unit we want to give ammo+mana to
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
@@ -311,14 +299,13 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final void giveUnitFullRangedAmmoAndMana (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit, db);
+		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
 		
 		// Now set the values
-		unit.setRangedAttackAmmo (calculateFullRangedAttackAmmo (unit, mergedSkills, players, spells, combatAreaEffects, db));
-		unit.setManaRemaining (calculateManaTotal (unit, mergedSkills, players, spells, combatAreaEffects, db));
+		unit.setRangedAttackAmmo (calculateFullRangedAttackAmmo (unit, mergedSkills, players, mem, db));
+		unit.setManaRemaining (calculateManaTotal (unit, mergedSkills, players, mem, db));
 	}
 
 	/**
@@ -337,8 +324,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/**
 	 * @param unit Unit to calculate HP for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many hit points the unit as a whole has left
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -347,12 +333,11 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final int calculateHitPointsRemaining (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateHitPointsRemaining"));
 		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 		
 		return (figures * hitPointsPerFigure) - unit.getDamageTaken ();
 	}
@@ -362,8 +347,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * 
 	 * @param unit Unit to calculate figure count for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Number of figures left alive in this unit
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -372,14 +356,13 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final int calculateAliveFigureCount (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateAliveFigureCount")) -
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
 			(unit.getDamageTaken () / Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)));
+				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
 		
 		// Protect against weird results
 		if (figures < 0)
@@ -394,8 +377,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * 
 	 * @param unit Unit to calculate HP for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many hit points the first figure in this unit has left
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -404,11 +386,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final int calculateHitPointsRemainingOfFirstFigure (final AvailableUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 		
 		// Work out how much damage the first figure has taken
 		final int damageTaken;
@@ -429,8 +410,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * 
 	 * @param unit Unit to calculate for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether the unit can make a ranged attack in combat and has ammo to do so
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -439,14 +419,13 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final boolean canMakeRangedAttack (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final boolean result;
 		
 		// First we have to actually have a ranged attack
 		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) <= 0)
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) <= 0)
 			
 			result = false;
 		
@@ -891,7 +870,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		}
 		
 		// Now check if we can fire missile attacks at any enemies
-		if (canMakeRangedAttack (unitBeingMoved, players, fogOfWarMemory.getMaintainedSpell (), fogOfWarMemory.getCombatAreaEffect (), db))
+		if (canMakeRangedAttack (unitBeingMoved, players, fogOfWarMemory, db))
 			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
 				for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
 					if (enemyUnits [y] [x])

@@ -25,8 +25,8 @@ import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.WeaponGradeSkillBonus;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
@@ -83,8 +83,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @param component Which component(s) making up this attribute to calculate
 	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Value of the specified skill - base value can be improved by weapon grades, experience or CAEs (e.g. Node Auras or Prayer), or can be reduced by curses or enemy CAEs (e.g. Black Prayer);
 	 * 	Returns -1 if the unit doesn't have the skill
@@ -95,7 +94,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	@Override
 	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID,
 		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering getModifiedSkillValue: " + unit.getUnitID () + ", " + unitSkillID);
@@ -103,12 +102,12 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
 		final List<UnitHasSkill> mergedSkills;
 		if ((unit instanceof MemoryUnit) && (!(skills instanceof UnitHasSkillMergedList)))
-			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, db);
+			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), (MemoryUnit) unit, db);
 		else
 			mergedSkills = skills;
 
 		// Get unit magic realm ID
-		final String storeMagicRealmLifeformTypeID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (unit, mergedSkills, spells, db);
+		final String storeMagicRealmLifeformTypeID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (unit, mergedSkills, mem.getMaintainedSpell (), db);
 
 		// Get basic skill value
 		final int basicValue = getUnitUtils ().getBasicSkillValue (mergedSkills, unitSkillID);
@@ -152,7 +151,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 				}
 	
 				// Any bonuses due to experience?
-				final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (unit, true, players, combatAreaEffects, db);
+				final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (unit, true, players, mem.getCombatAreaEffect (), db);
 				if ((expLvl != null) &&
 					((component == UnitSkillComponent.EXPERIENCE) || (component == UnitSkillComponent.ALL)))
 					
@@ -170,7 +169,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 							{
 								// Now see if the unit has that skill
 								int multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (),
-									UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+									UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
 								if (multiplier >= 0)
 								{
 									// Defining both isn't valid
@@ -211,7 +210,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 				
 				// Any bonuses from CAEs?
 				if ((component == UnitSkillComponent.COMBAT_AREA_EFFECTS) || (component == UnitSkillComponent.ALL))
-					for (final MemoryCombatAreaEffect thisCAE : combatAreaEffects)
+					for (final MemoryCombatAreaEffect thisCAE : mem.getCombatAreaEffect ())
 						if (getUnitUtils ().doesCombatAreaEffectApplyToUnit (unit, thisCAE, db))
 						{
 							// Found a combat area effect whose location matches this unit, as well as any player or other pre-requisites

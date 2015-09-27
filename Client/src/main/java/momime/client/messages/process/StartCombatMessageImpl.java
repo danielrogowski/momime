@@ -66,8 +66,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 			unit.setCombatSide (unitLoc.getCombatSide ());
 			
 			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (unit, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 		}
 		
 		// Start up the UI

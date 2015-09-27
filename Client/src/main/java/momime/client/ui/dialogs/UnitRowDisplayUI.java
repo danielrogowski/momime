@@ -203,8 +203,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 						// Use common routine to do all the validation
 						final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 							(spell, null, getClient ().getOurPlayerID (), null, unit,
-							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						if (validTarget == TargetSpellResult.VALID_TARGET)
 						{
@@ -267,8 +266,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			{
 				final String unitAttributeID = unitAttributeIDs.get (attrNo-1);
 				final int attrValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitAttributeID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
 				if (attrValue > 0)
 				{

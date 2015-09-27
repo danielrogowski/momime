@@ -16,17 +16,25 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.database.UnitSetting;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -47,15 +55,6 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the UnitServerUtils class
@@ -1351,8 +1350,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Set up other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Unit
 		final MemoryUnit defender = new MemoryUnit ();
@@ -1361,12 +1359,12 @@ public final class TestUnitServerUtilsImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 			
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
 		// Fix random number generator rolls
 		// Note these are in sets of 4 - the defence rolls each figure makes trying to block, before taking damage to HP
@@ -1383,6 +1381,6 @@ public final class TestUnitServerUtilsImpl
 		utils.setRandomUtils (random);
 		
 		// Run method
-		assertEquals (3, utils.applyDamage (defender, 6, 4, 5, players, spells, combatAreaEffects, db));	// Take 6 hits, each figure has defence 4, with 50% block chance
+		assertEquals (3, utils.applyDamage (defender, 6, 4, 5, players, fow, db));	// Take 6 hits, each figure has defence 4, with 50% block chance
 	}
 }

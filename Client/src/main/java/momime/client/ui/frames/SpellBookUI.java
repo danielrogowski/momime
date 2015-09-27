@@ -600,8 +600,7 @@ public final class SpellBookUI extends MomClientFrameUI
 												while ((!found) && (iter.hasNext ()))
 													if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 														(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, iter.next (),
-														getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-														getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+														getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 														getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
 														
 														found = true;

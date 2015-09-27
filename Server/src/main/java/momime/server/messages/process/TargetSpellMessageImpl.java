@@ -158,8 +158,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					// Common routine used by both the client and server does the guts of the validation work
 					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 						(spell, null, sender.getPlayerDescription ().getPlayerID (), null, unit,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					if (reason == TargetSpellResult.VALID_TARGET)
 					{

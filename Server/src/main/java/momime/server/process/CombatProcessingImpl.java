@@ -32,9 +32,7 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -169,27 +167,25 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 
 	 * @param unit Unit to compare
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Combat class of the unit, as defined in the list above
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
-	final int calculateUnitCombatClass (final MemoryUnit unit, final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+	final int calculateUnitCombatClass (final MemoryUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering calculateUnitCombatClass: Unit URN " + unit.getUnitURN ());
 		final int result;
 		
 		// Need this twice, so only do it once
-		final UnitHasSkillMergedList unitSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit, db);
+		final UnitHasSkillMergedList unitSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
 		
 		// Does this unit have a ranged attack?
 		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) > 0)
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) > 0)
 		{
 			// Ranged hero or regular unit?
 			if (db.findUnit (unit.getUnitID (), "calculateUnitCombatClass").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
@@ -200,7 +196,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Does this unit have a melee attack?
 		else if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) > 0)
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) > 0)
 		{
 			// Melee hero or regular unit?
 			if (db.findUnit (unit.getUnitID (), "calculateUnitCombatClass").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
@@ -546,11 +542,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 		{
 			// Give unit full ammo and mana
 			// Have to do this now, since sorting the units relies on knowing what ranged attacks they have
-			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (tu, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (tu, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ())));
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ())));
 		}
 		
 		// Sort the units by their "combat class"; this sorts in the order: Melee heroes, melee units, ranged heroes, ranged units, settlers
@@ -644,9 +639,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 					((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
 				
 				// Give this player all their movement for this turn
-				getUnitCalculations ().resetUnitCombatMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), tc.getCombatCurrentPlayer (), combatLocation,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+				getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayer (), combatLocation,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				// Allow the player to cast a spell this turn
 				tc.setSpellCastThisCombatTurn (null);
@@ -1023,8 +1017,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
 				reduceMovementRemaining (tu, getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) / 2);				
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) / 2);				
 			
 			// Actually put the units in that location on the server
 			tu.setCombatPosition (movePath);

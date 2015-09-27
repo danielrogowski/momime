@@ -78,9 +78,8 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 			getNewTurnMessagesUI ().setVisible (true);
 		
 		// Give units full movement
-		getUnitCalculations ().resetUnitOverlandMovement (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), 0,
-			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+		getUnitCalculations ().resetUnitOverlandMovement (0,
+			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// Simultaneous turns games have no 'continued movement' at the start of a turn, since its all processed at the end of the previous turn
 		getOverlandMapProcessing ().setProcessingContinuedMovement (false);

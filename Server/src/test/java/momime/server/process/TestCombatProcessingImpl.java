@@ -36,8 +36,6 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -151,8 +149,7 @@ public final class TestCombatProcessingImpl
 		
 		// Don't need anything real here since we're mocking the attribute calculation
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// One of each kind of test unit
 		final MemoryUnit dwarfHero = new MemoryUnit ();
@@ -175,32 +172,32 @@ public final class TestCombatProcessingImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final UnitHasSkillMergedList unitSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (eq (spells), any (MemoryUnit.class), eq (db))).thenReturn (unitSkills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (eq (fow.getMaintainedSpell ()), any (MemoryUnit.class), eq (db))).thenReturn (unitSkills);
 		
 		when (unitSkillUtils.getModifiedSkillValue (dwarfHero, dwarfHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (dwarfHero, dwarfHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
 		
 		when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
 			
 		when (unitSkillUtils.getModifiedSkillValue (archerHero, archerHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (archerHero, archerHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 				
 		when (unitSkillUtils.getModifiedSkillValue (bowmen, bowmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (bowmen, bowmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 					
 		when (unitSkillUtils.getModifiedSkillValue (settlers, settlers.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
 		when (unitSkillUtils.getModifiedSkillValue (settlers, settlers.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
 						
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -208,11 +205,11 @@ public final class TestCombatProcessingImpl
 		proc.setUnitUtils (unitUtils);
 		
 		// Check results
-		assertEquals (1, proc.calculateUnitCombatClass (dwarfHero, players, spells, combatAreaEffects, db));
-		assertEquals (2, proc.calculateUnitCombatClass (spearmen, players, spells, combatAreaEffects, db));
-		assertEquals (3, proc.calculateUnitCombatClass (archerHero, players, spells, combatAreaEffects, db));
-		assertEquals (4, proc.calculateUnitCombatClass (bowmen, players, spells, combatAreaEffects, db));
-		assertEquals (5, proc.calculateUnitCombatClass (settlers, players, spells, combatAreaEffects, db));
+		assertEquals (1, proc.calculateUnitCombatClass (dwarfHero, players, fow, db));
+		assertEquals (2, proc.calculateUnitCombatClass (spearmen, players, fow, db));
+		assertEquals (3, proc.calculateUnitCombatClass (archerHero, players, fow, db));
+		assertEquals (4, proc.calculateUnitCombatClass (bowmen, players, fow, db));
+		assertEquals (5, proc.calculateUnitCombatClass (settlers, players, fow, db));
 	}
 	
 	/**
@@ -637,8 +634,7 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
-			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db); 
+		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
 	}
 
 	/**
@@ -742,8 +738,7 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
-			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
 	}
 
 	/**
@@ -849,11 +844,8 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation,
-			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
-		
-		verify (unitCalc, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
-			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, players, trueMap, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
 	}
 	
 	/**
@@ -944,11 +936,8 @@ public final class TestCombatProcessingImpl
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation,
-			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
-		
-		verify (unitCalc, times (2)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation,
-			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
+		verify (unitCalc, times (2)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
+		verify (unitCalc, times (2)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, players, trueMap, db);
 	}
 	
 	/**
@@ -3763,7 +3752,7 @@ public final class TestCombatProcessingImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (tu, tu.getUnitHasSkill (),
 			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (6);
+			players, trueMap, db)).thenReturn (6);
 		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();

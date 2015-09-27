@@ -8,6 +8,12 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
@@ -15,8 +21,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.UnitSkillUtils;
@@ -24,12 +29,6 @@ import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Tests the CombatAIImpl class
@@ -134,15 +133,14 @@ public final class TestCombatAIImpl
 
 		// Other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Sample unit
 		final MemoryUnit unit = new MemoryUnit ();
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit, db)).thenReturn (skills);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (skills);
 		
 		// Set up object to test
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -155,25 +153,25 @@ public final class TestCombatAIImpl
 		
 		// Caster with MP remaining
 		unit.setManaRemaining (10);
-		assertEquals (1, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
+		assertEquals (1, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
 		
 		// Unit with a ranged attack
 		unit.setManaRemaining (9);
-		when (unitCalculations.canMakeRangedAttack (unit, players, spells, combatAreaEffects, db)).thenReturn (true);
-		assertEquals (2, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
+		when (unitCalculations.canMakeRangedAttack (unit, players, fow, db)).thenReturn (true);
+		assertEquals (2, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
 		
 		// Unit without the caster skill
-		when (unitCalculations.canMakeRangedAttack (unit, players, spells, combatAreaEffects, db)).thenReturn (false);
+		when (unitCalculations.canMakeRangedAttack (unit, players, fow, db)).thenReturn (false);
 		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
 		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
-		assertEquals (3, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
+		assertEquals (3, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
 		
 		// Caster without MP remaining
 		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
-		assertEquals (4, ai.calculateUnitCombatAIOrder (unit, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+		assertEquals (4, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
 	}
 	
 	/**
@@ -185,9 +183,9 @@ public final class TestCombatAIImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Set up object to test
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
@@ -202,18 +200,18 @@ public final class TestCombatAIImpl
 		// Caster with MP remaining
 		final MemoryUnit casterWithMP = new MemoryUnit ();
 		casterWithMP.setManaRemaining (10);
-		assertEquals (3, ai.evaluateTarget (attacker, casterWithMP, players, spells, combatAreaEffects, db));
+		assertEquals (3, ai.evaluateTarget (attacker, casterWithMP, players, fow, db));
 		
 		// Unit with a ranged attack
 		final MemoryUnit ranged = new MemoryUnit ();
 		ranged.setManaRemaining (9);
-		when (unitCalculations.canMakeRangedAttack (ranged, players, spells, combatAreaEffects, db)).thenReturn (true);
-		assertEquals (2, ai.evaluateTarget (attacker, ranged, players, spells, combatAreaEffects, db));
+		when (unitCalculations.canMakeRangedAttack (ranged, players, fow, db)).thenReturn (true);
+		assertEquals (2, ai.evaluateTarget (attacker, ranged, players, fow, db));
 		
 		// Unit without the caster skill
 		final MemoryUnit melee = new MemoryUnit ();
 		melee.setUnitID ("UN001");		// Dwarf hero
-		assertEquals (1, ai.evaluateTarget (attacker, melee, players, spells, combatAreaEffects, db));
+		assertEquals (1, ai.evaluateTarget (attacker, melee, players, fow, db));
 		
 		// Caster without MP remaining
 		final MemoryUnit casterWithoutMP = new MemoryUnit ();
@@ -225,6 +223,6 @@ public final class TestCombatAIImpl
 		casterSkill.setUnitSkillValue (3);
 		casterWithoutMP.getUnitHasSkill ().add (casterSkill);
 		
-		assertEquals (1, ai.evaluateTarget (attacker, casterWithoutMP, players, spells, combatAreaEffects, db));
+		assertEquals (1, ai.evaluateTarget (attacker, casterWithoutMP, players, fow, db));
 	}
 }

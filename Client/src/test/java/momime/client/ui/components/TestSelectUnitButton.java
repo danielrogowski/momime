@@ -250,7 +250,7 @@ public final class TestSelectUnitButton
 		// Hit points
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (5);
 		when (unitSkillUtils.getModifiedSkillValue (u, u.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (2);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (2);
 		
 		// Coloured image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();

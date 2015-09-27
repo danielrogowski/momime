@@ -14,6 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.random.RandomUtils;
+
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitCalculationsImpl;
 import momime.common.calculations.UnitHasSkillMergedList;
@@ -28,7 +40,6 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
@@ -49,18 +60,6 @@ import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the ServerUnitCalculations class
@@ -90,8 +89,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 
 		// Unit skills
 		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
@@ -105,13 +103,13 @@ public final class TestServerUnitCalculationsImpl
 
 		// Unit with no skills and no scouting range
 		final MemoryUnit unit = new MemoryUnit ();
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit, db)).thenReturn (mergedSkills);
-		assertEquals (1, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (mergedSkills);
+		assertEquals (1, calc.calculateUnitScoutingRange (unit, players, fow, db));
 		
 		// Unit with Scouting III
 		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);
-		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);
+		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, fow, db));
 		
 		// Unit with two skills, one which grants Scouting II (like Flight) and one which has nothing at all to do with scouting
 		final UnitHasSkill flight = new UnitHasSkill ();
@@ -122,14 +120,14 @@ public final class TestServerUnitCalculationsImpl
 		other.setUnitSkillID ("US002");
 		mergedSkills.add (other);
 		
-		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
+		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, fow, db));
 		
 		// Unit with a skill which grants Scouting IV
 		final UnitHasSkill longSight = new UnitHasSkill ();
 		longSight.setUnitSkillID ("US003");
 		mergedSkills.add (longSight);
 
-		assertEquals (4, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
+		assertEquals (4, calc.calculateUnitScoutingRange (unit, players, fow, db));
 	}
 
 	/**
@@ -889,8 +887,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Units
 		final MemoryUnit attacker = new MemoryUnit ();
@@ -902,7 +899,7 @@ public final class TestServerUnitCalculationsImpl
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		
 		// Run method
-		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
 	}
 
 	/**
@@ -927,8 +924,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Units
 		final MemoryUnit attacker = new MemoryUnit ();
@@ -943,7 +939,7 @@ public final class TestServerUnitCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
 	}
 
 	/**
@@ -968,8 +964,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Units
 		final MemoryUnit attacker = new MemoryUnit ();
@@ -984,7 +979,7 @@ public final class TestServerUnitCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
 	}
 
 	/**
@@ -1009,8 +1004,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Units
 		final MemoryUnit attacker = new MemoryUnit ();
@@ -1023,7 +1017,7 @@ public final class TestServerUnitCalculationsImpl
 		// We don't have the Long Range skill
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
@@ -1031,7 +1025,7 @@ public final class TestServerUnitCalculationsImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (3, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+		assertEquals (3, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
 	}
 
 	/**
@@ -1056,8 +1050,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Units
 		final MemoryUnit attacker = new MemoryUnit ();
@@ -1070,7 +1063,7 @@ public final class TestServerUnitCalculationsImpl
 		// We don't have the Long Range skill
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
@@ -1078,6 +1071,6 @@ public final class TestServerUnitCalculationsImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, spells, combatAreaEffects, db));
+		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
 	}
 }

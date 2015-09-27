@@ -2,6 +2,11 @@ package momime.common.calculations;
 
 import java.util.List;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
@@ -11,16 +16,10 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.PlayerPick;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Common calculations pertaining to units
@@ -30,37 +29,31 @@ public interface UnitCalculations
 	/**
 	 * Gives all units full movement back again overland
 	 *
-	 * @param units List of units to update
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	public void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
 	 * Gives all units full movement back again for their combat turn
 	 *
-	 * @param units List of units to update
 	 * @param playerID Player whose units to update 
 	 * @param combatLocation Where the combat is taking place
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation,
-		final List<? extends PlayerPublicDetails> players, final List<MemoryMaintainedSpell> spells,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+	public void resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -91,8 +84,7 @@ public interface UnitCalculations
 	 * @param unit Unit we want to check
 	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much ranged ammo this unit has when fully loaded
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
@@ -100,15 +92,13 @@ public interface UnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public int calculateFullRangedAttackAmmo (final AvailableUnit unit, final List<UnitHasSkill> skills, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
 	 * @param unit Unit we want to check
 	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How much mana the unit has total, before any is spent in combat
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
@@ -116,8 +106,7 @@ public interface UnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public int calculateManaTotal (final AvailableUnit unit, final List<UnitHasSkill> skills, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
 	 * Initializes any values on the unit at the start of a combat
@@ -126,16 +115,14 @@ public interface UnitCalculations
 	 * 
 	 * @param unit Unit we want to give ammo+mana to
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public void giveUnitFullRangedAmmoAndMana (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
 	 * Decreases amount of ranged ammo remaining for this unit when it fires a ranged attack
@@ -146,8 +133,7 @@ public interface UnitCalculations
 	/**
 	 * @param unit Unit to calculate HP for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many hit points the unit as a whole has left
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -155,16 +141,14 @@ public interface UnitCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public int calculateHitPointsRemaining (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
 	 * First figure will take full damage before the second figure takes any damage
 	 * 
 	 * @param unit Unit to calculate attribute value for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Number of figures left alive in this unit
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -172,8 +156,7 @@ public interface UnitCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public int calculateAliveFigureCount (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
 	 * Of course available units can never lose hitpoints, however we still need to define this so the unit info screen can use
@@ -181,8 +164,7 @@ public interface UnitCalculations
 	 * 
 	 * @param unit Unit to calculate HP for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many hit points the first figure in this unit has left
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -190,8 +172,7 @@ public interface UnitCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public int calculateHitPointsRemainingOfFirstFigure (final AvailableUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
 	 * This isn't as straightforward as it sounds, we either need dedicated ranged attack ammo (which can be phys or magic ranged attacks)
@@ -199,8 +180,7 @@ public interface UnitCalculations
 	 * 
 	 * @param unit Unit to calculate for
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether the unit can make a ranged attack in combat and has ammo to do so
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -208,8 +188,7 @@ public interface UnitCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public boolean canMakeRangedAttack (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
 	 * @param unitStack Unit stack to check

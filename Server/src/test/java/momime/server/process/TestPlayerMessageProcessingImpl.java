@@ -613,7 +613,7 @@ public final class TestPlayerMessageProcessingImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (players), eq (fow.getMaintainedSpell ()), eq (fow.getCombatAreaEffect ()), eq (db))).thenReturn (2);
+			eq (players), eq (fow), eq (db))).thenReturn (2);
 		
 		// Set up test object
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
@@ -733,7 +733,7 @@ public final class TestPlayerMessageProcessingImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (players), eq (fow.getMaintainedSpell ()), eq (fow.getCombatAreaEffect ()), eq (db))).thenReturn (2);
+			eq (players), eq (fow), eq (db))).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)
@@ -870,7 +870,7 @@ public final class TestPlayerMessageProcessingImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (players), eq (fow.getMaintainedSpell ()), eq (fow.getCombatAreaEffect ()), eq (db))).thenReturn (2);
+			eq (players), eq (fow), eq (db))).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)

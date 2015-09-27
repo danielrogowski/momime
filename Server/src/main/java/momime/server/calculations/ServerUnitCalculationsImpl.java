@@ -9,6 +9,18 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.MapCoordinates2D;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
@@ -23,7 +35,6 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -40,18 +51,6 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates2D;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
 
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
@@ -91,8 +90,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	/**
 	 * @param unit The unit to check
 	 * @param players Pre-locked players list
-	 * @param spells Known spells (flight spell might increase scouting range)
-	 * @param combatAreaEffects Known combat area effects (because theoretically, you could define a CAE which bumped up the scouting skill...)
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many squares this unit can see; by default = 1, flying units automatically get 2, and the Scouting unit skill can push this even higher
 	 * @throws RecordNotFoundException If we can't find the player who owns the unit, or the unit has a skill that we can't find in the cache
@@ -101,20 +99,19 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 */
 	@Override
 	public final int calculateUnitScoutingRange (final MemoryUnit unit, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering calculateUnitScoutingRange: Unit URN " + unit.getUnitURN () + ", " + unit.getUnitID ());
 
 		int scoutingRange = 1;
 
 		// Make sure we only bother to do this once
-		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit, db);
+		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
 
 		// Actual scouting skill
 		scoutingRange = Math.max (scoutingRange, getUnitSkillUtils ().getModifiedSkillValue
 			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
 		for (final UnitHasSkill thisSkill : mergedSkills)
@@ -629,8 +626,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param defender Unit being shot
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return To hit penalty incurred from the distance between the attacker and defender, NB. this is not capped in any way so may get very high values here
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
@@ -640,8 +636,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	@Override
 	public final int calculateRangedAttackDistancePenalty (final MemoryUnit attacker, final MemoryUnit defender,
 		final CombatMapSize combatMapCoordinateSystem, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering calculateRangedAttackDistancePenalty: Attacker Unit URN " + attacker.getUnitURN () + ", Defender Unit URN " + defender.getUnitURN ());
 
@@ -661,7 +656,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			
 			// Long range skill?
 			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db) >= 0))
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) >= 0))
 				
 				penalty = 1;
 		}

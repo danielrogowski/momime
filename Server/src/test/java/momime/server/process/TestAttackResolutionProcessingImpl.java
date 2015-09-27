@@ -8,6 +8,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -16,8 +21,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
 import momime.server.calculations.AttackDamage;
@@ -28,11 +32,6 @@ import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
-
-import org.junit.Test;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the AttackResolutionProcessingImpl class
@@ -50,8 +49,7 @@ public final class TestAttackResolutionProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Set up players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
@@ -62,12 +60,12 @@ public final class TestAttackResolutionProcessingImpl
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -95,7 +93,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitSkillUtils (unitSkillUtils);
 
 		// Run method
-		final AttackResolutionSvr chosen = proc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);
+		final AttackResolutionSvr chosen = proc.chooseAttackResolution (attacker, defender, "UA01", players, fow, db);
 		
 		// Check results
 		assertSame (res2, chosen);
@@ -112,8 +110,7 @@ public final class TestAttackResolutionProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Set up players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
@@ -124,12 +121,12 @@ public final class TestAttackResolutionProcessingImpl
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -157,7 +154,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitSkillUtils (unitSkillUtils);
 
 		// Run method
-		proc.chooseAttackResolution (attacker, defender, "UA01", players, spells, combatAreaEffects, db);
+		proc.chooseAttackResolution (attacker, defender, "UA01", players, fow, db);
 	}
 	
 	/**
@@ -305,8 +302,7 @@ public final class TestAttackResolutionProcessingImpl
 		final CombatMapSize combatMapSize = new CombatMapSize ();
 		
 		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -336,11 +332,11 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
-		when (unitCalc.canMakeRangedAttack (attacker, players, spells, combatAreaEffects, db)).thenReturn (true);
+		when (unitCalc.canMakeRangedAttack (attacker, players, fow, db)).thenReturn (true);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
+		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
 		
 		// Wrappers
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -351,11 +347,11 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
+			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
 		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
+			potentialDamageToDefender, players, fow, db)).thenReturn (3);
 		
 		// Range penalty
 		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
@@ -368,7 +364,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Run method
 		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
-			steps, null, players, spells, combatAreaEffects, combatMapSize, db);
+			steps, null, players, fow, combatMapSize, db);
 		
 		// Check results
 		assertEquals (0, attacker.getDamageTaken ());
@@ -402,8 +398,7 @@ public final class TestAttackResolutionProcessingImpl
 		final CombatMapSize combatMapSize = new CombatMapSize ();
 		
 		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -435,11 +430,11 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Attacker has already taken 2 hits, and can take 6 more
 		attacker.setDamageTaken (2);
-		when (unitCalc.calculateHitPointsRemaining (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);
+		when (unitCalc.calculateHitPointsRemaining (attacker, players, fow, db)).thenReturn (6);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
+		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
 
 		// Wrappers
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -450,17 +445,17 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender);
+			players, fow, db)).thenReturn (potentialDamageToDefender);
 
 		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageTypeID.SINGLE_FIGURE, null, 1);
 		when (damageCalc.attackFromUnitSkill (defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToAttacker);
+			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
 		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
+			potentialDamageToDefender, players, fow, db)).thenReturn (3);
 		when (damageCalc.calculateSingleFigureDamage (attackerWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToAttacker, players, spells, combatAreaEffects, db)).thenReturn (4);
+			potentialDamageToAttacker, players, fow, db)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -469,7 +464,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Run method
 		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
-			steps, null, players, spells, combatAreaEffects, combatMapSize, db);
+			steps, null, players, fow, combatMapSize, db);
 		
 		// Check results
 		assertEquals (2+4, attacker.getDamageTaken ());
@@ -500,8 +495,7 @@ public final class TestAttackResolutionProcessingImpl
 		final CombatMapSize combatMapSize = new CombatMapSize ();
 		
 		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -533,7 +527,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
+		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
 
 		// Wrappers
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -544,17 +538,17 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US002",
-			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender1);
+			players, fow, db)).thenReturn (potentialDamageToDefender1);
 		
 		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, DamageTypeID.DOOM, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US004",
-			players, spells, combatAreaEffects, db)).thenReturn (potentialDamageToDefender2);
+			players, fow, db)).thenReturn (potentialDamageToDefender2);
 
 		// 3+4 of them actually hit
 		when (damageCalc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender1, players, spells, combatAreaEffects, db)).thenReturn (3);
+			potentialDamageToDefender1, players, fow, db)).thenReturn (3);
 		when (damageCalc.calculateDoomDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender2, players, spells, combatAreaEffects, db)).thenReturn (4);
+			potentialDamageToDefender2, players, fow, db)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -563,7 +557,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Run method
 		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
-			steps, null, players, spells, combatAreaEffects, combatMapSize, db);
+			steps, null, players, fow, combatMapSize, db);
 		
 		// Check results
 		assertEquals (0, attacker.getDamageTaken ());
@@ -588,8 +582,7 @@ public final class TestAttackResolutionProcessingImpl
 		final CombatMapSize combatMapSize = new CombatMapSize ();
 		
 		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -617,7 +610,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		defender.setDamageTaken (3);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, spells, combatAreaEffects, db)).thenReturn (5);
+		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
 
 		// Wrapper
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
@@ -628,7 +621,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// 3 of them actually hit
 		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender, players, spells, combatAreaEffects, db)).thenReturn (3);
+			potentialDamageToDefender, players, fow, db)).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -637,7 +630,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Run method
 		proc.processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, steps,
-			potentialDamageToDefender, players, spells, combatAreaEffects, combatMapSize, db);
+			potentialDamageToDefender, players, fow, combatMapSize, db);
 		
 		// Check results
 		assertEquals (3+3, defender.getDamageTaken ());

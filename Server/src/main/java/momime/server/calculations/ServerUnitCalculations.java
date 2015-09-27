@@ -5,6 +5,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitStack;
 import momime.common.database.FogOfWarSetting;
@@ -12,15 +16,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
@@ -30,8 +28,7 @@ public interface ServerUnitCalculations
 	/**
 	 * @param unit The unit to check
 	 * @param players Pre-locked players list
-	 * @param spells Known spells (flight spell might increase scouting range)
-	 * @param combatAreaEffects Known combat area effects (because theoretically, you could define a CAE which bumped up the scouting skill...)
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many squares this unit can see; by default = 1, flying units automatically get 2, and the Scouting unit skill can push this even higher
 	 * @throws RecordNotFoundException If we can't find the player who owns the unit, or the unit has a skill that we can't find in the cache
@@ -39,8 +36,7 @@ public interface ServerUnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public int calculateUnitScoutingRange (final MemoryUnit unit, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
 	 * @param x X coordinate of the location we want to check
@@ -111,8 +107,7 @@ public interface ServerUnitCalculations
 	 * @param defender Unit being shot
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param players Players list
-	 * @param spells Known spells
-	 * @param combatAreaEffects Known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return To hit penalty incurred from the distance between the attacker and defender, NB. this is not capped in any way so may get very high values here
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
@@ -121,6 +116,5 @@ public interface ServerUnitCalculations
 	 */
 	public int calculateRangedAttackDistancePenalty (final MemoryUnit attacker, final MemoryUnit defender,
 		final CombatMapSize combatMapCoordinateSystem, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

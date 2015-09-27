@@ -6755,6 +6755,9 @@
 	</heroItemSlotType>
 	<unitSkill unitSkillID="UA01">
 		<unitSkillDescription>Melee Attack Strength</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>S</damageType>
+		<damagePerFigure>S</damagePerFigure>
 		<attackResolution>
 			<attackResolutionDescription>Attacker has First Strike and Haste, Defender has Haste - Attacker gets first hit in for free; then attacker makes 2nd attack with defender making simultaneous counterattack; then lastly defender makes 2nd counterattack</attackResolutionDescription>
 			<attackResolutionCondition>
@@ -8218,6 +8221,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="UA02">
 		<unitSkillDescription>Ranged Attack Strength</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageType>S</damageType>
+		<damagePerFigure>S</damagePerFigure>
 		<attackResolution>
 			<attackResolutionDescription>Hasted ranged attack</attackResolutionDescription>
 			<attackResolutionCondition>

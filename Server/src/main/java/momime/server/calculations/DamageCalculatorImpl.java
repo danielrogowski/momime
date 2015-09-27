@@ -138,9 +138,16 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			
 			// Different skills deal different types of damage
 			final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
+
+			if (unitSkill.getDamageType () == null)
+				throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageType defined");
+			
 			damageCalculationMsg.setDamageType (unitSkill.getDamageType ());
 			
 			// Some skills hit just once from the whole attacking unit, some hit once per figure
+			if (unitSkill.getDamagePerFigure () == null)
+				throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damagePerFigure defined");
+			
 			final int repetitions;
 			switch (unitSkill.getDamagePerFigure ())
 			{

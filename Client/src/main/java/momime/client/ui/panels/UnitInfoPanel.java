@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Action;
@@ -60,6 +61,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
@@ -614,6 +617,25 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		else
 			mergedSkills = unit.getUnitHasSkill ();
 		
+		// If the unit has no + to hit / + to defence skill, but gains it through some other means, e.g. experience, then display it
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK})
+		{
+			boolean exists = false;
+			final Iterator<UnitHasSkill> iter = mergedSkills.iterator ();
+			while ((!exists) && (iter.hasNext ()))
+				if (iter.next ().getUnitSkillID ().equals (unitSkillID))
+					exists = true;
+			
+			if ((!exists) && (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 0))
+			{
+				final UnitHasSkill plus = new UnitHasSkill ();
+				plus.setUnitSkillID (unitSkillID);
+				mergedSkills.add (plus);
+			}
+		}
+		
+		// Add each skill
 		getUnitSkillListCellRenderer ().setUnit (unit);
 		for (final UnitHasSkill thisSkill : mergedSkills)
 		{

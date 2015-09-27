@@ -61,7 +61,10 @@ public final class UnitAttributeListCellRenderer extends JPanel implements ListC
 		final String description = (skillLang == null) ? null : skillLang.getUnitSkillDescription ();
 		textLabel.setText ((description != null) ? description : value.getUnitSkillID ());
 		
-		imageLabel.setIcon (new ImageIcon (value.getUnitAttributeBreakdownImage ()));
+		if (value.getUnitAttributeBreakdownImage () == null)
+			imageLabel.setIcon (null);
+		else
+			imageLabel.setIcon (new ImageIcon (value.getUnitAttributeBreakdownImage ()));
 
 		return this;
 	}

@@ -114,16 +114,23 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 		// Get basic skill value
 		final int basicValue = getUnitUtils ().getBasicSkillValue (mergedSkills, unitSkillID);
 		
-		// If we don't have the skill at all, then return -1 regardless of which components were asked for.
+		// The majority of skills, if we don't have the skill at all, then bonuses don't apply to it.
 		// Also if it is a value-less skill like a movement skill, then no bonuses or penalities can apply to it so we just return 0, regardless of which components were asked for.
+		// e.g. Settlers have no melee attack - just because they might gain 20 exp doesn't mean they start attacking with their pitchforks.
+		// e.g. Units with no ranged attack don't suddenly gain one.
+		// e.g. Phantom Warriors have no defence, but this is in the nature of the type of unit, and I think it makes sense to not allow them to gain a defence thru bonuses.
+		// Movement speed, HP and Resistance are N/A here, because all units MUST define a value for those (see ServerDatabaseExImpl.consistencyChecks ())
+		// So the two that are left, that we must treat differently, are + to hit and + to block.  Most units don't have those values defined, but bonuses definitely still apply.
 		int total;
-		if (basicValue <= 0)
+		if ((basicValue <= 0) && (!unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)) &&
+			(!unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)))
+				
 			total = basicValue;
 		else
 		{
 			// Include basic value in total?
 			total = 0;
-			if ((component == UnitSkillComponent.BASIC) || (component == UnitSkillComponent.ALL))
+			if ((basicValue > 0) && ((component == UnitSkillComponent.BASIC) || (component == UnitSkillComponent.ALL)))
 				total = total + addToSkillValue (basicValue, positiveNegative);
 			
 			// Exclude experience, otherwise we get a repetitive loop as the call to expLvl = getExperienceLevel () lower down calls getSkillValue!
@@ -247,6 +254,10 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 									total = total + addToSkillValue (caeBonusCache.getBonusValue (), positiveNegative);
 						}
 			}
+			
+			// If we were searching for a + to hit or + to block bonus and never found one, and the unit didn't have the skill to begin with, then revert to returning -1
+			if ((total == 0) && (basicValue < 0))
+				total = basicValue;
 		}
 
 		log.trace ("Exiting getModifiedSkillValue = " + total);
@@ -273,13 +284,14 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 		log.trace ("Entering getHighestModifiedSkillValue: " + unitLocation + ", " + unitCombatLocation + ", " + owningPlayerID + ", " + unitSkillID);
 		
 		int highest = -1;
-		for (final MemoryUnit thisUnit : mem.getUnit ())
-			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == owningPlayerID) && (unitLocation.equals (thisUnit.getUnitLocation ())) &&
-				(((unitCombatLocation == null) && (thisUnit.getCombatLocation () == null)) ||
-				((unitCombatLocation != null) && (unitCombatLocation.equals (thisUnit.getCombatLocation ())))))
-				
-				highest = Math.max (highest, getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), unitSkillID,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
+		if (unitLocation != null)
+			for (final MemoryUnit thisUnit : mem.getUnit ())
+				if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == owningPlayerID) && (unitLocation.equals (thisUnit.getUnitLocation ())) &&
+					(((unitCombatLocation == null) && (thisUnit.getCombatLocation () == null)) ||
+					((unitCombatLocation != null) && (unitCombatLocation.equals (thisUnit.getCombatLocation ())))))
+					
+					highest = Math.max (highest, getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), unitSkillID,
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 
 		log.trace ("Exiting getHighestModifiedSkillValue = " + highest);
 		return highest;

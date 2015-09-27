@@ -776,7 +776,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			mergedSkills = unit.getUnitHasSkill ();
 		
 		final BufferedImage image;
-		if (getUnitUtils ().getBasicSkillValue (mergedSkills, unitSkillID) <= 0)
+		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
+			
 			image = null;
 		else
 		{

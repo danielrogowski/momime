@@ -308,6 +308,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 					final AvailableUnit sampleUnit = new AvailableUnit ();
 					sampleUnit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
 					sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
+					sampleUnit.setUnitLocation (new MapCoordinates3DEx (getCityLocation ()));
 					try
 					{
 						final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings

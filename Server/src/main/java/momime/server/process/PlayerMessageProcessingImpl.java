@@ -661,9 +661,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			mom.getSessionLogger ().info ("Start phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
-		// Give units their full movement back again
-		getUnitCalculations ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-
 		// Heal hurt units 1pt and gain 1exp
 		getFogOfWarMidTurnMultiChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
@@ -681,6 +678,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				mom.getSessionDescription (), mom.getServerDB ());
 		}
 
+		// Give units their full movement back again
+		// NB. Do this after our cities may have constructed new units above
+		getUnitCalculations ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		
 		// Now need to do one final recalc to take into account
 		// 1) Cities producing more food/gold due to increased population
 		// 2) Cities eating more food due to increased population

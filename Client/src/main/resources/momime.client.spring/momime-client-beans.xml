@@ -459,6 +459,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />

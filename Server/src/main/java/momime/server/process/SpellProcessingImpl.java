@@ -228,6 +228,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 							// For non-heroes, create a new unit
 							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, summonedUnitID, addLocation.getUnitLocation (), cityLocation,
 								null, player, UnitStatusID.ALIVE, players, sd, db);
+						
+						// Let it move this turn
+						newUnit.setDoubleOverlandMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (newUnit, newUnit.getUnitHasSkill (),
+							CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+							players, gsk.getTrueMap (), db));
 					}
 
 					// Show on new turn messages for the player who summoned it

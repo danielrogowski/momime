@@ -355,15 +355,19 @@ public final class TestSpellProcessingImpl
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (summoningCircleLocation, "UN001", 7, trueMap, sd, db)).thenReturn (addLocation);
 		
-		// Set up test object
+		// Mock creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, summoningCircleLocation, null,
+			player3, UnitStatusID.ALIVE, players, sd, db)).thenReturn (new MemoryUnit ());
 		
+		// Set up test object		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setSpellUtils (utils);
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		proc.setRandomUtils (randomUtils);
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setUnitSkillUtils (mock (UnitSkillUtils.class));
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -482,6 +486,7 @@ public final class TestSpellProcessingImpl
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		proc.setRandomUtils (randomUtils);
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setUnitSkillUtils (mock (UnitSkillUtils.class));
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);

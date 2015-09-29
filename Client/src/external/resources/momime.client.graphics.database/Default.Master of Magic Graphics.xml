@@ -42254,6 +42254,159 @@
 		<sizeMultiplier>1</sizeMultiplier>
 		<buildingID>BL02</buildingID>
 	</cityViewElement>
+	<heroItemType heroItemTypeID="IT01">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/sword-09.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT02">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-09.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-10.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/mace-11.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT03">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/axe-09.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT04">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/bow-09.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT05">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/staff-09.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT06">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/wand-09.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT07">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-09.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-10.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-11.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-12.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-13.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-14.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-15.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-16.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-17.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-18.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-19.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-20.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-21.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-22.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-23.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-24.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-25.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-26.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-27.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-28.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-29.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-30.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-31.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-32.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-33.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-34.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/misc-35.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT08">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-08.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/shield-09.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT09">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-07.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/chain-08.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT10">
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/plate-01.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/plate-02.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/plate-03.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/plate-04.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/plate-05.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/plate-06.png</heroItemTypeImageFile>
+		<heroItemTypeImageFile>/momime.client.graphics/heroItems/items/plate-07.png</heroItemTypeImageFile>
+	</heroItemType>
+	<heroItemSlotType heroItemSlotTypeID="IST01">
+		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/melee.png</heroItemSlotTypeImageFile>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST02">
+		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/bowOrMelee.png</heroItemSlotTypeImageFile>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST03">
+		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/meleeOrMagic.png</heroItemSlotTypeImageFile>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST04">
+		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/magic.png</heroItemSlotTypeImageFile>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST05">
+		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/misc.png</heroItemSlotTypeImageFile>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST06">
+		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/armour.png</heroItemSlotTypeImageFile>
+	</heroItemSlotType>
 	<animation animationID="UN001_D1_WALKFLY">
 		<animationDescription>Dwarf walking/flying up</animationDescription>
 		<animationSpeed>6</animationSpeed>

@@ -6729,29 +6729,88 @@
 	<unitType unitTypeID="S">
 		<unitTypeDescription>Summoned</unitTypeDescription>
 	</unitType>
+	<heroItemType heroItemTypeID="IT01">
+		<baseCraftingCost>100</baseCraftingCost>
+		<heroItemTypeDescription>Sword</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT02">
+		<baseCraftingCost>100</baseCraftingCost>
+		<heroItemTypeDescription>Mace</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT03">
+		<baseCraftingCost>100</baseCraftingCost>
+		<heroItemTypeDescription>Axe</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT04">
+		<baseCraftingCost>100</baseCraftingCost>
+		<heroItemTypeDescription>Bow</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT05">
+		<baseCraftingCost>300</baseCraftingCost>
+		<heroItemTypeDescription>Staff</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT06">
+		<baseCraftingCost>200</baseCraftingCost>
+		<heroItemTypeDescription>Wand</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT07">
+		<baseCraftingCost>50</baseCraftingCost>
+		<heroItemTypeDescription>Miscellaneous accessory</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT08">
+		<baseCraftingCost>100</baseCraftingCost>
+		<heroItemTypeBasicStat heroItemBasicSkillID="US014" />
+		<heroItemTypeDescription>Shield</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT09">
+		<baseCraftingCost>100</baseCraftingCost>
+		<heroItemTypeBasicStat heroItemBasicSkillID="UA04">
+			<heroItemBasicSkillValue>1</heroItemBasicSkillValue>
+		</heroItemTypeBasicStat>
+		<heroItemTypeDescription>Chain mail</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT10">
+		<baseCraftingCost>300</baseCraftingCost>
+		<heroItemTypeBasicStat heroItemBasicSkillID="UA04">
+			<heroItemBasicSkillValue>2</heroItemBasicSkillValue>
+		</heroItemTypeBasicStat>
+		<heroItemTypeDescription>Plate mail</heroItemTypeDescription>
+	</heroItemType>
 	<heroItemSlotType heroItemSlotTypeID="IST01">
-		<slotTypeDescription>Sword</slotTypeDescription>
-		<slotTypeImageNumber>19</slotTypeImageNumber>
+		<heroSlotAllowedItemType heroItemTypeID="IT01" />
+		<heroSlotAllowedItemType heroItemTypeID="IT02" />
+		<heroSlotAllowedItemType heroItemTypeID="IT03" />
+		<slotTypeDescription>Melee weapon</slotTypeDescription>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST02">
-		<slotTypeDescription>Bow</slotTypeDescription>
-		<slotTypeImageNumber>20</slotTypeImageNumber>
+		<heroSlotAllowedItemType heroItemTypeID="IT01" />
+		<heroSlotAllowedItemType heroItemTypeID="IT02" />
+		<heroSlotAllowedItemType heroItemTypeID="IT03" />
+		<heroSlotAllowedItemType heroItemTypeID="IT04" />
+		<slotTypeDescription>Bow or Melee weapon</slotTypeDescription>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST03">
-		<slotTypeDescription>Sword or Wand</slotTypeDescription>
-		<slotTypeImageNumber>21</slotTypeImageNumber>
+		<heroSlotAllowedItemType heroItemTypeID="IT01" />
+		<heroSlotAllowedItemType heroItemTypeID="IT02" />
+		<heroSlotAllowedItemType heroItemTypeID="IT03" />
+		<heroSlotAllowedItemType heroItemTypeID="IT05" />
+		<heroSlotAllowedItemType heroItemTypeID="IT06" />
+		<slotTypeDescription>Melee or Magic weapon</slotTypeDescription>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST04">
-		<slotTypeDescription>Wand</slotTypeDescription>
-		<slotTypeImageNumber>22</slotTypeImageNumber>
+		<heroSlotAllowedItemType heroItemTypeID="IT05" />
+		<heroSlotAllowedItemType heroItemTypeID="IT06" />
+		<slotTypeDescription>Magic weapon</slotTypeDescription>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST05">
-		<slotTypeDescription>Ring</slotTypeDescription>
-		<slotTypeImageNumber>23</slotTypeImageNumber>
+		<heroSlotAllowedItemType heroItemTypeID="IT07" />
+		<slotTypeDescription>Miscellaneous accessory</slotTypeDescription>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST06">
-		<slotTypeDescription>Shield</slotTypeDescription>
-		<slotTypeImageNumber>24</slotTypeImageNumber>
+		<heroSlotAllowedItemType heroItemTypeID="IT08" />
+		<heroSlotAllowedItemType heroItemTypeID="IT09" />
+		<heroSlotAllowedItemType heroItemTypeID="IT10" />
+		<slotTypeDescription>Armour</slotTypeDescription>
 	</heroItemSlotType>
 	<unitSkill unitSkillID="UA01">
 		<unitSkillDescription>Melee Attack Strength</unitSkillDescription>
@@ -9070,9 +9129,9 @@
 		</unitHasSkill>
 		<unitName>Dwarf</unitName>
 		<hiringFame>0</hiringFame>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN001_HN01" />
 		<heroName heroNameID="UN001_HN02" />
 		<heroName heroNameID="UN001_HN03" />
@@ -9110,9 +9169,9 @@
 		</unitHasSkill>
 		<unitName>Barbarian</unitName>
 		<hiringFame>0</hiringFame>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN002_HN01" />
 		<heroName heroNameID="UN002_HN02" />
 		<heroName heroNameID="UN002_HN03" />
@@ -9154,9 +9213,9 @@
 		</unitHasSkill>
 		<unitName>Sage</unitName>
 		<hiringFame>0</hiringFame>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN003_HN01" />
 		<heroName heroNameID="UN003_HN02" />
 		<heroName heroNameID="UN003_HN03" />
@@ -9198,9 +9257,9 @@
 		</unitHasSkill>
 		<unitName>Dervish</unitName>
 		<hiringFame>0</hiringFame>
-		<heroItemType itemTypeID="IST02" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST02" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN004_HN01" />
 		<heroName heroNameID="UN004_HN02" />
 		<heroName heroNameID="UN004_HN03" />
@@ -9239,9 +9298,9 @@
 		</unitHasSkill>
 		<unitName>Beastmaster</unitName>
 		<hiringFame>0</hiringFame>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN005_HN01" />
 		<heroName heroNameID="UN005_HN02" />
 		<heroName heroNameID="UN005_HN03" />
@@ -9279,9 +9338,9 @@
 		</unitHasSkill>
 		<unitName>Bard</unitName>
 		<hiringFame>0</hiringFame>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN006_HN01" />
 		<heroName heroNameID="UN006_HN02" />
 		<heroName heroNameID="UN006_HN03" />
@@ -9319,9 +9378,9 @@
 		<hiringFame>0</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN007_HN01" />
 		<heroName heroNameID="UN007_HN02" />
 		<heroName heroNameID="UN007_HN03" />
@@ -9363,9 +9422,9 @@
 		<hiringFame>0</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN008_HN01" />
 		<heroName heroNameID="UN008_HN02" />
 		<heroName heroNameID="UN008_HN03" />
@@ -9410,9 +9469,9 @@
 		<hiringFame>0</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST02" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST02" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN009_HN01" />
 		<heroName heroNameID="UN009_HN02" />
 		<heroName heroNameID="UN009_HN03" />
@@ -9450,9 +9509,9 @@
 		</unitHasSkill>
 		<unitName>Thief</unitName>
 		<hiringFame>0</hiringFame>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN010_HN01" />
 		<heroName heroNameID="UN010_HN02" />
 		<heroName heroNameID="UN010_HN03" />
@@ -9495,9 +9554,9 @@
 		</unitHasSkill>
 		<unitName>Druid</unitName>
 		<hiringFame>5</hiringFame>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN011_HN01" />
 		<heroName heroNameID="UN011_HN02" />
 		<heroName heroNameID="UN011_HN03" />
@@ -9534,9 +9593,9 @@
 		<hiringFame>5</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN012_HN01" />
 		<heroName heroNameID="UN012_HN02" />
 		<heroName heroNameID="UN012_HN03" />
@@ -9576,9 +9635,9 @@
 		<unitName>Warrior Mage</unitName>
 		<hiringFame>5</hiringFame>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST03" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST03" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN013_HN01" />
 		<heroName heroNameID="UN013_HN02" />
 		<heroName heroNameID="UN013_HN03" />
@@ -9623,9 +9682,9 @@
 		<hiringFame>5</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN014_HN01" />
 		<heroName heroNameID="UN014_HN02" />
 		<heroName heroNameID="UN014_HN03" />
@@ -9665,9 +9724,9 @@
 		<hiringFame>5</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN015_HN01" />
 		<heroName heroNameID="UN015_HN02" />
 		<heroName heroNameID="UN015_HN03" />
@@ -9709,9 +9768,9 @@
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN016_HN01" />
 		<heroName heroNameID="UN016_HN02" />
 		<heroName heroNameID="UN016_HN03" />
@@ -9760,9 +9819,9 @@
 		</unitHasSkill>
 		<unitName>Ranger</unitName>
 		<hiringFame>10</hiringFame>
-		<heroItemType itemTypeID="IST02" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST02" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN017_HN01" />
 		<heroName heroNameID="UN017_HN02" />
 		<heroName heroNameID="UN017_HN03" />
@@ -9802,9 +9861,9 @@
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN018_HN01" />
 		<heroName heroNameID="UN018_HN02" />
 		<heroName heroNameID="UN018_HN03" />
@@ -9849,9 +9908,9 @@
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN019_HN01" />
 		<heroName heroNameID="UN019_HN02" />
 		<heroName heroNameID="UN019_HN03" />
@@ -9891,9 +9950,9 @@
 		<unitName>Golden One</unitName>
 		<hiringFame>10</hiringFame>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN020_HN01" />
 		<heroName heroNameID="UN020_HN02" />
 		<heroName heroNameID="UN020_HN03" />
@@ -9931,9 +9990,9 @@
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN021_HN01" />
 		<heroName heroNameID="UN021_HN02" />
 		<heroName heroNameID="UN021_HN03" />
@@ -9973,9 +10032,9 @@
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN022_HN01" />
 		<heroName heroNameID="UN022_HN02" />
 		<heroName heroNameID="UN022_HN03" />
@@ -10021,9 +10080,9 @@
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN023_HN01" />
 		<heroName heroNameID="UN023_HN02" />
 		<heroName heroNameID="UN023_HN03" />
@@ -10065,9 +10124,9 @@
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN024_HN01" />
 		<heroName heroNameID="UN024_HN02" />
 		<heroName heroNameID="UN024_HN03" />
@@ -10107,9 +10166,9 @@
 		<unitName>Unknown</unitName>
 		<hiringFame>20</hiringFame>
 		<heroRandomPickCount>5</heroRandomPickCount>
-		<heroItemType itemTypeID="IST03" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST03" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN025_HN01" />
 		<heroName heroNameID="UN025_HN02" />
 		<heroName heroNameID="UN025_HN03" />
@@ -10152,9 +10211,9 @@
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN026_HN01" />
 		<heroName heroNameID="UN026_HN02" />
 		<heroName heroNameID="UN026_HN03" />
@@ -10203,9 +10262,9 @@
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN027_HN01" />
 		<heroName heroNameID="UN027_HN02" />
 		<heroName heroNameID="UN027_HN03" />
@@ -10258,9 +10317,9 @@
 		</unitHasSkill>
 		<unitName>Priestess</unitName>
 		<hiringFame>40</hiringFame>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN028_HN01" />
 		<heroName heroNameID="UN028_HN02" />
 		<heroName heroNameID="UN028_HN03" />
@@ -10307,9 +10366,9 @@
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN029_HN01" />
 		<heroName heroNameID="UN029_HN02" />
 		<heroName heroNameID="UN029_HN03" />
@@ -10358,9 +10417,9 @@
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN030_HN01" />
 		<heroName heroNameID="UN030_HN02" />
 		<heroName heroNameID="UN030_HN03" />
@@ -10404,9 +10463,9 @@
 		<unitName>Elven Archer</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickCount>3</heroRandomPickCount>
-		<heroItemType itemTypeID="IST02" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST02" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN031_HN01" />
 		<heroName heroNameID="UN031_HN02" />
 		<heroName heroNameID="UN031_HN03" />
@@ -10452,9 +10511,9 @@
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN032_HN01" />
 		<heroName heroNameID="UN032_HN02" />
 		<heroName heroNameID="UN032_HN03" />
@@ -10500,9 +10559,9 @@
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemType itemTypeID="IST04" />
-		<heroItemType itemTypeID="IST05" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN033_HN01" />
 		<heroName heroNameID="UN033_HN02" />
 		<heroName heroNameID="UN033_HN03" />
@@ -10549,9 +10608,9 @@
 		<unitName>Chaos Warrior</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickCount>3</heroRandomPickCount>
-		<heroItemType itemTypeID="IST03" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST03" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN034_HN01" />
 		<heroName heroNameID="UN034_HN02" />
 		<heroName heroNameID="UN034_HN03" />
@@ -10601,9 +10660,9 @@
 		<unitName>Chosen</unitName>
 		<hiringFame>50</hiringFame>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemType itemTypeID="IST01" />
-		<heroItemType itemTypeID="IST06" />
-		<heroItemType itemTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN035_HN01" />
 		<heroName heroNameID="UN035_HN02" />
 		<heroName heroNameID="UN035_HN03" />
@@ -22287,3 +22346,4 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
+

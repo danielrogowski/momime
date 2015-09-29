@@ -4329,6 +4329,36 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<citySpellEffectName>Pestilence</citySpellEffectName>
 		<citySpellEffectHelpText>Spreads a deadly plague throughout the affected city killing 1,000 population each turn if the current population exceeds a (1-10 roll) x1000.</citySpellEffectHelpText>
 	</citySpellEffect>
+	<heroItemType heroItemTypeID="IT01">
+		<heroItemTypeDescription>Sword</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT02">
+		<heroItemTypeDescription>Mace</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT03">
+		<heroItemTypeDescription>Axe</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT04">
+		<heroItemTypeDescription>Bow</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT05">
+		<heroItemTypeDescription>Staff</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT06">
+		<heroItemTypeDescription>Wand</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT07">
+		<heroItemTypeDescription>Misc</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT08">
+		<heroItemTypeDescription>Shield</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT09">
+		<heroItemTypeDescription>Chain</heroItemTypeDescription>
+	</heroItemType>
+	<heroItemType heroItemTypeID="IT10">
+		<heroItemTypeDescription>Plate</heroItemTypeDescription>
+	</heroItemType>
 	<overlandMapSize overlandMapSizeID="MS01">
 		<overlandMapSizeDescription>Tiny</overlandMapSizeDescription>
 	</overlandMapSize>

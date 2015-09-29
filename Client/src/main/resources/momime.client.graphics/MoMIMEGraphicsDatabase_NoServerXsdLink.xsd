@@ -71,6 +71,8 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorderImage" type="momimegfx:combatTileBorderImage" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElementSet" type="momimegfx:cityViewElementSet" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElement" type="momimegfx:cityViewElement" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimegfx:heroItemType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimegfx:heroItemSlotType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimegfx:animation" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimegfx:playList" />
 		</xsd:sequence>
@@ -161,6 +163,16 @@
 		<xsd:key name="playListPK">
 			<xsd:selector xpath="playList" />
 			<xsd:field xpath="@playListID" />
+		</xsd:key>
+		
+		<!-- Hero items, new for 0.9.7 -->
+		<xsd:key name="heroItemTypePK">
+			<xsd:selector xpath="heroItemType" />
+			<xsd:field xpath="@heroItemTypeID" />
+		</xsd:key>
+		<xsd:key name="heroItemSlotTypePK">
+			<xsd:selector xpath="heroItemSlotType" />
+			<xsd:field xpath="@heroItemSlotTypeID" />
 		</xsd:key>
 		
 <!-- Foreign keys -->
@@ -815,12 +827,37 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 		<xsd:attribute name="playListID" type="momimegfx:playListID" use="required" nxe:label="Play list ID" nxe:gridwidth="150" />
 	</xsd:complexType>
 
+<!-- Hero items, new for 0.9.7 -->
+	
+	<xsd:complexType name="heroItemType" nxe:singular="Hero Item Type" nxe:plural="Hero Item Types" nxe:submenu="Hero items">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeImageFile" type="momimegfx:imageFilename" nxe:label="Hero Item Image" nxe:gridwidth="350" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFile" type="momimegfx:imageFilename" nxe:label="Hero Item Slot Image" nxe:gridwidth="350" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Slot Type ID" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>slotTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
 <!-- Simple data types -->
 	
 	<xsd:simpleType name="imageFilename">
-        <xsd:annotation>
-        	<xsd:documentation>Image filename such as CITYSCAP.LBX or MOMADDITIONALGRAPHICS.NDGARC.  Also used for sound and music filenames.</xsd:documentation>
-        </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	

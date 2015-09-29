@@ -55,6 +55,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBookSection" type="momimelang:spellBookSection" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimelang:spell" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimelang:citySpellEffect" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimelang:heroItemType" />
 			
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimelang:overlandMapSize" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportion" type="momimelang:landProportion" />
@@ -209,6 +210,12 @@
 			<xsd:field xpath="@shortcut" />
 		</xsd:key>
 		
+		<!-- Hero items, new for 0.9.7 -->
+		<xsd:key name="heroItemTypePK">
+			<xsd:selector xpath="heroItemType" />
+			<xsd:field xpath="@heroItemTypeID" />
+		</xsd:key>
+		
 <!-- Foreign keys -->
 
 		<xsd:keyref refer="momimesvr:planePK" name="planeFKplane">
@@ -336,6 +343,12 @@
 		<xsd:keyref refer="momimesvr:knownServerPK" name="knownServerFKknownServer">
 			<xsd:selector xpath="knownServer" />
 			<xsd:field xpath="@knownServerID" />
+		</xsd:keyref>
+		
+		<!-- Hero items, new for 0.9.7 -->
+		<xsd:keyref refer="momimesvr:heroItemTypePK" name="heroItemTypeFKheroItemType">
+			<xsd:selector xpath="heroItemType" />
+			<xsd:field xpath="@heroItemTypeID" />
 		</xsd:keyref>
 	</xsd:element>
 		
@@ -740,7 +753,8 @@
 		<xsd:attribute name="knownServerID" type="momimecommon:knownServerID" use="required" nxe:label="Known Server ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
-	<!-- Shortcut keys, new for 0.9.3 -->
+<!-- Shortcut keys, new for 0.9.3 -->
+	
 	<xsd:complexType name="shortcutKey" nxe:singular="Shortcut Key" nxe:plural="Shortcut Keys">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="shift" type="xsd:boolean" nxe:label="Shift?" nxe:gridwidth="50" />
@@ -752,6 +766,21 @@
 			<!-- </xsd:choice> -->
 		</xsd:sequence>
 		<xsd:attribute name="shortcut" type="momimecommon:shortcut" use="required" nxe:label="Shortcut" nxe:gridwidth="300" />
+	</xsd:complexType>
+
+<!-- Hero items, new for 0.9.7 -->
+	
+	<xsd:complexType name="heroItemType" nxe:singular="Hero Item Type" nxe:plural="Hero Item Types" nxe:submenu="Hero items">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 	
 <!-- Simple data types -->

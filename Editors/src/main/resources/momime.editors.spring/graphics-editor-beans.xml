@@ -255,6 +255,28 @@
 		</property>
 	</bean>
 
+	<bean id="heroItemTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>heroItemTypeImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="heroItemSlotTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>heroItemSlotTypeImageFile</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
@@ -280,6 +302,8 @@
 				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />
 				<entry key="cityViewElement" value="cityViewElementGrid" />
 				<entry key="frame" value="frameGrid" />
+				<entry key="heroItemTypeImageFile" value="heroItemTypeGrid" />
+				<entry key="heroItemSlotType" value="heroItemSlotTypeGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

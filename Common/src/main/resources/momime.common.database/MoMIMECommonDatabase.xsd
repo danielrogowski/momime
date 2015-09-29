@@ -1158,6 +1158,58 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		</xsd:sequence>
 	</xsd:complexType>
 
+<!-- Hero items, new for 0.9.7 -->
+	
+	<xsd:complexType name="heroItemType" nxe:singular="Hero Item Type" nxe:plural="Hero Item Types" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Types of hero items - sword, axe, ring, shield, plate mail, and so on.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Base Crafting Cost" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeBasicStat" type="momimecommon:heroItemTypeBasicStat" nxe:label="Basic Stat" nxe:gridwidth="100" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemTypeBasicStat" nxe:singular="Hero Item Basic Stat" nxe:plural="Hero Item Basic Stats">
+        <xsd:annotation>
+        	<xsd:documentation>Some item types give some basic stat bonus even before any enchantments are added, e.g. plate mail items all give +2 defence.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemBasicSkillValue" type="momimecommon:unitSkillValue" nxe:label="Skill Value" nxe:gridwidth="100" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemBasicSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Skill" nxe:gridwidth="200">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Defines the different "item slots" heroes can have for, e.g. some heroes can only use a sword, some can only use a wand, but some have a slot that can take either.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroSlotAllowedItemType" type="momimecommon:heroSlotAllowedItemType" nxe:label="Allowed item type" nxe:gridwidth="100" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Slot Type ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="heroSlotAllowedItemType" nxe:singular="Allowed Item Type" nxe:plural="Allowed Item Types" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Defines the different kinds of hero items that can be equipped in the different kinds of slots.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
 <!-- Generic simple data types that are not really MoM specific -->
 
 	<xsd:simpleType name="description">
@@ -1273,6 +1325,14 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 	</xsd:simpleType>
 
 	<xsd:simpleType name="combatTileBorderID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="heroItemTypeID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="heroItemSlotTypeID">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 
@@ -1808,7 +1868,7 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 <!-- Datatypes not needed directly here, but used both in server and other XSDs -->
 	
 	<xsd:simpleType name="spellCount">

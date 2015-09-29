@@ -122,6 +122,7 @@
 					<xsd:field xpath="@levelNumber" />
 				</xsd:key>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimesvr:heroItemType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimesvr:heroItemSlotType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimesvr:unitSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimesvr:rangedAttackType" />
@@ -300,10 +301,6 @@
 			<xsd:selector xpath="unitMagicRealm" />
 			<xsd:field xpath="@unitMagicRealmID" />
 		</xsd:key>
-		<xsd:key name="heroItemSlotTypePK">
-			<xsd:selector xpath="heroItemSlotType" />
-			<xsd:field xpath="@heroItemSlotTypeID" />
-		</xsd:key>
 		<xsd:key name="heroSkillTypePK">
 			<xsd:selector xpath="heroSkillType" />
 			<xsd:field xpath="@heroSkillTypeID" />
@@ -367,7 +364,7 @@
 			<xsd:field xpath="@knownServerID" />
 		</xsd:key>
 
-	<!-- Combat map generation, new for 0.9.3 -->
+		<!-- Combat map generation, new for 0.9.3 -->
 		<xsd:key name="combatTileTypePK">
 			<xsd:selector xpath="combatTileType" />
 			<xsd:field xpath="@combatTileTypeID" />
@@ -375,6 +372,16 @@
 		<xsd:key name="combatTileBorderPK">
 			<xsd:selector xpath="combatTileBorder" />
 			<xsd:field xpath="@combatTileBorderID" />
+		</xsd:key>
+
+		<!-- Hero items, new for 0.9.7 -->
+		<xsd:key name="heroItemTypePK">
+			<xsd:selector xpath="heroItemType" />
+			<xsd:field xpath="@heroItemTypeID" />
+		</xsd:key>
+		<xsd:key name="heroItemSlotTypePK">
+			<xsd:selector xpath="heroItemSlotType" />
+			<xsd:field xpath="@heroItemSlotTypeID" />
 		</xsd:key>
 		
 <!-- Foreign keys -->
@@ -518,10 +525,6 @@
 		<xsd:keyref refer="momimesvr:unitTypePK" name="unitMagicRealmFKunitType">
 			<xsd:selector xpath="unitMagicRealm" />
 			<xsd:field xpath="unitTypeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:heroItemSlotTypePK" name="heroItemTypeFKheroItemSlotType">
-			<xsd:selector xpath="unit/heroItemType" />
-			<xsd:field xpath="@itemTypeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:productionTypePK" name="unitUpkeepFKproductionType">
 			<xsd:selector xpath="unit/unitUpkeep" />
@@ -703,6 +706,21 @@
 			<xsd:selector xpath="unitSkill/attackResolution/attackResolutionStep" />
 			<xsd:field xpath="unitSkillID" />
 		</xsd:keyref>
+		
+		<!-- Hero items, new for 0.9.7 -->
+		<xsd:keyref refer="momimesvr:heroItemSlotTypePK" name="heroItemSlotFKheroItemSlotType">
+			<xsd:selector xpath="unit/heroItemSlot" />
+			<xsd:field xpath="@heroItemSlotTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="heroItemTypeBasicStatFKunitSkill">
+			<xsd:selector xpath="heroItemType/heroItemTypeBasicStat" />
+			<xsd:field xpath="@heroItemBasicSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:heroItemTypePK" name="heroSlotAllowedItemTypeFKheroItemType">
+			<xsd:selector xpath="heroItemSlotType/heroSlotAllowedItemType" />
+			<xsd:field xpath="@heroItemTypeID" />
+		</xsd:keyref>
+		
 	</xsd:element>
 		
 <!-- Complex types -->
@@ -1061,7 +1079,7 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickType" type="momimesvr:heroSkillTypeID" nxe:label="Hero Random Pick Type" nxe:showmaincolumn="false" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickCount" type="momimesvr:heroRandomPickCount" nxe:label="Hero Random Picks" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="freeAtStartCount" type="momimesvr:freeAtStartCount" nxe:label="Nbr. Free at Start" nxe:gridwidth="100" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimesvr:heroItemType" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlot" type="momimesvr:heroItemSlot" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitCanCast" type="momimesvr:unitCanCast" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroName" type="momimesvr:heroName" />
 				</xsd:sequence>
@@ -1069,11 +1087,11 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="heroItemType" nxe:singular="Hero Item Type" nxe:plural="Hero Item Types">
+	<xsd:complexType name="heroItemSlot" nxe:singular="Hero Item Slot" nxe:plural="Hero Item Slots">
         <xsd:annotation>
         	<xsd:documentation>Lists the 3 "item slots" a hero has, so that fighter-type heroes typically have a Sword slot, Shield slot and a special item (Ring) slot, whereas mage-type heroes typically have a Wand slot and two special item (Ring) slots.</xsd:documentation>
         </xsd:annotation>
-		<xsd:attribute name="itemTypeID" type="momimesvr:itemTypeID" use="required" nxe:label="Item Type" nxe:showmaincolumn="false">
+		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Item Type">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>slotTypeDescription</nxe:showreferencedfield>
@@ -1213,17 +1231,6 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			<xsd:element minOccurs="1" maxOccurs="1" name="heroSkillTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="90" />
 		</xsd:sequence>
 		<xsd:attribute name="heroSkillTypeID" type="momimesvr:heroSkillTypeID" use="required" nxe:label="Hero Skill Type ID" nxe:gridwidth="120" />
-	</xsd:complexType>
-
-	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Units">
-        <xsd:annotation>
-        	<xsd:documentation>Defines the different "item slots" heroes can have for, e.g. some heroes can only use a sword, some can only use a wand, but some have a slot that can take either.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="slotTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="slotTypeImageNumber" type="momimecommon:imageNumber" nxe:label="Image Number" nxe:gridwidth="100" />
-		</xsd:sequence>
-		<xsd:attribute name="heroItemSlotTypeID" type="momimesvr:heroItemSlotTypeID" use="required" nxe:label="Slot Type ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
 	<xsd:complexType name="spellRank" nxe:singular="Spell Rank" nxe:plural="Spell Ranks" nxe:submenu="Spells">
@@ -1476,7 +1483,35 @@ Defaults to 1 if omitted.</xsd:documentation>
 			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
+<!-- Hero items, new for 0.9.7 -->
+
+	<xsd:complexType name="heroItemType" nxe:singular="Hero Item Type" nxe:plural="Hero Item Types" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Types of hero items - sword, axe, ring, shield, plate mail, and so on.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimecommon:heroItemType">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="heroItemTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Defines the different "item slots" heroes can have for, e.g. some heroes can only use a sword, some can only use a wand, but some have a slot that can take either.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimecommon:heroItemSlotType">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="slotTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 <!-- MoM-specific data types -->
 
 	<xsd:simpleType name="fame">
@@ -1512,14 +1547,6 @@ Defaults to 1 if omitted.</xsd:documentation>
 	
 	<xsd:simpleType name="unitCanCastSpellNumberOfTimes">
 		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="heroItemSlotTypeID">
-		<xsd:restriction base="xsd:normalizedString" />
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="itemTypeID">
-		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="aiResearchOrder">

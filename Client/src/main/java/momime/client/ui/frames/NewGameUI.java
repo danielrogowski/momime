@@ -2732,7 +2732,7 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final Pick pick : getClient ().getClientDB ().getPicks ())
 		{
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
-			if (pickGfx.getBookImage ().size () > 0)
+			if (pickGfx.getBookImageFile ().size () > 0)
 				bookshelfCount++;
 		}
 		
@@ -2740,7 +2740,7 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final Pick pick : getClient ().getClientDB ().getPicks ())
 		{
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
-			if (pickGfx.getBookImage ().size () == 0)
+			if (pickGfx.getBookImageFile ().size () == 0)
 			{
 				// Show as a retort label in the top half of the screen
 				retortNo++;
@@ -2820,7 +2820,7 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final Pick pick : getClient ().getClientDB ().getPicks ())
 		{
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
-			if (pickGfx.getBookImage ().size () > 0)
+			if (pickGfx.getBookImageFile ().size () > 0)
 			{
 				// Show as bookshelf
 				bookshelfNo++;
@@ -3683,7 +3683,7 @@ public final class NewGameUI extends MomClientFrameUI
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateBookshelfFromPicks");
-			if (pickGfx.getBookImage ().size () > 0)
+			if (pickGfx.getBookImageFile ().size () > 0)
 				for (int n = 0; n < pick.getQuantity (); n++)
 				{
 					// Choose random image for the pick
@@ -3734,7 +3734,7 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final PlayerPick pick : picks)
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			if (getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateRetortsFromPicks").getBookImage ().size () == 0)
+			if (getGraphicsDB ().findPick (pick.getPickID (), "NewGameUI.updateRetortsFromPicks").getBookImageFile ().size () == 0)
 			{
 				if (desc.length () > 0)
 					desc.append (", ");

@@ -319,63 +319,33 @@
 	</race>
 	<pick pickID="MB01">
 		<pickBookshelfTitleColour>FFFFFF</pickBookshelfTitleColour>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/life-1.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/life-2.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/life-3.png</bookImageFile>
-		</bookImage>
+		<bookImageFile>/momime.client.graphics/picks/life-1.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/life-2.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/life-3.png</bookImageFile>
 	</pick>
 	<pick pickID="MB02">
 		<pickBookshelfTitleColour>B485CB</pickBookshelfTitleColour>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/death-1.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/death-2.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/death-3.png</bookImageFile>
-		</bookImage>
+		<bookImageFile>/momime.client.graphics/picks/death-1.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/death-2.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/death-3.png</bookImageFile>
 	</pick>
 	<pick pickID="MB03">
 		<pickBookshelfTitleColour>FF0009</pickBookshelfTitleColour>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/chaos-1.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/chaos-2.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/chaos-3.png</bookImageFile>
-		</bookImage>
+		<bookImageFile>/momime.client.graphics/picks/chaos-1.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/chaos-2.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/chaos-3.png</bookImageFile>
 	</pick>
 	<pick pickID="MB04">
 		<pickBookshelfTitleColour>00BE00</pickBookshelfTitleColour>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/nature-1.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/nature-2.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/nature-3.png</bookImageFile>
-		</bookImage>
+		<bookImageFile>/momime.client.graphics/picks/nature-1.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/nature-2.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/nature-3.png</bookImageFile>
 	</pick>
 	<pick pickID="MB05">
 		<pickBookshelfTitleColour>128EFF</pickBookshelfTitleColour>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/sorcery-1.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/sorcery-2.png</bookImageFile>
-		</bookImage>
-		<bookImage>
-			<bookImageFile>/momime.client.graphics/picks/sorcery-3.png</bookImageFile>
-		</bookImage>
+		<bookImageFile>/momime.client.graphics/picks/sorcery-1.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/sorcery-2.png</bookImageFile>
+		<bookImageFile>/momime.client.graphics/picks/sorcery-3.png</bookImageFile>
 	</pick>
 	<pick pickID="RT01" />
 	<pick pickID="RT02" />

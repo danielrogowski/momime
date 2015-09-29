@@ -293,7 +293,7 @@
 	<xsd:complexType name="pick" nxe:singular="Pick" nxe:plural="Picks" nxe:submenu="Magic">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickBookshelfTitleColour" type="momimecommon:colour" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="bookImage" type="momimegfx:bookImage" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="bookImageFile" type="momimegfx:imageFilename" nxe:label="Book image file" nxe:gridwidth="300" />
 		</xsd:sequence>
 		<xsd:attribute name="pickID" type="momimecommon:pickID" use="required" nxe:label="Pick Type ID" nxe:gridwidth="100">
 			<xsd:annotation>
@@ -304,12 +304,6 @@
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="bookImage" nxe:singular="Book Image" nxe:plural="Book Images">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="bookImageFile" type="momimegfx:imageFilename" nxe:label="Book image file" nxe:gridwidth="250" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
 	<xsd:complexType name="unitSkillComponentImage" nxe:singular="Unit Skill Component" nxe:plural="Unit Skill Components" nxe:submenu="Units">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillComponentImageFile" type="momimegfx:imageFilename" nxe:label="Component image file" nxe:gridwidth="250" />

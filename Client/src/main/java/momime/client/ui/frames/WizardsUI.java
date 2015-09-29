@@ -297,7 +297,7 @@ public final class WizardsUI extends MomClientFrameUI
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
 			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
-			if (pickGfx.getBookImage ().size () > 0)
+			if (pickGfx.getBookImageFile ().size () > 0)
 				for (int n = 0; n < pick.getQuantity (); n++)
 				{
 					// Choose random image for the pick
@@ -337,7 +337,7 @@ public final class WizardsUI extends MomClientFrameUI
 		for (final PlayerPick pick : pub.getPick ())
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			if (getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImage ().size () == 0)
+			if (getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImageFile ().size () == 0)
 			{
 				if (desc.length () > 0)
 					desc.append (", ");

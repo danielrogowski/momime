@@ -36,7 +36,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.BookImageGfx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -568,14 +567,14 @@ public final class HelpUI extends MomClientFrameUI
 		
 		// Look for any images for this pickID
 		final PickGfx pick = getGraphicsDB ().findPick (pickID, "showPickID");
-		if (pick.getBookImage ().size () > 0)
+		if (pick.getBookImageFile ().size () > 0)
 		{
 			// Merge the images into one
 			int totalWidth = 0;
 			int maxHeight = 0;
-			for (final BookImageGfx bookImage : pick.getBookImages ())
+			for (final String bookImage : pick.getBookImageFile ())
 			{
-				final BufferedImage image = getUtils ().loadImage (bookImage.getBookImageFile ());
+				final BufferedImage image = getUtils ().loadImage (bookImage);
 				totalWidth = totalWidth + image.getWidth ();
 				maxHeight = Math.max (maxHeight, image.getHeight ());
 			}
@@ -585,9 +584,9 @@ public final class HelpUI extends MomClientFrameUI
 			try
 			{
 				int x = 0;
-				for (final BookImageGfx bookImage : pick.getBookImages ())
+				for (final String bookImage : pick.getBookImageFile ())
 				{
-					final BufferedImage image = getUtils ().loadImage (bookImage.getBookImageFile ());
+					final BufferedImage image = getUtils ().loadImage (bookImage);
 					g.drawImage (image, x, maxHeight - image.getHeight (), null);
 					x = x + image.getWidth ();
 				}

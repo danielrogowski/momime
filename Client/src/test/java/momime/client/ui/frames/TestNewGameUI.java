@@ -17,7 +17,6 @@ import momime.client.database.AvailableDatabase;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.NewGameDatabase;
 import momime.client.database.Wizard;
-import momime.client.graphics.database.BookImageGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
@@ -306,11 +305,7 @@ public final class TestNewGameUI
 			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
 			
 			for (int imageNo = 1; imageNo <= 3; imageNo++)
-			{
-				final BookImageGfx bookImage = new BookImageGfx ();
-				bookImage.setBookImageFile ("/momime.client.graphics/picks/" + magicRealmName.toLowerCase () + "-" + imageNo + ".png");
-				pickGfx.getBookImage ().add (bookImage);
-			}
+				pickGfx.getBookImageFile ().add ("/momime.client.graphics/picks/" + magicRealmName.toLowerCase () + "-" + imageNo + ".png");
 		}
 		
 		doReturn (picks).when (db).getPicks ();

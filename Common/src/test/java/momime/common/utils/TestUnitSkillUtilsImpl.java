@@ -19,14 +19,13 @@ import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.ExperienceSkillBonus;
 import momime.common.database.Unit;
 import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.WeaponGrade;
-import momime.common.database.WeaponGradeSkillBonus;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -71,9 +70,9 @@ public final class TestUnitSkillUtilsImpl
 		final WeaponGrade weaponGradeDef = new WeaponGrade ();
 		for (final String unitSkillID : new String [] {"US002", "US004"})
 		{
-			final WeaponGradeSkillBonus bonus = new WeaponGradeSkillBonus ();
+			final UnitSkillAndValue bonus = new UnitSkillAndValue ();
 			bonus.setUnitSkillID (unitSkillID);
-			bonus.setBonusValue (10);
+			bonus.setUnitSkillValue (10);
 			weaponGradeDef.getWeaponGradeSkillBonus ().add (bonus);
 		}
 		when (db.findWeaponGrade (1, "getModifiedSkillValue")).thenReturn (weaponGradeDef);
@@ -83,7 +82,7 @@ public final class TestUnitSkillUtilsImpl
 		{
 			final CombatAreaEffectSkillBonus bonus = new CombatAreaEffectSkillBonus ();
 			bonus.setUnitSkillID (unitSkillID);
-			bonus.setBonusValue (1000);
+			bonus.setUnitSkillValue (1000);
 			caeDef.getCombatAreaEffectSkillBonus ().add (bonus);
 		}
 		when (db.findCombatAreaEffect ("CAE01", "getModifiedSkillValue")).thenReturn (caeDef);
@@ -134,9 +133,9 @@ public final class TestUnitSkillUtilsImpl
 		
 		for (final String unitSkillID : new String [] {"US002", "US004"})
 		{
-			final ExperienceSkillBonus bonus = new ExperienceSkillBonus ();
+			final UnitSkillAndValue bonus = new UnitSkillAndValue ();
 			bonus.setUnitSkillID (unitSkillID);
-			bonus.setBonusValue (100);
+			bonus.setUnitSkillValue (100);
 			expLvl.getExperienceSkillBonus ().add (bonus);
 		}
 		when (unitUtils.getExperienceLevel (unit, true, players, fow.getCombatAreaEffect (), db)).thenReturn (expLvl);

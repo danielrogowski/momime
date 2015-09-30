@@ -9,7 +9,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.UnitHasSkill;
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
@@ -21,10 +25,6 @@ import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.common.utils.UnitUtilsImpl;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the FogOfWarDuplication class
@@ -353,7 +353,7 @@ public final class TestFogOfWarDuplicationImpl
 		unitTwo.setUnitLocation (unitTwoLocation);
 		unitTwo.setOwningPlayerID (2);
 		
-		final UnitHasSkill unitTwoAmmo = new UnitHasSkill ();
+		final UnitSkillAndValue unitTwoAmmo = new UnitSkillAndValue ();
 		unitTwoAmmo.setUnitSkillID ("US132");
 		unitTwoAmmo.setUnitSkillValue (5);
 		unitTwo.getUnitHasSkill ().add (unitTwoAmmo);
@@ -367,7 +367,7 @@ public final class TestFogOfWarDuplicationImpl
 		assertFalse (dup.copyUnit (unitTwo, destination));
 
 		// Cast flight on them (ok so normally this is done via the spells list and merging that into the unit skills list, but this is what's appropriate for this test...)
-		final UnitHasSkill flight = new UnitHasSkill ();
+		final UnitSkillAndValue flight = new UnitSkillAndValue ();
 		flight.setUnitSkillID ("SS056");
 		unitTwo.getUnitHasSkill ().add (flight);
 

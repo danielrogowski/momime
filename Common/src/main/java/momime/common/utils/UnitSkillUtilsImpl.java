@@ -17,14 +17,12 @@ import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.ExperienceSkillBonus;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
-import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.database.WeaponGradeSkillBonus;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -94,7 +92,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
 	 */
 	@Override
-	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID,
+	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final String unitSkillID,
 		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
@@ -102,7 +100,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 		log.trace ("Entering getModifiedSkillValue: " + unit.getUnitID () + ", " + unitSkillID);
 
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
-		final List<UnitHasSkill> mergedSkills;
+		final List<UnitSkillAndValue> mergedSkills;
 		if ((unit instanceof MemoryUnit) && (!(skills instanceof UnitHasSkillMergedList)))
 			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), (MemoryUnit) unit, db);
 		else
@@ -154,9 +152,9 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 						weaponGradeBonusApplies = true;
 					
 					if (weaponGradeBonusApplies)					
-						for (final WeaponGradeSkillBonus bonus : db.findWeaponGrade (unit.getWeaponGrade (), "getModifiedSkillValue").getWeaponGradeSkillBonus ())
-							if (bonus.getUnitSkillID ().equals (unitSkillID))
-								total = total + addToSkillValue (bonus.getBonusValue (), positiveNegative);
+						for (final UnitSkillAndValue bonus : db.findWeaponGrade (unit.getWeaponGrade (), "getModifiedSkillValue").getWeaponGradeSkillBonus ())
+							if ((bonus.getUnitSkillID ().equals (unitSkillID)) && (bonus.getUnitSkillValue () != null))
+								total = total + addToSkillValue (bonus.getUnitSkillValue (), positiveNegative);
 				}
 	
 				// Any bonuses due to experience?
@@ -164,9 +162,9 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 				if ((expLvl != null) &&
 					((component == UnitSkillComponent.EXPERIENCE) || (component == UnitSkillComponent.ALL)))
 					
-					for (final ExperienceSkillBonus bonus : expLvl.getExperienceSkillBonus ())
-						if (bonus.getUnitSkillID ().equals (unitSkillID))
-							total = total + addToSkillValue (bonus.getBonusValue (), positiveNegative);
+					for (final UnitSkillAndValue bonus : expLvl.getExperienceSkillBonus ())
+						if ((bonus.getUnitSkillID ().equals (unitSkillID)) && (bonus.getUnitSkillValue () != null))
+							total = total + addToSkillValue (bonus.getUnitSkillValue (), positiveNegative);
 				
 				// Any bonuses from skills that add to another skill, either hero skills or spell effects?
 				if ((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.SPELL_EFFECTS) ||
@@ -248,10 +246,10 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 							for (final CombatAreaEffectSkillBonus caeBonusCache : db.findCombatAreaEffect (thisCAE.getCombatAreaEffectID (), "getModifiedSkillValue").getCombatAreaEffectSkillBonus ())
 		
 								// Magic realm/lifeform type can be blank for effects that apply to all types of unit (e.g. Prayer)
-								if ((caeBonusCache.getUnitSkillID ().equals (unitSkillID)) &&
+								if ((caeBonusCache.getUnitSkillID ().equals (unitSkillID)) && (caeBonusCache.getUnitSkillValue () != null) &&
 									((caeBonusCache.getEffectMagicRealm () == null) || (caeBonusCache.getEffectMagicRealm ().equals (storeMagicRealmLifeformTypeID))))
 		
-									total = total + addToSkillValue (caeBonusCache.getBonusValue (), positiveNegative);
+									total = total + addToSkillValue (caeBonusCache.getUnitSkillValue (), positiveNegative);
 						}
 			}
 			

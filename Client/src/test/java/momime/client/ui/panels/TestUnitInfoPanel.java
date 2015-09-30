@@ -50,7 +50,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.Unit;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
@@ -312,7 +312,7 @@ public final class TestUnitInfoPanel
 			when (gfx.findUnitSkill (eq ("US0" + n), anyString ())).thenReturn (skillGfx);
 			
 			// Unit stat
-			final UnitHasSkill skill = new UnitHasSkill ();
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
 			skill.setUnitSkillID ("US0" + n);
 			unit.getUnitHasSkill ().add (skill);
 
@@ -343,7 +343,7 @@ public final class TestUnitInfoPanel
 			when (unitClientUtils.generateAttributeImage (unit, attrID)).thenReturn (ClientTestData.createSolidImage (289, 15, unitAttrNo * 35));
 			
 			// Unit stat
-			final UnitHasSkill attr = new UnitHasSkill ();
+			final UnitSkillAndValue attr = new UnitSkillAndValue ();
 			attr.setUnitSkillID (attrID);
 			unit.getUnitHasSkill ().add (attr);
 		}

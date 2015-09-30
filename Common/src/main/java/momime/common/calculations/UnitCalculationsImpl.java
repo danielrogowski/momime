@@ -27,7 +27,7 @@ import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
@@ -241,7 +241,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final int calculateFullRangedAttackAmmo (final AvailableUnit unit, final List<UnitHasSkill> skills, final List<? extends PlayerPublicDetails> players,
+	public final int calculateFullRangedAttackAmmo (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		return getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
@@ -260,7 +260,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final int calculateManaTotal (final AvailableUnit unit, final List<UnitHasSkill> skills, final List<? extends PlayerPublicDetails> players,
+	public final int calculateManaTotal (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Unit caster skill is easy, this directly says how many MP the unit has
@@ -472,7 +472,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 		if (unitStack != null)
 			for (final MemoryUnit thisUnit : unitStack)
-				for (final UnitHasSkill thisSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, thisUnit, db))
+				for (final UnitSkillAndValue thisSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, thisUnit, db))
 					if (!list.contains (thisSkill.getUnitSkillID ()))
 					{
 						list.add (thisSkill.getUnitSkillID ());
@@ -503,7 +503,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		log.trace ("Entering calculateDoubleMovementToEnterTileType: " + unit.getUnitID () + ", Player ID " + unit.getOwningPlayerID () + ", " + tileTypeID);
 
 		// Only merge the units list of skills once
-		final List<UnitHasSkill> unitHasSkills;
+		final List<UnitSkillAndValue> unitHasSkills;
 		if (unit instanceof MemoryUnit)
 			unitHasSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, db);
 		else
@@ -511,7 +511,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 		// Turn it into a list of strings so we can search it more quickly
 		final List<String> unitSkills = new ArrayList<String> ();
-		for (final UnitHasSkill thisSkill : unitHasSkills)
+		for (final UnitSkillAndValue thisSkill : unitHasSkills)
 			unitSkills.add (thisSkill.getUnitSkillID ());
 
 		// We basically run down the movement rate rules and stop as soon as we find the first applicable one

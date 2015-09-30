@@ -20,8 +20,7 @@ import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.ExperienceSkillBonus;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitType;
@@ -181,25 +180,25 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 						final StringBuilder bonuses = new StringBuilder ();
 						
 						// List out all the bonuses this exp level gives
-						final List<UnitHasSkill> mergedSkills;
+						final List<UnitSkillAndValue> mergedSkills;
 						if (getUnit () instanceof MemoryUnit)
 							mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 								(MemoryUnit) getUnit (), getClient ().getClientDB ());
 						else
 							mergedSkills = getUnit ().getUnitHasSkill ();
 							
-						for (final ExperienceSkillBonus bonus : expLvl.getExperienceSkillBonus ())
+						for (final UnitSkillAndValue bonus : expLvl.getExperienceSkillBonus ())
 							
 							// Don't mention skills that the unit does not have
-							if (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, bonus.getUnitSkillID (),
+							if ((bonus.getUnitSkillValue () != null) && (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, bonus.getUnitSkillID (),
 								UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH,
-								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
+								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0))
 							{
 								if (bonuses.length () > 0)
 									bonuses.append (", ");
 
 								bonuses.append ("+");
-								bonuses.append (bonus.getBonusValue ());
+								bonuses.append (bonus.getUnitSkillValue ());
 								bonuses.append (" ");
 								
 								final UnitSkillLang attr = getLanguage ().findUnitSkill (bonus.getUnitSkillID ());

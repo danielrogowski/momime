@@ -60,7 +60,7 @@ import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
@@ -180,7 +180,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private DefaultListModel<UnitAttributeWithBreakdownImage> unitAttributesItems;
 	
 	/** List model of unit skills */
-	private DefaultListModel<UnitHasSkill> unitSkillsItems;
+	private DefaultListModel<UnitSkillAndValue> unitSkillsItems;
 
 	/** Scroll pane containing the list of unit attributes */
 	private JScrollPane unitAttributesScrollPane;
@@ -356,9 +356,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		getUnitSkillListCellRenderer ().setForeground (MomUIConstants.AQUA);
 		getUnitSkillListCellRenderer ().init ();
 		
-		unitSkillsItems = new DefaultListModel<UnitHasSkill> ();
+		unitSkillsItems = new DefaultListModel<UnitSkillAndValue> ();
 		
-		final JList<UnitHasSkill> unitSkillsList = new JList<UnitHasSkill>  ();		
+		final JList<UnitSkillAndValue> unitSkillsList = new JList<UnitSkillAndValue>  ();		
 		unitSkillsList.setOpaque (false);
 		unitSkillsList.setModel (unitSkillsItems);
 		unitSkillsList.setCellRenderer (getUnitSkillListCellRenderer ());
@@ -377,7 +377,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				if ((unit instanceof MemoryUnit) && (unitSkillsList.getSelectedIndex () >= 0))
 				{
 					final MemoryUnit memoryUnit = (MemoryUnit) unit;
-					final UnitHasSkill skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
+					final UnitSkillAndValue skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
 					
 					// We want to ignore clicks on regular skills, and only do something about clicks on skills granted by spells.
 					// So search through maintained spells looking for this unitSkillID on this unit and see if we find anything.
@@ -451,7 +451,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					final int row = unitSkillsList.locationToIndex (ev.getPoint ());
 					if ((row >= 0) && (row < unitSkillsItems.size ()))
 					{
-						final UnitHasSkill unitSkill = unitSkillsItems.get (row);
+						final UnitSkillAndValue unitSkill = unitSkillsItems.get (row);
 						try
 						{
 							getHelpUI ().showUnitSkillID (unitSkill.getUnitSkillID (), getUnit ());
@@ -610,7 +610,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		upkeepLabel.setVisible (upkeepImage != null);
 		
 		// Add list items to display unit attributes and skills
-		final List<UnitHasSkill> mergedSkills;
+		final List<UnitSkillAndValue> mergedSkills;
 		if (unit instanceof MemoryUnit)
 			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit, getClient ().getClientDB ());
@@ -621,7 +621,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK})
 		{
 			boolean exists = false;
-			final Iterator<UnitHasSkill> iter = mergedSkills.iterator ();
+			final Iterator<UnitSkillAndValue> iter = mergedSkills.iterator ();
 			while ((!exists) && (iter.hasNext ()))
 				if (iter.next ().getUnitSkillID ().equals (unitSkillID))
 					exists = true;
@@ -629,7 +629,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			if ((!exists) && (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 0))
 			{
-				final UnitHasSkill plus = new UnitHasSkill ();
+				final UnitSkillAndValue plus = new UnitSkillAndValue ();
 				plus.setUnitSkillID (unitSkillID);
 				mergedSkills.add (plus);
 			}
@@ -637,7 +637,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Add each skill
 		getUnitSkillListCellRenderer ().setUnit (unit);
-		for (final UnitHasSkill thisSkill : mergedSkills)
+		for (final UnitSkillAndValue thisSkill : mergedSkills)
 		{
 			// Which list do we display it in?
 			final UnitSkillTypeID skillType = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel").getUnitSkillTypeID ();

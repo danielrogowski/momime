@@ -9,6 +9,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
+
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -17,21 +22,16 @@ import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.utils.UnitSkillUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.NdgUIUtils;
-
 /**
  * Renderer for drawing the icon and name of a unit skill
  */
-public final class UnitSkillListCellRenderer extends JLabel implements ListCellRenderer<UnitHasSkill>
+public final class UnitSkillListCellRenderer extends JLabel implements ListCellRenderer<UnitSkillAndValue>
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitSkillListCellRenderer.class);
@@ -73,7 +73,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	 * Sets up the image and label to draw the list cell
 	 */
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends UnitHasSkill> list, final UnitHasSkill value, final int index, final boolean isSelected, final boolean cellHasFocus)
+	public final Component getListCellRendererComponent (final JList<? extends UnitSkillAndValue> list, final UnitSkillAndValue value, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Look up the name of the skill
 		final UnitSkillLang skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());

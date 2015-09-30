@@ -10,6 +10,12 @@ import javax.swing.JComponent;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.zorder.ZOrderGraphics;
+
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
@@ -41,7 +47,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
@@ -51,12 +57,6 @@ import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.zorder.ZOrderGraphics;
 
 /**
  * Client side only helper methods for dealing with units
@@ -768,7 +768,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 
 		// If the unit doesn't even have the skill, then just return a null image.
 		// Also if it is a value-less skill like a movement skill then there's nothing to draw.
-		final List<UnitHasSkill> mergedSkills;
+		final List<UnitSkillAndValue> mergedSkills;
 		if (unit instanceof MemoryUnit)
 			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit, getClient ().getClientDB ());

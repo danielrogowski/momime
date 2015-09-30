@@ -38,8 +38,8 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
@@ -259,7 +259,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 				if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitRowDisplayUI").getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
 					unitAttributeIDs.add (thisSkill.getUnitSkillID ());
 			
-			final List<UnitHasSkill> mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
+			final List<UnitSkillAndValue> mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ());
 			
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
@@ -283,7 +283,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			// There's space on the form for up to 12 unit skills
 			int skillNo = 0;
 			
-			for (final UnitHasSkill thisSkill : mergedSkills)
+			for (final UnitSkillAndValue thisSkill : mergedSkills)
 				if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitRowDisplayUI").getUnitSkillTypeID () != UnitSkillTypeID.ATTRIBUTE)
 					if (skillNo < 12)
 					{

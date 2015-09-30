@@ -3,6 +3,15 @@ package momime.common.utils;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CombatAreaAffectsPlayersID;
@@ -13,8 +22,7 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
-import momime.common.database.UnitHasSkill;
-import momime.common.database.UnitSpellEffect;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitType;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
@@ -25,15 +33,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Simple unit lookups of basic skill, attribute and upkeep values
@@ -154,7 +153,7 @@ public final class UnitUtilsImpl implements UnitUtils
 
 			if (unitType.getExperienceLevel ().size () > 0)
 			{
-				final UnitHasSkill exp = new UnitHasSkill ();
+				final UnitSkillAndValue exp = new UnitSkillAndValue ();
 				exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				exp.setUnitSkillValue (startingExperience);
 				unit.getUnitHasSkill ().add (exp);
@@ -162,9 +161,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		}
 
 		// Copy skills from DB
-		for (final UnitHasSkill srcSkill : unitDefinition.getUnitHasSkill ())
+		for (final UnitSkillAndValue srcSkill : unitDefinition.getUnitHasSkill ())
 		{
-			final UnitHasSkill destSkill = new UnitHasSkill ();
+			final UnitSkillAndValue destSkill = new UnitSkillAndValue ();
 			destSkill.setUnitSkillID (srcSkill.getUnitSkillID ());
 			destSkill.setUnitSkillValue (srcSkill.getUnitSkillValue ());
 			unit.getUnitHasSkill ().add (destSkill);
@@ -199,14 +198,14 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @return Basic value of the specified skill (defined in the XML or heroes rolled randomly); whether skills granted from spells are included depends on whether we pass in a UnitHasSkillMergedList or not; -1 if we do not have the skill
 	 */
 	@Override
-	public final int getBasicSkillValue (final List<UnitHasSkill> skills, final String unitSkillID)
+	public final int getBasicSkillValue (final List<UnitSkillAndValue> skills, final String unitSkillID)
 	{
 		int skillValue = -1;
-		final Iterator<UnitHasSkill> iter = skills.iterator ();
+		final Iterator<UnitSkillAndValue> iter = skills.iterator ();
 
 		while ((skillValue < 0) && (iter.hasNext ()))
 		{
-			final UnitHasSkill thisSkill = iter.next ();
+			final UnitSkillAndValue thisSkill = iter.next ();
 			if (thisSkill.getUnitSkillID ().equals (unitSkillID))
 			{
 				if (thisSkill.getUnitSkillValue () == null)
@@ -232,11 +231,11 @@ public final class UnitUtilsImpl implements UnitUtils
 		log.trace ("Entering setBasicSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + skillValue);
 
 		boolean found = false;
-		final Iterator<UnitHasSkill> iter = unit.getUnitHasSkill ().iterator ();
+		final Iterator<UnitSkillAndValue> iter = unit.getUnitHasSkill ().iterator ();
 
 		while ((!found) && (iter.hasNext ()))
 		{
-			final UnitHasSkill thisSkill = iter.next ();
+			final UnitSkillAndValue thisSkill = iter.next ();
 			if (thisSkill.getUnitSkillID ().equals (unitSkillID))
 			{
 				found = true;
@@ -258,7 +257,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final String describeBasicSkillValuesInDebugString (final AvailableUnit unit)
 	{
 		String result = "";
-		for (final UnitHasSkill thisSkill : unit.getUnitHasSkill ())
+		for (final UnitSkillAndValue thisSkill : unit.getUnitHasSkill ())
 		{
 			if (!result.equals (""))
 				result = result + ", ";
@@ -294,16 +293,16 @@ public final class UnitUtilsImpl implements UnitUtils
 		for (final MemoryMaintainedSpell thisSpell : spells)
 			if ((thisSpell.getUnitURN () != null) && (thisSpell.getUnitURN () == unit.getUnitURN ()))
 			{
-				final UnitHasSkill spellSkill = new UnitHasSkill ();
+				final UnitSkillAndValue spellSkill = new UnitSkillAndValue ();
 				spellSkill.setUnitSkillID (thisSpell.getUnitSkillID ());
 				
 				// Get the strength of this skill from the spell definition
 				final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "mergeSpellEffectsIntoSkillList");
 				boolean found = false;
-				final Iterator<UnitSpellEffect> iter = spellDef.getUnitSpellEffect ().iterator ();
+				final Iterator<UnitSkillAndValue> iter = spellDef.getUnitSpellEffect ().iterator ();
 				while ((!found) && (iter.hasNext ()))
 				{
-					final UnitSpellEffect effect = iter.next ();
+					final UnitSkillAndValue effect = iter.next ();
 					if (effect.getUnitSkillID ().equals (thisSpell.getUnitSkillID ()))
 					{
 						found = true;
@@ -312,7 +311,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				}
 				
 				if (!found)
-					throw new RecordNotFoundException (UnitSpellEffect.class, thisSpell.getUnitSkillID (), "mergeSpellEffectsIntoSkillList");
+					throw new RecordNotFoundException ("UnitSpellEffect", thisSpell.getUnitSkillID (), "mergeSpellEffectsIntoSkillList");
 				
 				mergedSkills.add (spellSkill);
 			}
@@ -504,7 +503,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	@Override
-	public final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitHasSkill> skills,
+	public final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitSkillAndValue> skills,
 		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -514,14 +513,14 @@ public final class UnitUtilsImpl implements UnitUtils
 		String magicRealmLifeformTypeID = db.findUnit (unit.getUnitID (), "getModifiedUnitMagicRealmLifeformTypeID").getUnitMagicRealm ();
 
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
-		final List<UnitHasSkill> mergedSkills;
+		final List<UnitSkillAndValue> mergedSkills;
 		if ((unit instanceof MemoryUnit) && (!(skills instanceof UnitHasSkillMergedList)))
 			mergedSkills = mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, db);
 		else
 			mergedSkills = skills;
 
 		// Check if any skills or spells override this
-		for (final UnitHasSkill thisSkill : mergedSkills)
+		for (final UnitSkillAndValue thisSkill : mergedSkills)
 		{
 			final String changedMagicRealmLifeformTypeID = db.findUnitSkill (thisSkill.getUnitSkillID (), "getModifiedUnitMagicRealmLifeformTypeID").getChangesUnitToMagicRealm ();
 			if (changedMagicRealmLifeformTypeID != null)

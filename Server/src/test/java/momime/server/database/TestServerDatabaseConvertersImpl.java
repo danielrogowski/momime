@@ -32,7 +32,7 @@ import momime.client.database.ClientDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
@@ -59,7 +59,7 @@ public final class TestServerDatabaseConvertersImpl
 			{
 				// Make make all the consistency checks pass
 				final UnitUtils unitUtils = mock (UnitUtils.class);
-				when (unitUtils.getBasicSkillValue (anyListOf (UnitHasSkill.class), anyString ())).thenReturn (2);
+				when (unitUtils.getBasicSkillValue (anyListOf (UnitSkillAndValue.class), anyString ())).thenReturn (2);
 				
 				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 				db.setUnitUtils (unitUtils);

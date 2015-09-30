@@ -30,10 +30,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
-import momime.common.database.UnitSpellEffect;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitType;
 import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
@@ -240,7 +239,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitHasSkill unitDefSkill = new UnitHasSkill ();
+		final UnitSkillAndValue unitDefSkill = new UnitSkillAndValue ();
 		unitDefSkill.setUnitSkillID ("US001");
 		unitDefSkill.setUnitSkillValue (5);
 		
@@ -282,7 +281,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitHasSkill unitDefSkill = new UnitHasSkill ();
+		final UnitSkillAndValue unitDefSkill = new UnitSkillAndValue ();
 		unitDefSkill.setUnitSkillID ("US001");
 		unitDefSkill.setUnitSkillValue (5);
 		
@@ -345,14 +344,14 @@ public final class TestUnitUtilsImpl
 	public final void testGetBasicSkillValue ()
 	{
 		// Create skills list
-		final List<UnitHasSkill> skills = new ArrayList<UnitHasSkill> ();
+		final List<UnitSkillAndValue> skills = new ArrayList<UnitSkillAndValue> ();
 
-		final UnitHasSkill skillWithValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
 		skillWithValue.setUnitSkillID ("US001");
 		skillWithValue.setUnitSkillValue (5);
 		skills.add (skillWithValue);
 
-		final UnitHasSkill skillWithoutValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
 		skillWithoutValue.setUnitSkillID ("US002");
 		skills.add (skillWithoutValue);
 
@@ -375,12 +374,12 @@ public final class TestUnitUtilsImpl
 		unit.setUnitURN (3);
 
 		// Create skills list
-		final UnitHasSkill skillWithValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
 		skillWithValue.setUnitSkillID ("US001");
 		skillWithValue.setUnitSkillValue (5);
 		unit.getUnitHasSkill ().add (skillWithValue);
 
-		final UnitHasSkill skillWithoutValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
 		skillWithoutValue.setUnitSkillID ("US002");
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
@@ -408,12 +407,12 @@ public final class TestUnitUtilsImpl
 		unit.setUnitURN (3);
 
 		// Create skills list
-		final UnitHasSkill skillWithValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
 		skillWithValue.setUnitSkillID ("US001");
 		skillWithValue.setUnitSkillValue (5);
 		unit.getUnitHasSkill ().add (skillWithValue);
 
-		final UnitHasSkill skillWithoutValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
 		skillWithoutValue.setUnitSkillID ("US002");
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
@@ -433,12 +432,12 @@ public final class TestUnitUtilsImpl
 		unit.setUnitURN (3);
 
 		// Create skills list
-		final UnitHasSkill skillWithValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
 		skillWithValue.setUnitSkillID ("US001");
 		skillWithValue.setUnitSkillValue (5);
 		unit.getUnitHasSkill ().add (skillWithValue);
 
-		final UnitHasSkill skillWithoutValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
 		skillWithoutValue.setUnitSkillID ("US002");
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
@@ -457,7 +456,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSpellEffect unitSpellEffect = new UnitSpellEffect ();
+		final UnitSkillAndValue unitSpellEffect = new UnitSkillAndValue ();
 		unitSpellEffect.setUnitSkillID ("US003");
 		unitSpellEffect.setUnitSkillValue (7);
 		
@@ -471,12 +470,12 @@ public final class TestUnitUtilsImpl
 		unit.setUnitURN (3);
 
 		// Create skills list
-		final UnitHasSkill skillWithValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
 		skillWithValue.setUnitSkillID ("US001");
 		skillWithValue.setUnitSkillValue (5);
 		unit.getUnitHasSkill ().add (skillWithValue);
 
-		final UnitHasSkill skillWithoutValue = new UnitHasSkill ();
+		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
 		skillWithoutValue.setUnitSkillID ("US002");
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
@@ -585,7 +584,7 @@ public final class TestUnitUtilsImpl
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
 		// Create test unit
-		final UnitHasSkill exp = new UnitHasSkill ();
+		final UnitSkillAndValue exp = new UnitSkillAndValue ();
 		exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		exp.setUnitSkillValue (95);
 		
@@ -1143,7 +1142,7 @@ public final class TestUnitUtilsImpl
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID ("UN001");
 
-		final UnitHasSkill unitSkill = new UnitHasSkill ();
+		final UnitSkillAndValue unitSkill = new UnitSkillAndValue ();
 		unitSkill.setUnitSkillID ("US001");
 		unit.getUnitHasSkill ().add (unitSkill);
 
@@ -1179,7 +1178,7 @@ public final class TestUnitUtilsImpl
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID ("UN001");
 
-		final UnitHasSkill unitSkill = new UnitHasSkill ();
+		final UnitSkillAndValue unitSkill = new UnitSkillAndValue ();
 		unitSkill.setUnitSkillID ("US001");
 		unit.getUnitHasSkill ().add (unitSkill);
 
@@ -1211,7 +1210,7 @@ public final class TestUnitUtilsImpl
 		skillDef.setChangesUnitToMagicRealm ("B");
 		when (db.findUnitSkill ("US001", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (skillDef);
 		
-		final UnitSpellEffect unitSpellEffect = new UnitSpellEffect ();
+		final UnitSkillAndValue unitSpellEffect = new UnitSkillAndValue ();
 		unitSpellEffect.setUnitSkillID ("US001");
 		
 		final Spell spellDef = new Spell ();

@@ -6113,223 +6113,173 @@
 			<experienceRequired>20</experienceRequired>
 			<ringColour>0033B3</ringColour>
 			<ringCount>1</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="2">
 			<experienceRequired>60</experienceRequired>
 			<ringColour>0033B3</ringColour>
 			<ringCount>2</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="3">
 			<experienceRequired>120</experienceRequired>
 			<ringColour>0033B3</ringColour>
 			<ringCount>3</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="4">
 			<ringColour>FCC864</ringColour>
 			<ringCount>1</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="5">
 			<ringColour>FCC864</ringColour>
 			<ringCount>2</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Normal</unitTypeDescription>
@@ -6344,384 +6294,298 @@
 			<experienceRequired>20</experienceRequired>
 			<ringColour>0033B3</ringColour>
 			<ringCount>1</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="2">
 			<experienceRequired>60</experienceRequired>
 			<ringColour>0033B3</ringColour>
 			<ringCount>2</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="3">
 			<experienceRequired>120</experienceRequired>
 			<ringColour>0033B3</ringColour>
 			<ringCount>3</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="4">
 			<experienceRequired>200</experienceRequired>
 			<ringColour>FCC864</ringColour>
 			<ringCount>1</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>1</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>1</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="5">
 			<experienceRequired>300</experienceRequired>
 			<ringColour>FCC864</ringColour>
 			<ringCount>2</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>5</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>5</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="6">
 			<experienceRequired>450</experienceRequired>
 			<ringColour>FCC864</ringColour>
 			<ringCount>3</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>2</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>2</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>6</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>6</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="7">
 			<experienceRequired>600</experienceRequired>
 			<ringColour>FF1A1A</ringColour>
 			<ringCount>1</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>7</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>7</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<experienceLevel levelNumber="8">
 			<experienceRequired>1000</experienceRequired>
 			<ringColour>FF1A1A</ringColour>
 			<ringCount>2</ringCount>
-			<experienceSkillBonus>
-				<unitSkillID>UA01</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="UA01">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA02</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="UA02">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA03</unitSkillID>
-				<bonusValue>3</bonusValue>
+			<experienceSkillBonus unitSkillID="UA03">
+				<unitSkillValue>3</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA04</unitSkillID>
-				<bonusValue>4</bonusValue>
+			<experienceSkillBonus unitSkillID="UA04">
+				<unitSkillValue>4</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA05</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="UA05">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>UA06</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="UA06">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US134</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="US134">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US133</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="US133">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US130</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="US130">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>US126</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="US126">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
-			<experienceSkillBonus>
-				<unitSkillID>SS093B</unitSkillID>
-				<bonusValue>8</bonusValue>
+			<experienceSkillBonus unitSkillID="SS093B">
+				<unitSkillValue>8</unitSkillValue>
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Hero</unitTypeDescription>
@@ -6759,20 +6623,20 @@
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT08">
 		<baseCraftingCost>100</baseCraftingCost>
-		<heroItemTypeBasicStat heroItemBasicSkillID="US014" />
+		<heroItemTypeBasicStat unitSkillID="US014" />
 		<heroItemTypeDescription>Shield</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT09">
 		<baseCraftingCost>100</baseCraftingCost>
-		<heroItemTypeBasicStat heroItemBasicSkillID="UA04">
-			<heroItemBasicSkillValue>1</heroItemBasicSkillValue>
+		<heroItemTypeBasicStat unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
 		</heroItemTypeBasicStat>
 		<heroItemTypeDescription>Chain mail</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT10">
 		<baseCraftingCost>300</baseCraftingCost>
-		<heroItemTypeBasicStat heroItemBasicSkillID="UA04">
-			<heroItemBasicSkillValue>2</heroItemBasicSkillValue>
+		<heroItemTypeBasicStat unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
 		</heroItemTypeBasicStat>
 		<heroItemTypeDescription>Plate mail</heroItemTypeDescription>
 	</heroItemType>
@@ -16281,55 +16145,44 @@
 		<weaponGradeDescription>Regular weapons</weaponGradeDescription>
 	</weaponGrade>
 	<weaponGrade weaponGradeNumber="1">
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA03">
+			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
 		<weaponGradeDescription>Magic weapons built with Alchemists' Guild or Alchemy retort</weaponGradeDescription>
 	</weaponGrade>
 	<weaponGrade weaponGradeNumber="2">
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA03">
+			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
 		<weaponGradeDescription>Mithril weapons</weaponGradeDescription>
 	</weaponGrade>
 	<weaponGrade weaponGradeNumber="3">
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA03">
+			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
 		</weaponGradeSkillBonus>
-		<weaponGradeSkillBonus>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<weaponGradeSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 		</weaponGradeSkillBonus>
 		<weaponGradeDescription>Adamantium weapons</weaponGradeDescription>
 	</weaponGrade>
@@ -16338,95 +16191,77 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CAE02">
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Node Aura (+2 to various stats for Chaos creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -16435,50 +16270,41 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CAE04">
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Nature Node Aura (+2 to various stats for Nature creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -16487,50 +16313,41 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CAE06">
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Sorcery Node Aura (+2 to various stats for Sorcery creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -16552,343 +16369,276 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE102">
 		<combatAreaAffectsPlayers>C</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LTN</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LTN</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LTH</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LTH</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Metal Fires</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE108">
 		<combatAreaAffectsPlayers>B</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LTN</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LTH</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LT04</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LT05</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LT06</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>-2</unitSkillValue>
 			<effectMagicRealm>LTU</effectMagicRealm>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>-2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Warp Reality</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE116">
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LT03</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTCC</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>2</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Surge</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE128">
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>True Light</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE140">
 		<combatAreaAffectsPlayers>C</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Prayer</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE151">
 		<combatAreaAffectsPlayers>C</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>3</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>3</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA07</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA07">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>High Prayer</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE154">
 		<combatAreaAffectsPlayers>C</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA03</unitSkillID>
-			<bonusValue>1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA03">
+			<unitSkillValue>1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Holy Arms</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -16903,95 +16653,77 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE169">
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Darkness</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -17000,41 +16732,32 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE174">
 		<combatAreaAffectsPlayers>O</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>-2</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>-2</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>-1</bonusValue>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>-1</unitSkillValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Black Prayer</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -17046,95 +16769,77 @@
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE197">
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA01</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA02</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA04</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>UA05</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LT02</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US134</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US133</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US130</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>US126</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
-		<combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>LT01</effectMagicRealm>
-			<unitSkillID>SS093B</unitSkillID>
-			<bonusValue>-1</bonusValue>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Eternal Night</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -22346,4 +22051,3 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
-

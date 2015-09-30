@@ -32,7 +32,7 @@ import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SpellUpkeep;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
-import momime.common.database.UnitSpellEffect;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerPickUtils;
 
@@ -272,7 +272,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				case UNIT_ENCHANTMENTS:
 				case UNIT_CURSES:
 				{
-					for (final UnitSpellEffect unitSpellEffect : spell.getUnitSpellEffect ())
+					for (final UnitSkillAndValue unitSpellEffect : spell.getUnitSpellEffect ())
 					{
 						final String imageName = getGraphicsDB ().findUnitSkill (unitSpellEffect.getUnitSkillID (), "findImageForSpell").getUnitSkillImageFile ();
 						if (!imageFilenames.contains (imageName))

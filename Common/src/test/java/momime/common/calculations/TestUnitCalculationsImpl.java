@@ -39,7 +39,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
@@ -438,7 +438,7 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// These are all only used for the mock so doesn't matter if there's anything in them
-		final List<UnitHasSkill> skills = new ArrayList<UnitHasSkill> ();
+		final List<UnitSkillAndValue> skills = new ArrayList<UnitSkillAndValue> ();
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -472,7 +472,7 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// These are all only used for the mock so doesn't matter if there's anything in them
-		final List<UnitHasSkill> skills = new ArrayList<UnitHasSkill> ();
+		final List<UnitSkillAndValue> skills = new ArrayList<UnitSkillAndValue> ();
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -887,7 +887,7 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkillMergedList unitOneSkills = new UnitHasSkillMergedList ();
 		for (final String unitSkillID : new String [] {"US001", "US002"})
 		{
-			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			final UnitSkillAndValue unitHasSkill = new UnitSkillAndValue ();
 			unitHasSkill.setUnitSkillID (unitSkillID);
 			unitOneSkills.add (unitHasSkill);
 		}
@@ -897,7 +897,7 @@ public final class TestUnitCalculationsImpl
 		final UnitHasSkillMergedList unitTwoSkills = new UnitHasSkillMergedList ();
 		for (final String unitSkillID : new String [] {"US002", "US003"})
 		{
-			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			final UnitSkillAndValue unitHasSkill = new UnitSkillAndValue ();
 			unitHasSkill.setUnitSkillID (unitSkillID);
 			unitTwoSkills.add (unitHasSkill);
 		}
@@ -976,7 +976,7 @@ public final class TestUnitCalculationsImpl
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		
 		// Sample unit
-		final UnitHasSkill movementSkill = new UnitHasSkill ();
+		final UnitSkillAndValue movementSkill = new UnitSkillAndValue ();
 		movementSkill.setUnitSkillID ("US001");
 		
 		final UnitHasSkillMergedList movementSkills = new UnitHasSkillMergedList ();
@@ -1006,7 +1006,7 @@ public final class TestUnitCalculationsImpl
 		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
 		
 		// Cast flight spell - pathfinding takes preference, with how the demo rules above are ordered
-		final UnitHasSkill flightSpellEffect = new UnitHasSkill ();
+		final UnitSkillAndValue flightSpellEffect = new UnitSkillAndValue ();
 		flightSpellEffect.setUnitSkillID ("US002");
 		movementSkills.add (flightSpellEffect);
 
@@ -1064,13 +1064,13 @@ public final class TestUnitCalculationsImpl
 		when (db.getMovementRateRule ()).thenReturn (rules);
 		
 		// Example unit with each skill
-		final UnitHasSkill flyingUnitSkill = new UnitHasSkill ();
+		final UnitSkillAndValue flyingUnitSkill = new UnitSkillAndValue ();
 		flyingUnitSkill.setUnitSkillID ("US001");
 		
 		final AvailableUnit flyingUnit = new AvailableUnit ();
 		flyingUnit.getUnitHasSkill ().add (flyingUnitSkill);
 
-		final UnitHasSkill walkingUnitSkill = new UnitHasSkill ();
+		final UnitSkillAndValue walkingUnitSkill = new UnitSkillAndValue ();
 		walkingUnitSkill.setUnitSkillID ("US002");
 		
 		final AvailableUnit walkingUnit = new AvailableUnit ();
@@ -1438,7 +1438,7 @@ public final class TestUnitCalculationsImpl
 		// Have to mock skill list merging
 		final UnitHasSkillMergedList noSkills = new UnitHasSkillMergedList ();
 
-		final UnitHasSkill drakesFly = new UnitHasSkill ();
+		final UnitSkillAndValue drakesFly = new UnitSkillAndValue ();
 		drakesFly.setUnitSkillID ("US001");
 		
 		final UnitHasSkillMergedList yesSkills = new UnitHasSkillMergedList ();

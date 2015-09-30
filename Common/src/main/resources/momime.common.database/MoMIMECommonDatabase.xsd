@@ -691,27 +691,11 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
         	<xsd:documentation>Defines the wepaon grades available for normal units, such as that units can have Adamantium instead of regular weapons.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeSkillBonus" type="momimecommon:weaponGradeSkillBonus" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeSkillBonus" type="momimecommon:unitSkillAndValue" />
 		</xsd:sequence>
 		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120" />
 	</xsd:complexType>
 
-	<xsd:complexType name="weaponGradeSkillBonus" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses">
-        <xsd:annotation>
-        	<xsd:documentation>Lists the bonuses to skills that units get from having a particular grade of weapons - used so that Mithril and Adamantium weapons give a + to the Thrown Weapons skill.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="bonusValue" type="momimecommon:unitSkillValue" nxe:label="Value" nxe:gridwidth="50" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
 	<xsd:complexType name="unitSkill" nxe:singular="Unit Skill" nxe:plural="Unit Skills" nxe:submenu="Units">
         <xsd:annotation>
         	<xsd:documentation>Defines all the unit attributes and skills available, e.g. Melee Attack Strength, Defence, Resistance, First Strike, Flame Breath,
@@ -794,27 +778,11 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringColour" type="momimecommon:colour" nxe:label="Ring Colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringCount" type="momimecommon:experienceLevelRingCount" nxe:label="Nbr. Rings" nxe:gridwidth="70" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceSkillBonus" type="momimecommon:experienceSkillBonus" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceSkillBonus" type="momimecommon:unitSkillAndValue" />
 		</xsd:sequence>
 		<xsd:attribute name="levelNumber" type="momimecommon:experienceLevelNumber" use="required" nxe:label="Level" nxe:gridwidth="50" />
 	</xsd:complexType>
 
-	<xsd:complexType name="experienceSkillBonus" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses">
-        <xsd:annotation>
-        	<xsd:documentation>Lists the bonuses to skills that units get at a particular skill level, e.g. that Veteran units gain +1 to "attack" type skills such as Fire Breath or Thrown Weapons.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="bonusValue" type="momimecommon:unitSkillValue" nxe:label="Value" nxe:gridwidth="50" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
 	<xsd:complexType name="unitMagicRealm" nxe:singular="Unit Magic Realm/Lifeform Type" nxe:plural="Unit Magic Realms/Lifeform Types" nxe:submenu="Units">
         <xsd:annotation>
         	<xsd:documentation>Defines all the possible magic realms of summoned units, and other types of lifeform, namely Undead and Chaos Channeled units.</xsd:documentation>
@@ -869,19 +837,21 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 			<xsd:element minOccurs="0" maxOccurs="1" name="transportCapacity" type="momimecommon:transportCapacity" nxe:label="Transport Capacity" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitUpkeep" type="momimecommon:unitUpkeep" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPrerequisite" type="momimecommon:unitPrerequisite" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitHasSkill" type="momimecommon:unitHasSkill" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitHasSkill" type="momimecommon:unitSkillAndValue" />
 		</xsd:sequence>
 		<xsd:attribute name="unitID" type="momimecommon:unitID" use="required" nxe:label="Unit ID" nxe:gridwidth="50" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="unitHasSkill" nxe:singular="Unit has Skill" nxe:plural="Unit has Skills">
+	<xsd:complexType name="unitSkillAndValue" nxe:singular="Unit Skills" nxe:plural="Unit Skills">
         <xsd:annotation>
-        	<xsd:documentation>Defines which skills a particular unit has, e.g. First Strike, Flame Breath, Flying, Scouting.</xsd:documentation>
+        	<xsd:documentation>Specifies that a unit has a particular skill, or some skill bonus granted from experience, items or so on.
+This type is reused in a lot of places.  Some skills are valueless, e.g. First Strike or Flying, while others specify some kind of strength value, e.g. Flame Breath or Scouting.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillValue" type="momimecommon:unitSkillValue" nxe:label="Skill Value" nxe:gridwidth="100">
 				<xsd:annotation>
-					<xsd:documentation>Some skills have a value or saving throw penalty (such as Fire Breath 2 or Fire Breath 20, or Life Steal -2 or Life Steal -6) whereas some skills don't have a value (such as Fire Immunity or Mountaineer).</xsd:documentation>
+					<xsd:documentation>Some skills have a value or saving throw penalty (such as Fire Breath 2 or Fire Breath 20, or Life Steal 2 or Life Steal 6) whereas some skills
+don't have a value (such as Fire Immunity or Mountaineer).  By convention MoM IME stores all skill values as positive numbers.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
@@ -945,23 +915,19 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
         <xsd:annotation>
         	<xsd:documentation>Lists the bonuses or penalties to skills that units get from a particular combat area effect, e.g. Chaos creatures getting bonuses to the "attack" type skills such as Fire Breath from Chaos nodes.</xsd:documentation>
         </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Skill" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="bonusValue" type="momimecommon:unitSkillValue" nxe:label="Value" nxe:gridwidth="50" />
-		</xsd:sequence>
+        <xsd:complexContent>
+			<xsd:extension base="momimecommon:unitSkillAndValue">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="spell" nxe:singular="Spell" nxe:plural="Spells" nxe:submenu="Spells">
@@ -999,7 +965,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="MP per +1 dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:summonedUnit" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSpellEffect" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSkillAndValue" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCityEffect" type="momimecommon:spellHasCityEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCombatEffect" type="momimecommon:spellHasCombatEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidUnitTarget" type="momimecommon:spellValidUnitTarget" />
@@ -1016,26 +982,6 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>unitName</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-
-	<xsd:complexType name="unitSpellEffect" nxe:singular="Unit Spell Effect" nxe:plural="Unit Spell Effects">
-        <xsd:annotation>
-        	<xsd:documentation>For unit enchantments and curses, defines all possible "skills" the spell can grant.  When a player casts the spell, one of the listed skills will be chosen at random, e.g. Chaos Channels has 3 possible effects.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillValue" type="momimecommon:unitSkillValue" nxe:label="Skill Value" nxe:gridwidth="100">
-				<xsd:annotation>
-					<xsd:documentation>Some skills have a value or saving throw penalty (such as Fire Breath 2 or Fire Breath 20, or Life Steal -2 or Life Steal -6) whereas some skills don't have a value (such as Fire Immunity or Mountaineer).</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Option for Unit Skill" nxe:gridwidth="200">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -1166,25 +1112,9 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="baseCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Base Crafting Cost" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeBasicStat" type="momimecommon:heroItemTypeBasicStat" nxe:label="Basic Stat" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeBasicStat" type="momimecommon:unitSkillAndValue" nxe:label="Basic Stat" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-
-	<xsd:complexType name="heroItemTypeBasicStat" nxe:singular="Hero Item Basic Stat" nxe:plural="Hero Item Basic Stats">
-        <xsd:annotation>
-        	<xsd:documentation>Some item types give some basic stat bonus even before any enchantments are added, e.g. plate mail items all give +2 defence.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemBasicSkillValue" type="momimecommon:unitSkillValue" nxe:label="Skill Value" nxe:gridwidth="100" />
-		</xsd:sequence>
-		<xsd:attribute name="heroItemBasicSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Skill" nxe:gridwidth="200">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">

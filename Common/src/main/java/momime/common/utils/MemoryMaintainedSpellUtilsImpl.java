@@ -19,9 +19,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -219,7 +219,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else
     	{
     		unitSpellEffectIDs = new ArrayList<String> ();
-    		for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
+    		for (final UnitSkillAndValue effect : spell.getUnitSpellEffect ())
     			if (findMaintainedSpell (spells, castingPlayerID, spell.getSpellID (), unitURN, effect.getUnitSkillID (), null, null) == null)
     				unitSpellEffectIDs.add (effect.getUnitSkillID ());
     	}

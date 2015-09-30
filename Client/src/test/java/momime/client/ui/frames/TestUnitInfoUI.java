@@ -5,6 +5,12 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.Test;
+
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
@@ -26,13 +32,8 @@ import momime.common.database.Unit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.junit.Test;
-
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the UnitInfoUI class
@@ -105,6 +106,8 @@ public final class TestUnitInfoUI
 		// Skills
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
+		
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
@@ -129,6 +132,7 @@ public final class TestUnitInfoUI
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
+		panel.setUnitSkillUtils (unitSkillUtils);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
@@ -216,6 +220,8 @@ public final class TestUnitInfoUI
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
 
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
@@ -239,6 +245,7 @@ public final class TestUnitInfoUI
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
+		panel.setUnitSkillUtils (unitSkillUtils);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());

@@ -612,7 +612,7 @@ to show them moving from one cell to another have their GridCell set to null.</x
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="weaponGrade" type="momimecommon:weaponGradeNumber" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitHasSkill" type="momimecommon:unitHasSkill" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitHasSkill" type="momimecommon:unitSkillAndValue" />
 		</xsd:sequence>
 	</xsd:complexType>
 

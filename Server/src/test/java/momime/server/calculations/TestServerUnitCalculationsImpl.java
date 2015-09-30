@@ -34,7 +34,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.MovementRateRule;
 import momime.common.database.RangedAttackType;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
@@ -112,18 +112,18 @@ public final class TestServerUnitCalculationsImpl
 		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, fow, db));
 		
 		// Unit with two skills, one which grants Scouting II (like Flight) and one which has nothing at all to do with scouting
-		final UnitHasSkill flight = new UnitHasSkill ();
+		final UnitSkillAndValue flight = new UnitSkillAndValue ();
 		flight.setUnitSkillID ("US001");
 		mergedSkills.add (flight);
 
-		final UnitHasSkill other = new UnitHasSkill ();
+		final UnitSkillAndValue other = new UnitSkillAndValue ();
 		other.setUnitSkillID ("US002");
 		mergedSkills.add (other);
 		
 		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, fow, db));
 		
 		// Unit with a skill which grants Scouting IV
-		final UnitHasSkill longSight = new UnitHasSkill ();
+		final UnitSkillAndValue longSight = new UnitSkillAndValue ();
 		longSight.setUnitSkillID ("US003");
 		mergedSkills.add (longSight);
 
@@ -379,7 +379,7 @@ public final class TestServerUnitCalculationsImpl
 		// Regular walking unit can walk over the two types of land tiles, but not water
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		
-		final UnitHasSkill spearmenMovementSkill = new UnitHasSkill ();
+		final UnitSkillAndValue spearmenMovementSkill = new UnitSkillAndValue ();
 		spearmenMovementSkill.setUnitSkillID ("US001");
 		
 		final MemoryUnit spearmenUnit = new MemoryUnit ();
@@ -395,7 +395,7 @@ public final class TestServerUnitCalculationsImpl
 		assertNull (spearmen.get ("TT03"));
 		
 		// Stacking a flying unit with it makes no difference - although it can move over all tile types and faster, it always chooses the slowest movement rate
-		final UnitHasSkill flyingMovementSkill = new UnitHasSkill ();
+		final UnitSkillAndValue flyingMovementSkill = new UnitSkillAndValue ();
 		flyingMovementSkill.setUnitSkillID ("US001");
 		
 		final MemoryUnit flyingUnit = new MemoryUnit ();
@@ -411,7 +411,7 @@ public final class TestServerUnitCalculationsImpl
 		assertNull (flying.get ("TT03"));
 		
 		// Stacking a pathfinding unit reduces the movement rates for the land tile types for all units in the stack down to 1, but still can't move over water
-		final UnitHasSkill pathfindingMovementSkill = new UnitHasSkill ();
+		final UnitSkillAndValue pathfindingMovementSkill = new UnitSkillAndValue ();
 		pathfindingMovementSkill.setUnitSkillID ("US003");
 		
 		final MemoryUnit pathfindingUnit = new MemoryUnit ();
@@ -457,7 +457,7 @@ public final class TestServerUnitCalculationsImpl
 		
 			for (int n = 1; n <= 2; n++)
 			{
-				final UnitHasSkill walkingSkill = new UnitHasSkill ();
+				final UnitSkillAndValue walkingSkill = new UnitSkillAndValue ();
 				walkingSkill.setUnitSkillID ("USX01");
 				
 				final MemoryUnit spearmen = new MemoryUnit ();
@@ -623,7 +623,7 @@ public final class TestServerUnitCalculationsImpl
 	
 			for (int n = 1; n <= 2; n++)
 			{
-				final UnitHasSkill walkingSkill = new UnitHasSkill ();
+				final UnitSkillAndValue walkingSkill = new UnitSkillAndValue ();
 				walkingSkill.setUnitSkillID ("USX01");
 	
 				nextUnitURN++;

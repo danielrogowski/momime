@@ -20,8 +20,8 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSetting;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
@@ -159,7 +159,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					getUnitUtils ().setBasicSkillValue (unit, skillID, currentSkillValue + 1);
 				else
 				{
-					final UnitHasSkill newSkill = new UnitHasSkill ();
+					final UnitSkillAndValue newSkill = new UnitSkillAndValue ();
 					newSkill.setUnitSkillID (skillID);
 					newSkill.setUnitSkillValue (1);
 					unit.getUnitHasSkill ().add (newSkill);
@@ -331,7 +331,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		getUnitUtils ().initializeUnitSkills (testUnit, 0, db);
 
 		final List<String> testUnitSkillList = new ArrayList<String> ();
-		for (final UnitHasSkill testUnitSkill : testUnit.getUnitHasSkill ())
+		for (final UnitSkillAndValue testUnitSkill : testUnit.getUnitHasSkill ())
 			testUnitSkillList.add (testUnitSkill.getUnitSkillID ());
 
 		// First try the centre

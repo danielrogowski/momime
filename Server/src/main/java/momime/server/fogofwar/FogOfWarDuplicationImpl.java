@@ -3,7 +3,10 @@ package momime.server.fogofwar;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.database.UnitHasSkill;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
@@ -16,9 +19,6 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
-
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -271,10 +271,10 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(source.getDoubleCombatMovesLeft () != dest.getDoubleCombatMovesLeft ());
 
 			// AvailableUnit - compare skills in detail - already know the number of skills matches, so just need to verify their existance and values
-			final Iterator<UnitHasSkill> sourceSkillsIter = source.getUnitHasSkill ().iterator ();
+			final Iterator<UnitSkillAndValue> sourceSkillsIter = source.getUnitHasSkill ().iterator ();
 			while ((!needToUpdate) && (sourceSkillsIter.hasNext ()))
 			{
-				final UnitHasSkill srcSkill = sourceSkillsIter.next ();
+				final UnitSkillAndValue srcSkill = sourceSkillsIter.next ();
 				final int expectedValue = (srcSkill.getUnitSkillValue () == null) ? 0 : srcSkill.getUnitSkillValue ();
 				if (getUnitUtils ().getBasicSkillValue (dest.getUnitHasSkill (), srcSkill.getUnitSkillID ()) != expectedValue)
 					needToUpdate = true;
@@ -295,9 +295,9 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				dest.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getUnitLocation ()));
 
 			dest.getUnitHasSkill ().clear ();
-			for (final UnitHasSkill srcSkill : source.getUnitHasSkill ())
+			for (final UnitSkillAndValue srcSkill : source.getUnitHasSkill ())
 			{
-				final UnitHasSkill destSkill = new UnitHasSkill ();
+				final UnitSkillAndValue destSkill = new UnitSkillAndValue ();
 				destSkill.setUnitSkillID (srcSkill.getUnitSkillID ());
 				destSkill.setUnitSkillValue (srcSkill.getUnitSkillValue ());
 				dest.getUnitHasSkill ().add (destSkill);

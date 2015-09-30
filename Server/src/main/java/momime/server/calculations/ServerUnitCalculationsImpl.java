@@ -29,7 +29,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
@@ -114,7 +114,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
-		for (final UnitHasSkill thisSkill : mergedSkills)
+		for (final UnitSkillAndValue thisSkill : mergedSkills)
 		{
 			final Integer unitSkillScoutingRange = db.findUnitSkill (thisSkill.getUnitSkillID (), "calculateUnitScoutingRange").getUnitSkillScoutingRange ();
 			if (unitSkillScoutingRange != null)

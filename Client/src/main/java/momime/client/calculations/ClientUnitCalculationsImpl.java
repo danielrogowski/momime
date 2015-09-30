@@ -2,23 +2,23 @@ package momime.client.calculations;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Client side only methods dealing with unit calculations
@@ -59,7 +59,7 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID ());
 		
 		// Pre-merge in skills granted from spells (e.g. chaos channels flight) so that we only do it once time
-		final List<UnitHasSkill> mergedSkills;
+		final List<UnitSkillAndValue> mergedSkills;
 		if (unit instanceof MemoryUnit)
 			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				(MemoryUnit) unit, getClient ().getClientDB ());

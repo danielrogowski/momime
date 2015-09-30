@@ -41,8 +41,8 @@ import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.UnitHasSkill;
 import momime.common.database.UnitSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
@@ -167,7 +167,7 @@ public final class TestUnitRowDisplayUI
 		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
 		for (int skillNo = 1; skillNo <= 3; skillNo++)
 		{
-			final UnitHasSkill skill = new UnitHasSkill ();
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
 			skill.setUnitSkillID ("US03" + skillNo);
 			mergedSkills.add (skill);
 

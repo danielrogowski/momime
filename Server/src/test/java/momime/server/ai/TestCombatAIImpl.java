@@ -18,7 +18,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
@@ -218,7 +218,7 @@ public final class TestCombatAIImpl
 		casterWithoutMP.setUnitID ("UN003");		// Sage hero
 		casterWithoutMP.setManaRemaining (9);
 		
-		final UnitHasSkill casterSkill = new UnitHasSkill ();
+		final UnitSkillAndValue casterSkill = new UnitSkillAndValue ();
 		casterSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO);
 		casterSkill.setUnitSkillValue (3);
 		casterWithoutMP.getUnitHasSkill ().add (casterSkill);

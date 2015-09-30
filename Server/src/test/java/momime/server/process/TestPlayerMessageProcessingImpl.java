@@ -27,7 +27,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.UnitHasSkill;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
@@ -611,7 +611,7 @@ public final class TestPlayerMessageProcessingImpl
 
 		// Movement speed
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
+		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (players), eq (fow), eq (db))).thenReturn (2);
 		
@@ -731,7 +731,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Movement speed
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
+		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (players), eq (fow), eq (db))).thenReturn (2);
 		
@@ -868,7 +868,7 @@ public final class TestPlayerMessageProcessingImpl
 
 		// Movement speed
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitHasSkill.class),
+		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (players), eq (fow), eq (db))).thenReturn (2);
 		

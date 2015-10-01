@@ -1181,7 +1181,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				
 				// Loop finding each unit, and in process ensure they all have movement remaining
 				int doubleMovementRemaining = Integer.MAX_VALUE;
-				int doubleMovementTotal = Integer.MAX_VALUE;
+				int movementTotal = Integer.MAX_VALUE;
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 				for (final Integer unitURN : thisMove.getUnitURN ())
 				{
@@ -1191,11 +1191,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					
-					final int unitDoubleMovementTotal = getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					final int unitMovementTotal = getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
+						CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-					if (unitDoubleMovementTotal < doubleMovementTotal)
-						doubleMovementTotal = unitDoubleMovementTotal;
+					if (unitMovementTotal < movementTotal)
+						movementTotal = unitMovementTotal;
 				}
 				
 				// Any pending movements where the unit stack is out of movement, just leave them in the list until next turn
@@ -1211,7 +1211,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					
 					// Does it initiate a combat?  If so then leave the pending movement (don't remove it) and we'll deal with it later
 					else if (!oneCell.isCombatInitiated ())
-						for (int n = 0; n < doubleMovementTotal; n++)
+						for (int n = 0; n < movementTotal; n++)
 							moves.add (oneCell);
 				}
 			}

@@ -230,8 +230,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 								null, player, UnitStatusID.ALIVE, players, sd, db);
 						
 						// Let it move this turn
-						newUnit.setDoubleOverlandMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (newUnit, newUnit.getUnitHasSkill (),
-							CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+						newUnit.setDoubleOverlandMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (newUnit, newUnit.getUnitHasSkill (),
+							CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 							players, gsk.getTrueMap (), db));
 					}
 
@@ -418,8 +418,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 				
 				// Allow it to be moved this combat turn
-				tu.setDoubleCombatMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				tu.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
+					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 				
 				// Make sure we remove it after combat

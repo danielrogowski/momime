@@ -86,15 +86,15 @@ public final class TestUnitCalculationsImpl
 			spearmen.setOwningPlayerID (playerID);
 			fow.getUnit ().add (spearmen);
 			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				players, fow, db)).thenReturn (2);
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, fow, db)).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
 			fow.getUnit ().add (hellHounds);
 			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				players, fow, db)).thenReturn (4);
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, fow, db)).thenReturn (2);
 		}
 
 		// Set up object to test
@@ -135,15 +135,15 @@ public final class TestUnitCalculationsImpl
 			spearmen.setOwningPlayerID (playerID);
 			fow.getUnit ().add (spearmen);
 			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				players, fow, db)).thenReturn (2);
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, fow, db)).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
 			fow.getUnit ().add (hellHounds);
 			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				players, fow, db)).thenReturn (4);
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				players, fow, db)).thenReturn (2);
 		}
 
 		// Set up object to test
@@ -189,8 +189,8 @@ public final class TestUnitCalculationsImpl
 		u1.setCombatHeading (1);
 		fow.getUnit ().add (u1);
 		when (unitSkillUtils.getModifiedSkillValue (u1, u1.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (2);
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow, db)).thenReturn (1);
 
 		// Wrong location
 		final MemoryUnit u2 = new MemoryUnit ();
@@ -202,8 +202,8 @@ public final class TestUnitCalculationsImpl
 		u2.setCombatHeading (1);
 		fow.getUnit ().add (u2);
 		when (unitSkillUtils.getModifiedSkillValue (u2, u2.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (2);
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow, db)).thenReturn (1);
 
 		// No combat position
 		final MemoryUnit u3 = new MemoryUnit ();
@@ -214,8 +214,8 @@ public final class TestUnitCalculationsImpl
 		u3.setCombatHeading (1);
 		fow.getUnit ().add (u3);
 		when (unitSkillUtils.getModifiedSkillValue (u3, u3.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (2);
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow, db)).thenReturn (1);
 		
 		// Wrong player
 		final MemoryUnit u4 = new MemoryUnit ();
@@ -227,8 +227,8 @@ public final class TestUnitCalculationsImpl
 		u4.setCombatHeading (1);
 		fow.getUnit ().add (u4);
 		when (unitSkillUtils.getModifiedSkillValue (u4, u4.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (2);
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow, db)).thenReturn (1);
 		
 		// Unit B that matches
 		final MemoryUnit u5 = new MemoryUnit ();
@@ -240,8 +240,8 @@ public final class TestUnitCalculationsImpl
 		u5.setCombatHeading (1);
 		fow.getUnit ().add (u5);
 		when (unitSkillUtils.getModifiedSkillValue (u5, u5.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (4);
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, fow, db)).thenReturn (2);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();

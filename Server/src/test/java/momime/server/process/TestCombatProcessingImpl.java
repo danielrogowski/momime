@@ -3751,8 +3751,8 @@ public final class TestCombatProcessingImpl
 		// Unit speed
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (tu, tu.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, trueMap, db)).thenReturn (6);
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			players, trueMap, db)).thenReturn (3);
 		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();

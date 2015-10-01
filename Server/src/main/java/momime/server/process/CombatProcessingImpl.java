@@ -1016,8 +1016,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// If the unit it making an attack, that takes half its total movement
 			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
 				reduceMovementRemaining (tu, getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) / 2);				
+					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));				
 			
 			// Actually put the units in that location on the server
 			tu.setCombatPosition (movePath);

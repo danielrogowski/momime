@@ -217,7 +217,7 @@ public final class CommonDatabaseConstants
 	public static final String UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK = "UA07";
 
 	/** Movement speed skill; speed is calculated entirely separately from the -kind- of movement, via skills like Flight or Swimming */
-	public static final String UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED = "UA08";
+	public static final String UNIT_SKILL_ID_MOVEMENT_SPEED = "UA08";
 	
 	/**
 	 * Prevent instatiation of this class

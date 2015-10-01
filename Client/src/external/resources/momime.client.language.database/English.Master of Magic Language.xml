@@ -1352,7 +1352,7 @@ The background colour of each icon depicts the source of the attribute:
 		<unitSkillDescription>Movement</unitSkillDescription>
 		<unitSkillHelpText>The number of movement icons indicate the number of map cells or combat tiles that the unit is able to move during one overland or combat turn.
 		
-The type of movment icon indicates the unit's primary movement skill, although it may have multiple, especially if it has enchantments cast upon on.</unitSkillHelpText>
+The type of movement icon indicates the unit's primary movement skill, although it may have multiple, especially if it has enchantments cast upon on.</unitSkillHelpText>
 	</unitSkill>
 	<unitMagicRealm unitMagicRealmID="LTN">
 		<unitMagicRealmPlural>Normal units</unitMagicRealmPlural>

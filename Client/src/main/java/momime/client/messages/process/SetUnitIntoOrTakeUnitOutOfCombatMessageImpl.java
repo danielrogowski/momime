@@ -181,8 +181,8 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 			getCombatUI ().getUnitToDrawAtEachLocation () [getCombatPosition ().getY ()] [getCombatPosition ().getX ()] = unit;
 	
 			// Give it movement this turn
-			unit.setDoubleCombatMovesLeft (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			unit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()));
 			
 			// Prompt for it to move

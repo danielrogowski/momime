@@ -8185,7 +8185,7 @@
 		<unitSkillDescription>+ to Block</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="UA08">
-		<unitSkillDescription>Double movement speed</unitSkillDescription>
+		<unitSkillDescription>Movement</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="USX01">
 		<unitSkillDescription>Movement: Walking</unitSkillDescription>
@@ -8696,7 +8696,7 @@
 		<addsToSkill>
 			<addsToSkillID>UA08</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
-			<addsToSkillFixed>2</addsToSkillFixed>
+			<addsToSkillFixed>1</addsToSkillFixed>
 		</addsToSkill>
 		<unitSkillDescription>Endurance</unitSkillDescription>
 	</unitSkill>
@@ -8984,7 +8984,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -9022,7 +9022,7 @@
 			<unitSkillValue>9</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>3</unitSkillValue>
@@ -9066,7 +9066,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS14">
@@ -9110,7 +9110,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -9150,7 +9150,7 @@
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US037">
 			<unitSkillValue>3</unitSkillValue>
@@ -9191,7 +9191,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS08">
@@ -9231,7 +9231,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>3</unitSkillValue>
@@ -9275,7 +9275,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
@@ -9319,7 +9319,7 @@
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -9362,7 +9362,7 @@
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS01">
@@ -9406,7 +9406,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US037">
 			<unitSkillValue>3</unitSkillValue>
@@ -9447,7 +9447,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS01">
@@ -9490,7 +9490,7 @@
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS05">
@@ -9532,7 +9532,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -9575,7 +9575,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US030">
@@ -9621,7 +9621,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US009" />
 		<unitHasSkill unitSkillID="US023" />
@@ -9665,7 +9665,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US037">
 			<unitSkillValue>2</unitSkillValue>
@@ -9712,7 +9712,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
@@ -9758,7 +9758,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -9805,7 +9805,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS05">
@@ -9843,7 +9843,7 @@
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US018" />
@@ -9883,7 +9883,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS08">
@@ -9925,7 +9925,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>4</unitSkillValue>
@@ -9977,7 +9977,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -10021,7 +10021,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS05">
@@ -10063,7 +10063,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -10104,7 +10104,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS07">
@@ -10159,7 +10159,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
@@ -10210,7 +10210,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US012" />
@@ -10259,7 +10259,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US012" />
@@ -10314,7 +10314,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -10356,7 +10356,7 @@
 			<unitSkillValue>9</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="HS07">
@@ -10408,7 +10408,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -10456,7 +10456,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US028" />
@@ -10501,7 +10501,7 @@
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -10558,7 +10558,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX02" />
 		<unitName>Trireme</unitName>
@@ -10592,7 +10592,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -10625,7 +10625,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>10</unitSkillValue>
@@ -10665,7 +10665,7 @@
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>8</unitSkillValue>
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>99</unitSkillValue>
@@ -10696,7 +10696,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
@@ -10732,7 +10732,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
@@ -10773,7 +10773,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -10808,7 +10808,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
@@ -10847,7 +10847,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -10879,7 +10879,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -10910,7 +10910,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US126">
 			<unitSkillValue>3</unitSkillValue>
@@ -10940,7 +10940,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -10973,7 +10973,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -11006,7 +11006,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
@@ -11042,7 +11042,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -11080,7 +11080,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11123,7 +11123,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11161,7 +11161,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -11193,7 +11193,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -11229,7 +11229,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>6</unitSkillValue>
@@ -11263,7 +11263,7 @@
 			<unitSkillValue>7</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US030">
@@ -11299,7 +11299,7 @@
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -11331,7 +11331,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11371,7 +11371,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11411,7 +11411,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11450,7 +11450,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11489,7 +11489,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11524,7 +11524,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -11555,7 +11555,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US018" />
@@ -11593,7 +11593,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11635,7 +11635,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11665,7 +11665,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
@@ -11701,7 +11701,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
@@ -11737,7 +11737,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
@@ -11776,7 +11776,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -11814,7 +11814,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11854,7 +11854,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -11893,7 +11893,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
@@ -11925,7 +11925,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US017" />
@@ -11957,7 +11957,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>6</unitSkillValue>
@@ -11994,7 +11994,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>8</unitSkillValue>
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>10</unitSkillValue>
@@ -12027,7 +12027,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12061,7 +12061,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12093,7 +12093,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036">
 			<unitSkillValue>2</unitSkillValue>
@@ -12128,7 +12128,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12161,7 +12161,7 @@
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>10</unitSkillValue>
@@ -12195,7 +12195,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US047" />
@@ -12224,7 +12224,7 @@
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -12252,7 +12252,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -12285,7 +12285,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -12318,7 +12318,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US046" />
@@ -12355,7 +12355,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -12388,7 +12388,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -12420,7 +12420,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Wolf Riders</unitName>
@@ -12447,7 +12447,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US123" />
@@ -12481,7 +12481,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US123" />
@@ -12520,7 +12520,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -12559,7 +12559,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -12592,7 +12592,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US123" />
@@ -12628,7 +12628,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>6</unitSkillValue>
@@ -12662,7 +12662,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12699,7 +12699,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12736,7 +12736,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12772,7 +12772,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12812,7 +12812,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -12850,7 +12850,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12890,7 +12890,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -12927,7 +12927,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -12968,7 +12968,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -12998,7 +12998,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -13031,7 +13031,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -13069,7 +13069,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -13104,7 +13104,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US029" />
@@ -13140,7 +13140,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -13183,7 +13183,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -13221,7 +13221,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -13250,7 +13250,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -13281,7 +13281,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US046" />
@@ -13314,7 +13314,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US012" />
@@ -13347,7 +13347,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -13380,7 +13380,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -13413,7 +13413,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
@@ -13444,7 +13444,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -13473,7 +13473,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -13505,7 +13505,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
@@ -13535,7 +13535,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -13569,7 +13569,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -13603,7 +13603,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -13639,7 +13639,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>6</unitSkillValue>
@@ -13678,7 +13678,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -13711,7 +13711,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -13744,7 +13744,7 @@
 			<unitSkillValue>15</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
@@ -13775,7 +13775,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -13808,7 +13808,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -13846,7 +13846,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -13884,7 +13884,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -13927,7 +13927,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -13961,7 +13961,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -13997,7 +13997,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -14030,7 +14030,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US046" />
@@ -14067,7 +14067,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -14102,7 +14102,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US028" />
@@ -14131,7 +14131,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Spearmen</unitName>
@@ -14164,7 +14164,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -14197,7 +14197,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Halberdiers</unitName>
@@ -14233,7 +14233,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -14268,7 +14268,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Cavalry</unitName>
@@ -14303,7 +14303,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -14343,7 +14343,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -14381,7 +14381,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US036" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -14410,7 +14410,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -14442,7 +14442,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US030">
@@ -14472,7 +14472,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US024" />
@@ -14506,7 +14506,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US014" />
@@ -14540,7 +14540,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US024" />
@@ -14577,7 +14577,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -14610,7 +14610,7 @@
 			<unitSkillValue>40</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US017" />
@@ -14642,7 +14642,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US024" />
@@ -14674,7 +14674,7 @@
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US015" />
@@ -14701,7 +14701,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US040">
 			<unitSkillValue>1</unitSkillValue>
@@ -14732,7 +14732,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>3</unitSkillValue>
@@ -14763,7 +14763,7 @@
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US007" />
@@ -14797,7 +14797,7 @@
 			<unitSkillValue>15</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>2</unitSkillValue>
@@ -14828,7 +14828,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US006" />
@@ -14856,7 +14856,7 @@
 			<unitSkillValue>15</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US026">
 			<unitSkillValue>4</unitSkillValue>
@@ -14897,7 +14897,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>4</unitSkillValue>
@@ -14928,7 +14928,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>8</unitSkillValue>
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US032">
@@ -14963,7 +14963,7 @@
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US006" />
@@ -14995,7 +14995,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>5</unitSkillValue>
@@ -15027,7 +15027,7 @@
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US134">
 			<unitSkillValue>30</unitSkillValue>
@@ -15058,7 +15058,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
@@ -15091,7 +15091,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US010" />
@@ -15127,7 +15127,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US131">
 			<unitSkillValue>2</unitSkillValue>
@@ -15163,7 +15163,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US010" />
@@ -15197,7 +15197,7 @@
 			<unitSkillValue>12</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US009" />
@@ -15231,7 +15231,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
@@ -15272,7 +15272,7 @@
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -15311,7 +15311,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
@@ -15353,7 +15353,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>8</unitSkillValue>
@@ -15393,7 +15393,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US010" />
@@ -15425,7 +15425,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US000" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -15455,7 +15455,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US033">
 			<unitSkillValue>1</unitSkillValue>
@@ -15489,7 +15489,7 @@
 			<unitSkillValue>15</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
@@ -15522,7 +15522,7 @@
 			<unitSkillValue>18</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>8</unitSkillValue>
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US010" />
@@ -15554,7 +15554,7 @@
 			<unitSkillValue>8</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -15587,7 +15587,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -15619,7 +15619,7 @@
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US027">
@@ -15650,7 +15650,7 @@
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US026">
 			<unitSkillValue>1</unitSkillValue>
@@ -15681,7 +15681,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US030">
@@ -15719,7 +15719,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>2</unitSkillValue>
@@ -15758,7 +15758,7 @@
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>2</unitSkillValue>
@@ -15793,7 +15793,7 @@
 			<unitSkillValue>9</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US026">
 			<unitSkillValue>2</unitSkillValue>
@@ -15824,7 +15824,7 @@
 			<unitSkillValue>30</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US007" />
@@ -15855,7 +15855,7 @@
 			<unitSkillValue>45</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitName>Behemoth</unitName>
@@ -15883,7 +15883,7 @@
 			<unitSkillValue>45</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US169" />
 		<unitHasSkill unitSkillID="USX01" />
@@ -15906,7 +15906,7 @@
 			<unitSkillValue>45</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX02" />
 		<unitHasSkill unitSkillID="US007" />
@@ -15934,7 +15934,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US047" />
@@ -15960,7 +15960,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US007" />
 		<unitHasSkill unitSkillID="US047" />
@@ -15996,7 +15996,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>4</unitSkillValue>
+			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US132">
 			<unitSkillValue>4</unitSkillValue>
@@ -16029,7 +16029,7 @@
 			<unitSkillValue>10</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>10</unitSkillValue>
+			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US007" />
@@ -16065,7 +16065,7 @@
 			<unitSkillValue>20</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>6</unitSkillValue>
+			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US000" />
@@ -16098,7 +16098,7 @@
 			<unitSkillValue>25</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>8</unitSkillValue>
+			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US133">
 			<unitSkillValue>20</unitSkillValue>
@@ -16131,7 +16131,7 @@
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA08">
-			<unitSkillValue>2</unitSkillValue>
+			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX03" />
 		<unitHasSkill unitSkillID="USX01" />

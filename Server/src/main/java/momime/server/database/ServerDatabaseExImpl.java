@@ -249,12 +249,8 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			if (getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE) < 1)
 				throw new MomException ("Unit " + unitDef.getUnitID () + " has no resistance value defined");
 			
-			final int doubleMovementSpeed = getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED);
-			if (doubleMovementSpeed < 1)
+			if (getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED) < 1)
 				throw new MomException ("Unit " + unitDef.getUnitID () + " has no movement speed defined");
-			
-			if (doubleMovementSpeed % 2 != 0)
-				throw new MomException ("Unit " + unitDef.getUnitID () + "'s movement speed is not a multiple of 2 (" + doubleMovementSpeed + ")");
 		}
 
 		log.trace ("Exiting consistencyChecks");

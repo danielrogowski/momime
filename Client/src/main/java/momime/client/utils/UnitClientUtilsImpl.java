@@ -226,7 +226,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					skillImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade (), "getUnitSkillComponentBreakdownIcon");
 			}
 		}
-		else if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED))
+		else if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED))
 		{
 			// Movement has its own special rules, so we show a boot or wings or sailing icon
 			skillImageName = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ();
@@ -782,9 +782,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			image = null;
 		else
 		{
-			// Movement is stored double, but displayed singly
-			final int attributeValueDivisor = unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_DOUBLE_MOVEMENT_SPEED) ? 2 : 1;
-			
 			// Create all images the same size, since it makes laying them out in the list simpler
 			// But we still need to know the size of an image to base this off
 			final BufferedImage basicComponentBackgroundImage = getUtils ().loadImage
@@ -807,7 +804,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			else
 				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) / attributeValueDivisor;
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			final Graphics2D g = image.createGraphics ();
 			try
@@ -822,7 +819,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
 						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, attrComponent,
 							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) / attributeValueDivisor;
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						if (totalValue > 0)
 						{

@@ -102,7 +102,7 @@
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:wizardPick" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pickAndQuantity" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

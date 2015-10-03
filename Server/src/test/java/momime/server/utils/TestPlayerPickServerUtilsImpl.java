@@ -11,8 +11,15 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.multiplayer.server.ServerToClientSessionConnection;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.WizardPick;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -33,13 +40,6 @@ import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.WizardSvr;
-
-import org.junit.Test;
-
-import com.ndg.multiplayer.server.ServerToClientSessionConnection;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the PlayerPickServerUtilsImpl class
@@ -230,15 +230,15 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
 		// Create requested picks list
-		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
-		final WizardPick pick1 = new WizardPick ();
-		pick1.setPick ("MB02");
+		final PickAndQuantity pick1 = new PickAndQuantity ();
+		pick1.setPickID ("MB02");
 		pick1.setQuantity (4);
 		picks.add (pick1);
 		
-		final WizardPick pick2 = new WizardPick ();
-		pick2.setPick ("MB03");
+		final PickAndQuantity pick2 = new PickAndQuantity ();
+		pick2.setPickID ("MB03");
 		pick2.setQuantity (1);
 		picks.add (pick2);
 
@@ -279,15 +279,15 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
 		// Create requested picks list
-		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
-		final WizardPick pick1 = new WizardPick ();
-		pick1.setPick ("MB02");
+		final PickAndQuantity pick1 = new PickAndQuantity ();
+		pick1.setPickID ("MB02");
 		pick1.setQuantity (4);
 		picks.add (pick1);
 		
-		final WizardPick pick2 = new WizardPick ();
-		pick2.setPick ("MB03");
+		final PickAndQuantity pick2 = new PickAndQuantity ();
+		pick2.setPickID ("MB03");
 		pick2.setQuantity (1);
 		picks.add (pick2);
 
@@ -328,10 +328,10 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
 		// Create requested picks list
-		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
-		final WizardPick pick1 = new WizardPick ();
-		pick1.setPick ("MB02");
+		final PickAndQuantity pick1 = new PickAndQuantity ();
+		pick1.setPickID ("MB02");
 		pick1.setQuantity (4);
 		picks.add (pick1);
 
@@ -372,15 +372,15 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
 		// Create requested picks list
-		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
-		final WizardPick pick1 = new WizardPick ();
-		pick1.setPick ("MB02");
+		final PickAndQuantity pick1 = new PickAndQuantity ();
+		pick1.setPickID ("MB02");
 		pick1.setQuantity (4);
 		picks.add (pick1);
 		
-		final WizardPick pick2 = new WizardPick ();
-		pick2.setPick ("MB03");
+		final PickAndQuantity pick2 = new PickAndQuantity ();
+		pick2.setPickID ("MB03");
 		pick2.setQuantity (2);
 		picks.add (pick2);
 
@@ -421,15 +421,15 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
 		// Create requested picks list
-		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
-		final WizardPick pick1 = new WizardPick ();
-		pick1.setPick ("MB02");
+		final PickAndQuantity pick1 = new PickAndQuantity ();
+		pick1.setPickID ("MB02");
 		pick1.setQuantity (4);
 		picks.add (pick1);
 		
-		final WizardPick pick2 = new WizardPick ();
-		pick2.setPick ("MB03");
+		final PickAndQuantity pick2 = new PickAndQuantity ();
+		pick2.setPickID ("MB03");
 		pick2.setQuantity (1);
 		picks.add (pick2);
 

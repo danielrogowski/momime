@@ -77,7 +77,7 @@ public final class WizardPicksForCountColumn extends XmlGridColumn
 			final Element thisPick = (Element) picks.next ();
 
 			// Pick
-			final String pickId = thisPick.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_PICK);
+			final String pickId = thisPick.getAttributeValue (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_PICK_ID);
 			final Element pickNode = JdomUtils.findDomChildNodeWithTextAttribute (getXmlDocuments ().get (0).getXml (),
 				ServerEditorDatabaseConstants.TAG_ENTITY_PICK, ServerEditorDatabaseConstants.TAG_ATTRIBUTE_PICK_ID, pickId);
 

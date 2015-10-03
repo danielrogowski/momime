@@ -1203,246 +1203,195 @@
 		<wizardName>Merlin</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT07</pick>
+			<wizardPick pickID="RT07">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -1451,258 +1400,204 @@
 		<wizardName>Raven</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT18</pick>
+			<wizardPick pickID="RT18">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT18</pick>
+			<wizardPick pickID="RT18">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT18</pick>
+			<wizardPick pickID="RT18">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT18</pick>
+			<wizardPick pickID="RT18">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT18</pick>
+			<wizardPick pickID="RT18">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT18</pick>
+			<wizardPick pickID="RT18">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT18</pick>
+			<wizardPick pickID="RT18">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -1711,246 +1606,195 @@
 		<wizardName>Sharee</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -1959,242 +1803,192 @@
 		<wizardName>Lo Pan</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -2203,218 +1997,174 @@
 		<wizardName>Jafar</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT15</pick>
+			<wizardPick pickID="RT15">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT01</pick>
+			<wizardPick pickID="RT01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT15</pick>
+			<wizardPick pickID="RT15">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -2423,246 +2173,195 @@
 		<wizardName>Oberic</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -2671,202 +2370,162 @@
 		<wizardName>Rjak</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT16</pick>
+			<wizardPick pickID="RT16">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT17</pick>
+			<wizardPick pickID="RT17">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -2875,258 +2534,204 @@
 		<wizardName>Sss'ra</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -3135,214 +2740,171 @@
 		<wizardName>Tauron</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>5</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB03</pick>
+			<wizardPick pickID="MB03">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT13</pick>
+			<wizardPick pickID="RT13">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT08</pick>
+			<wizardPick pickID="RT08">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -3351,226 +2913,180 @@
 		<wizardName>Freya</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT14</pick>
+			<wizardPick pickID="RT14">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT03</pick>
+			<wizardPick pickID="RT03">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT06</pick>
+			<wizardPick pickID="RT06">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -3579,246 +3095,195 @@
 		<wizardName>Horus</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT04</pick>
+			<wizardPick pickID="RT04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -3827,226 +3292,180 @@
 		<wizardName>Ariel</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>5</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>11</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>12</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>13</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB01</pick>
+			<wizardPick pickID="MB01">
 				<quantity>14</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT12</pick>
+			<wizardPick pickID="RT12">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT09</pick>
+			<wizardPick pickID="RT09">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT10</pick>
+			<wizardPick pickID="RT10">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -4055,242 +3474,192 @@
 		<wizardName>Tlaloc</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB04</pick>
+			<wizardPick pickID="MB04">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT02</pick>
+			<wizardPick pickID="RT02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
@@ -4299,246 +3668,195 @@
 		<wizardName>Kali</wizardName>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="2">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>1</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="3">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="4">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>2</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="5">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>2</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="6">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>3</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="7">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>3</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="8">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="9">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="10">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>4</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="11">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="12">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>5</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="13">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="14">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>6</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="15">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="16">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>7</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="17">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="18">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>8</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="19">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>
 		<wizardPickCount pickCount="20">
-			<wizardPick>
-				<pick>MB05</pick>
+			<wizardPick pickID="MB05">
 				<quantity>10</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>MB02</pick>
+			<wizardPick pickID="MB02">
 				<quantity>9</quantity>
 			</wizardPick>
-			<wizardPick>
-				<pick>RT05</pick>
+			<wizardPick pickID="RT05">
 				<quantity>1</quantity>
 			</wizardPick>
 		</wizardPickCount>

@@ -8,14 +8,24 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.database.WizardPick;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -68,16 +78,6 @@ import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Methods for any significant message processing to do with game startup and the turn system that isn't done in the message implementations
@@ -256,10 +256,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 					// Read pre-defined wizard's list of picks from the DB and send them to the player
 					// We'll send them to everyone else when the game starts
-					for (final WizardPick srcPick : pickCount.getWizardPick ())
+					for (final PickAndQuantity srcPick : pickCount.getWizardPick ())
 					{
 						final PlayerPick destPick = new PlayerPick ();
-						destPick.setPickID (srcPick.getPick ());
+						destPick.setPickID (srcPick.getPickID ());
 						destPick.setQuantity (srcPick.getQuantity ());
 						destPick.setOriginalQuantity (srcPick.getQuantity ());
 						ppk.getPick ().add (destPick);

@@ -3,12 +3,16 @@ package momime.client.database;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import momime.common.database.Building;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
@@ -22,9 +26,6 @@ import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
-import momime.common.database.WizardPick;
-
-import org.junit.Test;
 
 /**
  * Tests the ClientDatabaseLookup class
@@ -124,8 +125,8 @@ public final class TestClientDatabaseExImpl
 			final Wizard newWizard = new Wizard ();
 			newWizard.setWizardID ("WZ0" + n);
 
-			final WizardPick pick = new WizardPick ();
-			pick.setPick ("MB0" + n);
+			final PickAndQuantity pick = new PickAndQuantity ();
+			pick.setPickID ("MB0" + n);
 			pick.setQuantity (n);
 			newWizard.getWizardPick ().add (pick);
 
@@ -136,7 +137,7 @@ public final class TestClientDatabaseExImpl
 
 		assertEquals ("WZ02", db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardID ());
 		assertEquals (1, db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPick ().size ());
-		assertEquals ("MB02", db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPick ().get (0).getPick ());
+		assertEquals ("MB02", db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPick ().get (0).getPickID ());
 		assertEquals (2, db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPick ().get (0).getQuantity ());
 	}
 

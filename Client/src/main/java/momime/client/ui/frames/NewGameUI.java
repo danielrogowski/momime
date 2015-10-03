@@ -106,6 +106,7 @@ import momime.common.database.NodeStrength;
 import momime.common.database.NodeStrengthPlane;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.Plane;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
@@ -113,7 +114,6 @@ import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.database.SwitchResearch;
 import momime.common.database.UnitSetting;
-import momime.common.database.WizardPick;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -1278,8 +1278,8 @@ public final class NewGameUI extends MomClientFrameUI
 						final ChooseCustomPicksMessage msg = new ChooseCustomPicksMessage ();
 						for (final PlayerPick src : picks)
 						{
-							final WizardPick dest = new WizardPick ();
-							dest.setPick (src.getPickID ());
+							final PickAndQuantity dest = new PickAndQuantity ();
+							dest.setPickID (src.getPickID ());
 							dest.setQuantity (src.getQuantity ());
 							msg.getPick ().add (dest);
 						}
@@ -2606,10 +2606,10 @@ public final class NewGameUI extends MomClientFrameUI
 									
 									updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
 									
-									for (final WizardPick src : wizard.getWizardPick ())
+									for (final PickAndQuantity src : wizard.getWizardPick ())
 									{
 										final PlayerPick dest = new PlayerPick ();
-										dest.setPickID (src.getPick ());
+										dest.setPickID (src.getPickID ());
 										dest.setQuantity (src.getQuantity ());
 										picks.add (dest);
 									}

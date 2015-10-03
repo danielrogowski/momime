@@ -13,19 +13,19 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.database.AvailableDatabase;
 import momime.client.database.ClientDatabase;
 import momime.client.database.NewGameDatabase;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureProduction;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
-import momime.common.database.WizardPick;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Converters for building derivative XML files from the server XML file
@@ -279,7 +279,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 					if (pickCount.getPickCount () == humanSpellPicks)
 					{
 						found = true;
-						for (final WizardPick pick : pickCount.getWizardPick ())
+						for (final PickAndQuantity pick : pickCount.getWizardPick ())
 							destWizard.getWizardPick ().add (pick);
 					}
 				}

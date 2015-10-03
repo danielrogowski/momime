@@ -52,9 +52,6 @@ public final class ServerEditorDatabaseConstants
 	/** wizardPick grandchild entity */
 	public static final String TAG_GRANDCHILD_ENTITY_WIZARD_PICK = "wizardPick";
 
-	/** Which book or retort the wizard picks */
-	public static final String TAG_VALUE_PICK = "pick";
-
 	/** How many of the book the wizard picks */
 	public static final String TAG_VALUE_QUANTITY = "quantity";
 

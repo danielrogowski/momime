@@ -89,7 +89,7 @@ the server XML and send to the client once they join a session.</xsd:documentati
 		<xsd:complexContent>
 			<xsd:extension base="momimecommon:wizard">
 				<xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPick" type="momimecommon:wizardPick" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPick" type="momimecommon:pickAndQuantity" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

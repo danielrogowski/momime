@@ -429,7 +429,7 @@
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:pickPK" name="wizardPickFKpick">
 			<xsd:selector xpath="wizard/wizardPickCount/wizardPick" />
-			<xsd:field xpath="pick" />
+			<xsd:field xpath="@pickID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:pickPK" name="pickExclusiveFromFKpick">
 			<xsd:selector xpath="pick/pickExclusiveFrom" />
@@ -955,7 +955,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines the standard picks for a pre-built wizard when they get a certain number of picks at the start of the game, i.e. one entry for if they get 11 picks, another for if they get 15 picks.  This isn't how the original MoM worked so I may change it.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPick" type="momimecommon:wizardPick" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPick" type="momimecommon:pickAndQuantity" />
 		</xsd:sequence>
 		<xsd:attribute name="pickCount" type="momimecommon:pickCount" use="required" nxe:label="Pick Count" nxe:gridwidth="80" />
 	</xsd:complexType>

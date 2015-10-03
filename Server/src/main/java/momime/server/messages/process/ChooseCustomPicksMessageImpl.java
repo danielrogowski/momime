@@ -3,9 +3,16 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+
 import momime.common.MomException;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.WizardPick;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.PlayerPick;
@@ -16,13 +23,6 @@ import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
 import momime.server.utils.PlayerPickServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client telling Server about all the custom picks they've chosen
@@ -69,10 +69,10 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 			final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) sender.getTransientPlayerPrivateKnowledge ();
 			priv.setCustomPicksChosen (true);
 
-			for (final WizardPick srcPick : getPick ())
+			for (final PickAndQuantity srcPick : getPick ())
 			{
 				final PlayerPick destPick = new PlayerPick ();
-				destPick.setPickID (srcPick.getPick ());
+				destPick.setPickID (srcPick.getPickID ());
 				destPick.setQuantity (srcPick.getQuantity ());
 				destPick.setOriginalQuantity (srcPick.getQuantity ());
 				ppk.getPick ().add (destPick);

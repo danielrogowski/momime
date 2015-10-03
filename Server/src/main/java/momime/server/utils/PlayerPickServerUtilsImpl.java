@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.WizardPick;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -29,12 +35,6 @@ import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.WizardSvr;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
 
 /**
  * Server side only helper methods for dealing with picks
@@ -139,7 +139,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
 	@Override
-	public final String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final int humanSpellPicks, final ServerDatabaseEx db)
+	public final String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final ServerDatabaseEx db)
 	{
 		log.trace ("Entering validateCustomPicks: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + picks.size ());
 
@@ -162,9 +162,9 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			int totalPickCost = 0;
 			try
 			{
-				for (final WizardPick thisPick : picks)
+				for (final PickAndQuantity thisPick : picks)
 				{
-					final PickSvr pick = db.findPick (thisPick.getPick (), "validateCustomPicks");
+					final PickSvr pick = db.findPick (thisPick.getPickID (), "validateCustomPicks");
 					totalPickCost = totalPickCost + (thisPick.getQuantity () * pick.getPickCost ());
 				}
 

@@ -2,16 +2,16 @@ package momime.server.utils;
 
 import java.util.List;
 
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
 import momime.common.MomException;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.WizardPick;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.WizardSvr;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Server side only helper methods for dealing with picks
@@ -49,7 +49,7 @@ public interface PlayerPickServerUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
-	public String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final int humanSpellPicks, final ServerDatabaseEx db);
+	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final ServerDatabaseEx db);
 
 	/**
 	 * Checks each type of book this player has to see if it can find a type of book for which the player gets free spells, but has not yet chosen those free spells

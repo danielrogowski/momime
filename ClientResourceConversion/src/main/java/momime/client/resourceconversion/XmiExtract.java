@@ -13,6 +13,11 @@ import com.ndg.archive.LbxArchiveReader;
  */
 public final class XmiExtract
 {
+	/**
+	 * @param lbxName Name of LBX file containing the XMI music
+	 * @param subFileNumber Number of the subfile within the LBX
+	 * @throws Exception If there is a problem
+	 */
 	public final void extract (final String lbxName, final int subFileNumber) throws Exception
 	{
 		System.out.println ("Extracting " + lbxName + " sub file " + subFileNumber);
@@ -26,7 +31,10 @@ public final class XmiExtract
 			}
 		}
 	}
-	
+
+	/**
+	 * @param args Command line arguments, ignored
+	 */
 	public final static void main (final String args [])
 	{
 		try

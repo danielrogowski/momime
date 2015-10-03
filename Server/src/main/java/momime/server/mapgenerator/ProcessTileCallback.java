@@ -3,6 +3,7 @@ package momime.server.mapgenerator;
 /**
  * Interface to perform some operation from the setHighestTiles/setLowestTiles methods 
  */
+@FunctionalInterface
 public interface ProcessTileCallback
 {
 	/**

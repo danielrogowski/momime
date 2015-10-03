@@ -30,8 +30,19 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
@@ -51,7 +62,6 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;
-import momime.client.ui.panels.BuildingListener;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer;
 import momime.client.utils.AnimationController;
@@ -78,19 +88,6 @@ import momime.common.messages.clienttoserver.SellBuildingMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 /**
  * City screen, so you can view current buildings, production and civilians, examine
@@ -602,39 +599,35 @@ public final class CityViewUI extends MomClientFrameUI
 		contentPane.add (spellsScrollPane, "frmCityEnchantments");
 		
 		// Clicking a spell asks about cancelling it
-		spellsList.addListSelectionListener (new ListSelectionListener ()
+		spellsList.addListSelectionListener ((ev) ->
 		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
+			if (spellsList.getSelectedIndex () >= 0)
 			{
-				if (spellsList.getSelectedIndex () >= 0)
+				final MemoryMaintainedSpell spell = spellsItems.get (spellsList.getSelectedIndex ());
+				try
 				{
-					final MemoryMaintainedSpell spell = spellsItems.get (spellsList.getSelectedIndex ());
-					try
-					{
-						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("SpellCasting");
-						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("SpellCasting");
+					msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
 
-						final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
-						final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
-						
-						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
-							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
-								("SPELL_NAME", (effectName != null) ? effectName : spell.getCitySpellEffectID ()));
-						else
-						{
-							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-								("SPELL_NAME", (effectName != null) ? effectName : spell.getCitySpellEffectID ()));
-							msg.setSwitchOffSpell (spell);
-						}
-
-						msg.setVisible (true);
-					}
-					catch (final Exception e)
+					final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
+					final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
+					
+					if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+						msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
+							("SPELL_NAME", (effectName != null) ? effectName : spell.getCitySpellEffectID ()));
+					else
 					{
-						log.error (e, e);
+						msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+							("SPELL_NAME", (effectName != null) ? effectName : spell.getCitySpellEffectID ()));
+						msg.setSwitchOffSpell (spell);
 					}
+
+					msg.setVisible (true);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
 				}
 			}
 		});
@@ -772,111 +765,107 @@ public final class CityViewUI extends MomClientFrameUI
 		contentPane.add (constructionPanel, "frmCityConstruction");
 
 		// Deal with clicking on buildings to sell them
-		getCityViewPanel ().addBuildingListener (new BuildingListener ()
+		getCityViewPanel ().addBuildingListener ((buildingID) ->
 		{
-			@Override
-			public final void buildingClicked (final String buildingID) throws Exception
+			// If the city isn't ours then don't even show a message
+			final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+			final OverlandMapCityData cityData = mc.getCityData ();
+			if ((cityData != null) && (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())))
 			{
-				// If the city isn't ours then don't even show a message
-				final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
-				final OverlandMapCityData cityData = mc.getCityData ();
-				if ((cityData != null) && (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())))
+				// If cancelling a pending sale, there's no lookups or confirmations or anything to do, just send the message
+				if (buildingID == null)
 				{
-					// If cancelling a pending sale, there's no lookups or confirmations or anything to do, just send the message
-					if (buildingID == null)
-					{
-						final SellBuildingMessage msg = new SellBuildingMessage ();
-						msg.setCityLocation (getCityLocation ());
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
+					final SellBuildingMessage msg = new SellBuildingMessage ();
+					msg.setCityLocation (getCityLocation ());
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+				}
+				else
+				{					
+					// Language entry ID of error or confirmation message
+					final String languageEntryID;
+					String prerequisiteBuildingName = null;
+					boolean ok = false;
+					
+					// How much money do we get for selling it?
+					// If this is zero, then they're trying to do something daft like sell their Wizard's Fortress or Summoning Circle
+					final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (getClient ().getClientDB ().findBuilding (buildingID, "buildingClicked"));
+					if (goldValue <= 0)
+						languageEntryID = "CannotSellSpecialBuilding";
+					
+					// We can only sell one building a turn
+					else if (mc.getBuildingIdSoldThisTurn () != null)
+						languageEntryID = "OnlySellOneEachTurn";
+					
 					else
-					{					
-						// Language entry ID of error or confirmation message
-						final String languageEntryID;
-						String prerequisiteBuildingName = null;
-						boolean ok = false;
-						
-						// How much money do we get for selling it?
-						// If this is zero, then they're trying to do something daft like sell their Wizard's Fortress or Summoning Circle
-						final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (getClient ().getClientDB ().findBuilding (buildingID, "buildingClicked"));
-						if (goldValue <= 0)
-							languageEntryID = "CannotSellSpecialBuilding";
-						
-						// We can only sell one building a turn
-						else if (mc.getBuildingIdSoldThisTurn () != null)
-							languageEntryID = "OnlySellOneEachTurn";
-						
+					{
+						// We can't sell a building if another building depends on it, e.g. trying to sell a Granary when we already have a Farmers' Market
+						final String prerequisiteBuildingID = getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+							getCityLocation (), buildingID, getClient ().getClientDB ());
+						if (prerequisiteBuildingID != null)
+						{
+							languageEntryID = "CannotSellRequiredByAnother";
+							final BuildingLang prerequisiteBuilding = getLanguage ().findBuilding (prerequisiteBuildingID);
+							prerequisiteBuildingName = (prerequisiteBuilding != null) ? prerequisiteBuilding.getBuildingName () : prerequisiteBuildingID;
+						}
 						else
 						{
-							// We can't sell a building if another building depends on it, e.g. trying to sell a Granary when we already have a Farmers' Market
-							final String prerequisiteBuildingID = getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-								getCityLocation (), buildingID, getClient ().getClientDB ());
-							if (prerequisiteBuildingID != null)
+							// OK - but first check if current construction project depends on the one we're selling
+							// If so, then we can still sell it, but it will cancel our current construction project
+							ok = true;
+							if (((cityData.getCurrentlyConstructingBuildingID () != null) &&
+									(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, cityData.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
+								((cityData.getCurrentlyConstructingUnitID () != null) &&
+									(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, cityData.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
 							{
-								languageEntryID = "CannotSellRequiredByAnother";
-								final BuildingLang prerequisiteBuilding = getLanguage ().findBuilding (prerequisiteBuildingID);
-								prerequisiteBuildingName = (prerequisiteBuilding != null) ? prerequisiteBuilding.getBuildingName () : prerequisiteBuildingID;
-							}
-							else
-							{
-								// OK - but first check if current construction project depends on the one we're selling
-								// If so, then we can still sell it, but it will cancel our current construction project
-								ok = true;
-								if (((cityData.getCurrentlyConstructingBuildingID () != null) &&
-										(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, cityData.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
-									((cityData.getCurrentlyConstructingUnitID () != null) &&
-										(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, cityData.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
+								languageEntryID = "SellPromptPrerequisite";
+								if (cityData.getCurrentlyConstructingBuildingID () != null)
 								{
-									languageEntryID = "SellPromptPrerequisite";
-									if (cityData.getCurrentlyConstructingBuildingID () != null)
-									{
-										final BuildingLang currentConstruction = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
-										prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ();
-									}
-									else if (cityData.getCurrentlyConstructingUnitID () != null)
-									{
-										final UnitLang currentConstruction = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
-										prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getUnitName () : cityData.getCurrentlyConstructingUnitID ();
-									}
+									final BuildingLang currentConstruction = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+									prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ();
 								}
-								else
-									languageEntryID = "SellPromptNormal";
+								else if (cityData.getCurrentlyConstructingUnitID () != null)
+								{
+									final UnitLang currentConstruction = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
+									prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getUnitName () : cityData.getCurrentlyConstructingUnitID ();
+								}
 							}
-						}
-						
-						// Work out the text for the message box
-						final BuildingLang building = getLanguage ().findBuilding (buildingID);
-						String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", languageEntryID).replaceAll
-							("BUILDING_NAME", (building != null) ? building.getBuildingName () : buildingID).replaceAll
-							("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
-						
-						if (prerequisiteBuildingName != null)
-							text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
-						
-						// Show message box
-						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
-						msg.setTitleLanguageEntryID ("SellTitle");
-						msg.setText (text);
-						
-						if (ok)
-						{
-							final MemoryBuilding sellBuilding = getMemoryBuildingUtils ().findBuilding
-								(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), buildingID);
-							if (sellBuilding == null)
-								log.error ("Can't find building with ID " + buildingID + " in city " + getCityLocation () + " to sell even though it was clicked on");
 							else
-							{						
-								msg.setCityLocation (getCityLocation ());
-								msg.setBuildingURN (sellBuilding.getBuildingURN ());
-							}
+								languageEntryID = "SellPromptNormal";
 						}
-						
-						msg.setVisible (true);
 					}
-				}				
-			}
+					
+					// Work out the text for the message box
+					final BuildingLang building = getLanguage ().findBuilding (buildingID);
+					String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", languageEntryID).replaceAll
+						("BUILDING_NAME", (building != null) ? building.getBuildingName () : buildingID).replaceAll
+						("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
+					
+					if (prerequisiteBuildingName != null)
+						text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
+					
+					// Show message box
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
+					msg.setTitleLanguageEntryID ("SellTitle");
+					msg.setText (text);
+					
+					if (ok)
+					{
+						final MemoryBuilding sellBuilding = getMemoryBuildingUtils ().findBuilding
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), buildingID);
+						if (sellBuilding == null)
+							log.error ("Can't find building with ID " + buildingID + " in city " + getCityLocation () + " to sell even though it was clicked on");
+						else
+						{						
+							msg.setCityLocation (getCityLocation ());
+							msg.setBuildingURN (sellBuilding.getBuildingURN ());
+						}
+					}
+					
+					msg.setVisible (true);
+				}
+			}				
 		});
 
 		cityDataChanged ();

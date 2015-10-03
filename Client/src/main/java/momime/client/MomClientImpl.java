@@ -444,20 +444,16 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 		
 		// To be correct, should start up the first Swing frame in the Swing thread
 		log.info ("Starting up UI");
-		SwingUtilities.invokeLater (new Runnable ()
+		SwingUtilities.invokeLater (() ->
 		{
-			@Override
-			public final void run ()
+			try
 			{
-				try
-				{
-					getUtils ().useNimbusLookAndFeel ();
-					getMainMenuUI ().setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
+				getUtils ().useNimbusLookAndFeel ();
+				getMainMenuUI ().setVisible (true);
+			}
+			catch (final IOException e)
+			{
+				log.error (e, e);
 			}
 		});
 		

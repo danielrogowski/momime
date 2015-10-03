@@ -76,75 +76,71 @@ public final class SingleWindowUI extends AppenderSkeleton implements MomServerU
 	{
 		MomServerUIHolder.setUI (this);
 		
-		SwingUtilities.invokeLater (new Runnable ()
+		SwingUtilities.invokeLater (() ->
 		{
-			@Override
-			public final void run ()
+			new NdgUIUtilsImpl ().useNimbusLookAndFeel ();
+	
+			// Initialize the frame
+			frame = new JFrame ();
+			frame.setSize (1200, 500);
+			frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server");
+			frame.setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
+	
+			// Closing the main window kills the server, so ask for confirmation before doing so
+			frame.addWindowListener (new WindowAdapter ()
 			{
-				new NdgUIUtilsImpl ().useNimbusLookAndFeel ();
-		
-				// Initialize the frame
-				frame = new JFrame ();
-				frame.setSize (1200, 500);
-				frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server");
-				frame.setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
-		
-				// Closing the main window kills the server, so ask for confirmation before doing so
-				frame.addWindowListener (new WindowAdapter ()
+				/**
+				 * User has clicked the X to close the window - make sure they really want to
+				 */
+				@Override
+				public final void windowClosing (final WindowEvent e)
 				{
-					/**
-					 * User has clicked the X to close the window - make sure they really want to
-					 */
-					@Override
-					public final void windowClosing (final WindowEvent e)
-					{
-						if (JOptionPane.showConfirmDialog (null, "Closing the main window will end the MoM IME server and any sessions currently in progress.  Are you sure?",
-							frame.getTitle (), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION)
-		
-							System.exit (0);
-					}
-				});
-		
-				// Initialize the content pane
-				final JPanel contentPane = new JPanel ();
-				contentPane.setBorder (BorderFactory.createCompoundBorder (BorderFactory.createEmptyBorder (SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE,
-					SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE), contentPane.getBorder ()));
-				contentPane.setLayout (new BoxLayout (contentPane, BoxLayout.Y_AXIS));
-		
-				// Create the list of log messages
-				textArea = new JTextArea ();
-				linesOfText = 0;
-		
-				// Put the list of log messages in a scroll pane
-				final JScrollPane scrollPane = new JScrollPane (textArea);
-				scrollPane.setAlignmentX (Component.LEFT_ALIGNMENT);
-				scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
-				scrollPane.setMinimumSize (new Dimension (100, 50));
-				scrollPane.setPreferredSize (new Dimension (100, 50));
-				contentPane.add (scrollPane);
-		
-				contentPane.add (Box.createRigidArea (new Dimension (0, SwingLayoutConstants.SPACE_BETWEEN_CONTROLS)));
-		
-				// Create the table showing the games in progress
-				tableModel = new SingleWindowTableModel ();
-				final JTable table = new JTable (tableModel, new SingleWindowColumnModel ());
-				table.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
-				table.setAutoCreateColumnsFromModel (true);	// Without this, no TableColumns are added to the column model
-				table.setRowSelectionAllowed (true);
-				table.setColumnSelectionAllowed (false);
-		
-				// Put the grid into a scrolling area
-				final JScrollPane tableScroll = new JScrollPane (table);
-				tableScroll.setAlignmentX (Component.LEFT_ALIGNMENT);
-				tableScroll.setAlignmentY (Component.TOP_ALIGNMENT);
-				tableScroll.setMinimumSize (new Dimension (100, 50));
-				tableScroll.setPreferredSize (new Dimension (100, 50));
-				contentPane.add (tableScroll);
-		
-				// Show frame
-				frame.setContentPane (contentPane);
-				frame.setVisible (true);
-			}
+					if (JOptionPane.showConfirmDialog (null, "Closing the main window will end the MoM IME server and any sessions currently in progress.  Are you sure?",
+						frame.getTitle (), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION)
+	
+						System.exit (0);
+				}
+			});
+	
+			// Initialize the content pane
+			final JPanel contentPane = new JPanel ();
+			contentPane.setBorder (BorderFactory.createCompoundBorder (BorderFactory.createEmptyBorder (SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE,
+				SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE), contentPane.getBorder ()));
+			contentPane.setLayout (new BoxLayout (contentPane, BoxLayout.Y_AXIS));
+	
+			// Create the list of log messages
+			textArea = new JTextArea ();
+			linesOfText = 0;
+	
+			// Put the list of log messages in a scroll pane
+			final JScrollPane scrollPane = new JScrollPane (textArea);
+			scrollPane.setAlignmentX (Component.LEFT_ALIGNMENT);
+			scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
+			scrollPane.setMinimumSize (new Dimension (100, 50));
+			scrollPane.setPreferredSize (new Dimension (100, 50));
+			contentPane.add (scrollPane);
+	
+			contentPane.add (Box.createRigidArea (new Dimension (0, SwingLayoutConstants.SPACE_BETWEEN_CONTROLS)));
+	
+			// Create the table showing the games in progress
+			tableModel = new SingleWindowTableModel ();
+			final JTable table = new JTable (tableModel, new SingleWindowColumnModel ());
+			table.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
+			table.setAutoCreateColumnsFromModel (true);	// Without this, no TableColumns are added to the column model
+			table.setRowSelectionAllowed (true);
+			table.setColumnSelectionAllowed (false);
+	
+			// Put the grid into a scrolling area
+			final JScrollPane tableScroll = new JScrollPane (table);
+			tableScroll.setAlignmentX (Component.LEFT_ALIGNMENT);
+			tableScroll.setAlignmentY (Component.TOP_ALIGNMENT);
+			tableScroll.setMinimumSize (new Dimension (100, 50));
+			tableScroll.setPreferredSize (new Dimension (100, 50));
+			contentPane.add (tableScroll);
+	
+			// Show frame
+			frame.setContentPane (contentPane);
+			frame.setVisible (true);
 		});
 	}
 
@@ -182,42 +178,38 @@ public final class SingleWindowUI extends AppenderSkeleton implements MomServerU
 	@Override
 	protected final void append (final LoggingEvent event)
 	{
-		SwingUtilities.invokeLater (new Runnable ()
+		SwingUtilities.invokeLater (() ->
 		{
-			@Override
-			public final void run ()
+			// Log here, or in separate session window?
+			final boolean isSessionLog = event.getLoggerName ().startsWith (MomSessionThread.MOM_SESSION_LOGGER_PREFIX);
+			boolean done = false;
+			if ((isSeparateWindowForEachSession ()) && (isSessionLog))
 			{
-				// Log here, or in separate session window?
-				final boolean isSessionLog = event.getLoggerName ().startsWith (MomSessionThread.MOM_SESSION_LOGGER_PREFIX);
-				boolean done = false;
-				if ((isSeparateWindowForEachSession ()) && (isSessionLog))
+				final int sessionID = Integer.parseInt (event.getLoggerName ().substring (MomSessionThread.MOM_SESSION_LOGGER_PREFIX.length ()));
+				final SessionWindow sessionWindow = sessionWindows.get (sessionID);
+				if (sessionWindow != null)
 				{
-					final int sessionID = Integer.parseInt (event.getLoggerName ().substring (MomSessionThread.MOM_SESSION_LOGGER_PREFIX.length ()));
-					final SessionWindow sessionWindow = sessionWindows.get (sessionID);
-					if (sessionWindow != null)
-					{
-						sessionWindow.addLine (layout.format (event));
-						done = true;
-					}
+					sessionWindow.addLine (layout.format (event));
+					done = true;
 				}
+			}
 
-				if (!done)
+			if (!done)
+			{
+				// Strip off old lines to make space
+				while (linesOfText >= MAX_LINE_COUNT)
 				{
-					// Strip off old lines to make space
-					while (linesOfText >= MAX_LINE_COUNT)
-					{
-						textArea.setText (textArea.getText ().substring (textArea.getText ().indexOf (System.lineSeparator ()) + System.lineSeparator ().length ()));
-						linesOfText--;
-					}
-			
-					// Use sessionLayout for messages from session loggers, and regular layout for global messages
-					final Layout useLayout = isSessionLog ? getSessionLayout () : layout;
-					textArea.setText (textArea.getText () + useLayout.format (event));
-					linesOfText++;
-					
-					// Scroll to the bottom
-					textArea.setCaretPosition (textArea.getDocument ().getLength ());
+					textArea.setText (textArea.getText ().substring (textArea.getText ().indexOf (System.lineSeparator ()) + System.lineSeparator ().length ()));
+					linesOfText--;
 				}
+		
+				// Use sessionLayout for messages from session loggers, and regular layout for global messages
+				final Layout useLayout = isSessionLog ? getSessionLayout () : layout;
+				textArea.setText (textArea.getText () + useLayout.format (event));
+				linesOfText++;
+				
+				// Scroll to the bottom
+				textArea.setCaretPosition (textArea.getDocument ().getLength ());
 			}
 		});
 	}

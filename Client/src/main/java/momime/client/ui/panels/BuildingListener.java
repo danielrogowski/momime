@@ -3,6 +3,7 @@ package momime.client.ui.panels;
 /**
  * Interface for listening to clicks on buildings in the CityViewPanel
  */
+@FunctionalInterface
 public interface BuildingListener
 {
 	/**

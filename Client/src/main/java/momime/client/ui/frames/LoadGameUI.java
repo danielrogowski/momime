@@ -15,13 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-
-import momime.client.MomClient;
-import momime.client.ui.MomUIConstants;
-import momime.common.messages.MomSessionDescription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +28,10 @@ import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.utils.DateFormats;
+
+import momime.client.MomClient;
+import momime.client.ui.MomUIConstants;
+import momime.common.messages.MomSessionDescription;
 
 /**
  * Screen for showing a list of saved games and save points that are running on the server so we can select one to load
@@ -234,15 +232,8 @@ public final class LoadGameUI extends MomClientFrameUI
 		savedGamesTablePane.getViewport ().setOpaque (false);
 		contentPane.add (savedGamesTablePane, "frmJoinGameSessions");
 		
-		savedGamesTable.getSelectionModel ().addListSelectionListener (new ListSelectionListener ()
-		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
-			{
-				// Enable button as soon as a row is clicked on
-				selectSavedGameAction.setEnabled (true);
-			}
-		});
+		// Enable button as soon as a row is clicked on
+		savedGamesTable.getSelectionModel ().addListSelectionListener ((ev) -> selectSavedGameAction.setEnabled (true));
 		
 		// Save points table
 		savePointsTable = new JTable ();
@@ -263,15 +254,8 @@ public final class LoadGameUI extends MomClientFrameUI
 		savePointsTablePane.getViewport ().setOpaque (false);
 		contentPane.add (savePointsTablePane, "frmJoinGameSessions");
 		
-		savePointsTable.getSelectionModel ().addListSelectionListener (new ListSelectionListener ()
-		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
-			{
-				// Enable button as soon as a row is clicked on
-				selectSavePointAction.setEnabled (true);
-			}
-		});
+		// Enable button as soon as a row is clicked on
+		savePointsTable.getSelectionModel ().addListSelectionListener ((ev) -> selectSavePointAction.setEnabled (true));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

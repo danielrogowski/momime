@@ -1461,42 +1461,42 @@ public final class TestCityCalculationsImpl
 		
 		// Check results
 		assertEquals (3, productionValues.getProductionType ().size ());
-		
-		assertEquals ("RE03", productionValues.getProductionType ().get (0).getProductionTypeID ());
-		assertEquals (36, productionValues.getProductionType ().get (0).getDoubleProductionAmount ());
+
+		assertEquals ("RE01", productionValues.getProductionType ().get (0).getProductionTypeID ());
+		assertEquals (6, productionValues.getProductionType ().get (0).getDoubleProductionAmount ());
 		assertEquals (1, productionValues.getProductionType ().get (0).getMapFeatureProduction ().size ());
-		assertEquals ("MF02", productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getMapFeatureID ());
-		assertEquals (3, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getCount ());
-		assertEquals (4, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
-		assertEquals (12, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountAllFeatures ());
-		assertEquals (2, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getRaceMineralBonusMultiplier ());
-		assertEquals (24, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleProductionAmountAfterRacialMultiplier ());
-		assertEquals (50, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getBuildingMineralPercentageBonus ());	
-		assertEquals (36, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
+		assertEquals ("MF01", productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getMapFeatureID ());
+		assertEquals (2, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getCount ());
+		assertEquals (3, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
+		assertEquals (6, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountAllFeatures ());
+		assertEquals (1, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getRaceMineralBonusMultiplier ());
+		assertEquals (6, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleProductionAmountAfterRacialMultiplier ());
+		assertEquals (0, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getBuildingMineralPercentageBonus ());	
+		assertEquals (6, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
 		
-		assertEquals ("RE01", productionValues.getProductionType ().get (1).getProductionTypeID ());
-		assertEquals (6, productionValues.getProductionType ().get (1).getDoubleProductionAmount ());
+		assertEquals ("RE02", productionValues.getProductionType ().get (1).getProductionTypeID ());
+		assertEquals (8, productionValues.getProductionType ().get (1).getDoubleProductionAmount ());
 		assertEquals (1, productionValues.getProductionType ().get (1).getMapFeatureProduction ().size ());
 		assertEquals ("MF01", productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getMapFeatureID ());
 		assertEquals (2, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getCount ());
-		assertEquals (3, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
-		assertEquals (6, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountAllFeatures ());
+		assertEquals (4, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
+		assertEquals (8, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountAllFeatures ());
 		assertEquals (1, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getRaceMineralBonusMultiplier ());
-		assertEquals (6, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleProductionAmountAfterRacialMultiplier ());
+		assertEquals (8, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleProductionAmountAfterRacialMultiplier ());
 		assertEquals (0, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getBuildingMineralPercentageBonus ());	
-		assertEquals (6, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
-				
-		assertEquals ("RE02", productionValues.getProductionType ().get (2).getProductionTypeID ());
-		assertEquals (8, productionValues.getProductionType ().get (2).getDoubleProductionAmount ());
+		assertEquals (8, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
+
+		assertEquals ("RE03", productionValues.getProductionType ().get (2).getProductionTypeID ());
+		assertEquals (36, productionValues.getProductionType ().get (2).getDoubleProductionAmount ());
 		assertEquals (1, productionValues.getProductionType ().get (2).getMapFeatureProduction ().size ());
-		assertEquals ("MF01", productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getMapFeatureID ());
-		assertEquals (2, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getCount ());
+		assertEquals ("MF02", productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getMapFeatureID ());
+		assertEquals (3, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getCount ());
 		assertEquals (4, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
-		assertEquals (8, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountAllFeatures ());
-		assertEquals (1, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getRaceMineralBonusMultiplier ());
-		assertEquals (8, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleProductionAmountAfterRacialMultiplier ());
-		assertEquals (0, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getBuildingMineralPercentageBonus ());	
-		assertEquals (8, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
+		assertEquals (12, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountAllFeatures ());
+		assertEquals (2, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getRaceMineralBonusMultiplier ());
+		assertEquals (24, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleProductionAmountAfterRacialMultiplier ());
+		assertEquals (50, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getBuildingMineralPercentageBonus ());	
+		assertEquals (36, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
 	}
 
 	/**

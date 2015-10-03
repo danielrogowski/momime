@@ -20,8 +20,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.GridBagConstraintsNoFill;
 
 import momime.client.MomClient;
 import momime.client.language.database.ProductionTypeLang;
@@ -31,13 +36,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Alchemy screen, for converting gold to mana or vice versa
@@ -256,14 +254,7 @@ public final class AlchemyUI extends MomClientFrameUI
 			}
 		};
 		
-		slider.addChangeListener (new ChangeListener ()
-		{
-			@Override
-			public final void stateChanged (final ChangeEvent ev)
-			{
-				sliderPositionChanged ();
-			}
-		});
+		slider.addChangeListener ((ev) -> sliderPositionChanged ());
 		
 		slider.setMinimumSize (sliderSize);
 		slider.setMaximumSize (sliderSize);

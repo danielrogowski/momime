@@ -14,13 +14,7 @@ import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-
-import momime.client.MomClient;
-import momime.client.ui.MomUIConstants;
-import momime.common.messages.MomSessionDescription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +25,10 @@ import com.ndg.multiplayer.sessionbase.RequestSessionList;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+
+import momime.client.MomClient;
+import momime.client.ui.MomUIConstants;
+import momime.common.messages.MomSessionDescription;
 
 /**
  * Screen for showing a list of sessions that are running on the server so we can select one to join
@@ -180,16 +178,9 @@ public final class JoinGameUI extends MomClientFrameUI
 		final JScrollPane sessionsTablePane = new JScrollPane (sessionsTable);
 		sessionsTablePane.getViewport ().setOpaque (false);
 		contentPane.add (sessionsTablePane, "frmJoinGameSessions");
-		
-		sessionsTable.getSelectionModel ().addListSelectionListener (new ListSelectionListener ()
-		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
-			{
-				// Enable button as soon as a row is clicked on
-				joinAction.setEnabled (true);
-			}
-		});
+
+		// Enable button as soon as a row is clicked on
+		sessionsTable.getSelectionModel ().addListSelectionListener ((ev) -> joinAction.setEnabled (true));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

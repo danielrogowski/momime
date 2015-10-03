@@ -24,8 +24,14 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.swing.GridBagConstraintsNoFill;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
@@ -40,25 +46,18 @@ import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Building;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.Unit;
-import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Screen to change the current construction project at a city
@@ -274,61 +273,53 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		contentPane.add (unitsScroll, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Clicking a building previews its details
-		buildingSelectionListener = new ListSelectionListener ()
+		buildingSelectionListener = (ev) ->
 		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
+			if (buildingsList.getSelectedIndex () >= 0)
 			{
-				if (buildingsList.getSelectedIndex () >= 0)
+				final MemoryBuilding building = new MemoryBuilding ();
+				building.setBuildingID (buildingsItems.get (buildingsList.getSelectedIndex ()).getBuildingID ());
+				building.setCityLocation (getCityLocation ());
+				try
 				{
-					final MemoryBuilding building = new MemoryBuilding ();
-					building.setBuildingID (buildingsItems.get (buildingsList.getSelectedIndex ()).getBuildingID ());
-					building.setCityLocation (getCityLocation ());
-					try
-					{
-						getUnitInfoPanel ().showBuilding (building);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+					getUnitInfoPanel ().showBuilding (building);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
 				}
 			}
 		};
 		buildingsList.addListSelectionListener (buildingSelectionListener);
 		
 		// Clicking a unit previews its details
-		unitSelectionListener = new ListSelectionListener ()
+		unitSelectionListener = (ev) ->
 		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
+			if (unitsList.getSelectedIndex () >= 0)
 			{
-				if (unitsList.getSelectedIndex () >= 0)
+				final AvailableUnit sampleUnit = new AvailableUnit ();
+				sampleUnit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
+				sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
+				sampleUnit.setUnitLocation (new MapCoordinates3DEx (getCityLocation ()));
+				try
 				{
-					final AvailableUnit sampleUnit = new AvailableUnit ();
-					sampleUnit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
-					sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
-					sampleUnit.setUnitLocation (new MapCoordinates3DEx (getCityLocation ()));
-					try
-					{
-						final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
-							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), getClient ().getClientDB ());
+					final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), getClient ().getClientDB ());
 
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getMultiplayerSessionUtils ().findPlayerWithID
-							(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();
-					
-						sampleUnit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-							pub.getPick (), getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()));
-					
-						getUnitUtils ().initializeUnitSkills (sampleUnit, startingExperience, getClient ().getClientDB ());
-						getUnitInfoPanel ().showUnit (sampleUnit);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getMultiplayerSessionUtils ().findPlayerWithID
+						(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();
+				
+					sampleUnit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
+						pub.getPick (), getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()));
+				
+					getUnitUtils ().initializeUnitSkills (sampleUnit, startingExperience, getClient ().getClientDB ());
+					getUnitInfoPanel ().showUnit (sampleUnit);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
 				}
 			}
 		};

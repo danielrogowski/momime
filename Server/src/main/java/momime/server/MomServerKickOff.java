@@ -25,7 +25,7 @@ public final class MomServerKickOff
 			final String configDir = (args.length == 0) ? "" : (args [0] + "/");
 			System.setProperty ("configDir", configDir);
 			
-			// Ensure v1.7 JVM
+			// Ensure minimum required JVM version
 			final String [] javaVersion = System.getProperty ("java.version").split ("\\.");
 			final int majorVersion = Integer.parseInt (javaVersion [0]);
 			final int minorVersion = Integer.parseInt (javaVersion [1]);

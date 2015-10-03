@@ -160,15 +160,10 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	{
 		log.trace ("Entering setHighestTiles: " + combatTileTypeID + ", " + desiredTileCount);
 
-		heightMap.setHighestTiles (desiredTileCount, new ProcessTileCallback ()
-		{
-			@Override
-			public final void process (final int x, final int y)
-			{
-				// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
-				map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID);
-			}
-		});
+		heightMap.setHighestTiles (desiredTileCount, (x, y) ->
+		
+			// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
+			map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID));
 
 		log.trace ("Exiting setHighestTiles");
 	}
@@ -186,15 +181,10 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	{
 		log.trace ("Entering setLowestTiles: " + combatTileTypeID + ", " + desiredTileCount);
 
-		heightMap.setLowestTiles (desiredTileCount, new ProcessTileCallback ()
-		{
-			@Override
-			public final void process (final int x, final int y)
-			{
-				// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
-				map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID);
-			}
-		});
+		heightMap.setLowestTiles (desiredTileCount, (x, y) ->
+
+			// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
+			map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID));
 
 		log.trace ("Exiting setLowestTiles");
 	}

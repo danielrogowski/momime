@@ -15,10 +15,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.language.database.ProductionTypeLang;
@@ -35,14 +41,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Popup box used for spells like fire bolt where we can choose an additional amount of MP to pump into the spell to make it more powerful
@@ -177,14 +175,7 @@ public final class VariableManaUI extends MomClientDialogUI
 		};
 		
 		slider.setOpaque (false);
-		slider.addChangeListener (new ChangeListener ()
-		{
-			@Override
-			public final void stateChanged (final ChangeEvent ev)
-			{
-				sliderPositionChanged ();
-			}
-		});
+		slider.addChangeListener ((ev) -> sliderPositionChanged ());
 		
 		contentPane.add (slider, "frmVariableManaSlider");
 		

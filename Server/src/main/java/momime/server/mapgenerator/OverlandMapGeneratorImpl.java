@@ -565,14 +565,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	{
 		log.trace ("Entering setHighestTiles: " + plane + ", " + tileTypeID + ", " +desiredTileCount);
 
-		heightMap.setHighestTiles (desiredTileCount, new ProcessTileCallback ()
-		{
-			@Override
-			public final void process (final int x, final int y)
-			{
-				gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (tileTypeID);
-			}
-		});
+		heightMap.setHighestTiles (desiredTileCount, (x, y) ->
+			gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (tileTypeID));
 
 		log.trace ("Exiting setHighestTiles");
 	}

@@ -47,13 +47,29 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemType;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.NewSession;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.filefilters.ExtensionFileFilter;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.database.AvailableDatabase;
@@ -114,23 +130,6 @@ import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemType;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.NewSession;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.filefilters.ExtensionFileFilter;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Screens for setting up new games
@@ -2286,19 +2285,15 @@ public final class NewGameUI extends MomClientFrameUI
 		flagColourBlue.setMaximum (255);
 		flagColourPanel.add (flagColourBlue, "frmChooseFlagColourBlue");
 		
-		final ChangeListener flagColourChangeListener = new ChangeListener ()
+		final ChangeListener flagColourChangeListener = (ev) ->
 		{
-			@Override
-			public final void stateChanged (final ChangeEvent ev)
+			try
 			{
-				try
-				{
-					updateCustomFlagColour ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
+				updateCustomFlagColour ();
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
 			}
 		};
 		flagColourRed.addChangeListener (flagColourChangeListener);

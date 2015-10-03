@@ -22,8 +22,6 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -369,49 +367,45 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		getPanel ().add (unitSkillsScrollPane, "frmUnitInfoSkills");
 		
 		// Clicking a unit skill from a spell asks about cancelling it
-		unitSkillsList.addListSelectionListener (new ListSelectionListener ()
+		unitSkillsList.addListSelectionListener ((ev) ->
 		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
+			if ((unit instanceof MemoryUnit) && (unitSkillsList.getSelectedIndex () >= 0))
 			{
-				if ((unit instanceof MemoryUnit) && (unitSkillsList.getSelectedIndex () >= 0))
-				{
-					final MemoryUnit memoryUnit = (MemoryUnit) unit;
-					final UnitSkillAndValue skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
-					
-					// We want to ignore clicks on regular skills, and only do something about clicks on skills granted by spells.
-					// So search through maintained spells looking for this unitSkillID on this unit and see if we find anything.
-					final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-						null, null, memoryUnit.getUnitURN (), skill.getUnitSkillID (), null, null);
-					
-					if (spell != null)
-						try
+				final MemoryUnit memoryUnit = (MemoryUnit) unit;
+				final UnitSkillAndValue skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
+				
+				// We want to ignore clicks on regular skills, and only do something about clicks on skills granted by spells.
+				// So search through maintained spells looking for this unitSkillID on this unit and see if we find anything.
+				final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					null, null, memoryUnit.getUnitURN (), skill.getUnitSkillID (), null, null);
+				
+				if (spell != null)
+					try
+					{
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("SpellCasting");
+						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+
+						final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
+						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						
+						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+						else
 						{
-							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-							msg.setTitleLanguageCategoryID ("SpellCasting");
-							msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
-	
-							final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-							
-							if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
-								msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
-									("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-							else
-							{
-								msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-									("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-								msg.setSwitchOffSpell (spell);
-							}
-	
-							msg.setVisible (true);
+							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+							msg.setSwitchOffSpell (spell);
 						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-				}
+
+						msg.setVisible (true);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 		});
 		

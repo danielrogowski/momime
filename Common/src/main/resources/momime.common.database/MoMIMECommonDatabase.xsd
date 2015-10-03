@@ -1112,7 +1112,9 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="baseCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Base Crafting Cost" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="itemBonusCraftingCostMultiplier" type="momimecommon:spellCastingCost" nxe:label="Cost Multiplier" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeBasicStat" type="momimecommon:unitSkillAndValue" nxe:label="Basic Stat" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeAllowedBonus" type="momimecommon:heroItemTypeAllowedBonus" nxe:label="Allowed Bonus" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100" />
 	</xsd:complexType>
@@ -1135,6 +1137,31 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemBonus" nxe:singular="Hero Item Bonus" nxe:plural="Hero Item Bonuses">
+        <xsd:annotation>
+        	<xsd:documentation>Lists all possible stats and bonuses that can be added to hero items.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="bonusCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Bonus Crafting Cost" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="craftingCostMultiplierApplies" type="xsd:boolean" nxe:label="Cost multiplier applies?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusStat" type="momimecommon:unitSkillAndValue" nxe:label="Bonus Stat" nxe:gridwidth="100" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemBonusID" type="momimecommon:heroItemBonusID" use="required" nxe:label="Item Bonus ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemTypeAllowedBonus" nxe:singular="Allowed Bonus" nxe:plural="Allowed Bonuses" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Specifies the list of bonuses which are allowed for each item type, e.g. you can't add +attack onto a shield.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="heroItemBonusID" type="momimecommon:heroItemBonusID" use="required" nxe:label="Item Bonus ID" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>heroItemBonusDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -1263,6 +1290,10 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="heroItemSlotTypeID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="heroItemBonusID">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 

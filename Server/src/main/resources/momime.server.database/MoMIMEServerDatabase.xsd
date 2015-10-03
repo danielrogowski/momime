@@ -124,6 +124,7 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimesvr:heroItemType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimesvr:heroItemSlotType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonus" type="momimesvr:heroItemBonus" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimesvr:unitSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimesvr:rangedAttackType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimesvr:unit">
@@ -383,6 +384,10 @@
 			<xsd:selector xpath="heroItemSlotType" />
 			<xsd:field xpath="@heroItemSlotTypeID" />
 		</xsd:key>
+		<xsd:key name="heroItemBonusPK">
+			<xsd:selector xpath="heroItemBonus" />
+			<xsd:field xpath="@heroItemBonusID" />
+		</xsd:key>
 		
 <!-- Foreign keys -->
 
@@ -536,7 +541,7 @@
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="experienceSkillBonusFKunitSkill">
 			<xsd:selector xpath="unitType/experienceLevel/experienceSkillBonus" />
-			<xsd:field xpath="unitSkillID" />
+			<xsd:field xpath="@unitSkillID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="mapFeatureMagicRealmFKunitMagicRealm">
 			<xsd:selector xpath="mapFeature/mapFeatureMagicRealm" />
@@ -548,7 +553,7 @@
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="weaponGradeSkillBonusFKunitSkill">
 			<xsd:selector xpath="weaponGrade/weaponGradeSkillBonus" />
-			<xsd:field xpath="unitSkillID" />
+			<xsd:field xpath="@unitSkillID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:combatAreaEffectPK" name="tileTypeAreaEffectFKcombatAreaEffect">
 			<xsd:selector xpath="tileType/tileTypeAreaEffect" />
@@ -564,7 +569,7 @@
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="combatAreaEffectSkillBonusFKunitSkill">
 			<xsd:selector xpath="combatAreaEffect/combatAreaEffectSkillBonus" />
-			<xsd:field xpath="unitSkillID" />
+			<xsd:field xpath="@unitSkillID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:productionTypePK" name="pickProductionBonusFKproductionType">
 			<xsd:selector xpath="pick/pickProductionBonus" />
@@ -714,11 +719,19 @@
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="heroItemTypeBasicStatFKunitSkill">
 			<xsd:selector xpath="heroItemType/heroItemTypeBasicStat" />
-			<xsd:field xpath="@heroItemBasicSkillID" />
+			<xsd:field xpath="@unitSkillID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:heroItemTypePK" name="heroSlotAllowedItemTypeFKheroItemType">
 			<xsd:selector xpath="heroItemSlotType/heroSlotAllowedItemType" />
 			<xsd:field xpath="@heroItemTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="heroItemBonusStatFKunitSkill">
+			<xsd:selector xpath="heroItemBonus/heroItemBonusStat" />
+			<xsd:field xpath="@unitSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:heroItemBonusPK" name="heroItemTypeAllowedBonusFKheroItemBonus">
+			<xsd:selector xpath="heroItemType/heroItemTypeAllowedBonus" />
+			<xsd:field xpath="@heroItemBonusID" />
 		</xsd:keyref>
 		
 	</xsd:element>
@@ -1512,6 +1525,19 @@ Defaults to 1 if omitted.</xsd:documentation>
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="heroItemBonus" nxe:singular="Hero Item Bonus" nxe:plural="Hero Item Bonuses" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Lists all possible stats and bonuses that can be added to hero items.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimecommon:heroItemBonus">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="heroItemBonusDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 <!-- MoM-specific data types -->
 
 	<xsd:simpleType name="fame">

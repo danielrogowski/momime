@@ -1045,6 +1045,10 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 		<unitSkillDescription>SUPER_HS14 Sage</unitSkillDescription>
 		<unitSkillHelpText>Sage heroes contribute 3 spell research points per level of experience each turn to the controlling wizards research total.  Super Sage ability increases this bonus by 50%.</unitSkillHelpText>
 	</unitSkill>
+	<unitSkill unitSkillID="HS15">
+		<unitSkillDescription>- Spell Save</unitSkillDescription>
+		<unitSkillHelpText>For all spells cast by the hero, reduces the effective resistance of the target by the amount of the spell save modifier.</unitSkillHelpText>
+	</unitSkill>
 	<unitSkill unitSkillID="SS002">
 		<unitSkillDescription>Resist Elements</unitSkillDescription>
 		<unitSkillHelpText>Instills in target unit an increased resistance (+3) to the elemental magics of chaos and nature.  In addition, the unit gains improved defenses to normal magic ranged attacks (+3 to ranged defense).</unitSkillHelpText>
@@ -4359,6 +4363,147 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 	<heroItemType heroItemTypeID="IT10">
 		<heroItemTypeDescription>Plate</heroItemTypeDescription>
 	</heroItemType>
+	<heroItemBonus heroItemBonusID="IB_UA01_1">
+		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA01_2">
+		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA01_3">
+		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA01_4">
+		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US126_1">
+		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US126_2">
+		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US126_3">
+		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US126_4">
+		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US126_5">
+		<heroItemBonusDescription>+5 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US126_6">
+		<heroItemBonusDescription>+6 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA02_1">
+		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA02_2">
+		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA02_3">
+		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA02_4">
+		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA02_5">
+		<heroItemBonusDescription>+5 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA02_6">
+		<heroItemBonusDescription>+6 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_ATK_1">
+		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_ATK_2">
+		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_ATK_3">
+		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_ATK_4">
+		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA03_1">
+		<heroItemBonusDescription>+1 to Hit</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA03_2">
+		<heroItemBonusDescription>+2 to Hit</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA03_3">
+		<heroItemBonusDescription>+3 to Hit</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA04_1">
+		<heroItemBonusDescription>+1 Defence</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA04_2">
+		<heroItemBonusDescription>+2 Defence</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA04_3">
+		<heroItemBonusDescription>+3 Defence</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA04_4">
+		<heroItemBonusDescription>+4 Defence</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA04_5">
+		<heroItemBonusDescription>+5 Defence</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA04_6">
+		<heroItemBonusDescription>+6 Defence</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA05_1">
+		<heroItemBonusDescription>+1 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA05_2">
+		<heroItemBonusDescription>+2 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA05_3">
+		<heroItemBonusDescription>+3 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA05_4">
+		<heroItemBonusDescription>+4 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA05_5">
+		<heroItemBonusDescription>+5 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA05_6">
+		<heroItemBonusDescription>+6 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA08_1">
+		<heroItemBonusDescription>+1 Movement</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA08_2">
+		<heroItemBonusDescription>+2 Movement</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA08_3">
+		<heroItemBonusDescription>+3 Movement</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_UA08_4">
+		<heroItemBonusDescription>+4 Movement</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US051_1">
+		<heroItemBonusDescription>+5 Spell Skill</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US051_2">
+		<heroItemBonusDescription>+10 Spell Skill</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US051_3">
+		<heroItemBonusDescription>+15 Spell Skill</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_US051_4">
+		<heroItemBonusDescription>+20 Spell Skill</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_HS15_1">
+		<heroItemBonusDescription>-1 Spell Save</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_HS15_2">
+		<heroItemBonusDescription>-2 Spell Save</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_HS15_3">
+		<heroItemBonusDescription>-3 Spell Save</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB_HS15_4">
+		<heroItemBonusDescription>-4 Spell Save</heroItemBonusDescription>
+	</heroItemBonus>
 	<overlandMapSize overlandMapSizeID="MS01">
 		<overlandMapSizeDescription>Tiny</overlandMapSizeDescription>
 	</overlandMapSize>

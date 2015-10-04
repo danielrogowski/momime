@@ -721,6 +721,10 @@
 			<xsd:selector xpath="heroItemType/heroItemTypeBasicStat" />
 			<xsd:field xpath="@unitSkillID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="heroItemTypeAttackTypeFKunitSkill">
+			<xsd:selector xpath="heroItemType/heroItemTypeAttackType" />
+			<xsd:field xpath="@unitSkillID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:heroItemTypePK" name="heroSlotAllowedItemTypeFKheroItemType">
 			<xsd:selector xpath="heroItemSlotType/heroSlotAllowedItemType" />
 			<xsd:field xpath="@heroItemTypeID" />
@@ -732,6 +736,10 @@
 		<xsd:keyref refer="momimesvr:heroItemBonusPK" name="heroItemTypeAllowedBonusFKheroItemBonus">
 			<xsd:selector xpath="heroItemType/heroItemTypeAllowedBonus" />
 			<xsd:field xpath="@heroItemBonusID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:pickPK" name="heroItemBonusPrerequisiteFKpick">
+			<xsd:selector xpath="heroItemBonus/heroItemBonusPrerequisite" />
+			<xsd:field xpath="@pickID" />
 		</xsd:keyref>
 		
 	</xsd:element>

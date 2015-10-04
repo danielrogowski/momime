@@ -8,9 +8,6 @@ import java.nio.ByteOrder;
 
 import javax.swing.JFileChooser;
 
-import momime.editors.client.language.MoMLanguageEditorGridWithImport;
-import momime.editors.server.ServerEditorDatabaseConstants;
-
 import org.jdom.Element;
 
 import com.ndg.archive.LbxArchiveReader;
@@ -20,11 +17,14 @@ import com.ndg.utils.StringUtils;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
 
+import momime.editors.MoMEditorGridWithImport;
+import momime.editors.server.ServerEditorDatabaseConstants;
+
 /**
  * Grid for displaying and editing building names and descriptions
  * Allows importing building help text from the original MoM LBXes
  */
-public final class BuildingGrid extends MoMLanguageEditorGridWithImport
+public final class BuildingGrid extends MoMEditorGridWithImport
 {
 	/**
 	 * Specify the filename we're looking for

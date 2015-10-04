@@ -478,9 +478,9 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:attribute name="wizardID" type="momimecommon:wizardID" use="required" nxe:label="Wizard ID" nxe:gridwidth="80" />
 	</xsd:complexType>
 
-	<xsd:complexType name="pickAndQuantity" nxe:singular="Wizard Pick" nxe:plural="Wizard Picks">
+	<xsd:complexType name="pickAndQuantity" nxe:singular="Pick" nxe:plural="Picks">
         <xsd:annotation>
-        	<xsd:documentation>Defines all the standard picks for a particular pre-built wizard when they get a certain number of picks at the start of the game.</xsd:documentation>
+        	<xsd:documentation>Stores a pickID and quantity; used in a couple of places with different meanings.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="quantity" type="momimecommon:pickQuantity" nxe:label="Quantity" nxe:gridwidth="80" />
@@ -1114,9 +1114,23 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			<xsd:element minOccurs="1" maxOccurs="1" name="baseCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Base Crafting Cost" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="itemBonusCraftingCostMultiplier" type="momimecommon:spellCastingCost" nxe:label="Cost Multiplier" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeBasicStat" type="momimecommon:unitSkillAndValue" nxe:label="Basic Stat" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeAttackType" type="momimecommon:heroItemTypeAttackType" nxe:label="Attack Type" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeAllowedBonus" type="momimecommon:heroItemTypeAllowedBonus" nxe:label="Allowed Bonus" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemTypeID" type="momimecommon:heroItemTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemTypeAttackType" nxe:singular="Attack Type" nxe:plural="Attack Types">
+        <xsd:annotation>
+        	<xsd:documentation>Specifies the kind of attacks appropriate for the type of item, e.g. swords only affect melee attacks, but axes also affect thrown attacks.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Skill" nxe:gridwidth="200">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">
@@ -1147,8 +1161,13 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         	<xsd:documentation>Lists all possible stats and bonuses that can be added to hero items.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="bonusCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Bonus Crafting Cost" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="bonusCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Bonus Crafting Cost" nxe:gridwidth="150">
+		        <xsd:annotation>
+		        	<xsd:documentation>Mandatory for every bonus except "Spell Charges", where the cost is calculated depending on which spell is added.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="craftingCostMultiplierApplies" type="xsd:boolean" nxe:label="Cost multiplier applies?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusPrerequisite" type="momimecommon:pickAndQuantity" nxe:label="Prerequisites" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusStat" type="momimecommon:unitSkillAndValue" nxe:label="Bonus Stat" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemBonusID" type="momimecommon:heroItemBonusID" use="required" nxe:label="Item Bonus ID" nxe:gridwidth="100" />

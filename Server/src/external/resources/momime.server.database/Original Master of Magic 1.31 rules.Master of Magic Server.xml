@@ -5914,156 +5914,287 @@
 	<heroItemType heroItemTypeID="IT01">
 		<baseCraftingCost>100</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>1</itemBonusCraftingCostMultiplier>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA01_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA01_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA01_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_2" />
+		<heroItemTypeAttackType unitSkillID="UA01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB03" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB08" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB09" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB13" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB14" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB15" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB26" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB27" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB34" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB35" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB36" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB37" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB38" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB39" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB40" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB41" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB45" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB46" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB47" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB49" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
 		<heroItemTypeDescription>Sword</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT02">
 		<baseCraftingCost>100</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>1</itemBonusCraftingCostMultiplier>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA01_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA01_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA01_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA01_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_2" />
+		<heroItemTypeAttackType unitSkillID="UA01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB03" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB04" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB13" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB14" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB15" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB26" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB27" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB34" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB35" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB36" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB37" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB38" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB39" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB40" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB41" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB45" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB46" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB47" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB49" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
 		<heroItemTypeDescription>Mace</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT03">
 		<baseCraftingCost>100</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>1</itemBonusCraftingCostMultiplier>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US126_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US126_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US126_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US126_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US126_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US126_6" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_2" />
+		<heroItemTypeAttackType unitSkillID="UA01" />
+		<heroItemTypeAttackType unitSkillID="US126" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB03" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB04" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB05" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB06" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB13" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB14" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB26" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB27" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB34" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB35" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB36" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB37" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB38" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB39" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB40" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB41" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB45" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB46" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB47" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB49" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
 		<heroItemTypeDescription>Axe</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT04">
 		<baseCraftingCost>100</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>1</itemBonusCraftingCostMultiplier>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_6" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_2" />
+		<heroItemTypeAttackType unitSkillID="UA02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB03" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB04" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB05" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB06" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB08" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB09" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB13" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB14" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB15" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB26" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB27" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB34" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB35" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB36" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB37" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB39" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB40" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB46" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB47" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB49" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
 		<heroItemTypeDescription>Bow</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT05">
 		<baseCraftingCost>300</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>1</itemBonusCraftingCostMultiplier>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_6" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_4" />
+		<heroItemTypeAttackType unitSkillID="UA02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB03" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB04" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB05" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB06" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB08" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB09" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB13" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB14" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB15" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB26" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB27" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB28" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB29" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB30" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB31" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB32" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB33" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB34" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB35" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB36" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB37" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB39" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB40" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB46" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB47" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB48" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB58" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB65" />
 		<heroItemTypeDescription>Staff</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT06">
 		<baseCraftingCost>200</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>1</itemBonusCraftingCostMultiplier>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA02_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_2" />
+		<heroItemTypeAttackType unitSkillID="UA02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB13" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB26" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB27" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB30" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB31" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB34" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB35" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB37" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB39" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB40" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB46" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB47" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB48" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB58" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB65" />
 		<heroItemTypeDescription>Wand</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT07">
 		<baseCraftingCost>50</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>2</itemBonusCraftingCostMultiplier>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_ATK_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_ATK_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_ATK_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_ATK_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA03_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_6" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_US051_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_HS15_4" />
+		<heroItemTypeAttackType unitSkillID="UA01" />
+		<heroItemTypeAttackType unitSkillID="UA02" />
+		<heroItemTypeAttackType unitSkillID="US126" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB01" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB02" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB03" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB04" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB08" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB09" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB10" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB13" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB14" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB16" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB17" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB18" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB20" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB21" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB22" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB23" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB24" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB25" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB26" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB27" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB28" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB30" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB31" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB32" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB33" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB42" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB45" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB48" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB52" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB53" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB54" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB55" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB56" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB57" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB58" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB59" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB60" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB61" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB62" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB63" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB64" />
 		<heroItemTypeDescription>Miscellaneous accessory</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT08">
 		<baseCraftingCost>100</baseCraftingCost>
 		<itemBonusCraftingCostMultiplier>1</itemBonusCraftingCostMultiplier>
 		<heroItemTypeBasicStat unitSkillID="US014" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_6" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_6" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB08" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB09" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB10" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB11" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB12" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB16" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB17" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB18" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB19" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB20" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB21" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB22" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB23" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB24" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB25" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB48" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB52" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB53" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB54" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB55" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB56" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB57" />
 		<heroItemTypeDescription>Shield</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT09">
@@ -6072,22 +6203,33 @@
 		<heroItemTypeBasicStat unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
 		</heroItemTypeBasicStat>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_6" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_6" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB08" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB09" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB10" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB11" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB12" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB16" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB17" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB18" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB19" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB20" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB21" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB22" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB23" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB24" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB25" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB48" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB52" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB53" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB54" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB55" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB56" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB57" />
 		<heroItemTypeDescription>Chain mail</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemType heroItemTypeID="IT10">
@@ -6096,22 +6238,33 @@
 		<heroItemTypeBasicStat unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
 		</heroItemTypeBasicStat>
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA04_6" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA08_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_1" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_2" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_3" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_4" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_5" />
-		<heroItemTypeAllowedBonus heroItemBonusID="IB_UA05_6" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB07" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB08" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB09" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB10" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB11" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB12" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB16" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB17" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB18" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB19" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB20" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB21" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB22" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB23" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB24" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB25" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB43" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB44" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB48" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB50" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB51" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB52" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB53" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB54" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB55" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB56" />
+		<heroItemTypeAllowedBonus heroItemBonusID="IB57" />
 		<heroItemTypeDescription>Plate mail</heroItemTypeDescription>
 	</heroItemType>
 	<heroItemSlotType heroItemSlotTypeID="IST01">
@@ -6150,329 +6303,127 @@
 		<heroSlotAllowedItemType heroItemTypeID="IT10" />
 		<slotTypeDescription>Armour</slotTypeDescription>
 	</heroItemSlotType>
-	<heroItemBonus heroItemBonusID="IB_UA01_1">
+	<heroItemBonus heroItemBonusID="IB01">
 		<bonusCraftingCost>50</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
+		<heroItemBonusStat unitSkillID="HS16">
 			<unitSkillValue>1</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+1 Melee Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA01_2">
+	<heroItemBonus heroItemBonusID="IB02">
 		<bonusCraftingCost>100</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
+		<heroItemBonusStat unitSkillID="HS16">
 			<unitSkillValue>2</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+2 Melee Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA01_3">
+	<heroItemBonus heroItemBonusID="IB03">
 		<bonusCraftingCost>200</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
+		<heroItemBonusStat unitSkillID="HS16">
 			<unitSkillValue>3</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+3 Melee Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA01_4">
+	<heroItemBonus heroItemBonusID="IB04">
 		<bonusCraftingCost>350</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
+		<heroItemBonusStat unitSkillID="HS16">
 			<unitSkillValue>4</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+4 Melee Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_1">
-		<bonusCraftingCost>50</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>1</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>1</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+1 Melee and Thrown Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_2">
-		<bonusCraftingCost>100</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>2</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>2</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+2 Melee and Thrown Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_3">
-		<bonusCraftingCost>200</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>3</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>3</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+3 Melee and Thrown Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_4">
-		<bonusCraftingCost>350</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>4</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>4</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+4 Melee and Thrown Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_5">
+	<heroItemBonus heroItemBonusID="IB05">
 		<bonusCraftingCost>550</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
+		<heroItemBonusStat unitSkillID="HS16">
 			<unitSkillValue>5</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>5</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+5 Melee and Thrown Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+5 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_6">
+	<heroItemBonus heroItemBonusID="IB06">
 		<bonusCraftingCost>800</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
+		<heroItemBonusStat unitSkillID="HS16">
 			<unitSkillValue>6</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>6</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+6 Melee and Thrown Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+6 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_1">
+	<heroItemBonus heroItemBonusID="IB07">
 		<bonusCraftingCost>50</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA02">
+		<heroItemBonusStat unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+1 Ranged Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+1 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_2">
+	<heroItemBonus heroItemBonusID="IB08">
 		<bonusCraftingCost>100</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA02">
+		<heroItemBonusStat unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+2 Ranged Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+2 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_3">
+	<heroItemBonus heroItemBonusID="IB09">
 		<bonusCraftingCost>200</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA02">
+		<heroItemBonusStat unitSkillID="UA04">
 			<unitSkillValue>3</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+3 Ranged Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+3 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_4">
+	<heroItemBonus heroItemBonusID="IB10">
 		<bonusCraftingCost>350</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA02">
+		<heroItemBonusStat unitSkillID="UA04">
 			<unitSkillValue>4</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+4 Ranged Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+4 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_5">
+	<heroItemBonus heroItemBonusID="IB11">
 		<bonusCraftingCost>550</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA02">
+		<heroItemBonusStat unitSkillID="UA04">
 			<unitSkillValue>5</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+5 Ranged Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+5 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_6">
+	<heroItemBonus heroItemBonusID="IB12">
 		<bonusCraftingCost>800</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA02">
-			<unitSkillValue>6</unitSkillValue>
+		<heroItemBonusStat unitSkillID="UA04">
+			<unitSkillValue>5</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+6 Ranged Attack</heroItemBonusDescription>
+		<heroItemBonusDescription>+6 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_1">
-		<bonusCraftingCost>50</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>1</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="UA02">
-			<unitSkillValue>1</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>1</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+1 All Attacks</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_2">
-		<bonusCraftingCost>50</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>2</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="UA02">
-			<unitSkillValue>2</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>2</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+2 All Attacks</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_3">
-		<bonusCraftingCost>50</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>3</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="UA02">
-			<unitSkillValue>3</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>3</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+3 All Attacks</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_4">
-		<bonusCraftingCost>50</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA01">
-			<unitSkillValue>4</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="UA02">
-			<unitSkillValue>4</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusStat unitSkillID="US126">
-			<unitSkillValue>4</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+4 All Attacks</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA03_1">
+	<heroItemBonus heroItemBonusID="IB13">
 		<bonusCraftingCost>400</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="UA03">
 			<unitSkillValue>1</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+1 to Hit</heroItemBonusDescription>
+		<heroItemBonusDescription>+1 To Hit</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA03_2">
+	<heroItemBonus heroItemBonusID="IB14">
 		<bonusCraftingCost>800</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="UA03">
 			<unitSkillValue>2</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+2 to Hit</heroItemBonusDescription>
+		<heroItemBonusDescription>+2 To Hit</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA03_3">
+	<heroItemBonus heroItemBonusID="IB15">
 		<bonusCraftingCost>1200</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="UA03">
 			<unitSkillValue>3</unitSkillValue>
 		</heroItemBonusStat>
-		<heroItemBonusDescription>+3 to Hit</heroItemBonusDescription>
+		<heroItemBonusDescription>+3 To Hit</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_1">
-		<bonusCraftingCost>50</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA04">
-			<unitSkillValue>1</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+1 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_2">
-		<bonusCraftingCost>100</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA04">
-			<unitSkillValue>2</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+2 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_3">
-		<bonusCraftingCost>200</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA04">
-			<unitSkillValue>3</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+3 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_4">
-		<bonusCraftingCost>350</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA04">
-			<unitSkillValue>4</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+4 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_5">
-		<bonusCraftingCost>550</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA04">
-			<unitSkillValue>5</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+5 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_6">
-		<bonusCraftingCost>800</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA04">
-			<unitSkillValue>6</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+6 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_1">
-		<bonusCraftingCost>50</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA05">
-			<unitSkillValue>1</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+1 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_2">
-		<bonusCraftingCost>100</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA05">
-			<unitSkillValue>2</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+2 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_3">
-		<bonusCraftingCost>200</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA05">
-			<unitSkillValue>3</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+3 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_4">
-		<bonusCraftingCost>350</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA05">
-			<unitSkillValue>4</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+4 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_5">
-		<bonusCraftingCost>550</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA05">
-			<unitSkillValue>5</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+5 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_6">
-		<bonusCraftingCost>800</bonusCraftingCost>
-		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
-		<heroItemBonusStat unitSkillID="UA05">
-			<unitSkillValue>6</unitSkillValue>
-		</heroItemBonusStat>
-		<heroItemBonusDescription>+6 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_1">
+	<heroItemBonus heroItemBonusID="IB16">
 		<bonusCraftingCost>100</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="UA08">
@@ -6480,7 +6431,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+1 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_2">
+	<heroItemBonus heroItemBonusID="IB17">
 		<bonusCraftingCost>200</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="UA08">
@@ -6488,7 +6439,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+2 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_3">
+	<heroItemBonus heroItemBonusID="IB18">
 		<bonusCraftingCost>400</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="UA08">
@@ -6496,7 +6447,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+3 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_4">
+	<heroItemBonus heroItemBonusID="IB19">
 		<bonusCraftingCost>800</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="UA08">
@@ -6504,7 +6455,55 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+4 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_1">
+	<heroItemBonus heroItemBonusID="IB20">
+		<bonusCraftingCost>50</bonusCraftingCost>
+		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
+		<heroItemBonusStat unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
+		</heroItemBonusStat>
+		<heroItemBonusDescription>+1 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB21">
+		<bonusCraftingCost>100</bonusCraftingCost>
+		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
+		<heroItemBonusStat unitSkillID="UA05">
+			<unitSkillValue>2</unitSkillValue>
+		</heroItemBonusStat>
+		<heroItemBonusDescription>+2 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB22">
+		<bonusCraftingCost>200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
+		<heroItemBonusStat unitSkillID="UA05">
+			<unitSkillValue>3</unitSkillValue>
+		</heroItemBonusStat>
+		<heroItemBonusDescription>+3 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB23">
+		<bonusCraftingCost>350</bonusCraftingCost>
+		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
+		<heroItemBonusStat unitSkillID="UA05">
+			<unitSkillValue>4</unitSkillValue>
+		</heroItemBonusStat>
+		<heroItemBonusDescription>+4 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB24">
+		<bonusCraftingCost>550</bonusCraftingCost>
+		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
+		<heroItemBonusStat unitSkillID="UA05">
+			<unitSkillValue>5</unitSkillValue>
+		</heroItemBonusStat>
+		<heroItemBonusDescription>+5 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB25">
+		<bonusCraftingCost>800</bonusCraftingCost>
+		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
+		<heroItemBonusStat unitSkillID="UA05">
+			<unitSkillValue>6</unitSkillValue>
+		</heroItemBonusStat>
+		<heroItemBonusDescription>+6 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB26">
 		<bonusCraftingCost>200</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="US051">
@@ -6512,7 +6511,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+5 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_2">
+	<heroItemBonus heroItemBonusID="IB27">
 		<bonusCraftingCost>400</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="US051">
@@ -6520,7 +6519,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+10 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_3">
+	<heroItemBonus heroItemBonusID="IB28">
 		<bonusCraftingCost>800</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="US051">
@@ -6528,7 +6527,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+15 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_4">
+	<heroItemBonus heroItemBonusID="IB29">
 		<bonusCraftingCost>1600</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="US051">
@@ -6536,7 +6535,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>+20 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_1">
+	<heroItemBonus heroItemBonusID="IB30">
 		<bonusCraftingCost>100</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="HS15">
@@ -6544,7 +6543,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>-1 Spell Save</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_2">
+	<heroItemBonus heroItemBonusID="IB31">
 		<bonusCraftingCost>200</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="HS15">
@@ -6552,7 +6551,7 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>-2 Spell Save</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_3">
+	<heroItemBonus heroItemBonusID="IB32">
 		<bonusCraftingCost>400</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="HS15">
@@ -6560,13 +6559,265 @@
 		</heroItemBonusStat>
 		<heroItemBonusDescription>-3 Spell Save</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_4">
+	<heroItemBonus heroItemBonusID="IB33">
 		<bonusCraftingCost>800</bonusCraftingCost>
 		<craftingCostMultiplierApplies>true</craftingCostMultiplierApplies>
 		<heroItemBonusStat unitSkillID="HS15">
 			<unitSkillValue>4</unitSkillValue>
 		</heroItemBonusStat>
 		<heroItemBonusDescription>-4 Spell Save</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB34">
+		<bonusCraftingCost>300</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB03">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Flaming</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB35">
+		<bonusCraftingCost>800</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB03">
+			<quantity>5</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Lightning</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB36">
+		<bonusCraftingCost>2000</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB03">
+			<quantity>6</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Chaos</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB37">
+		<bonusCraftingCost>1000</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB03">
+			<quantity>5</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Destruction</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB38">
+		<bonusCraftingCost>800</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB02">
+			<quantity>5</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Vampiric</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB39">
+		<bonusCraftingCost>400</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB02">
+			<quantity>3</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Death</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB40">
+		<bonusCraftingCost>500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB02">
+			<quantity>4</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Power Drain</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB41">
+		<bonusCraftingCost>500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>3</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Holy Avenger</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB42">
+		<bonusCraftingCost>500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>6</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>True Sight</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB43">
+		<bonusCraftingCost>100</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB04">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Resist Elements</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB44">
+		<bonusCraftingCost>500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB04">
+			<quantity>4</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Elemental Armor</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB45">
+		<bonusCraftingCost>300</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB04">
+			<quantity>3</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Giant Strength</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB46">
+		<bonusCraftingCost>150</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB04">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Stoning</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB47">
+		<bonusCraftingCost>1500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB05">
+			<quantity>6</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Phantasmal</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB48">
+		<bonusCraftingCost>400</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB05">
+			<quantity>3</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Guardian Wind</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB49">
+		<bonusCraftingCost>2000</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB05">
+			<quantity>7</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Haste</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB50">
+		<bonusCraftingCost>200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB05">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Resist Magic</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB51">
+		<bonusCraftingCost>700</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB05">
+			<quantity>5</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Magic Immunity</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB52">
+		<bonusCraftingCost>1200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB02">
+			<quantity>4</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Wraithform</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB53">
+		<bonusCraftingCost>200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB02">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Cloak of Fear</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB54">
+		<bonusCraftingCost>200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Bless</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB55">
+		<bonusCraftingCost>500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>4</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Righteousness</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB56">
+		<bonusCraftingCost>1200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>5</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Invulnerability</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB57">
+		<bonusCraftingCost>200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Endurance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB58">
+		<bonusCraftingCost>500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>5</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Planar Travel</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB59">
+		<bonusCraftingCost>1000</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB01">
+			<quantity>6</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Lion Heart</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB60">
+		<bonusCraftingCost>100</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB04">
+			<quantity>2</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Water Walking</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB61">
+		<bonusCraftingCost>1500</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB04">
+			<quantity>6</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Regeneration</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB62">
+		<bonusCraftingCost>200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB04">
+			<quantity>3</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Pathfinding</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB63">
+		<bonusCraftingCost>200</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB05">
+			<quantity>3</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Flight</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB64">
+		<bonusCraftingCost>1000</bonusCraftingCost>
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusPrerequisite pickID="MB05">
+			<quantity>5</quantity>
+		</heroItemBonusPrerequisite>
+		<heroItemBonusDescription>Invisibility</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB65">
+		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<heroItemBonusDescription>Spell Charges</heroItemBonusDescription>
 	</heroItemBonus>
 	<unitSkill unitSkillID="UA01">
 		<unitSkillDescription>Melee Attack Strength</unitSkillDescription>
@@ -8435,6 +8686,9 @@
 	</unitSkill>
 	<unitSkill unitSkillID="HS15">
 		<unitSkillDescription>- Spell Save</unitSkillDescription>
+	</unitSkill>
+	<unitSkill unitSkillID="HS16">
+		<unitSkillDescription>Attack(s) appropriate for type of hero item</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS002">
 		<addsToSkill>

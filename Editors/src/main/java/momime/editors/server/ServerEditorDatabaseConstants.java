@@ -196,6 +196,43 @@ public final class ServerEditorDatabaseConstants
 	/** The unit ID of the unit which this spell may summon */
 	public static final String TAG_ATTRIBUTE_SUMMONED_UNIT_ID = "summonedUnitID";
 	
+	// heroItemBonus
+	
+	/** Lists all possible bonuses that can appear on hero items */
+	public static final String TAG_ENTITY_HERO_ITEM_BONUS = "heroItemBonus";
+	
+	/** Uniquely identifies each hero item bonus */
+	public static final String TAG_ATTRIBUTE_HERO_ITEM_BONUS_ID = "heroItemBonusID";
+
+	/** Crafting cost of each bonus */
+	public static final String TAG_VALUE_HERO_ITEM_BONUS_CRAFTING_COST = "bonusCraftingCost";
+
+	/** Is crafting cost of the bonus higher for misc items? */
+	public static final String TAG_VALUE_HERO_ITEM_BONUS_CRAFTING_COST_MULTIPLIER_APPLES = "craftingCostMultiplierApplies";
+
+	/** Description of the bonus */
+	public static final String TAG_VALUE_HERO_ITEM_BONUS_DESCRIPTION = "heroItemBonusDescription";
+	
+	/** Lists the actual skill boosts that a particular bonus gives */
+	public static final String TAG_CHILD_ENTITY_HERO_ITEM_BONUS_STAT = "heroItemBonusStat";
+
+	/** The number of skill points bonus provided */
+	public static final String TAG_VALUE_UNIT_SKILL_VALUE = "unitSkillValue";
+
+	/** Spell books you must have in order to be able to put a particular bonus onto a hero item */
+	public static final String TAG_CHILD_ENTITY_HERO_ITEM_BONUS_PREREQ = "heroItemBonusPrerequisite";
+
+	// heroItemType
+	
+	/** Lists all possible types of hero items (Swords, Maces and so on) */
+	public static final String TAG_ENTITY_HERO_ITEM_TYPE = "heroItemType";
+
+	/** Uniquely identifies each hero item type */
+	public static final String TAG_ATTRIBUTE_HERO_ITEM_TYPE_ID = "heroItemTypeID";
+
+	/** Lists the actual skill boosts that a particular bonus gives */
+	public static final String TAG_CHILD_ENTITY_HERO_ITEM_TYPE_ALLOWED_BONUS = "heroItemTypeAllowedBonus";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

@@ -12,9 +12,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.filechooser.FileFilter;
 
-import momime.editors.client.language.MoMLanguageEditorGridWithImport;
-import momime.editors.server.ServerEditorDatabaseConstants;
-
 import org.jdom.Element;
 
 import com.ndg.swing.GridBagConstraintsHorizontalFill;
@@ -25,11 +22,14 @@ import com.ndg.utils.StringUtils;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
 
+import momime.editors.MoMEditorGridWithImport;
+import momime.editors.server.ServerEditorDatabaseConstants;
+
 /**
  * Grid for displaying and editing unit names
  * Allows importing unit names from the original MoM WIZARDS.EXE
  */
-public final class UnitGrid extends MoMLanguageEditorGridWithImport
+public final class UnitGrid extends MoMEditorGridWithImport
 {
 	/** Offset into WIZARDS.EXE of the names table */
 	private JComboBox<String> dataOffsetCombo;

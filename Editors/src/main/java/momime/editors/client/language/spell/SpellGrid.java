@@ -8,9 +8,6 @@ import java.nio.ByteOrder;
 
 import javax.swing.JFileChooser;
 
-import momime.editors.client.language.MoMLanguageEditorGridWithImport;
-import momime.editors.server.ServerEditorDatabaseConstants;
-
 import org.jdom.Element;
 
 import com.ndg.archive.LbxArchiveReader;
@@ -21,11 +18,14 @@ import com.ndg.utils.StringUtils;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
 
+import momime.editors.MoMEditorGridWithImport;
+import momime.editors.server.ServerEditorDatabaseConstants;
+
 /**
  * Grid for displaying and editing spell names and descriptions
  * Allows importing spell names and help text from the original MoM LBXes
  */
-public final class SpellGrid extends MoMLanguageEditorGridWithImport
+public final class SpellGrid extends MoMEditorGridWithImport
 {
 	/** Amount of data for each spell in SPELLDAT.LBX (rest of each record is the spell name) */
 	private static final int SPELL_DATA_LENGTH = 17;

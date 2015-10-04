@@ -11,9 +11,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import momime.editors.client.language.MoMLanguageEditorGridWithImport;
-import momime.editors.server.ServerEditorDatabaseConstants;
-
 import org.jdom.Element;
 
 import com.ndg.archive.LbxArchiveReader;
@@ -26,11 +23,14 @@ import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
 
+import momime.editors.MoMEditorGridWithImport;
+import momime.editors.server.ServerEditorDatabaseConstants;
+
 /**
  * Grid for displaying and editing hero names
  * Allows importing hero names from the original MoM LBXes
  */
-public final class HeroNameGrid extends MoMLanguageEditorGridWithImport
+public final class HeroNameGrid extends MoMEditorGridWithImport
 {
 	/** Conjunction to use if hero class starts with a vowel, e.g. l' for Tumu l'Assassin */
 	private JTextField vowelConjunction;

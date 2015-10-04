@@ -1,4 +1,4 @@
-package momime.editors.client.language;
+package momime.editors;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -15,7 +15,7 @@ import com.ndg.xmleditor.grid.XmlEditorGridWithImport;
 /**
  * Shows a file open dialog asking for the location of an LBX file to import when the Import button is clicked
  */
-public abstract class MoMLanguageEditorGridWithImport extends XmlEditorGridWithImport
+public abstract class MoMEditorGridWithImport extends XmlEditorGridWithImport
 {
 	/**
 	 * Shows a file open dialog asking for the location of an LBX file to import when the Import button is clicked

@@ -160,40 +160,17 @@ public final class CommonDatabaseConstants
 	/** Wizard's fortress */
 	public static final String BUILDING_FORTRESS = "BL99";
 
+	// combat area effects
+
+	/** Crusade */
+	public static final String COMBAT_AREA_EFFECT_CRUSADE = "CSE158";
+	
 	// unit types
 
 	/** Units summoned from spells */
 	public static final String UNIT_TYPE_ID_SUMMONED = "S";
 
 	// unit skills
-
-	/** Skill for settlers creating new cities */
-	public static final String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
-	
-	/** Skill for magic and guardian spirits capturing nodes */	
-	public static final String UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
-	
-	/** the "skill" for experience levels */
-	public static final String UNIT_SKILL_ID_EXPERIENCE = "US098";
-
-	/** Allows unit to cast spells, value of the skill specifies how MP worth of spells they can cast, e.g. Archangels able to cast 40 MP worth of life magic */
-	public static final String UNIT_SKILL_ID_CASTER_UNIT = "US051";
-	
-	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
-	public static final String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
-
-	/** Limit ranged attack distance penalty to -10% */ 
-	public static final String UNIT_SKILL_ID_LONG_RANGE = "US125";
-	
-	// hero skills
-	
-	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
-	public static final String UNIT_SKILL_ID_CASTER_HERO = "HS05";
-	
-	// combat area effects
-
-	/** Crusade */
-	public static final String COMBAT_AREA_EFFECT_CRUSADE = "CSE158";
 
 	/** Melee attack strength */
 	public static final String UNIT_ATTRIBUTE_ID_MELEE_ATTACK = "UA01";
@@ -218,6 +195,39 @@ public final class CommonDatabaseConstants
 
 	/** Movement speed skill; speed is calculated entirely separately from the -kind- of movement, via skills like Flight or Swimming */
 	public static final String UNIT_SKILL_ID_MOVEMENT_SPEED = "UA08";
+	
+	/** Skill for settlers creating new cities */
+	public static final String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
+	
+	/** Skill for magic and guardian spirits capturing nodes */	
+	public static final String UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
+	
+	/** the "skill" for experience levels */
+	public static final String UNIT_SKILL_ID_EXPERIENCE = "US098";
+
+	/** Allows unit to cast spells, value of the skill specifies how MP worth of spells they can cast, e.g. Archangels able to cast 40 MP worth of life magic */
+	public static final String UNIT_SKILL_ID_CASTER_UNIT = "US051";
+	
+	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
+	public static final String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
+
+	/** Limit ranged attack distance penalty to -10% */ 
+	public static final String UNIT_SKILL_ID_LONG_RANGE = "US125";
+	
+	// hero skills
+	
+	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
+	public static final String UNIT_SKILL_ID_CASTER_HERO = "HS05";
+
+	/** Hero item skill that penalises target's resistance attribute by the specified amount */
+	public static final String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
+	
+	/**
+	 * Special code used for hero item bonuses, meaning "type(s) of attack appropriate for the type of weapon", so is used to differentiate
+	 * that for example an Sword of Illuisonary Attack being wielded by a hero with a Thrown Attack affects his regular melee hits only, and not
+	 * the Thrown Attack, but an Axe of Illuisonary Attack would affect both.
+	 */
+	public static final String UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM = "HS16";
 	
 	/**
 	 * Prevent instatiation of this class

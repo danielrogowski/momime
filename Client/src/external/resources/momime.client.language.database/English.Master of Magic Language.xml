@@ -1049,6 +1049,10 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 		<unitSkillDescription>- Spell Save</unitSkillDescription>
 		<unitSkillHelpText>For all spells cast by the hero, reduces the effective resistance of the target by the amount of the spell save modifier.</unitSkillHelpText>
 	</unitSkill>
+	<unitSkill unitSkillID="HS16">
+		<unitSkillDescription>Attack(s) appropriate for type of hero item</unitSkillDescription>
+		<unitSkillHelpText>Attack(s) appropriate for type of hero item.</unitSkillHelpText>
+	</unitSkill>
 	<unitSkill unitSkillID="SS002">
 		<unitSkillDescription>Resist Elements</unitSkillDescription>
 		<unitSkillHelpText>Instills in target unit an increased resistance (+3) to the elemental magics of chaos and nature.  In addition, the unit gains improved defenses to normal magic ranged attacks (+3 to ranged defense).</unitSkillHelpText>
@@ -4363,146 +4367,200 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 	<heroItemType heroItemTypeID="IT10">
 		<heroItemTypeDescription>Plate</heroItemTypeDescription>
 	</heroItemType>
-	<heroItemBonus heroItemBonusID="IB_UA01_1">
+	<heroItemBonus heroItemBonusID="IB01">
 		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA01_2">
+	<heroItemBonus heroItemBonusID="IB02">
 		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA01_3">
+	<heroItemBonus heroItemBonusID="IB03">
 		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA01_4">
+	<heroItemBonus heroItemBonusID="IB04">
 		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_1">
-		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_2">
-		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_3">
-		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_4">
-		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_5">
+	<heroItemBonus heroItemBonusID="IB05">
 		<heroItemBonusDescription>+5 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US126_6">
+	<heroItemBonus heroItemBonusID="IB06">
 		<heroItemBonusDescription>+6 Attack</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_1">
-		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB07">
+		<heroItemBonusDescription>+1 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_2">
-		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB08">
+		<heroItemBonusDescription>+2 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_3">
-		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB09">
+		<heroItemBonusDescription>+3 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_4">
-		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB10">
+		<heroItemBonusDescription>+4 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_5">
-		<heroItemBonusDescription>+5 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB11">
+		<heroItemBonusDescription>+5 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA02_6">
-		<heroItemBonusDescription>+6 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB12">
+		<heroItemBonusDescription>+6 Defense</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_1">
-		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB13">
+		<heroItemBonusDescription>+1 To Hit</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_2">
-		<heroItemBonusDescription>+2 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB14">
+		<heroItemBonusDescription>+2 To Hit</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_3">
-		<heroItemBonusDescription>+3 Attack</heroItemBonusDescription>
+	<heroItemBonus heroItemBonusID="IB15">
+		<heroItemBonusDescription>+3 To Hit</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_ATK_4">
-		<heroItemBonusDescription>+4 Attack</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA03_1">
-		<heroItemBonusDescription>+1 to Hit</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA03_2">
-		<heroItemBonusDescription>+2 to Hit</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA03_3">
-		<heroItemBonusDescription>+3 to Hit</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_1">
-		<heroItemBonusDescription>+1 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_2">
-		<heroItemBonusDescription>+2 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_3">
-		<heroItemBonusDescription>+3 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_4">
-		<heroItemBonusDescription>+4 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_5">
-		<heroItemBonusDescription>+5 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA04_6">
-		<heroItemBonusDescription>+6 Defence</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_1">
-		<heroItemBonusDescription>+1 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_2">
-		<heroItemBonusDescription>+2 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_3">
-		<heroItemBonusDescription>+3 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_4">
-		<heroItemBonusDescription>+4 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_5">
-		<heroItemBonusDescription>+5 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA05_6">
-		<heroItemBonusDescription>+6 Resistance</heroItemBonusDescription>
-	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_1">
+	<heroItemBonus heroItemBonusID="IB16">
 		<heroItemBonusDescription>+1 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_2">
+	<heroItemBonus heroItemBonusID="IB17">
 		<heroItemBonusDescription>+2 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_3">
+	<heroItemBonus heroItemBonusID="IB18">
 		<heroItemBonusDescription>+3 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_UA08_4">
+	<heroItemBonus heroItemBonusID="IB19">
 		<heroItemBonusDescription>+4 Movement</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_1">
+	<heroItemBonus heroItemBonusID="IB20">
+		<heroItemBonusDescription>+1 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB21">
+		<heroItemBonusDescription>+2 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB22">
+		<heroItemBonusDescription>+3 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB23">
+		<heroItemBonusDescription>+4 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB24">
+		<heroItemBonusDescription>+5 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB25">
+		<heroItemBonusDescription>+6 Resistance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB26">
 		<heroItemBonusDescription>+5 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_2">
+	<heroItemBonus heroItemBonusID="IB27">
 		<heroItemBonusDescription>+10 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_3">
+	<heroItemBonus heroItemBonusID="IB28">
 		<heroItemBonusDescription>+15 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_US051_4">
+	<heroItemBonus heroItemBonusID="IB29">
 		<heroItemBonusDescription>+20 Spell Skill</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_1">
+	<heroItemBonus heroItemBonusID="IB30">
 		<heroItemBonusDescription>-1 Spell Save</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_2">
+	<heroItemBonus heroItemBonusID="IB31">
 		<heroItemBonusDescription>-2 Spell Save</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_3">
+	<heroItemBonus heroItemBonusID="IB32">
 		<heroItemBonusDescription>-3 Spell Save</heroItemBonusDescription>
 	</heroItemBonus>
-	<heroItemBonus heroItemBonusID="IB_HS15_4">
+	<heroItemBonus heroItemBonusID="IB33">
 		<heroItemBonusDescription>-4 Spell Save</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB34">
+		<heroItemBonusDescription>Flaming</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB35">
+		<heroItemBonusDescription>Lightning</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB36">
+		<heroItemBonusDescription>Chaos</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB37">
+		<heroItemBonusDescription>Destruction</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB38">
+		<heroItemBonusDescription>Vampiric</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB39">
+		<heroItemBonusDescription>Death</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB40">
+		<heroItemBonusDescription>Power Drain</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB41">
+		<heroItemBonusDescription>Holy Avenger</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB42">
+		<heroItemBonusDescription>True Sight</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB43">
+		<heroItemBonusDescription>Resist Elements</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB44">
+		<heroItemBonusDescription>Elemental Armor</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB45">
+		<heroItemBonusDescription>Giant Strength</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB46">
+		<heroItemBonusDescription>Stoning</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB47">
+		<heroItemBonusDescription>Phantasmal</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB48">
+		<heroItemBonusDescription>Guardian Wind</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB49">
+		<heroItemBonusDescription>Haste</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB50">
+		<heroItemBonusDescription>Resist Magic</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB51">
+		<heroItemBonusDescription>Magic Immunity</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB52">
+		<heroItemBonusDescription>Wraithform</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB53">
+		<heroItemBonusDescription>Cloak of Fear</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB54">
+		<heroItemBonusDescription>Bless</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB55">
+		<heroItemBonusDescription>Righteousness</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB56">
+		<heroItemBonusDescription>Invulnerability</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB57">
+		<heroItemBonusDescription>Endurance</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB58">
+		<heroItemBonusDescription>Planar Travel</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB59">
+		<heroItemBonusDescription>Lion Heart</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB60">
+		<heroItemBonusDescription>Water Walking</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB61">
+		<heroItemBonusDescription>Regeneration</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB62">
+		<heroItemBonusDescription>Pathfinding</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB63">
+		<heroItemBonusDescription>Flight</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB64">
+		<heroItemBonusDescription>Invisibility</heroItemBonusDescription>
+	</heroItemBonus>
+	<heroItemBonus heroItemBonusID="IB65">
+		<heroItemBonusDescription>Spell Charges</heroItemBonusDescription>
 	</heroItemBonus>
 	<overlandMapSize overlandMapSizeID="MS01">
 		<overlandMapSizeDescription>Tiny</overlandMapSizeDescription>

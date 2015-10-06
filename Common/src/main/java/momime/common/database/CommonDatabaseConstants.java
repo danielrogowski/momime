@@ -229,6 +229,11 @@ public final class CommonDatabaseConstants
 	 */
 	public static final String UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM = "HS16";
 	
+	// hero items
+	
+	/** Specail hero item bonus ID for the ability to cast a spell a number of times in combat for free */
+	public static final String HERO_ITEM_BONUS_ID_SPELL_CHARGES = "IB65";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

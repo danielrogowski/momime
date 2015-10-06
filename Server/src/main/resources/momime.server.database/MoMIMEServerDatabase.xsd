@@ -125,6 +125,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimesvr:heroItemType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimesvr:heroItemSlotType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonus" type="momimesvr:heroItemBonus" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimecommon:heroItem" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimesvr:unitSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimesvr:rangedAttackType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimesvr:unit">
@@ -740,6 +741,18 @@
 		<xsd:keyref refer="momimesvr:pickPK" name="heroItemBonusPrerequisiteFKpick">
 			<xsd:selector xpath="heroItemBonus/heroItemBonusPrerequisite" />
 			<xsd:field xpath="@pickID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:heroItemTypePK" name="heroItemFKheroItemType">
+			<xsd:selector xpath="heroItem" />
+			<xsd:field xpath="heroItemTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:spellPK" name="heroItemFKspell">
+			<xsd:selector xpath="heroItem" />
+			<xsd:field xpath="spellID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:heroItemBonusPK" name="heroItemChosenBonusFKheroItemBonus">
+			<xsd:selector xpath="heroItem/heroItemChosenBonus" />
+			<xsd:field xpath="@heroItemBonusID" />
 		</xsd:keyref>
 		
 	</xsd:element>

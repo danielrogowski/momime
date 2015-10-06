@@ -1173,7 +1173,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:attribute name="heroItemBonusID" type="momimecommon:heroItemBonusID" use="required" nxe:label="Item Bonus ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
-	<xsd:complexType name="heroItemTypeAllowedBonus" nxe:singular="Allowed Bonus" nxe:plural="Allowed Bonuses" nxe:submenu="Hero items">
+	<xsd:complexType name="heroItemTypeAllowedBonus" nxe:singular="Bonus" nxe:plural="Bonuses" nxe:submenu="Hero items">
         <xsd:annotation>
         	<xsd:documentation>Specifies the list of bonuses which are allowed for each item type, e.g. you can't add +attack onto a shield.</xsd:documentation>
         </xsd:annotation>
@@ -1184,6 +1184,32 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItem" nxe:singular="Hero Item" nxe:plural="Hero Items" nxe:submenu="Hero items">
+        <xsd:annotation>
+        	<xsd:documentation>Defines one actual hero item, whether one of the standard 250 predefined items, or a custom one created via Create Artifact.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+		<xsd:element minOccurs="1" maxOccurs="1" name="heroItemName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="200" />
+		<xsd:element minOccurs="1" maxOccurs="1" name="heroItemTypeID" type="momimecommon:heroItemTypeID" nxe:label="Item Type ID" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:element>
+		<xsd:element minOccurs="1" maxOccurs="1" name="heroItemImageNumber" type="momimecommon:imageNumber" nxe:label="Image Number" nxe:gridwidth="100" />
+		<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID" nxe:label="Spell Charges" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>spellName</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:element>
+		<xsd:element minOccurs="0" maxOccurs="1" name="spellChargeCount" type="momimecommon:spellCount" nxe:label="Spell Charge Count" nxe:gridwidth="150" />
+		<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemChosenBonus" type="momimecommon:heroItemTypeAllowedBonus" nxe:label="Bonus" nxe:gridwidth="100" />
+		</xsd:sequence>
 	</xsd:complexType>
 
 <!-- Generic simple data types that are not really MoM specific -->

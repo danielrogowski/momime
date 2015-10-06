@@ -6819,6 +6819,2102 @@
 		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
 		<heroItemBonusDescription>Spell Charges</heroItemBonusDescription>
 	</heroItemBonus>
+	<heroItem>
+		<heroItemName>Black Asp</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Mallana</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Stealth</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB42" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Dragon Slayer</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Monster Masher</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+		<heroItemChosenBonus heroItemBonusID="IB42" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Mephisto</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>White Lightning</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Ultimate Defense</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Stoning Sword</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Living Sword</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Pummel Mace</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mauler</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Skull Smasher</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Deathbringer</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Storm Mace</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>10</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Dracken Mace</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Fangs Avenger</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>World Ender</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Morphains Friend</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Orc Smasher</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Flaming Axe</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of the Caster</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<spellID>SP151</spellID>
+		<spellChargeCount>1</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Hacker</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of Haste</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB49" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Power Axe</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of Chaotic Death</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Phantastic Axe</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of Stone</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Beheader</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of Light</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Living Bow</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Regulator</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mithril Longbow</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Silver Shortbow</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Master Crossbow</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bow of Magic Immunity</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bow of Hazard</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Undertaker</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Elvish Longbow</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Life Bow</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Mangler</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Staff Of Magic Mastery</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Stick of the Mage</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB28" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Guardian Staff</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Flaming Staff</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chaotic Staff of Fire</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Destructor</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB29" />
+		<heroItemChosenBonus heroItemBonusID="IB33" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Staff of Pain</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Staff Of Confusion</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<spellID>SP046</spellID>
+		<spellChargeCount>4</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB58" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Staff of Superiority</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<spellID>SP067</spellID>
+		<spellChargeCount>4</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB29" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Branch of Magic</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Immunity</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+		<heroItemChosenBonus heroItemBonusID="IB60" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Arcanus</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB60" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Enhancement</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+		<heroItemChosenBonus heroItemBonusID="IB60" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Fiery Death</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB60" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Elros</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB31" />
+		<heroItemChosenBonus heroItemBonusID="IB60" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>White Lightning</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB31" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Balmoth</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of the Guardian</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Doom</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Elven Ring of Health</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Amulet of Battle</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Ring of Power</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Amulet of Resistance</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB24" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Devils Eye of Fear</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB53" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Band of Chivalry</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Trinket of Strength</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB24" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Orb of Righteous Sight</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>34</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB42" />
+		<heroItemChosenBonus heroItemBonusID="IB55" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Cross of Blessed Death</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB54" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Magical Crystal of Power</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>30</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB42" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Demos</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Evasion</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Eros</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Blessed Shield of Defense</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB23" />
+		<heroItemChosenBonus heroItemBonusID="IB54" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Elements</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Guardian Defense</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Enduring Fear</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB23" />
+		<heroItemChosenBonus heroItemBonusID="IB53" />
+		<heroItemChosenBonus heroItemBonusID="IB57" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of the Undead</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Transformation</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Supreme Shield of Death</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain Mail of Defense</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain Mail of Resistance</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain Mail of Movement</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain Mail of Balance</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Blessed Mail of Resistance</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+		<heroItemChosenBonus heroItemBonusID="IB54" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain Mail of Endurance</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB57" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain Mail of Immunity</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB11" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain Mail of Absorbtion</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB11" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain of Super Resistance</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mithril Mail of Talos</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB54" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate Mail of Defense</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate Mail of Resistance</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB23" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate Mail of Movement</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate Mail of Diversity</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB23" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate Mail of Blessed Fear</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+		<heroItemChosenBonus heroItemBonusID="IB53" />
+		<heroItemChosenBonus heroItemBonusID="IB54" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Righteous Plate of Evasion</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB55" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate of Enduring Immunity</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB57" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Elemental Transformation</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate of Divine Protection</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB11" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate of Omnipotence</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Blade of Blood</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+		<heroItemChosenBonus heroItemBonusID="IB49" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bane Blade</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Immunity</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sting</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Great Sword of Arkanna</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Right Hand 0f Justice</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Vlads Impaler</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Merlins Nails</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Intimidator</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Whirlwind</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Thors Hammer</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Hand of God</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB49" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Club of Chaos</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Fist of Destruction</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Edge of the Elements</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Double Axe of Pain</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Executioners Friend</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Knight Chopper</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Tree Tamer</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Inquisitor</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Resistor</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Hells Bolt</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bow of the Golden Horde</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Ray of Light</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB49" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Gideons Harp</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Hartshone</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Deathstorm</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Devils Instrument</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Enlightener</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB31" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Traveller</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<spellID>SP124</spellID>
+		<spellChargeCount>3</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB58" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Staff of Horus</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB29" />
+		<heroItemChosenBonus heroItemBonusID="IB33" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Pummeler</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Word of God</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<spellID>SP124</spellID>
+		<spellChargeCount>4</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Protector</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Ossifier</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB32" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Lesser Might</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Infinite Magic</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB31" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Mighty Wand of Zod</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB31" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Wand of Glenda</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of Ultimate Might</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<spellID>SP112</spellID>
+		<spellChargeCount>2</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Amulet of Lesser Shielding</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Cloak of Armor</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>14</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+		<heroItemChosenBonus heroItemBonusID="IB32" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Ring of Dasmiff</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>10</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB63" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Orb of Fear</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>34</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB28" />
+		<heroItemChosenBonus heroItemBonusID="IB32" />
+		<heroItemChosenBonus heroItemBonusID="IB53" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Helm of Trollish Might</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>22</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB61" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of the Fool</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Thiron</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Quatis</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of the Wraith</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of the Gods</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain of Magical Health</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Morthogs Chainmail</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mithril Chainmail</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chainmail of Speed</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB23" />
+		<heroItemChosenBonus heroItemBonusID="IB57" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chainmail of the Elements</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB11" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Champions Platemail</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Armor of the Warrior</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB55" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bloodmail</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Silvermail</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate of Ultimax</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Cannae</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Flaming Sword of Death</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Joshuas Sword</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Revenge of Orculs</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Defender</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Cannes Mace</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Irons Mace</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Jans Hammer</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of Severe Pain</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Axe of Uncaring</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of the Apostles</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Peacemaker</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Kick Axe</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB49" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Archer</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Telecaster</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bow of The Dervish</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Elemental Staff of Nature</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Planar Staff</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB58" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Golden Staff of Sharee</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Purple Rain of Death</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB05" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Conjurers Friend</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of the Mind</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<spellID>SP050</spellID>
+		<spellChargeCount>2</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of the Mage</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of the Beast</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<spellID>SP060</spellID>
+		<spellChargeCount>4</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Pin of Health</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Jafars Orb of Sight</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>32</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB42" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Gauntlet of Eastwood</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>19</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bracer of Invulnerability</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Helm of Everlasting</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>24</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB61" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Helm of the Tides</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>27</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB28" />
+		<heroItemChosenBonus heroItemBonusID="IB60" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Speed</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Vans Shield</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB23" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Brooke</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB11" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Wind Shield</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Holy Shield</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB55" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mail of Arcanus</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Chain of Tyrolia</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Giddeons Plate</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB57" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate of the Elements</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>5</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB23" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate of Immunity</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB11" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Golden Axe of Rath</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Suit of Power</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB57" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Elvish Scalemail</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB20" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Uhl Khakhaas</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB30" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Uhl Dover</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Idspispopd</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Ehr Rhee</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mae Govannon</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB01" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB26" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Zir Daun</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Lor Goth</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mail of Pobox</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Protection of Ramses</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB53" />
+		<heroItemChosenBonus heroItemBonusID="IB57" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bird of Paradise</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+		<heroItemChosenBonus heroItemBonusID="IB55" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Kraken Wand</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB39" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Theodores Liberator</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<spellID>SP073</spellID>
+		<spellChargeCount>4</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB29" />
+		<heroItemChosenBonus heroItemBonusID="IB33" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Crossbow of Power</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Laik Kenegul</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>4</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Peppermace of Gates</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>9</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Axe of Vivisection</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB13" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Inquisition</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>White Flicker</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Staff of the Constellation</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB31" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Resistor</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Plate of Eandor</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB16" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Blood Plate of Lucifer</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>2</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB11" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+		<heroItemChosenBonus heroItemBonusID="IB54" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Disc of Advancement</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB19" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wand of the Grey Wizard</heroItemName>
+		<heroItemTypeID>IT06</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<spellID>SP042</spellID>
+		<spellChargeCount>2</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+		<heroItemChosenBonus heroItemBonusID="IB58" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Little Flicker</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Freyas Friend</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>1</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB07" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Vampiric Vanquisher</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB27" />
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Medusa</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB46" />
+		<heroItemChosenBonus heroItemBonusID="IB34" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Zlotakian Staff of Magic</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<spellID>SP062</spellID>
+		<spellChargeCount>3</spellChargeCount>
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+		<heroItemChosenBonus heroItemBonusID="IB36" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+		<heroItemChosenBonus heroItemBonusID="IB65" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Orions Belt</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB17" />
+		<heroItemChosenBonus heroItemBonusID="IB21" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Bracer of Mrad</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB18" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Wraithe Shirt</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB10" />
+		<heroItemChosenBonus heroItemBonusID="IB52" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Ziggmunds Armor</heroItemName>
+		<heroItemTypeID>IT10</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB54" />
+		<heroItemChosenBonus heroItemBonusID="IB55" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Ring of the Mad Mage</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB28" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+		<heroItemChosenBonus heroItemBonusID="IB56" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Gabriels Axe</heroItemName>
+		<heroItemTypeID>IT03</heroItemTypeID>
+		<heroItemImageNumber>6</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB06" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB41" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Maul of Bathory</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+		<heroItemChosenBonus heroItemBonusID="IB44" />
+		<heroItemChosenBonus heroItemBonusID="IB49" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Pendulum</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+		<heroItemChosenBonus heroItemBonusID="IB35" />
+		<heroItemChosenBonus heroItemBonusID="IB47" />
+		<heroItemChosenBonus heroItemBonusID="IB40" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Shield of Ultimate Defense</heroItemName>
+		<heroItemTypeID>IT08</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB12" />
+		<heroItemChosenBonus heroItemBonusID="IB25" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+		<heroItemChosenBonus heroItemBonusID="IB50" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Mace of Disintegration</heroItemName>
+		<heroItemTypeID>IT02</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB37" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Sword of Renfield</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB02" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB38" />
+		<heroItemChosenBonus heroItemBonusID="IB45" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Staff of Odin</heroItemName>
+		<heroItemTypeID>IT05</heroItemTypeID>
+		<heroItemImageNumber>7</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB15" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB29" />
+		<heroItemChosenBonus heroItemBonusID="IB51" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Gem of the Aerie</heroItemName>
+		<heroItemTypeID>IT07</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB04" />
+		<heroItemChosenBonus heroItemBonusID="IB28" />
+		<heroItemChosenBonus heroItemBonusID="IB48" />
+		<heroItemChosenBonus heroItemBonusID="IB53" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>The Scarlet Bow</heroItemName>
+		<heroItemTypeID>IT04</heroItemTypeID>
+		<heroItemImageNumber>0</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Raindancer</heroItemName>
+		<heroItemTypeID>IT01</heroItemTypeID>
+		<heroItemImageNumber>8</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB03" />
+		<heroItemChosenBonus heroItemBonusID="IB14" />
+		<heroItemChosenBonus heroItemBonusID="IB08" />
+		<heroItemChosenBonus heroItemBonusID="IB43" />
+	</heroItem>
+	<heroItem>
+		<heroItemName>Light Mail Shirt</heroItemName>
+		<heroItemTypeID>IT09</heroItemTypeID>
+		<heroItemImageNumber>3</heroItemImageNumber>
+		<heroItemChosenBonus heroItemBonusID="IB09" />
+		<heroItemChosenBonus heroItemBonusID="IB22" />
+	</heroItem>
 	<unitSkill unitSkillID="UA01">
 		<unitSkillDescription>Melee Attack Strength</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>

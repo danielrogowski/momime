@@ -46,6 +46,9 @@ public final class ServerEditorDatabaseConstants
 
 	/** The number of spells of a particular rank we get for free at the start of the game for a given number of spell books */
 	public static final String TAG_VALUE_SPELLS_FREE_AT_START = "spellsFreeAtStart";
+
+	/** Combat casting cost */
+	public static final String TAG_VALUE_SPELL_COMBAT_CASTING_COST = "combatCastingCost";
 	
 	// wizard - wizardPickCount - wizardPick
 
@@ -229,9 +232,29 @@ public final class ServerEditorDatabaseConstants
 
 	/** Uniquely identifies each hero item type */
 	public static final String TAG_ATTRIBUTE_HERO_ITEM_TYPE_ID = "heroItemTypeID";
+	
+	/** Cost to make the base item, before any bonuses are added to it */
+	public static final String TAG_VALUE_HERO_ITEM_TYPE_BASE_CRAFTING_COST = "baseCraftingCost";
 
 	/** Lists the actual skill boosts that a particular bonus gives */
 	public static final String TAG_CHILD_ENTITY_HERO_ITEM_TYPE_ALLOWED_BONUS = "heroItemTypeAllowedBonus";
+	
+	// heroItem
+	
+	/** Predefined hero items */
+	public static final String TAG_ENTITY_HERO_ITEM = "heroItem";
+	
+	/** Name of the item */
+	public static final String TAG_VALUE_HERO_ITEM_NAME = "heroItemName";
+	
+	/** Image number */
+	public static final String TAG_VALUE_HERO_ITEM_IMAGE_NUMBER = "heroItemImageNumber";
+	
+	/** Number of spell charges */
+	public static final String TAG_VALUE_HERO_ITEM_SPELL_CHARGES = "spellChargeCount";
+	
+	/** Chosen bonus */
+	public static final String TAG_CHILD_ENTITY_HERO_ITEM_CHOSEN_BONUS = "heroItemChosenBonus";
 	
 	/**
 	 * Prevent instatiation of this class

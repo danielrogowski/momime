@@ -47,6 +47,11 @@
 		<property name="utils" ref="utils" />
 	</bean>
 
+	<bean id="heroItemGrid" class="momime.editors.server.heroItem.HeroItemGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+	</bean>
+
 	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
@@ -56,6 +61,7 @@
 				<entry key="spell" value="spellGrid" />
 				<entry key="wizardPickCount" value="wizardPickCountGrid" />
 				<entry key="heroItemBonus" value="heroItemBonusGrid" />
+				<entry key="heroItem" value="heroItemGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

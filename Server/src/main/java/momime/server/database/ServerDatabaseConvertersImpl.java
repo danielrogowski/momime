@@ -24,7 +24,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureProduction;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TaxRate;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 
 /**
@@ -186,61 +185,28 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 
 		final ClientDatabase dest = new ClientDatabase ();
 
-		for (final PlaneSvr plane : src.getPlanes ())
-			dest.getPlane ().add (plane);
-
-		for (final ProductionTypeSvr productionType : src.getProductionTypes ())
-			dest.getProductionType ().add (productionType);
-
-		for (final TileTypeSvr tileType : src.getTileTypes ())
-			dest.getTileType ().add (tileType);
-
-		for (final PickTypeSvr pickType : src.getPickTypes ())
-			dest.getPickType ().add (pickType);
-
-		for (final PickSvr pick : src.getPicks ())
-			dest.getPick ().add (pick);
-
-		for (final RaceSvr race : src.getRaces ())
-			dest.getRace ().add (race);
-
-		for (final TaxRate taxRate : src.getTaxRate ())
-			dest.getTaxRate ().add (taxRate);
-
-		for (final BuildingSvr building : src.getBuildings ())
-			dest.getBuilding ().add (building);
-
-		for (final UnitTypeSvr unitType : src.getUnitTypes ())
-			dest.getUnitType ().add (unitType);
-
-		for (final UnitSkillSvr unitSkill : src.getUnitSkills ())
-			dest.getUnitSkill ().add (unitSkill);
-
-		for (final RangedAttackTypeSvr rangedAttackType : src.getRangedAttackTypes ())
-			dest.getRangedAttackType ().add (rangedAttackType);
-
-		for (final UnitSvr unit : src.getUnits ())
-			dest.getUnit ().add (unit);
-
-		for (final WeaponGradeSvr weaponGrade : src.getWeaponGrades ())
-			dest.getWeaponGrade ().add (weaponGrade);
-
-		for (final CombatAreaEffectSvr combatAreaEffect : src.getCombatAreaEffects ())
-			dest.getCombatAreaEffect ().add (combatAreaEffect);
-
-		for (final SpellSvr spell : src.getSpells ())
-			dest.getSpell ().add (spell);
-
-		for (final UnitMagicRealmSvr unitMagicRealm : src.getUnitMagicRealms ())
-			dest.getUnitMagicRealm ().add (unitMagicRealm);
-
-		for (final CombatTileTypeSvr combatTileType : src.getCombatTileTypes ())
-			dest.getCombatTileType ().add (combatTileType);
-
-		for (final CombatTileBorderSvr combatTileBorder : src.getCombatTileBorders ())
-			dest.getCombatTileBorder ().add (combatTileBorder);
-		
+		dest.getPlane ().addAll (src.getPlanes ());
+		dest.getProductionType ().addAll (src.getProductionTypes ());
+		dest.getTileType ().addAll (src.getTileTypes ());
+		dest.getPickType ().addAll (src.getPickTypes ());
+		dest.getPick ().addAll (src.getPicks ());
+		dest.getRace ().addAll (src.getRaces ());
+		dest.getTaxRate ().addAll (src.getTaxRate ());
+		dest.getBuilding ().addAll (src.getBuildings ());
+		dest.getUnitType ().addAll (src.getUnitTypes ());
+		dest.getUnitSkill ().addAll (src.getUnitSkills ());
+		dest.getRangedAttackType ().addAll (src.getRangedAttackTypes ());
+		dest.getUnit ().addAll (src.getUnits ());
+		dest.getWeaponGrade ().addAll (src.getWeaponGrades ());
+		dest.getCombatAreaEffect ().addAll (src.getCombatAreaEffects ());
+		dest.getSpell ().addAll (src.getSpells ());
+		dest.getUnitMagicRealm ().addAll (src.getUnitMagicRealms ());
+		dest.getCombatTileType ().addAll (src.getCombatTileTypes ());
+		dest.getCombatTileBorder ().addAll (src.getCombatTileBorders ());
 		dest.getMovementRateRule ().addAll (src.getMovementRateRule ());
+		dest.getHeroItemSlotType ().addAll (src.getHeroItemSlotType ());
+		dest.getHeroItemType ().addAll (src.getHeroItemType ());
+		dest.getHeroItemBonus ().addAll (src.getHeroItemBonus ());
 
 	    // Derive client-side only flag for map features
 		for (final MapFeatureSvr srcMapFeature : src.getMapFeatures ())

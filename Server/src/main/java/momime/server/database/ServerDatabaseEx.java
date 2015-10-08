@@ -3,6 +3,7 @@ package momime.server.database;
 import java.util.List;
 
 import momime.common.database.CommonDatabase;
+import momime.common.database.HeroItem;
 import momime.common.database.NewGameDefaults;
 import momime.common.database.RecordNotFoundException;
 
@@ -284,4 +285,9 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @return Complete list of all pre-defined spell settings
 	 */
 	public List<SpellSettingSvr> getSpellSettings ();
+	
+	/**
+	 * @return Complete list of all pre-defined hero items
+	 */
+	public List<HeroItem> getHeroItem ();
 }

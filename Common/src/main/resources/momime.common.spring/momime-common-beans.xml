@@ -249,4 +249,8 @@
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 	</bean>
 
+	<bean id="heroItemCalculations" class="momime.common.calculations.HeroItemCalculationsImpl">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
+
 </beans>

@@ -66,6 +66,9 @@ the server XML and send to the client once they join a session.</xsd:documentati
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimecommon:heroItemSlotType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimecommon:heroItemType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonus" type="momimecommon:heroItemBonus" />
 		</xsd:sequence>
 	</xsd:complexType>
 

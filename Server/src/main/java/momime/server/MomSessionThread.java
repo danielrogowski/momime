@@ -125,6 +125,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		mapGen.setGsk (getGeneralServerKnowledge ());		// See comment in spring XML for why this isn't just injected
 		mapGen.generateOverlandTerrain ();
 		mapGen.generateInitialCombatAreaEffects ();
+		
+		// Make all predefined hero items available
+		getGeneralServerKnowledge ().getAvailableHeroItem ().addAll (getServerDB ().getHeroItem ());
 
 		getSessionLogger ().info ("Session startup completed");
 		log.trace ("Exiting initializeNewGame");

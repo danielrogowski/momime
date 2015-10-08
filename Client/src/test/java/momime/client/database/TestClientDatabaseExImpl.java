@@ -11,6 +11,9 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemBonus;
+import momime.common.database.HeroItemSlotType;
+import momime.common.database.HeroItemType;
 import momime.common.database.Pick;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.PickType;
@@ -849,5 +852,125 @@ public final class TestClientDatabaseExImpl
 		db.buildMaps ();
 
 		assertNull (db.findCombatTileBorder ("CTB04", "testFindCombatTileBorder_NotExists"));
+	}
+
+	/**
+	 * Tests the findHeroItemSlotType method to find a heroItemSlotType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindHeroItemSlotType_Exists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemSlotType newHeroItemSlotType = new HeroItemSlotType ();
+			newHeroItemSlotType.setHeroItemSlotTypeID ("IST0" + n);
+			db.getHeroItemSlotType ().add (newHeroItemSlotType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IST02", db.findHeroItemSlotType ("IST02", "testFindHeroItemSlotType_Exists").getHeroItemSlotTypeID ());
+	}
+
+	/**
+	 * Tests the findHeroItemSlotType method to find a heroItemSlotType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemSlotType_NotExists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemSlotType newHeroItemSlotType = new HeroItemSlotType ();
+			newHeroItemSlotType.setHeroItemSlotTypeID ("IST0" + n);
+			db.getHeroItemSlotType ().add (newHeroItemSlotType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findHeroItemSlotType ("IST04", "testFindHeroItemSlotType_NotExists"));
+	}
+
+	/**
+	 * Tests the findHeroItemType method to find a heroItemType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindHeroItemType_Exists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemType newHeroItemType = new HeroItemType ();
+			newHeroItemType.setHeroItemTypeID ("IT0" + n);
+			db.getHeroItemType ().add (newHeroItemType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IT02", db.findHeroItemType ("IT02", "testFindHeroItemType_Exists").getHeroItemTypeID ());
+	}
+
+	/**
+	 * Tests the findHeroItemType method to find a heroItemType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemType_NotExists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemType newHeroItemType = new HeroItemType ();
+			newHeroItemType.setHeroItemTypeID ("IT0" + n);
+			db.getHeroItemType ().add (newHeroItemType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findHeroItemType ("IT04", "testFindHeroItemType_NotExists"));
+	}
+
+	/**
+	 * Tests the findHeroItemBonus method to find a heroItemBonus ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindHeroItemBonus_Exists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemBonus newHeroItemBonus = new HeroItemBonus ();
+			newHeroItemBonus.setHeroItemBonusID ("IB0" + n);
+			db.getHeroItemBonus ().add (newHeroItemBonus);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IB02", db.findHeroItemBonus ("IB02", "testFindHeroItemBonus_Exists").getHeroItemBonusID ());
+	}
+
+	/**
+	 * Tests the findHeroItemBonus method to find a heroItemBonus ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemBonus_NotExists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemBonus newHeroItemBonus = new HeroItemBonus ();
+			newHeroItemBonus.setHeroItemBonusID ("IB0" + n);
+			db.getHeroItemBonus ().add (newHeroItemBonus);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findHeroItemBonus ("IB04", "testFindHeroItemBonus_NotExists"));
 	}
 }

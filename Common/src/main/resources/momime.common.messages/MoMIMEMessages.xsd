@@ -123,6 +123,11 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 								that is taking us more than one turn to cast (instant spells are cast instantly!)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="unassignedHeroItem" type="momimecommon:heroItem">
+						<xsd:annotation>
+							<xsd:documentation>Hero items that the player has just sitting in the bank, not being used by any hero at the moment</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWar" type="momimemsgs:mapVolumeOfFogOfWarStates" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarMemory" type="momimemsgs:fogOfWarMemory" />
 				</xsd:sequence>
@@ -648,9 +653,23 @@ set, but combatPosition and combatHeading left null (server only). -->
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatHeading" type="map:mapDirection" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="doubleCombatMovesLeft" type="momimecommon:doubleMovement" />
+
+					<!-- Hero items -->
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlot" type="momimemsgs:memoryUnitHeroItemSlot" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="memoryUnitHeroItemSlot">
+	    <xsd:annotation>
+    		<xsd:documentation>Stores which item is being used in each item slot on a hero.  We can't just have a 0..unbounded list of heroItem, because if
+there is no item in the first slot but there is in the second, JAXB might not save the null out to keep the list positions correct.  So instead the correct number
+of these containers is created when the unit is created and then the items just assigned and removed from here as necessary.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="heroItem" type="momimecommon:heroItem" />
+		</xsd:sequence>
 	</xsd:complexType>
 	
 <!-- Map areas -->

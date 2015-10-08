@@ -226,7 +226,7 @@ public interface CommonDatabase
 	public CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException;
 
 	/**
-	 * @param  combatTileBorderID Combat tile border ID to search for
+	 * @param combatTileBorderID Combat tile border ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return CombatTileBorder object
 	 * @throws RecordNotFoundException If the combat tile border ID doesn't exist
@@ -237,4 +237,43 @@ public interface CommonDatabase
 	 * @return Complete list of all movement rate rules in game
 	 */
 	public List<MovementRateRule> getMovementRateRule ();
+
+	/**
+	 * @return Complete list of all hero item slot types in game
+	 */
+	public List<? extends HeroItemSlotType> getHeroItemSlotType ();
+	
+	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemSlotType object
+	 * @throws RecordNotFoundException If the hero item slot type ID doesn't exist
+	 */
+	public HeroItemSlotType findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of all hero item types in game
+	 */
+	public List<? extends HeroItemType> getHeroItemType ();
+	
+	/**
+	 * @param heroItemTypeID Hero item type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemType object
+	 * @throws RecordNotFoundException If the hero item type ID doesn't exist
+	 */
+	public HeroItemType findHeroItemType (final String heroItemTypeID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of all hero item bonuses in game
+	 */
+	public List<? extends HeroItemBonus> getHeroItemBonus ();
+	
+	/**
+	 * @param heroItemBonusID Hero item bonus ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemBonus object
+	 * @throws RecordNotFoundException If the hero item bonus ID doesn't exist
+	 */
+	public HeroItemBonus findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException;
 }

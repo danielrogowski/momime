@@ -4,11 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.common.database.Building;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemBonus;
+import momime.common.database.HeroItemSlotType;
+import momime.common.database.HeroItemType;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
@@ -24,9 +30,6 @@ import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Adds client-side specific extensions to the common database lookup class
@@ -96,6 +99,15 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	/** Map of combat tile border IDs to combat tile border objects */
 	private Map<String, CombatTileBorder> combatTileBordersMap;
 	
+	/** Map of hero item slot type IDs to hero item slot type objects */
+	private Map<String, HeroItemSlotType> heroItemSlotTypesMap;
+
+	/** Map of hero item type IDs to hero item type objects */
+	private Map<String, HeroItemType> heroItemTypesMap;
+
+	/** Map of hero item bonus IDs to hero item bonus objects */
+	private Map<String, HeroItemBonus> heroItemBonusesMap;
+	
 	/** Cost to construct the most expensive unit or building in the database */
 	private int mostExpensiveConstructionCost;
 	
@@ -113,18 +125,18 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 
 		// Create map features map
 		mapFeaturesMap = new HashMap<String, MapFeature> ();
-		for (final MapFeature thismapFeature : getMapFeature ())
-			mapFeaturesMap.put (thismapFeature.getMapFeatureID (), thismapFeature);
+		for (final MapFeature thisMapFeature : getMapFeature ())
+			mapFeaturesMap.put (thisMapFeature.getMapFeatureID (), thisMapFeature);
 
 		// Create tile types map
 		tileTypesMap = new HashMap<String, TileType> ();
-		for (final TileType thistileType : getTileType ())
-			tileTypesMap.put (thistileType.getTileTypeID (), thistileType);
+		for (final TileType thisTileType : getTileType ())
+			tileTypesMap.put (thisTileType.getTileTypeID (), thisTileType);
 
 		// Create production types map
 		productionTypesMap = new HashMap<String, ProductionType> ();
-		for (final ProductionType thisproductionType : getProductionType ())
-			productionTypesMap.put (thisproductionType.getProductionTypeID (), thisproductionType);
+		for (final ProductionType thisProductionType : getProductionType ())
+			productionTypesMap.put (thisProductionType.getProductionTypeID (), thisProductionType);
 
 		// Create pick types map
 		pickTypesMap = new HashMap<String, PickType> ();
@@ -206,6 +218,21 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
 			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
 
+		// Create hero item slot types map
+		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotType> ();
+		for (final HeroItemSlotType thisHeroItemSlotType : getHeroItemSlotType ())
+			heroItemSlotTypesMap.put (thisHeroItemSlotType.getHeroItemSlotTypeID (), thisHeroItemSlotType);
+
+		// Create hero item types map
+		heroItemTypesMap = new HashMap<String, HeroItemType> ();
+		for (final HeroItemType thisHeroItemType : getHeroItemType ())
+			heroItemTypesMap.put (thisHeroItemType.getHeroItemTypeID (), thisHeroItemType);
+
+		// Create hero item bonuses map
+		heroItemBonusesMap = new HashMap<String, HeroItemBonus> ();
+		for (final HeroItemBonus thisHeroItemBonus : getHeroItemBonus ())
+			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), thisHeroItemBonus);
+		
 		log.trace ("Exiting buildMaps");
 	}
 
@@ -675,6 +702,54 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		return found;
 	}
 
+	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemSlotType object
+	 * @throws RecordNotFoundException If the hero item slot type ID doesn't exist
+	 */
+	@Override
+	public final HeroItemSlotType findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException
+	{
+		final HeroItemSlotType found = heroItemSlotTypesMap.get (heroItemSlotTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemSlotType.class, heroItemSlotTypeID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param heroItemTypeID Hero item type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemType object
+	 * @throws RecordNotFoundException If the hero item type ID doesn't exist
+	 */
+	@Override
+	public final HeroItemType findHeroItemType (final String heroItemTypeID, final String caller) throws RecordNotFoundException
+	{
+		final HeroItemType found = heroItemTypesMap.get (heroItemTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemType.class, heroItemTypeID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param heroItemBonusID Hero item bonus ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemBonus object
+	 * @throws RecordNotFoundException If the hero item bonus ID doesn't exist
+	 */
+	@Override
+	public final HeroItemBonus findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException
+	{
+		final HeroItemBonus found = heroItemBonusesMap.get (heroItemBonusID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemBonus.class, heroItemBonusID, caller);
+
+		return found;
+	}
+	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database
 	 */

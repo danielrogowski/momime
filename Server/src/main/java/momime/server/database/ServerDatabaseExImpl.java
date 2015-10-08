@@ -13,11 +13,13 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.utils.UnitUtils;
 import momime.server.database.v0_9_7.Building;
-import momime.server.database.v0_9_7.CitySize;
 import momime.server.database.v0_9_7.CitySpellEffect;
 import momime.server.database.v0_9_7.CombatAreaEffect;
 import momime.server.database.v0_9_7.CombatTileBorder;
 import momime.server.database.v0_9_7.CombatTileType;
+import momime.server.database.v0_9_7.HeroItemBonus;
+import momime.server.database.v0_9_7.HeroItemSlotType;
+import momime.server.database.v0_9_7.HeroItemType;
 import momime.server.database.v0_9_7.MapFeature;
 import momime.server.database.v0_9_7.Pick;
 import momime.server.database.v0_9_7.PickType;
@@ -46,9 +48,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Map of city size IDs to city size XML objects */
-	private Map<String, CitySize> citySizesMap;
-
 	/** Map of plane numbers to plane XML objects */
 	private Map<Integer, Plane> planesMap;
 
@@ -112,6 +111,15 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	/** Map of city spell effect IDs to city spell effect objects */
 	private Map<String, CitySpellEffectSvr> citySpellEffectsMap;
 	
+	/** Map of hero item slot type IDs to hero item slot type objects */
+	private Map<String, HeroItemSlotType> heroItemSlotTypesMap;
+
+	/** Map of hero item type IDs to hero item type objects */
+	private Map<String, HeroItemType> heroItemTypesMap;
+
+	/** Map of hero item bonus IDs to hero item bonus objects */
+	private Map<String, HeroItemBonus> heroItemBonusesMap;
+	
 	/**
 	 * Builds all the hash maps to enable finding records faster
 	 */
@@ -119,11 +127,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		log.trace ("Entering buildMaps");
 		
-		// Create city sizes map
-		citySizesMap = new HashMap<String, CitySize> ();
-		for (final CitySize thisCitySize : getCitySize ())
-			citySizesMap.put (thisCitySize.getCitySizeID (), thisCitySize);
-
 		// Create planes map
 		planesMap = new HashMap<Integer, Plane> ();
 		for (final Plane thisPlane : getPlane ())
@@ -229,6 +232,21 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		for (final CitySpellEffect thisCitySpellEffect : getCitySpellEffect ())
 			citySpellEffectsMap.put (thisCitySpellEffect.getCitySpellEffectID (), (CitySpellEffectSvr) thisCitySpellEffect);
 		
+		// Create hero item slot types map
+		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotType> ();
+		for (final HeroItemSlotType thisHeroItemSlotType : getHeroItemSlotType ())
+			heroItemSlotTypesMap.put (thisHeroItemSlotType.getHeroItemSlotTypeID (), thisHeroItemSlotType);
+
+		// Create hero item types map
+		heroItemTypesMap = new HashMap<String, HeroItemType> ();
+		for (final HeroItemType thisHeroItemType : getHeroItemType ())
+			heroItemTypesMap.put (thisHeroItemType.getHeroItemTypeID (), thisHeroItemType);
+
+		// Create hero item bonuses map
+		heroItemBonusesMap = new HashMap<String, HeroItemBonus> ();
+		for (final HeroItemBonus thisHeroItemBonus : getHeroItemBonus ())
+			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), thisHeroItemBonus);
+		
 		log.trace ("Exiting buildMaps");
 	}
 
@@ -266,21 +284,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		return (List<CitySizeSvr>) (List<?>) getCitySize ();
 	}
 	
-	/**
-	 * @param citySizeID City size ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return CitySize object
-	 * @throws RecordNotFoundException If the citySizeID doesn't exist
-	 */
-	public final CitySize findCitySize (final String citySizeID, final String caller) throws RecordNotFoundException
-	{
-		final CitySize found = citySizesMap.get (citySizeID);
-		if (found == null)
-			throw new RecordNotFoundException (CitySize.class, citySizeID, caller);
-
-		return found;
-	}
-
 	/**
 	 * @return Complete list of all planes in game
 	 */
@@ -887,6 +890,54 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		return (List<SpellSettingSvr>) (List<?>) getSpellSetting ();
 	}
 
+	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemSlotType object
+	 * @throws RecordNotFoundException If the hero item slot type ID doesn't exist
+	 */
+	@Override
+	public final HeroItemSlotType findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException
+	{
+		final HeroItemSlotType found = heroItemSlotTypesMap.get (heroItemSlotTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemSlotType.class, heroItemSlotTypeID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param heroItemTypeID Hero item type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemType object
+	 * @throws RecordNotFoundException If the hero item type ID doesn't exist
+	 */
+	@Override
+	public final HeroItemType findHeroItemType (final String heroItemTypeID, final String caller) throws RecordNotFoundException
+	{
+		final HeroItemType found = heroItemTypesMap.get (heroItemTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemType.class, heroItemTypeID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param heroItemBonusID Hero item bonus ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemBonus object
+	 * @throws RecordNotFoundException If the hero item bonus ID doesn't exist
+	 */
+	@Override
+	public final HeroItemBonus findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException
+	{
+		final HeroItemBonus found = heroItemBonusesMap.get (heroItemBonusID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemBonus.class, heroItemBonusID, caller);
+
+		return found;
+	}
+	
 	/**
 	 * @return Unit utils
 	 */

@@ -14,46 +14,6 @@ import org.junit.Test;
 public final class TestServerDatabaseExImpl
 {
 	/**
-	 * Tests the findCitySize method to find a citySizeNumber that does exist
-	 * @throws RecordNotFoundException If we can't find it
-	 */
-	@Test
-	public final void testFindCitySize_Exists () throws RecordNotFoundException
-	{
-		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final CitySizeSvr newCitySize = new CitySizeSvr ();
-			newCitySize.setCitySizeID ("CS0" + n);
-			db.getCitySize ().add (newCitySize);
-		}
-
-		db.buildMaps ();
-
-		assertEquals ("CS02", db.findCitySize ("CS02", "testFindCitySize_Exists").getCitySizeID ());
-	}
-
-	/**
-	 * Tests the findCitySize method to find a citySizeNumber that doesn't exist
-	 * @throws RecordNotFoundException If we can't find it as expected
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testFindCitySize_NotExists () throws RecordNotFoundException
-	{
-		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final CitySizeSvr newCitySize = new CitySizeSvr ();
-			newCitySize.setCitySizeID ("CS0" + n);
-			db.getCitySize ().add (newCitySize);
-		}
-
-		db.buildMaps ();
-
-		assertNull (db.findCitySize ("CS04", "testFindCitySize_NotExists"));
-	}
-
-	/**
 	 * Tests the findPlaneID method to find a plane ID that does exist
 	 * @throws RecordNotFoundException If we can't find it
 	 */
@@ -897,5 +857,125 @@ public final class TestServerDatabaseExImpl
 		db.buildMaps ();
 
 		assertNull (db.findCitySpellEffect ("SE004", "testFindCitySpellEffect_NotExists"));
+	}
+
+	/**
+	 * Tests the findHeroItemSlotType method to find a heroItemSlotType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindHeroItemSlotType_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemSlotTypeSvr newHeroItemSlotType = new HeroItemSlotTypeSvr ();
+			newHeroItemSlotType.setHeroItemSlotTypeID ("IST0" + n);
+			db.getHeroItemSlotType ().add (newHeroItemSlotType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IST02", db.findHeroItemSlotType ("IST02", "testFindHeroItemSlotType_Exists").getHeroItemSlotTypeID ());
+	}
+
+	/**
+	 * Tests the findHeroItemSlotType method to find a heroItemSlotType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemSlotType_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemSlotTypeSvr newHeroItemSlotType = new HeroItemSlotTypeSvr ();
+			newHeroItemSlotType.setHeroItemSlotTypeID ("IST0" + n);
+			db.getHeroItemSlotType ().add (newHeroItemSlotType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findHeroItemSlotType ("IST04", "testFindHeroItemSlotType_NotExists"));
+	}
+
+	/**
+	 * Tests the findHeroItemType method to find a heroItemType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindHeroItemType_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemTypeSvr newHeroItemType = new HeroItemTypeSvr ();
+			newHeroItemType.setHeroItemTypeID ("IT0" + n);
+			db.getHeroItemType ().add (newHeroItemType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IT02", db.findHeroItemType ("IT02", "testFindHeroItemType_Exists").getHeroItemTypeID ());
+	}
+
+	/**
+	 * Tests the findHeroItemType method to find a heroItemType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemType_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemTypeSvr newHeroItemType = new HeroItemTypeSvr ();
+			newHeroItemType.setHeroItemTypeID ("IT0" + n);
+			db.getHeroItemType ().add (newHeroItemType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findHeroItemType ("IT04", "testFindHeroItemType_NotExists"));
+	}
+
+	/**
+	 * Tests the findHeroItemBonus method to find a heroItemBonus ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindHeroItemBonus_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemBonusSvr newHeroItemBonus = new HeroItemBonusSvr ();
+			newHeroItemBonus.setHeroItemBonusID ("IB0" + n);
+			db.getHeroItemBonus ().add (newHeroItemBonus);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IB02", db.findHeroItemBonus ("IB02", "testFindHeroItemBonus_Exists").getHeroItemBonusID ());
+	}
+
+	/**
+	 * Tests the findHeroItemBonus method to find a heroItemBonus ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemBonus_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemBonusSvr newHeroItemBonus = new HeroItemBonusSvr ();
+			newHeroItemBonus.setHeroItemBonusID ("IB0" + n);
+			db.getHeroItemBonus ().add (newHeroItemBonus);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findHeroItemBonus ("IB04", "testFindHeroItemBonus_NotExists"));
 	}
 }

@@ -2,14 +2,17 @@ package momime.client.ui.frames;
 
 import java.awt.Dimension;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.WindowConstants;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
@@ -21,9 +24,6 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Most of the guts of the unit info screen is handled by UnitInfoPanel.
@@ -74,32 +74,21 @@ public final class UnitInfoUI extends MomClientFrameUI
 		// Only show the dismiss button for our own units
 		if (getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
 		{
-			dismissAction = new AbstractAction ()
+			dismissAction = new LoggingAction ((ev) ->
 			{
-				@Override
-				public final void actionPerformed (final ActionEvent ev)
-				{
-					// Show name of unit
-					String text = getLanguage ().findCategoryEntry ("frmUnitInfo", "DismissPrompt");
-					getUnitStatsReplacer ().setUnit (getUnit ());
-					text = getUnitStatsReplacer ().replaceVariables (text);
-					
-					// Show message box
-					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("frmUnitInfo");
-					msg.setTitleLanguageEntryID ("DismissTitle");
-					msg.setText (text);
-					msg.setUnitToDismiss (getUnit ());
-					try
-					{
-						msg.setVisible (true);
-					}
-					catch (final IOException e)
-					{
-						log.error (e, e);
-					}
-				}
-			};
+				// Show name of unit
+				String text = getLanguage ().findCategoryEntry ("frmUnitInfo", "DismissPrompt");
+				getUnitStatsReplacer ().setUnit (getUnit ());
+				text = getUnitStatsReplacer ().replaceVariables (text);
+				
+				// Show message box
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setTitleLanguageCategoryID ("frmUnitInfo");
+				msg.setTitleLanguageEntryID ("DismissTitle");
+				msg.setText (text);
+				msg.setUnitToDismiss (getUnit ());
+				msg.setVisible (true);
+			});
 			
 			getUnitInfoPanel ().getActions ().add (dismissAction);
 			
@@ -107,42 +96,24 @@ public final class UnitInfoUI extends MomClientFrameUI
 			if (getClient ().getClientDB ().findUnit
 				(getUnit ().getUnitID (), "UnitInfoUI").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 			{
-				renameAction = new AbstractAction ()
+				renameAction = new LoggingAction ((ev) ->
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev)
-					{
-						final EditStringUI msg = getPrototypeFrameCreator ().createEditString ();
-						msg.setTitleLanguageCategoryID ("frmUnitInfo");
-						msg.setTitleLanguageEntryID ("Rename");
-						msg.setPromptLanguageCategoryID ("frmUnitInfo");
-						msg.setPromptLanguageEntryID ("RenamePrompt");
-						msg.setUnitBeingNamed (getUnit ().getUnitURN ());
-						
-						try
-						{
-							msg.setText (getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.SIMPLE_UNIT_NAME));
-							msg.setVisible (true);
-						}
-						catch (final IOException e)
-						{
-							log.error (e, e);
-						}
-					}
-				};
+					final EditStringUI msg = getPrototypeFrameCreator ().createEditString ();
+					msg.setTitleLanguageCategoryID ("frmUnitInfo");
+					msg.setTitleLanguageEntryID ("Rename");
+					msg.setPromptLanguageCategoryID ("frmUnitInfo");
+					msg.setPromptLanguageEntryID ("RenamePrompt");
+					msg.setUnitBeingNamed (getUnit ().getUnitURN ());
+					msg.setText (getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.SIMPLE_UNIT_NAME));
+					msg.setVisible (true);
+				});
 
 				getUnitInfoPanel ().getActions ().add (renameAction);
 			}			
 		}
 
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().dispose ();
-			}
-		};
+		okAction = new LoggingAction ((ev) -> getFrame ().dispose ());
+		
 		getUnitInfoPanel ().getActions ().add (okAction);
 		
 		// Initialize the frame

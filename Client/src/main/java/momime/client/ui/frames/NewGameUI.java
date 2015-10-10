@@ -12,7 +12,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -29,7 +28,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -66,6 +64,7 @@ import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.filefilters.ExtensionFileFilter;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -1208,114 +1207,96 @@ public final class NewGameUI extends MomClientFrameUI
 		buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
 		
 		// Actions
-		cancelAction = new AbstractAction ()
+		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
+
+		okAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public void actionPerformed (final ActionEvent e)
+			// What this does depends on which 'card' is currently displayed
+			if ((newGamePanel.isVisible ()) || (mapSizePanel.isVisible ()) || (landProportionPanel.isVisible ()) || (nodesPanel.isVisible ()) ||
+				(difficulty1Panel.isVisible ()) || (difficulty2Panel.isVisible ()) || (difficulty3Panel.isVisible ()) || (fogOfWarPanel.isVisible ()) ||
+				(unitsPanel.isVisible ()) || (spellsPanel.isVisible ()) || (debugPanel.isVisible ()))
+				
+				showNextNewGamePanel ();
+			
+			else if (wizardPanel.isVisible ())
 			{
-				getFrame ().setVisible (false);
+				final ChooseWizardMessage msg = new ChooseWizardMessage ();
+				msg.setWizardID (wizardChosen);
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+
+				okAction.setEnabled (false);
 			}
-		};
-
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			else if (portraitPanel.isVisible ())
 			{
-				try
+				if (PlayerKnowledgeUtils.isCustomWizard (portraitChosen))
 				{
-					// What this does depends on which 'card' is currently displayed
-					if ((newGamePanel.isVisible ()) || (mapSizePanel.isVisible ()) || (landProportionPanel.isVisible ()) || (nodesPanel.isVisible ()) ||
-						(difficulty1Panel.isVisible ()) || (difficulty2Panel.isVisible ()) || (difficulty3Panel.isVisible ()) || (fogOfWarPanel.isVisible ()) ||
-						(unitsPanel.isVisible ()) || (spellsPanel.isVisible ()) || (debugPanel.isVisible ()))
-						
-						showNextNewGamePanel ();
-					
-					else if (wizardPanel.isVisible ())
+					try (final FileInputStream in = new FileInputStream (customPortraitChooser.getSelectedFile ()))
 					{
-						final ChooseWizardMessage msg = new ChooseWizardMessage ();
-						msg.setWizardID (wizardChosen);
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-
-						okAction.setEnabled (false);
-					}
-					else if (portraitPanel.isVisible ())
-					{
-						if (PlayerKnowledgeUtils.isCustomWizard (portraitChosen))
+						try (final ByteArrayOutputStream out = new ByteArrayOutputStream ())
 						{
-							try (final FileInputStream in = new FileInputStream (customPortraitChooser.getSelectedFile ()))
-							{
-								try (final ByteArrayOutputStream out = new ByteArrayOutputStream ())
-								{
-									IOUtils.copy (in, out);
-									
-									final UploadCustomPhotoMessage msg = new UploadCustomPhotoMessage ();
-									msg.setNdgBmpImage (out.toByteArray ());
-									getClient ().getServerConnection ().sendMessageToServer (msg);
-								}
-							}
-						}
-						else
-						{
-							final ChooseStandardPhotoMessage msg = new ChooseStandardPhotoMessage ();
-							msg.setPhotoID (portraitChosen);
+							IOUtils.copy (in, out);
+							
+							final UploadCustomPhotoMessage msg = new UploadCustomPhotoMessage ();
+							msg.setNdgBmpImage (out.toByteArray ());
 							getClient ().getServerConnection ().sendMessageToServer (msg);
-						}						
-
-						okAction.setEnabled (false);
-					}
-					else if (flagColourPanel.isVisible ())
-					{
-						final ChooseCustomFlagColourMessage msg = new ChooseCustomFlagColourMessage ();
-						msg.setFlagColour (sliderToHex (flagColourRed) + sliderToHex (flagColourGreen) + sliderToHex (flagColourBlue));
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-						
-						// We assume the server is going to accept this, and go straight to the custom picks screen
-						showCustomPicksPanel ();
-					}
-					else if (picksPanel.isVisible ())
-					{
-						final ChooseCustomPicksMessage msg = new ChooseCustomPicksMessage ();
-						for (final PlayerPick src : picks)
-						{
-							final PickAndQuantity dest = new PickAndQuantity ();
-							dest.setPickID (src.getPickID ());
-							dest.setQuantity (src.getQuantity ());
-							msg.getPick ().add (dest);
 						}
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-						okAction.setEnabled (false);
 					}
-					else if (freeSpellsPanel.isVisible ())
-					{
-						final ChooseInitialSpellsMessage msg = new ChooseInitialSpellsMessage ();
-						msg.setPickID (currentMagicRealmID);
-						
-						for (final Entry<Spell, ToggleAction> spell : freeSpellActions.entrySet ())
-							if (spell.getValue ().isSelected ())
-								msg.getSpell ().add (spell.getKey ().getSpellID ());
-
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-
-						okAction.setEnabled (false);
-					}
-					else if (racePanel.isVisible ())
-					{
-						final ChooseRaceMessage msg = new ChooseRaceMessage ();
-						msg.setRaceID (raceChosen);
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-
-						okAction.setEnabled (false);
-					}
-					else
-						log.warn ("Don't know what action to take from clicking OK button");
 				}
-				catch (final Exception e)
+				else
 				{
-					log.error (e, e);
-				}
+					final ChooseStandardPhotoMessage msg = new ChooseStandardPhotoMessage ();
+					msg.setPhotoID (portraitChosen);
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+				}						
+
+				okAction.setEnabled (false);
 			}
-		};
+			else if (flagColourPanel.isVisible ())
+			{
+				final ChooseCustomFlagColourMessage msg = new ChooseCustomFlagColourMessage ();
+				msg.setFlagColour (sliderToHex (flagColourRed) + sliderToHex (flagColourGreen) + sliderToHex (flagColourBlue));
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+				
+				// We assume the server is going to accept this, and go straight to the custom picks screen
+				showCustomPicksPanel ();
+			}
+			else if (picksPanel.isVisible ())
+			{
+				final ChooseCustomPicksMessage msg = new ChooseCustomPicksMessage ();
+				for (final PlayerPick src : picks)
+				{
+					final PickAndQuantity dest = new PickAndQuantity ();
+					dest.setPickID (src.getPickID ());
+					dest.setQuantity (src.getQuantity ());
+					msg.getPick ().add (dest);
+				}
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+				okAction.setEnabled (false);
+			}
+			else if (freeSpellsPanel.isVisible ())
+			{
+				final ChooseInitialSpellsMessage msg = new ChooseInitialSpellsMessage ();
+				msg.setPickID (currentMagicRealmID);
+				
+				for (final Entry<Spell, ToggleAction> spell : freeSpellActions.entrySet ())
+					if (spell.getValue ().isSelected ())
+						msg.getSpell ().add (spell.getKey ().getSpellID ());
+
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+
+				okAction.setEnabled (false);
+			}
+			else if (racePanel.isVisible ())
+			{
+				final ChooseRaceMessage msg = new ChooseRaceMessage ();
+				msg.setRaceID (raceChosen);
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+
+				okAction.setEnabled (false);
+			}
+			else
+				log.warn ("Don't know what action to take from clicking OK button");
+		});
 		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
@@ -2581,48 +2562,38 @@ public final class NewGameUI extends MomClientFrameUI
 					final String wizardID = (wizard == null) ? "" : wizard.getWizardID ();
 					
 					// Choose wizard button
-					final Action wizardButtonAction = new AbstractAction ()
+					final Action wizardButtonAction = new LoggingAction ((ev) ->
 					{
-						@Override
-						public final void actionPerformed (final ActionEvent ev)
+						wizardChosen = wizardID;
+						okAction.setEnabled (true);
+						
+						picks.clear ();
+						if (wizard == null)
 						{
-							wizardChosen = wizardID;
-							okAction.setEnabled (true);
-							try
+							// Custom wizard - select portait and flag colour in next stages
+							wizardPortrait.setIcon (null);
+							flag1.setIcon (null);
+							flag2.setIcon (null);
+						}
+						else
+						{
+							final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.wizardButtonAction"); 
+							wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
+								(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
+							
+							updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
+							
+							for (final PickAndQuantity src : wizard.getWizardPick ())
 							{
-								picks.clear ();
-								if (wizard == null)
-								{
-									// Custom wizard - select portait and flag colour in next stages
-									wizardPortrait.setIcon (null);
-									flag1.setIcon (null);
-									flag2.setIcon (null);
-								}
-								else
-								{
-									final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.wizardButtonAction"); 
-									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
-										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
-									
-									updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
-									
-									for (final PickAndQuantity src : wizard.getWizardPick ())
-									{
-										final PlayerPick dest = new PlayerPick ();
-										dest.setPickID (src.getPickID ());
-										dest.setQuantity (src.getQuantity ());
-										picks.add (dest);
-									}
-								}
-								updateBookshelfFromPicks ();
-								updateRetortsFromPicks (-1);
-							}
-							catch (final Exception e)
-							{
-								log.error (e, e);
+								final PlayerPick dest = new PlayerPick ();
+								dest.setPickID (src.getPickID ());
+								dest.setQuantity (src.getQuantity ());
+								picks.add (dest);
 							}
 						}
-					};
+						updateBookshelfFromPicks ();
+						updateRetortsFromPicks (-1);
+					});
 				
 					wizardButtonActions.put (wizardID, wizardButtonAction);
 
@@ -2633,55 +2604,44 @@ public final class NewGameUI extends MomClientFrameUI
 					wizardComponents.add (wizardButton);
 					
 					// Choose portrait button
-					final Action portraitButtonAction = new AbstractAction ()
+					final Action portraitButtonAction = new LoggingAction ((ev) ->
 					{
-						@Override
-						public final void actionPerformed (final ActionEvent ev)
+						portraitChosen = wizardID;
+						if (wizard == null)
 						{
-							portraitChosen = wizardID;
-							try
+							// Custom wizard - ask for filename
+							if (customPortraitChooser.showOpenDialog (null) == JFileChooser.APPROVE_OPTION)
 							{
-								if (wizard == null)
+								final BufferedImage customPortrait = ImageIO.read (customPortraitChooser.getSelectedFile ());
+								final XmlLayoutComponent portraitSize = getNewGameLayoutMain ().findComponent ("frmNewGameLHSPhoto");
+								if ((customPortrait.getWidth () > portraitSize.getWidth ()) || (customPortrait.getHeight () > portraitSize.getHeight ()))
 								{
-									// Custom wizard - ask for filename
-									if (customPortraitChooser.showOpenDialog (null) == JFileChooser.APPROVE_OPTION)
-									{
-										final BufferedImage customPortrait = ImageIO.read (customPortraitChooser.getSelectedFile ());
-										final XmlLayoutComponent portraitSize = getNewGameLayoutMain ().findComponent ("frmNewGameLHSPhoto");
-										if ((customPortrait.getWidth () > portraitSize.getWidth ()) || (customPortrait.getHeight () > portraitSize.getHeight ()))
-										{
-											final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
-											msgBox.setTitleLanguageCategoryID ("frmChoosePortrait");
-											msgBox.setTitleLanguageEntryID ("Title");
-											msgBox.setTextLanguageCategoryID ("frmChoosePortrait");
-											msgBox.setTextLanguageEntryID ("CustomTooLarge");
-											msgBox.setVisible (true);
-										}
-										else
-										{										
-											wizardPortrait.setIcon (new ImageIcon (customPortrait));
-											flag1.setIcon (null);
-											flag2.setIcon (null);
-											okAction.setEnabled (true);
-										}
-									}
+									final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
+									msgBox.setTitleLanguageCategoryID ("frmChoosePortrait");
+									msgBox.setTitleLanguageEntryID ("Title");
+									msgBox.setTextLanguageCategoryID ("frmChoosePortrait");
+									msgBox.setTextLanguageEntryID ("CustomTooLarge");
+									msgBox.setVisible (true);
 								}
 								else
-								{
-									final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.portraitButtonAction"); 
-									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
-										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
-
-									updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
+								{										
+									wizardPortrait.setIcon (new ImageIcon (customPortrait));
+									flag1.setIcon (null);
+									flag2.setIcon (null);
 									okAction.setEnabled (true);
 								}
 							}
-							catch (final Exception e)
-							{
-								log.error (e, e);
-							}
 						}
-					};
+						else
+						{
+							final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.portraitButtonAction"); 
+							wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
+								(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
+
+							updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
+							okAction.setEnabled (true);
+						}
+					});
 
 					portraitButtonActions.put (wizardID, portraitButtonAction);
 
@@ -2856,23 +2816,12 @@ public final class NewGameUI extends MomClientFrameUI
 				bookshelfTitles.put (pick.getPickID (), bookshelfTitle);
 				
 				// Add a book of this type
-				final Action addBookAction = new AbstractAction ()
+				final Action addBookAction = new LoggingAction ((ev) ->
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev)
-					{
-						try
-						{
-							getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), 1);
-							updateCustomPicksCount ();
-							updateBookshelfFromPicks ();
-						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-					}
-				};
+					getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), 1);
+					updateCustomPicksCount ();
+					updateBookshelfFromPicks ();
+				});
 				
 				addBookActions.put (pick.getPickID (), addBookAction);
 				
@@ -2881,23 +2830,12 @@ public final class NewGameUI extends MomClientFrameUI
 				customPicksComponents.add (addBookButton);				
 				
 				// Remove a book of this type
-				final Action removeBookAction = new AbstractAction ()
+				final Action removeBookAction = new LoggingAction ((ev) ->
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev)
-					{
-						try
-						{
-							getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), -1);
-							updateCustomPicksCount ();
-							updateBookshelfFromPicks ();
-						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-					}
-				};
+					getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), -1);
+					updateCustomPicksCount ();
+					updateBookshelfFromPicks ();
+				});
 				
 				removeBookActions.put (pick.getPickID (), removeBookAction);
 				
@@ -2922,15 +2860,11 @@ public final class NewGameUI extends MomClientFrameUI
 			for (final Race race : getClient ().getClientDB ().getRaces ())
 				if (race.getNativePlane () == plane.getPlaneNumber ())
 				{
-					final Action raceButtonAction = new AbstractAction ()
+					final Action raceButtonAction = new LoggingAction ((ev) ->
 					{
-						@Override
-						public final void actionPerformed (final ActionEvent ev)
-						{
-							raceChosen = race.getRaceID ();
-							okAction.setEnabled (true);
-						}
-					};
+						raceChosen = race.getRaceID ();
+						okAction.setEnabled (true);
+					});
 					
 					raceButtonActions.put (race, raceButtonAction);
 					

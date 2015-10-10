@@ -1,26 +1,25 @@
 package momime.client.ui.dialogs;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-
-import momime.client.MomClient;
-import momime.client.ui.MomUIConstants;
-import momime.common.messages.CaptureCityDecisionID;
-import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+
+import momime.client.MomClient;
+import momime.client.ui.MomUIConstants;
+import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
 
 /**
  * Dialog box that pops up after successfully attacking an enemy city, to ask if you want to raze or keep it.
@@ -69,47 +68,27 @@ public final class RazeCityUI extends MomClientDialogUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x17Pressed.png");
 		
 		// Actions
-		razeAction = new AbstractAction ()
+		razeAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				final CaptureCityDecisionMessage msg = new CaptureCityDecisionMessage ();
-				msg.setCityLocation (getCityLocation ());
-				msg.setDefendingPlayerID (getDefendingPlayerID ());
-				msg.setCaptureCityDecision (CaptureCityDecisionID.RAZE);
-				try
-				{
-					getClient ().getServerConnection ().sendMessageToServer (msg);
-					setVisible (false);
-				}
-				catch (final Exception e)
-				{
-					log.error (e ,e);
-				}
-			}
-		};
+			final CaptureCityDecisionMessage msg = new CaptureCityDecisionMessage ();
+			msg.setCityLocation (getCityLocation ());
+			msg.setDefendingPlayerID (getDefendingPlayerID ());
+			msg.setCaptureCityDecision (CaptureCityDecisionID.RAZE);
+
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			setVisible (false);
+		});
  
-		captureAction = new AbstractAction ()
+		captureAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				final CaptureCityDecisionMessage msg = new CaptureCityDecisionMessage ();
-				msg.setCityLocation (getCityLocation ());
-				msg.setDefendingPlayerID (getDefendingPlayerID ());
-				msg.setCaptureCityDecision (CaptureCityDecisionID.CAPTURE);
-				try
-				{
-					getClient ().getServerConnection ().sendMessageToServer (msg);
-					setVisible (false);
-				}
-				catch (final Exception e)
-				{
-					log.error (e ,e);
-				}
-			}
-		};
+			final CaptureCityDecisionMessage msg = new CaptureCityDecisionMessage ();
+			msg.setCityLocation (getCityLocation ());
+			msg.setDefendingPlayerID (getDefendingPlayerID ());
+			msg.setCaptureCityDecision (CaptureCityDecisionID.CAPTURE);
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			setVisible (false);
+		});
 		
 		// Initialize the content pane
 		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);

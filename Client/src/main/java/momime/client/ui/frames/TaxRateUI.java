@@ -3,7 +3,6 @@ package momime.client.ui.frames;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,23 +11,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
 import momime.common.database.TaxRate;
 import momime.common.messages.clienttoserver.ChangeTaxRateMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Window that shows a button for each possible tax rate so we can click one
@@ -129,25 +128,15 @@ public final class TaxRateUI extends MomClientFrameUI
 			for (final TaxRate taxRate : getClient ().getClientDB ().getTaxRate ())
 			{
 				// Create new action
-				final Action taxRateAction = new AbstractAction ()
+				final Action taxRateAction = new LoggingAction ((ev) ->
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev)
-					{
-						// Don't update it locally yet - tell the server what tax rate we want and it will send a message back to confirm the new tax rate is OK
-						final ChangeTaxRateMessage msg = new ChangeTaxRateMessage ();
-						msg.setTaxRateID (taxRate.getTaxRateID ());
-						try
-						{
-							getClient ().getServerConnection ().sendMessageToServer (msg);
-							setVisible (false);
-						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-					}
-				};
+					// Don't update it locally yet - tell the server what tax rate we want and it will send a message back to confirm the new tax rate is OK
+					final ChangeTaxRateMessage msg = new ChangeTaxRateMessage ();
+					msg.setTaxRateID (taxRate.getTaxRateID ());
+
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+					setVisible (false);
+				});
 				
 				taxRateActions.put (taxRate, taxRateAction);
 				

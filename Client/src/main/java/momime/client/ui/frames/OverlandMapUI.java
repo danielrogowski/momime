@@ -9,8 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -21,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JComponent;
@@ -46,6 +43,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
@@ -273,163 +271,29 @@ public final class OverlandMapUI extends MomClientFrameUI
 		final BufferedImage topBarOptionsPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsPressed.png");
 
 		// Actions
-		gameAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
-
-		spellsAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getSpellBookUI ().setVisible (true);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		armiesAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
-
-		citiesAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
-
-		magicAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getMagicSlidersUI ().setVisible (true);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		planeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					switchMapViewPlane ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		messagesAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getNewTurnMessagesUI ().setVisible (true);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		chatAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
-
-		final Action infoAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getSelectAdvisorUI ().setVisible (true);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		final Action optionsAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOptionsUI ().setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		gameAction = new LoggingAction ((ev) -> {});
+		spellsAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
+		armiesAction = new LoggingAction ((ev) -> {});
+		citiesAction = new LoggingAction ((ev) -> {});
+		magicAction = new LoggingAction ((ev) -> getMagicSlidersUI ().setVisible (true));
+		planeAction = new LoggingAction ((ev) -> switchMapViewPlane ());
+		messagesAction = new LoggingAction ((ev) -> getNewTurnMessagesUI ().setVisible (true));
+		chatAction = new LoggingAction ((ev) -> {});
 		
-		final Action centreOnSelectedUnitAction = new AbstractAction ()
+		final Action infoAction = new LoggingAction ((ev) -> getSelectAdvisorUI ().setVisible (true));
+		final Action optionsAction = new LoggingAction ((ev) -> getOptionsUI ().setVisible (true));
+		
+		final Action centreOnSelectedUnitAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				final MapCoordinates3DEx coords = getOverlandMapProcessing ().getUnitMoveFrom ();
-				if (coords != null)
-					scrollTo (coords.getX (), coords.getY (), coords.getZ (), true);
-			}
-		};
+			final MapCoordinates3DEx coords = getOverlandMapProcessing ().getUnitMoveFrom ();
+			if (coords != null)
+				scrollTo (coords.getX (), coords.getY (), coords.getZ (), true);
+		});
 		
 		// Compacted these up a lot because they're so repetetive
 		final Map<SquareMapDirection, Action> moveUnitStackInDirectionActions = new HashMap<SquareMapDirection, Action> ();
 		for (final SquareMapDirection d : SquareMapDirection.values ())
-			moveUnitStackInDirectionActions.put (d, new AbstractAction ()
-			{
-				@Override
-				public final void actionPerformed (final ActionEvent ev)
-				{
-					try
-					{
-						moveUnitStackInDirection (d);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-				}
-			});
+			moveUnitStackInDirectionActions.put (d, new LoggingAction ((ev) -> moveUnitStackInDirection (d)));
 		
 		// Need the tile set in a few places
 		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
@@ -793,87 +657,75 @@ public final class OverlandMapUI extends MomClientFrameUI
 		contentPane.add (sceneryPanel, sceneryConstraints);
 	
 		// Animate the terrain tiles
-		new Timer ((int) (1000 / overlandMapTileSet.getAnimationSpeed ()), new ActionListener ()
+		new Timer ((int) (1000 / overlandMapTileSet.getAnimationSpeed ()), (ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent e)
-			{
-				final int newFrame = terrainAnimFrame + 1;
-				terrainAnimFrame = (newFrame >= overlandMapTileSet.getAnimationFrameCount ()) ? 0 : newFrame;
-				sceneryPanel.repaint ();
-				
-				// The mini maps on all the city views run from the same timer
-				for (final CityViewUI cityView : getClient ().getCityViews ().values ())
-					cityView.repaintCityViewMiniMap ();
-			}
+			final int newFrame = terrainAnimFrame + 1;
+			terrainAnimFrame = (newFrame >= overlandMapTileSet.getAnimationFrameCount ()) ? 0 : newFrame;
+			sceneryPanel.repaint ();
+			
+			// The mini maps on all the city views run from the same timer
+			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+				cityView.repaintCityViewMiniMap ();
 		}).start ();
 
 		// Zoom actions (need the sceneryPanel, hence why defined down here)
-		final Action zoomInAction = new AbstractAction ()
+		final Action zoomInAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public void actionPerformed (final ActionEvent e)
+			if (mapViewZoom < 20)
 			{
-				if (mapViewZoom < 20)
-				{
-					// Make the zoom take effect from the centrepoint of the map, not the top-left corner
-					double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2d)) / mapZoomedWidth;
+				// Make the zoom take effect from the centrepoint of the map, not the top-left corner
+				double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+				final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2d)) / mapZoomedWidth;
 
-					double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2d)) / mapZoomedHeight;
-					
-					mapViewZoom++;
-					
-					mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-					final int newMapViewX = (int) ((scaledX * mapZoomedWidth) - (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2));
+				double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+				final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2d)) / mapZoomedHeight;
+				
+				mapViewZoom++;
+				
+				mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+				final int newMapViewX = (int) ((scaledX * mapZoomedWidth) - (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2));
 
-					mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-					final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
-					
-					mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
+				mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+				final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
+				
+				mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+					sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
 
-					mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
-					
-					sceneryPanel.repaint ();
-				}
+				mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+					sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
+				
+				sceneryPanel.repaint ();
 			}
-		};
+		});
 
-		final Action zoomOutAction = new AbstractAction ()
+		final Action zoomOutAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public void actionPerformed (final ActionEvent e)
+			if (mapViewZoom > 10)
 			{
-				if (mapViewZoom > 10)
-				{
-					// Make the zoom take effect from the centrepoint of the map, not the top-left corner
-					double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2d)) / mapZoomedWidth;
+				// Make the zoom take effect from the centrepoint of the map, not the top-left corner
+				double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+				final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2d)) / mapZoomedWidth;
 
-					double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2d)) / mapZoomedHeight;
-					
-					mapViewZoom--;
-					
-					mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
-					final int newMapViewX = (int) ((scaledX * mapZoomedWidth) - (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2));
+				double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+				final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2d)) / mapZoomedHeight;
+				
+				mapViewZoom--;
+				
+				mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+				final int newMapViewX = (int) ((scaledX * mapZoomedWidth) - (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2));
 
-					mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
-					final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
-					
-					mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
+				mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+				final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
+				
+				mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+					sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
 
-					mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
-					
-					sceneryPanel.repaint ();
-				}
+				mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+					sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
+				
+				sceneryPanel.repaint ();
 			}
-		};
+		});
 		
 		// Set up the row of gold buttons along the top
 		mapButtonBar.setLayout (new GridBagLayout ());
@@ -1097,56 +949,52 @@ public final class OverlandMapUI extends MomClientFrameUI
 		// So I'd rather just allow the window to be made too big and leave a black area.
 		
 		// Scroll the map around if the mouse pointer is near the edges
-		new Timer (20, new ActionListener ()
+		new Timer (20, (ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent e)
+			final Point pos = contentPane.getMousePosition ();
+			if (pos != null)
 			{
-				final Point pos = contentPane.getMousePosition ();
-				if (pos != null)
+				int newMapViewX = mapViewX;
+				int newMapViewY = mapViewY;
+				
+				boolean mapViewUpdated = false;
+				if (pos.x < MOUSE_SCROLL_WIDTH)
 				{
-					int newMapViewX = mapViewX;
-					int newMapViewY = mapViewY;
-					
-					boolean mapViewUpdated = false;
-					if (pos.x < MOUSE_SCROLL_WIDTH)
-					{
-						newMapViewX = newMapViewX - MOUSE_SCROLL_SPEED;
-						mapViewUpdated = true;
-					}
-					
-					if (pos.y < MOUSE_SCROLL_WIDTH)
-					{
-						newMapViewY = newMapViewY - MOUSE_SCROLL_SPEED;
-						mapViewUpdated = true;
-					}
+					newMapViewX = newMapViewX - MOUSE_SCROLL_SPEED;
+					mapViewUpdated = true;
+				}
+				
+				if (pos.y < MOUSE_SCROLL_WIDTH)
+				{
+					newMapViewY = newMapViewY - MOUSE_SCROLL_SPEED;
+					mapViewUpdated = true;
+				}
 
-					if (pos.x >= contentPane.getWidth () - MOUSE_SCROLL_WIDTH)
-					{
-						newMapViewX = newMapViewX + MOUSE_SCROLL_SPEED;
-						mapViewUpdated = true;
-					}
+				if (pos.x >= contentPane.getWidth () - MOUSE_SCROLL_WIDTH)
+				{
+					newMapViewX = newMapViewX + MOUSE_SCROLL_SPEED;
+					mapViewUpdated = true;
+				}
 
-					if (pos.y >= contentPane.getHeight () - MOUSE_SCROLL_WIDTH)
-					{
-						newMapViewY = newMapViewY + MOUSE_SCROLL_SPEED;
-						mapViewUpdated = true;
-					}
-					
-					if (mapViewUpdated)
-					{
-						newMapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-							sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
+				if (pos.y >= contentPane.getHeight () - MOUSE_SCROLL_WIDTH)
+				{
+					newMapViewY = newMapViewY + MOUSE_SCROLL_SPEED;
+					mapViewUpdated = true;
+				}
+				
+				if (mapViewUpdated)
+				{
+					newMapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight ());
 
-						newMapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-							sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
-					
-						if ((newMapViewX != mapViewX) || (newMapViewY != mapViewY))
-						{
-							mapViewX = newMapViewX;
-							mapViewY = newMapViewY;
-							sceneryPanel.repaint ();
-						}
+					newMapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsTopToBottom ());
+				
+					if ((newMapViewX != mapViewX) || (newMapViewY != mapViewY))
+					{
+						mapViewX = newMapViewX;
+						mapViewY = newMapViewY;
+						sceneryPanel.repaint ();
 					}
 				}
 			}

@@ -1,13 +1,11 @@
 package momime.editors;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
+import com.ndg.swing.actions.MessageDialogAction;
 import com.ndg.swing.filefilters.ExtensionFileFilter;
 import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.grid.XmlEditorGridWithImport;
@@ -28,27 +26,18 @@ public abstract class MoMEditorGridWithImport extends XmlEditorGridWithImport
 		super.init ();
 		
 		// Import action
-		setImportAction (new AbstractAction ()
+		setImportAction (new MessageDialogAction ((ev) ->
 		{
-			@Override
-			public void actionPerformed (final ActionEvent event)
-			{
-				final JFileChooser lbxChooser = new JFileChooser ();
-				lbxChooser.addChoosableFileFilter (new ExtensionFileFilter ("lbx", "Original Master of Magic LBX files"));
-				addOtherFilters (lbxChooser);
+			final JFileChooser lbxChooser = new JFileChooser ();
+			lbxChooser.addChoosableFileFilter (new ExtensionFileFilter ("lbx", "Original Master of Magic LBX files"));
+			addOtherFilters (lbxChooser);
 
-				if (lbxChooser.showOpenDialog (null) == JFileChooser.APPROVE_OPTION)
-					try
-					{
-						importFromLbx (lbxChooser.getSelectedFile ());
-						getTableModel ().fireTableDataChanged ();
-					}
-					catch (final Exception e)
-					{
-						JOptionPane.showMessageDialog (null, e.toString (), "MoM IME Language Editor Import", JOptionPane.ERROR_MESSAGE);
-					}
+			if (lbxChooser.showOpenDialog (null) == JFileChooser.APPROVE_OPTION)
+			{
+				importFromLbx (lbxChooser.getSelectedFile ());
+				getTableModel ().fireTableDataChanged ();
 			}
-		});
+		}));
 	}
 
 	/**

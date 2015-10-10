@@ -8,7 +8,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
@@ -39,6 +37,7 @@ import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -300,156 +299,105 @@ public final class CityViewUI extends MomClientFrameUI
 		final int productionProgressDivisor = (getClient ().getClientDB ().getMostExpensiveConstructionCost () + coinsTotal - 1) / coinsTotal;
 		
 		// Actions
-		rushBuyAction = new AbstractAction ()
+		rushBuyAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// Get the text to display
+			String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", "RushBuyPrompt");
+			
+			// How much will it cost us to rush buy it?
+			final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+			final OverlandMapCityData cityData = mc.getCityData ();
+
+			Integer productionCost = null;
+			if (cityData.getCurrentlyConstructingBuildingID () != null)
 			{
-				try
-				{
-					// Get the text to display
-					String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", "RushBuyPrompt");
-					
-					// How much will it cost us to rush buy it?
-					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-						(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
-					final OverlandMapCityData cityData = mc.getCityData ();
-
-					Integer productionCost = null;
-					if (cityData.getCurrentlyConstructingBuildingID () != null)
-					{
-						productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "rushBuyAction").getProductionCost ();
-						final BuildingLang building = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
-						text = text.replaceAll ("A_UNIT_NAME", (building != null) ? building.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
-					}
-
-					else if (cityData.getCurrentlyConstructingUnitID () != null)
-					{
-						productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "rushBuyAction").getProductionCost ();
-
-						final AvailableUnit unit = new AvailableUnit ();
-						unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
-						getUnitStatsReplacer ().setUnit (unit);
-
-						text = getUnitStatsReplacer ().replaceVariables (text);
-					}
-					
-					if (productionCost != null)
-					{
-						final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
-						text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
-					
-						// Now show the message
-						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
-						msg.setTitleLanguageEntryID ("RushBuyTitle");
-						msg.setText (text);
-						msg.setCityLocation (getCityLocation ());
-						msg.setVisible (true);
-					}
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
+				productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "rushBuyAction").getProductionCost ();
+				final BuildingLang building = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+				text = text.replaceAll ("A_UNIT_NAME", (building != null) ? building.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
 			}
-		};
+
+			else if (cityData.getCurrentlyConstructingUnitID () != null)
+			{
+				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "rushBuyAction").getProductionCost ();
+
+				final AvailableUnit unit = new AvailableUnit ();
+				unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
+				getUnitStatsReplacer ().setUnit (unit);
+
+				text = getUnitStatsReplacer ().replaceVariables (text);
+			}
+			
+			if (productionCost != null)
+			{
+				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
+				text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
+			
+				// Now show the message
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
+				msg.setTitleLanguageEntryID ("RushBuyTitle");
+				msg.setText (text);
+				msg.setCityLocation (getCityLocation ());
+				msg.setVisible (true);
+			}
+		});
 
 		final CityViewUI ui = this;
-		changeConstructionAction = new AbstractAction ()
+		changeConstructionAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// Is there a change construction window already open for this city?
+			ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getCityLocation ().toString ());
+			if (changeConstruction == null)
 			{
-				// Is there a change construction window already open for this city?
-				ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getCityLocation ().toString ());
-				if (changeConstruction == null)
-				{
-					changeConstruction = getPrototypeFrameCreator ().createChangeConstruction ();
-					changeConstruction.setCityLocation (new MapCoordinates3DEx (getCityLocation ()));
-					getClient ().getChangeConstructions ().put (getCityLocation ().toString (), changeConstruction);
-				}
+				changeConstruction = getPrototypeFrameCreator ().createChangeConstruction ();
+				changeConstruction.setCityLocation (new MapCoordinates3DEx (getCityLocation ()));
+				getClient ().getChangeConstructions ().put (getCityLocation ().toString (), changeConstruction);
+			}
 				
-				try
-				{
-					changeConstruction.setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			changeConstruction.setVisible (true);
+		});
 		
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().dispose ();
-			}
-		};
+		okAction = new LoggingAction ((ev) -> getFrame ().dispose ());
 		
 		// Explain the max size calculation
-		maximumPopulationAction = new AbstractAction ()
+		maximumPopulationAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
-						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
-							(CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-					
-					final ProductionTypeLang productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
-					final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
-					
-					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
-					calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
-						("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
-						("PRODUCTION_TYPE", productionTypeDescription));
-					calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
-					calc.setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		}; 
+			final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
+				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
+					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+			
+			final ProductionTypeLang productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
+			final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
+			
+			final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+			calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
+				("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
+				("PRODUCTION_TYPE", productionTypeDescription));
+			calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
+			calc.setVisible (true);
+		}); 
 
 		// Explain the city growth calculation
-		currentPopulationAction = new AbstractAction ()
+		currentPopulationAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					final int maxCitySize = getCityCalculations ().calculateSingleCityProduction
-						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (),
-						CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-				
-					final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
+			final int maxCitySize = getCityCalculations ().calculateSingleCityProduction
+				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (),
+				CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		
+			final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
 
-					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
-					calc.setTitle (getLanguage ().findCategoryEntry ("CityGrowthRate", "Title").replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
-					calc.setText (getClientCityCalculations ().describeCityGrowthRateCalculation (breakdown));
-					calc.setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+			calc.setTitle (getLanguage ().findCategoryEntry ("CityGrowthRate", "Title").replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
+			calc.setText (getClientCityCalculations ().describeCityGrowthRateCalculation (breakdown));
+			calc.setVisible (true);
+		});
 		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
@@ -1031,60 +979,38 @@ public final class CityViewUI extends MomClientFrameUI
 				(civvyNo <= cityData.getMinimumFarmers ()))						// Enforced farmers
 			{
 				// Create as a 'show unrest calculation' button
-				action = new AbstractAction ()
+				action = new LoggingAction ((ev) ->
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev)
-					{
-						try
-						{
-							final CityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getPlayers (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getClientDB ());
-							
-							final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
-							calc.setTitle (getLanguage ().findCategoryEntry ("UnrestCalculation", "Title").replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
-							calc.setText (getClientCityCalculations ().describeCityUnrestCalculation (breakdown));
-							calc.setVisible (true);							
-						}
-						catch (final IOException e)
-						{
-							log.error (e, e);
-						}
-					}
-				}; 
+					final CityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getPlayers (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getClientDB ());
+					
+					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+					calc.setTitle (getLanguage ().findCategoryEntry ("UnrestCalculation", "Title").replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
+					calc.setText (getClientCityCalculations ().describeCityUnrestCalculation (breakdown));
+					calc.setVisible (true);							
+				}); 
 			}
 			else
 			{
 				// Create as an 'optional farmers' button
 				final int civvyNoCopy = civvyNo;
-				action = new AbstractAction ()
+				action = new LoggingAction ((ev) ->
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev)
-					{
-						// Clicking on the same number toggles it, so we can turn the last optional farmer into a worker
-						int optionalFarmers = civvyNoCopy - cityData.getMinimumFarmers ();
-						if (optionalFarmers == cityData.getOptionalFarmers ())
-							optionalFarmers--;
-						
-						log.debug ("Requesting optional farmers in city " + getCityLocation () + " to be set to " + optionalFarmers);
-						
-						try
-						{
-							final ChangeOptionalFarmersMessage msg = new ChangeOptionalFarmersMessage ();
-							msg.setCityLocation (getCityLocation ());
-							msg.setOptionalFarmers (optionalFarmers);
-							getClient ().getServerConnection ().sendMessageToServer (msg);
-						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-					}
-				}; 
+					// Clicking on the same number toggles it, so we can turn the last optional farmer into a worker
+					int optionalFarmers = civvyNoCopy - cityData.getMinimumFarmers ();
+					if (optionalFarmers == cityData.getOptionalFarmers ())
+						optionalFarmers--;
+					
+					log.debug ("Requesting optional farmers in city " + getCityLocation () + " to be set to " + optionalFarmers);
+					
+					final ChangeOptionalFarmersMessage msg = new ChangeOptionalFarmersMessage ();
+					msg.setCityLocation (getCityLocation ());
+					msg.setOptionalFarmers (optionalFarmers);
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+				}); 
 			}
 			
 			// Left justify all the civilians
@@ -1116,35 +1042,24 @@ public final class CityViewUI extends MomClientFrameUI
 			if (buttonImage != null)
 			{
 				// Explain this production calculation
-				final Action productionAction = new AbstractAction ()
+				final Action productionAction = new LoggingAction ((ev) ->
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev)
-					{
-						try
-						{
-							final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
-								(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
-									(thisProduction.getProductionTypeID ());
-								
-							final ProductionTypeLang productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
-							final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
-								
-							final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
-							calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
-								("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription));
-							calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
-							calc.setVisible (true);
-						}
-						catch (final IOException e)
-						{
-							log.error (e, e);
-						}
-					}
-				}; 
+					final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
+						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
+							(thisProduction.getProductionTypeID ());
+						
+					final ProductionTypeLang productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
+					final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
+						
+					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+					calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
+						("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription));
+					calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
+					calc.setVisible (true);
+				}); 
 					
 				// Create the button - leave 5 gap underneath before the next button
 				productionPanel.add (getUtils ().createImageButton (productionAction, null, null, null, buttonImage, buttonImage, buttonImage),

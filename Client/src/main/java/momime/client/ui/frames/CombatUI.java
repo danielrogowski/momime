@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,6 +33,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.JPanelWithConstantRepaints;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.zorder.ZOrderGraphicsImpl;
@@ -422,118 +421,39 @@ public final class CombatUI extends MomClientFrameUI
 		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI");
 		
 		// Actions
-		spellAction = new AbstractAction ()
+		spellAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
+		waitAction = new LoggingAction ((ev) -> getCombatMapProcessing ().selectedUnitWait ());
+		doneAction = new LoggingAction ((ev) -> getCombatMapProcessing ().selectedUnitDone ());
+		fleeAction = new LoggingAction ((ev) -> {});
+		
+		autoAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// If it is currently our turn, then we immediately need to tell the server to have the AI take the rest of our turn
+			autoControl = !autoControl;
+			
+			if ((autoControl) && (getClient ().getOurPlayerID ().equals (currentPlayerID)))
 			{
-				try
-				{
-					getSpellBookUI ().setVisible (true);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
+				final CombatAutoControlMessage msg = new CombatAutoControlMessage ();
+				msg.setCombatLocation (getCombatLocation ());
+				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
-		};
+		});		
 
-		waitAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getCombatMapProcessing ().selectedUnitWait ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		final Action toggleDamageCalculationsAction = new LoggingAction
+			((ev) -> getDamageCalculationsUI ().setVisible (!getDamageCalculationsUI ().isVisible ()));
 		
-		doneAction = new AbstractAction ()
+		cancelTargetSpellAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getCombatMapProcessing ().selectedUnitDone ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
-		fleeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
-		
-		autoAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				// If it is currently our turn, then we immediately need to tell the server to have the AI take the rest of our turn
-				autoControl = !autoControl;
-				
-				if ((autoControl) && (getClient ().getOurPlayerID ().equals (currentPlayerID)))
-				{
-					final CombatAutoControlMessage msg = new CombatAutoControlMessage ();
-					msg.setCombatLocation (getCombatLocation ());
-					try
-					{
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-				}
-			}
-		};		
-
-		final Action toggleDamageCalculationsAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getDamageCalculationsUI ().setVisible (!getDamageCalculationsUI ().isVisible ());
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
-		cancelTargetSpellAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				spellBeingTargetted = null;
-				
-				targetSpellPromptDefender.setText (null);
-				cancelTargetSpellDefender.setVisible (false);
-				targetSpellPromptAttacker.setText (null);
-				cancelTargetSpellAttacker.setVisible (false);
-				
-				defendingPlayerName.setVisible (true);
-				attackingPlayerName.setVisible (true);
-			}
-		};
+			spellBeingTargetted = null;
+			
+			targetSpellPromptDefender.setText (null);
+			cancelTargetSpellDefender.setVisible (false);
+			targetSpellPromptAttacker.setText (null);
+			cancelTargetSpellAttacker.setVisible (false);
+			
+			defendingPlayerName.setVisible (true);
+			attackingPlayerName.setVisible (true);
+		});
 		
 		// Initialize the content pane
 		

@@ -8,14 +8,12 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
@@ -24,16 +22,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
-import momime.client.ui.MomUIConstants;
-import momime.client.utils.AnimationController;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.sessionbase.BrowseSavedGames;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
+
+import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
+import momime.client.ui.MomUIConstants;
+import momime.client.utils.AnimationController;
 
 /**
  * Main menu with options to connect to a server and create or join games
@@ -138,97 +137,26 @@ public final class MainMenuUI extends MomClientFrameUI
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/mainMenu/background.png");
 
 		// Create actions
-		connectToServerAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getConnectToServerUI ().setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		connectToServerAction = new LoggingAction ((ev) -> getConnectToServerUI ().setVisible (true));
 		
-		newGameAction = new AbstractAction ()
+		newGameAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getNewGameUI ().setVisible (true);
-					getNewGameUI ().showNewGamePanel ();
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			getNewGameUI ().setVisible (true);
+			getNewGameUI ().showNewGamePanel ();
+		});
 		
-		joinGameAction = new AbstractAction ()
+		joinGameAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getJoinGameUI ().setVisible (true);
-					getJoinGameUI ().refreshSessionList ();
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			getJoinGameUI ().setVisible (true);
+			getJoinGameUI ().refreshSessionList ();
+		});
 		
-		loadGameAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getClient ().getServerConnection ().sendMessageToServer (new BrowseSavedGames ());
-					// Receiving the reply to this causes LoadGameUI to be displayed, see receivedSavedGamesList ()
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		// Receiving the reply to this causes LoadGameUI to be displayed, see receivedSavedGamesList ()
+		loadGameAction = new LoggingAction ((ev) -> getClient ().getServerConnection ().sendMessageToServer (new BrowseSavedGames ()));
 		
-		optionsAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOptionsUI ().setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		optionsAction = new LoggingAction ((ev) -> getOptionsUI ().setVisible (true));
 		
-		exitToWindowsAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				System.exit (0);
-			}
-		};
+		exitToWindowsAction = new LoggingAction ((ev) -> System.exit (0));
 		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);

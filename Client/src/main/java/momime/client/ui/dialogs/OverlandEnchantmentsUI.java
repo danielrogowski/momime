@@ -5,8 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -18,6 +16,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -32,14 +38,6 @@ import momime.client.ui.frames.MagicSlidersUI;
 import momime.common.MomException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Animation of the swirly mirror when someone casts an overland enchantment
@@ -249,20 +247,16 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// There's 3 stages to the animation (fade from shiny-photo, pause, fade from photo-spell pic) but it would be messy to set up 3 different timers,
 		// so instead the 1 timer and frame counter keeps ticking up the whole way through, and the paintComponent method knows which
 		// stage of animation it needs to be drawing.
-		timer = new Timer ((int) (1000 / fadeAnim.getAnimationSpeed ()), new ActionListener ()
+		timer = new Timer ((int) (1000 / fadeAnim.getAnimationSpeed ()), (ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				animationFrame++;
-				contentPane.repaint ();		// Technically we don't need to do this when we're paused looking at the wizard's photo
-		
-				if (animationFrame == fadeAnim.getFrame ().size () + PAUSE_FRAMES)
-					languageChanged ();
-				
-				else if (animationFrame+1 >= (fadeAnim.getFrame ().size () * 2) + PAUSE_FRAMES)
-					timer.stop ();
-			}
+			animationFrame++;
+			contentPane.repaint ();		// Technically we don't need to do this when we're paused looking at the wizard's photo
+	
+			if (animationFrame == fadeAnim.getFrame ().size () + PAUSE_FRAMES)
+				languageChanged ();
+			
+			else if (animationFrame+1 >= (fadeAnim.getFrame ().size () * 2) + PAUSE_FRAMES)
+				timer.stop ();
 		});
 		timer.start ();
 		

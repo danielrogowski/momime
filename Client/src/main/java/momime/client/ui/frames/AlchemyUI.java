@@ -7,11 +7,9 @@ import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -27,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.language.database.ProductionTypeLang;
@@ -120,76 +119,54 @@ public final class AlchemyUI extends MomClientFrameUI
 		final BufferedImage sliderImage = getUtils ().loadImage ("/momime.client.graphics/ui/alchemy/slider.png");
 		
 		// Actions
-		final Action changeDirectionAction = new AbstractAction ()
+		final Action changeDirectionAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// Do the swap
+			final String temp = fromProductionTypeID;
+			fromProductionTypeID = toProductionTypeID;
+			toProductionTypeID = temp;
+			
+			// Update the labels
+			directionChanged ();
+			
+			// Update the button
+			if (fromProductionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD))
 			{
-				// Do the swap
-				final String temp = fromProductionTypeID;
-				fromProductionTypeID = toProductionTypeID;
-				toProductionTypeID = temp;
-				
-				// Update the labels
-				directionChanged ();
-				
-				// Update the button
-				if (fromProductionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD))
-				{
-					changeDirectionButton.setIcon (new ImageIcon (goldToManaButtonNormal));
-					changeDirectionButton.setPressedIcon (new ImageIcon (goldToManaButtonPressed));
-					changeDirectionButton.setDisabledIcon (new ImageIcon (goldToManaButtonNormal));
-				}
-				else
-				{
-					changeDirectionButton.setIcon (new ImageIcon (manaToGoldButtonNormal));
-					changeDirectionButton.setPressedIcon (new ImageIcon (manaToGoldButtonPressed));
-					changeDirectionButton.setDisabledIcon (new ImageIcon (manaToGoldButtonNormal));
-				}
+				changeDirectionButton.setIcon (new ImageIcon (goldToManaButtonNormal));
+				changeDirectionButton.setPressedIcon (new ImageIcon (goldToManaButtonPressed));
+				changeDirectionButton.setDisabledIcon (new ImageIcon (goldToManaButtonNormal));
 			}
-		};
+			else
+			{
+				changeDirectionButton.setIcon (new ImageIcon (manaToGoldButtonNormal));
+				changeDirectionButton.setPressedIcon (new ImageIcon (manaToGoldButtonPressed));
+				changeDirectionButton.setDisabledIcon (new ImageIcon (manaToGoldButtonNormal));
+			}
+		});
 		
-		okAction = new AbstractAction ()
+		okAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
-					int fromValue = slider.getValue ();
-				
-					final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "okActionPerformed");
-					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
+			int fromValue = slider.getValue ();
+		
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "AlchemyUI");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
-					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
-						fromValue = fromValue * 2;
+			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
+				fromValue = fromValue * 2;
 
-					// Send message to the server
-					final AlchemyMessage msg = new AlchemyMessage ();
-					msg.setFromProductionTypeID (fromProductionTypeID);
-					msg.setFromValue (fromValue);
-				
-					getClient ().getServerConnection ().sendMessageToServer (msg);
-				
-					// Hide the form
-					getFrame ().setVisible (false);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			// Send message to the server
+			final AlchemyMessage msg = new AlchemyMessage ();
+			msg.setFromProductionTypeID (fromProductionTypeID);
+			msg.setFromValue (fromValue);
+		
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		
+			// Hide the form
+			getFrame ().setVisible (false);
+		});
 
-		cancelAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 
 		// Initialize the content pane
 		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);

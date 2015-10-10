@@ -3,13 +3,11 @@ package momime.client.ui.frames;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,6 +21,7 @@ import com.ndg.multiplayer.sessionbase.JoinSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.RequestSessionList;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -84,58 +83,29 @@ public final class JoinGameUI extends MomClientFrameUI
 		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldDisabled.png");
 
 		// Actions
-		refreshAction = new AbstractAction ()
+		refreshAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				joinAction.setEnabled (false);
-				try
-				{
-					getClient ().getServerConnection ().sendMessageToServer (new RequestSessionList ());
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			joinAction.setEnabled (false);
+			getClient ().getServerConnection ().sendMessageToServer (new RequestSessionList ());
+		});
 		
-		cancelAction = new AbstractAction ()
+		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
+		
+		joinAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
-		
-		joinAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				final SessionAndPlayerDescriptions spd = getSessions ().get (sessionsTable.getSelectedRow ());
-				
-				final PlayerDescription pd = new PlayerDescription ();
-				pd.setPlayerID (getClient ().getOurPlayerID ());
-				pd.setPlayerName (getClient ().getOurPlayerName ());
-				pd.setHuman (true);
-		
-				final JoinSession msg = new JoinSession ();
-				msg.setSessionID (spd.getSessionDescription ().getSessionID ());
-				msg.setPlayerDescription (pd);
-		
-				try
-				{
-					getClient ().getServerConnection ().sendMessageToServer (msg);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			final SessionAndPlayerDescriptions spd = getSessions ().get (sessionsTable.getSelectedRow ());
+			
+			final PlayerDescription pd = new PlayerDescription ();
+			pd.setPlayerID (getClient ().getOurPlayerID ());
+			pd.setPlayerName (getClient ().getOurPlayerName ());
+			pd.setHuman (true);
+	
+			final JoinSession msg = new JoinSession ();
+			msg.setSessionID (spd.getSessionDescription ().getSessionID ());
+			msg.setPlayerDescription (pd);
+	
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		});
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()

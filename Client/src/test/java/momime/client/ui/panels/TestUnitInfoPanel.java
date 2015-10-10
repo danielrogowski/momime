@@ -5,11 +5,9 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -20,6 +18,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
@@ -154,17 +153,8 @@ public final class TestUnitInfoPanel
 		skillRenderer.setUtils (utils);
 		
 		// Create some dummy actions for buttons
-		final Action blahAction = new AbstractAction ("Blah")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
-		
-		final Action pantsAction = new AbstractAction ("Pants")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
+		final Action blahAction = new LoggingAction ("Blah", (ev) -> {});
+		final Action pantsAction = new LoggingAction ("Pants", (ev) -> {});
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
@@ -445,11 +435,7 @@ public final class TestUnitInfoPanel
 	@Test
 	public final void testUnitInfoPanel_OneButtons () throws Exception
 	{
-		final Action blahAction = new AbstractAction ("Blah")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
+		final Action blahAction = new LoggingAction ("Blah", (ev) -> {});
 		
 		testUnitInfoPanel (new Action [] {blahAction});
 	}
@@ -461,17 +447,8 @@ public final class TestUnitInfoPanel
 	@Test
 	public final void testUnitInfoPanel_TwoButtons () throws Exception
 	{
-		final Action blahAction = new AbstractAction ("Blah")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
-		
-		final Action pantsAction = new AbstractAction ("Pants")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
+		final Action blahAction = new LoggingAction ("Blah", (ev) -> {});
+		final Action pantsAction = new LoggingAction ("Pants", (ev) -> {});
 		
 		testUnitInfoPanel (new Action [] {blahAction, pantsAction});
 	}
@@ -483,23 +460,9 @@ public final class TestUnitInfoPanel
 	@Test
 	public final void testUnitInfoPanel_ThreeButtons () throws Exception
 	{
-		final Action blahAction = new AbstractAction ("Blah")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
-		
-		final Action pantsAction = new AbstractAction ("Pants")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
-
-		final Action yuckAction = new AbstractAction ("Yuck")
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev) {}
-		};
+		final Action blahAction = new LoggingAction ("Blah", (ev) -> {});
+		final Action pantsAction = new LoggingAction ("Pants", (ev) -> {});
+		final Action yuckAction = new LoggingAction ("Yuck", (ev) -> {});
 		
 		testUnitInfoPanel (new Action [] {blahAction, pantsAction, yuckAction});
 	}

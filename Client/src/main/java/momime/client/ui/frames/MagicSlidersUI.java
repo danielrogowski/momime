@@ -1,7 +1,6 @@
 package momime.client.ui.frames;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -26,6 +24,15 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.language.database.ProductionTypeLang;
@@ -49,14 +56,6 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Screen allowing setting magic power distribution into mana/research/skill, and viewing overland enchantments
@@ -198,88 +197,53 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
 		
 		// Actions
-		alchemyAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getAlchemyUI ().setVisible (true);
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-			}
-		}; 
+		alchemyAction = new LoggingAction ((ev) -> getAlchemyUI ().setVisible (true));
 		
-		applyAction = new AbstractAction ()
+		applyAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// Do we need to inform the server of changed values?
+			final MagicPowerDistribution dist = getClient ().getOurPersistentPlayerPrivateKnowledge ().getMagicPowerDistribution ();
+			if ((lastValuesSentToServer == null) || (lastValuesSentToServer.getManaRatio () != dist.getManaRatio ()) ||
+				(lastValuesSentToServer.getResearchRatio () != dist.getResearchRatio ()) || (lastValuesSentToServer.getSkillRatio () != dist.getSkillRatio ()))
 			{
-				// Do we need to inform the server of changed values?
-				final MagicPowerDistribution dist = getClient ().getOurPersistentPlayerPrivateKnowledge ().getMagicPowerDistribution ();
-				if ((lastValuesSentToServer == null) || (lastValuesSentToServer.getManaRatio () != dist.getManaRatio ()) ||
-					(lastValuesSentToServer.getResearchRatio () != dist.getResearchRatio ()) || (lastValuesSentToServer.getSkillRatio () != dist.getSkillRatio ()))
-				{
-					// Remember what we're sending - take a full copy of it - don't just point at the same object
-					lastValuesSentToServer = new MagicPowerDistribution ();
-					lastValuesSentToServer.setManaRatio			(dist.getManaRatio ());
-					lastValuesSentToServer.setResearchRatio	(dist.getResearchRatio ());
-					lastValuesSentToServer.setSkillRatio			(dist.getSkillRatio ());
-					
-					// Send it
-					final UpdateMagicPowerDistributionMessage msg = new UpdateMagicPowerDistributionMessage ();
-					msg.setDistribution (dist);
-					try
-					{
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					
-						// Update the mana per turn shown on the right hand panel of the overland map
-						getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
-						
-						// We might not need to research a spell anymore if we set RP slider to nothing
-						getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-				}
-			}
-		};
-		
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				applyAction.actionPerformed (ev);
+				// Remember what we're sending - take a full copy of it - don't just point at the same object
+				lastValuesSentToServer = new MagicPowerDistribution ();
+				lastValuesSentToServer.setManaRatio			(dist.getManaRatio ());
+				lastValuesSentToServer.setResearchRatio	(dist.getResearchRatio ());
+				lastValuesSentToServer.setSkillRatio			(dist.getSkillRatio ());
 				
-				// Hide the screen
-				getFrame ().setVisible (false);
+				// Send it
+				final UpdateMagicPowerDistributionMessage msg = new UpdateMagicPowerDistributionMessage ();
+				msg.setDistribution (dist);
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+				// Update the mana per turn shown on the right hand panel of the overland map
+				getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
+				
+				// We might not need to research a spell anymore if we set RP slider to nothing
+				getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 			}
-		};				
+		});
+		
+		okAction = new LoggingAction ((ev) ->
+		{
+			applyAction.actionPerformed (ev);
+			getFrame ().setVisible (false);
+		});				
 				
 		// Set whether the 3 slides are enabled.
 		// Even if a slider is unlocked, we only want to enable it if at least two sliders are unlocked.
 		final List<MagicSlider> sliders = new ArrayList<MagicSlider> ();
-		final Action lockAction = new AbstractAction ()
+		final Action lockAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				int unlocked = 0;
-				for (final MagicSlider slider : sliders)
-					if (!slider.isLocked ())
-						unlocked++;
+			int unlocked = 0;
+			for (final MagicSlider slider : sliders)
+				if (!slider.isLocked ())
+					unlocked++;
 
-				for (final MagicSlider slider : sliders)
-					slider.getSlider ().setEnabled ((!slider.isLocked ()) && (unlocked >= 2));
-			}
-		};
+			for (final MagicSlider slider : sliders)
+				slider.getSlider ().setEnabled ((!slider.isLocked ()) && (unlocked >= 2));
+		});
 
 		final ChangeListener sliderChanged = new ChangeListener ()
 		{

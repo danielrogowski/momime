@@ -9,8 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -19,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -39,6 +36,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.MouseClickListener;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -353,168 +351,39 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		getPanel ().setPreferredSize (backgroundSize);
 		
 		// Actions
-		nextTurnAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().nextTurnButton ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
-		doneAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().selectedUnitsDone ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
-		patrolAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().selectedUnitsPatrol ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
-		waitAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().selectedUnitsWait ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		nextTurnAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().nextTurnButton ());
+		doneAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().selectedUnitsDone ());
+		patrolAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().selectedUnitsPatrol ());
+		waitAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().selectedUnitsWait ());
 
-		createOutpostAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_CITY);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		buildRoadAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_ROAD);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		meldWithNodeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.MELD_WITH_NODE);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-
-		purifyAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.PURIFY);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		createOutpostAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_CITY));
+		buildRoadAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_ROAD));
+		meldWithNodeAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.MELD_WITH_NODE));
+		purifyAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.PURIFY));
 		
-		cancelAction = new AbstractAction ()
+		cancelAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// What are we cancelling - check the top part of the panel
+			switch (getTop ())
 			{
-				try
-				{
-					// What are we cancelling - check the top part of the panel
-					switch (getTop ())
-					{
-						case SURVEYOR:
-							getOverlandMapProcessing ().updateMovementRemaining ();
-							break;
-							
-						case TARGET_SPELL:
-							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-							msg.setTitleLanguageCategoryID ("SpellTargetting");
-							msg.setTitleLanguageEntryID ("CancelTitle");
-							msg.setTextLanguageCategoryID ("SpellTargetting");
-							msg.setTextLanguageEntryID ("CancelText");
-							msg.setCancelTargettingSpell (getTargetSpell ());
-							msg.setVisible (true);
-							break;
-							
-						default:
-							log.warn ("Cancel button clicked in overland map RHP but don't know what we're cancelling, top = " + getTop ());
-					}
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
+				case SURVEYOR:
+					getOverlandMapProcessing ().updateMovementRemaining ();
+					break;
+					
+				case TARGET_SPELL:
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("SpellTargetting");
+					msg.setTitleLanguageEntryID ("CancelTitle");
+					msg.setTextLanguageCategoryID ("SpellTargetting");
+					msg.setTextLanguageEntryID ("CancelText");
+					msg.setCancelTargettingSpell (getTargetSpell ());
+					msg.setVisible (true);
+					break;
+					
+				default:
+					log.warn ("Cancel button clicked in overland map RHP but don't know what we're cancelling, top = " + getTop ());
 			}
-		};
+		});
 		
 		// Set up layout
 		getPanel ().setLayout (new GridBagLayout ());
@@ -899,19 +768,15 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		updateGlobalEconomyValues ();
 		
 		// Set up animation to make the colour patches slide along
-		new Timer (30, new ActionListener ()
+		new Timer (30, (ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			if (colourPatchCurrentPos != colourPatchDesiredPos)
 			{
-				if (colourPatchCurrentPos != colourPatchDesiredPos)
-				{
-					colourPatchCurrentPos++;
-					if (colourPatchCurrentPos >= getClient ().getPlayers ().size () * COLOUR_PATCH_WIDTH)
-						colourPatchCurrentPos = 0;
-					
-					colourPatches.repaint ();
-				}
+				colourPatchCurrentPos++;
+				if (colourPatchCurrentPos >= getClient ().getPlayers ().size () * COLOUR_PATCH_WIDTH)
+					colourPatchCurrentPos = 0;
+				
+				colourPatches.repaint ();
 			}
 		}).start ();
 		

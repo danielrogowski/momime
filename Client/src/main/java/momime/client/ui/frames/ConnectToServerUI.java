@@ -8,13 +8,11 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
@@ -27,17 +25,18 @@ import javax.swing.event.DocumentListener;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.language.database.KnownServerLang;
-import momime.client.ui.MomUIConstants;
-import momime.client.ui.dialogs.MessageBoxUI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.sessionbase.CreateAccount;
 import com.ndg.multiplayer.sessionbase.Login;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
+
+import momime.client.MomClient;
+import momime.client.language.database.KnownServerLang;
+import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 
 /**
  * Screen for choosing a server to connect to
@@ -121,66 +120,55 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		final BufferedImage editbox = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox125x23.png");
 
 		// Actions
-		cancelAction = new AbstractAction ()
-		{
-			@Override
-			public void actionPerformed (final ActionEvent e)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 
-		okAction = new AbstractAction ()
+		okAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			try
 			{
+				getClient ().setServerAddress (ipAddress.getText ());
+				getClient ().connect ();
+				
+				// The next thing that happens from there is we either get an exception if we can't
+				// connect, or the server sends NewGameDatabaseMessage if we can
+				// See the afterConnected () method below
+			}
+			catch (final Exception e)
+			{
+				// Get the key for the message in the langauge XML
+				// This still uses the old Delphi numeric codes, but didn't see much point in changing them, they're just keys
+				final String entryID;
+				if (e instanceof UnknownHostException)
+					entryID = "10049";
+				else if (e instanceof ConnectException)
+				{
+					if (e.getMessage ().contains ("timed"))
+						entryID = "10060";
+					else
+						entryID = "10061";
+				}
+				else
+				{
+					entryID = "Other";
+					log.error (e, e);
+				}
+
+				// Display in window
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setTitleLanguageCategoryID ("ConnectionErrors");
+				msg.setTitleLanguageEntryID ("Title");
+				msg.setTextLanguageCategoryID ("ConnectionErrors");
+				msg.setTextLanguageEntryID (entryID);
 				try
 				{
-					getClient ().setServerAddress (ipAddress.getText ());
-					getClient ().connect ();
-					
-					// The next thing that happens from there is we either get an exception if we can't
-					// connect, or the server sends NewGameDatabaseMessage if we can
-					// See the afterConnected () method below
+					msg.setVisible (true);
 				}
-				catch (final Exception e)
+				catch (final Exception e2)
 				{
-					// Get the key for the message in the langauge XML
-					// This still uses the old Delphi numeric codes, but didn't see much point in changing them, they're just keys
-					final String entryID;
-					if (e instanceof UnknownHostException)
-						entryID = "10049";
-					else if (e instanceof ConnectException)
-					{
-						if (e.getMessage ().contains ("timed"))
-							entryID = "10060";
-						else
-							entryID = "10061";
-					}
-					else
-					{
-						entryID = "Other";
-						log.error (e, e);
-					}
-
-					// Display in window
-					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("ConnectionErrors");
-					msg.setTitleLanguageEntryID ("Title");
-					msg.setTextLanguageCategoryID ("ConnectionErrors");
-					msg.setTextLanguageEntryID (entryID);
-					try
-					{
-						msg.setVisible (true);
-					}
-					catch (final Exception e2)
-					{
-						log.error (e2, e2);
-					}
+					log.error (e2, e2);
 				}
 			}
-		};
+		});
 		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
@@ -228,14 +216,8 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		int gridy = 3;
 		for (final KnownServerLang server : getLanguage ().getKnownServers ())
 		{
-			final Action serverAction = new AbstractAction (server.getKnownServerDescription () + " (" + server.getKnownServerIP () + ")")
-			{
-				@Override
-				public void actionPerformed (final ActionEvent ev)
-				{
-					ipAddress.setText (server.getKnownServerIP ());
-				}
-			};
+			final Action serverAction = new LoggingAction (server.getKnownServerDescription () + " (" + server.getKnownServerIP () + ")",
+				(ev) -> ipAddress.setText (server.getKnownServerIP ()));
 			
 			// There's no "disabled" image for the wide button
 			contentPane.add (getUtils ().createImageButton (serverAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),

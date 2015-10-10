@@ -1,11 +1,9 @@
 package momime.client.ui.frames;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -15,15 +13,16 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
-import momime.client.MomClient;
-import momime.client.ui.MomUIConstants;
-import momime.client.ui.renderer.QueuedSpellListCellRenderer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+
+import momime.client.MomClient;
+import momime.client.ui.MomUIConstants;
+import momime.client.ui.renderer.QueuedSpellListCellRenderer;
 
 /**
  * Screen showing all overland spells queued up to be cast, so we can cancel some if desired.
@@ -78,14 +77,7 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
 
 		// Actions
-		closeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
 		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);

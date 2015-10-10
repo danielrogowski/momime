@@ -2,13 +2,11 @@ package momime.client.ui.frames;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -16,17 +14,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import momime.client.MomClient;
-import momime.client.ui.MomUIConstants;
-import momime.common.messages.clienttoserver.ChooseCityNameMessage;
-import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+
+import momime.client.MomClient;
+import momime.client.ui.MomUIConstants;
+import momime.common.messages.clienttoserver.ChooseCityNameMessage;
+import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
 
 /**
  * Frame which a prompt, text box, and takes some action when OK is clicked
@@ -96,42 +95,31 @@ public final class EditStringUI extends MomClientFrameUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/okButton41x15Pressed.png");
 
 		// Actions
-		okAction = new AbstractAction ()
+		okAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// Take whatever action is appropriate for the string being edited
+			if (getCityBeingNamed () != null)
 			{
-				try
-				{
-					// Take whatever action is appropriate for the string being edited
-					if (getCityBeingNamed () != null)
-					{
-						final ChooseCityNameMessage msg = new ChooseCityNameMessage ();
-						msg.setCityLocation (getCityBeingNamed ());
-						msg.setCityName (getText ());
-					
-						getClient ().getServerConnection ().sendMessageToServer (msg);					
-					}
-					else if (getUnitBeingNamed () != null)
-					{
-						final RequestUpdateUnitNameMessage msg = new RequestUpdateUnitNameMessage ();
-						msg.setUnitURN (getUnitBeingNamed ());
-						msg.setUnitName (getText ());
-						
-						getClient ().getServerConnection ().sendMessageToServer (msg);					
-					}
-					else
-						log.warn ("EditStringUI had string entered for prompt \"" + promptLabel.getText () + " but took no action from clicking the OK button");
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-				
-				// Close out the window
-				getFrame ().dispose ();
+				final ChooseCityNameMessage msg = new ChooseCityNameMessage ();
+				msg.setCityLocation (getCityBeingNamed ());
+				msg.setCityName (getText ());
+			
+				getClient ().getServerConnection ().sendMessageToServer (msg);					
 			}
-		};
+			else if (getUnitBeingNamed () != null)
+			{
+				final RequestUpdateUnitNameMessage msg = new RequestUpdateUnitNameMessage ();
+				msg.setUnitURN (getUnitBeingNamed ());
+				msg.setUnitName (getText ());
+				
+				getClient ().getServerConnection ().sendMessageToServer (msg);					
+			}
+			else
+				log.warn ("EditStringUI had string entered for prompt \"" + promptLabel.getText () + " but took no action from clicking the OK button");
+				
+			// Close out the window
+			getFrame ().dispose ();
+		});
 		
 		// Initialize the frame
 		final EditStringUI ui = this;

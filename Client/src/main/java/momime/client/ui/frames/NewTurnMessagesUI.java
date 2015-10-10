@@ -3,7 +3,6 @@ package momime.client.ui.frames;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -11,12 +10,19 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.newturnmessages.NewTurnMessageAnimated;
 import momime.client.newturnmessages.NewTurnMessageClickable;
@@ -24,13 +30,6 @@ import momime.client.newturnmessages.NewTurnMessageRepaintOnCityDataChanged;
 import momime.client.newturnmessages.NewTurnMessageUI;
 import momime.client.ui.renderer.NewTurnMessageRenderer;
 import momime.client.utils.AnimationController;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Scroll that displays new turn messages like "City of blah has grown from population 4,900 to 5,050" or "City of blah has finished constructing a Granary" or
@@ -83,14 +82,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		final int bottomRollerBottom = bottomRollerTop + roller.getHeight ();
 
 		// Actions
-		final Action closeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		final Action closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()

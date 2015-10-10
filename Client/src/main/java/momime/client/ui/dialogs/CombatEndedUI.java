@@ -4,18 +4,23 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.messages.process.CombatEndedMessageImpl;
@@ -24,12 +29,6 @@ import momime.client.utils.TextUtils;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Popup box at the end of a combat, it doesn't do much, just says whether we won or lost and
@@ -84,14 +83,7 @@ public final class CombatEndedUI extends MomClientDialogUI
 		final BufferedImage closeButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/closeButtonPressed.png");
 		
 		// Actions
-		final Action closeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getDialog ().dispose ();
-			}
-		};
+		final Action closeAction = new LoggingAction ((ev) -> getDialog ().dispose ());
 		
 		// Initialize the dialog
 		final CombatEndedUI ui = this;

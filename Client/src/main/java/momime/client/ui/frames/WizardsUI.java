@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -22,6 +20,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -36,14 +43,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerKnowledgeUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Wizards screen, for checking everybodys' picks and diplomacy
@@ -128,14 +127,7 @@ public final class WizardsUI extends MomClientFrameUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
 
 		// Actions
-		closeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
 		contentPane = getUtils ().createPanelWithBackgroundImage (background);

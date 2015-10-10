@@ -1,19 +1,25 @@
 package momime.client.ui.dialogs;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.language.database.ShortcutKeyLang;
@@ -31,13 +37,6 @@ import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.RushBuyMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Modal dialog which displays a message with an OK button, or a Yes and No choice, with Yes taking some action
@@ -131,123 +130,94 @@ public final class MessageBoxUI extends MomClientDialogUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
 
 		// Actions
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getDialog ().dispose ();
-			}
-		};
+		okAction = new LoggingAction ((ev) -> getDialog ().dispose ());
 		
-		noAction = new AbstractAction ()
+		noAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					// Cancel cancel targetting a spell, leaving it on the NTM list to be retargetted again, but still we have to close out the "Target Spell" right hand panel
-					if (getCancelTargettingSpell () != null)
-						getOverlandMapProcessing ().updateMovementRemaining ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
+			// Cancel cancel targetting a spell, leaving it on the NTM list to be retargetted again, but still we have to close out the "Target Spell" right hand panel
+			if (getCancelTargettingSpell () != null)
+				getOverlandMapProcessing ().updateMovementRemaining ();
 
-				// Close the form
-				getDialog ().dispose ();
-			}
-		};
+			// Close the form
+			getDialog ().dispose ();
+		});
 		
-		yesAction = new AbstractAction ()
+		yesAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			// Dismiss a unit on overland map
+			if (getUnitToDismiss () != null)
 			{
-				try
-				{
-					// Dismiss a unit on overland map
-					if (getUnitToDismiss () != null)
-					{
-						final DismissUnitMessage msg = new DismissUnitMessage ();
-						msg.setUnitURN (getUnitToDismiss ().getUnitURN ());
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
-					
-					// Rush buy current construction project or sell a building
-					else if (getCityLocation () != null)
-					{
-						if (getBuildingURN () == null)
-						{
-							final RushBuyMessage msg = new RushBuyMessage ();
-							msg.setCityLocation (getCityLocation ());
-							getClient ().getServerConnection ().sendMessageToServer (msg);
-						}
-						else
-						{
-							final SellBuildingMessage msg = new SellBuildingMessage ();
-							msg.setCityLocation (getCityLocation ());
-							msg.setBuildingURN (getBuildingURN ());
-							getClient ().getServerConnection ().sendMessageToServer (msg);
-						}
-					}
-					
-					// Research a spell
-					else if (getResearchSpellID () != null)
-					{
-						final RequestResearchSpellMessage msg = new RequestResearchSpellMessage ();
-						msg.setSpellID (getResearchSpellID ());
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
-					
-					// Cast a spell
-					else if (getCastSpellID () != null)
-					{
-						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-						msg.setSpellID (getResearchSpellID ());
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
-					
-					// Cancel targetting a spell
-					else if (getCancelTargettingSpell () != null)
-					{
-						// Mark the NTM as cancelled
-						getCancelTargettingSpell ().setTargettingCancelled (true);
-						
-						// Redraw the NTMs
-						getNewTurnMessagesUI ().languageChanged ();
-						
-						// Server will have spell listed in their Maintained Spells list, so tell the server to remove it
-						final CancelTargetSpellMessage msg = new CancelTargetSpellMessage ();
-						msg.setSpellID (getCancelTargettingSpell ().getSpellID ());
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-						
-						// Close out the "Target Spell" right hand panel
-						getOverlandMapProcessing ().updateMovementRemaining ();
-					}
-					
-					// Switch off a spell
-					else if (getSwitchOffSpell () != null)
-					{
-						final RequestSwitchOffMaintainedSpellMessage msg = new RequestSwitchOffMaintainedSpellMessage ();
-					    msg.setSpellURN (getSwitchOffSpell ().getSpellURN ());
-					    getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
-					
-					else
-						log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-				
-				// Close the form
-				getDialog ().dispose ();
+				final DismissUnitMessage msg = new DismissUnitMessage ();
+				msg.setUnitURN (getUnitToDismiss ().getUnitURN ());
+				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
-		};
+			
+			// Rush buy current construction project or sell a building
+			else if (getCityLocation () != null)
+			{
+				if (getBuildingURN () == null)
+				{
+					final RushBuyMessage msg = new RushBuyMessage ();
+					msg.setCityLocation (getCityLocation ());
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+				}
+				else
+				{
+					final SellBuildingMessage msg = new SellBuildingMessage ();
+					msg.setCityLocation (getCityLocation ());
+					msg.setBuildingURN (getBuildingURN ());
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+				}
+			}
+			
+			// Research a spell
+			else if (getResearchSpellID () != null)
+			{
+				final RequestResearchSpellMessage msg = new RequestResearchSpellMessage ();
+				msg.setSpellID (getResearchSpellID ());
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+			
+			// Cast a spell
+			else if (getCastSpellID () != null)
+			{
+				final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+				msg.setSpellID (getResearchSpellID ());
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+			
+			// Cancel targetting a spell
+			else if (getCancelTargettingSpell () != null)
+			{
+				// Mark the NTM as cancelled
+				getCancelTargettingSpell ().setTargettingCancelled (true);
+				
+				// Redraw the NTMs
+				getNewTurnMessagesUI ().languageChanged ();
+				
+				// Server will have spell listed in their Maintained Spells list, so tell the server to remove it
+				final CancelTargetSpellMessage msg = new CancelTargetSpellMessage ();
+				msg.setSpellID (getCancelTargettingSpell ().getSpellID ());
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+				
+				// Close out the "Target Spell" right hand panel
+				getOverlandMapProcessing ().updateMovementRemaining ();
+			}
+			
+			// Switch off a spell
+			else if (getSwitchOffSpell () != null)
+			{
+				final RequestSwitchOffMaintainedSpellMessage msg = new RequestSwitchOffMaintainedSpellMessage ();
+			    msg.setSpellURN (getSwitchOffSpell ().getSpellURN ());
+			    getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+			
+			else
+				log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
+				
+			// Close the form
+			getDialog ().dispose ();
+		});
 		
 		// Initialize the dialog
 		final MessageBoxUI ui = this;

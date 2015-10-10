@@ -7,14 +7,12 @@ import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Iterator;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -32,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
@@ -155,51 +154,33 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		final BufferedImage changeConstructionBackground = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/changeConstruction.png");
 		
 		// Actions
-		cancelAction = new AbstractAction ()
+		cancelAction = new LoggingAction ((ev) -> getFrame ().dispose ());
+
+		okAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+
+			if (((getUnitInfoPanel ().getBuilding () != null) && (!getUnitInfoPanel ().getBuilding ().getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
+				((getUnitInfoPanel ().getUnit () != null) && (!getUnitInfoPanel ().getUnit ().getUnitID ().equals ( cityData.getCurrentlyConstructingUnitID ()))))
 			{
-				getFrame ().dispose ();
-			}
-		};
-
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-
-				if (((getUnitInfoPanel ().getBuilding () != null) && (!getUnitInfoPanel ().getBuilding ().getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
-					((getUnitInfoPanel ().getUnit () != null) && (!getUnitInfoPanel ().getUnit ().getUnitID ().equals ( cityData.getCurrentlyConstructingUnitID ()))))
-				{
-					// Tell server that we want to change our construction
-					// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
-					final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-					
-					if (getUnitInfoPanel ().getBuilding () != null)
-						msg.setBuildingID (getUnitInfoPanel ().getBuilding ().getBuildingID ());
-
-					if (getUnitInfoPanel ().getUnit () != null)
-						msg.setUnitID (getUnitInfoPanel ().getUnit ().getUnitID ());
-					
-					msg.setCityLocation (getCityLocation ());
-					try
-					{
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-				}
+				// Tell server that we want to change our construction
+				// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+				final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
 				
-				// Close form even if we didn't change what's being constructed
-				getFrame ().dispose ();
+				if (getUnitInfoPanel ().getBuilding () != null)
+					msg.setBuildingID (getUnitInfoPanel ().getBuilding ().getBuildingID ());
+
+				if (getUnitInfoPanel ().getUnit () != null)
+					msg.setUnitID (getUnitInfoPanel ().getUnit ().getUnitID ());
+				
+				msg.setCityLocation (getCityLocation ());
+				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
-		};
+			
+			// Close form even if we didn't change what's being constructed
+			getFrame ().dispose ();
+		});
 		
 		// Must do this prior to calling .getPanel () on it
 		getUnitInfoPanel ().getActions ().add (cancelAction);

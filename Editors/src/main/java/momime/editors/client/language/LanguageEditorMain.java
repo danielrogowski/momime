@@ -1,21 +1,18 @@
 package momime.editors.client.language;
 
-import java.awt.event.ActionEvent;
 import java.util.Iterator;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
-
-import momime.server.database.ServerDatabaseConstants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
+import com.ndg.swing.actions.MessageDialogAction;
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.doc.XmlDocument;
@@ -23,6 +20,8 @@ import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.schema.ComplexTypeEx;
 import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
+
+import momime.server.database.ServerDatabaseConstants;
 
 /**
  * Specialised main window for the language XML editor which adds an option to the File menu
@@ -46,32 +45,20 @@ public final class LanguageEditorMain extends XmlEditorMain
 
 		// Special option to check all entries from the server XML file exist in this language XML file
 		final LanguageEditorMain form = this;
-		final Action checkAction = new AbstractAction ("Verify that all necessary entries are in the Language XML file")
+		final Action checkAction = new MessageDialogAction ("Verify that all necessary entries are in the Language XML file", (ev) ->
 		{
-			@Override
-			public void actionPerformed (final ActionEvent event)
-			{
-				try
-				{
-					final XmlDocument serverXml = getXmlDocuments ().findDocumentWithNamespaceURI (ServerDatabaseConstants.SERVER_XSD_NAMESPACE_URI);
+			final XmlDocument serverXml = getXmlDocuments ().findDocumentWithNamespaceURI (ServerDatabaseConstants.SERVER_XSD_NAMESPACE_URI);
 
-					String valuesAdded = form.checkNode (serverXml.getXml (),
-						getXmlDocuments ().get (0).getXml (), getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition ());
+			String valuesAdded = form.checkNode (serverXml.getXml (),
+				getXmlDocuments ().get (0).getXml (), getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition ());
 
-					if (valuesAdded.equals (""))
-						valuesAdded = "Language XML file checks out OK against Server XML file - all necessary entries were already present.";
-					else
-						valuesAdded = "The following missing entries were added.  Ensure you re-load the editor after fixing these values up to prove all mandatory fields are present." + valuesAdded;
+			if (valuesAdded.equals (""))
+				valuesAdded = "Language XML file checks out OK against Server XML file - all necessary entries were already present.";
+			else
+				valuesAdded = "The following missing entries were added.  Ensure you re-load the editor after fixing these values up to prove all mandatory fields are present." + valuesAdded;
 
-					JOptionPane.showMessageDialog (null, valuesAdded, FORM_TITLE, JOptionPane.INFORMATION_MESSAGE);
-				}
-				catch (final XmlEditorException e)
-				{
-					log.error (e, e);
-					JOptionPane.showMessageDialog (null, e.toString (), FORM_TITLE, JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		};
+			JOptionPane.showMessageDialog (null, valuesAdded, FORM_TITLE, JOptionPane.INFORMATION_MESSAGE);
+		});
 
 		final JMenuItem checkOption = new JMenuItem ();
 		checkOption.setAction (checkAction);

@@ -2,7 +2,6 @@ package momime.client.ui.frames;
 
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -25,6 +23,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
@@ -207,38 +206,27 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
 		
 		// Actions
-		okAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		okAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
-		final Action changeUnitCombatScaleAction = new AbstractAction ()
+		final Action changeUnitCombatScaleAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			switch (getClientConfig ().getUnitCombatScale ())
 			{
-				switch (getClientConfig ().getUnitCombatScale ())
-				{
-					case DOUBLE_SIZE_UNITS:
-						getClientConfig ().setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES);
-						break;
-						
-					case FOUR_TIMES_FIGURES:
-						getClientConfig ().setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED);
-						break;
-						
-					case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
-						getClientConfig ().setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);
-						break;
-				}
-				
-				saveConfigFile ();
+				case DOUBLE_SIZE_UNITS:
+					getClientConfig ().setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES);
+					break;
+					
+				case FOUR_TIMES_FIGURES:
+					getClientConfig ().setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED);
+					break;
+					
+				case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
+					getClientConfig ().setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);
+					break;
 			}
-		};			
+			
+			saveConfigFile ();
+		});			
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()

@@ -9,11 +9,9 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -30,6 +28,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsHorizontalFill;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -173,14 +172,7 @@ public final class HelpUI extends MomClientFrameUI
 		final int bottomRollerBottom = bottomRollerTop + roller.getHeight ();
 
 		// Actions
-		final Action closeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		final Action closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
 		contentPane = new JPanel ()

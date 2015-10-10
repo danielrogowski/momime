@@ -3,13 +3,11 @@ package momime.client.ui.frames;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -25,6 +23,7 @@ import com.ndg.multiplayer.sessionbase.LoadGame;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;
 import com.ndg.multiplayer.sessionbase.SavedGameSession;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.utils.DateFormats;
@@ -114,74 +113,41 @@ public final class LoadGameUI extends MomClientFrameUI
 		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldDisabled.png");
 
 		// Actions
-		cancelAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
-		selectSavedGameAction = new AbstractAction ()
+		selectSavedGameAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				selectSavePointAction.setEnabled (false);
-				
-				final SavedGameSession savedGame = getSavedGames ().get (savedGamesTable.getSelectedRow ());
+			selectSavePointAction.setEnabled (false);
+			
+			final SavedGameSession savedGame = getSavedGames ().get (savedGamesTable.getSelectedRow ());
 
-				final BrowseSavePoints msg = new BrowseSavePoints ();
-				msg.setSavedGameID (savedGame.getSessionDescription ().getSavedGameID ());
-				
-				try
-				{
-					getClient ().getServerConnection ().sendMessageToServer (msg);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			final BrowseSavePoints msg = new BrowseSavePoints ();
+			msg.setSavedGameID (savedGame.getSessionDescription ().getSavedGameID ());
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		});
 		
-		selectSavePointAction = new AbstractAction ()
+		selectSavePointAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				final SavedGameSession savedGame = getSavedGames ().get (savedGamesTable.getSelectedRow ());
-				final SavedGamePoint savePoint = getSavePoints ().get (savePointsTable.getSelectedRow ());
+			final SavedGameSession savedGame = getSavedGames ().get (savedGamesTable.getSelectedRow ());
+			final SavedGamePoint savePoint = getSavePoints ().get (savePointsTable.getSelectedRow ());
 
-				final LoadGame msg = new LoadGame ();
-				msg.setSavedGameID (savedGame.getSessionDescription ().getSavedGameID ());
-				msg.setSavedGameFilename (savePoint.getSavedGameFilename ());
-				
-				try
-				{
-					getClient ().getServerConnection ().sendMessageToServer (msg);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			final LoadGame msg = new LoadGame ();
+			msg.setSavedGameID (savedGame.getSessionDescription ().getSavedGameID ());
+			msg.setSavedGameFilename (savePoint.getSavedGameFilename ());
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		});
 
 		// Back goes back from the save points to the list of all saved games
-		backAction = new AbstractAction ()
+		backAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				savedGamesTablePane.setVisible (true);
-				savePointsTablePane.setVisible (false);
-				selectSavedGameButton.setVisible (true);
-				selectSavePointButton.setVisible (false);
-				backButton.setVisible (false);
-			}
-		};
+			savedGamesTablePane.setVisible (true);
+			savePointsTablePane.setVisible (false);
+			selectSavedGameButton.setVisible (true);
+			selectSavePointButton.setVisible (false);
+			backButton.setVisible (false);
+		});
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()

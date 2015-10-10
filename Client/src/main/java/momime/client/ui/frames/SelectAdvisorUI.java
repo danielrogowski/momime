@@ -3,11 +3,9 @@ package momime.client.ui.frames;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
@@ -15,18 +13,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+
 import momime.client.language.database.ShortcutKeyLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.common.database.Shortcut;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Popup from clicking the Info button on the overland map.  Gives all the choices like F1=surveyor, F7=tax rate and so on.
@@ -111,116 +110,40 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button234x14Pressed.png");
 		
 		// Actions
-		surveyorAction = new AbstractAction ()
+		surveyorAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getOverlandMapRightHandPanel ().setTop (OverlandMapRightHandPanelTop.SURVEYOR);
-				getOverlandMapRightHandPanel ().setBottom (OverlandMapRightHandPanelBottom.CANCEL);
-				
-				try
-				{
-					getOverlandMapRightHandPanel ().setSurveyorLocation (null);
-					setVisible (false);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			getOverlandMapRightHandPanel ().setTop (OverlandMapRightHandPanelTop.SURVEYOR);
+			getOverlandMapRightHandPanel ().setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+			getOverlandMapRightHandPanel ().setSurveyorLocation (null);
+			
+			setVisible (false);
+		});
 		
-		cartographerAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
+		cartographerAction = new LoggingAction ((ev) -> {});
 		
-		apprenticeAction = new AbstractAction ()
+		apprenticeAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getQueuedSpellsUI ().setVisible (true);
-					setVisible (false);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			getQueuedSpellsUI ().setVisible (true);
+			setVisible (false);
+		});
 		
-		historianAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
+		historianAction = new LoggingAction ((ev) -> {});
+		astrologerAction = new LoggingAction ((ev) -> {});
+		chancellorAction = new LoggingAction ((ev) -> {});
 		
-		astrologerAction = new AbstractAction ()
+		taxCollectorAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
+			getTaxRateUI ().setVisible (true);
+			setVisible (false);
+		});
 		
-		chancellorAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
+		grandVizierAction = new LoggingAction ((ev) -> {});
 		
-		taxCollectorAction = new AbstractAction ()
+		wizardsAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getTaxRateUI ().setVisible (true);
-					setVisible (false);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
-		grandVizierAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-			}
-		};
-		
-		wizardsAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					getWizardsUI ().setVisible (true);
-					setVisible (false);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+			getWizardsUI ().setVisible (true);
+			setVisible (false);
+		});
 		
 		// Initialize the content pane
 		contentPane = getUtils ().createPanelWithBackgroundImage (background);

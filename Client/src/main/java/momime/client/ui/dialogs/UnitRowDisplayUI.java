@@ -3,7 +3,6 @@ package momime.client.ui.dialogs;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +18,7 @@ import javax.swing.WindowConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -130,14 +129,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redPressed.png");
 		
 		// Actions
-		cancelAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getDialog ().dispose ();
-			}
-		};
+		cancelAction = new LoggingAction ((ev) -> getDialog ().dispose ());
 		
 		// Initialize the dialog
 		final UnitRowDisplayUI ui = this;
@@ -193,54 +185,43 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			row++;
 			
 			// Unit image/button
-			final Action selectAction = new AbstractAction ()
+			final Action selectAction = new LoggingAction ((ev) ->
 			{
-				@Override
-				public final void actionPerformed (final ActionEvent ev)
+				// Use common routine to do all the validation
+				final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+					(spell, null, getClient ().getOurPlayerID (), null, unit,
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				
+				if (validTarget == TargetSpellResult.VALID_TARGET)
 				{
-					try
-					{
-						// Use common routine to do all the validation
-						final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(spell, null, getClient ().getOurPlayerID (), null, unit,
-							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-						
-						if (validTarget == TargetSpellResult.VALID_TARGET)
-						{
-							final TargetSpellMessage msg = new TargetSpellMessage ();
-							msg.setSpellID (getTargetSpell ().getSpellID ());
-							msg.setUnitURN (unit.getUnitURN ());
-							getClient ().getServerConnection ().sendMessageToServer (msg);
-							
-							// Close out this window and the "Target Spell" right hand panel
-							getOverlandMapProcessing ().updateMovementRemaining ();
-							getDialog ().dispose ();
-						}
-						else if (validTarget.getUnitLanguageEntryID () != null)
-						{
-							final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
-							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-							
-							String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : getTargetSpell ().getSpellID ());
-							
-							// If spell can only be targetted on specific magic realm/lifeform types, the list them
-							if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
-								text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
-							
-							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-							msg.setTitleLanguageCategoryID ("SpellTargetting");
-							msg.setTitleLanguageEntryID ("Title");
-							msg.setText (text);
-							msg.setVisible (true);												
-						}
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+					final TargetSpellMessage msg = new TargetSpellMessage ();
+					msg.setSpellID (getTargetSpell ().getSpellID ());
+					msg.setUnitURN (unit.getUnitURN ());
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+					
+					// Close out this window and the "Target Spell" right hand panel
+					getOverlandMapProcessing ().updateMovementRemaining ();
+					getDialog ().dispose ();
 				}
-			};
+				else if (validTarget.getUnitLanguageEntryID () != null)
+				{
+					final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
+					final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+					
+					String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+						("SPELL_NAME", (spellName != null) ? spellName : getTargetSpell ().getSpellID ());
+					
+					// If spell can only be targetted on specific magic realm/lifeform types, the list them
+					if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
+						text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
+					
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("SpellTargetting");
+					msg.setTitleLanguageEntryID ("Title");
+					msg.setText (text);
+					msg.setVisible (true);												
+				}
+			});
 
 			final UnitRowDisplayButton button = getUiComponentFactory ().createUnitRowDisplayButton ();
 			button.setAction (selectAction);

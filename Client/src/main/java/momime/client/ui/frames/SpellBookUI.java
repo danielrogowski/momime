@@ -8,8 +8,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -22,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -31,6 +28,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
@@ -62,14 +68,6 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Spell book with fancy turning pages - the same book is used for casting spells overland, in combat, and research
@@ -220,134 +218,111 @@ public final class SpellBookUI extends MomClientFrameUI
 		final AnimationGfx pageTurnAnim = getGraphicsDB ().findAnimation (ANIM_PAGE_TURN, "SpellBookUI");
 		
 		// Actions
-		final Action closeAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				getFrame ().setVisible (false);
-			}
-		};
+		final Action closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 
-		turnPageLeftAction = new AbstractAction ()
+		turnPageLeftAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			turnPageLeftAction.setEnabled (false);
+			turnPageRightAction.setEnabled (false);
+			
+			// Any more pages available to turn after this anim finishes?
+			turnPageLeftButton.setHidden ((leftPageNumber - 2) <= 0);
+			
+			// Show page turn animation
+			if (pageTurnTimer != null)
+				pageTurnTimer.stop ();				
+			
+			pageTurnFrame = pageTurnAnim.getFrame ().size () - 1;
+			contentPane.repaint ();
+			
+			pageTurnTimer = new Timer ((int) (1000 / pageTurnAnim.getAnimationSpeed ()), (ev2) ->
 			{
-				turnPageLeftAction.setEnabled (false);
-				turnPageRightAction.setEnabled (false);
-				
-				// Any more pages available to turn after this anim finishes?
-				turnPageLeftButton.setHidden ((leftPageNumber - 2) <= 0);
-				
-				// Show page turn animation
-				if (pageTurnTimer != null)
-					pageTurnTimer.stop ();				
-				
-				pageTurnFrame = pageTurnAnim.getFrame ().size () - 1;
-				contentPane.repaint ();
-				
-				pageTurnTimer = new Timer ((int) (1000 / pageTurnAnim.getAnimationSpeed ()), new ActionListener ()
+				if ((pageTurnFrame == null) || (pageTurnFrame <= 0))
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev2)
+					if (pageTurnTimer != null)
+						pageTurnTimer.stop ();
+					
+					pageTurnTimer = null;
+					pageTurnFrame = null;
+					
+					turnPageRightButton.setHidden (false);
+					turnPageLeftAction.setEnabled (true);
+					turnPageRightAction.setEnabled (true);
+				}
+				else
+				{
+					pageTurnFrame = pageTurnFrame - 1;
+					
+					if (pageTurnFrame == 0)
 					{
-						if ((pageTurnFrame == null) || (pageTurnFrame <= 0))
-						{
-							if (pageTurnTimer != null)
-								pageTurnTimer.stop ();
-							
-							pageTurnTimer = null;
-							pageTurnFrame = null;
-							
-							turnPageRightButton.setHidden (false);
-							turnPageLeftAction.setEnabled (true);
-							turnPageRightAction.setEnabled (true);
-						}
-						else
-						{
-							pageTurnFrame = pageTurnFrame - 1;
-							
-							if (pageTurnFrame == 0)
-							{
-								// Update the right hand page while it is covered up
-								rightPageNumber = rightPageNumber - 2;
-								languageOrPageChanged ();
-							}
-							else if (pageTurnFrame == 2)
-							{
-								// Update the left hand page while it is covered up
-								leftPageNumber = leftPageNumber - 2;
-								languageOrPageChanged ();
-							}
-						}
-						
-						contentPane.repaint ();
+						// Update the right hand page while it is covered up
+						rightPageNumber = rightPageNumber - 2;
+						languageOrPageChanged ();
 					}
-				});
-				pageTurnTimer.start ();
-			}
-		};
+					else if (pageTurnFrame == 2)
+					{
+						// Update the left hand page while it is covered up
+						leftPageNumber = leftPageNumber - 2;
+						languageOrPageChanged ();
+					}
+				}
+				
+				contentPane.repaint ();
+			});
+			pageTurnTimer.start ();
+		});
 		
-		turnPageRightAction = new AbstractAction ()
+		turnPageRightAction = new LoggingAction ((ev) ->
 		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
+			turnPageLeftAction.setEnabled (false);
+			turnPageRightAction.setEnabled (false);
+
+			// Any more pages available to turn after this anim finishes?
+			turnPageRightButton.setHidden ((rightPageNumber + 2) + 1 >= pages.size ());
+
+			// Show page turn animation
+			if (pageTurnTimer != null)
+				pageTurnTimer.stop ();				
+			
+			pageTurnFrame = 0;
+			contentPane.repaint ();
+			
+			pageTurnTimer = new Timer ((int) (1000 / pageTurnAnim.getAnimationSpeed ()), (ev2) ->
 			{
-				turnPageLeftAction.setEnabled (false);
-				turnPageRightAction.setEnabled (false);
-
-				// Any more pages available to turn after this anim finishes?
-				turnPageRightButton.setHidden ((rightPageNumber + 2) + 1 >= pages.size ());
-
-				// Show page turn animation
-				if (pageTurnTimer != null)
-					pageTurnTimer.stop ();				
-				
-				pageTurnFrame = 0;
-				contentPane.repaint ();
-				
-				pageTurnTimer = new Timer ((int) (1000 / pageTurnAnim.getAnimationSpeed ()), new ActionListener ()
+				if ((pageTurnFrame == null) || (pageTurnFrame+1 >= pageTurnAnim.getFrame ().size ()))
 				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev2)
+					if (pageTurnTimer != null)
+						pageTurnTimer.stop ();
+					
+					pageTurnTimer = null;
+					pageTurnFrame = null;
+					
+					turnPageLeftButton.setHidden (false);
+					turnPageLeftAction.setEnabled (true);
+					turnPageRightAction.setEnabled (true);
+				}
+				else
+				{
+					pageTurnFrame = pageTurnFrame + 1;
+					
+					if (pageTurnFrame == 1)
 					{
-						if ((pageTurnFrame == null) || (pageTurnFrame+1 >= pageTurnAnim.getFrame ().size ()))
-						{
-							if (pageTurnTimer != null)
-								pageTurnTimer.stop ();
-							
-							pageTurnTimer = null;
-							pageTurnFrame = null;
-							
-							turnPageLeftButton.setHidden (false);
-							turnPageLeftAction.setEnabled (true);
-							turnPageRightAction.setEnabled (true);
-						}
-						else
-						{
-							pageTurnFrame = pageTurnFrame + 1;
-							
-							if (pageTurnFrame == 1)
-							{
-								// Update the right hand page while it is covered up
-								rightPageNumber = rightPageNumber + 2;
-								languageOrPageChanged ();
-							}
-							else if (pageTurnFrame == 3)
-							{
-								// Update the left hand page while it is covered up
-								leftPageNumber = leftPageNumber + 2;
-								languageOrPageChanged ();
-							}
-						}
-						
-						contentPane.repaint ();
+						// Update the right hand page while it is covered up
+						rightPageNumber = rightPageNumber + 2;
+						languageOrPageChanged ();
 					}
-				});
-				pageTurnTimer.start ();
-			}
-		};
+					else if (pageTurnFrame == 3)
+					{
+						// Update the left hand page while it is covered up
+						leftPageNumber = leftPageNumber + 2;
+						languageOrPageChanged ();
+					}
+				}
+				
+				contentPane.repaint ();
+			});
+			pageTurnTimer.start ();
+		});
 		
 		// Initialize the content pane
 		contentPane = new JPanel ()

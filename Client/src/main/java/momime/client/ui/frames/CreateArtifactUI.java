@@ -3,14 +3,12 @@ package momime.client.ui.frames;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,6 +18,7 @@ import javax.swing.JPanel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -91,37 +90,8 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		final BufferedImage rightArrowPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/goldArrowRightPressed.png");
 
 		// Actions
-		final Action previousImageAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					updateItemImage (-1);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		
-		final Action nextImageAction = new AbstractAction ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
-				try
-				{
-					updateItemImage (1);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
+		final Action previousImageAction = new LoggingAction ((ev) -> updateItemImage (-1));
+		final Action nextImageAction = new LoggingAction ((ev) -> updateItemImage (1));
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
@@ -148,21 +118,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		{
 			itemTypeNumber++;
 			
-			final Action itemTypeAction = new AbstractAction ()
-			{
-				@Override
-				public final void actionPerformed (final ActionEvent ev)
-				{
-					try
-					{
-						selectItemType (itemType);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-				}
-			};
+			final Action itemTypeAction = new LoggingAction ((ev) -> selectItemType (itemType));
 			
 			final JButton itemTypeButton = getUtils ().createImageButton (itemTypeAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 				itemTypeButtonNormal, itemTypeButtonPressed, itemTypeButtonNormal);

@@ -3,8 +3,6 @@ package momime.client.ui.dialogs;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -14,6 +12,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -28,15 +35,6 @@ import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.panels.CityViewPanel;
 import momime.common.messages.OverlandMapCityData;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Mini city screen, used to show spells and random effects.
@@ -193,29 +191,25 @@ public final class MiniCityViewUI extends MomClientDialogUI
 				else
 				{
 					// Set up a timer to add the spell or building after a while
-					timer = new Timer (spellGfx.getSoundAndImageDelay () * 1000, new ActionListener ()
+					timer = new Timer (spellGfx.getSoundAndImageDelay () * 1000, (ev) ->
 					{
-						@Override
-						public final void actionPerformed (final ActionEvent ev)
-						{
-							timer.stop ();
-							if (!added)
-								try
-								{
-									if (spellGfx.getSpellSoundFile () != null)
-										getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+						timer.stop ();
+						if (!added)
+							try
+							{
+								if (spellGfx.getSpellSoundFile () != null)
+									getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+							
+								addSpellOrBuilding ();
 								
-									addSpellOrBuilding ();
-									
-									// The added spell/building might need an additional animation set up for it
-									getCityViewPanel ().init ();
-									getCityViewPanel ().repaint ();		// In case it isn't an animation, still need to force a repaint
-								}
-								catch (final Exception e)
-								{
-									log.error (e, e);
-								}
-						}
+								// The added spell/building might need an additional animation set up for it
+								getCityViewPanel ().init ();
+								getCityViewPanel ().repaint ();		// In case it isn't an animation, still need to force a repaint
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
 					});
 					timer.start ();
 				}

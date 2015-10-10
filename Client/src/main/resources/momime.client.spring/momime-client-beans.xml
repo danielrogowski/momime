@@ -1217,6 +1217,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatUI" ref="combatUI" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="variableManaUI" ref="variableManaUI" />
+		<property name="createArtifactUI" ref="createArtifactUI" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 
@@ -1411,6 +1412,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="combatUI" ref="combatUI" />
+	</bean>
+	
+	<bean id="createArtifactLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CreateArtifactUI.xml" />
+	</bean>
+
+	<bean id="createArtifactUI" class="momime.client.ui.frames.CreateArtifactUI">
+		<property name="createArtifactLayout" ref="createArtifactLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
 	</bean>
 	
 	<!-- Prototype UI components -->

@@ -964,6 +964,12 @@ don't have a value (such as Fire Immunity or Mountaineer).  By convention MoM IM
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="MP per +1 dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemBonusMaximumCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Item Bonus Max Cost" nxe:gridwidth="150">
+		        <xsd:annotation>
+		        	<xsd:documentation>For summoning spells, identifies that the spell summons hero items (i.e. Enchant Item or Create Artifact).  The value indicates the most
+expensive bonus we are allowed to put onto the item.  A value of 0 allows all bonuses.  Spell Charges are only allowed if the value is 0.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:summonedUnit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSkillAndValue" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCityEffect" type="momimecommon:spellHasCityEffect" />

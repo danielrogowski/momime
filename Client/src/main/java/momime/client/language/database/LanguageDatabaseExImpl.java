@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.language.database.v0_9_7.Building;
 import momime.client.language.database.v0_9_7.CitySize;
 import momime.client.language.database.v0_9_7.CitySpellEffect;
@@ -11,6 +14,8 @@ import momime.client.language.database.v0_9_7.CombatAreaEffect;
 import momime.client.language.database.v0_9_7.DifficultyLevel;
 import momime.client.language.database.v0_9_7.FogOfWarSetting;
 import momime.client.language.database.v0_9_7.Hero;
+import momime.client.language.database.v0_9_7.HeroItemBonus;
+import momime.client.language.database.v0_9_7.HeroItemType;
 import momime.client.language.database.v0_9_7.LandProportion;
 import momime.client.language.database.v0_9_7.LanguageCategory;
 import momime.client.language.database.v0_9_7.LanguageDatabase;
@@ -39,9 +44,6 @@ import momime.client.language.database.v0_9_7.Wizard;
 import momime.common.database.Shortcut;
 import momime.common.database.SpellBookSectionID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Implementation of language XML database - extends stubs auto-generated from XSD to add additional functionality from the interface
  */
@@ -69,7 +71,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	private Map<String, PickLang> picksMap;
 
 	/** Map of wizard IDs to wizard objects */
-	private Map<String, Wizard> wizardsMap;
+	private Map<String, WizardLang> wizardsMap;
 
 	/** Map of population task IDs to population task objects */
 	private Map<String, PopulationTaskLang> populationTasksMap;
@@ -90,16 +92,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	private Map<String, UnitMagicRealmLang> magicRealmsMap;
 	
 	/** Map of ranged attack type IDs to unit skill objects */
-	private Map<String, RangedAttackType> rangedAttackTypesMap;
+	private Map<String, RangedAttackTypeLang> rangedAttackTypesMap;
 	
 	/** Map of unit IDs to unit objects */
 	private Map<String, UnitLang> unitsMap;
 
 	/** Map of hero name IDs to hero name objects */
-	private Map<String, Hero> heroNamesMap;
+	private Map<String, HeroLang> heroNamesMap;
 	
 	/** Map of city size IDs to city size objects */
-	private Map<String, CitySize> citySizesMap;
+	private Map<String, CitySizeLang> citySizesMap;
 
 	/** Map of city spell effect IDs to unit objects */
 	private Map<String, CitySpellEffectLang> citySpellEffectsMap;
@@ -108,7 +110,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	private Map<String, CombatAreaEffectLang> combatAreaEffectsMap;
 
 	/** Map of spell rank IDs to spell rank objects */
-	private Map<String, SpellRank> spellRanksMap;
+	private Map<String, SpellRankLang> spellRanksMap;
 	
 	/** Map of spell book section IDs to spell book section objects */
 	private Map<SpellBookSectionID, SpellBookSectionLang> spellBookSectionsMap;
@@ -116,26 +118,32 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	/** Map of spell IDs to spell objects */
 	private Map<String, SpellLang> spellsMap;
 	
+	/** Map of hero item type IDs to hero item type objects */
+	private Map<String, HeroItemTypeLang> heroItemTypesMap;
+	
+	/** Map of hero item bonus IDs to hero item bonus objects */
+	private Map<String, HeroItemBonusLang> heroItemBonusesMap;
+	
 	/** Map of overland map size IDs to overland map size objects */
-	private Map<String, OverlandMapSize> overlandMapSizesMap;
+	private Map<String, OverlandMapSizeLang> overlandMapSizesMap;
 	
 	/** Map of land proportion IDs to land proportion objects */
-	private Map<String, LandProportion> landProportionsMap;
+	private Map<String, LandProportionLang> landProportionsMap;
 	
 	/** Map of node strength IDs to node strength objects */
-	private Map<String, NodeStrength> nodeStrengthsMap;
+	private Map<String, NodeStrengthLang> nodeStrengthsMap;
 	
 	/** Map of difficulty level IDs to difficulty level objects */
-	private Map<String, DifficultyLevel> difficultyLevelsMap;
+	private Map<String, DifficultyLevelLang> difficultyLevelsMap;
 	
 	/** Map of fog of war setting IDs to fog of war settings objects */
-	private Map<String, FogOfWarSetting> fogOfWarSettingsMap;
+	private Map<String, FogOfWarSettingLang> fogOfWarSettingsMap;
 	
 	/** Map of unit setting IDs to unit settings objects */
-	private Map<String, UnitSetting> unitSettingsMap;
+	private Map<String, UnitSettingLang> unitSettingsMap;
 	
 	/** Map of spell setting IDs to spell settings objects */
-	private Map<String, SpellSetting> spellSettingsMap;
+	private Map<String, SpellSettingLang> spellSettingsMap;
 
 	/** Map of category IDs to category objects */
 	private Map<String, LanguageCategoryEx> categoriesMap;
@@ -181,9 +189,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			picksMap.put (thisPick.getPickID (), (PickLang) thisPick);
 
 		// Create wizards map
-		wizardsMap = new HashMap<String, Wizard> ();
+		wizardsMap = new HashMap<String, WizardLang> ();
 		for (final Wizard thisWizard : getWizard ())
-			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+			wizardsMap.put (thisWizard.getWizardID (), (WizardLang) thisWizard);
 
 		// Create population tasks map
 		populationTasksMap = new HashMap<String, PopulationTaskLang> ();
@@ -220,9 +228,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			magicRealmsMap.put (thisMagicRealm.getUnitMagicRealmID (), (UnitMagicRealmLang) thisMagicRealm);
 
 		// Create ranged attack types map
-		rangedAttackTypesMap = new HashMap<String, RangedAttackType> ();
+		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeLang> ();
 		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
-			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), thisRangedAttackType);
+			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), (RangedAttackTypeLang) thisRangedAttackType);
 		
 		// Create units map
 		unitsMap = new HashMap<String, UnitLang> ();
@@ -230,14 +238,14 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			unitsMap.put (thisUnit.getUnitID (), (UnitLang) thisUnit);
 		
 		// Create hero names map
-		heroNamesMap = new HashMap<String, Hero> ();
+		heroNamesMap = new HashMap<String, HeroLang> ();
 		for (final Hero thisHeroName : getHero ())
-			heroNamesMap.put (thisHeroName.getHeroNameID (), thisHeroName);
+			heroNamesMap.put (thisHeroName.getHeroNameID (), (HeroLang) thisHeroName);
 		
 		// Create city sizes map
-		citySizesMap = new HashMap<String, CitySize> ();
+		citySizesMap = new HashMap<String, CitySizeLang> ();
 		for (final CitySize thisCitySize : getCitySize ())
-			citySizesMap.put (thisCitySize.getCitySizeID (), thisCitySize);
+			citySizesMap.put (thisCitySize.getCitySizeID (), (CitySizeLang) thisCitySize);
 
 		// Create city spell effects map
 		citySpellEffectsMap = new HashMap<String, CitySpellEffectLang> ();
@@ -250,9 +258,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			combatAreaEffectsMap.put (cae.getCombatAreaEffectID (), (CombatAreaEffectLang) cae);
 		
 		// Create spell ranks map
-		spellRanksMap = new HashMap<String, SpellRank> ();
+		spellRanksMap = new HashMap<String, SpellRankLang> ();
 		for (final SpellRank thisSpellRank : getSpellRank ())
-			spellRanksMap.put (thisSpellRank.getSpellRankID (), thisSpellRank);
+			spellRanksMap.put (thisSpellRank.getSpellRankID (), (SpellRankLang) thisSpellRank);
 
 		// Create spell book sections map
 		spellBookSectionsMap = new HashMap<SpellBookSectionID, SpellBookSectionLang> ();
@@ -264,40 +272,50 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		for (final Spell thisSpell : getSpell ())
 			spellsMap.put (thisSpell.getSpellID (), (SpellLang) thisSpell);
 		
+		// Create hero item types map
+		heroItemTypesMap = new HashMap<String, HeroItemTypeLang> ();
+		for (final HeroItemType thisHeroItemType : getHeroItemType ())
+			heroItemTypesMap.put (thisHeroItemType.getHeroItemTypeID (), (HeroItemTypeLang) thisHeroItemType);
+		
+		// Create hero item bonuses map
+		heroItemBonusesMap = new HashMap<String, HeroItemBonusLang> ();
+		for (final HeroItemBonus thisHeroItemBonus : getHeroItemBonus ())
+			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), (HeroItemBonusLang) thisHeroItemBonus);
+		
 		// Create overland map sizes map
-		overlandMapSizesMap = new HashMap<String, OverlandMapSize> ();
+		overlandMapSizesMap = new HashMap<String, OverlandMapSizeLang> ();
 		for (final OverlandMapSize thisOverlandMapSize : getOverlandMapSize ())
-			overlandMapSizesMap.put (thisOverlandMapSize.getOverlandMapSizeID (), thisOverlandMapSize);
+			overlandMapSizesMap.put (thisOverlandMapSize.getOverlandMapSizeID (), (OverlandMapSizeLang) thisOverlandMapSize);
 		
 		// Create land proportions map
-		landProportionsMap = new HashMap<String, LandProportion> ();
+		landProportionsMap = new HashMap<String, LandProportionLang> ();
 		for (final LandProportion thisLandProportion : getLandProportion ())
-			landProportionsMap.put (thisLandProportion.getLandProportionID (), thisLandProportion);
+			landProportionsMap.put (thisLandProportion.getLandProportionID (), (LandProportionLang) thisLandProportion);
 
 		// Create node strengths map
-		nodeStrengthsMap = new HashMap<String, NodeStrength> ();
+		nodeStrengthsMap = new HashMap<String, NodeStrengthLang> ();
 		for (final NodeStrength thisNodeStrength : getNodeStrength ())
-			nodeStrengthsMap.put (thisNodeStrength.getNodeStrengthID (), thisNodeStrength);
+			nodeStrengthsMap.put (thisNodeStrength.getNodeStrengthID (), (NodeStrengthLang) thisNodeStrength);
 		
 		// Create difficulty levels map
-		difficultyLevelsMap = new HashMap<String, DifficultyLevel> ();
+		difficultyLevelsMap = new HashMap<String, DifficultyLevelLang> ();
 		for (final DifficultyLevel thisDifficultyLevel : getDifficultyLevel ())
-			difficultyLevelsMap.put (thisDifficultyLevel.getDifficultyLevelID (), thisDifficultyLevel);
+			difficultyLevelsMap.put (thisDifficultyLevel.getDifficultyLevelID (), (DifficultyLevelLang) thisDifficultyLevel);
 
 		// Create fog of war settings map
-		fogOfWarSettingsMap = new HashMap<String, FogOfWarSetting> ();
+		fogOfWarSettingsMap = new HashMap<String, FogOfWarSettingLang> ();
 		for (final FogOfWarSetting thisFogOfWarSetting : getFogOfWarSetting ())
-			fogOfWarSettingsMap.put (thisFogOfWarSetting.getFogOfWarSettingID (), thisFogOfWarSetting);
+			fogOfWarSettingsMap.put (thisFogOfWarSetting.getFogOfWarSettingID (), (FogOfWarSettingLang) thisFogOfWarSetting);
 		
 		// Create unit settings map
-		unitSettingsMap = new HashMap<String, UnitSetting> ();
+		unitSettingsMap = new HashMap<String, UnitSettingLang> ();
 		for (final UnitSetting thisUnitSetting : getUnitSetting ())
-			unitSettingsMap.put (thisUnitSetting.getUnitSettingID (), thisUnitSetting);
+			unitSettingsMap.put (thisUnitSetting.getUnitSettingID (), (UnitSettingLang) thisUnitSetting);
 		
 		// Create spell settings map
-		spellSettingsMap = new HashMap<String, SpellSetting> ();
+		spellSettingsMap = new HashMap<String, SpellSettingLang> ();
 		for (final SpellSetting thisSpellSetting : getSpellSetting ())
-			spellSettingsMap.put (thisSpellSetting.getSpellSettingID (), thisSpellSetting);
+			spellSettingsMap.put (thisSpellSetting.getSpellSettingID (), (SpellSettingLang) thisSpellSetting);
 		
 		// Create categories map
 		categoriesMap = new HashMap<String, LanguageCategoryEx> ();
@@ -383,7 +401,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findWizardName (final String wizardID)
 	{
-		final Wizard thisWizard = wizardsMap.get (wizardID);
+		final WizardLang thisWizard = wizardsMap.get (wizardID);
 		final String wizardName = (thisWizard != null) ? thisWizard.getWizardName () : null;
 		return (wizardName != null) ? wizardName : wizardID;
 	}
@@ -455,7 +473,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findRangedAttackTypeDescription (final String rangedAttackTypeID)
 	{
-		final RangedAttackType rat = rangedAttackTypesMap.get (rangedAttackTypeID);
+		final RangedAttackTypeLang rat = rangedAttackTypesMap.get (rangedAttackTypeID);
 		final String desc = (rat != null) ? rat.getRangedAttackTypeDescription () : null; 
 		return (desc != null) ? desc : rangedAttackTypeID;
 	}
@@ -477,7 +495,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findHeroName (final String heroNameID)
 	{
-		final Hero thisHeroName = heroNamesMap.get (heroNameID);
+		final HeroLang thisHeroName = heroNamesMap.get (heroNameID);
 		final String hn = (thisHeroName != null) ? thisHeroName.getHeroName () : null;
 		return (hn != null) ? hn : heroNameID;
 	}
@@ -489,7 +507,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findCitySizeName (final String citySizeID)
 	{
-		final CitySize thisCitySize = citySizesMap.get (citySizeID);
+		final CitySizeLang thisCitySize = citySizesMap.get (citySizeID);
 		final String citySizeName = (thisCitySize != null) ? thisCitySize.getCitySizeName () : null; 
 		return (citySizeName != null) ? citySizeName : citySizeID;
 	}
@@ -521,7 +539,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findSpellRankDescription (final String spellRankID)
 	{
-		final SpellRank thisSpellRank = spellRanksMap.get (spellRankID);
+		final SpellRankLang thisSpellRank = spellRanksMap.get (spellRankID);
 		final String desc = (thisSpellRank != null) ? thisSpellRank.getSpellRankDescription () : null; 
 		return (desc != null) ? desc : spellRankID;
 	}
@@ -547,13 +565,37 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	}
 	
 	/**
+	 * @param heroItemTypeID Hero item type ID to search for
+	 * @return Hero item type description; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findHeroItemTypeDescription (final String heroItemTypeID)
+	{
+		final HeroItemTypeLang thisHeroItemType = heroItemTypesMap.get (heroItemTypeID);
+		final String desc = (thisHeroItemType != null) ? thisHeroItemType.getHeroItemTypeDescription () : null;
+		return (desc != null) ? desc : heroItemTypeID;
+	}
+	
+	/**
+	 * @param heroItemBonusID Hero item bonus ID to search for
+	 * @return Hero item bonus description; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findHeroItemBonusDescription (final String heroItemBonusID)
+	{
+		final HeroItemBonusLang thisHeroItemBonus = heroItemBonusesMap.get (heroItemBonusID);
+		final String desc = (thisHeroItemBonus != null) ? thisHeroItemBonus.getHeroItemBonusDescription () : null;
+		return (desc != null) ? desc : heroItemBonusID;
+	}
+	
+	/**
 	 * @param overlandMapSizeID Overland map size ID to search for
 	 * @return Overland map size description; or replays back the ID if no description exists
 	 */
 	@Override
 	public final String findOverlandMapSizeDescription (final String overlandMapSizeID)
 	{
-		final OverlandMapSize thisMapSize = overlandMapSizesMap.get (overlandMapSizeID);
+		final OverlandMapSizeLang thisMapSize = overlandMapSizesMap.get (overlandMapSizeID);
 		final String desc = (thisMapSize != null) ? thisMapSize.getOverlandMapSizeDescription () : null;
 		return (desc != null) ? desc : overlandMapSizeID;
 	}
@@ -565,7 +607,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findLandProportionDescription (final String landProportionID)
 	{
-		final LandProportion thisLandProportion = landProportionsMap.get (landProportionID);
+		final LandProportionLang thisLandProportion = landProportionsMap.get (landProportionID);
 		final String desc = (thisLandProportion != null) ? thisLandProportion.getLandProportionDescription () : null;
 		return (desc != null) ? desc : landProportionID;
 	}
@@ -577,7 +619,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findNodeStrengthDescription (final String nodeStrengthID)
 	{
-		final NodeStrength thisNodeStrength = nodeStrengthsMap.get (nodeStrengthID);
+		final NodeStrengthLang thisNodeStrength = nodeStrengthsMap.get (nodeStrengthID);
 		final String desc = (thisNodeStrength != null) ? thisNodeStrength.getNodeStrengthDescription () : null;
 		return (desc != null) ? desc : nodeStrengthID;
 	}
@@ -589,7 +631,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findDifficultyLevelDescription (final String difficultyLevelID)
 	{
-		final DifficultyLevel thisDifficultyLevel = difficultyLevelsMap.get (difficultyLevelID);
+		final DifficultyLevelLang thisDifficultyLevel = difficultyLevelsMap.get (difficultyLevelID);
 		final String desc = (thisDifficultyLevel != null) ? thisDifficultyLevel.getDifficultyLevelDescription () : null;
 		return (desc != null) ? desc : difficultyLevelID;
 	}
@@ -601,7 +643,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findFogOfWarSettingDescription (final String fogOfWarSettingID)
 	{
-		final FogOfWarSetting thisFogOfWarSetting = fogOfWarSettingsMap.get (fogOfWarSettingID);
+		final FogOfWarSettingLang thisFogOfWarSetting = fogOfWarSettingsMap.get (fogOfWarSettingID);
 		final String desc = (thisFogOfWarSetting != null) ? thisFogOfWarSetting.getFogOfWarSettingDescription () : null;
 		return (desc != null) ? desc : fogOfWarSettingID;
 	}
@@ -613,7 +655,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findUnitSettingDescription (final String unitSettingID)
 	{
-		final UnitSetting thisUnitSetting = unitSettingsMap.get (unitSettingID);
+		final UnitSettingLang thisUnitSetting = unitSettingsMap.get (unitSettingID);
 		final String desc = (thisUnitSetting != null) ? thisUnitSetting.getUnitSettingDescription () : null;
 		return (desc != null) ? desc : unitSettingID;
 	}
@@ -625,7 +667,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	@Override
 	public final String findSpellSettingDescription (final String spellSettingID)
 	{
-		final SpellSetting thisSpellSetting = spellSettingsMap.get (spellSettingID);
+		final SpellSettingLang thisSpellSetting = spellSettingsMap.get (spellSettingID);
 		final String desc = (thisSpellSetting != null) ? thisSpellSetting.getSpellSettingDescription () : null;
 		return (desc != null) ? desc : spellSettingID;
 	}

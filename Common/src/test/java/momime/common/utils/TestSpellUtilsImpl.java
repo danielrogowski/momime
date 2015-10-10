@@ -220,6 +220,21 @@ public final class TestSpellUtilsImpl
 	}
 
 	/**
+	 * Tests the spellCanBeCastIn method on a the create artifact spell
+	 * @throws MomException If there is a problem
+	 */
+	@Test
+	public final void testSpellCanBeCastIn_CreateArtifact () throws MomException
+	{
+		final Spell spell = new Spell ();
+		spell.setHeroItemBonusMaximumCraftingCost (0);
+
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		assertTrue (utils.spellCanBeCastIn (spell, SpellCastType.OVERLAND));
+		assertFalse (utils.spellCanBeCastIn (spell, SpellCastType.COMBAT));
+	}
+
+	/**
 	 * Tests the getReducedOverlandCastingCost method
 	 * @throws MomException If there is a problem
 	 * @throws RecordNotFoundException If the test db doesn't include an entry that we reference

@@ -475,6 +475,48 @@ public final class TestLanguageDatabaseExImpl
 	}
 	
 	/**
+	 * Tests the findHeroItemTypeDescription method
+	 */
+	@Test
+	public final void testFindHeroItemTypeDescription ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemTypeLang newMapSize = new HeroItemTypeLang ();
+			newMapSize.setHeroItemTypeID ("IT0" + n);
+			newMapSize.setHeroItemTypeDescription ("ITDesc0" + n);
+			lang.getHeroItemType ().add (newMapSize);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("ITDesc02", lang.findHeroItemTypeDescription ("IT02"));
+		assertEquals ("IT04", lang.findHeroItemTypeDescription ("IT04"));
+	}
+	
+	/**
+	 * Tests the findHeroItemBonusDescription method
+	 */
+	@Test
+	public final void testFindHeroItemBonusDescription ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemBonusLang newMapSize = new HeroItemBonusLang ();
+			newMapSize.setHeroItemBonusID ("IB0" + n);
+			newMapSize.setHeroItemBonusDescription ("IBDesc0" + n);
+			lang.getHeroItemBonus ().add (newMapSize);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("IBDesc02", lang.findHeroItemBonusDescription ("IB02"));
+		assertEquals ("IB04", lang.findHeroItemBonusDescription ("IB04"));
+	}
+
+	/**
 	 * Tests the findOverlandMapSizeDescription method
 	 */
 	@Test

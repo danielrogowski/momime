@@ -143,6 +143,18 @@ public interface LanguageDatabaseEx
 	public SpellLang findSpell (final String spellID);
 	
 	/**
+	 * @param heroItemTypeID Hero item type ID to search for
+	 * @return Hero item type description; or replays back the ID if no description exists
+	 */
+	public String findHeroItemTypeDescription (final String heroItemTypeID);
+	
+	/**
+	 * @param heroItemBonusID Hero item bonus ID to search for
+	 * @return Hero item bonus description; or replays back the ID if no description exists
+	 */
+	public String findHeroItemBonusDescription (final String heroItemBonusID);
+	
+	/**
 	 * @param overlandMapSizeID Overland map size ID to search for
 	 * @return Overland map size description; or replays back the ID if no description exists
 	 */

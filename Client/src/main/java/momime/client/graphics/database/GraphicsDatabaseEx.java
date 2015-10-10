@@ -200,6 +200,22 @@ public interface GraphicsDatabaseEx
     public CombatTileBorderImageGfx findCombatTileBorderImages (final String combatTileBorderID, final String directions, final FrontOrBack frontOrBack);
 	
 	/**
+	 * @param heroItemTypeID Hero item type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Hero item type object
+	 * @throws RecordNotFoundException If the heroItemTypeID doesn't exist
+	 */
+    public HeroItemTypeGfx findHeroItemType (final String heroItemTypeID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Hero item slot type object
+	 * @throws RecordNotFoundException If the heroItemSlotTypeID doesn't exist
+	 */
+    public HeroItemSlotTypeGfx findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException;
+    
+	/**
 	 * @param animationID Animation ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Animation object

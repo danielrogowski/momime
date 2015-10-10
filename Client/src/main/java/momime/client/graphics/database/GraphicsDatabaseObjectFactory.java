@@ -12,6 +12,8 @@ import momime.client.graphics.database.v0_9_7.CombatTileFigurePositions;
 import momime.client.graphics.database.v0_9_7.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_7.FigurePositionsForFigureCount;
 import momime.client.graphics.database.v0_9_7.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_7.HeroItemSlotType;
+import momime.client.graphics.database.v0_9_7.HeroItemType;
 import momime.client.graphics.database.v0_9_7.MapFeature;
 import momime.client.graphics.database.v0_9_7.ObjectFactory;
 import momime.client.graphics.database.v0_9_7.Pick;
@@ -321,6 +323,24 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final CombatTileBorderImage createCombatTileBorderImage ()
 	{
 		return new CombatTileBorderImageGfx ();
+	}
+	
+	/**
+	 * @return Custom extended Hero item type
+	 */
+	@Override
+	public final HeroItemType createHeroItemType ()
+	{
+		return new HeroItemTypeGfx ();
+	}
+
+	/**
+	 * @return Custom extended Hero item slot type
+	 */
+	@Override
+	public final HeroItemSlotType createHeroItemSlotType ()
+	{
+		return new HeroItemSlotTypeGfx ();
 	}
 
 	/**

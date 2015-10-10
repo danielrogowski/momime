@@ -3,27 +3,41 @@ package momime.client.language.database;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.client.language.database.v0_9_7.Building;
+import momime.client.language.database.v0_9_7.CitySize;
 import momime.client.language.database.v0_9_7.CitySpellEffect;
 import momime.client.language.database.v0_9_7.CombatAreaEffect;
+import momime.client.language.database.v0_9_7.DifficultyLevel;
+import momime.client.language.database.v0_9_7.FogOfWarSetting;
+import momime.client.language.database.v0_9_7.Hero;
+import momime.client.language.database.v0_9_7.HeroItemBonus;
+import momime.client.language.database.v0_9_7.HeroItemType;
 import momime.client.language.database.v0_9_7.KnownServer;
+import momime.client.language.database.v0_9_7.LandProportion;
 import momime.client.language.database.v0_9_7.LanguageCategory;
 import momime.client.language.database.v0_9_7.LanguageDatabase;
 import momime.client.language.database.v0_9_7.MapFeature;
+import momime.client.language.database.v0_9_7.NodeStrength;
 import momime.client.language.database.v0_9_7.ObjectFactory;
+import momime.client.language.database.v0_9_7.OverlandMapSize;
 import momime.client.language.database.v0_9_7.Pick;
 import momime.client.language.database.v0_9_7.PickType;
 import momime.client.language.database.v0_9_7.Plane;
 import momime.client.language.database.v0_9_7.PopulationTask;
 import momime.client.language.database.v0_9_7.ProductionType;
 import momime.client.language.database.v0_9_7.Race;
+import momime.client.language.database.v0_9_7.RangedAttackType;
 import momime.client.language.database.v0_9_7.ShortcutKey;
 import momime.client.language.database.v0_9_7.Spell;
 import momime.client.language.database.v0_9_7.SpellBookSection;
+import momime.client.language.database.v0_9_7.SpellRank;
+import momime.client.language.database.v0_9_7.SpellSetting;
 import momime.client.language.database.v0_9_7.TileType;
 import momime.client.language.database.v0_9_7.Unit;
 import momime.client.language.database.v0_9_7.UnitMagicRealm;
+import momime.client.language.database.v0_9_7.UnitSetting;
 import momime.client.language.database.v0_9_7.UnitSkill;
 import momime.client.language.database.v0_9_7.UnitType;
+import momime.client.language.database.v0_9_7.Wizard;
 
 /**
  * Creates our custom extended LanguageDatabase when it is unmarshalled with JAXB
@@ -218,5 +232,131 @@ public final class LanguageDatabaseFactory extends ObjectFactory
 	public final KnownServer createKnownServer ()
 	{
 		return new KnownServerLang ();
+	}
+
+	/**
+	 * @return Custom extended Wizard
+	 */
+	@Override
+	public final Wizard createWizard ()
+	{
+		return new WizardLang ();
+	}
+
+	/**
+	 * @return Custom extended RAT
+	 */
+	@Override
+	public final RangedAttackType createRangedAttackType ()
+	{
+		return new RangedAttackTypeLang ();
+	}
+
+	/**
+	 * @return Custom extended Hero
+	 */
+	@Override
+	public final Hero createHero ()
+	{
+		return new HeroLang ();
+	}
+
+	/**
+	 * @return Custom extended CitySize
+	 */
+	@Override
+	public final CitySize createCitySize ()
+	{
+		return new CitySizeLang ();
+	}
+
+	/**
+	 * @return Custom extended SpellRank
+	 */
+	@Override
+	public final SpellRank createSpellRank ()
+	{
+		return new SpellRankLang ();
+	}
+
+	/**
+	 * @return Custom extended KnowHeroItemType
+	 */
+	@Override
+	public final HeroItemType createHeroItemType ()
+	{
+		return new HeroItemTypeLang ();
+	}
+
+	/**
+	 * @return Custom extended HeroItemBonus
+	 */
+	@Override
+	public final HeroItemBonus createHeroItemBonus ()
+	{
+		return new HeroItemBonusLang ();
+	}
+
+	/**
+	 * @return Custom extended OverlandMapSize
+	 */
+	@Override
+	public final OverlandMapSize createOverlandMapSize ()
+	{
+		return new OverlandMapSizeLang ();
+	}
+
+	/**
+	 * @return Custom extended LandProportion
+	 */
+	@Override
+	public final LandProportion createLandProportion ()
+	{
+		return new LandProportionLang ();
+	}
+
+	/**
+	 * @return Custom extended NodeStrength
+	 */
+	@Override
+	public final NodeStrength createNodeStrength ()
+	{
+		return new NodeStrengthLang ();
+	}
+
+	/**
+	 * @return Custom extended DifficultyLevel
+	 */
+	@Override
+	public final DifficultyLevel createDifficultyLevel ()
+	{
+		return new DifficultyLevelLang ();
+	}
+
+	/**
+	 * @return Custom extended UnitSetting
+	 */
+	@Override
+	public final UnitSetting createUnitSetting ()
+	{
+		return new UnitSettingLang ();
+	}
+
+	/**
+	 * @return Custom extended SpellSetting
+	 */
+	@Override
+	public final SpellSetting createSpellSetting ()
+	{
+		return new SpellSettingLang ();
+	}
+
+	/**
+	 * @return Custom extended FogOfWarSetting
+	 */
+	@Override
+	public final FogOfWarSetting createFogOfWarSetting ()
+	{
+		return new FogOfWarSettingLang ();
 	}
 }

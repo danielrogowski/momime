@@ -8,6 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.NdgUIUtils;
+
 import momime.client.graphics.database.v0_9_7.Animation;
 import momime.client.graphics.database.v0_9_7.CityImage;
 import momime.client.graphics.database.v0_9_7.CityImagePrerequisite;
@@ -17,6 +23,8 @@ import momime.client.graphics.database.v0_9_7.CombatAreaEffect;
 import momime.client.graphics.database.v0_9_7.CombatTileBorderImage;
 import momime.client.graphics.database.v0_9_7.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_7.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_7.HeroItemSlotType;
+import momime.client.graphics.database.v0_9_7.HeroItemType;
 import momime.client.graphics.database.v0_9_7.MapFeature;
 import momime.client.graphics.database.v0_9_7.Pick;
 import momime.client.graphics.database.v0_9_7.PlayList;
@@ -26,8 +34,8 @@ import momime.client.graphics.database.v0_9_7.RangedAttackType;
 import momime.client.graphics.database.v0_9_7.Spell;
 import momime.client.graphics.database.v0_9_7.TileSet;
 import momime.client.graphics.database.v0_9_7.Unit;
-import momime.client.graphics.database.v0_9_7.UnitSkillComponentImage;
 import momime.client.graphics.database.v0_9_7.UnitSkill;
+import momime.client.graphics.database.v0_9_7.UnitSkillComponentImage;
 import momime.client.graphics.database.v0_9_7.UnitSpecialOrderImage;
 import momime.client.graphics.database.v0_9_7.UnitType;
 import momime.client.graphics.database.v0_9_7.WeaponGrade;
@@ -39,12 +47,6 @@ import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
 
 /**
  * Implementation of graphics XML database - extends stubs auto-generated from XSD to add additional functionality from the interface
@@ -113,6 +115,12 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/** Map of borderID-directions-F/B to combat tile border image objects */
 	private Map<String, CombatTileBorderImageGfx> combatTileBorderImagesMap;
+	
+	/** Map of hero item type IDs to hero item type objects */
+	private Map<String, HeroItemTypeGfx> heroItemTypesMap;
+
+	/** Map of hero item slot type IDs to hero item slot type objects */
+	private Map<String, HeroItemSlotTypeGfx> heroItemSlotTypesMap;
 	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationGfx> animationsMap;
@@ -273,6 +281,16 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		combatTileBorderImagesMap = new HashMap<String, CombatTileBorderImageGfx> ();
 		for (final CombatTileBorderImage ctb : getCombatTileBorderImage ())
 			combatTileBorderImagesMap.put (ctb.getCombatTileBorderID () + "-" + ctb.getDirections () + "-" + ctb.getFrontOrBack ().value (), (CombatTileBorderImageGfx) ctb);
+
+		// Create hero item types map
+		heroItemTypesMap = new HashMap<String, HeroItemTypeGfx> ();
+		for (final HeroItemType itemType : getHeroItemType ())
+			heroItemTypesMap.put (itemType.getHeroItemTypeID (), (HeroItemTypeGfx) itemType);
+
+		// Create hero item slot types map
+		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotTypeGfx> ();
+		for (final HeroItemSlotType itemSlotType : getHeroItemSlotType ())
+			heroItemSlotTypesMap.put (itemSlotType.getHeroItemSlotTypeID (), (HeroItemSlotTypeGfx) itemSlotType);
 		
 		// Create play lists map
 		playListsMap = new HashMap<String, PlayListGfx> ();
@@ -746,6 +764,38 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	public final List<CityViewElementGfx> getCityViewElements ()
     {
     	return (List<CityViewElementGfx>) (List<?>) getCityViewElement ();
+    }
+	
+	/**
+	 * @param heroItemTypeID Hero item type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Hero item type object
+	 * @throws RecordNotFoundException If the heroItemTypeID doesn't exist
+	 */
+    @Override
+    public final HeroItemTypeGfx findHeroItemType (final String heroItemTypeID, final String caller) throws RecordNotFoundException
+    {
+		final HeroItemTypeGfx found = heroItemTypesMap.get (heroItemTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemType.class, heroItemTypeID, caller);
+
+		return found;
+    }
+
+	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Hero item slot type object
+	 * @throws RecordNotFoundException If the heroItemSlotTypeID doesn't exist
+	 */
+    @Override
+    public final HeroItemSlotTypeGfx findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException
+    {
+		final HeroItemSlotTypeGfx found = heroItemSlotTypesMap.get (heroItemSlotTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (HeroItemSlotType.class, heroItemSlotTypeID, caller);
+
+		return found;
     }
 	
 	/**

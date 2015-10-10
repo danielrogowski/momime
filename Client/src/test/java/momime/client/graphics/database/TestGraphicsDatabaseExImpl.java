@@ -961,6 +961,86 @@ public final class TestGraphicsDatabaseExImpl
 		// Run test
 		db.findBestCityImage ("CS02", cityLocation, buildings, "testFindBestCityImage");
 	}
+
+	/**
+	 * Tests the findHeroItemTypeID method to find a heroItemType ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindHeroItemTypeID_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemTypeGfx newHeroItemType = new HeroItemTypeGfx ();
+			newHeroItemType.setHeroItemTypeID ("IT0" + n);
+			db.getHeroItemType ().add (newHeroItemType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IT02", db.findHeroItemType ("IT02", "testFindHeroItemTypeID_Exists").getHeroItemTypeID ());
+	}
+	
+	/**
+	 * Tests the findHeroItemTypeID method to find a heroItemType ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemTypeID_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemTypeGfx newHeroItemType = new HeroItemTypeGfx ();
+			newHeroItemType.setHeroItemTypeID ("IT0" + n);
+			db.getHeroItemType ().add (newHeroItemType);
+		}
+
+		db.buildMaps ();
+
+		db.findHeroItemType ("IT04", "testFindHeroItemTypeID_NotExists");
+	}
+
+	/**
+	 * Tests the findHeroItemSlotTypeID method to find a heroItemSlotType ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindHeroItemSlotTypeID_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemSlotTypeGfx newHeroItemSlotType = new HeroItemSlotTypeGfx ();
+			newHeroItemSlotType.setHeroItemSlotTypeID ("IST0" + n);
+			db.getHeroItemSlotType ().add (newHeroItemSlotType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("IST02", db.findHeroItemSlotType ("IST02", "testFindHeroItemSlotTypeID_Exists").getHeroItemSlotTypeID ());
+	}
+	
+	/**
+	 * Tests the findHeroItemSlotTypeID method to find a heroItemSlotType ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindHeroItemSlotTypeID_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemSlotTypeGfx newHeroItemSlotType = new HeroItemSlotTypeGfx ();
+			newHeroItemSlotType.setHeroItemSlotTypeID ("IST0" + n);
+			db.getHeroItemSlotType ().add (newHeroItemSlotType);
+		}
+
+		db.buildMaps ();
+
+		db.findHeroItemSlotType ("IST04", "testFindHeroItemSlotTypeID_NotExists");
+	}
 	
 	/**
 	 * Tests the findAnimation method to find a animation ID that does exist

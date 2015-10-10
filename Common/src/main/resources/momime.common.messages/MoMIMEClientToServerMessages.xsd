@@ -496,6 +496,7 @@ If in combat, and casting at a location (e.g. summoning), combatTargetLocation w
 this indicates the damage chosen when casting the spell, beteween baseDamage and maxDamage.  The MP cost can be inferred from this.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="heroItem" type="momimecommon:heroItem" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

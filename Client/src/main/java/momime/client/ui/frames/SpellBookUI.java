@@ -118,7 +118,10 @@ public final class SpellBookUI extends MomClientFrameUI
 	private HelpUI helpUI;
 	
 	/** Variable MP popup */
-	private VariableManaUI variableManaUI;	
+	private VariableManaUI variableManaUI;
+	
+	/** Crafting popup */
+	private CreateArtifactUI createArtifactUI;
 	
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
@@ -562,11 +565,11 @@ public final class SpellBookUI extends MomClientFrameUI
 											final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
 												getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 											
-											if ((getCastType () == SpellCastType.OVERLAND) && (spell.getOverlandCastingCost () == null))
+											if ((getCastType () == SpellCastType.OVERLAND) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 												proceed = false;
 	
 											else if ((getCastType () == SpellCastType.COMBAT) &&
-												((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ())))
+												((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatUI ().getMaxCastable ())))
 												proceed = false;
 											
 											// Check if it is an overland enchantment that we already have
@@ -674,6 +677,13 @@ public final class SpellBookUI extends MomClientFrameUI
 												((sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 												
 												getCombatUI ().setSpellBeingTargetted (spell);
+											
+											// Show item crafting window for Enchant Item / Create Artifact
+											else if (spell.getHeroItemBonusMaximumCraftingCost () != null)
+											{
+												getCreateArtifactUI ().setSpell (spell);
+												getCreateArtifactUI ().setVisible (true);
+											}											
 											else
 											{
 												// Tell server to cast it
@@ -972,7 +982,7 @@ public final class SpellBookUI extends MomClientFrameUI
 											if (getCastType () == SpellCastType.COMBAT)
 											{
 												spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												if ((combatCost == null) || (combatCost > getCombatUI ().getMaxCastable ()))
+												if ((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatUI ().getMaxCastable ()))
 												{
 													spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
 													spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
@@ -981,7 +991,7 @@ public final class SpellBookUI extends MomClientFrameUI
 											else
 											{
 												spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												if (spell.getOverlandCastingCost () == null)
+												if (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND))
 												{
 													spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
 													spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
@@ -1243,6 +1253,22 @@ public final class SpellBookUI extends MomClientFrameUI
 		variableManaUI = ui;
 	}
 	
+	/**
+	 * @return Crafting popup
+	 */
+	public final CreateArtifactUI getCreateArtifactUI ()
+	{
+		return createArtifactUI;
+	}
+
+	/**
+	 * @param ui Crafting popup
+	 */
+	public final void setCreateArtifactUI (final CreateArtifactUI ui)
+	{
+		createArtifactUI = ui;
+	}
+
 	/**
 	 * @return Memory CAE utils
 	 */

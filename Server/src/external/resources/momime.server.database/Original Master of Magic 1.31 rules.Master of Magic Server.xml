@@ -21438,6 +21438,8 @@
 	<spell spellID="SP207">
 		<spellRank>SR02</spellRank>
 		<researchCost>450</researchCost>
+		<spellBookSectionID>SC01</spellBookSectionID>
+		<heroItemBonusMaximumCraftingCost>200</heroItemBonusMaximumCraftingCost>
 		<spellName>Enchant Item</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
 	</spell>
@@ -21495,6 +21497,8 @@
 	<spell spellID="SP211">
 		<spellRank>SR03</spellRank>
 		<researchCost>1000</researchCost>
+		<spellBookSectionID>SC01</spellBookSectionID>
+		<heroItemBonusMaximumCraftingCost>0</heroItemBonusMaximumCraftingCost>
 		<spellName>Create Artifact</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>

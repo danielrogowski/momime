@@ -122,12 +122,16 @@ public final class SpellUtilsImpl implements SpellUtils
 
 		switch (castType)
 		{
+			// Note Special case to allow Enchant Item and Create Artifact to be cast, which have no overland cost
 			case OVERLAND:
-				result = ((spell.getOverlandCastingCost () != null) && (spell.getOverlandCastingCost () > 0));
+				result = ((spell.getOverlandCastingCost () != null) && (spell.getOverlandCastingCost () > 0)) ||
+					(spell.getHeroItemBonusMaximumCraftingCost () != null);
 				break;
+				
 			case COMBAT:
-				result = ((spell.getCombatCastingCost () != null) && (spell.getCombatCastingCost () > 0));
+				result = (spell.getCombatCastingCost () != null) && (spell.getCombatCastingCost () > 0);
 				break;
+				
 			default:
 				throw new MomException ("spellCanBeCastIn: Invalid CastType");
 		}

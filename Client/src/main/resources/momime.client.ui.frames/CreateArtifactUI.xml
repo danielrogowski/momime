@@ -80,4 +80,204 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmCreateArtifactAttributeBonus1">
+		<left>18</left>
+		<top>80</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus2">
+		<left>18</left>
+		<top>100</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus3">
+		<left>18</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus4">
+		<left>18</left>
+		<top>140</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus5">
+		<left>18</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus6">
+		<left>18</left>
+		<top>180</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus7">
+		<left>18</left>
+		<top>200</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus8">
+		<left>18</left>
+		<top>220</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus9">
+		<left>18</left>
+		<top>240</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus10">
+		<left>18</left>
+		<top>260</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus11">
+		<left>18</left>
+		<top>280</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus12">
+		<left>18</left>
+		<top>300</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus13">
+		<left>18</left>
+		<top>320</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus14">
+		<left>18</left>
+		<top>340</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus15">
+		<left>18</left>
+		<top>360</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus16">
+		<left>18</left>
+		<top>380</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus17">
+		<left>194</left>
+		<top>80</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus18">
+		<left>194</left>
+		<top>100</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus19">
+		<left>194</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus20">
+		<left>194</left>
+		<top>140</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus21">
+		<left>194</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus22">
+		<left>194</left>
+		<top>180</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus23">
+		<left>194</left>
+		<top>200</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus24">
+		<left>194</left>
+		<top>220</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus25">
+		<left>194</left>
+		<top>240</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus26">
+		<left>194</left>
+		<top>260</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus27">
+		<left>194</left>
+		<top>280</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus28">
+		<left>194</left>
+		<top>300</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus29">
+		<left>194</left>
+		<top>320</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus30">
+		<left>194</left>
+		<top>340</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus31">
+		<left>194</left>
+		<top>360</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactAttributeBonus32">
+		<left>194</left>
+		<top>380</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactSpellEffectBonuses">
+		<left>392</left>
+		<top>80</top>
+		<width>234</width>
+		<height>340</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 </ns2:xmlLayoutContainer>

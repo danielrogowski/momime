@@ -1,5 +1,7 @@
 package momime.client.ui.frames;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,6 +11,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -23,8 +28,13 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.SpellLang;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.HeroItemClientUtils;
+import momime.common.calculations.HeroItemCalculations;
+import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
+import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.Spell;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
 /**
  * Tests the CreateArtifactUI class
@@ -55,6 +65,12 @@ public final class TestCreateArtifactUI
 			itemTypeNumber++;
 			when (lang.findHeroItemTypeDescription ("IT" + ((itemTypeNumber < 10) ? "0" : "") + itemTypeNumber)).thenReturn (itemTypeName);
 		}
+
+		for (int n = 1; n <= 37; n++)
+		{
+			final String bonusID = "IB" + ((n < 10) ? "0" : "") + n;
+			when (lang.findHeroItemBonusDescription (bonusID)).thenReturn ("Name of " + bonusID);
+		}
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -84,15 +100,50 @@ public final class TestCreateArtifactUI
 			final HeroItemType itemType = new HeroItemType ();
 			itemType.setHeroItemTypeID ("IT" + ((n < 10) ? "0" : "") + n);
 			itemType.setBaseCraftingCost (n * 50);
-			
 			itemTypes.add (itemType);
+			
+			// Which bonuses does this item type allow
+			for (int m = 1; m <= 10; m++)
+			{
+				final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
+				int bonusID = ((n-1) * 3) + m;		// So they are staggered a bit... item type 1 has bonuses 1..10; item type 2 has bonuses 4..14 and so on
+				bonus.setHeroItemBonusID ("IB" + ((bonusID < 10) ? "0" : "") + bonusID);
+				itemType.getHeroItemTypeAllowedBonus ().add (bonus);
+			}
 		}
 		
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		doReturn (itemTypes).when (db).getHeroItemType ();
 		
+		for (int n = 1; n <= 37; n++)
+		{
+			final HeroItemBonus bonus = new HeroItemBonus ();
+			bonus.setHeroItemBonusID ("IB" + ((n < 10) ? "0" : "") + n);
+			bonus.setCraftingCostMultiplierApplies ((n % 2) == 0);
+			when (db.findHeroItemBonus (eq (bonus.getHeroItemBonusID ()), anyString ())).thenReturn (bonus);
+		}
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "selectItemType")).thenReturn (player);
+		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
+		
+		// We can get all bonuses
+		final HeroItemCalculations heroItemCalculations = mock (HeroItemCalculations.class);
+		when (heroItemCalculations.haveRequiredBooksForBonus (anyString (), eq (pub.getPick ()), eq (db))).thenReturn (true);
 
 		// The spell being cast
 		final Spell spellDef = new Spell ();
@@ -110,8 +161,12 @@ public final class TestCreateArtifactUI
 		createArtifact.setLanguageHolder (langHolder);
 		createArtifact.setLanguageChangeMaster (langMaster);
 		createArtifact.setClient (client);
+		createArtifact.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		createArtifact.setHeroItemCalculations (heroItemCalculations);
+		createArtifact.setHeroItemClientUtils (mock (HeroItemClientUtils.class));
 		createArtifact.setGraphicsDB (gfx);
 		createArtifact.setSmallFont (CreateFontsForTests.getSmallFont ());
+		createArtifact.setLargeFont (CreateFontsForTests.getLargeFont ());
 		createArtifact.setSpell (spellDef);
 
 		// Display form		

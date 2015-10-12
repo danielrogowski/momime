@@ -876,6 +876,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
+	<bean id="heroItemClientUtils" class="momime.client.utils.HeroItemClientUtilsImpl" />
+	
 	<!-- Language variable replacers -->
 	
 	<bean id="unrestReplacer" class="momime.client.language.replacer.CityUnrestLanguageVariableReplacerImpl">
@@ -1424,8 +1426,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
+		<property name="largeFont" ref="largeFont" />
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="heroItemCalculations" ref="heroItemCalculations" />
+		<property name="heroItemClientUtils" ref="heroItemClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 	<!-- Prototype UI components -->

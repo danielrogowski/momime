@@ -271,7 +271,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		contentPane.add (spellEffectsListScroll, "frmCreateArtifactSpellEffectBonuses");
 		
 		// Lock frame size
-		selectItemType (getClient ().getClientDB ().getHeroItemType ().get (0));		// Pick Sword by default
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 
@@ -523,48 +522,51 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		// Title
-		final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-		final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
-		getFrame ().setTitle (spellName != null ? spellName : spell.getSpellID ());
-
-		// Spell charges
-		if (spellChargesChosenSpell == null)
-			spellChargesChosenSpellLabel.setText (null);
-		else
+		if (spell != null)
 		{
-			final SpellLang chosenSpellLang = getLanguage ().findSpell (spellChargesChosenSpell.getSpellID ());
-			final String chosenSpellName = (chosenSpellLang == null) ? null : chosenSpellLang.getSpellName ();
-			spellChargesChosenSpellLabel.setText (chosenSpellName != null ? chosenSpellName : spellChargesChosenSpell.getSpellID ());
-		}
+			// Title
+			final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
+			final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
+			getFrame ().setTitle (spellName != null ? spellName : spell.getSpellID ());
 		
-		// Item type buttons
-		for (final Entry<String, Action> itemTypeAction : itemTypeActions.entrySet ())
-			itemTypeAction.getValue ().putValue (Action.NAME, getLanguage ().findHeroItemTypeDescription (itemTypeAction.getKey ()));
-		
-		// Item bonus buttons
-		for (final Entry<String, Action> itemBonusAction : itemBonusActions.entrySet ())
-		{
-			// Show fully chosen spell charges as e.g. "Bless x4" other than just the text "Spell Charges"
-			final String bonusDescription;
-			if ((itemBonusAction.getKey ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES)) &&
-				(spellChargesChosenSpell != null) && (spellChargesChosenCount > 0))
-				
-				bonusDescription = spellChargesChosenSpellLabel.getText () + " x" + spellChargesChosenCount; 
+			// Spell charges
+			if (spellChargesChosenSpell == null)
+				spellChargesChosenSpellLabel.setText (null);
 			else
-				bonusDescription = getLanguage ().findHeroItemBonusDescription (itemBonusAction.getKey ());
+			{
+				final SpellLang chosenSpellLang = getLanguage ().findSpell (spellChargesChosenSpell.getSpellID ());
+				final String chosenSpellName = (chosenSpellLang == null) ? null : chosenSpellLang.getSpellName ();
+				spellChargesChosenSpellLabel.setText (chosenSpellName != null ? chosenSpellName : spellChargesChosenSpell.getSpellID ());
+			}
 			
-			itemBonusAction.getValue ().putValue (Action.NAME, bonusDescription);
-		}
-		
-		// The "MP" suffix may have changed
-		try
-		{
-			updateCraftingCost ();
-		}
-		catch (final IOException e)
-		{
-			log.error (e, e);
+			// Item type buttons
+			for (final Entry<String, Action> itemTypeAction : itemTypeActions.entrySet ())
+				itemTypeAction.getValue ().putValue (Action.NAME, getLanguage ().findHeroItemTypeDescription (itemTypeAction.getKey ()));
+			
+			// Item bonus buttons
+			for (final Entry<String, Action> itemBonusAction : itemBonusActions.entrySet ())
+			{
+				// Show fully chosen spell charges as e.g. "Bless x4" other than just the text "Spell Charges"
+				final String bonusDescription;
+				if ((itemBonusAction.getKey ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES)) &&
+					(spellChargesChosenSpell != null) && (spellChargesChosenCount > 0))
+					
+					bonusDescription = spellChargesChosenSpellLabel.getText () + " x" + spellChargesChosenCount; 
+				else
+					bonusDescription = getLanguage ().findHeroItemBonusDescription (itemBonusAction.getKey ());
+				
+				itemBonusAction.getValue ().putValue (Action.NAME, bonusDescription);
+			}
+			
+			// The "MP" suffix may have changed
+			try
+			{
+				updateCraftingCost ();
+			}
+			catch (final IOException e)
+			{
+				log.error (e, e);
+			}
 		}
 		
 		log.trace ("Exiting languageChanged");

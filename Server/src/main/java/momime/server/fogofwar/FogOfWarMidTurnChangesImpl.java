@@ -303,6 +303,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		if (initialStatus == UnitStatusID.ALIVE)
 			updateUnitStatusToAliveOnServerAndClients (newUnit, locationToAddUnit, unitOwner, players, gsk.getTrueMap (), sd, db);
+		else
+			newUnit.setStatus (initialStatus);
 
 		log.trace ("Exiting addUnitOnServerAndClients = Unit URN " + newUnit.getUnitURN ());
 		return newUnit;

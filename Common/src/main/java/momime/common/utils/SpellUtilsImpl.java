@@ -5,9 +5,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.common.MomException;
+import momime.common.calculations.HeroItemCalculations;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
+import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -17,9 +22,6 @@ import momime.common.database.SummonedUnit;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Simple spell lookups and calculations
@@ -34,6 +36,9 @@ public final class SpellUtilsImpl implements SpellUtils
 	
 	/** Spell calculations */
 	private SpellCalculations spellCalculations;
+	
+	/** Hero item calculations */
+	private HeroItemCalculations heroItemCalculations;
 	
 	// Methods dealing with a single spell
 
@@ -158,6 +163,7 @@ public final class SpellUtilsImpl implements SpellUtils
 
 	/**
 	 * @param spell Spell we want to cast
+	 * @param heroItem If this spell is Enchant Item or Create Artifact then the item being made; for all other spells pass null
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
@@ -166,10 +172,16 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+	public final int getReducedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		return getReducedCastingCost (spell, spell.getOverlandCastingCost (), picks, spellSettings, db);
+		final int castingCost;
+		if (heroItem != null)
+			castingCost = getHeroItemCalculations ().calculateCraftingCost (heroItem, db);
+		else
+			castingCost = spell.getOverlandCastingCost ();
+		
+		return getReducedCastingCost (spell, castingCost, picks, spellSettings, db);
 	}
 
 	/**
@@ -657,5 +669,21 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final void setSpellCalculations (final SpellCalculations calc)
 	{
 		spellCalculations = calc;
+	}
+
+	/**
+	 * @return Hero item calculations
+	 */
+	public final HeroItemCalculations getHeroItemCalculations ()
+	{
+		return heroItemCalculations;
+	}
+
+	/**
+	 * @param calc Hero item calculations
+	 */
+	public final void setHeroItemCalculations (final HeroItemCalculations calc)
+	{
+		heroItemCalculations = calc;
 	}
 }

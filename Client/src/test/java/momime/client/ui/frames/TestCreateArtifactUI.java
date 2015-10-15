@@ -1,5 +1,6 @@
 package momime.client.ui.frames;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -26,15 +27,23 @@ import momime.client.graphics.database.HeroItemTypeGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.database.SpellLang;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.HeroItemClientUtils;
+import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.HeroItemCalculations;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.Spell;
+import momime.common.database.SpellSetting;
+import momime.common.database.UnitSetting;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.utils.SpellUtils;
 
 /**
  * Tests the CreateArtifactUI class
@@ -58,6 +67,10 @@ public final class TestCreateArtifactUI
 		
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findSpell ("SP001")).thenReturn (spellLang);
+		
+		final ProductionTypeLang manaLang = new ProductionTypeLang ();
+		manaLang.setProductionTypeSuffix ("MP");
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaLang);
 		
 		int itemTypeNumber = 0;
 		for (final String itemTypeName : new String [] {"Sword", "Mace", "Axe", "Bow", "Staff", "Wand", "Misc", "Shield", "Chain", "Plate"})
@@ -134,16 +147,31 @@ public final class TestCreateArtifactUI
 		players.add (player);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "selectItemType")).thenReturn (player);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		
+		// Session description
+		final UnitSetting unitSetting = new UnitSetting ();
+		unitSetting.setMaxHeroItemBonuses (4);
+		
+		final SpellSetting spellSetting = new SpellSetting ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSetting);
+		sd.setSpellSetting (spellSetting);
+		when (client.getSessionDescription ()).thenReturn (sd);
+		
 		// We can get all bonuses
 		final HeroItemCalculations heroItemCalculations = mock (HeroItemCalculations.class);
 		when (heroItemCalculations.haveRequiredBooksForBonus (anyString (), eq (pub.getPick ()), eq (db))).thenReturn (true);
+		when (heroItemCalculations.calculateCraftingCost (any (HeroItem.class), eq (db))).thenReturn (9999);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getReducedOverlandCastingCost (any (Spell.class), any (HeroItem.class), eq (pub.getPick ()), eq (spellSetting), eq (db))).thenReturn (9999);
 
 		// The spell being cast
 		final Spell spellDef = new Spell ();
@@ -164,14 +192,16 @@ public final class TestCreateArtifactUI
 		createArtifact.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		createArtifact.setHeroItemCalculations (heroItemCalculations);
 		createArtifact.setHeroItemClientUtils (mock (HeroItemClientUtils.class));
+		createArtifact.setSpellUtils (spellUtils);
 		createArtifact.setGraphicsDB (gfx);
 		createArtifact.setSmallFont (CreateFontsForTests.getSmallFont ());
 		createArtifact.setLargeFont (CreateFontsForTests.getLargeFont ());
 		createArtifact.setSpell (spellDef);
+		createArtifact.setTextUtils (new TextUtilsImpl ());
 
 		// Display form		
 		createArtifact.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 		createArtifact.setVisible (false);
 	}
 }

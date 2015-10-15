@@ -4,6 +4,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
+import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -68,6 +69,7 @@ public interface SpellUtils
 
 	/**
 	 * @param spell Spell we want to cast
+	 * @param heroItem If this spell is Enchant Item or Create Artifact then the item being made; for all other spells pass null
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
@@ -75,7 +77,7 @@ public interface SpellUtils
 	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+	public int getReducedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**

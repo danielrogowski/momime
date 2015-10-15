@@ -101,10 +101,12 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		// Get the values we need from the spell
 		final String spellMagicRealmID;
 		final String spellUnitTypeID;
+		final boolean itemCraftingSpell;
 		if (spell != null)
 		{
 			spellMagicRealmID = spell.getSpellRealm ();
 			spellUnitTypeID = getSpellUtils ().spellSummonsUnitTypeID (spell, db);
+			itemCraftingSpell = (spell.getHeroItemBonusMaximumCraftingCost () != null);
 		}
 		else
 		{
@@ -112,6 +114,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 			// No issues with unit type ID though
 			spellMagicRealmID = "_";
 			spellUnitTypeID = null;
+			itemCraftingSpell = false;
 		}
 
 		// Search for retorts that give us other bonuses
@@ -125,10 +128,12 @@ public final class SpellCalculationsImpl implements SpellCalculations
 					{
 						// Do we have a reduction value, and do any magic realm requirements match what we're casting?
 						final boolean isMagicRealmIdBlank = (pickProductionBonus.isMagicRealmIdBlank () == null) ? false : pickProductionBonus.isMagicRealmIdBlank ();
+						final boolean isItemCraftingSpells = (pickProductionBonus.isItemCraftingSpells () == null) ? false : pickProductionBonus.isItemCraftingSpells ();
 
 						if ((pickProductionBonus.getPercentageBonus () > 0) &&
 							((pickProductionBonus.getMagicRealmID () == null) || (pickProductionBonus.getMagicRealmID ().equals (spellMagicRealmID))) &&
 							((!isMagicRealmIdBlank) || (spellMagicRealmID == null)) &&
+							((!isItemCraftingSpells) || (itemCraftingSpell)) &&
 							((pickProductionBonus.getUnitTypeID () == null) || (pickProductionBonus.getUnitTypeID ().equals (spellUnitTypeID))))
 						{
 							switch (spellSettings.getSpellBooksCastingReductionCombination ())

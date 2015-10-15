@@ -1,6 +1,7 @@
 package momime.client.ui.frames;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
@@ -9,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
@@ -28,16 +31,21 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.HeroItemTypeGfx;
+import momime.client.language.database.ProductionTypeLang;
 import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.HeroItemClientUtils;
+import momime.client.utils.TextUtils;
 import momime.common.calculations.HeroItemCalculations;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
@@ -45,6 +53,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellUtils;
 
 /**
  * UI for designing hero items
@@ -81,6 +91,15 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
+	/** Text utils */
+	private TextUtils textUtils;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
+
+	/** Spell book */
+	private SpellBookUI spellBookUI;
+	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -104,9 +123,24 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	
 	/** Image of the item being made */
 	private JLabel itemImage;
+	
+	/** Edit box to type a name for the item */
+	private JTextField itemName;
+	
+	/** Label showing crafting cost */
+	private JLabel craftingCost;
 
 	/** The item creation spell being cast */
 	private Spell spell;
+	
+	/** The spell charges chosen to imbue into the item */
+	private Spell spellChargesChosenSpell;
+	
+	/** Label showing the spell charges chosen to imbue into the item */
+	private JLabel spellChargesChosenSpellLabel;
+	
+	/** The number of spell charges chosen to imbue into the item */
+	private int spellChargesChosenCount;
 	
 	/** The currently selected item type */
 	private HeroItemType heroItemType;
@@ -116,6 +150,12 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	
 	/** Index into the available images list for the selected item type */
 	private int imageNumber;
+	
+	/** Background panel that appears when choosing spell charges */
+	private JLabel spellChargesBackground;
+	
+	/** x1 x2 x3 x4 buttons for picking number of spell charges */
+	private List<JButton> spellChargesButtons = new ArrayList<JButton> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -127,13 +167,16 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		log.trace ("Entering init");
 		
 		// Load images
-		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/createArtifact.png");
+		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/background.png");
 		final BufferedImage itemTypeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button62x26Normal.png");
 		final BufferedImage itemTypeButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button62x26Pressed.png");
-		final BufferedImage leftArrowNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/goldArrowLeftNormal.png");
-		final BufferedImage leftArrowPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/goldArrowLeftPressed.png");
-		final BufferedImage rightArrowNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/goldArrowRightNormal.png");
-		final BufferedImage rightArrowPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/goldArrowRightPressed.png");
+		final BufferedImage leftArrowNormal = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/goldArrowLeftNormal.png");
+		final BufferedImage leftArrowPressed = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/goldArrowLeftPressed.png");
+		final BufferedImage rightArrowNormal = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/goldArrowRightNormal.png");
+		final BufferedImage rightArrowPressed = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/goldArrowRightPressed.png");
+		final BufferedImage spellChargesBackgroundImage = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/spellChargesBackground.png");
+		final BufferedImage spellChargesCountNormal = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/spellChargesCountNormal.png");
+		final BufferedImage spellChargesCountPressed = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/spellChargesCountPressed.png");
 
 		// Actions
 		final Action previousImageAction = new LoggingAction ((ev) -> updateItemImage (-1));
@@ -158,6 +201,14 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		contentPane.add (getUtils ().createImageButton (previousImageAction, null, null, null, leftArrowNormal, leftArrowPressed, leftArrowNormal), "frmCreateArtifactImagePrevious");
 		contentPane.add (getUtils ().createImageButton (nextImageAction, null, null, null, rightArrowNormal, rightArrowPressed, rightArrowNormal), "frmCreateArtifactImageNext");
 		
+		final XmlLayoutComponent itemNameLayout = getCreateArtifactLayout ().findComponent ("frmCreateArtifactName");
+		itemName = getUtils ().createTransparentTextField (MomUIConstants.SILVER, getSmallFont (), new Dimension
+			(itemNameLayout.getWidth (), itemNameLayout.getHeight ()));
+		contentPane.add (itemName, "frmCreateArtifactName");
+		
+		craftingCost = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		contentPane.add (craftingCost, "frmCreateArtifactCraftingCost");
+		
 		// Item type buttons
 		int itemTypeNumber = 0;
 		for (final HeroItemType itemType : getClient ().getClientDB ().getHeroItemType ())
@@ -173,6 +224,39 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			itemTypeActions.put (itemType.getHeroItemTypeID (), itemTypeAction);
 			itemTypeButtons.put (itemType.getHeroItemTypeID (), itemTypeButton);
 		}
+		
+		// Spell charges area - this must be before the spell effect bonuses panel, since the two overlap but we take clicks here in preference
+		for (int n = 1; n <= 4; n++)
+		{
+			final int nn = n;
+			final Action spellChargesAction = new LoggingAction ("x" + n, (ev) ->
+			{
+				// Finally add spell charges to the bonus list
+				selectedBonusIDs.add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
+				spellChargesChosenCount = nn;
+
+				spellChargesBackground.setVisible (false);
+				spellChargesChosenSpellLabel.setVisible (false);
+				
+				for (final JButton button : spellChargesButtons)
+					button.setVisible (false);
+				
+				updateBonusColouring ();
+				updateCraftingCost ();
+				languageChanged ();		// To change the "Spell Charges" text in the selected bonus to say "Spell Name x4"
+			});
+			
+			final JButton spellChargesButton = getUtils ().createImageButton (spellChargesAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN,
+				getLargeFont (), spellChargesCountNormal, spellChargesCountPressed, spellChargesCountNormal);
+			contentPane.add (spellChargesButton, "frmCreateArtifactSpellCharges" + n);
+			spellChargesButtons.add (spellChargesButton);
+		}
+		
+		spellChargesChosenSpellLabel = getUtils ().createLabel (MomUIConstants.DARK_BROWN, getLargeFont ());
+		contentPane.add (spellChargesChosenSpellLabel, "frmCreateArtifactSpellChargesName");
+
+		spellChargesBackground = getUtils ().createImage (spellChargesBackgroundImage);
+		contentPane.add (spellChargesBackground, "frmCreateArtifactSpellChargesBackground");
 		
 		// Spell effect bonuses panel
 		final JPanel spellEffectBonusesContainer = new JPanel (new BorderLayout ());		// This is to make the buttons take up minimum space
@@ -213,6 +297,16 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		itemBonusButtons.clear ();
 		itemBonusActions.clear ();
 		selectedBonusIDs.clear ();
+		spellChargesBackground.setVisible (false);
+		spellChargesChosenSpellLabel.setVisible (false);
+		spellChargesChosenSpell = null;
+		spellChargesChosenCount = 0;
+		
+		for (final JButton button : spellChargesButtons)
+			button.setVisible (false);
+		
+		// Set base item name
+		itemName.setText (getLanguage ().findHeroItemTypeDescription (heroItemType.getHeroItemTypeID ()));
 		
 		// Light up the relevant item type button gold
 		for (final Entry<String, JButton> itemTypeButton : itemTypeButtons.entrySet ())
@@ -272,6 +366,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 						selectedBonusIDs.add (bonus.getHeroItemBonusID ());
 					
 					updateBonusColouring ();
+					updateCraftingCost ();
 				});
 				
 				final JButton bonusButton = getUtils ().createTextOnlyButton (bonusAction, MomUIConstants.DULL_GOLD, getLargeFont ());
@@ -285,15 +380,42 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		// Create buttons for the spell effect bonuses
 		for (final HeroItemBonus bonus : spellEffectBonuses)
 		{
-			final Action bonusAction = new LoggingAction ((ev) ->
-			{
-				if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
-					selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
-				else
-					selectedBonusIDs.add (bonus.getHeroItemBonusID ());
+			final Action bonusAction;
+			if (bonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
 				
-				updateBonusColouring ();
-			});
+				// Open spell book back up to pick the spell we want to imbue
+				bonusAction = new LoggingAction ((ev) ->
+				{
+					if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
+					{
+						selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
+						spellChargesBackground.setVisible (false);
+						spellChargesChosenSpellLabel.setVisible (false);
+						spellChargesChosenSpell = null;
+						spellChargesChosenCount = 0;
+						updateBonusColouring ();
+						updateCraftingCost ();
+						languageChanged ();		// Change the unselected text back to the generic text "Spell Charges"
+					}
+					else
+					{
+						getSpellBookUI ().setCastType (SpellCastType.SPELL_CHARGES);
+						getSpellBookUI ().setVisible (true);
+					}
+				});
+			else
+				
+				// For any other bonuses, just add directly
+				bonusAction = new LoggingAction ((ev) ->
+				{
+					if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
+						selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
+					else
+						selectedBonusIDs.add (bonus.getHeroItemBonusID ());
+					
+					updateBonusColouring ();
+					updateCraftingCost ();
+				});
 			
 			final JButton bonusButton = getUtils ().createTextOnlyButton (bonusAction, MomUIConstants.DULL_GOLD, getLargeFont ());
 			bonusButton.setHorizontalAlignment (SwingConstants.LEFT);
@@ -306,6 +428,26 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		languageChanged ();
 		contentPane.revalidate ();
 		contentPane.repaint ();
+	}
+	
+	/**
+	 * @param chosenSpell Spell chosen from spell book to imbue into this item
+	 */
+	public final void setSpellCharges (final Spell chosenSpell)
+	{
+		log.trace ("Entering setSpellCharges: " + chosenSpell.getSpellID ());
+
+		spellChargesChosenSpell = chosenSpell;
+		spellChargesBackground.setVisible (true);
+		spellChargesChosenSpellLabel.setVisible (true);
+		
+		// Now ask for whether to put in 1,2,3 or 4 copies of the spell
+		for (int n = 0; n < 4; n++)
+			spellChargesButtons.get (n).setVisible (n < getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemSpellCharges ());
+		
+		languageChanged ();
+		
+		log.trace ("Exiting setSpellCharges");
 	}
 	
 	/**
@@ -350,10 +492,12 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			}
 			else
 			{
-				// Typically there's only 1 bonus stat, so don't bother using an iterator
-				boolean ok = true;
-				for (final UnitSkillAndValue bonusStat : getClient ().getClientDB ().findHeroItemBonus (bonusButton.getKey (), "updateBonusColouring").getHeroItemBonusStat ())
-					if (bonusSkillIDs.contains (bonusStat.getUnitSkillID ()))
+				boolean ok = (getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemBonuses () == null) ||
+					(selectedBonusIDs.size () < getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemBonuses ());
+				
+				final Iterator<UnitSkillAndValue> bonusStatIter = getClient ().getClientDB ().findHeroItemBonus (bonusButton.getKey (), "updateBonusColouring").getHeroItemBonusStat ().iterator ();
+				while ((ok) && (bonusStatIter.hasNext ()))
+					if (bonusSkillIDs.contains (bonusStatIter.next ().getUnitSkillID ()))
 						ok = false;
 				
 				bonusAction.setEnabled (ok);
@@ -379,9 +523,20 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
+		// Title
 		final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
 		final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
 		getFrame ().setTitle (spellName != null ? spellName : spell.getSpellID ());
+
+		// Spell charges
+		if (spellChargesChosenSpell == null)
+			spellChargesChosenSpellLabel.setText (null);
+		else
+		{
+			final SpellLang chosenSpellLang = getLanguage ().findSpell (spellChargesChosenSpell.getSpellID ());
+			final String chosenSpellName = (chosenSpellLang == null) ? null : chosenSpellLang.getSpellName ();
+			spellChargesChosenSpellLabel.setText (chosenSpellName != null ? chosenSpellName : spellChargesChosenSpell.getSpellID ());
+		}
 		
 		// Item type buttons
 		for (final Entry<String, Action> itemTypeAction : itemTypeActions.entrySet ())
@@ -389,9 +544,93 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		
 		// Item bonus buttons
 		for (final Entry<String, Action> itemBonusAction : itemBonusActions.entrySet ())
-			itemBonusAction.getValue ().putValue (Action.NAME, getLanguage ().findHeroItemBonusDescription (itemBonusAction.getKey ()));
+		{
+			// Show fully chosen spell charges as e.g. "Bless x4" other than just the text "Spell Charges"
+			final String bonusDescription;
+			if ((itemBonusAction.getKey ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES)) &&
+				(spellChargesChosenSpell != null) && (spellChargesChosenCount > 0))
+				
+				bonusDescription = spellChargesChosenSpellLabel.getText () + " x" + spellChargesChosenCount; 
+			else
+				bonusDescription = getLanguage ().findHeroItemBonusDescription (itemBonusAction.getKey ());
+			
+			itemBonusAction.getValue ().putValue (Action.NAME, bonusDescription);
+		}
+		
+		// The "MP" suffix may have changed
+		try
+		{
+			updateCraftingCost ();
+		}
+		catch (final IOException e)
+		{
+			log.error (e, e);
+		}
 		
 		log.trace ("Exiting languageChanged");
+	}
+	
+	/**
+	 * Updates the label showing the current crafting cost of the item
+	 * @throws IOException If there is a problem
+	 */
+	private final void updateCraftingCost () throws IOException
+	{
+		log.trace ("Entering updateCraftingCost");
+		
+		final HeroItem heroItem = buildHeroItem ();
+		
+		// Base crafting cost
+		final ProductionTypeLang mp = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+		String mpSuffix = (mp == null) ? null : mp.getProductionTypeSuffix ();
+		if (mpSuffix == null)
+			mpSuffix = CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA;
+
+		final int baseCost = getHeroItemCalculations ().calculateCraftingCost (heroItem, getClient ().getClientDB ());
+		String text = getTextUtils ().intToStrCommas (baseCost) + " " + mpSuffix;
+		
+		// Do we have artificer or runemaster?
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateCraftingCost");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		
+		final int reducedCost = getSpellUtils ().getReducedOverlandCastingCost
+			(getSpell (), heroItem, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+		
+		if (reducedCost < baseCost)
+			text = text + " / " + getTextUtils ().intToStrCommas (reducedCost) + " " + mpSuffix;
+		
+		// Set text
+		craftingCost.setText (text);
+		
+		log.trace ("Exiting updateCraftingCost = " + text);
+	}
+	
+	/**
+	 * @return Hero item object built from all the values on the form
+	 */
+	private final HeroItem buildHeroItem ()
+	{
+		log.trace ("Entering buildHeroItem");
+		
+		final HeroItem heroItem = new HeroItem ();
+		heroItem.setHeroItemTypeID (heroItemType.getHeroItemTypeID ());
+		heroItem.setHeroItemName (itemName.getText ());
+		heroItem.setHeroItemImageNumber (imageNumber);
+		
+		for (final String bonusID : selectedBonusIDs)
+		{
+			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
+			bonus.setHeroItemBonusID (bonusID);
+			heroItem.getHeroItemChosenBonus ().add (bonus);
+		}
+		
+		if (selectedBonusIDs.contains (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES)) {
+			heroItem.setSpellID (spellChargesChosenSpell.getSpellID ());
+			heroItem.setSpellChargeCount (spellChargesChosenCount);
+		}
+
+		log.trace ("Exiting buildHeroItem = " + heroItem);
+		return heroItem;
 	}
 
 	/**
@@ -542,5 +781,53 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
 	}
 }

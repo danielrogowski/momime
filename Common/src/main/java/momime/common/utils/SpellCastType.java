@@ -9,5 +9,8 @@ public enum SpellCastType
 	OVERLAND,
 	
 	/** Combat map spell */
-	COMBAT;
+	COMBAT,
+	
+	/** Special setting used on the client only, when using the spell book to select the spell charges to imbue into a hero item */
+	SPELL_CHARGES;
 }

@@ -30,10 +30,10 @@ public final class TestHeroItemCalculationsImpl
 {
 	/**
 	 * Tests the calculateCraftingCost method
-	 * @throws RecordNotFoundException If the item type, one of the bonuses or spell charges can't be found in the XML
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateCraftingCost () throws RecordNotFoundException
+	public final void testCalculateCraftingCost () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);

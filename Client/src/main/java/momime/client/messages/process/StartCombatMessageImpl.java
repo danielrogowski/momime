@@ -7,11 +7,13 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.CreateArtifactUI;
 import momime.client.ui.frames.SpellBookUI;
 import momime.common.calculations.UnitCalculations;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -43,6 +45,9 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	
 	/** Spell book */
 	private SpellBookUI spellBookUI;
+	
+	/** Crafting popup */
+	private CreateArtifactUI createArtifactUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -76,7 +81,8 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 		getCombatUI ().setVisible (true);
 		
 		// Switch spell book to showing combat spells
-		getSpellBookUI ().languageOrPageChanged ();
+		getCreateArtifactUI ().setVisible (false);
+		getSpellBookUI ().setCastType (SpellCastType.COMBAT);
 		
 		log.trace ("Exiting start");
 	}
@@ -159,5 +165,21 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	public final void setSpellBookUI (final SpellBookUI ui)
 	{
 		spellBookUI = ui;
+	}
+
+	/**
+	 * @return Crafting popup
+	 */
+	public final CreateArtifactUI getCreateArtifactUI ()
+	{
+		return createArtifactUI;
+	}
+
+	/**
+	 * @param ui Crafting popup
+	 */
+	public final void setCreateArtifactUI (final CreateArtifactUI ui)
+	{
+		createArtifactUI = ui;
 	}
 }

@@ -5303,6 +5303,18 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="RollHeroSkillsAtStartOfGame">
 			<languageEntryText>Hero random skills are rolled at the start of the game (so cannot reroll by reloading the game just before spell finishes casting)</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="MaxHeroItemBonuses">
+			<languageEntryText>Maximum bonuses on a hero item</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="MaxHeroItemSpellCharges">
+			<languageEntryText>Maximum spell charges on a hero item</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="MaxHeroItemsInBank">
+			<languageEntryText>Maximum hero items in storage</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Unlimited">
+			<languageEntryText>(blank = unlimited)</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>

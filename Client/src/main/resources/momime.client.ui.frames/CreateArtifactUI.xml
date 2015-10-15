@@ -280,4 +280,56 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmCreateArtifactName">
+		<left>58</left>
+		<top>24</top>
+		<width>240</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactCraftingCost">
+		<left>392</left>
+		<top>448</top>
+		<width>158</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactSpellChargesBackground">
+		<left>410</left>
+		<top>348</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactSpellChargesName">
+		<left>508</left>
+		<top>354</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactSpellCharges1">
+		<left>416</left>
+		<top>378</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactSpellCharges2">
+		<left>462</left>
+		<top>378</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactSpellCharges3">
+		<left>508</left>
+		<top>378</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCreateArtifactSpellCharges4">
+		<left>554</left>
+		<top>378</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 </ns2:xmlLayoutContainer>

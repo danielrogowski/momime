@@ -40053,6 +40053,12 @@
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/HS14-icon.png</unitSkillImageFile>
 	</unitSkill>
+	<unitSkill unitSkillID="HS15">
+		<unitSkillTypeID>N</unitSkillTypeID>
+	</unitSkill>
+	<unitSkill unitSkillID="HS16">
+		<unitSkillTypeID>N</unitSkillTypeID>
+	</unitSkill>
 	<unitSkill unitSkillID="SS002">
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SS002-icon.png</unitSkillImageFile>

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
@@ -33,9 +34,10 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @return Crafting cost - note this doesn't take the reductions from Artificer or Runemaster into account, because sometimes we need the raw value, e.g. when breaking on anvil
 	 * @throws RecordNotFoundException If the item type, one of the bonuses or spell charges can't be found in the XML
+	 * @throws MomException If we selected the Spell Charges bonus without picking the spell or number of charges
 	 */
 	@Override
-	public final int calculateCraftingCost (final HeroItem heroItem, final CommonDatabase db) throws RecordNotFoundException
+	public final int calculateCraftingCost (final HeroItem heroItem, final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering calculateCraftingCost: " + heroItem.getHeroItemTypeID () + ", " + heroItem.getHeroItemName ());
 		
@@ -51,6 +53,8 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 			int bonusCost;
 			if (!chosenBonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
 				bonusCost = bonus.getBonusCraftingCost ();
+			else if ((heroItem.getSpellID () == null) || (heroItem.getSpellChargeCount () == null))
+				throw new MomException ("Hero item \"" + heroItem.getHeroItemName () + "\" includes Spell Charges bonus, but doesn't specify which spell and/or the number of charges"); 
 			else
 				bonusCost = 20 * heroItem.getSpellChargeCount () * db.findSpell (heroItem.getSpellID (), "calculateCraftingCost").getCombatCastingCost ();
 			

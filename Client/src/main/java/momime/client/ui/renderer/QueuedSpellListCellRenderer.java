@@ -91,7 +91,7 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
 			final Spell spell = getClient ().getClientDB ().findSpell (spellID, "QueuedSpellListCellRenderer");
-			final int castingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+			final int castingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, null, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 			final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 			String suffix = (manaProduction == null) ? null : manaProduction.getProductionTypeSuffix ();

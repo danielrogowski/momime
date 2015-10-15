@@ -445,13 +445,14 @@ public final class HelpUI extends MomClientFrameUI
 				final ProductionTypeLang mana = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 				final String manaSuffix = (mana == null) ? null : mana.getProductionTypeSuffix ();
 				
-				if (getSpellUtils ().spellCanBeCastIn (spellDef, SpellCastType.OVERLAND))
+				// Item creation spells can be cast overland but have no defined cost - so don't use "spellCanBeCastIn" for this
+				if (spellDef.getOverlandCastingCost () != null)
 				{
 					final int reducedCastingCost;
 					if (castingPub == null)
 						reducedCastingCost = spellDef.getOverlandCastingCost ();		// No info on caster's picks, so just assume no reduction
 					else
-						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
 					spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp",
 						(spellDef.getOverlandCastingCost () == reducedCastingCost) ? "SpellBookOverlandCostFull" : "SpellBookOverlandCostReduced").replaceAll

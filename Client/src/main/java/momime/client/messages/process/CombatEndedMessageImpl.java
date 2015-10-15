@@ -15,6 +15,7 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.SpellBookUI;
 import momime.client.utils.AnimationController;
 import momime.common.messages.servertoclient.CombatEndedMessage;
+import momime.common.utils.SpellCastType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -81,7 +82,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 		getCombatUI ().setVisible (false);
 		
 		// Switch spell book to showing overland spells
-		getSpellBookUI ().languageOrPageChanged ();
+		getSpellBookUI ().setCastType (SpellCastType.OVERLAND);
 		
 		// Go back to the overland music
 		try

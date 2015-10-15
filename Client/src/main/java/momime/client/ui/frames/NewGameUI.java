@@ -933,9 +933,36 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Maximum heroes hired at once label */
 	private JLabel maximumHeroesLabel;
+
+	/** Maximum heroes unlimited label */
+	private JLabel maximumHeroesUnlimitedLabel;
 	
 	/** Maximum heroes hired at once */
 	private JTextField maximumHeroes;
+	
+	/** Maximum number of bonuses that can be enchanted onto a hero item label */
+	private JLabel maxHeroItemBonusesLabel;
+
+	/** Maximum number of bonuses that can be enchanted onto a hero item unlimited label */
+	private JLabel maxHeroItemBonusesUnlimitedLabel;
+	
+	/** Maximum number of bonuses that can be enchanted onto a hero item */
+	private JTextField maxHeroItemBonuses;
+	
+	/** Maximum number of charges for a spell that can be enchanted onto a hero item label */
+	private JLabel maxHeroItemSpellChargesLabel;
+	
+	/** Maximum number of charges for a spell that can be enchanted onto a hero item */
+	private JTextField maxHeroItemSpellCharges;
+	
+	/** Maximum number of hero items that can be kept unused in bank label */
+	private JLabel maxHeroItemsInBankLabel;
+
+	/** Maximum number of hero items that can be kept unused in bank unlimited label */
+	private JLabel maxHeroItemsInBankUnlimitedLabel;
+	
+	/** Maximum number of hero items that can be kept unused in bank */
+	private JTextField maxHeroItemsInBank;
 	
 	/** Roll hero skills at start of game? */
 	private JCheckBox rollHeroSkillsAtStart;
@@ -2107,10 +2134,37 @@ public final class NewGameUI extends MomClientFrameUI
 		unitsPanel.add (exceedMaxUnitsDuringCombatLabel, "frmNewGameCustomUnitsCanExceedMaximumUnitsDuringCombat");
 		
 		maximumHeroesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		unitsPanel.add (maximumHeroesLabel, "frmNewGameCustomUnitsMaxHeroes");
+		unitsPanel.add (maximumHeroesLabel, "frmNewGameCustomUnitsMaxHeroesLabel");
+		
+		maximumHeroesUnlimitedLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maximumHeroesUnlimitedLabel, "frmNewGameCustomUnitsMaxHeroesUnlimited");
 		
 		maximumHeroes = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		unitsPanel.add (maximumHeroes, "frmNewGameCustomUnitsMaxHeroesEdit");
+		
+		maxHeroItemBonusesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maxHeroItemBonusesLabel, "frmNewGameCustomUnitsMaxItemBonusesLabel");
+		
+		maxHeroItemBonusesUnlimitedLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maxHeroItemBonusesUnlimitedLabel, "frmNewGameCustomUnitsMaxItemBonusesUnlimited");
+		
+		maxHeroItemBonuses = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		unitsPanel.add (maxHeroItemBonuses, "frmNewGameCustomUnitsMaxItemBonusesEdit");
+		
+		maxHeroItemSpellChargesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maxHeroItemSpellChargesLabel, "frmNewGameCustomUnitsMaxSpellChargesLabel");
+		
+		maxHeroItemSpellCharges = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		unitsPanel.add (maxHeroItemSpellCharges, "frmNewGameCustomUnitsMaxSpellChargesEdit");
+		
+		maxHeroItemsInBankLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maxHeroItemsInBankLabel, "frmNewGameCustomUnitsMaxItemBankLabel");
+		
+		maxHeroItemsInBankUnlimitedLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		unitsPanel.add (maxHeroItemsInBankUnlimitedLabel, "frmNewGameCustomUnitsMaxItemBankUnlimited");
+		
+		maxHeroItemsInBank = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		unitsPanel.add (maxHeroItemsInBank, "frmNewGameCustomUnitsMaxItemBankEdit");
 		
 		rollHeroSkillsAtStart = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
 		unitsPanel.add (rollHeroSkillsAtStart, "frmNewGameCustomUnitsRollHeroSkillsAtStartOfGameCheckbox");
@@ -3387,8 +3441,14 @@ public final class NewGameUI extends MomClientFrameUI
 		maxUnitsPerGridCellLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "MaxPerGridCell"));
 		exceedMaxUnitsDuringCombatLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "CanExceedMaximumUnitsDuringCombat"));
 		maximumHeroesLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroes"));
+		maxHeroItemBonusesLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemBonuses"));
+		maxHeroItemSpellChargesLabel.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemSpellCharges"));
+		maxHeroItemsInBankLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemsInBank"));
 		rollHeroSkillsAtStartLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "RollHeroSkillsAtStartOfGame"));
-
+		maximumHeroesUnlimitedLabel.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "Unlimited"));
+		maxHeroItemBonusesUnlimitedLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "Unlimited"));
+		maxHeroItemsInBankUnlimitedLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomUnits", "Unlimited"));
+		
 		// CUSTOM SPELL SETTINGS PANEL
 		switchResearch.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearch"));
 		switchResearchNo.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchNo"));
@@ -4064,7 +4124,10 @@ public final class NewGameUI extends MomClientFrameUI
 		final UnitSetting unitSettings = changeUnitSettingsAction.getSelectedItem ();
 		maxUnitsPerGridCell.setText						(new Integer (unitSettings.getUnitsPerMapCell ()).toString ());
 		exceedMaxUnitsDuringCombat.setSelected	(unitSettings.isCanExceedMaximumUnitsDuringCombat ());
-		maximumHeroes.setText								(new Integer (unitSettings.getMaxHeroes ()).toString ());
+		maximumHeroes.setText								((unitSettings.getMaxHeroes () == null) ? "" : unitSettings.getMaxHeroes ().toString ());
+		maxHeroItemBonuses.setText						((unitSettings.getMaxHeroItemBonuses () == null) ? "" : unitSettings.getMaxHeroItemBonuses ().toString ());
+		maxHeroItemSpellCharges.setText				(new Integer (unitSettings.getMaxHeroItemSpellCharges ()).toString ());
+		maxHeroItemsInBank.setText						((unitSettings.getMaxHeroItemsInBank () == null) ? "" : unitSettings.getMaxHeroItemsInBank ().toString ());
 		rollHeroSkillsAtStart.setSelected					(unitSettings.isRollHeroSkillsAtStartOfGame ());
 		
 		// Spell settings
@@ -4313,7 +4376,10 @@ public final class NewGameUI extends MomClientFrameUI
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setUnitsPerMapCell									(Integer.parseInt (maxUnitsPerGridCell.getText ()));
 		unitSettings.setCanExceedMaximumUnitsDuringCombat	(exceedMaxUnitsDuringCombat.isSelected ());
-		unitSettings.setMaxHeroes											(Integer.parseInt (maximumHeroes.getText ()));
+		unitSettings.setMaxHeroes											(maximumHeroes.getText ().equals("") ? null : Integer.parseInt (maximumHeroes.getText ()));
+		unitSettings.setMaxHeroItemBonuses							(maxHeroItemBonuses.getText ().equals("") ? null : Integer.parseInt (maxHeroItemBonuses.getText ()));
+		unitSettings.setMaxHeroItemSpellCharges						(Integer.parseInt (maxHeroItemSpellCharges.getText ()));
+		unitSettings.setMaxHeroItemsInBank							(maxHeroItemsInBank.getText ().equals("") ? null : Integer.parseInt (maxHeroItemsInBank.getText ()));
 		unitSettings.setRollHeroSkillsAtStartOfGame					(rollHeroSkillsAtStart.isSelected ());
 		
 		if (!customizeUnits.isSelected ())

@@ -216,8 +216,17 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitsPerMapCell" type="momimecommon:unitCount" nxe:label="Max. units in a map cell" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="canExceedMaximumUnitsDuringCombat" type="xsd:boolean" nxe:label="Exceed limit during combat?" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="maxHeroes" type="momimecommon:unitCount" nxe:label="Max. heroes hired at once" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="maxHeroes" type="momimecommon:unitCount" nxe:label="Max. heroes hired at once" nxe:gridwidth="150">
+		        <xsd:annotation><xsd:documentation>null = unlimited.</xsd:documentation></xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="rollHeroSkillsAtStartOfGame" type="xsd:boolean" nxe:label="Roll hero skills at start of game?" nxe:gridwidth="170" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="maxHeroItemBonuses" type="momimecommon:spellCount" nxe:label="Max. bonuses added to hero item" nxe:gridwidth="200">
+		        <xsd:annotation><xsd:documentation>null = unlimited.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="maxHeroItemSpellCharges" type="momimecommon:spellCount" nxe:label="Max. spell charges added to hero item" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="maxHeroItemsInBank" type="momimecommon:spellCount" nxe:label="Unallocated hero item bank size" nxe:gridwidth="200">
+		        <xsd:annotation><xsd:documentation>null = unlimited.</xsd:documentation></xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="unitSettingID" type="momimecommon:unitSettingID" use="optional" nxe:label="Unit Setting ID" nxe:gridwidth="100" />
 	</xsd:complexType>
@@ -453,6 +462,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmIdBlank" type="xsd:boolean" nxe:label="Magic Realm must be blank (Arcane)?" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="itemCraftingSpells" type="xsd:boolean" nxe:label="Affects only item crafting spells?" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitTypeID" type="momimecommon:unitTypeID" nxe:label="Unit Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>

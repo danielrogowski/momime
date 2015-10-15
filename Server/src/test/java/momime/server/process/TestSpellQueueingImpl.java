@@ -442,7 +442,7 @@ public final class TestSpellQueueingImpl
 		
 		// We've got loads of MP, but not enough casting skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (20);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		trans.setOverlandCastingSkillRemainingThisTurn (15);
 		
@@ -520,7 +520,7 @@ public final class TestSpellQueueingImpl
 		
 		// We've got enough MP and skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (20);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		trans.setOverlandCastingSkillRemainingThisTurn (25);	// <---
 		
@@ -2275,7 +2275,7 @@ public final class TestSpellQueueingImpl
 		priv.getQueuedSpellID ().add ("SP001");
 		trans.setOverlandCastingSkillRemainingThisTurn (12);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), settings, db)).thenReturn (100);
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (100);
 		priv.setManaSpentOnCastingCurrentSpell (15);		
 		
 		// Set up test object
@@ -2346,7 +2346,7 @@ public final class TestSpellQueueingImpl
 		priv.getQueuedSpellID ().add ("SP001");
 		trans.setOverlandCastingSkillRemainingThisTurn (12);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), settings, db)).thenReturn (25);		// <---
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (25);		// <---
 		priv.setManaSpentOnCastingCurrentSpell (15);		
 		
 		// Set up test object
@@ -2427,7 +2427,7 @@ public final class TestSpellQueueingImpl
 		
 		trans.setOverlandCastingSkillRemainingThisTurn (14);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), settings, db)).thenReturn (5);		// <---
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (5);		// <---
 		priv.setManaSpentOnCastingCurrentSpell (2);		// So we should finish this one, fully cast 2 more, and spend 1 point toward casting the 4th
 		
 		// Set up test object

@@ -662,7 +662,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 					final Spell spellBeingCast = getClient ().getClientDB ().findSpell
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0), "updateProductionLabels (c)");
 					manaPerTurn.setMaximum (getSpellUtils ().getReducedOverlandCastingCost
-						(spellBeingCast, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
+						(spellBeingCast, null, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
 					manaPerTurn.setValue (getClient ().getOurPersistentPlayerPrivateKnowledge ().getManaSpentOnCastingCurrentSpell ());					
 				}
 			}

@@ -317,7 +317,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else
 		{
 			// Overland spell - need to see if we can instant cast it or need to queue it up
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (),
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, null, pub.getPick (),
 				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			
 			if ((priv.getQueuedSpellID ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
@@ -385,7 +385,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		{
 			// How much to put towards this spell?
 			final SpellSvr spell = db.findSpell (priv.getQueuedSpellID ().get (0), "progressOverlandCasting");
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), sd.getSpellSetting (), db);
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, null, pub.getPick (), sd.getSpellSetting (), db);
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());
 			final int manaAmount = Math.min (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (), manaRemaining), leftToCast);
 

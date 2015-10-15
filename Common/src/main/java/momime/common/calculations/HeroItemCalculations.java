@@ -2,6 +2,7 @@ package momime.common.calculations;
 
 import java.util.List;
 
+import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
@@ -17,8 +18,9 @@ public interface HeroItemCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @return Crafting cost - note this doesn't take the reductions from Artificer or Runemaster into account, because sometimes we need the raw value, e.g. when breaking on anvil
 	 * @throws RecordNotFoundException If the item type, one of the bonuses or spell charges can't be found in the XML
+	 * @throws MomException If we selected the Spell Charges bonus without picking the spell or number of charges
 	 */
-	public int calculateCraftingCost (final HeroItem heroItem, final CommonDatabase db) throws RecordNotFoundException;
+	public int calculateCraftingCost (final HeroItem heroItem, final CommonDatabase db) throws RecordNotFoundException, MomException;
 
 	/**
 	 * @param heroItemBonusID ID of the bonus that we want to get

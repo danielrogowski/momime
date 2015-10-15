@@ -196,6 +196,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Turn page rightaction */
 	private Action turnPageRightAction;
 	
+	/** Overland or combat casting */
+	private SpellCastType castType;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -542,7 +545,10 @@ public final class SpellBookUI extends MomClientFrameUI
 											
 											if ((getCastType () == SpellCastType.OVERLAND) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 												proceed = false;
-	
+
+											else if ((getCastType () == SpellCastType.SPELL_CHARGES) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
+												proceed = false;
+											
 											else if ((getCastType () == SpellCastType.COMBAT) &&
 												((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatUI ().getMaxCastable ())))
 												proceed = false;
@@ -658,10 +664,15 @@ public final class SpellBookUI extends MomClientFrameUI
 											{
 												getCreateArtifactUI ().setSpell (spell);
 												getCreateArtifactUI ().setVisible (true);
-											}											
+											}
+											
+											// Go back to the create artifact UI
+											else if (getCastType () == SpellCastType.SPELL_CHARGES)
+												getCreateArtifactUI ().setSpellCharges (spell);
+												
+											// Tell server to cast it
 											else
 											{
-												// Tell server to cast it
 												final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
 												msg.setSpellID (spell.getSpellID ());
 												
@@ -940,37 +951,63 @@ public final class SpellBookUI extends MomClientFrameUI
 										else
 										{
 											// Show combat and overland casting cost separately
-											final Integer overlandCost = (spell.getOverlandCastingCost () == null) ? null :
-												getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
-		
+											Integer overlandCost;
+											Integer combatCost;
+											
+											if (getCastType () == SpellCastType.SPELL_CHARGES)
+											{
+												overlandCost = null;
+												combatCost = (spell.getCombatCastingCost () == null) ? null : spell.getCombatCastingCost () * 20;
+											}
+											else
+											{
+												overlandCost = (spell.getOverlandCastingCost () == null) ? null :
+													getSpellUtils ().getReducedOverlandCastingCost (spell, null, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+			
+												combatCost = (spell.getCombatCastingCost () == null) ? null :
+													getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+											}
+
 											if (overlandCost != null)
 												spellOverlandCosts [x] [y].setText (getTextUtils ().intToStrCommas (overlandCost) + " " + manaSuffix);
-											
-											final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
-												getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 											
 											if (combatCost != null)
 												spellCombatCosts [x] [y].setText (getTextUtils ().intToStrCommas (combatCost) + " " + manaSuffix);
 											
 											// Grey out (ok, light brown out...) casting cost that's inappropriate for our current cast type.
 											// If we're in a combat, this also greys out spells that we don't have enough remaining skill/MP to cast in the combat.
-											if (getCastType () == SpellCastType.COMBAT)
+											switch (getCastType ())
 											{
-												spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												if ((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatUI ().getMaxCastable ()))
-												{
-													spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-													spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												}
-											}
-											else
-											{
-												spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												if (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND))
-												{
-													spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-													spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-												}
+												case COMBAT:
+													spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													if ((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatUI ().getMaxCastable ()))
+													{
+														spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+														spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													}
+													break;
+
+												case SPELL_CHARGES:
+													spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													if (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT))
+													{
+														spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+														spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													}
+													break;													
+													
+												case OVERLAND:
+													spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													if (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND))
+													{
+														spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+														spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+													}
+													break;
+													
+												default:
+													throw new MomException ("SpellBookUI doesn't know how to prepare spell " + spell.getSpellID () +
+														" in section " + page.getSectionID () + " when the cast type is " + getCastType ());
 											}
 										}
 									}
@@ -1015,9 +1052,18 @@ public final class SpellBookUI extends MomClientFrameUI
 	/**
 	 * @return Overland or combat casting
 	 */
-	private final SpellCastType getCastType ()
+	public final SpellCastType getCastType ()
 	{
-		return getCombatUI ().isVisible () ? SpellCastType.COMBAT : SpellCastType.OVERLAND;
+		return castType;
+	}
+	
+	/**
+	 * @param ct Overland or combat casting
+	 */
+	public final void setCastType (final SpellCastType ct)
+	{
+		castType = ct;
+		languageOrPageChanged ();
 	}
 	
 	/**

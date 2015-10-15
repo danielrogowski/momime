@@ -29,6 +29,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
 import org.junit.Test;
@@ -152,7 +153,7 @@ public final class TestSpellBookUI
 			spell.setResearchCost (n * 10);
 			spells.add (spell);
 			
-			when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
+			when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
 			when (spellUtils.getReducedCombatCastingCost (spell, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
 		}
 		doReturn (spells).when (db).getSpells ();
@@ -210,6 +211,7 @@ public final class TestSpellBookUI
 		book.setMediumFont (CreateFontsForTests.getMediumFont ());
 		book.setLargeFont (CreateFontsForTests.getLargeFont ());
 		book.setCombatUI (new CombatUI ());
+		book.setCastType (SpellCastType.OVERLAND);
 
 		// Display form		
 		book.setVisible (true);

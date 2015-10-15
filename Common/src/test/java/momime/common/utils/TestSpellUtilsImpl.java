@@ -268,14 +268,14 @@ public final class TestSpellUtilsImpl
 		// Arcane spell gives no bonus
 		spell.setOverlandCastingCost (80);
 		spell.setCombatCastingCost (100);
-		assertEquals (80, utils.getReducedOverlandCastingCost (spell, picks, spellSettings, db));
+		assertEquals (80, utils.getReducedOverlandCastingCost (spell, null, picks, spellSettings, db));
 		
 		// Now try spells with magic realms that get a reduction
 		spell.setSpellRealm ("MB01");
-		assertEquals (80-8, utils.getReducedOverlandCastingCost (spell, picks, spellSettings, db));
+		assertEquals (80-8, utils.getReducedOverlandCastingCost (spell, null, picks, spellSettings, db));
 		
 		spell.setSpellRealm ("MB02");
-		assertEquals (80-16, utils.getReducedOverlandCastingCost (spell, picks, spellSettings, db));
+		assertEquals (80-16, utils.getReducedOverlandCastingCost (spell, null, picks, spellSettings, db));
 	}
 
 	/**

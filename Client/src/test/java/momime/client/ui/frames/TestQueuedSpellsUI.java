@@ -99,7 +99,7 @@ public final class TestQueuedSpellsUI
 		{
 			final Spell spell = new Spell ();
 			when (db.findSpell ("SP00" + n, "QueuedSpellListCellRenderer")).thenReturn (spell);
-			when (spellUtils.getReducedOverlandCastingCost (spell, pub.getPick (), spellSettings, db)).thenReturn (n * 100);
+			when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 100);
 		}
 		
 		// Mock queued spells

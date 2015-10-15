@@ -406,6 +406,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="createArtifactUI" ref="createArtifactUI" />
 	</bean>
 
 	<bean id="updateCombatMapMessage" class="momime.client.messages.process.UpdateCombatMapMessageImpl" scope="prototype">
@@ -1432,6 +1433,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="heroItemClientUtils" ref="heroItemClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="spellBookUI" ref="spellBookUI" />
 	</bean>
 	
 	<!-- Prototype UI components -->

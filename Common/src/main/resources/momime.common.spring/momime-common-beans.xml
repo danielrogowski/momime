@@ -213,6 +213,7 @@
 	<bean id="spellUtils" class="momime.common.utils.SpellUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="spellCalculations" ref="spellCalculations" />
+		<property name="heroItemCalculations" ref="heroItemCalculations" />
 	</bean>
 	
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">

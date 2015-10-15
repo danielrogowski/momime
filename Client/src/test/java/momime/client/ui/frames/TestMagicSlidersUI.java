@@ -188,7 +188,7 @@ public final class TestMagicSlidersUI
 		priv.getQueuedSpellID ().add ("SP002");
 		priv.setManaSpentOnCastingCurrentSpell (70);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell2, pub.getPick (), spellSettings, db)).thenReturn (80);
+		when (spellUtils.getReducedOverlandCastingCost (spell2, null, pub.getPick (), spellSettings, db)).thenReturn (80);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

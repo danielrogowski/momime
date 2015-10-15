@@ -1016,6 +1016,10 @@
 	<pick pickID="RT05">
 		<pickType>R</pickType>
 		<pickCost>1</pickCost>
+		<pickProductionBonus productionTypeID="RE11">
+			<itemCraftingSpells>true</itemCraftingSpells>
+			<percentageBonus>50</percentageBonus>
+		</pickProductionBonus>
 		<pickDescription>Artificer (½ price item creation, 2 items spells free at start)</pickDescription>
 		<pickFreeSpell freeSpellID="SP207" />
 		<pickFreeSpell freeSpellID="SP211" />
@@ -22682,13 +22686,17 @@
 		<canExceedMaximumUnitsDuringCombat>false</canExceedMaximumUnitsDuringCombat>
 		<maxHeroes>6</maxHeroes>
 		<rollHeroSkillsAtStartOfGame>true</rollHeroSkillsAtStartOfGame>
+		<maxHeroItemBonuses>4</maxHeroItemBonuses>
+		<maxHeroItemSpellCharges>4</maxHeroItemSpellCharges>
+		<maxHeroItemsInBank>4</maxHeroItemsInBank>
 		<unitSettingDescription>Original</unitSettingDescription>
 	</unitSetting>
 	<unitSetting unitSettingID="US02">
 		<unitsPerMapCell>9</unitsPerMapCell>
 		<canExceedMaximumUnitsDuringCombat>true</canExceedMaximumUnitsDuringCombat>
-		<maxHeroes>6</maxHeroes>
-		<rollHeroSkillsAtStartOfGame>true</rollHeroSkillsAtStartOfGame>
+		<rollHeroSkillsAtStartOfGame>false</rollHeroSkillsAtStartOfGame>
+		<maxHeroItemBonuses>4</maxHeroItemBonuses>
+		<maxHeroItemSpellCharges>4</maxHeroItemSpellCharges>
 		<unitSettingDescription>Recommended</unitSettingDescription>
 	</unitSetting>
 	<spellSetting spellSettingID="SS01">
@@ -23774,6 +23782,10 @@
 		<languageEntry languageEntryID="CanExceedMaximumUnitsDuringCombat" />
 		<languageEntry languageEntryID="MaxHeroes" />
 		<languageEntry languageEntryID="RollHeroSkillsAtStartOfGame" />
+		<languageEntry languageEntryID="MaxHeroItemBonuses" />
+		<languageEntry languageEntryID="MaxHeroItemSpellCharges" />
+		<languageEntry languageEntryID="MaxHeroItemsInBank" />
+		<languageEntry languageEntryID="Unlimited" />
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>

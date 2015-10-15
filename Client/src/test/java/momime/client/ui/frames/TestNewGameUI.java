@@ -210,6 +210,10 @@ public final class TestNewGameUI
 		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "CanExceedMaximumUnitsDuringCombat")).thenReturn ("Can temporarily exceed maximum during combat (e.g. with Phantom Warriors, Earth/Air/Fire Elementals)");
 		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroes")).thenReturn ("Maximum heroes at a time");
 		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "RollHeroSkillsAtStartOfGame")).thenReturn ("Hero random skills are rolled at the start of the game (so cannot reroll by reloading the game just before spell finishes casting)");
+		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemBonuses")).thenReturn ("Maximum bonuses on a hero item");
+		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemSpellCharges")).thenReturn ("Maximum spell charges on a hero item");
+		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemsInBank")).thenReturn ("Maximum hero items in storage");
+		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "Unlimited")).thenReturn ("(blank = unlimited)");
 		
 		// CUSTOM SPELL SETTINGS PANEL
 		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "Title")).thenReturn ("New Game: Custom Spell Settings");

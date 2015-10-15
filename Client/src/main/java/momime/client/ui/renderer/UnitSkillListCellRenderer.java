@@ -88,8 +88,9 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 			if ((value.getUnitSkillValue () != null) && (value.getUnitSkillValue () > 0) &&
 				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
 				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) &&
-				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)) &&
-				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO)))
+				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO)) &&
+				(!value.getUnitSkillID ().startsWith ("HS")))	// This is a bit of a hack, but better than listing all hero skills out separately, and the client
+																				// doesn't have all the skill rolling data like the "maxOccurrences" value and so on
 				
 				try
 				{
@@ -102,7 +103,8 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 					log.error (e, e);
 				}
 			
-			setText (skillText);
+			// Trim off the annoying leading space on hero skills like "Armsmaster", which is there in case it needs to put "Super Armsmaster"
+			setText (skillText.trim ());
 		}
 		
 		setIcon (null);

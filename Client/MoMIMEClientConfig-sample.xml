@@ -11,6 +11,7 @@
 	<overlandShowEnemyBorders>false</overlandShowEnemyBorders>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
 	<unitCombatScale>D</unitCombatScale>
+	<showHeroPortraits>true</showHeroPortraits>
 	<displayUnitSkillsAsAttributes>A</displayUnitSkillsAsAttributes>
 	<debugShowURNs>false</debugShowURNs>
 	<debugShowEdgesOfMap>false</debugShowEdgesOfMap>

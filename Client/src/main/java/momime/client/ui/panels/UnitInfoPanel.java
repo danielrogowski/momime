@@ -37,6 +37,7 @@ import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.UnitGfx;
 import momime.client.language.database.BuildingLang;
 import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
@@ -141,6 +142,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Main background image */
 	private BufferedImage backgroundMain;
 
+	/** Frame for hero portraits */
+	private BufferedImage heroPortraitFrame;
+	
 	/** Extension to the background image according to the number and location of buttons to add */
 	private BufferedImage backgroundButtons;
 	
@@ -221,6 +225,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Load images
 		backgroundMain = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetails.png");
+		heroPortraitFrame = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsHeroFrame.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redPressed.png");
 		
@@ -271,9 +276,23 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					// Draw unit
 					if (unit != null)
 					{
-						zOrderGraphics.setGraphics (g);
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0);
+						final UnitGfx unitGfx = getGraphicsDB ().findUnit (unit.getUnitID (), "heroPortrait");
+						if ((unitGfx.getHeroPortraitImageFile () != null) && (getClientConfig ().isShowHeroPortraits ()))
+						{
+							// Show static hero portrait
+							int x = (getSize ().width - heroPortraitFrame.getWidth ()) / 2;
+							int y = (getSize ().height - heroPortraitFrame.getHeight ()) / 2;
+							g.drawImage (heroPortraitFrame, x, y, null);
+							g.drawImage (getUtils ().loadImage (unitGfx.getHeroPortraitImageFile ()), x+1, y+1,
+								heroPortraitFrame.getWidth () - 2, heroPortraitFrame.getHeight () - 2, null);
+						}
+						else
+						{
+							// Show combat anim of unit 
+							zOrderGraphics.setGraphics (g);
+							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
+							getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0);
+						}
 					}
 				}
 				catch (final Exception e)

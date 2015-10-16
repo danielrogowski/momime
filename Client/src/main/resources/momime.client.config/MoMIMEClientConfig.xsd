@@ -45,6 +45,7 @@
 				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecommon:unitCombatScale" />
 				
 				<!-- Unit info display options -->
+				<xsd:element minOccurs="1" maxOccurs="1" name="showHeroPortraits" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="displayUnitSkillsAsAttributes" type="momimecommon:unitSkillTypeID" />
 				
 				<!-- Debug options -->

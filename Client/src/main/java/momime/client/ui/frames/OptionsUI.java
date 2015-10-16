@@ -174,6 +174,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 
 	/** Choose language label */
 	private JLabel chooseLanguageLabel;
+	
+	/** True to show still hero portraits; false to show animated combat pic like other untis */
+	private JCheckBox showHeroPortraits;
 
 	/** Unit attributes label */
 	private JLabel unitAttributesLabel;
@@ -297,6 +300,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 
 		chooseLanguageLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (chooseLanguageLabel, "frmOptionsChooseLanguage");
+
+		showHeroPortraits = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (showHeroPortraits, "frmOptionsUnitInfoHeroPortraits");
 		
 		unitAttributesLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (unitAttributesLabel, "frmOptionsUnitInfoAttributes");
@@ -365,6 +371,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowOurBorder.setSelected			(getClientConfig ().isOverlandShowOurBorder ());
 		overlandShowEnemyBorders.setSelected		(getClientConfig ().isOverlandShowEnemyBorders ());
 		combatSmoothTerrain.setSelected				(getClientConfig ().isCombatSmoothTerrain ());
+		showHeroPortraits.setSelected						(getClientConfig ().isShowHeroPortraits ());
 		debugShowURNs.setSelected						(getClientConfig ().isDebugShowURNs ());
 		debugShowEdgesOfMap.setSelected			(getClientConfig ().isDebugShowEdgesOfMap ());
 		
@@ -430,7 +437,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 				saveConfigFile ();
 			}
 		});
-
+		
 		overlandShowPartialFogOfWar.addItemListener (new ItemListener ()
 		{
 			@Override
@@ -538,7 +545,26 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			}
 		});
 
-		// Changing the language saves out the config file
+		showHeroPortraits.addItemListener (new ItemListener ()
+		{
+			@Override
+			public final void itemStateChanged (final ItemEvent ev)
+			{
+				getClientConfig ().setShowHeroPortraits (showHeroPortraits.isSelected ());
+				saveConfigFile ();
+
+				for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
+					try
+					{
+						unitInfo.getUnitInfoPanel ().showUnit (unitInfo.getUnitInfoPanel ().getUnit ());
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+			}
+		});
+		
 		unitAttributesChoice.addItemListener (new ItemListener ()
 		{
 			@Override
@@ -599,6 +625,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		debugShowEdgesOfMap.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowEdgesOfMap"));
 		combatScaleLabel.setText					(getLanguage ().findCategoryEntry ("frmOptions", "CombatUnitScale"));
 		chooseLanguageLabel.setText				(getLanguage ().findCategoryEntry ("frmOptions", "ChooseLanguage"));
+		showHeroPortraits.setText					(getLanguage ().findCategoryEntry ("frmOptions", "ShowHeroPortraits"));
 		unitAttributesLabel.setText					(getLanguage ().findCategoryEntry ("frmOptions", "UnitAttributes"));
 		
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmOptions", "OK"));

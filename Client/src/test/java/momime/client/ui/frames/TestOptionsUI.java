@@ -75,6 +75,7 @@ public final class TestOptionsUI
 		when (lang.findCategoryEntry ("frmOptions", "CombatUnitScale")).thenReturn ("Unit scale (visual only; showing 4x figures does not mean 4x attacks):");
 		when (lang.findCategoryEntry ("frmOptions", "ChooseLanguage")).thenReturn ("Choose Language:");
 
+		when (lang.findCategoryEntry ("frmOptions", "ShowHeroPortraits")).thenReturn ("Show hero portraits");		
 		when (lang.findCategoryEntry ("frmOptions", "UnitAttributes")).thenReturn ("Show full breakdown (in top list) for:");
 		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesA")).thenReturn ("Only standard attributes Melee, HP, etc");
 		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesM")).thenReturn ("Skills with values modifyable by exp, auras, etc");

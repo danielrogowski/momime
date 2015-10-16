@@ -94,33 +94,39 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmOptionsUnitInfoAttributes">
+	<component name="frmOptionsUnitInfoHeroPortraits">
 		<left>345</left>
 		<top>190</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmOptionsUnitInfoAttributes">
+		<left>345</left>
+		<top>210</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmOptionsUnitInfoAttributesList">
 		<left>345</left>
-		<top>205</top>
+		<top>225</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsDebugSection">
 		<left>345</left>
-		<top>250</top>
+		<top>270</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsShowURNs">
 		<left>345</left>
-		<top>280</top>
+		<top>300</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsShowEdgesOfMap">
 		<left>345</left>
-		<top>295</top>
+		<top>315</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

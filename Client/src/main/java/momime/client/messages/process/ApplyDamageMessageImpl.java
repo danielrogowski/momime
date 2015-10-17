@@ -384,7 +384,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 
 				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
 				if (attackerUI != null)
-					attackerUI.getUnitInfoPanel ().getPanel ().repaint ();
+					attackerUI.getUnitInfoPanel ().showUnit (attackerUI.getUnitInfoPanel ().getUnit ());
 
 				// Defenders
 				for (final ApplyDamageMessageDefenderDetails thisUnit : getDefenderUnits ())
@@ -394,7 +394,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					
 					final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
 					if (defenderUI != null)
-						defenderUI.getUnitInfoPanel ().getPanel ().repaint ();
+						defenderUI.getUnitInfoPanel ().showUnit (defenderUI.getUnitInfoPanel ().getUnit ());
 				}
 			}
 			catch (final IOException e)
@@ -485,7 +485,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			{
 				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
 				if (attackerUI != null)
-					attackerUI.getUnitInfoPanel ().getPanel ().repaint ();
+					attackerUI.getUnitInfoPanel ().showUnit (attackerUI.getUnitInfoPanel ().getUnit ());
 				
 				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == attackerUnit))
@@ -527,7 +527,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			{
 				final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
 				if (defenderUI != null)
-					defenderUI.getUnitInfoPanel ().getPanel ().repaint ();
+					defenderUI.getUnitInfoPanel ().showUnit (defenderUI.getUnitInfoPanel ().getUnit ());
 
 				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == defenderUnit))

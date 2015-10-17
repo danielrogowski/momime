@@ -3,6 +3,7 @@ package momime.client.newturnmessages;
 import momime.common.messages.NewTurnMessageBuildingSoldFromLackOfProduction;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageConstructUnit;
+import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageNode;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageSpell;
@@ -62,6 +63,15 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	public final NewTurnMessageSummonUnit createNewTurnMessageSummonUnit ()
 	{
 		return getNewTurnMessagesFactory ().createNewTurnMessageSummonUnit ();
+	}
+
+	/**
+	 * @return Custom extended NTM
+	 */
+	@Override
+	public final NewTurnMessageCreateArtifact createNewTurnMessageCreateArtifact ()
+	{
+		return getNewTurnMessagesFactory ().createNewTurnMessageCreateArtifact ();
 	}
 
 	/**

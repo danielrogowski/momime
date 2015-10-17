@@ -52,6 +52,7 @@ import momime.common.database.Spell;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
 import momime.common.utils.ResourceValueUtils;
@@ -647,7 +648,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				}
 				
 				// Spell being cast
-				if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().size () == 0)
+				if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().size () == 0)
 				{
 					manaPerTurn.setMaximum (100);
 					manaPerTurn.setValue (0);
@@ -655,14 +656,20 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				}
 				else
 				{
-					final SpellLang spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0));
-					final String spellName = (spell != null) ? spell.getSpellName () : null;
-					currentlyCasting.setText ((spellName != null) ? spellName : getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0));
+					final QueuedSpell queued = getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().get (0);
+					
+					if (queued.getHeroItem () != null)
+						currentlyCasting.setText (queued.getHeroItem ().getHeroItemName ());
+					else
+					{
+						final SpellLang spell = getLanguage ().findSpell (queued.getQueuedSpellID ());
+						final String spellName = (spell != null) ? spell.getSpellName () : null;
+						currentlyCasting.setText ((spellName != null) ? spellName : queued.getQueuedSpellID ());
+					}
 
-					final Spell spellBeingCast = getClient ().getClientDB ().findSpell
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0), "updateProductionLabels (c)");
+					final Spell spellBeingCast = getClient ().getClientDB ().findSpell (queued.getQueuedSpellID (), "updateProductionLabels (c)");
 					manaPerTurn.setMaximum (getSpellUtils ().getReducedOverlandCastingCost
-						(spellBeingCast, null, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
+						(spellBeingCast, queued.getHeroItem (), pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
 					manaPerTurn.setValue (getClient ().getOurPersistentPlayerPrivateKnowledge ().getManaSpentOnCastingCurrentSpell ());					
 				}
 			}

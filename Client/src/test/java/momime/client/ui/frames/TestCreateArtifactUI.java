@@ -62,10 +62,13 @@ public final class TestCreateArtifactUI
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
+		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("frmCreateArtifact", "OK")).thenReturn ("OK");
+		when (lang.findCategoryEntry ("frmCreateArtifact", "Cancel")).thenReturn ("Cancel");
+		
 		final SpellLang spellLang = new SpellLang ();
 		spellLang.setSpellName ("Create Artifact");
 		
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findSpell ("SP001")).thenReturn (spellLang);
 		
 		final ProductionTypeLang manaLang = new ProductionTypeLang ();

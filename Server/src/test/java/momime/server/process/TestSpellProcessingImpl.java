@@ -98,7 +98,7 @@ public final class TestSpellProcessingImpl
 		proc.setSpellUtils (utils);
 
 		// Run test
-		proc.castOverlandNow (null, player3, spell, null, null, null);
+		proc.castOverlandNow (null, player3, spell, null, null, null, null);
 	}
 
 	/**
@@ -185,7 +185,7 @@ public final class TestSpellProcessingImpl
 		proc.setRandomUtils (randomUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
+		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
 		
 		// Mocked method handles adding the spell to the true map, player's memories and sending the network msgs, so don't need to worry about any of that
 		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, players, db, sd);
@@ -273,7 +273,7 @@ public final class TestSpellProcessingImpl
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
+		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
 		
 		// So this shouldn't happen
 		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
@@ -370,7 +370,7 @@ public final class TestSpellProcessingImpl
 		proc.setUnitSkillUtils (mock (UnitSkillUtils.class));
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
+		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
 		
 		// Prove that unit got added
 		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, summoningCircleLocation, null, player3,
@@ -489,7 +489,7 @@ public final class TestSpellProcessingImpl
 		proc.setUnitSkillUtils (mock (UnitSkillUtils.class));
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
+		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
 		
 		// Prove that unit got updated, not added
 		verify (midTurn, times (0)).addUnitOnServerAndClients (gsk, "UN008", summoningCircleLocation, summoningCircleLocation, null, player3,
@@ -569,7 +569,7 @@ public final class TestSpellProcessingImpl
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
+		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
 		
 		// Casting player gets no message
 		assertEquals (0, trans3.getNewTurnMessage ().size ());
@@ -627,7 +627,7 @@ public final class TestSpellProcessingImpl
 		proc.setFogOfWarMidTurnChanges (midTurn);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
+		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
 		
 		// Check we told human player to pick a target
 		assertEquals (1, trans3.getNewTurnMessage ().size ());

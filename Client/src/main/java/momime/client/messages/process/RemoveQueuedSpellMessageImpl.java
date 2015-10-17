@@ -38,7 +38,7 @@ public final class RemoveQueuedSpellMessageImpl extends RemoveQueuedSpellMessage
 	{
 		log.trace ("Entering start: " + getQueuedSpellIndex ());
 		
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().remove (getQueuedSpellIndex ());
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().remove (getQueuedSpellIndex ());
 		getQueuedSpellsUI ().updateQueuedSpells ();
 		
 		log.trace ("Exiting start");

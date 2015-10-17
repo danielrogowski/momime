@@ -23,6 +23,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.QueuedSpellListCellRenderer;
+import momime.common.messages.QueuedSpell;
 
 /**
  * Screen showing all overland spells queued up to be cast, so we can cancel some if desired.
@@ -57,10 +58,10 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 	private Action closeAction;
 	
 	/** Items in the spells list box */
-	private DefaultListModel<String> spellsItems; 
+	private DefaultListModel<QueuedSpell> spellsItems; 
 	
 	/** Spells list box */
-	private JList<String> spellsList;
+	private JList<QueuedSpell> spellsList;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -96,8 +97,8 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 		getQueuedSpellListCellRenderer ().setForeground (MomUIConstants.SILVER);
 		getQueuedSpellListCellRenderer ().init ();
 		
-		spellsItems = new DefaultListModel<String> ();
-		spellsList = new JList<String> ();
+		spellsItems = new DefaultListModel<QueuedSpell> ();
+		spellsList = new JList<QueuedSpell> ();
 		spellsList.setOpaque (false);
 		spellsList.setModel (spellsItems);
 		spellsList.setCellRenderer (getQueuedSpellListCellRenderer ());
@@ -126,8 +127,8 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 		if (spellsItems != null)
 		{
 			spellsItems.clear ();
-			for (final String spellID : getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ())
-				spellsItems.addElement (spellID);
+			for (final QueuedSpell queued : getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ())
+				spellsItems.addElement (queued);
 			
 			spellsList.repaint ();
 		}

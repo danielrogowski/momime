@@ -5,14 +5,15 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.ui.frames.QueuedSpellsUI;
-import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
+import momime.client.MomClient;
+import momime.client.ui.frames.QueuedSpellsUI;
+import momime.common.messages.QueuedSpell;
+import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 
 /**
  * Server sends this to players trying to cast overland spells that are too big to cast instantly
@@ -38,7 +39,11 @@ public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessa
 	{
 		log.trace ("Entering start: " + getSpellID ());
 		
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().add (getSpellID ());
+		final QueuedSpell queued = new QueuedSpell ();
+		queued.setQueuedSpellID (getSpellID ());
+		queued.setHeroItem (getHeroItem ());
+		
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().add (queued);
 		getQueuedSpellsUI ().updateQueuedSpells ();
 		
 		log.trace ("Exiting start");

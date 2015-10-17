@@ -6506,6 +6506,12 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="SummonedUnitNoRoomSuffix">
 			<languageEntryText>, but the city and all nearby terrain was full so the unit was lost</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CreateArtifact">
+			<languageEntryText>You have finished crafting ITEM_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CreateArtifactLastTurn">
+			<languageEntryText>Last turn you finished crafting ITEM_NAME</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="TargetSpell">
 			<languageEntryText>You have completed casting SPELL_NAME and need to choose a target for it</languageEntryText>
 		</languageEntry>
@@ -6602,6 +6608,14 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Close">
 			<languageEntryText>Close</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="frmCreateArtifact">
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Cancel">
+			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">

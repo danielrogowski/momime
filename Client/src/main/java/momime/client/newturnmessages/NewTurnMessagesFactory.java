@@ -33,6 +33,11 @@ public interface NewTurnMessagesFactory
 	/**
 	 * @return NTM with injected dependencies
 	 */
+	public NewTurnMessageCreateArtifactEx createNewTurnMessageCreateArtifact ();
+	
+	/**
+	 * @return NTM with injected dependencies
+	 */
 	public NewTurnMessageSummonUnitEx createNewTurnMessageSummonUnit ();
 
 	/**

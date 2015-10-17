@@ -24229,6 +24229,8 @@
 		<languageEntry languageEntryID="SummonedUnitLastTurn" />
 		<languageEntry languageEntryID="SummonedUnitBumpedSuffix" />
 		<languageEntry languageEntryID="SummonedUnitNoRoomSuffix" />
+		<languageEntry languageEntryID="CreateArtifact" />
+		<languageEntry languageEntryID="CreateArtifactLastTurn" />
 		<languageEntry languageEntryID="TargetSpell" />
 		<languageEntry languageEntryID="TargetSpellChosen" />
 		<languageEntry languageEntryID="TargetSpellCancelled" />
@@ -24268,6 +24270,10 @@
 	<languageCategory languageCategoryID="frmWizards">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Close" />
+	</languageCategory>
+	<languageCategory languageCategoryID="frmCreateArtifact">
+		<languageEntry languageEntryID="OK" />
+		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />

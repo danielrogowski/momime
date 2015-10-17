@@ -6,9 +6,20 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
@@ -24,6 +35,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -49,16 +61,6 @@ import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
 
 /**
  * Methods for processing the effects of spells that have completed casting
@@ -119,6 +121,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param gsk Server knowledge structure
 	 * @param player Player who is casting the spell
 	 * @param spell Which spell is being cast
+	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param players List of players in this session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
@@ -129,7 +132,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castOverlandNow (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final SpellSvr spell,
+	public final void castOverlandNow (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -159,6 +162,24 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, spell.getSpellID (),
 						player.getPlayerDescription ().getPlayerID (), null, players, db, sd);
 				}
+			}
+		}
+		
+		// Enchant item / Create artifact
+		else if ((sectionID == SpellBookSectionID.SUMMONING) && (heroItem != null))
+		{
+			// Put new item in players' bank
+			priv.getUnassignedHeroItem ().add (heroItem);
+
+			// Show on new turn messages for the player who summoned it
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final NewTurnMessageCreateArtifact createArtifactSpell = new NewTurnMessageCreateArtifact ();
+				createArtifactSpell.setMsgType (NewTurnMessageTypeID.CREATE_ARTIFACT);
+				createArtifactSpell.setSpellID (spell.getSpellID ());
+				createArtifactSpell.setHeroItemName (heroItem.getHeroItemName ());
+
+				((MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (createArtifactSpell);
 			}
 		}
 

@@ -53,6 +53,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
@@ -99,6 +100,12 @@ public final class CreateArtifactUI extends MomClientFrameUI
 
 	/** Spell book */
 	private SpellBookUI spellBookUI;
+
+	/** OK action */
+	private Action okAction;
+	
+	/** Cancel action */
+	private Action cancelAction;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -177,10 +184,25 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		final BufferedImage spellChargesBackgroundImage = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/spellChargesBackground.png");
 		final BufferedImage spellChargesCountNormal = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/spellChargesCountNormal.png");
 		final BufferedImage spellChargesCountPressed = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/spellChargesCountPressed.png");
+		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x17Normal.png");
+		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x17Pressed.png");
 
 		// Actions
 		final Action previousImageAction = new LoggingAction ((ev) -> updateItemImage (-1));
 		final Action nextImageAction = new LoggingAction ((ev) -> updateItemImage (1));
+		
+		okAction = new LoggingAction ((ev) ->
+		{
+			final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+			msg.setSpellID (getSpell ().getSpellID ());
+			msg.setHeroItem (buildHeroItem ());
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			getFrame ().setVisible (false);
+		});
+		
+		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
 		contentPane = new JPanel ()
@@ -200,6 +222,12 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		
 		contentPane.add (getUtils ().createImageButton (previousImageAction, null, null, null, leftArrowNormal, leftArrowPressed, leftArrowNormal), "frmCreateArtifactImagePrevious");
 		contentPane.add (getUtils ().createImageButton (nextImageAction, null, null, null, rightArrowNormal, rightArrowPressed, rightArrowNormal), "frmCreateArtifactImageNext");
+
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonNormal), "frmCreateArtifactOK");
+
+		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonNormal), "frmCreateArtifactCancel");
 		
 		final XmlLayoutComponent itemNameLayout = getCreateArtifactLayout ().findComponent ("frmCreateArtifactName");
 		itemName = getUtils ().createTransparentTextField (MomUIConstants.SILVER, getSmallFont (), new Dimension
@@ -526,6 +554,9 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	public final void languageChanged ()
 	{
 		log.trace ("Entering languageChanged");
+
+		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCreateArtifact", "OK"));
+		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCreateArtifact", "Cancel"));
 		
 		if (getSpell () != null)
 		{

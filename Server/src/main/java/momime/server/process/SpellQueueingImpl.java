@@ -5,11 +5,20 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
@@ -17,6 +26,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
@@ -39,14 +49,6 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Methods for validating spell requests and deciding whether to queue them up or cast immediately.
@@ -101,6 +103,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * 
 	 * @param player Player who is casting the spell
 	 * @param spellID Which spell they want to cast
+	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
 	 * @param combatTargetLocation Which specific tile of the combat map the spell is being cast at, for cell-targetted spells like combat summons
 	 * @param combatTargetUnitURN Which specific unit within combat the spell is being cast at, for unit-targetted spells like Fire Bolt
@@ -113,7 +116,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void requestCastSpell (final PlayerServerDetails player, final String spellID,
+	public final void requestCastSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
@@ -317,15 +320,16 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else
 		{
 			// Overland spell - need to see if we can instant cast it or need to queue it up
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, null, pub.getPick (),
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, pub.getPick (),
 				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			
-			if ((priv.getQueuedSpellID ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
+			if ((priv.getQueuedSpell ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
 				getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (),
 					CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) >= reducedCastingCost))
 			{
 				// Cast instantly, and show the casting message instantly too
-				getSpellProcessing ().castOverlandNow (mom.getGeneralServerKnowledge (), player, spell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				getSpellProcessing ().castOverlandNow (mom.getGeneralServerKnowledge (), player, spell, heroItem,
+					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 				getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 				
 				// Charge player the skill/mana
@@ -340,11 +344,17 @@ public final class SpellQueueingImpl implements SpellQueueing
 			else
 			{
 				// Queue it on server
-				priv.getQueuedSpellID ().add (spellID);
+				final QueuedSpell queued = new QueuedSpell ();
+				queued.setQueuedSpellID (spellID);
+				queued.setHeroItem (heroItem);
+				
+				priv.getQueuedSpell ().add (queued);
 				
 				// Queue it on client
 				final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
 				reply.setSpellID (spellID);
+				reply.setHeroItem (heroItem);
+				
 				player.getConnection ().sendMessageToClient (reply);
 			}
 		}
@@ -381,11 +391,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 		// Keep going while this player has spells queued, free mana and free skill
 		boolean anySpellsCast = false;
 		int manaRemaining = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		while ((priv.getQueuedSpellID ().size () > 0) && (trans.getOverlandCastingSkillRemainingThisTurn () > 0) && (manaRemaining > 0))
+		while ((priv.getQueuedSpell ().size () > 0) && (trans.getOverlandCastingSkillRemainingThisTurn () > 0) && (manaRemaining > 0))
 		{
 			// How much to put towards this spell?
-			final SpellSvr spell = db.findSpell (priv.getQueuedSpellID ().get (0), "progressOverlandCasting");
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, null, pub.getPick (), sd.getSpellSetting (), db);
+			final QueuedSpell queued = priv.getQueuedSpell ().get (0);
+			final SpellSvr spell = db.findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), pub.getPick (), sd.getSpellSetting (), db);
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());
 			final int manaAmount = Math.min (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (), manaRemaining), leftToCast);
 
@@ -399,7 +410,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			if (priv.getManaSpentOnCastingCurrentSpell () >= reducedCastingCost)
 			{
 				// Remove queued spell on server
-				priv.getQueuedSpellID ().remove (0);
+				priv.getQueuedSpell ().remove (0);
 				priv.setManaSpentOnCastingCurrentSpell (0);
 
 				// Remove queued spell on client
@@ -408,7 +419,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				player.getConnection ().sendMessageToClient (msg);
 
 				// Cast it
-				getSpellProcessing ().castOverlandNow (gsk, player, spell, players, db, sd);
+				getSpellProcessing ().castOverlandNow (gsk, player, spell, queued.getHeroItem (), players, db, sd);
 				anySpellsCast = true;
 			}
 

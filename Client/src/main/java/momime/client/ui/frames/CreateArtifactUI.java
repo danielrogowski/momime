@@ -271,6 +271,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		contentPane.add (spellEffectsListScroll, "frmCreateArtifactSpellEffectBonuses");
 		
 		// Lock frame size
+		selectItemType (getClient ().getClientDB ().getHeroItemType ().get (0));		// Pick Sword by default
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 
@@ -285,148 +286,152 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	{
 		heroItemType = newItemType;
 		
-		// Clear old dynamically created controls
-		for (final JButton itemBonusButton : itemBonusButtons.values ())
+		// If we have no spell yet then there's not much else we can reliably do - we'll have to repeat this later anyway
+		if (getSpell () != null)
 		{
-			// Don't know which it will be in - just try both
-			contentPane.remove (itemBonusButton);
-			spellEffectBonusesPanel.remove (itemBonusButton);
-		}
-		
-		itemBonusButtons.clear ();
-		itemBonusActions.clear ();
-		selectedBonusIDs.clear ();
-		spellChargesBackground.setVisible (false);
-		spellChargesChosenSpellLabel.setVisible (false);
-		spellChargesChosenSpell = null;
-		spellChargesChosenCount = 0;
-		
-		for (final JButton button : spellChargesButtons)
-			button.setVisible (false);
-		
-		// Set base item name
-		itemName.setText (getLanguage ().findHeroItemTypeDescription (heroItemType.getHeroItemTypeID ()));
-		
-		// Light up the relevant item type button gold
-		for (final Entry<String, JButton> itemTypeButton : itemTypeButtons.entrySet ())
-			itemTypeButton.getValue ().setForeground
-				(itemTypeButton.getKey ().equals (heroItemType.getHeroItemTypeID ()) ? MomUIConstants.GOLD : MomUIConstants.DARK_BROWN);
-		
-		// Update the image
-		heroItemTypeGfx = getGraphicsDB ().findHeroItemType (heroItemType.getHeroItemTypeID (), "selectItemType");
-		if (heroItemTypeGfx.getHeroItemTypeImageFile ().size () == 0)
-			throw new IOException ("Hero item type " + heroItemType.getHeroItemTypeID () + " exists in graphics XML but has no image(s) defined"); 
-				
-		imageNumber = 0;
-		updateItemImage (0);
-		
-		// Find what bonuses are applicable to this item type and the picks we have
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "selectItemType");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-		
-		final List<HeroItemBonus> attributeBonuses = new ArrayList<HeroItemBonus> ();
-		final List<HeroItemBonus> spellEffectBonuses = new ArrayList<HeroItemBonus> ();
-		
-		for (final HeroItemTypeAllowedBonus allowedBonus : heroItemType.getHeroItemTypeAllowedBonus ())
-			if (getHeroItemCalculations ().haveRequiredBooksForBonus (allowedBonus.getHeroItemBonusID (), pub.getPick (), getClient ().getClientDB ()))
+			// Clear old dynamically created controls
+			for (final JButton itemBonusButton : itemBonusButtons.values ())
 			{
-				final HeroItemBonus bonus = getClient ().getClientDB ().findHeroItemBonus (allowedBonus.getHeroItemBonusID (), "selectItemType");
-				
-				// Limit bonuses available for Enchant Item, but check for spell max = 0 first - so we allow Spell Charges for Create Artifact
-				if ((spell.getHeroItemBonusMaximumCraftingCost () == 0) ||
-					((bonus.getBonusCraftingCost () != null) && (bonus.getBonusCraftingCost () <= spell.getHeroItemBonusMaximumCraftingCost ())))
+				// Don't know which it will be in - just try both
+				contentPane.remove (itemBonusButton);
+				spellEffectBonusesPanel.remove (itemBonusButton);
+			}
+			
+			itemBonusButtons.clear ();
+			itemBonusActions.clear ();
+			selectedBonusIDs.clear ();
+			spellChargesBackground.setVisible (false);
+			spellChargesChosenSpellLabel.setVisible (false);
+			spellChargesChosenSpell = null;
+			spellChargesChosenCount = 0;
+			
+			for (final JButton button : spellChargesButtons)
+				button.setVisible (false);
+			
+			// Set base item name
+			itemName.setText (getLanguage ().findHeroItemTypeDescription (heroItemType.getHeroItemTypeID ()));
+			
+			// Light up the relevant item type button gold
+			for (final Entry<String, JButton> itemTypeButton : itemTypeButtons.entrySet ())
+				itemTypeButton.getValue ().setForeground
+					(itemTypeButton.getKey ().equals (heroItemType.getHeroItemTypeID ()) ? MomUIConstants.GOLD : MomUIConstants.DARK_BROWN);
+			
+			// Update the image
+			heroItemTypeGfx = getGraphicsDB ().findHeroItemType (heroItemType.getHeroItemTypeID (), "selectItemType");
+			if (heroItemTypeGfx.getHeroItemTypeImageFile ().size () == 0)
+				throw new IOException ("Hero item type " + heroItemType.getHeroItemTypeID () + " exists in graphics XML but has no image(s) defined"); 
+					
+			imageNumber = 0;
+			updateItemImage (0);
+			
+			// Find what bonuses are applicable to this item type and the picks we have
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "selectItemType");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			
+			final List<HeroItemBonus> attributeBonuses = new ArrayList<HeroItemBonus> ();
+			final List<HeroItemBonus> spellEffectBonuses = new ArrayList<HeroItemBonus> ();
+			
+			for (final HeroItemTypeAllowedBonus allowedBonus : heroItemType.getHeroItemTypeAllowedBonus ())
+				if (getHeroItemCalculations ().haveRequiredBooksForBonus (allowedBonus.getHeroItemBonusID (), pub.getPick (), getClient ().getClientDB ()))
 				{
-					// This a pretty cheesy way to determine which list the bonus should go in, but it works for now;
-					// it also gets "Spell Charges" correctly in the correct right hand list which splitting according to bonuses
-					// that have or don't have any pre-requisites would get wrong.
-					if (bonus.isCraftingCostMultiplierApplies ())
-						attributeBonuses.add (bonus);
-					else
-						spellEffectBonuses.add (bonus);
+					final HeroItemBonus bonus = getClient ().getClientDB ().findHeroItemBonus (allowedBonus.getHeroItemBonusID (), "selectItemType");
+					
+					// Limit bonuses available for Enchant Item, but check for spell max = 0 first - so we allow Spell Charges for Create Artifact
+					if ((spell.getHeroItemBonusMaximumCraftingCost () == 0) ||
+						((bonus.getBonusCraftingCost () != null) && (bonus.getBonusCraftingCost () <= spell.getHeroItemBonusMaximumCraftingCost ())))
+					{
+						// This a pretty cheesy way to determine which list the bonus should go in, but it works for now;
+						// it also gets "Spell Charges" correctly in the correct right hand list which splitting according to bonuses
+						// that have or don't have any pre-requisites would get wrong.
+						if (bonus.isCraftingCostMultiplierApplies ())
+							attributeBonuses.add (bonus);
+						else
+							spellEffectBonuses.add (bonus);
+					}
+				}
+			
+			// Insert spaces between bonuses to the same attribute, i.e. so there's a space left between the "+ attack"s and the "+ defence"s and so on
+			getHeroItemClientUtils ().insertGapsBetweenDifferentKindsOfAttributeBonuses (attributeBonuses);
+			getHeroItemClientUtils ().shuffleSplitPoint (attributeBonuses, ATTRIBUTE_BONUS_ROWS);
+			
+			// Create buttons for the attribute bonuses
+			int buttonNo = 0;
+			for (final HeroItemBonus bonus : attributeBonuses)
+			{
+				buttonNo++;
+				if (bonus != null)
+				{
+					final Action bonusAction = new LoggingAction ((ev) ->
+					{
+						if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
+							selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
+						else
+							selectedBonusIDs.add (bonus.getHeroItemBonusID ());
+						
+						updateBonusColouring ();
+						updateCraftingCost ();
+					});
+					
+					final JButton bonusButton = getUtils ().createTextOnlyButton (bonusAction, MomUIConstants.DULL_GOLD, getLargeFont ());
+					contentPane.add (bonusButton, "frmCreateArtifactAttributeBonus" + buttonNo);
+	
+					itemBonusActions.put (bonus.getHeroItemBonusID (), bonusAction);
+					itemBonusButtons.put (bonus.getHeroItemBonusID (), bonusButton);
 				}
 			}
-		
-		// Insert spaces between bonuses to the same attribute, i.e. so there's a space left between the "+ attack"s and the "+ defence"s and so on
-		getHeroItemClientUtils ().insertGapsBetweenDifferentKindsOfAttributeBonuses (attributeBonuses);
-		getHeroItemClientUtils ().shuffleSplitPoint (attributeBonuses, ATTRIBUTE_BONUS_ROWS);
-		
-		// Create buttons for the attribute bonuses
-		int buttonNo = 0;
-		for (final HeroItemBonus bonus : attributeBonuses)
-		{
-			buttonNo++;
-			if (bonus != null)
+			
+			// Create buttons for the spell effect bonuses
+			for (final HeroItemBonus bonus : spellEffectBonuses)
 			{
-				final Action bonusAction = new LoggingAction ((ev) ->
-				{
-					if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
-						selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
-					else
-						selectedBonusIDs.add (bonus.getHeroItemBonusID ());
+				final Action bonusAction;
+				if (bonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
 					
-					updateBonusColouring ();
-					updateCraftingCost ();
-				});
+					// Open spell book back up to pick the spell we want to imbue
+					bonusAction = new LoggingAction ((ev) ->
+					{
+						if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
+						{
+							selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
+							spellChargesBackground.setVisible (false);
+							spellChargesChosenSpellLabel.setVisible (false);
+							spellChargesChosenSpell = null;
+							spellChargesChosenCount = 0;
+							updateBonusColouring ();
+							updateCraftingCost ();
+							languageChanged ();		// Change the unselected text back to the generic text "Spell Charges"
+						}
+						else
+						{
+							getSpellBookUI ().setCastType (SpellCastType.SPELL_CHARGES);
+							getSpellBookUI ().setVisible (true);
+						}
+					});
+				else
+					
+					// For any other bonuses, just add directly
+					bonusAction = new LoggingAction ((ev) ->
+					{
+						if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
+							selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
+						else
+							selectedBonusIDs.add (bonus.getHeroItemBonusID ());
+						
+						updateBonusColouring ();
+						updateCraftingCost ();
+					});
 				
 				final JButton bonusButton = getUtils ().createTextOnlyButton (bonusAction, MomUIConstants.DULL_GOLD, getLargeFont ());
-				contentPane.add (bonusButton, "frmCreateArtifactAttributeBonus" + buttonNo);
-
+				bonusButton.setHorizontalAlignment (SwingConstants.LEFT);
+				spellEffectBonusesPanel.add (bonusButton);
+	
 				itemBonusActions.put (bonus.getHeroItemBonusID (), bonusAction);
 				itemBonusButtons.put (bonus.getHeroItemBonusID (), bonusButton);
 			}
-		}
-		
-		// Create buttons for the spell effect bonuses
-		for (final HeroItemBonus bonus : spellEffectBonuses)
-		{
-			final Action bonusAction;
-			if (bonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
-				
-				// Open spell book back up to pick the spell we want to imbue
-				bonusAction = new LoggingAction ((ev) ->
-				{
-					if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
-					{
-						selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
-						spellChargesBackground.setVisible (false);
-						spellChargesChosenSpellLabel.setVisible (false);
-						spellChargesChosenSpell = null;
-						spellChargesChosenCount = 0;
-						updateBonusColouring ();
-						updateCraftingCost ();
-						languageChanged ();		// Change the unselected text back to the generic text "Spell Charges"
-					}
-					else
-					{
-						getSpellBookUI ().setCastType (SpellCastType.SPELL_CHARGES);
-						getSpellBookUI ().setVisible (true);
-					}
-				});
-			else
-				
-				// For any other bonuses, just add directly
-				bonusAction = new LoggingAction ((ev) ->
-				{
-					if (selectedBonusIDs.contains (bonus.getHeroItemBonusID ()))
-						selectedBonusIDs.remove (bonus.getHeroItemBonusID ());
-					else
-						selectedBonusIDs.add (bonus.getHeroItemBonusID ());
-					
-					updateBonusColouring ();
-					updateCraftingCost ();
-				});
 			
-			final JButton bonusButton = getUtils ().createTextOnlyButton (bonusAction, MomUIConstants.DULL_GOLD, getLargeFont ());
-			bonusButton.setHorizontalAlignment (SwingConstants.LEFT);
-			spellEffectBonusesPanel.add (bonusButton);
-
-			itemBonusActions.put (bonus.getHeroItemBonusID (), bonusAction);
-			itemBonusButtons.put (bonus.getHeroItemBonusID (), bonusButton);
+			languageChanged ();
+			contentPane.revalidate ();
+			contentPane.repaint ();
 		}
-		
-		languageChanged ();
-		contentPane.revalidate ();
-		contentPane.repaint ();
 	}
 	
 	/**
@@ -522,7 +527,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		if (spell != null)
+		if (getSpell () != null)
 		{
 			// Title
 			final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());

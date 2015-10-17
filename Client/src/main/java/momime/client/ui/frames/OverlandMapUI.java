@@ -82,7 +82,6 @@ import momime.common.messages.servertoclient.OverlandMoveTypeID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
-import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
 
 /**
@@ -273,13 +272,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		// Actions
 		gameAction = new LoggingAction ((ev) -> {});
-		
-		spellsAction = new LoggingAction ((ev) ->
-		{
-			getSpellBookUI ().setCastType (SpellCastType.OVERLAND);
-			getSpellBookUI ().setVisible (true);
-		});
-		
+		spellsAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
 		armiesAction = new LoggingAction ((ev) -> {});
 		citiesAction = new LoggingAction ((ev) -> {});
 		magicAction = new LoggingAction ((ev) -> getMagicSlidersUI ().setVisible (true));

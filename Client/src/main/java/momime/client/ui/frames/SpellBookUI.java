@@ -703,6 +703,10 @@ public final class SpellBookUI extends MomClientFrameUI
 		
 		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
 			getUtils ().createConstraintsNoFill (2, SPELLS_PER_PAGE + 1, 1, 1, new Insets (38, 33, 0, 0), GridBagConstraintsNoFill.WEST));
+
+		// Default cast type to overland, if one wasn't already pre-set
+		if (getCastType () == null)
+			setCastType (SpellCastType.OVERLAND);
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

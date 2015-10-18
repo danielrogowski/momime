@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>156</formWidth>
+	<formHeight>460</formHeight>
+	<component name="frmRightHandPanelMiniMap">
+		<left>18</left>
+		<top>2</top>
+		<width>120</width>
+		<height>80</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmRightHandPanelGoldStored">
+		<left>41</left>
+		<top>113</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmRightHandPanelManaStored">
+		<left>115</left>
+		<top>113</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmRightHandPanelTopCard">
+		<left>2</left>
+		<top>135</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmRightHandPanelBottomCard">
+		<left>2</left>
+		<top>368</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmRightHandPanelPlayerColourPatches">
+		<left>10</left>
+		<top>424</top>
+		<width>134</width>
+		<height>26</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

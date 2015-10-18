@@ -1107,12 +1107,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="tinyFont" ref="tinyFont" />
 		<property name="client" ref="client" />
 	</bean>
+
+	<bean id="overlandMapRightHandPanelLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel.xml" />
+	</bean>
 	
 	<bean id="surveyorLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml" />
 	</bean>
 	
 	<bean id="overlandMapRightHandPanel" class="momime.client.ui.panels.OverlandMapRightHandPanel">
+		<property name="overlandMapRightHandPanelLayout" ref="overlandMapRightHandPanelLayout" />
 		<property name="surveyorLayout" ref="surveyorLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />

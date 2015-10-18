@@ -37,6 +37,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.MouseClickListener;
 import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -102,6 +103,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 	/** Width of the colour patch for one player */
 	private final static int COLOUR_PATCH_WIDTH = 8;
+
+	/** XML layout for the overall panel */
+	private XmlLayoutContainerEx overlandMapRightHandPanelLayout;
 	
 	/** XML layout for the surveyor subpanel */
 	private XmlLayoutContainerEx surveyorLayout;
@@ -344,12 +348,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		final BufferedImage playerAI = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/playerAI.png");
 		final BufferedImage playerAllocatedMovement = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/playerAllocatedMovement.png");
 		
-		// Fix the size of the panel to be the same as the background
-		final Dimension backgroundSize = new Dimension (background.getWidth (), background.getHeight ());
-		getPanel ().setMinimumSize (backgroundSize);
-		getPanel ().setMaximumSize (backgroundSize);
-		getPanel ().setPreferredSize (backgroundSize);
-		
 		// Actions
 		nextTurnAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().nextTurnButton ());
 		doneAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().selectedUnitsDone ());
@@ -386,47 +384,36 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		});
 		
 		// Set up layout
-		getPanel ().setLayout (new GridBagLayout ());
+		getPanel ().setLayout (new XmlLayoutManager (getOverlandMapRightHandPanelLayout ()));
 		
 		// Minimap view
-		final Dimension minimapSize = new Dimension (116, 73);
-		
 		final JPanel minimap = new JPanel ();
 		minimap.setBackground (new Color (0x008000));
-		minimap.setMinimumSize (minimapSize);
-		minimap.setMaximumSize (minimapSize);
-		minimap.setPreferredSize (minimapSize);
 		
-		getPanel ().add (minimap, getUtils ().createConstraintsNoFill (0, 0, 2, 1, new Insets (0, 0, 35, 0), GridBagConstraintsNoFill.CENTRE));
+		getPanel ().add (minimap, "frmRightHandPanelMiniMap");
 		
 		// Amounts stored
 		goldAmountStored = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getMediumFont ());
-		
-		final GridBagConstraints goldAmountStoredConstraints = getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 4, 0, 0), GridBagConstraintsNoFill.CENTRE);
-		goldAmountStoredConstraints.weightx = 0.5;
-		getPanel ().add (goldAmountStored, goldAmountStoredConstraints);
+		getPanel ().add (goldAmountStored, "frmRightHandPanelGoldStored");
 
 		manaAmountStored = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getMediumFont ());
-		
-		final GridBagConstraints manaAmountStoredConstraints = getUtils ().createConstraintsNoFill (1, 1, 1, 1, new Insets (0, 0, 0, 2), GridBagConstraintsNoFill.CENTRE);
-		manaAmountStoredConstraints.weightx = 0.5;
-		getPanel ().add (manaAmountStored, manaAmountStoredConstraints);
+		getPanel ().add (manaAmountStored, "frmRightHandPanelManaStored");
 		
 		// Card layouts - the top and bottom are stuck directly together with 0 pixel gap in between
 		topCardLayout = new CardLayout ();
 		
 		topCards = new JPanel (topCardLayout);
 		topCards.setOpaque (false);
-		getPanel ().add (topCards, getUtils ().createConstraintsNoFill (0, 2, 2, 1, new Insets (6, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
+		getPanel ().add (topCards, "frmRightHandPanelTopCard");
 
 		bottomCardLayout = new CardLayout ();
 		
 		bottomCards = new JPanel (bottomCardLayout);
 		bottomCards.setOpaque (false);
-		getPanel ().add (bottomCards, getUtils ().createConstraintsNoFill (0, 3, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		getPanel ().add (bottomCards, "frmRightHandPanelBottomCard");
 		
 		// Colour patches showing players' turn sequence
-		final Dimension colourPatchesSize = new Dimension (134, 26);
+		final XmlLayoutComponent colourPatchesSize = getOverlandMapRightHandPanelLayout ().findComponent ("frmRightHandPanelPlayerColourPatches");
 		
 		colourPatches = new JPanel ()
 		{
@@ -448,7 +435,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 							final PlayerPublicDetails player = getClient ().getPlayers ().get (playerIndex);
 							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
 							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
-							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.height);
+							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.getHeight ());
 							
 							// Draw icon for AI or human player
 							g.drawImage (player.getPlayerDescription ().isHuman () ? playerHuman : playerAI, x + 1, 1, null);
@@ -463,7 +450,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 								playerIndex = 0;
 								x++;				// leave black gap
 								g.setColor (Color.WHITE);
-								g.drawLine (x, 0, x, colourPatchesSize.height);
+								g.drawLine (x, 0, x, colourPatchesSize.getHeight ());
 								x = x + 2;		// leave white line + black gap
 							}
 						}
@@ -476,14 +463,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						{
 							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
 							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
-							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.height);
+							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.getHeight ());
 							
 							// Draw icon for AI or human player
 							g.drawImage (player.getPlayerDescription ().isHuman () ? playerHuman : playerAI, x + 1, 1, null);
 							
 							// Show whether they finished allocating movement yet
 							if (trans.getMovementAllocatedForTurnNumber () >= getClient ().getGeneralPublicKnowledge ().getTurnNumber ())
-								g.drawImage (playerAllocatedMovement, x + 1, colourPatchesSize.height - playerAllocatedMovement.getHeight () - 1, null);
+								g.drawImage (playerAllocatedMovement, x + 1, colourPatchesSize.getHeight () - playerAllocatedMovement.getHeight () - 1, null);
 
 							// Move to next position
 							x = x + COLOUR_PATCH_WIDTH;
@@ -494,11 +481,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		};
 		
 		colourPatches.setBackground (Color.BLACK);
-		colourPatches.setMinimumSize (colourPatchesSize);
-		colourPatches.setMaximumSize (colourPatchesSize);
-		colourPatches.setPreferredSize (colourPatchesSize);
 
-		getPanel ().add (colourPatches, getUtils ().createConstraintsNoFill (0, 4, 2, 1, new Insets (4, 0, 8, 0), GridBagConstraintsNoFill.CENTRE));
+		getPanel ().add (colourPatches, "frmRightHandPanelPlayerColourPatches");
 		
 		// Top card - global economy
 		final JPanel economyPanel = getUtils ().createPanelWithBackgroundImage (economyBackground);
@@ -1728,6 +1712,22 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
+	}
+	
+	/**
+	 * @return XML layout for the overall panel
+	 */
+	public final XmlLayoutContainerEx getOverlandMapRightHandPanelLayout ()
+	{
+		return overlandMapRightHandPanelLayout;
+	}
+
+	/**
+	 * @param layout XML layout for the overall panel
+	 */
+	public final void setOverlandMapRightHandPanelLayout (final XmlLayoutContainerEx layout)
+	{
+		overlandMapRightHandPanelLayout = layout;
 	}
 	
 	/**

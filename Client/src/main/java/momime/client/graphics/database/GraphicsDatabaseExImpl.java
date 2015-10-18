@@ -33,6 +33,7 @@ import momime.client.graphics.database.v0_9_7.Race;
 import momime.client.graphics.database.v0_9_7.RangedAttackType;
 import momime.client.graphics.database.v0_9_7.Spell;
 import momime.client.graphics.database.v0_9_7.TileSet;
+import momime.client.graphics.database.v0_9_7.TileType;
 import momime.client.graphics.database.v0_9_7.Unit;
 import momime.client.graphics.database.v0_9_7.UnitSkill;
 import momime.client.graphics.database.v0_9_7.UnitSkillComponentImage;
@@ -107,6 +108,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of tileSet IDs to tileSet objects */
 	private Map<String, TileSetGfx> tileSetsMap;
 
+	/** Map of tile type IDs to tile type XML objects */
+	private Map<String, TileTypeGfx> tileTypesMap;
+	
 	/** Map of map feature IDs to map feature XML objects */
 	private Map<String, MapFeatureGfx> mapFeaturesMap;
 	
@@ -267,6 +271,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		for (final TileSet ts : getTileSet ())
 			tileSetsMap.put (ts.getTileSetID (), (TileSetGfx) ts);
 
+		// Create tile types map
+		tileTypesMap = new HashMap<String, TileTypeGfx> ();
+		for (final TileType tt : getTileType ())
+		{
+			final TileTypeGfx ttex = (TileTypeGfx) tt;
+			ttex.buildMap ();
+			tileTypesMap.put (tt.getTileTypeID (), ttex);
+		}
+		
 		// Create map features map
 		mapFeaturesMap = new HashMap<String, MapFeatureGfx> ();
 		for (final MapFeature mf : getMapFeature ())
@@ -664,6 +677,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		return found;
 	}
 
+	/**
+	 * @param tileTypeID Tile type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Tile type object
+	 * @throws RecordNotFoundException If the tileTypeID doesn't exist
+	 */
+	@Override
+	public final TileTypeGfx findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException
+	{
+		final TileTypeGfx found = tileTypesMap.get (tileTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (TileType.class, tileTypeID, caller);
+
+		return found;
+	}
+	
 	/**
 	 * @param mapFeatureID Map feature ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

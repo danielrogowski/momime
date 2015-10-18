@@ -72,7 +72,12 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimegfx:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimegfx:combatAreaEffect" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileType" type="momimegfx:tileType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileType" type="momimegfx:tileType">
+				<xsd:key name="tileTypeMiniMapPK">
+					<xsd:selector xpath="tileTypeMiniMap" />
+					<xsd:field xpath="@planeNumber" />
+				</xsd:key>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeature" type="momimegfx:mapFeature" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImage" type="momimegfx:cityImage" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorderImage" type="momimegfx:combatTileBorderImage" />
@@ -357,6 +362,12 @@
 		<xsd:keyref refer="momimesvr:heroItemSlotTypePK" name="heroItemSlotTypeFKheroItemSlotType">
 			<xsd:selector xpath="heroItemSlotType" />
 			<xsd:field xpath="@heroItemSlotTypeID" />
+		</xsd:keyref>
+		
+		<!-- Minimap, new for 0.9.7 -->
+		<xsd:keyref refer="momimesvr:planePK" name="tileTypeMiniMapFKplane">
+			<xsd:selector xpath="tileType/tileTypeMiniMap" />
+			<xsd:field xpath="@planeNumber" />
 		</xsd:keyref>
 	</xsd:element>
 		
@@ -869,11 +880,25 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 	<xsd:complexType name="tileType" nxe:singular="Tile Type" nxe:plural="Tile Types" nxe:submenu="Overland Map">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimegfx:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="380" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeMiniMap" type="momimegfx:tileTypeMiniMap" nxe:label="Mini map" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="tileTypeMiniMap" nxe:singular="Mini map" nxe:plural="Mini map" nxe:submenu="Overland Map">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="miniMapPixelColour" type="momimecommon:colour" nxe:label="Mini map colour" nxe:gridwidth="120" />
+		</xsd:sequence>
+		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:gridwidth="80">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

@@ -42,6 +42,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.database.MapFeature;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.MapFeatureLang;
@@ -57,6 +58,7 @@ import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.TextUtils;
@@ -110,6 +112,12 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** XML layout for the surveyor subpanel */
 	private XmlLayoutContainerEx surveyorLayout;
 	
+	/** Minimap generator */
+	private MiniMapBitmapGenerator miniMapBitmapGenerator;
+	
+	/** Minimap panel */
+	private JPanel miniMapPanel;
+	
 	/** Select unit buttons */
 	private List<HideableComponent<SelectUnitButton>> selectUnitButtons = new ArrayList<HideableComponent<SelectUnitButton>> ();
 
@@ -133,6 +141,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -305,6 +316,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Mini panel showing colour patch for each wizard to show progression of their turns */
 	private JPanel colourPatches;
 	
+	/** Bitmap for the mini map */
+	private BufferedImage miniMapBitmap;
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -387,10 +401,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		getPanel ().setLayout (new XmlLayoutManager (getOverlandMapRightHandPanelLayout ()));
 		
 		// Minimap view
-		final JPanel minimap = new JPanel ();
-		minimap.setBackground (new Color (0x008000));
+		final XmlLayoutComponent miniMapSize = getOverlandMapRightHandPanelLayout ().findComponent ("frmRightHandPanelMiniMap");
+		miniMapPanel = new JPanel ()
+		{
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				// Black out background
+				super.paintComponent (g);
+				
+				g.drawImage (miniMapBitmap, 0, 0, miniMapSize.getWidth (), miniMapSize.getHeight (), null);
+			}			
+		};
 		
-		getPanel ().add (minimap, "frmRightHandPanelMiniMap");
+		miniMapPanel.setBackground (Color.BLACK);
+		getPanel ().add (miniMapPanel, "frmRightHandPanelMiniMap");
 		
 		// Amounts stored
 		goldAmountStored = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getMediumFont ());
@@ -784,6 +809,20 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		colourPatches.repaint ();
 	}
 
+	/**
+	 * Generates bitmap of the entire overland map with only 1 pixel per terrain file, to display in the mini map area in the top right corner.
+	 * @throws IOException If there is a problem finding any of the necessary data
+	 */
+	public final void regenerateMiniMapBitmap () throws IOException
+	{
+		log.trace ("Entering regenerateMiniMapBitmap: " + getOverlandMapUI ().getMapViewPlane ());
+		
+		miniMapBitmap = getMiniMapBitmapGenerator ().generateMiniMapBitmap (getOverlandMapUI ().getMapViewPlane ());
+		miniMapPanel.repaint ();
+		
+		log.trace ("Exiting regenerateMiniMapBitmap");
+	}
+	
 	/**
 	 * Update all labels and such from the chosen language 
 	 */
@@ -1523,6 +1562,22 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	}
 
 	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+	
+	/**
 	 * @return Resource value utils
 	 */
 	public final ResourceValueUtils getResourceValueUtils ()
@@ -1744,5 +1799,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setSurveyorLayout (final XmlLayoutContainerEx layout)
 	{
 		surveyorLayout = layout;
+	}
+
+	/**
+	 * @return Minimap generator
+	 */
+	public final MiniMapBitmapGenerator getMiniMapBitmapGenerator ()
+	{
+		return miniMapBitmapGenerator;
+	}
+
+	/**
+	 * @param gen Minimap generator
+	 */
+	public final void setMiniMapBitmapGenerator (final MiniMapBitmapGenerator gen)
+	{
+		miniMapBitmapGenerator = gen;
 	}
 }

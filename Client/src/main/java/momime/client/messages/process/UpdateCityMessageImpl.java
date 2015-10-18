@@ -11,6 +11,7 @@ import momime.client.ui.frames.EditStringUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 
@@ -34,6 +35,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
@@ -54,8 +58,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		
 		processOneUpdate ();
 		
-		// Regenerate city images to show change in size
+		// Regenerate city images to show change in size or owner
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 		
 		log.trace ("Exiting start");
 	}
@@ -138,6 +143,22 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 
 	/**

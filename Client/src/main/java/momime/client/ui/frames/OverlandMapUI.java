@@ -166,7 +166,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
-
+	
 	/** Bitmap for the shading at the edges of the area we can see */
 	private BufferedImage fogOfWarBitmap;
 
@@ -1179,7 +1179,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		log.trace ("Exiting regenerateOverlandMapBitmaps");
 	}
-
+	
 	/**
 	 * Generates big bitmap of the smoothed edges of blackness that obscure the edges of the outermost tiles we can see, so that the edges aren't just a solid black line
 	 * 
@@ -1326,6 +1326,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		
 		regenerateOverlandMapBitmaps ();
 		regenerateFogOfWarBitmap ();
+		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 
 		// Keep the same movement types array, but regenerate the bitmap from it to show movement available on the new plane
 		setMovementTypes (movementTypes);
@@ -1421,6 +1422,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return The plane that the UI is currently displaying
+	 */
+	public final int getMapViewPlane ()
+	{
+		return mapViewPlane;
+	}
+	
+	/**
 	 * @return Multiplayer client
 	 */
 	public final MomClient getClient ()
@@ -1515,7 +1524,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		overlandMapBitmapGenerator = gen;
 	}
-
+	
 	/**
 	 * @return Overland map right hand panel showing economy etc
 	 */

@@ -768,6 +768,46 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findTileTypeID method to find a tileType ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindTileTypeID_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final TileTypeGfx newTileType = new TileTypeGfx ();
+			newTileType.setTileTypeID ("TT0" + n);
+			db.getTileType ().add (newTileType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("TT02", db.findTileType ("TT02", "testFindTileTypeID_Exists").getTileTypeID ());
+	}
+
+	/**
+	 * Tests the findTileTypeID method to find a tileType ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindTileTypeID_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final TileTypeGfx newTileType = new TileTypeGfx ();
+			newTileType.setTileTypeID ("TT0" + n);
+			db.getTileType ().add (newTileType);
+		}
+
+		db.buildMaps ();
+
+		db.findTileType ("TT04", "testFindTileTypeID_NotExists");
+	}
+
+	/**
 	 * Tests the findMapFeatureID method to find a mapFeature ID that does exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
@@ -806,7 +846,7 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
 	}
-
+	
 	/**
 	 * Tests the findCombatAreaEffectID method to find a combatAreaEffect ID that does exist
 	 * @throws RecordNotFoundException If the record is not found

@@ -207,7 +207,7 @@ public final class ClientTestData
 	public final static MapVolumeOfMemoryGridCells createOverlandMap (final CoordinateSystem sys)
 	{
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-		for (int plane = 0; plane < 2; plane++)
+		for (int plane = 0; plane < sys.getDepth (); plane++)
 		{
 			final MapAreaOfMemoryGridCells area = new MapAreaOfMemoryGridCells ();
 			for (int y = 0; y < sys.getHeight (); y++)

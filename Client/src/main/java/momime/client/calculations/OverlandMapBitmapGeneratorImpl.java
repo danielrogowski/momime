@@ -205,7 +205,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	 * @param startY Map coordinate of the cell to draw at the top edge of the bitmaps
 	 * @param countX Width of the bitmap to generate, in number of map cells
 	 * @param countY Height of the bitmap to generate, in number of map cells
-	 * @return Array of overland map bitmaps
+	 * @return Array of overland map bitmaps, one for each animation frame
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	@Override

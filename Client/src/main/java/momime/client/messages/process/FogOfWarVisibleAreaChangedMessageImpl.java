@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -41,6 +42,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -180,6 +184,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		// So much will have changed (terrain, cities, node auras, fog of war area, units) that best to just regenerate the lot
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapUI ().regenerateFogOfWarBitmap ();
+		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 
 		log.trace ("Exiting start");
 	}
@@ -230,5 +235,21 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

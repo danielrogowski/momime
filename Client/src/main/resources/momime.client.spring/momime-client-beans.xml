@@ -498,6 +498,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 	</bean>
@@ -505,6 +506,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 	</bean>
@@ -569,6 +571,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="factory" ref="momClientServerToClientServerFactory" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
@@ -826,6 +829,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="clientConfig" ref="clientConfig" />
+	</bean>
+	
+	<bean id="miniMapBitmapGenerator" class="momime.client.calculations.MiniMapBitmapGeneratorImpl">
+		<property name="client" ref="client" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 	<bean id="combatMapBitmapGenerator" class="momime.client.calculations.CombatMapBitmapGeneratorImpl">
@@ -1127,6 +1136,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="client" ref="client" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
@@ -1139,6 +1149,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">

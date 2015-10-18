@@ -157,6 +157,14 @@ public interface GraphicsDatabaseEx
 	public TileSetGfx findTileSet (final String tileSetID, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @param tileTypeID Tile type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Tile type object
+	 * @throws RecordNotFoundException If the tileTypeID doesn't exist
+	 */
+	public TileTypeGfx findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @param mapFeatureID Map feature ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Map feature object

@@ -40859,27 +40859,129 @@
 	<combatAreaEffect combatAreaEffectID="CSE197">
 		<combatAreaEffectImageFile>/momime.client.graphics/combat/effects/CSE197.png</combatAreaEffectImageFile>
 	</combatAreaEffect>
-	<tileType tileTypeID="TT01" />
-	<tileType tileTypeID="TT02" />
-	<tileType tileTypeID="TT03" />
-	<tileType tileTypeID="TT04" />
-	<tileType tileTypeID="TT05" />
-	<tileType tileTypeID="TT06" />
-	<tileType tileTypeID="TT07" />
-	<tileType tileTypeID="TT08" />
-	<tileType tileTypeID="TT09" />
-	<tileType tileTypeID="TT10" />
-	<tileType tileTypeID="TT11" />
+	<tileType tileTypeID="TT01">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>69615D</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>69615D</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT02">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>385D10</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>61493C</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT03">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>105D10</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>49413C</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT04">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>BE9A75</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>8E7159</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT05">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>2C2C49</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>241C18</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT06">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>3C5D3C</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>513C30</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT07">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>7D7571</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>795D4D</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT08">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>2C2C49</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>241C18</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT09">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>000059</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>080404</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT10">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>10105D</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>080404</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
+	<tileType tileTypeID="TT11">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>2C2C49</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>241C18</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
 	<tileType tileTypeID="TT12">
 		<monsterFoundImageFile>/momime.client.graphics/overland/tileTypes/sorceryNode-scouting.png</monsterFoundImageFile>
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>3C5D3C</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>513C30</miniMapPixelColour>
+		</tileTypeMiniMap>
 	</tileType>
 	<tileType tileTypeID="TT13">
 		<monsterFoundImageFile>/momime.client.graphics/overland/tileTypes/natureNode-scouting.png</monsterFoundImageFile>
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>105D10</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>513C30</miniMapPixelColour>
+		</tileTypeMiniMap>
 	</tileType>
 	<tileType tileTypeID="TT14">
 		<monsterFoundImageFile>/momime.client.graphics/overland/tileTypes/chaosNode-scouting.png</monsterFoundImageFile>
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>69615D</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>69615D</miniMapPixelColour>
+		</tileTypeMiniMap>
 	</tileType>
-	<tileType tileTypeID="TT15" />
+	<tileType tileTypeID="TT15">
+		<tileTypeMiniMap planeNumber="0">
+			<miniMapPixelColour>10105D</miniMapPixelColour>
+		</tileTypeMiniMap>
+		<tileTypeMiniMap planeNumber="1">
+			<miniMapPixelColour>080404</miniMapPixelColour>
+		</tileTypeMiniMap>
+	</tileType>
 	<tileType tileTypeID="TT98" />
 	<tileType tileTypeID="TT99" />
 	<tileType tileTypeID="FOW" />

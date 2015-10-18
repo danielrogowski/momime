@@ -27,6 +27,7 @@ import momime.client.graphics.database.v0_9_7.SmoothedTileType;
 import momime.client.graphics.database.v0_9_7.SmoothingSystem;
 import momime.client.graphics.database.v0_9_7.Spell;
 import momime.client.graphics.database.v0_9_7.TileSet;
+import momime.client.graphics.database.v0_9_7.TileType;
 import momime.client.graphics.database.v0_9_7.Unit;
 import momime.client.graphics.database.v0_9_7.UnitSkillComponentImage;
 import momime.client.graphics.database.v0_9_7.UnitCombatAction;
@@ -91,6 +92,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 		return new SmoothingSystemGfx ();
 	}
 	
+	/**
+	 * @return Custom extended TileType
+	 */
+	@Override
+	public final TileType createTileType ()
+	{
+		return new TileTypeGfx ();
+	}
+
 	/**
 	 * @return Custom extended MapFeature 
 	 */

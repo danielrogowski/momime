@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.MemoryGridCell;
@@ -36,9 +37,12 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
 	/** Overland map bitmap generator */
 	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
-
+	
 	/** Operations for 3D boolean map areas */
 	private BooleanMapAreaOperations3D booleanMapAreaOperations3D;
 
@@ -63,6 +67,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		// Bit of a cop-out just regenerating everything, but we do have node auras and map features as well as the terrain to worry
 		// about... so that's already almost everything (although we could avoid regenerating the units...)
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 		
 		log.trace ("Exiting start");
 	}
@@ -141,6 +146,22 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		overlandMapUI = ui;
 	}
 
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
+	}
+	
 	/**
 	 * @return Operations for 3D boolean map areas
 	 */

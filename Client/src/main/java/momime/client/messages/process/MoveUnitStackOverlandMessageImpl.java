@@ -9,6 +9,7 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
+import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -54,6 +55,9 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
+	
+	/** Army list */
+	private ArmyListUI armyListUI;
 	
 	/** Overland map tile set */
 	private TileSetGfx overlandMapTileSet;
@@ -209,19 +213,27 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 			getMemoryMaintainedSpellUtils ().removeSpellsCastOnUnitStack (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getUnitURN ());
 		
 		// Put the units into their new map cell
+		boolean ourUnits = false;
 		for (final int thisUnitURN : getUnitURN ())
 		{
 			final MemoryUnit u = getUnitUtils ().findUnitURN (thisUnitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "MoveUnitStackOverlandMessageImpl.finish");
 
 			// Free after moving is used when an enemy unit is walking out of the area we can see, so we see them move and then they disappear
 			if (isFreeAfterMoving ())
-				getUnitClientUtils ().killUnit (thisUnitURN, KillUnitActionID.FREE, null);
+				getUnitClientUtils ().killUnit (u, KillUnitActionID.FREE, null);
 			else
+			{
 				u.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getMoveTo ()));
+				if (u.getOwningPlayerID () == getClient ().getOurPlayerID ())
+					ourUnits = true;
+			}
 		}
 		
 		getOverlandMapUI ().setUnitStackMoving (null);
 		getOverlandMapUI ().repaintSceneryPanel ();
+		
+		if (ourUnits)
+			getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) getMoveTo ());
 		
 		// If we've got the city screen open for the map cell the units just moved into then we need to update it to add their select unit buttons
 		final CityViewUI cityView = getClient ().getCityViews ().get (getMoveTo ().toString ());
@@ -350,6 +362,22 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		unitClientUtils = util;
 	}
 
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
+	}
+	
 	/**
 	 * @return Unit to draw
 	 */

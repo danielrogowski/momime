@@ -8,6 +8,12 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
@@ -22,6 +28,7 @@ import momime.client.graphics.database.TileSetGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -39,11 +46,6 @@ import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
 import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 /**
  * Message server sends to all clients when an attack takes place, this might damage the attacker and/or the defender.
@@ -107,6 +109,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** Army list */
+	private ArmyListUI armyListUI;
 	
 	/** The attacking unit; null if we can't see it */
 	private MemoryUnit attackerUnit;
@@ -479,7 +484,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			{
 				// Attacker is dead
 				log.debug ("ApplyDamage is killing off dead attacker Unit URN " + getAttackerUnitURN ());
-				getUnitClientUtils ().killUnit (getAttackerUnitURN (), transmittedAction, untransmittedAction);
+				getUnitClientUtils ().killUnit (attackerUnit, transmittedAction, untransmittedAction);
+				
+				if (attackerUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())
+					getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) attackerUnit.getUnitLocation ());
 			}
 			else
 			{
@@ -521,7 +529,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			{
 				// Defender is dead
 				log.debug ("ApplyDamage is killing off dead defender Unit URN " + thisUnit.getDefUnit ().getUnitURN ());
-				getUnitClientUtils ().killUnit (thisUnit.getDefUnit ().getUnitURN (), transmittedAction, untransmittedAction);
+				getUnitClientUtils ().killUnit (thisUnit.getDefUnit (), transmittedAction, untransmittedAction);
+				
+				if (thisUnit.getDefUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
+					getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) thisUnit.getDefUnit ().getUnitLocation ());
 			}
 			else
 			{
@@ -751,6 +762,22 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+	
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
 	}
 	
 	/**

@@ -6618,6 +6618,17 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmArmyList">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>The Armies of PLAYER_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="HeroItems">
+			<languageEntryText>Items</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Combats</languageEntryText>

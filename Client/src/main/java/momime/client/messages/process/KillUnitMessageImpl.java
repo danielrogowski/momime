@@ -5,13 +5,18 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.utils.UnitClientUtils;
-import momime.common.messages.servertoclient.KillUnitMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
+import momime.client.MomClient;
+import momime.client.ui.frames.ArmyListUI;
+import momime.client.utils.UnitClientUtils;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.KillUnitMessage;
+import momime.common.utils.UnitUtils;
 
 /**
  * Server sends this to everyone to notify of dead units, except where it is already obvious from an Apply Damage message that a unit is dead
@@ -24,6 +29,15 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+
+	/** Army list */
+	private ArmyListUI armyListUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -34,7 +48,13 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	{
 		log.trace ("Entering start: Unit URN " + getUnitURN () + ", " + getKillUnitActionID ());
 
-		getUnitClientUtils ().killUnit (getUnitURN (), getKillUnitActionID (), null);
+		final MemoryUnit unit = getUnitUtils ().findUnitURN (unitURN,
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "KillUnitMessageImpl");
+		
+		getUnitClientUtils ().killUnit (unit, getKillUnitActionID (), null);
+		
+		if (unit.getOwningPlayerID () == getClient ().getOurPlayerID ())
+			getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) unit.getUnitLocation ());
 		
 		log.trace ("Exiting start");
 	}
@@ -53,5 +73,54 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
 	}
 }

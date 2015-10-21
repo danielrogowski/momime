@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.EditStringUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
@@ -38,6 +39,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
+	/** Army list */
+	private ArmyListUI armyListUI;
+	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
@@ -61,6 +65,7 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		// Regenerate city images to show change in size or owner
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
+		getArmyListUI ().regenerateMiniMapBitmaps ();
 		
 		log.trace ("Exiting start");
 	}
@@ -191,5 +196,21 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+	
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
 	}
 }

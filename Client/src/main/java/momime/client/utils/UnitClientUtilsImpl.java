@@ -297,7 +297,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/**
 	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later
 	 * 
-	 * @param unitURN Unit to kill
+	 * @param unit Unit to kill
 	 * @param transmittedAction Method by which the unit is being killed, out of possible values that are sent from the server; null if untransmittedAction is filled in
 	 * @param untransmittedAction Method by which the unit is being killed, out of possible values that are inferred from other messages; null if transmittedAction is filled in
 	 * @throws IOException If there is a problem
@@ -305,30 +305,27 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void killUnit (final int unitURN, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction)
+	public final void killUnit (final MemoryUnit unit, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction)
 		throws IOException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering killUnit: Unit URN " + unitURN + ", " + transmittedAction + ", " + untransmittedAction);
+		log.trace ("Entering killUnit: Unit URN " + unit.getUnitURN () + ", " + transmittedAction + ", " + untransmittedAction);
 
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
-		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), unitURN);
-		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unitURN);	// Removes spells cast on unit
+		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), unit.getUnitURN ());
+		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unit.getUnitURN ());	// Removes spells cast on unit
 		
 		// Is there a unit info screen open for it?
-		final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unitURN);
+		final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());
 		if (unitInfo != null)
 			unitInfo.close ();
 
-		// Find the unit being removed
-		final MemoryUnit unit = getUnitUtils ().findUnitURN (unitURN,
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "killUnit");
-
+		// Remove from movement lists
 		getOverlandMapProcessing ().removeUnitFromLeftToMoveOverland (unit);
 		getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit);
 		
 		// Select unit buttons on the Map
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((!button.isHidden ()) && (button.getComponent ().getUnit () != null) && (button.getComponent ().getUnit ().getUnitURN () == unitURN))
+			if ((!button.isHidden ()) && (button.getComponent ().getUnit () == unit))
 			{
 				button.getComponent ().setUnit (null);
 				
@@ -351,7 +348,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				// Phyically free the unit
 				case FREE:
 				case VISIBLE_AREA_CHANGED:
-					getUnitUtils ().removeUnitURN (unitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+					getUnitUtils ().removeUnitURN (unit.getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 					break;
 	
 				// Units dying from lack of production are a problem, because we always get the kill message first before the NTM arrives, so if we just
@@ -377,7 +374,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					if ((unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
 						(unit.getUnitID (), "killUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
 						
-						getUnitUtils ().removeUnitURN (unitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+						getUnitUtils ().removeUnitURN (unit.getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 					else
 						unit.setStatus (UnitStatusID.DEAD);
 					break;

@@ -16,6 +16,7 @@ import momime.client.graphics.database.SpellGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
+import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
@@ -64,6 +65,9 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
+	
+	/** Army list */
+	private ArmyListUI armyListUI;
 	
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
@@ -279,6 +283,16 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				final UnitInfoUI ui = getClient ().getUnitInfos ().get (getMaintainedSpell ().getUnitURN ());
 				if (ui != null)
 					ui.getUnitInfoPanel ().showUnit (ui.getUnit ());
+				
+				// Also need to update the upkeep shown on the army list?
+				if (getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())
+				{
+					final MemoryUnit u = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");
+					
+					if (u.getOwningPlayerID () == getClient ().getOurPlayerID ())
+						getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) u.getUnitLocation ());
+				}
 			}
 		}
 		catch (final Exception e)
@@ -418,6 +432,22 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
 	}
 	
 	/**

@@ -368,6 +368,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="armyListUI" ref="armyListUI" />
 	</bean>
 
 	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype">
@@ -445,6 +446,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="anim" ref="anim" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="armyListUI" ref="armyListUI" />
 	</bean>
 
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype">
@@ -499,6 +501,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="armyListUI" ref="armyListUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 	</bean>
@@ -507,6 +510,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="armyListUI" ref="armyListUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 	</bean>
@@ -532,6 +536,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="client" ref="client" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="armyListUI" ref="armyListUI" />
 	</bean>
 
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype">
@@ -545,12 +552,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="armyListUI" ref="armyListUI" />
 	</bean>
 
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="armyListUI" ref="armyListUI" />
 	</bean>
 
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype">
@@ -572,6 +582,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="factory" ref="momClientServerToClientServerFactory" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="armyListUI" ref="armyListUI" />
 	</bean>
 
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
@@ -1166,6 +1177,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="armyListUI" ref="armyListUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="selectAdvisorUI" ref="selectAdvisorUI" />
 		<property name="optionsUI" ref="optionsUI" />
@@ -1459,6 +1471,26 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="spellBookUI" ref="spellBookUI" />
+	</bean>
+	
+	<bean id="armyListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/ArmyListUI.xml" />
+	</bean>
+
+	<bean id="armyListUI" class="momime.client.ui.frames.ArmyListUI">
+		<property name="armyListLayout" ref="armyListLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
 	<!-- Prototype UI components -->

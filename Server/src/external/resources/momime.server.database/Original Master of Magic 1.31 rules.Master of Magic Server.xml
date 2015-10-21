@@ -24275,6 +24275,11 @@
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmArmyList">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="HeroItems" />
+		<languageEntry languageEntryID="OK" />
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="RequestingUsToPlayCategory" />

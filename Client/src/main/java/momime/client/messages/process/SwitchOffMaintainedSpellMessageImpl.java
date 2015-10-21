@@ -6,16 +6,20 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
@@ -34,6 +38,12 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
+	
+	/** Army list */
+	private ArmyListUI armyListUI;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -83,6 +93,16 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 				final UnitInfoUI ui = getClient ().getUnitInfos ().get (spell.getUnitURN ());
 				if (ui != null)
 					ui.getUnitInfoPanel ().showUnit (ui.getUnit ());
+				
+				// Also need to update the upkeep shown on the army list?
+				if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
+				{
+					final MemoryUnit u = getUnitUtils ().findUnitURN (spell.getUnitURN (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl");
+					
+					if (u.getOwningPlayerID () == getClient ().getOurPlayerID ())
+						getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) u.getUnitLocation ());
+				}
 			}
 			
 			// If we've got the magic screen loaded up, update overland enchantments
@@ -143,5 +163,37 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	public final void setMagicSlidersUI (final MagicSlidersUI ui)
 	{
 		magicSlidersUI = ui;
+	}
+
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

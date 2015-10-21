@@ -7,13 +7,14 @@ import javax.swing.JComponent;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.zorder.ZOrderGraphics;
+
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.KillUnitActionID;
-
-import com.ndg.zorder.ZOrderGraphics;
 
 /**
  * Client side only helper methods for dealing with units
@@ -81,14 +82,14 @@ public interface UnitClientUtils
 	/**
 	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later
 	 * 
-	 * @param unitURN Unit to kill
+	 * @param unit Unit to kill
 	 * @param transmittedAction Method by which the unit is being killed, out of possible values that are sent from the server; null if untransmittedAction is filled in
 	 * @param untransmittedAction Method by which the unit is being killed, out of possible values that are inferred from other messages; null if transmittedAction is filled in
 	 * @throws IOException If there is a problem
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void killUnit (final int unitURN, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction)
+	public void killUnit (final MemoryUnit unit, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction)
 		throws IOException, JAXBException, XMLStreamException;
 	
 	/**

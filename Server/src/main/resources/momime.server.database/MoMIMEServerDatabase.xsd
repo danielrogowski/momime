@@ -31,7 +31,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="plane" type="momimesvr:plane">
 				<xsd:key name="fortressPlaneProductionPK">
 					<xsd:selector xpath="fortressPlaneProduction" />
-					<xsd:field xpath="@fortressProductionTypeID" />
+					<xsd:field xpath="@productionTypeID" />
 				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionType" type="momimesvr:productionType" />
@@ -54,7 +54,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickType" type="momimesvr:pickType">
 				<xsd:key name="fortressPickTypeProductionPK">
 					<xsd:selector xpath="fortressPickTypeProduction" />
-					<xsd:field xpath="@fortressProductionTypeID" />
+					<xsd:field xpath="@productionTypeID" />
 				</xsd:key>
 				<xsd:key name="pickTypeCountPK">
 					<xsd:selector xpath="pickTypeCount" />
@@ -482,11 +482,11 @@
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:productionTypePK" name="fortressPickTypeProductionFKproductionType">
 			<xsd:selector xpath="pickType/fortressPickTypeProduction" />
-			<xsd:field xpath="@fortressProductionTypeID" />
+			<xsd:field xpath="@productionTypeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:productionTypePK" name="fortressPlaneProductionFKproductionType">
 			<xsd:selector xpath="plane/fortressPlaneProduction" />
-			<xsd:field xpath="@fortressProductionTypeID" />
+			<xsd:field xpath="@productionTypeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:buildingPK" name="raceCannotBuildFKbuilding">
 			<xsd:selector xpath="race/raceCannotBuild" />

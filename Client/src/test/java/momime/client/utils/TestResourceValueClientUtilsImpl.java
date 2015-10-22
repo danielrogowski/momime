@@ -19,7 +19,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeGfx;
 import momime.client.graphics.database.ProductionTypeImageGfx;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.UnitUpkeep;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 
 /**
  * Tests the ResourceValueClientUtilsImpl class
@@ -258,14 +258,14 @@ public final class TestResourceValueClientUtilsImpl
 
 		// Test null conditions
 		assertNull (obj.generateUpkeepImage (null, false)); 
-		assertNull (obj.generateUpkeepImage (new ArrayList<UnitUpkeep> (), false));
+		assertNull (obj.generateUpkeepImage (new ArrayList<ProductionTypeAndUndoubledValue> (), false));
 		
 		// List containing a production type for which we have images, but the value is 0
-		final UnitUpkeep list1upkeep = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue list1upkeep = new ProductionTypeAndUndoubledValue ();
 		list1upkeep.setProductionTypeID ("RE01");
-		list1upkeep.setUpkeepValue (0);
+		list1upkeep.setUndoubledProductionValue (0);
 		
-		final List<UnitUpkeep> list1 = new ArrayList<UnitUpkeep> ();
+		final List<ProductionTypeAndUndoubledValue> list1 = new ArrayList<ProductionTypeAndUndoubledValue> ();
 		list1.add (list1upkeep);
 		
 		assertNull (obj.generateUpkeepImage (list1, false));
@@ -275,24 +275,24 @@ public final class TestResourceValueClientUtilsImpl
 		assertNull (obj.generateUpkeepImage (list1, false));
 
 		// List containing a production type for which don't we have images, and the value is non-zero
-		list1upkeep.setUpkeepValue (10);
+		list1upkeep.setUndoubledProductionValue (10);
 		assertNull (obj.generateUpkeepImage (list1, false));
 		
 		// Single production
-		final UnitUpkeep list4upkeep = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue list4upkeep = new ProductionTypeAndUndoubledValue ();
 		list4upkeep.setProductionTypeID ("RE01");
-		list4upkeep.setUpkeepValue (12);
+		list4upkeep.setUndoubledProductionValue (12);
 		
-		final List<UnitUpkeep> list4 = new ArrayList<UnitUpkeep> ();
+		final List<ProductionTypeAndUndoubledValue> list4 = new ArrayList<ProductionTypeAndUndoubledValue> ();
 		list4.add (list4upkeep);
 		
 		final BufferedImage image4 = obj.generateUpkeepImage (list4, false);
 		checkImage (image4, "X X X X X X X X X X X X");
 		
 		// Two productions
-		final UnitUpkeep list4mana = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue list4mana = new ProductionTypeAndUndoubledValue ();
 		list4mana.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		list4mana.setUpkeepValue (14);
+		list4mana.setUndoubledProductionValue (14);
 		
 		list4.add (list4mana);
 		
@@ -304,7 +304,7 @@ public final class TestResourceValueClientUtilsImpl
 		checkImage (image6, "X X X X X X X X X X X X x x x x x x x");		
 
 		// Two productions, and one is halved and needs to display the half icon
-		list4mana.setUpkeepValue (15);
+		list4mana.setUndoubledProductionValue (15);
 		
 		final BufferedImage image7 = obj.generateUpkeepImage (list4, true);
 		checkImage (image7, "X X X X X X X X X X X X x x x x x x x h");		
@@ -385,14 +385,14 @@ public final class TestResourceValueClientUtilsImpl
 
 		// Test null conditions
 		assertNull (obj.generateUpkeepImage (null, false)); 
-		assertNull (obj.generateUpkeepImage (new ArrayList<UnitUpkeep> (), false));
+		assertNull (obj.generateUpkeepImage (new ArrayList<ProductionTypeAndUndoubledValue> (), false));
 		
 		// List containing a production type for which we have images, but the value is 0
-		final UnitUpkeep list1upkeep = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue list1upkeep = new ProductionTypeAndUndoubledValue ();
 		list1upkeep.setProductionTypeID ("RE01");
-		list1upkeep.setUpkeepValue (0);
+		list1upkeep.setUndoubledProductionValue (0);
 		
-		final List<UnitUpkeep> list1 = new ArrayList<UnitUpkeep> ();
+		final List<ProductionTypeAndUndoubledValue> list1 = new ArrayList<ProductionTypeAndUndoubledValue> ();
 		list1.add (list1upkeep);
 		
 		assertNull (obj.generateUpkeepImage (list1, false));
@@ -402,24 +402,24 @@ public final class TestResourceValueClientUtilsImpl
 		assertNull (obj.generateUpkeepImage (list1, false));
 
 		// List containing a production type for which don't we have images, and the value is non-zero
-		list1upkeep.setUpkeepValue (10);
+		list1upkeep.setUndoubledProductionValue (10);
 		assertNull (obj.generateUpkeepImage (list1, false));
 		
 		// Single production
-		final UnitUpkeep list4upkeep = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue list4upkeep = new ProductionTypeAndUndoubledValue ();
 		list4upkeep.setProductionTypeID ("RE01");
-		list4upkeep.setUpkeepValue (12);
+		list4upkeep.setUndoubledProductionValue (12);
 		
-		final List<UnitUpkeep> list4 = new ArrayList<UnitUpkeep> ();
+		final List<ProductionTypeAndUndoubledValue> list4 = new ArrayList<ProductionTypeAndUndoubledValue> ();
 		list4.add (list4upkeep);
 		
 		final BufferedImage image4 = obj.generateUpkeepImage (list4, false);
 		checkImage (image4, "T X X");
 		
 		// Two productions
-		final UnitUpkeep list4mana = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue list4mana = new ProductionTypeAndUndoubledValue ();
 		list4mana.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		list4mana.setUpkeepValue (14);
+		list4mana.setUndoubledProductionValue (14);
 		
 		list4.add (list4mana);
 		
@@ -431,7 +431,7 @@ public final class TestResourceValueClientUtilsImpl
 		checkImage (image6, "T X X x x x x x x x");		
 
 		// Two productions, and one is halved and needs to display the half icon
-		list4mana.setUpkeepValue (15);
+		list4mana.setUndoubledProductionValue (15);
 		
 		final BufferedImage image7 = obj.generateUpkeepImage (list4, true);
 		checkImage (image7, "T X X x x x x x x x h");		

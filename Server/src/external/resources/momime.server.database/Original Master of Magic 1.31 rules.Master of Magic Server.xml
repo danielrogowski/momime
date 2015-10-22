@@ -5,8 +5,8 @@
 	</plane>
 	<plane planeNumber="1">
 		<prerequisitePickToChooseNativeRace>RT08</prerequisitePickToChooseNativeRace>
-		<fortressPlaneProduction fortressProductionTypeID="RE04">
-			<doubleAmount>10</doubleAmount>
+		<fortressPlaneProduction productionTypeID="RE04">
+			<doubledProductionValue>10</doubledProductionValue>
 		</fortressPlaneProduction>
 		<planeDescription>Myrror</planeDescription>
 	</plane>
@@ -82,7 +82,7 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE03">
-			<doubleAmount>10</doubleAmount>
+			<doubledProductionValue>10</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Gems</mapFeatureDescription>
 		<cityQualityEstimate>28</cityQualityEstimate>
@@ -91,7 +91,7 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE04">
-			<doubleAmount>6</doubleAmount>
+			<doubledProductionValue>6</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Quork Crystals</mapFeatureDescription>
 		<cityQualityEstimate>17</cityQualityEstimate>
@@ -100,7 +100,7 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE04">
-			<doubleAmount>10</doubleAmount>
+			<doubledProductionValue>10</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Crysx Crystals</mapFeatureDescription>
 		<cityQualityEstimate>33</cityQualityEstimate>
@@ -109,7 +109,7 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE07">
-			<doubleAmount>-10</doubleAmount>
+			<doubledProductionValue>-10</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Iron Ore</mapFeatureDescription>
 		<cityQualityEstimate>04</cityQualityEstimate>
@@ -118,7 +118,7 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE07">
-			<doubleAmount>-20</doubleAmount>
+			<doubledProductionValue>-20</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Coal</mapFeatureDescription>
 		<cityQualityEstimate>06</cityQualityEstimate>
@@ -127,7 +127,7 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE03">
-			<doubleAmount>4</doubleAmount>
+			<doubledProductionValue>4</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Silver Ore</mapFeatureDescription>
 		<cityQualityEstimate>09</cityQualityEstimate>
@@ -136,7 +136,7 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE03">
-			<doubleAmount>6</doubleAmount>
+			<doubledProductionValue>6</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Gold Ore</mapFeatureDescription>
 		<cityQualityEstimate>12</cityQualityEstimate>
@@ -146,7 +146,7 @@
 		<featureMagicWeapons>2</featureMagicWeapons>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE04">
-			<doubleAmount>2</doubleAmount>
+			<doubledProductionValue>2</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Mithril Ore</mapFeatureDescription>
 		<cityQualityEstimate>24</cityQualityEstimate>
@@ -156,7 +156,7 @@
 		<featureMagicWeapons>3</featureMagicWeapons>
 		<raceMineralMultiplerApplies>true</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE04">
-			<doubleAmount>4</doubleAmount>
+			<doubledProductionValue>4</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Adamantium Ore</mapFeatureDescription>
 		<cityQualityEstimate>75</cityQualityEstimate>
@@ -165,10 +165,10 @@
 		<canBuildCity>true</canBuildCity>
 		<raceMineralMultiplerApplies>false</raceMineralMultiplerApplies>
 		<mapFeatureProduction productionTypeID="RE01">
-			<doubleAmount>4</doubleAmount>
+			<doubledProductionValue>4</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureProduction productionTypeID="RE06">
-			<doubleAmount>4</doubleAmount>
+			<doubledProductionValue>4</doubledProductionValue>
 		</mapFeatureProduction>
 		<mapFeatureDescription>Wild Game</mapFeatureDescription>
 		<cityQualityEstimate>21</cityQualityEstimate>
@@ -633,8 +633,8 @@
 		<tileTypeDescription>Partial Fog of War ("have seen")</tileTypeDescription>
 	</tileType>
 	<pickType pickTypeID="B">
-		<fortressPickTypeProduction fortressProductionTypeID="RE04">
-			<doubleAmount>2</doubleAmount>
+		<fortressPickTypeProduction productionTypeID="RE04">
+			<doubledProductionValue>2</doubledProductionValue>
 		</fortressPickTypeProduction>
 		<pickTypeDescription>Spell Book</pickTypeDescription>
 		<pickTypeCount count="1">
@@ -3880,15 +3880,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -3956,15 +3956,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4027,15 +4027,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>6</doubleAmount>
+				<doubledProductionValue>6</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4086,26 +4086,26 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03">
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<raceUnrest capitalRaceID="RC02">
@@ -4167,15 +4167,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4232,15 +4232,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>6</doubleAmount>
+				<doubledProductionValue>6</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4317,15 +4317,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4400,15 +4400,15 @@
 		<goldTradeBonus>50</goldTradeBonus>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4462,15 +4462,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4522,26 +4522,26 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03">
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<raceUnrest capitalRaceID="RC03">
@@ -4610,26 +4610,26 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>2</doubleAmount>
+				<doubledProductionValue>2</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>2</doubleAmount>
+				<doubledProductionValue>2</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03">
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>2</doubleAmount>
+				<doubledProductionValue>2</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<raceUnrest capitalRaceID="RC03">
@@ -4701,26 +4701,26 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03">
 			<racePopulationTaskProduction productionTypeID="RE04">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<raceUnrest capitalRaceID="RC03">
@@ -4793,15 +4793,15 @@
 		<mineralBonusMultiplier>2</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>6</doubleAmount>
+				<doubledProductionValue>6</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -4867,15 +4867,15 @@
 		<mineralBonusMultiplier>1</mineralBonusMultiplier>
 		<racePopulationTask populationTaskID="PT01">
 			<racePopulationTaskProduction productionTypeID="RE01">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>1</doubleAmount>
+				<doubledProductionValue>1</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT02">
 			<racePopulationTaskProduction productionTypeID="RE02">
-				<doubleAmount>4</doubleAmount>
+				<doubledProductionValue>4</doubledProductionValue>
 			</racePopulationTaskProduction>
 		</racePopulationTask>
 		<racePopulationTask populationTaskID="PT03" />
@@ -11218,7 +11218,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -11256,7 +11256,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -11297,7 +11297,7 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT20</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -11341,7 +11341,7 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -11384,7 +11384,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -11425,7 +11425,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -11465,7 +11465,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>6</unitSkillValue>
@@ -11506,7 +11506,7 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>3</unitSkillValue>
@@ -11550,7 +11550,7 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -11596,7 +11596,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -11637,7 +11637,7 @@
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT26</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -11681,7 +11681,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>6</unitSkillValue>
@@ -11721,7 +11721,7 @@
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -11763,7 +11763,7 @@
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -11809,7 +11809,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>3</unitSkillValue>
@@ -11852,7 +11852,7 @@
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT22</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -11896,7 +11896,7 @@
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>6</unitSkillValue>
@@ -11946,7 +11946,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>7</unitSkillValue>
@@ -11989,7 +11989,7 @@
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -12036,7 +12036,7 @@
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>6</unitSkillValue>
@@ -12077,7 +12077,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>6</upkeepValue>
+			<undoubledProductionValue>6</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>6</unitSkillValue>
@@ -12117,7 +12117,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>6</upkeepValue>
+			<undoubledProductionValue>6</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>7</unitSkillValue>
@@ -12159,7 +12159,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>6</upkeepValue>
+			<undoubledProductionValue>6</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>7</unitSkillValue>
@@ -12208,7 +12208,7 @@
 		<productionCost>300</productionCost>
 		<rangedAttackType>RAT1E</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>6</upkeepValue>
+			<undoubledProductionValue>6</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -12252,7 +12252,7 @@
 		<productionCost>300</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>6</upkeepValue>
+			<undoubledProductionValue>6</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -12294,7 +12294,7 @@
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT20</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -12338,7 +12338,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>6</unitSkillValue>
@@ -12390,7 +12390,7 @@
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
@@ -12444,7 +12444,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>9</unitSkillValue>
@@ -12493,7 +12493,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>9</unitSkillValue>
@@ -12545,7 +12545,7 @@
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -12590,7 +12590,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>8</unitSkillValue>
@@ -12639,7 +12639,7 @@
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -12687,7 +12687,7 @@
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT1E</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>8</unitSkillValue>
@@ -12735,7 +12735,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>600</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>12</upkeepValue>
+			<undoubledProductionValue>12</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>12</unitSkillValue>
@@ -12788,10 +12788,10 @@
 		<productionCost>60</productionCost>
 		<transportCapacity>2</transportCapacity>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL12" />
 		<unitHasSkill unitSkillID="UA01">
@@ -12819,10 +12819,10 @@
 		<rangedAttackType>RAT14</rangedAttackType>
 		<transportCapacity>5</transportCapacity>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL13" />
 		<unitHasSkill unitSkillID="UA01">
@@ -12855,10 +12855,10 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL33" />
 		<unitHasSkill unitSkillID="UA02">
@@ -12891,10 +12891,10 @@
 		<rangedAttackType>RAT0A</rangedAttackType>
 		<transportCapacity>3</transportCapacity>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL14" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -12930,7 +12930,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>15</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -12961,10 +12961,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL08" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -12999,10 +12999,10 @@
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -13037,10 +13037,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -13074,10 +13074,10 @@
 		<productionCost>50</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL22" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13113,10 +13113,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -13140,10 +13140,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL06" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13174,7 +13174,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
@@ -13202,10 +13202,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -13236,10 +13236,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13268,10 +13268,10 @@
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -13307,10 +13307,10 @@
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL24" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13350,10 +13350,10 @@
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL21" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13391,10 +13391,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL32" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13424,10 +13424,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -13455,10 +13455,10 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -13492,10 +13492,10 @@
 		<figureCount>2</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL10" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -13526,10 +13526,10 @@
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL06" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13562,7 +13562,7 @@
 		<productionCost>25</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -13597,10 +13597,10 @@
 		<productionCost>50</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -13638,10 +13638,10 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13676,10 +13676,10 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL09" />
@@ -13716,10 +13716,10 @@
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL24" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13758,10 +13758,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -13785,10 +13785,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL05" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13820,10 +13820,10 @@
 		<productionCost>240</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL21" />
 		<unitHasSkill unitSkillID="UA01">
@@ -13861,10 +13861,10 @@
 		<productionCost>160</productionCost>
 		<rangedAttackType>RAT24</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL11" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -13899,7 +13899,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>25</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -13930,10 +13930,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>50</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -13967,10 +13967,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14002,10 +14002,10 @@
 		<productionCost>45</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -14041,10 +14041,10 @@
 		<productionCost>75</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL22" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14081,10 +14081,10 @@
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL21" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14122,10 +14122,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL10" />
 		<unitPrerequisite prerequisiteID="BL33" />
@@ -14159,10 +14159,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
@@ -14186,10 +14186,10 @@
 		<figureCount>2</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -14221,10 +14221,10 @@
 		<productionCost>200</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL13" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14259,7 +14259,7 @@
 		<figureCount>6</figureCount>
 		<productionCost>50</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -14291,10 +14291,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14323,10 +14323,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL32" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14358,10 +14358,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL05" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14390,10 +14390,10 @@
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL34" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -14425,10 +14425,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL06" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14458,10 +14458,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -14486,7 +14486,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>3</unitSkillValue>
@@ -14514,10 +14514,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -14548,10 +14548,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14581,10 +14581,10 @@
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -14619,10 +14619,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
@@ -14649,10 +14649,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -14681,7 +14681,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>15</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -14710,10 +14710,10 @@
 		<figureCount>8</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -14746,10 +14746,10 @@
 		<productionCost>45</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -14786,10 +14786,10 @@
 		<productionCost>75</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL22" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14826,10 +14826,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>90</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -14855,10 +14855,10 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT15</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14893,7 +14893,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>15</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -14925,10 +14925,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -14963,10 +14963,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -14998,10 +14998,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL09" />
@@ -15036,10 +15036,10 @@
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL21" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15081,10 +15081,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>90</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA03">
 			<unitSkillValue>1</unitSkillValue>
@@ -15113,10 +15113,10 @@
 		<productionCost>80</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -15154,10 +15154,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL06" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15191,10 +15191,10 @@
 		<productionCost>160</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL11" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -15232,7 +15232,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -15260,10 +15260,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -15295,10 +15295,10 @@
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -15333,10 +15333,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL09" />
@@ -15367,10 +15367,10 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL24" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15410,10 +15410,10 @@
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL21" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15451,10 +15451,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL32" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15484,10 +15484,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -15511,10 +15511,10 @@
 		<figureCount>8</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL05" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15543,10 +15543,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL25" />
 		<unitPrerequisite prerequisiteID="BL06" />
@@ -15581,7 +15581,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -15609,10 +15609,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -15643,10 +15643,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15674,10 +15674,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL32" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15707,10 +15707,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -15734,10 +15734,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL06" />
@@ -15769,7 +15769,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -15798,10 +15798,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -15833,10 +15833,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15866,10 +15866,10 @@
 		<productionCost>80</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL05" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15905,10 +15905,10 @@
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL22" />
 		<unitHasSkill unitSkillID="UA01">
@@ -15945,10 +15945,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
@@ -15973,10 +15973,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL06" />
@@ -16009,7 +16009,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -16037,10 +16037,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -16072,10 +16072,10 @@
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -16111,10 +16111,10 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL24" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16154,10 +16154,10 @@
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL21" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16195,10 +16195,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -16223,10 +16223,10 @@
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -16260,10 +16260,10 @@
 		<figureCount>8</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL05" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16293,10 +16293,10 @@
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL10" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -16331,10 +16331,10 @@
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL11" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -16365,7 +16365,7 @@
 		<figureCount>8</figureCount>
 		<productionCost>10</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -16393,10 +16393,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -16427,10 +16427,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16459,10 +16459,10 @@
 		<productionCost>30</productionCost>
 		<rangedAttackType>RAT14</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL15" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -16497,10 +16497,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL09" />
@@ -16530,10 +16530,10 @@
 		<productionCost>60</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL22" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16570,10 +16570,10 @@
 		<productionCost>120</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL21" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16611,10 +16611,10 @@
 		<figureCount>6</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL32" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16644,10 +16644,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -16671,10 +16671,10 @@
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL11" />
 		<unitPrerequisite prerequisiteID="BL03" />
@@ -16706,7 +16706,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>3</unitSkillValue>
@@ -16735,10 +16735,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>60</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL03" />
 		<unitPrerequisite prerequisiteID="BL08" />
@@ -16770,10 +16770,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL04" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16804,10 +16804,10 @@
 		<productionCost>180</productionCost>
 		<rangedAttackType>RAT23</rangedAttackType>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL22" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16844,10 +16844,10 @@
 		<figureCount>1</figureCount>
 		<productionCost>180</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
@@ -16872,10 +16872,10 @@
 		<figureCount>4</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL05" />
 		<unitHasSkill unitSkillID="UA01">
@@ -16903,10 +16903,10 @@
 		<figureCount>2</figureCount>
 		<productionCost>240</productionCost>
 		<unitUpkeep productionTypeID="RE03">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</unitUpkeep>
 		<unitUpkeep productionTypeID="RE01">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitPrerequisite prerequisiteID="BL09" />
 		<unitPrerequisite prerequisiteID="BL06" />
@@ -16935,7 +16935,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -16963,7 +16963,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>3</unitSkillValue>
@@ -16994,7 +16994,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -17025,7 +17025,7 @@
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>10</unitSkillValue>
@@ -17062,7 +17062,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>12</unitSkillValue>
@@ -17090,7 +17090,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>400</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>12</upkeepValue>
+			<undoubledProductionValue>12</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
@@ -17128,7 +17128,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>350</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>7</unitSkillValue>
@@ -17159,7 +17159,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>8</upkeepValue>
+			<undoubledProductionValue>8</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>10</unitSkillValue>
@@ -17191,7 +17191,7 @@
 		<productionCost>550</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>15</upkeepValue>
+			<undoubledProductionValue>15</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>9</unitSkillValue>
@@ -17226,7 +17226,7 @@
 		<figureCount>9</figureCount>
 		<productionCost>650</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>14</upkeepValue>
+			<undoubledProductionValue>14</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>6</unitSkillValue>
@@ -17258,7 +17258,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>900</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>30</upkeepValue>
+			<undoubledProductionValue>30</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>30</unitSkillValue>
@@ -17289,7 +17289,7 @@
 		<figureCount>6</figureCount>
 		<productionCost>25</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>3</unitSkillValue>
@@ -17322,7 +17322,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -17358,7 +17358,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>7</unitSkillValue>
@@ -17394,7 +17394,7 @@
 		<figureCount>6</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -17428,7 +17428,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>14</unitSkillValue>
@@ -17462,7 +17462,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>7</unitSkillValue>
@@ -17500,7 +17500,7 @@
 		<productionCost>325</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>7</upkeepValue>
+			<undoubledProductionValue>7</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -17542,7 +17542,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>600</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>8</upkeepValue>
+			<undoubledProductionValue>8</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>9</unitSkillValue>
@@ -17581,7 +17581,7 @@
 		<productionCost>900</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>15</upkeepValue>
+			<undoubledProductionValue>15</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>20</unitSkillValue>
@@ -17656,7 +17656,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>5</unitSkillValue>
@@ -17689,7 +17689,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>50</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>10</unitSkillValue>
@@ -17720,7 +17720,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>550</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>15</upkeepValue>
+			<undoubledProductionValue>15</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>13</unitSkillValue>
@@ -17753,7 +17753,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>950</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>20</upkeepValue>
+			<undoubledProductionValue>20</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>15</unitSkillValue>
@@ -17788,7 +17788,7 @@
 		<figureCount>2</figureCount>
 		<productionCost>70</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>7</unitSkillValue>
@@ -17815,7 +17815,7 @@
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT25</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
@@ -17850,7 +17850,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>275</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>8</upkeepValue>
+			<undoubledProductionValue>8</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -17881,7 +17881,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>325</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>7</upkeepValue>
+			<undoubledProductionValue>7</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>15</unitSkillValue>
@@ -17912,7 +17912,7 @@
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -17947,7 +17947,7 @@
 		<productionCost>450</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>9</upkeepValue>
+			<undoubledProductionValue>9</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>15</unitSkillValue>
@@ -17986,7 +17986,7 @@
 		<productionCost>800</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>17</upkeepValue>
+			<undoubledProductionValue>17</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>20</unitSkillValue>
@@ -18024,7 +18024,7 @@
 		<figureCount>4</figureCount>
 		<productionCost>599</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>15</upkeepValue>
+			<undoubledProductionValue>15</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>8</unitSkillValue>
@@ -18055,7 +18055,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>7</upkeepValue>
+			<undoubledProductionValue>7</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>25</unitSkillValue>
@@ -18086,7 +18086,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>700</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>15</upkeepValue>
+			<undoubledProductionValue>15</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>25</unitSkillValue>
@@ -18114,7 +18114,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>1000</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>20</upkeepValue>
+			<undoubledProductionValue>20</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>25</unitSkillValue>
@@ -18146,7 +18146,7 @@
 		<figureCount>1</figureCount>
 		<transportCapacity>8</transportCapacity>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA05">
 			<unitSkillValue>10</unitSkillValue>
@@ -18168,7 +18168,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>225</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>18</unitSkillValue>
@@ -18197,7 +18197,7 @@
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>3</unitSkillValue>
@@ -18224,7 +18224,7 @@
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT1E</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>12</unitSkillValue>
@@ -18260,7 +18260,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>170</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>8</upkeepValue>
+			<undoubledProductionValue>8</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>15</unitSkillValue>
@@ -18293,7 +18293,7 @@
 		<productionCost>650</productionCost>
 		<rangedAttackType>RAT22</rangedAttackType>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>17</upkeepValue>
+			<undoubledProductionValue>17</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>15</unitSkillValue>
@@ -18329,7 +18329,7 @@
 		<figureCount>1</figureCount>
 		<productionCost>1000</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>25</upkeepValue>
+			<undoubledProductionValue>25</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>20</unitSkillValue>
@@ -18362,7 +18362,7 @@
 		<figureCount>2</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</unitUpkeep>
 		<unitHasSkill unitSkillID="UA01">
 			<unitSkillValue>4</unitSkillValue>
@@ -19124,7 +19124,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS002" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Resist Elements</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -19148,7 +19148,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS004" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Giant Strength</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -19182,7 +19182,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS007" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Stone Skin</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -19195,7 +19195,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS008" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Water Walking</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19239,7 +19239,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE012" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Nature's Eye</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
@@ -19285,7 +19285,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS016" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Path Finding</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -19335,7 +19335,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS021" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Elemental Armour</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19370,7 +19370,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS024" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Iron Skin</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -19419,7 +19419,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE029" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Gaia's Blessing</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -19443,7 +19443,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS031" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Regeneration</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19475,7 +19475,7 @@
 		<overlandCastingCost>800</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>7</upkeepValue>
+			<undoubledProductionValue>7</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Nature Awareness</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19508,7 +19508,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE037" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Earth Gate</spellName>
 		<aiResearchOrder>6</aiResearchOrder>
@@ -19520,7 +19520,7 @@
 		<overlandCastingCost>1000</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Herb Mastery</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -19542,7 +19542,7 @@
 		<overlandCastingCost>1250</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Nature's Wrath</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -19556,7 +19556,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS041" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Resist Magic</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -19588,7 +19588,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS044" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Guardian Wind</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19701,7 +19701,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS054" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Spell Lock</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -19723,7 +19723,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS056" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Flight</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -19735,7 +19735,7 @@
 		<overlandCastingCost>400</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Wind Mastery</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -19755,7 +19755,7 @@
 		<overlandCastingCost>400</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Aura of Majesty</spellName>
 		<aiResearchOrder>6</aiResearchOrder>
@@ -19787,7 +19787,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS062" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Invisiblity</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19800,7 +19800,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS063" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Wind Walking</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -19866,7 +19866,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS069" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Magic Immunity</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19903,7 +19903,7 @@
 		<spellHasCityEffect citySpellEffectID="SE072N" />
 		<spellHasCityEffect citySpellEffectID="SE072S" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Spell Ward</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -19967,7 +19967,7 @@
 		<overlandCastingCost>1250</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>50</upkeepValue>
+			<undoubledProductionValue>50</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Suppress Magic</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19979,7 +19979,7 @@
 		<overlandCastingCost>1500</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>200</upkeepValue>
+			<undoubledProductionValue>200</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Time Stop</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20047,7 +20047,7 @@
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellValidUnitTarget targetMagicRealmID="LTCC" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Eldritch Weapon</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20061,7 +20061,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE087" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Wall of Fire</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20157,7 +20157,7 @@
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellValidUnitTarget targetMagicRealmID="LTCC" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Flame Blade</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20213,7 +20213,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS099" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Immolation</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
@@ -20328,7 +20328,7 @@
 		<spellBookSectionID>SC06</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE110" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Chaos Rift</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20361,7 +20361,7 @@
 		<overlandCastingCost>900</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Meteor Storm</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20373,7 +20373,7 @@
 		<overlandCastingCost>1000</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>20</upkeepValue>
+			<undoubledProductionValue>20</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Great Wasting</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20394,7 +20394,7 @@
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellHasCombatEffect combatAreaEffectID="CSE116" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>40</upkeepValue>
+			<undoubledProductionValue>40</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Chaos Surge</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20406,7 +20406,7 @@
 		<overlandCastingCost>1100</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>15</upkeepValue>
+			<undoubledProductionValue>15</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Doom Mastery</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20436,7 +20436,7 @@
 		<overlandCastingCost>1250</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>40</upkeepValue>
+			<undoubledProductionValue>40</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Armageddon</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20450,7 +20450,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS121" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Bless</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20479,7 +20479,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS123" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Endurance</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -20496,7 +20496,7 @@
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellValidUnitTarget targetMagicRealmID="LTCC" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Holy Weapon</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -20521,7 +20521,7 @@
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellValidUnitTarget targetMagicRealmID="LTCC" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Holy Armour</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20533,7 +20533,7 @@
 		<overlandCastingCost>150</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Just Cause</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20570,7 +20570,7 @@
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellValidUnitTarget targetMagicRealmID="LTCC" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Heroism</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20584,7 +20584,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS131" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>True Sight</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -20631,7 +20631,7 @@
 		<overlandCastingCost>500</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Planar Seal</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
@@ -20662,7 +20662,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS138" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Planar Travel</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20675,7 +20675,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE139" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Heavenly Light</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -20699,7 +20699,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS141" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Lionheart</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20723,7 +20723,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS143" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Invulnerability</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -20737,7 +20737,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS144" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Righteousness</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -20750,7 +20750,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE145" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Prosperity</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -20763,7 +20763,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE146" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Altar of Battle</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20786,7 +20786,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE148" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>8</upkeepValue>
+			<undoubledProductionValue>8</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Stream of Life</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20840,7 +20840,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE152" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Inspirations</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -20853,7 +20853,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE153" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Astral Gate</spellName>
 		<aiResearchOrder>6</aiResearchOrder>
@@ -20866,7 +20866,7 @@
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellHasCombatEffect combatAreaEffectID="CSE154" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Holy Arms</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -20879,7 +20879,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE155" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>8</upkeepValue>
+			<undoubledProductionValue>8</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Consecration</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20891,7 +20891,7 @@
 		<overlandCastingCost>1000</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Life Force</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20903,7 +20903,7 @@
 		<overlandCastingCost>1000</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Tranquility</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -20916,7 +20916,7 @@
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellHasCombatEffect combatAreaEffectID="CSE158" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Crusade</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20939,7 +20939,7 @@
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellHasCombatEffect combatAreaEffectID="CSE160" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Charm of Life</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20987,7 +20987,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS164" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Cloak of Fear</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -21086,7 +21086,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Lycanthropy</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -21112,7 +21112,7 @@
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellValidUnitTarget targetMagicRealmID="LTU" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>1</upkeepValue>
+			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Black Channels</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
@@ -21144,7 +21144,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE178" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Wall of Darkness</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -21178,7 +21178,7 @@
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS181" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Wraith Form</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -21201,7 +21201,7 @@
 		<spellBookSectionID>SC06</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE183" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>4</upkeepValue>
+			<undoubledProductionValue>4</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Evil Presence</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -21224,7 +21224,7 @@
 		<spellBookSectionID>SC03</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE185" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Cloud of Shadow</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -21253,7 +21253,7 @@
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellHasCombatEffect combatAreaEffectID="CSE188" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>40</upkeepValue>
+			<undoubledProductionValue>40</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Zombie Mastery</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -21266,7 +21266,7 @@
 		<spellBookSectionID>SC06</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE189" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Famine</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -21279,7 +21279,7 @@
 		<spellBookSectionID>SC06</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE190" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>2</upkeepValue>
+			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Cursed Lands</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -21342,7 +21342,7 @@
 		<spellBookSectionID>SC06</spellBookSectionID>
 		<spellHasCityEffect citySpellEffectID="SE196" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>5</upkeepValue>
+			<undoubledProductionValue>5</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Pestilence</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
@@ -21355,7 +21355,7 @@
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellHasCombatEffect combatAreaEffectID="CSE197" />
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>15</upkeepValue>
+			<undoubledProductionValue>15</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Eternal Night</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -21367,7 +21367,7 @@
 		<overlandCastingCost>1100</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>10</upkeepValue>
+			<undoubledProductionValue>10</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Evil Omens</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -21434,7 +21434,7 @@
 		<overlandCastingCost>200</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Detect Magic</spellName>
 		<aiResearchOrder>6</aiResearchOrder>
@@ -21486,7 +21486,7 @@
 		<overlandCastingCost>500</overlandCastingCost>
 		<spellBookSectionID>SC02</spellBookSectionID>
 		<spellUpkeep productionTypeID="RE09">
-			<upkeepValue>3</upkeepValue>
+			<undoubledProductionValue>3</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Awareness</spellName>
 		<aiResearchOrder>2</aiResearchOrder>

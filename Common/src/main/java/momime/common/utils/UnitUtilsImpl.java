@@ -19,12 +19,12 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitType;
-import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -545,12 +545,12 @@ public final class UnitUtilsImpl implements UnitUtils
 		log.trace ("Entering getBasicUpkeepValue: " + unit.getUnitID () + ", " + productionTypeID);
 
 		int result = 0;
-		final Iterator<UnitUpkeep> iter = db.findUnit (unit.getUnitID (), "getBasicUpkeepValue").getUnitUpkeep ().iterator ();
+		final Iterator<ProductionTypeAndUndoubledValue> iter = db.findUnit (unit.getUnitID (), "getBasicUpkeepValue").getUnitUpkeep ().iterator ();
 		while ((result == 0) && (iter.hasNext ()))
 		{
-			final UnitUpkeep thisUpkeep = iter.next ();
+			final ProductionTypeAndUndoubledValue thisUpkeep = iter.next ();
 			if (thisUpkeep.getProductionTypeID ().equals (productionTypeID))
-				result = thisUpkeep.getUpkeepValue ();
+				result = thisUpkeep.getUndoubledProductionValue ();
 		}
 
 		log.trace ("Exiting getBasicUpkeepValue = " + result);

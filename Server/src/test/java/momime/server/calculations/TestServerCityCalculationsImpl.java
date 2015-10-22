@@ -9,13 +9,22 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.RacePopulationTask;
-import momime.common.database.RacePopulationTaskProduction;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -31,15 +40,6 @@ import momime.server.database.CitySizeSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the ServerCityCalculations class
@@ -133,9 +133,9 @@ public final class TestServerCityCalculationsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.getCitySizes ()).thenReturn (citySizes);
 		
-		final RacePopulationTaskProduction highMenRations = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue highMenRations = new ProductionTypeAndDoubledValue ();
 		highMenRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		highMenRations.setDoubleAmount (4);
+		highMenRations.setDoubledProductionValue (4);
 		
 		final RacePopulationTask highMenFarmers = new RacePopulationTask ();
 		highMenFarmers.getRacePopulationTaskProduction ().add (highMenRations);
@@ -145,9 +145,9 @@ public final class TestServerCityCalculationsImpl
 		highMen.getRacePopulationTask ().add (highMenFarmers);
 		when (db.findRace ("RC05", "calculateDoubleFarmingRate")).thenReturn (highMen);
 
-		final RacePopulationTaskProduction halflingRations = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue halflingRations = new ProductionTypeAndDoubledValue ();
 		halflingRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		halflingRations.setDoubleAmount (6);
+		halflingRations.setDoubledProductionValue (6);
 		
 		final RacePopulationTask halflingFarmers = new RacePopulationTask ();
 		halflingFarmers.getRacePopulationTaskProduction ().add (halflingRations);

@@ -21,8 +21,8 @@ import momime.client.database.ClientDatabase;
 import momime.client.database.NewGameDatabase;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.MapFeatureProduction;
 import momime.common.database.PickAndQuantity;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 
@@ -219,7 +219,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			destMapFeature.setFeatureMagicWeapons (srcMapFeature.getFeatureMagicWeapons ());
 			destMapFeature.setRaceMineralMultiplerApplies (srcMapFeature.isRaceMineralMultiplerApplies ());
 
-			for (final MapFeatureProduction mapFeatureProduction : srcMapFeature.getMapFeatureProduction ())
+			for (final ProductionTypeAndDoubledValue mapFeatureProduction : srcMapFeature.getMapFeatureProduction ())
 				destMapFeature.getMapFeatureProduction ().add (mapFeatureProduction);
 
 			destMapFeature.setAnyMagicRealmsDefined (srcMapFeature.getMapFeatureMagicRealm ().size () > 0);

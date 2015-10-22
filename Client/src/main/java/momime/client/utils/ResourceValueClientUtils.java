@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
-import momime.common.database.UnitUpkeep;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 
 /**
  * Utils for dealing with graphics of resource values/production icons
@@ -54,5 +54,5 @@ public interface ResourceValueClientUtils
 	 * @return Image of production icons; null if the list is null, empty, contains only zero values, or contains only production types that have no images
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	public BufferedImage generateUpkeepImage (final List<UnitUpkeep> upkeeps, final boolean halveManaUpkeep) throws IOException;
+	public BufferedImage generateUpkeepImage (final List<ProductionTypeAndUndoubledValue> upkeeps, final boolean halveManaUpkeep) throws IOException;
 }

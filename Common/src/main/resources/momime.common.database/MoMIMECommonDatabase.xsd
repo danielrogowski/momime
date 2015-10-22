@@ -277,25 +277,13 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPlaneProduction" type="momimecommon:fortressPlaneProduction" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPlaneProduction" type="momimecommon:productionTypeAndDoubledValue">
+		        <xsd:annotation>
+		        	<xsd:documentation>Models that a Wizards' Fortress on Myrror generates +5 magic power.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:gridwidth="80" />
-	</xsd:complexType>
-
-	<xsd:complexType name="fortressPlaneProduction" nxe:singular="Fortress Plane Production" nxe:plural="Fortress Plane Productions">
-        <xsd:annotation>
-        	<xsd:documentation>Models that a Wizards' Fortress on Myrror generates +5 magic power.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
-		</xsd:sequence>
-		<xsd:attribute name="fortressProductionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Fortress Production Type" nxe:showmaincolumn="false" nxe:gridwidth="200">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="productionType" nxe:singular="Production Type" nxe:plural="Production Types" nxe:submenu="Cities">
@@ -326,25 +314,13 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="raceMineralMultiplerApplies" type="xsd:boolean" nxe:label="Race Mineral Multipler Applies?" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureProduction" type="momimecommon:mapFeatureProduction" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureProduction" type="momimecommon:productionTypeAndDoubledValue">
+		        <xsd:annotation>
+		        	<xsd:documentation>Defines the types of production that a particular map feature generates, e.g. +5 Gold from Gems, +2 Magic Power from Adamantium.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="mapFeatureID" type="momimecommon:mapFeatureID" use="required" nxe:label="Map Feature ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-
-	<xsd:complexType name="mapFeatureProduction" nxe:singular="Production from Map Feature" nxe:plural="Production from Map Feature">
-        <xsd:annotation>
-        	<xsd:documentation>Defines the types of production that a particular map feature generates, e.g. +5 Gold from Gems, +2 Magic Power from Adamantium.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
-		</xsd:sequence>
-		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:showmaincolumn="false">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="tileType" nxe:singular="Tile Type" nxe:plural="Tile Types" nxe:submenu="Overland Map">
@@ -374,25 +350,13 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines types of picks that can be chosen at the start of the game, i.e. Spell Books &amp; Retorts.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPickTypeProduction" type="momimecommon:fortressPickTypeProduction" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPickTypeProduction" type="momimecommon:productionTypeAndDoubledValue">
+		        <xsd:annotation>
+		        	<xsd:documentation>Models that a Wizards' Fortress generates +2 magic power for each spell book the wizard has.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="pickTypeID" type="momimecommon:pickTypeID" use="required" nxe:label="Pick Type ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-
-	<xsd:complexType name="fortressPickTypeProduction" nxe:singular="Fortress Pick Type Production" nxe:plural="Fortress Pick Type Productions">
-        <xsd:annotation>
-        	<xsd:documentation>Models that a Wizards' Fortress generates +2 magic power for each spell book the wizard has.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
-		</xsd:sequence>
-		<xsd:attribute name="fortressProductionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Fortress Production Type" nxe:showmaincolumn="false">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="pick" nxe:singular="Pick" nxe:plural="Picks" nxe:submenu="Magic">
@@ -538,27 +502,16 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines the characteristics of each population task for a particular race.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="racePopulationTaskProduction" type="momimecommon:racePopulationTaskProduction" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="racePopulationTaskProduction" type="momimecommon:productionTypeAndDoubledValue">
+		        <xsd:annotation>
+		        	<xsd:documentation>Lists the types of production that 1,000 civilians of a particular race performing a particular task produce.  e.g. Defines that
+Halfling farmers produce more food, that Klackon and Dwarven workers produce more production, and which races naturally generate magic power.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="required" nxe:label="Population Task ID" nxe:gridwidth="150" />
 	</xsd:complexType>
 
-	<xsd:complexType name="racePopulationTaskProduction" nxe:singular="Civilian Production" nxe:plural="Civilian Production">
-        <xsd:annotation>
-        	<xsd:documentation>Lists the types of production that 1,000 civilians of a particular race performing a particular task produce.  e.g. Defines that Halfling farmers produce more food, that Klackon and Dwarven workers produce more production, and which races naturally generate magic power.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
-		</xsd:sequence>
-		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:showmaincolumn="false">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	
 	<xsd:complexType name="raceUnrest" nxe:singular="Unrest" nxe:plural="Unrest">
         <xsd:annotation>
         	<xsd:documentation>For a particular city race, lists out the unrest generated for each possible capital race (the race inhabiting the city where the wizards' fortress is).  Unrest modifier can be a fixed value (Klackons special -2 modifier) or more usually a percentage.</xsd:documentation>
@@ -845,7 +798,11 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="transportCapacity" type="momimecommon:transportCapacity" nxe:label="Transport Capacity" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitUpkeep" type="momimecommon:unitUpkeep" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitUpkeep" type="momimecommon:productionTypeAndUndoubledValue">
+				<xsd:annotation>
+					<xsd:documentation>Lists all the types of upkeep for a particular unit, e.g. that Wolf Riders eat 1 ration and use 2 gold per turn.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPrerequisite" type="momimecommon:unitPrerequisite" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitHasSkill" type="momimecommon:unitSkillAndValue" />
 		</xsd:sequence>
@@ -874,12 +831,30 @@ don't have a value (such as Fire Immunity or Mountaineer).  By convention MoM IM
 		</xsd:attribute>
 	</xsd:complexType>
 	
-	<xsd:complexType name="unitUpkeep" nxe:singular="Unit Upkeep" nxe:plural="Unit Upkeep">
+	<xsd:complexType name="productionTypeAndUndoubledValue" nxe:singular="Undoubled Production" nxe:plural="Undoubled Production">
         <xsd:annotation>
-        	<xsd:documentation>Lists all the types of upkeep for a particular unit, e.g. that Wolf Riders eat 1 ration and use 2 gold per turn.</xsd:documentation>
+        	<xsd:documentation>Stores a production type ID and value.  Note this is an identical structure to productionTypeAndDoubledValue
+but kept these separate to make it totally clear when production values are recorded as is and when they are recorded doubled.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="upkeepValue" type="momimecommon:undoubledProductionValue" nxe:label="Value" nxe:gridwidth="60" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="undoubledProductionValue" type="momimecommon:undoubledProductionValue" nxe:label="Undoubled value" nxe:gridwidth="150" />
+		</xsd:sequence>
+		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="productionTypeAndDoubledValue" nxe:singular="Doubled Production" nxe:plural="Doubled Production">
+        <xsd:annotation>
+        	<xsd:documentation>Stores a production type ID and value.  Note this is an identical structure to productionTypeAndUndoubledValue
+but kept these separate to make it totally clear when production values are recorded as is and when they are recorded doubled.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubledProductionValue" type="momimecommon:doubledProductionValue" nxe:label="Doubled value" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -985,7 +960,11 @@ expensive bonus we are allowed to put onto the item.  A value of 0 allows all bo
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCityEffect" type="momimecommon:spellHasCityEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCombatEffect" type="momimecommon:spellHasCombatEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidUnitTarget" type="momimecommon:spellValidUnitTarget" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellUpkeep" type="momimecommon:spellUpkeep" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellUpkeep" type="momimecommon:productionTypeAndUndoubledValue">
+		        <xsd:annotation>
+		        	<xsd:documentation>Defines the upkeep a particular spells costs each turn, typically an amount of mana.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="spellID" type="momimecommon:spellID" use="required" nxe:label="Spell ID" nxe:gridwidth="60" />
 	</xsd:complexType>
@@ -1018,22 +997,6 @@ expensive bonus we are allowed to put onto the item.  A value of 0 allows all bo
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>combatAreaEffectDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-
-	<xsd:complexType name="spellUpkeep" nxe:singular="Spell Upkeep" nxe:plural="Spell Upkeep">
-        <xsd:annotation>
-        	<xsd:documentation>Defines the upkeep a particular spells costs each turn, typically an amount of mana.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="upkeepValue" type="momimecommon:undoubledProductionValue" nxe:label="Value" nxe:gridwidth="60" />
-		</xsd:sequence>
-		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type" nxe:showmaincolumn="false">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

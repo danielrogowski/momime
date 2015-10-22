@@ -48,10 +48,10 @@ import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillTypeID;
-import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
@@ -245,11 +245,11 @@ public final class TestUnitInfoPanel
 		longbowmen.setProductionCost (80);
 		longbowmen.setRangedAttackType ("RAT01");
 
-		final UnitUpkeep goldUpkeep = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue goldUpkeep = new ProductionTypeAndUndoubledValue ();
 		goldUpkeep.setProductionTypeID ("RE01");
 		longbowmen.getUnitUpkeep ().add (goldUpkeep);
 
-		final UnitUpkeep rationsUpkeep = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue rationsUpkeep = new ProductionTypeAndUndoubledValue ();
 		rationsUpkeep.setProductionTypeID ("RE02");
 		longbowmen.getUnitUpkeep ().add (rationsUpkeep);
 		

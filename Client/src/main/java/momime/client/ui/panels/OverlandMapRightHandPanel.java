@@ -67,8 +67,8 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
-import momime.common.database.MapFeatureProduction;
 import momime.common.database.ProductionType;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.TileType;
@@ -1098,15 +1098,15 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				
 				// Production bonuses from feature (e.g. +5 gold, +2 mana)
 				final MapFeature mapFeature = getClient ().getClientDB ().findMapFeature (terrainData.getMapFeatureID (), "surveyorLocationOrLanguageChanged");
-				for (final MapFeatureProduction mapFeatureProduction : mapFeature.getMapFeatureProduction ())
-					if (mapFeatureProduction.getDoubleAmount () != 0)
+				for (final ProductionTypeAndDoubledValue mapFeatureProduction : mapFeature.getMapFeatureProduction ())
+					if (mapFeatureProduction.getDoubledProductionValue () != 0)
 					{
 						final ProductionType productionType = getClient ().getClientDB ().findProductionType (mapFeatureProduction.getProductionTypeID (), "surveyorLocationOrLanguageChanged");
 						
 						final ProductionTypeLang productionTypeLang = getLanguage ().findProductionType (mapFeatureProduction.getProductionTypeID ());
 						final String productionTypeDescription = (productionTypeLang != null) ? productionTypeLang.getProductionTypeDescription () : null;
 						
-						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubleAmount ()) +
+						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubledProductionValue ()) +
 							(productionType.isIsPercentage () ? "% " : " ") +
 							((productionTypeDescription != null) ? productionTypeDescription : mapFeatureProduction.getProductionTypeID ()));
 					}

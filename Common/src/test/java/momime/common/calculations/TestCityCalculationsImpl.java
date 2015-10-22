@@ -33,18 +33,15 @@ import momime.common.database.BuildingRequiresTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
-import momime.common.database.FortressPickTypeProduction;
-import momime.common.database.FortressPlaneProduction;
 import momime.common.database.GenerateTestData;
 import momime.common.database.MapFeature;
-import momime.common.database.MapFeatureProduction;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.Race;
 import momime.common.database.RacePopulationTask;
-import momime.common.database.RacePopulationTaskProduction;
 import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.RoundingDirectionID;
@@ -1194,13 +1191,13 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final RacePopulationTaskProduction prod1 = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue prod1 = new ProductionTypeAndDoubledValue ();
 		prod1.setProductionTypeID ("RE01");
-		prod1.setDoubleAmount (2);
+		prod1.setDoubledProductionValue (2);
 		
-		final RacePopulationTaskProduction prod2 = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue prod2 = new ProductionTypeAndDoubledValue ();
 		prod2.setProductionTypeID ("RE02");
-		prod2.setDoubleAmount (3);
+		prod2.setDoubledProductionValue (3);
 		
 		final RacePopulationTask populationTask = new RacePopulationTask ();
 		populationTask.setPopulationTaskID ("B");
@@ -1252,13 +1249,13 @@ public final class TestCityCalculationsImpl
 	public final void testAddProductionFromFortressPickType ()
 	{
 		// Mock database
-		final FortressPickTypeProduction prod1 = new FortressPickTypeProduction ();
-		prod1.setFortressProductionTypeID ("RE01");
-		prod1.setDoubleAmount (2);
+		final ProductionTypeAndDoubledValue prod1 = new ProductionTypeAndDoubledValue ();
+		prod1.setProductionTypeID ("RE01");
+		prod1.setDoubledProductionValue (2);
 		
-		final FortressPickTypeProduction prod2 = new FortressPickTypeProduction ();
-		prod2.setFortressProductionTypeID ("RE02");
-		prod2.setDoubleAmount (3);
+		final ProductionTypeAndDoubledValue prod2 = new ProductionTypeAndDoubledValue ();
+		prod2.setProductionTypeID ("RE02");
+		prod2.setDoubledProductionValue (3);
 		
 		final PickType pickType = new PickType ();
 		pickType.setPickTypeID ("B");
@@ -1299,13 +1296,13 @@ public final class TestCityCalculationsImpl
 	public final void testAddProductionFromFortressPlane ()
 	{
 		// Mock database
-		final FortressPlaneProduction prod1 = new FortressPlaneProduction ();
-		prod1.setFortressProductionTypeID ("RE01");
-		prod1.setDoubleAmount (2);
+		final ProductionTypeAndDoubledValue prod1 = new ProductionTypeAndDoubledValue ();
+		prod1.setProductionTypeID ("RE01");
+		prod1.setDoubledProductionValue (2);
 		
-		final FortressPlaneProduction prod2 = new FortressPlaneProduction ();
-		prod2.setFortressProductionTypeID ("RE02");
-		prod2.setDoubleAmount (3);
+		final ProductionTypeAndDoubledValue prod2 = new ProductionTypeAndDoubledValue ();
+		prod2.setProductionTypeID ("RE02");
+		prod2.setDoubledProductionValue (3);
 
 		final Plane plane = new Plane ();
 		plane.setPlaneNumber (1);
@@ -1411,17 +1408,17 @@ public final class TestCityCalculationsImpl
 	public final void testAddProductionFromMapFeatures () throws RecordNotFoundException
 	{
 		// Mock database
-		final MapFeatureProduction firstProd = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue firstProd = new ProductionTypeAndDoubledValue ();
 		firstProd.setProductionTypeID ("RE01");
-		firstProd.setDoubleAmount (3);
+		firstProd.setDoubledProductionValue (3);
 
-		final MapFeatureProduction secondProd = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue secondProd = new ProductionTypeAndDoubledValue ();
 		secondProd.setProductionTypeID ("RE02");
-		secondProd.setDoubleAmount (4);
+		secondProd.setDoubledProductionValue (4);
 		
-		final MapFeatureProduction thirdProd = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue thirdProd = new ProductionTypeAndDoubledValue ();
 		thirdProd.setProductionTypeID ("RE03");
-		thirdProd.setDoubleAmount (4);
+		thirdProd.setDoubledProductionValue (4);
 		
 		final MapFeature firstFeature = new MapFeature ();
 		firstFeature.getMapFeatureProduction ().add (firstProd);
@@ -1523,31 +1520,31 @@ public final class TestCityCalculationsImpl
 		when (db.findTileType (eq ("TT02"), anyString ())).thenReturn (riverDef);
 
 		// Map features
-		final MapFeatureProduction wildGameFood = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue wildGameFood = new ProductionTypeAndDoubledValue ();
 		wildGameFood.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-		wildGameFood.setDoubleAmount (4);		
+		wildGameFood.setDoubledProductionValue (4);		
 		
-		final MapFeatureProduction wildGameRations = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue wildGameRations = new ProductionTypeAndDoubledValue ();
 		wildGameRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		wildGameRations.setDoubleAmount (4);
+		wildGameRations.setDoubledProductionValue (4);
 		
 		final MapFeature wildGame = new MapFeature ();
 		wildGame.getMapFeatureProduction ().add (wildGameFood);
 		wildGame.getMapFeatureProduction ().add (wildGameRations);
 		when (db.findMapFeature ("MF01", "addProductionFromMapFeatures")).thenReturn (wildGame);
 
-		final MapFeatureProduction gemsGold = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue gemsGold = new ProductionTypeAndDoubledValue ();
 		gemsGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		gemsGold.setDoubleAmount (10);
+		gemsGold.setDoubledProductionValue (10);
 		
 		final MapFeature gems = new MapFeature ();
 		gems.setRaceMineralMultiplerApplies (true);
 		gems.getMapFeatureProduction ().add (gemsGold);
 		when (db.findMapFeature ("MF02", "addProductionFromMapFeatures")).thenReturn (gems);
 
-		final MapFeatureProduction adamantiumMagicPower = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue adamantiumMagicPower = new ProductionTypeAndDoubledValue ();
 		adamantiumMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
-		adamantiumMagicPower.setDoubleAmount (4);
+		adamantiumMagicPower.setDoubledProductionValue (4);
 		
 		final MapFeature adamantium = new MapFeature ();
 		adamantium.setRaceMineralMultiplerApplies (true);
@@ -1576,22 +1573,22 @@ public final class TestCityCalculationsImpl
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, "halveAddPercentageBonusAndCapProduction")).thenReturn (magicPowerProduction);
 		
 		// Standard race
-		final RacePopulationTaskProduction raceFarmerRations = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue raceFarmerRations = new ProductionTypeAndDoubledValue ();
 		raceFarmerRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		raceFarmerRations.setDoubleAmount (4);
+		raceFarmerRations.setDoubledProductionValue (4);
 
-		final RacePopulationTaskProduction raceFarmerProduction = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue raceFarmerProduction = new ProductionTypeAndDoubledValue ();
 		raceFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		raceFarmerProduction.setDoubleAmount (1);
+		raceFarmerProduction.setDoubledProductionValue (1);
 		
 		final RacePopulationTask raceFarmers = new RacePopulationTask ();
 		raceFarmers.getRacePopulationTaskProduction ().add (raceFarmerRations);
 		raceFarmers.getRacePopulationTaskProduction ().add (raceFarmerProduction);
 		raceFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final RacePopulationTaskProduction raceWorkerProduction = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue raceWorkerProduction = new ProductionTypeAndDoubledValue ();
 		raceWorkerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		raceWorkerProduction.setDoubleAmount (4);
+		raceWorkerProduction.setDoubledProductionValue (4);
 		
 		final RacePopulationTask raceWorkers = new RacePopulationTask ();
 		raceWorkers.getRacePopulationTaskProduction ().add (raceWorkerProduction);
@@ -1604,22 +1601,22 @@ public final class TestCityCalculationsImpl
 		when (db.findRace ("RC01", "calculateAllCityProductions")).thenReturn (raceDef);
 		
 		// Dwarves
-		final RacePopulationTaskProduction dwarvesFarmerRations = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue dwarvesFarmerRations = new ProductionTypeAndDoubledValue ();
 		dwarvesFarmerRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		dwarvesFarmerRations.setDoubleAmount (4);
+		dwarvesFarmerRations.setDoubledProductionValue (4);
 
-		final RacePopulationTaskProduction dwarvesFarmerProduction = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue dwarvesFarmerProduction = new ProductionTypeAndDoubledValue ();
 		dwarvesFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		dwarvesFarmerProduction.setDoubleAmount (1);
+		dwarvesFarmerProduction.setDoubledProductionValue (1);
 		
 		final RacePopulationTask dwarvesFarmers = new RacePopulationTask ();
 		dwarvesFarmers.getRacePopulationTaskProduction ().add (dwarvesFarmerRations);
 		dwarvesFarmers.getRacePopulationTaskProduction ().add (dwarvesFarmerProduction);
 		dwarvesFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final RacePopulationTaskProduction dwarvesWorkerProduction = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue dwarvesWorkerProduction = new ProductionTypeAndDoubledValue ();
 		dwarvesWorkerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		dwarvesWorkerProduction.setDoubleAmount (6);
+		dwarvesWorkerProduction.setDoubledProductionValue (6);
 		
 		final RacePopulationTask dwarvesWorkers = new RacePopulationTask ();
 		dwarvesWorkers.getRacePopulationTaskProduction ().add (dwarvesWorkerProduction);
@@ -1632,17 +1629,17 @@ public final class TestCityCalculationsImpl
 		when (db.findRace ("RC02", "calculateAllCityProductions")).thenReturn (dwarvesDef);
 		
 		// High elves
-		final RacePopulationTaskProduction highElfFarmerRations = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue highElfFarmerRations = new ProductionTypeAndDoubledValue ();
 		highElfFarmerRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		highElfFarmerRations.setDoubleAmount (4);
+		highElfFarmerRations.setDoubledProductionValue (4);
 
-		final RacePopulationTaskProduction highElfFarmerProduction = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue highElfFarmerProduction = new ProductionTypeAndDoubledValue ();
 		highElfFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		highElfFarmerProduction.setDoubleAmount (1);
+		highElfFarmerProduction.setDoubledProductionValue (1);
 
-		final RacePopulationTaskProduction highElfFarmerMagicPower = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue highElfFarmerMagicPower = new ProductionTypeAndDoubledValue ();
 		highElfFarmerMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
-		highElfFarmerMagicPower.setDoubleAmount (1);
+		highElfFarmerMagicPower.setDoubledProductionValue (1);
 		
 		final RacePopulationTask highElfFarmers = new RacePopulationTask ();
 		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmerRations);
@@ -1650,22 +1647,22 @@ public final class TestCityCalculationsImpl
 		highElfFarmers.getRacePopulationTaskProduction ().add (highElfFarmerMagicPower);
 		highElfFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final RacePopulationTaskProduction highElfWorkerProduction = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue highElfWorkerProduction = new ProductionTypeAndDoubledValue ();
 		highElfWorkerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		highElfWorkerProduction.setDoubleAmount (4);
+		highElfWorkerProduction.setDoubledProductionValue (4);
 
-		final RacePopulationTaskProduction highElfWorkerMagicPower = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue highElfWorkerMagicPower = new ProductionTypeAndDoubledValue ();
 		highElfWorkerMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
-		highElfWorkerMagicPower.setDoubleAmount (1);
+		highElfWorkerMagicPower.setDoubledProductionValue (1);
 		
 		final RacePopulationTask highElfWorkers = new RacePopulationTask ();
 		highElfWorkers.getRacePopulationTaskProduction ().add (highElfWorkerProduction);
 		highElfWorkers.getRacePopulationTaskProduction ().add (highElfWorkerMagicPower);
 		highElfWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
 
-		final RacePopulationTaskProduction highElfRebelMagicPower = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue highElfRebelMagicPower = new ProductionTypeAndDoubledValue ();
 		highElfRebelMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
-		highElfRebelMagicPower.setDoubleAmount (1);
+		highElfRebelMagicPower.setDoubledProductionValue (1);
 		
 		final RacePopulationTask highElfRebels = new RacePopulationTask ();
 		highElfRebels.getRacePopulationTaskProduction ().add (highElfRebelMagicPower);
@@ -1740,18 +1737,18 @@ public final class TestCityCalculationsImpl
 		doReturn (buildingDefs).when (db).getBuildings ();
 		
 		// Planes
-		final FortressPlaneProduction fortressPlaneProduction = new FortressPlaneProduction ();
-		fortressPlaneProduction.setDoubleAmount (10);
-		fortressPlaneProduction.setFortressProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		final ProductionTypeAndDoubledValue fortressPlaneProduction = new ProductionTypeAndDoubledValue ();
+		fortressPlaneProduction.setDoubledProductionValue (10);
+		fortressPlaneProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		
 		final Plane myrror = new Plane ();
 		myrror.getFortressPlaneProduction ().add (fortressPlaneProduction);
 		when (db.findPlane (1, "calculateAllCityProductions")).thenReturn (myrror);
 		
 		// Pick types
-		final FortressPickTypeProduction fortressPickTypeProduction = new FortressPickTypeProduction ();
-		fortressPickTypeProduction.setDoubleAmount (2);
-		fortressPickTypeProduction.setFortressProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		final ProductionTypeAndDoubledValue fortressPickTypeProduction = new ProductionTypeAndDoubledValue ();
+		fortressPickTypeProduction.setDoubledProductionValue (2);
+		fortressPickTypeProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		
 		final PickType books = new PickType ();
 		books.setPickTypeID ("B");
@@ -2488,17 +2485,17 @@ public final class TestCityCalculationsImpl
 		final TileType riverDef = new TileType ();
 		when (db.findTileType (eq ("TT02"), anyString ())).thenReturn (riverDef);
 		
-		final MapFeatureProduction wildGameProduction = new MapFeatureProduction ();
+		final ProductionTypeAndDoubledValue wildGameProduction = new ProductionTypeAndDoubledValue ();
 		wildGameProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		wildGameProduction.setDoubleAmount (4);
+		wildGameProduction.setDoubledProductionValue (4);
 		
 		final MapFeature wildGame = new MapFeature ();
 		wildGame.getMapFeatureProduction ().add (wildGameProduction);
 		when (db.findMapFeature ("MF01", "addProductionFromMapFeatures")).thenReturn (wildGame);
 
-		final RacePopulationTaskProduction raceFarmerProduction = new RacePopulationTaskProduction ();
+		final ProductionTypeAndDoubledValue raceFarmerProduction = new ProductionTypeAndDoubledValue ();
 		raceFarmerProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-		raceFarmerProduction.setDoubleAmount (4);
+		raceFarmerProduction.setDoubledProductionValue (4);
 		
 		final RacePopulationTask raceFarmers = new RacePopulationTask ();
 		raceFarmers.getRacePopulationTaskProduction ().add (raceFarmerProduction);

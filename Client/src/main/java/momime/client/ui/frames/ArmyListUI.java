@@ -42,10 +42,9 @@ import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Spell;
-import momime.common.database.SpellUpkeep;
 import momime.common.database.Unit;
-import momime.common.database.UnitUpkeep;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
@@ -267,7 +266,7 @@ public final class ArmyListUI extends MomClientFrameUI
 					
 					// Total up upkeep
 					final Unit unitDetails = getClient ().getClientDB ().findUnit (thisUnit.getUnitID (), "refreshArmyList");
-					for (final UnitUpkeep upkeep : unitDetails.getUnitUpkeep ())
+					for (final ProductionTypeAndUndoubledValue upkeep : unitDetails.getUnitUpkeep ())
 					{
 						Integer value = upkeepsMap.get (upkeep.getProductionTypeID ());
 						if (value == null)
@@ -308,13 +307,13 @@ public final class ArmyListUI extends MomClientFrameUI
 				{
 					final Spell spellDetails = getClient ().getClientDB ().findSpell (spell.getSpellID (), "refreshArmyList");
 
-					for (final SpellUpkeep upkeep : spellDetails.getSpellUpkeep ())
+					for (final ProductionTypeAndUndoubledValue upkeep : spellDetails.getSpellUpkeep ())
 					{
 						Integer value = upkeepsMap.get (upkeep.getProductionTypeID ());
 						if (value == null)
 							value = 0;
 						
-						value = value + upkeep.getUpkeepValue ();
+						value = value + upkeep.getUndoubledProductionValue ();
 						
 						upkeepsMap.put (upkeep.getProductionTypeID (), value);
 					}

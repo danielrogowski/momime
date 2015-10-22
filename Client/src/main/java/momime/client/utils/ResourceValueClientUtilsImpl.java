@@ -6,15 +6,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeGfx;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.UnitUpkeep;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.ProductionTypeGfx;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 
 /**
  * Utils for dealing with graphics of resource values/production icons
@@ -100,7 +100,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	@Override
-	public final BufferedImage generateUpkeepImage (final List<UnitUpkeep> upkeeps, final boolean halveManaUpkeep) throws IOException
+	public final BufferedImage generateUpkeepImage (final List<ProductionTypeAndUndoubledValue> upkeeps, final boolean halveManaUpkeep) throws IOException
 	{
 		log.trace ("Entering generateUpkeepImage: " + ((upkeeps == null) ? "null" : new Integer (upkeeps.size ()).toString ()) + ", " + halveManaUpkeep);
 		
@@ -110,12 +110,12 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 			// Generate a list of images that we need to include
 			final List<BufferedImage> productionImages = new ArrayList<BufferedImage> ();
 			
-			for (final UnitUpkeep upkeep : upkeeps)
+			for (final ProductionTypeAndUndoubledValue upkeep : upkeeps)
 			{
 				final ProductionTypeGfx productionTypeImages = getGraphicsDB ().findProductionType (upkeep.getProductionTypeID (), "generateUpkeepImage");
 
 				// Halve value or not?  This is so summoned units display half upkeep if we have the Channeler retort
-				int value = upkeep.getUpkeepValue ();
+				int value = upkeep.getUndoubledProductionValue ();
 				boolean showHalf = false;
 				if ((halveManaUpkeep) && (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA.equals (upkeep.getProductionTypeID ())))
 				{

@@ -26,17 +26,14 @@ import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.BuildingRequiresTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FortressPickTypeProduction;
-import momime.common.database.FortressPlaneProduction;
 import momime.common.database.MapFeature;
-import momime.common.database.MapFeatureProduction;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.Race;
 import momime.common.database.RacePopulationTask;
-import momime.common.database.RacePopulationTaskProduction;
 import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
@@ -688,11 +685,11 @@ public final class CityCalculationsImpl implements CityCalculations
 			// It may genuinely not be there - rebels of most races produce nothing so won't even be listed
 			for (final RacePopulationTask populationTask : race.getRacePopulationTask ())
 				if (populationTask.getPopulationTaskID ().equals (populationTaskID))
-					for (final RacePopulationTaskProduction thisProduction : populationTask.getRacePopulationTaskProduction ())
+					for (final ProductionTypeAndDoubledValue thisProduction : populationTask.getRacePopulationTaskProduction ())
 					{
 						// Are there are building we have which increase this type of production from this type of population
 						// i.e. Animists' guild increasing farmers yield by +1
-						final int doubleAmountPerPerson = thisProduction.getDoubleAmount () +
+						final int doubleAmountPerPerson = thisProduction.getDoubledProductionValue () +
 							getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings
 								(buildings, cityLocation, populationTaskID, thisProduction.getProductionTypeID (), db);
 
@@ -723,15 +720,15 @@ public final class CityCalculationsImpl implements CityCalculations
 		log.trace ("Entering addProductionFromFortressPickType: " + pickType.getPickTypeID () + " x" + pickTypeCount);
 
 		if (pickTypeCount > 0)
-			for (final FortressPickTypeProduction thisProduction : pickType.getFortressPickTypeProduction ())
+			for (final ProductionTypeAndDoubledValue thisProduction : pickType.getFortressPickTypeProduction ())
 			{
 				final CityProductionBreakdownPickType pickTypeBreakdown = new CityProductionBreakdownPickType ();
 				pickTypeBreakdown.setPickTypeID (pickType.getPickTypeID ());
 				pickTypeBreakdown.setCount (pickTypeCount);
-				pickTypeBreakdown.setDoubleProductionAmountEachPick (thisProduction.getDoubleAmount ());
-				pickTypeBreakdown.setDoubleProductionAmountAllPicks (pickTypeCount * thisProduction.getDoubleAmount ());
+				pickTypeBreakdown.setDoubleProductionAmountEachPick (thisProduction.getDoubledProductionValue ());
+				pickTypeBreakdown.setDoubleProductionAmountAllPicks (pickTypeCount * thisProduction.getDoubledProductionValue ());
 
-				final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getFortressProductionTypeID ());
+				final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getProductionTypeID ());
 				breakdown.getPickTypeProduction ().add (pickTypeBreakdown);
 				breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + pickTypeBreakdown.getDoubleProductionAmountAllPicks ());
 			}
@@ -749,12 +746,12 @@ public final class CityCalculationsImpl implements CityCalculations
 	{
 		log.trace ("Entering addProductionFromFortressPlane: " + plane.getPlaneNumber ());
 
-		for (final FortressPlaneProduction thisProduction : plane.getFortressPlaneProduction ())
+		for (final ProductionTypeAndDoubledValue thisProduction : plane.getFortressPlaneProduction ())
 		{
-			final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getFortressProductionTypeID ());
+			final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getProductionTypeID ());
 			breakdown.setFortressPlane (plane.getPlaneNumber ());
-			breakdown.setDoubleProductionAmountFortressPlane (breakdown.getDoubleProductionAmountFortressPlane () + thisProduction.getDoubleAmount ());
-			breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + thisProduction.getDoubleAmount ());
+			breakdown.setDoubleProductionAmountFortressPlane (breakdown.getDoubleProductionAmountFortressPlane () + thisProduction.getDoubledProductionValue ());
+			breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + thisProduction.getDoubledProductionValue ());
 		}
 
 		log.trace ("Exiting addProductionFromFortressPlane");
@@ -918,7 +915,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 
 			// Add on each type of production generated
-			for (final MapFeatureProduction thisProduction : mapFeature.getMapFeatureProduction ())
+			for (final ProductionTypeAndDoubledValue thisProduction : mapFeature.getMapFeatureProduction ())
 			{
 				// Copy the details, in case one map feature generates multiple types of production
 				final CityProductionBreakdownMapFeature copyMapFeature = new CityProductionBreakdownMapFeature ();
@@ -928,7 +925,7 @@ public final class CityCalculationsImpl implements CityCalculations
 				copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus ());
 				
 				// Deal with multipliers
-				copyMapFeature.setDoubleUnmodifiedProductionAmountEachFeature (thisProduction.getDoubleAmount ());
+				copyMapFeature.setDoubleUnmodifiedProductionAmountEachFeature (thisProduction.getDoubledProductionValue ());
 				
 				copyMapFeature.setDoubleUnmodifiedProductionAmountAllFeatures
 					(copyMapFeature.getDoubleUnmodifiedProductionAmountEachFeature () * copyMapFeature.getCount ());

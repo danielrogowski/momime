@@ -36,11 +36,11 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellHasCombatEffect;
-import momime.common.database.SpellUpkeep;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitSkillAndValue;
@@ -91,9 +91,9 @@ public final class TestSpellClientUtilsImpl
 		langHolder.setLanguage (lang);
 		
 		// Spell
-		final SpellUpkeep upkeep = new SpellUpkeep ();
+		final ProductionTypeAndUndoubledValue upkeep = new ProductionTypeAndUndoubledValue ();
 		upkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		upkeep.setUpkeepValue (5);
+		upkeep.setUndoubledProductionValue (5);
 		
 		final Spell spell = new Spell ();
 		spell.getSpellUpkeep ().add (upkeep);
@@ -134,9 +134,9 @@ public final class TestSpellClientUtilsImpl
 		langHolder.setLanguage (lang);
 		
 		// Spell
-		final SpellUpkeep upkeep = new SpellUpkeep ();
+		final ProductionTypeAndUndoubledValue upkeep = new ProductionTypeAndUndoubledValue ();
 		upkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		upkeep.setUpkeepValue (5);
+		upkeep.setUndoubledProductionValue (5);
 		
 		final Spell spell = new Spell ();
 		spell.getSpellUpkeep ().add (upkeep);
@@ -181,13 +181,13 @@ public final class TestSpellClientUtilsImpl
 		langHolder.setLanguage (lang);
 		
 		// Spell
-		final SpellUpkeep upkeep1 = new SpellUpkeep ();
+		final ProductionTypeAndUndoubledValue upkeep1 = new ProductionTypeAndUndoubledValue ();
 		upkeep1.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		upkeep1.setUpkeepValue (5);
+		upkeep1.setUndoubledProductionValue (5);
 
-		final SpellUpkeep upkeep2 = new SpellUpkeep ();
+		final ProductionTypeAndUndoubledValue upkeep2 = new ProductionTypeAndUndoubledValue ();
 		upkeep2.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		upkeep2.setUpkeepValue (2);
+		upkeep2.setUndoubledProductionValue (2);
 		
 		final Spell spell = new Spell ();
 		spell.getSpellUpkeep ().add (upkeep1);

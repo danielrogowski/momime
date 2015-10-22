@@ -3,13 +3,22 @@ package momime.server.calculations;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RacePopulationTask;
-import momime.common.database.RacePopulationTaskProduction;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -21,15 +30,6 @@ import momime.server.database.BuildingSvr;
 import momime.server.database.CitySizeSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
@@ -80,11 +80,11 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 			throw new MomException ("calculateDoubleFarmingRate: Race " + cityData.getCityRaceID () + " has no farmers defined");
 
 		// Find how many rations each farmer produces
-		RacePopulationTaskProduction rations = null;;
-		final Iterator<RacePopulationTaskProduction> prodIter = farmer.getRacePopulationTaskProduction ().iterator ();
+		ProductionTypeAndDoubledValue rations = null;;
+		final Iterator<ProductionTypeAndDoubledValue> prodIter = farmer.getRacePopulationTaskProduction ().iterator ();
 		while ((rations == null) && (prodIter.hasNext ()))
 		{
-			final RacePopulationTaskProduction thisProd = prodIter.next ();
+			final ProductionTypeAndDoubledValue thisProd = prodIter.next ();
 			if (thisProd.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS))
 				rations = thisProd;
 		}
@@ -93,7 +93,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 			throw new MomException ("calculateDoubleFarmingRate: Farmers for race " + cityData.getCityRaceID () + " do not produce any rations");
 
 		// Every race has farmers, and every farmer produces rations, so the chain of records must exist
-		final int doubleFarmingRate = rations.getDoubleAmount () +
+		final int doubleFarmingRate = rations.getDoubledProductionValue () +
 
 			// Bump up farming rate if we have an Animists' guild
 			getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,

@@ -57,13 +57,13 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
-import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -527,16 +527,16 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		costLabel.setVisible (buildingInfo.getProductionCost () != null);
 
 		// Search for upkeep values (i.e. no population task specified, and the value is negative)
-		final List<UnitUpkeep> upkeeps = new ArrayList<UnitUpkeep> ();
+		final List<ProductionTypeAndUndoubledValue> upkeeps = new ArrayList<ProductionTypeAndUndoubledValue> ();
 		for (final BuildingPopulationProductionModifier upkeepValue : buildingInfo.getBuildingPopulationProductionModifier ())
 			if ((upkeepValue.getPopulationTaskID () == null) && (upkeepValue.getDoubleAmount () != null) && (upkeepValue.getDoubleAmount () < 0))
 			{
 				if (upkeepValue.getDoubleAmount () % 2 != 0)
 					throw new MomException ("Building " + building.getBuildingID () + " has an upkeep of type " + upkeepValue.getProductionTypeID () + " which is not a multiple of 2");
 			
-				final UnitUpkeep upkeep = new UnitUpkeep ();
+				final ProductionTypeAndUndoubledValue upkeep = new ProductionTypeAndUndoubledValue ();
 				upkeep.setProductionTypeID (upkeepValue.getProductionTypeID ());
-				upkeep.setUpkeepValue (-upkeepValue.getDoubleAmount () / 2);
+				upkeep.setUndoubledProductionValue (-upkeepValue.getDoubleAmount () / 2);
 				upkeeps.add (upkeep);
 			}
 	
@@ -608,12 +608,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		costLabel.setVisible (unitInfo.getProductionCost () != null);
 		
 		// Search for upkeep values
-		final List<UnitUpkeep> upkeeps = new ArrayList<UnitUpkeep> ();
-		for (final UnitUpkeep upkeepValue : unitInfo.getUnitUpkeep ())
+		final List<ProductionTypeAndUndoubledValue> upkeeps = new ArrayList<ProductionTypeAndUndoubledValue> ();
+		for (final ProductionTypeAndUndoubledValue upkeepValue : unitInfo.getUnitUpkeep ())
 		{
-			final UnitUpkeep upkeep = new UnitUpkeep ();
+			final ProductionTypeAndUndoubledValue upkeep = new ProductionTypeAndUndoubledValue ();
 			upkeep.setProductionTypeID (upkeepValue.getProductionTypeID ());
-			upkeep.setUpkeepValue (getUnitSkillUtils ().getModifiedUpkeepValue (unit, upkeep.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
+			upkeep.setUndoubledProductionValue (getUnitSkillUtils ().getModifiedUpkeepValue (unit, upkeep.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
 			upkeeps.add (upkeep);
 		}
 

@@ -26,10 +26,10 @@ import momime.client.language.database.UnitSkillLang;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Spell;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellHasCombatEffect;
-import momime.common.database.SpellUpkeep;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitSkillAndValue;
@@ -79,7 +79,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		log.trace ("Entering listUpkeepsOfSpell: " + spell.getSpellID ());
 		
 		String upkeepList = null;
-		for (final SpellUpkeep upkeep : spell.getSpellUpkeep ())
+		for (final ProductionTypeAndUndoubledValue upkeep : spell.getSpellUpkeep ())
 		{
 			if (upkeepList == null)
 				upkeepList = "";
@@ -98,8 +98,8 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				
 			upkeepList = upkeepList + thisUpkeep.replaceAll
 				("PRODUCTION_TYPE", (productionTypeDescription != null) ? productionTypeDescription : upkeep.getProductionTypeID ()).replaceAll
-				("HALF_UPKEEP_VALUE", getTextUtils ().halfIntToStr (upkeep.getUpkeepValue ())).replaceAll
-				("UPKEEP_VALUE", new Integer (upkeep.getUpkeepValue ()).toString ());
+				("HALF_UPKEEP_VALUE", getTextUtils ().halfIntToStr (upkeep.getUndoubledProductionValue ())).replaceAll
+				("UPKEEP_VALUE", new Integer (upkeep.getUndoubledProductionValue ()).toString ());
 		}
 		
 		// Did we find any?

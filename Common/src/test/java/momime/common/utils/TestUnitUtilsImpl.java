@@ -26,6 +26,7 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
@@ -34,7 +35,6 @@ import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitType;
-import momime.common.database.UnitUpkeep;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -1248,13 +1248,13 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitUpkeep upkeepA = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue upkeepA = new ProductionTypeAndUndoubledValue ();
 		upkeepA.setProductionTypeID ("A");
-		upkeepA.setUpkeepValue (1);
+		upkeepA.setUndoubledProductionValue (1);
 
-		final UnitUpkeep upkeepB = new UnitUpkeep ();
+		final ProductionTypeAndUndoubledValue upkeepB = new ProductionTypeAndUndoubledValue ();
 		upkeepB.setProductionTypeID ("B");
-		upkeepB.setUpkeepValue (5);
+		upkeepB.setUndoubledProductionValue (5);
 		
 		final Unit unitDef = new Unit ();
 		unitDef.getUnitUpkeep ().add (upkeepA);

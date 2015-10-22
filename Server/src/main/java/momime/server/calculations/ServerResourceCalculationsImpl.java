@@ -7,14 +7,21 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
-import momime.common.database.SpellUpkeep;
-import momime.common.database.UnitUpkeep;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
@@ -53,14 +60,6 @@ import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
 import momime.server.utils.UnitServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
 
 /**
  * Server side methods for dealing with calculating and updating the global economy e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
@@ -130,7 +129,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
 			{
 				final UnitSvr unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
-				for (final UnitUpkeep upkeep : unitDetails.getUnitUpkeep ())
+				for (final ProductionTypeAndUndoubledValue upkeep : unitDetails.getUnitUpkeep ())
 					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), players, db));
 			}
 
@@ -142,8 +141,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 				// Note we deal with Channeler retort halving spell maintenance below, so there is no
 				// getModifiedUpkeepValue method for spells, we can just use the values right out of the database
-				for (final SpellUpkeep upkeep : spellDetails.getSpellUpkeep ())
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -upkeep.getUpkeepValue ());
+				for (final ProductionTypeAndUndoubledValue upkeep : spellDetails.getSpellUpkeep ())
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -upkeep.getUndoubledProductionValue ());
 			}
 
 		// At this point, the only Mana recorded is consumption - so we can halve consumption if the wizard has Channeler
@@ -287,19 +286,19 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				final SpellSvr spell = db.findSpell (thisSpell.getSpellID (), "listConsumersOfProductionType");
 
 				boolean found = false;
-				final Iterator<SpellUpkeep> upkeepIter = spell.getSpellUpkeep ().iterator ();
+				final Iterator<ProductionTypeAndUndoubledValue> upkeepIter = spell.getSpellUpkeep ().iterator ();
 				while ((!found) && (upkeepIter.hasNext ()))
 				{
-					final SpellUpkeep upkeep = upkeepIter.next ();
+					final ProductionTypeAndUndoubledValue upkeep = upkeepIter.next ();
 					if (upkeep.getProductionTypeID ().equals (productionTypeID))
 					{
 						found = true;
-						if (upkeep.getUpkeepValue () > 0)
+						if (upkeep.getUndoubledProductionValue () > 0)
 						{
 							final MomResourceConsumerSpell consumer = getMomResourceConsumerFactory ().createSpellConsumer ();
 							consumer.setPlayer (player);
 							consumer.setProductionTypeID (productionTypeID);
-							consumer.setConsumptionAmount (upkeep.getUpkeepValue ());
+							consumer.setConsumptionAmount (upkeep.getUndoubledProductionValue ());
 							consumer.setSpell (thisSpell);
 							consumers.add (consumer);
 						}

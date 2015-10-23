@@ -818,7 +818,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		log.trace ("Entering regenerateMiniMapBitmap: " + getOverlandMapUI ().getMapViewPlane ());
 		
 		miniMapBitmap = getMiniMapBitmapGenerator ().generateMiniMapBitmap (getOverlandMapUI ().getMapViewPlane ());
-		miniMapPanel.repaint ();
+
+		if (miniMapPanel != null)
+			miniMapPanel.repaint ();
 		
 		log.trace ("Exiting regenerateMiniMapBitmap");
 	}

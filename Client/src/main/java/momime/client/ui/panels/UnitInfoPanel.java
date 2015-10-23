@@ -8,8 +8,11 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
@@ -27,6 +30,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
@@ -59,6 +64,7 @@ import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
@@ -68,7 +74,9 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
@@ -132,6 +140,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 	/** Client unit calculations */
 	private ClientUnitCalculations clientUnitCalculations;
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** 0-3 actions to set up red buttons for; NB. this must be set prior to init () being called */
 	private List<Action> actions = new ArrayList<Action> ();
@@ -607,18 +621,49 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		currentlyConstructingProductionCost.setText ((unitInfo.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (unitInfo.getProductionCost ()));
 		costLabel.setVisible (unitInfo.getProductionCost () != null);
 		
-		// Search for upkeep values
-		final List<ProductionTypeAndUndoubledValue> upkeeps = new ArrayList<ProductionTypeAndUndoubledValue> ();
+		// Search for upkeeps of the unit
+		final Map<String, Integer> upkeepsMap = new HashMap<String, Integer> ();
 		for (final ProductionTypeAndUndoubledValue upkeepValue : unitInfo.getUnitUpkeep ())
+			upkeepsMap.put (upkeepValue.getProductionTypeID (),
+				getUnitSkillUtils ().getModifiedUpkeepValue (unit, upkeepValue.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
+		
+		// Search for upkeeps from spells cast on the unit
+		if (unit instanceof MemoryUnit)
 		{
-			final ProductionTypeAndUndoubledValue upkeep = new ProductionTypeAndUndoubledValue ();
-			upkeep.setProductionTypeID (upkeepValue.getProductionTypeID ());
-			upkeep.setUndoubledProductionValue (getUnitSkillUtils ().getModifiedUpkeepValue (unit, upkeep.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
-			upkeeps.add (upkeep);
+			final int unitURN = ((MemoryUnit) unit).getUnitURN ();
+			
+			for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
+				if ((spell.getCastingPlayerID () == unit.getOwningPlayerID ()) && (unitURN == spell.getUnitURN ()))
+				{
+					final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "showUnit");
+					for (final ProductionTypeAndUndoubledValue upkeepValue : spellDef.getSpellUpkeep ())
+					{
+						Integer value = upkeepsMap.get (upkeepValue.getProductionTypeID ());
+						if (value == null)
+							value = 0;
+						
+						value = value + upkeepValue.getUndoubledProductionValue ();
+						
+						upkeepsMap.put (upkeepValue.getProductionTypeID (), value);
+					}
+				}					
 		}
+		
+		// Turn the map back into a list
+		final List<ProductionTypeAndUndoubledValue> upkeeps = upkeepsMap.entrySet ().stream ().sorted ((e1, e2) -> e1.getKey ().compareTo (e2.getKey ())).map (e ->
+		{
+			final ProductionTypeAndUndoubledValue upkeepValue = new ProductionTypeAndUndoubledValue ();
+			upkeepValue.setProductionTypeID (e.getKey ());
+			upkeepValue.setUndoubledProductionValue (e.getValue ());
+			return upkeepValue;
+		}).collect (Collectors.toList ());
 
 		// Generate an image from the upkeeps
-		final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps, false);
+		final PlayerPublicDetails unitOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), unit.getOwningPlayerID (), "showUnit");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
+
+		final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps,
+			getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) >= 1);
 		currentlyConstructingUpkeep.setIcon ((upkeepImage == null) ? null : new ImageIcon (upkeepImage));
 		upkeepLabel.setVisible (upkeepImage != null);
 		
@@ -1008,6 +1053,38 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 	
 	/**

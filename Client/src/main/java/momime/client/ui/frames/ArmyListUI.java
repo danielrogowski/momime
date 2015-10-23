@@ -47,7 +47,9 @@ import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
@@ -88,6 +90,9 @@ public final class ArmyListUI extends MomClientFrameUI
 	
 	/** Text utils */
 	private TextUtils textUtils;
+
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/** Title */
 	private JLabel title;
@@ -323,7 +328,16 @@ public final class ArmyListUI extends MomClientFrameUI
 			final Integer goldUpkeep = upkeepsMap.get (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 			goldUpkeepLabel.setText ((goldUpkeep == null) ? "" : getTextUtils ().intToStrCommas (goldUpkeep));
 
-			final Integer manaUpkeep = upkeepsMap.get (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+			Integer manaUpkeep = upkeepsMap.get (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+			if ((manaUpkeep != null) && (manaUpkeep > 1))
+			{
+				// Do we have channeler, to halve all upkeep?
+				final PlayerPublicDetails unitOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "refreshArmyList");
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
+
+				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) >= 1)
+					manaUpkeep = manaUpkeep - (manaUpkeep / 2);
+			}			
 			manaUpkeepLabel.setText ((manaUpkeep == null) ? "" : getTextUtils ().intToStrCommas (manaUpkeep));
 
 			final Integer rationsUpkeep = upkeepsMap.get (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
@@ -552,5 +566,21 @@ public final class ArmyListUI extends MomClientFrameUI
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

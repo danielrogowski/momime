@@ -5,6 +5,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.xml.ws.Holder;
 
@@ -38,7 +42,9 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
+import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.renderer.ArmyListCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabaseConstants;
@@ -94,6 +100,12 @@ public final class ArmyListUI extends MomClientFrameUI
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
 	/** Title */
 	private JLabel title;
 	
@@ -108,6 +120,9 @@ public final class ArmyListUI extends MomClientFrameUI
 	
 	/** Unit stacks list box */
 	private JList<Entry<MapCoordinates3DEx, List<MemoryUnit>>> unitStacksList;
+	
+	/** Cell renderer */
+	private ArmyListCellRenderer armyListCellRenderer;
 	
 	/** Minimap panel */
 	private JPanel miniMapPanel;
@@ -140,6 +155,10 @@ public final class ArmyListUI extends MomClientFrameUI
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/armyList.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button82x30goldBorderNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button82x30goldBorderPressed.png");
+		
+		// We need any overland unit image to know the size of it
+		final String firstUnitID = getClient ().getClientDB ().getUnits ().get (0).getUnitID ();
+		final BufferedImage firstUnitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (firstUnitID, "ArmyListUI").getUnitOverlandImageFile ());
 		
 		// Actions
 		heroItemsAction = new LoggingAction ((ev) -> {});
@@ -178,11 +197,15 @@ public final class ArmyListUI extends MomClientFrameUI
 		rationsUpkeepLabel = getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont ());
 		contentPane.add (rationsUpkeepLabel, "frmArmyListUpkeepRations");
 		
+		// Set up cell renderer
+		getArmyListCellRenderer ().init ();
+		
 		// Set up the list
 		unitStacksItems = new DefaultListModel<Entry<MapCoordinates3DEx, List<MemoryUnit>>> ();
 		unitStacksList = new JList<Entry<MapCoordinates3DEx, List<MemoryUnit>>> ();
 		unitStacksList.setOpaque (false);
 		unitStacksList.setModel (unitStacksItems);
+		unitStacksList.setCellRenderer (getArmyListCellRenderer ());
 		unitStacksList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 
 		final JScrollPane spellsScroll = getUtils ().createTransparentScrollPane (unitStacksList);
@@ -225,7 +248,57 @@ public final class ArmyListUI extends MomClientFrameUI
 				log.error (e, e);
 			}
 		});
+		
+		// Right clicks open up the unit info panel
+		unitStacksList.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isRightMouseButton (ev))
+				{
+					final int row = unitStacksList.locationToIndex (ev.getPoint ());
+					if ((row >= 0) && (row < unitStacksItems.size ()))
+					{
+						final Rectangle rect = unitStacksList.getCellBounds (row, row);
+						if (rect.contains (ev.getPoint ()))
+						{
+							// Work out the coordinates within the list cell, and adjust for the position of the units
+							final int x = ev.getX () - (int) rect.getMinX () - ArmyListCellRenderer.LEFT_BORDER;
+							final int y = ev.getY () - (int) rect.getMinY () - ArmyListCellRenderer.TOP_BORDER;
+							
+							final List<MemoryUnit> unitStack = unitStacksItems.get (row).getValue ();
+							if ((x >= 0) && (y >= 0) && (y < firstUnitImage.getHeight () * 2) &&
+								(x < firstUnitImage.getWidth () * 2 * unitStack.size ()))
+							{
+								final int unitNo = x / (firstUnitImage.getWidth () * 2);
+								final MemoryUnit unit = unitStack.get (unitNo);
+			
+								// Is there a unit info screen already open for this unit?
+								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());
+								if (unitInfo == null)
+								{
+									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
+									unitInfo.setUnit (unit);
+									getClient ().getUnitInfos ().put (unit.getUnitURN (), unitInfo);
+								}
+							
+								try
+								{
+									unitInfo.setVisible (true);
+								}
+								catch (final IOException e)
+								{
+									log.error (e, e);
+								}
+							}
+						}
+					}
+				}
+			}
+		});
 
+		// Initialize the list
 		refreshArmyList (null);
 		
 		// Lock frame size
@@ -582,5 +655,53 @@ public final class ArmyListUI extends MomClientFrameUI
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Cell renderer
+	 */
+	public final ArmyListCellRenderer getArmyListCellRenderer ()
+	{
+		return armyListCellRenderer;
+	}
+
+	/**
+	 * @param rend Cell renderer
+	 */
+	public final void setArmyListCellRenderer (final ArmyListCellRenderer rend)
+	{
+		armyListCellRenderer = rend;
+	}
+
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

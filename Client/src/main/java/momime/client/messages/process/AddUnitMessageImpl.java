@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
@@ -15,6 +16,7 @@ import momime.common.utils.UnitUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
@@ -37,6 +39,9 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements BaseServ
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** Army list */
+	private ArmyListUI armyListUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -65,6 +70,9 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements BaseServ
 			if (cityView != null)
 				cityView.unitsChanged ();
 		}
+		
+		if (getMemoryUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
+			getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) getMemoryUnit ().getUnitLocation ());
 		
 		log.trace ("Exiting start");
 	}
@@ -99,5 +107,21 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements BaseServ
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
 	}
 }

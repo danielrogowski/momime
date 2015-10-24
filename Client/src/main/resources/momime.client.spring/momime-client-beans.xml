@@ -532,6 +532,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="armyListUI" ref="armyListUI" />
 	</bean>
 
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">
@@ -1492,6 +1493,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="armyListCellRenderer" ref="armyListCellRenderer" />
 	</bean>
 	
 	<!-- Prototype UI components -->
@@ -1541,6 +1545,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="spellUtils" ref="spellUtils" />
+	</bean>
+
+	<bean id="armyListCellRenderer" class="momime.client.ui.renderer.ArmyListCellRenderer" scope="prototype">
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
 	</bean>
 
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >

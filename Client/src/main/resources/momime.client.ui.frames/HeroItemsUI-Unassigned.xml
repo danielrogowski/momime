@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>218</formWidth>
+	<formHeight>46</formHeight>
+	<component name="frmHeroItemsUnassignedImage">
+		<left>12</left>
+		<top>8</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmHeroItemsUnassignedName">
+		<left>58</left>
+		<top>6</top>
+		<width>158</width>
+		<height>36</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

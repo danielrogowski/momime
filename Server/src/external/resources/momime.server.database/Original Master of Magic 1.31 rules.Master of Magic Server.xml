@@ -24280,6 +24280,12 @@
 		<languageEntry languageEntryID="HeroItems" />
 		<languageEntry languageEntryID="OK" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmHeroItems">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Bank" />
+		<languageEntry languageEntryID="DestroyTitle" />
+		<languageEntry languageEntryID="Destroy" />
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="RequestingUsToPlayCategory" />

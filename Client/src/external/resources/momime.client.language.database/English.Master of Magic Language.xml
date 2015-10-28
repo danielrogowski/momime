@@ -6629,6 +6629,20 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmHeroItems">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Hero Items</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Bank">
+			<languageEntryText>Fortress Vault</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DestroyTitle">
+			<languageEntryText>Destroy hero item</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Destroy">
+			<languageEntryText>Do you want to destroy your ITEM_NAME and gain MANA_GAINED mana crystals?</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Combats</languageEntryText>

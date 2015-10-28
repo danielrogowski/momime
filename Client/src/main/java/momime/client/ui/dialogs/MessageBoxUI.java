@@ -27,6 +27,7 @@ import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.NewTurnMessagesUI;
+import momime.common.database.HeroItem;
 import momime.common.database.Shortcut;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -111,6 +112,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** Spell we're thinking of switching off; null if the message box isn't about switching off a spell */
 	private MemoryMaintainedSpell switchOffSpell;
+	
+	/** Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item */
+	private HeroItem destroyHeroItem;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -212,6 +216,12 @@ public final class MessageBoxUI extends MomClientDialogUI
 			    getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			
+			// Destroy a hero item
+			else if (getDestroyHeroItem () != null)
+			{
+				System.out.println ("Requesting to destroy hero item " + getDestroyHeroItem ().getHeroItemName ());
+			}
+			
 			else
 				log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
 				
@@ -238,7 +248,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		contentPane.setLayout (new XmlLayoutManager (getMessageBoxLayout ()));
 		
 		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
-			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null)) ? 1 : 2;
+			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItem () == null)) ? 1 : 2;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmMessageBoxText");
@@ -602,5 +612,21 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setSwitchOffSpell (final MemoryMaintainedSpell spell)
 	{
 		switchOffSpell = spell;
+	}
+
+	/**
+	 * @return Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item
+	 */
+	public final HeroItem getDestroyHeroItem ()
+	{
+		return destroyHeroItem;
+	}
+
+	/**
+	 * @param item Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item
+	 */
+	public final void setDestroyHeroItem (final HeroItem item)
+	{
+		destroyHeroItem = item;
 	}
 }

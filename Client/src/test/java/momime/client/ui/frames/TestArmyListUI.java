@@ -136,7 +136,7 @@ public final class TestArmyListUI
 		
 		// Display form		
 		army.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 		army.setVisible (false);
 	}
 }

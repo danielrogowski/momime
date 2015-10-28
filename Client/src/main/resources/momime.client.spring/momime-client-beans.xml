@@ -982,6 +982,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg value="11.0" />
 	</bean>
 	
+	<!-- Drag and drop support -->
+	
+	<bean id="transferableFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.ui.draganddrop.TransferableFactory" />
+	</bean>
+	
+	<bean id="heroItemFlavour" class="java.awt.datatransfer.DataFlavor">
+		<constructor-arg value="#{T(java.awt.datatransfer.DataFlavor).javaJVMLocalObjectMimeType + ';class=momime.common.database.HeroItem'}" />
+	</bean>
+	
+	<bean id="transferableHeroItem" class="momime.client.ui.draganddrop.TransferableHeroItem" scope="prototype">
+		<property name="heroItemFlavour" ref="heroItemFlavour" />
+	</bean>
+	
 	<!-- UI components -->
 
 	<bean id="mainMenuUI" class="momime.client.ui.frames.MainMenuUI">
@@ -1496,8 +1510,30 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="armyListCellRenderer" ref="armyListCellRenderer" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 	
+	<bean id="heroItemsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemsUI.xml" />
+	</bean>
+
+	<bean id="heroItemsUI" class="momime.client.ui.frames.HeroItemsUI">
+		<property name="heroItemsLayout" ref="heroItemsLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="transferableFactory" ref="transferableFactory" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="heroItemFlavour" ref="heroItemFlavour" />
+		<property name="unassignedHeroItemCellRenderer" ref="unassignedHeroItemCellRenderer" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="heroItemCalculations" ref="heroItemCalculations" />
+	</bean>
+
 	<!-- Prototype UI components -->
 
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
@@ -1550,6 +1586,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="armyListCellRenderer" class="momime.client.ui.renderer.ArmyListCellRenderer" scope="prototype">
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
+	</bean>
+
+	<bean id="unassignedHeroItemLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemsUI-Unassigned.xml" />
+	</bean>
+
+	<bean id="unassignedHeroItemCellRenderer" class="momime.client.ui.renderer.UnassignedHeroItemCellRenderer" scope="prototype">
+		<property name="unassignedHeroItemLayout" ref="unassignedHeroItemLayout" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+		<property name="mediumFont" ref="mediumFont" />
 	</bean>
 
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >

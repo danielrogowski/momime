@@ -106,6 +106,9 @@ public final class ArmyListUI extends MomClientFrameUI
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
+	/** Hero items UI */
+	private HeroItemsUI heroItemsUI;
+	
 	/** Title */
 	private JLabel title;
 	
@@ -161,7 +164,7 @@ public final class ArmyListUI extends MomClientFrameUI
 		final BufferedImage firstUnitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (firstUnitID, "ArmyListUI").getUnitOverlandImageFile ());
 		
 		// Actions
-		heroItemsAction = new LoggingAction ((ev) -> {});
+		heroItemsAction = new LoggingAction ((ev) -> getHeroItemsUI ().setVisible (true));
 		okAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
@@ -703,5 +706,21 @@ public final class ArmyListUI extends MomClientFrameUI
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Hero items UI
+	 */
+	public final HeroItemsUI getHeroItemsUI ()
+	{
+		return heroItemsUI;
+	}
+
+	/**
+	 * @param ui Hero items UI
+	 */
+	public final void setHeroItemsUI (final HeroItemsUI ui)
+	{
+		heroItemsUI = ui;
 	}
 }

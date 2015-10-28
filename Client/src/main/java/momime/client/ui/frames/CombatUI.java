@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -1253,7 +1252,7 @@ public final class CombatUI extends MomClientFrameUI
 					// Add the image - caeList.size () is a sneaky way of generating the 'x' values for the GridBagLayout
 					final BufferedImage image = getUtils ().loadImage (getGraphicsDB ().findCombatAreaEffect
 						(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ());
-					final JLabel label = getUtils ().createImage (doubleSize (image));
+					final JLabel label = getUtils ().createImage (getUtils ().doubleSize (image));
 					
 					caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
 					caeList.add (label);
@@ -1596,15 +1595,6 @@ public final class CombatUI extends MomClientFrameUI
 		spellCancel.setVisible (true);
 		
 		log.trace ("Exiting setSpellBeingTargetted");
-	}
-	
-	/**
-	 * @param source Source image
-	 * @return Double sized image
-	 */
-	private final Image doubleSize (final BufferedImage source)
-	{
-		return source.getScaledInstance (source.getWidth () * 2, source.getHeight () * 2, Image.SCALE_FAST);
 	}
 	
 	/**

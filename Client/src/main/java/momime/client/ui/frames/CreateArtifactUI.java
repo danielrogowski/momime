@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -497,7 +496,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			imageNumber = imageNumber - heroItemTypeGfx.getHeroItemTypeImageFile ().size ();
 		
 		// Update icon
-		itemImage.setIcon (new ImageIcon (doubleSize (getUtils ().loadImage (heroItemTypeGfx.getHeroItemTypeImageFile ().get (imageNumber)))));
+		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (getUtils ().loadImage (heroItemTypeGfx.getHeroItemTypeImageFile ().get (imageNumber)))));
 	}
 	
 	/**
@@ -538,15 +537,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		}
 	}
 
-	/**
-	 * @param source Source image
-	 * @return Double sized image
-	 */
-	private final Image doubleSize (final BufferedImage source)
-	{
-		return source.getScaledInstance (source.getWidth () * 2, source.getHeight () * 2, Image.SCALE_FAST);
-	}
-	
 	/**
 	 * Update all labels and such from the chosen language 
 	 */

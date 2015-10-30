@@ -33,8 +33,9 @@
 					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeBuildingURN" type="momimemsgs:buildingURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeSpellURN" type="momimemsgs:spellURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeCombatAreaEffectURN" type="momimemsgs:combatAreaEffectURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeHeroItemURN" type="momimemsgs:heroItemURN" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="usedCityName" type="xsd:normalizedString" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="availableHeroItem" type="momimecommon:heroItem">
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="availableHeroItem" type="momimemsgs:numberedHeroItem">
 					    <xsd:annotation>
     						<xsd:documentation>List of all predefined hero items that haven't been claimed yet, so can be given out as rewards from lairs/nodes/towers,
 or offered for sale from merchants.</xsd:documentation>

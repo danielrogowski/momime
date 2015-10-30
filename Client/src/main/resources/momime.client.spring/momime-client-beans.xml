@@ -289,11 +289,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatUI" ref="combatUI" />
 	</bean>
 
-	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
-	</bean>
-
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 	</bean>
@@ -479,11 +474,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="taxRateUI" ref="taxRateUI" />
 	</bean>
 
-	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
-	</bean>
-	
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype">
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 	</bean>
@@ -529,7 +519,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 
-	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype">
+	<bean id="addOrUpdateUnitMessage" class="momime.client.messages.process.AddOrUpdateUnitMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="armyListUI" ref="armyListUI" />
@@ -589,6 +579,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+	</bean>
+
+	<bean id="addUnassignedHeroItemMessage" class="momime.client.messages.process.AddUnassignedHeroItemMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
+	</bean>
+
+	<bean id="removeUnassignedHeroItemMessage" class="momime.client.messages.process.RemoveUnassignedHeroItemMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
+		<property name="heroItemUtils" ref="heroItemUtils" />
 	</bean>
 
 	<!-- Create extended versions of NTMs which include drawing implementations -->
@@ -651,6 +652,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 
 	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype">
@@ -989,7 +991,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="heroItemFlavour" class="java.awt.datatransfer.DataFlavor">
-		<constructor-arg value="#{T(java.awt.datatransfer.DataFlavor).javaJVMLocalObjectMimeType + ';class=momime.common.database.HeroItem'}" />
+		<constructor-arg value="#{T(java.awt.datatransfer.DataFlavor).javaJVMLocalObjectMimeType + ';class=momime.common.messages.NumberedHeroItem'}" />
 	</bean>
 	
 	<bean id="transferableHeroItem" class="momime.client.ui.draganddrop.TransferableHeroItem" scope="prototype">

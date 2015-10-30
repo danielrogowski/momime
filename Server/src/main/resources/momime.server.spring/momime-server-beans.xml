@@ -262,6 +262,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
 	</bean>
+
+	<bean id="requestMoveHeroItemMessage" class="momime.server.messages.process.RequestMoveHeroItemMessageImpl" scope="prototype">
+		<property name="heroItemUtils" ref="heroItemUtils" />
+		<property name="heroItemCalculations" ref="heroItemCalculations" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+	</bean>
 	
 	<!-- Singleton beans for server -->
 	
@@ -387,6 +394,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="playerServerUtils" class="momime.server.utils.PlayerServerUtilsImpl" />
+	
+	<bean id="heroItemServerUtils" class="momime.server.utils.HeroItemServerUtilsImpl" />
 	
 	<!-- Calculations -->
 	
@@ -517,6 +526,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
+		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -711,6 +721,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="nextFreeBuildingURN" value="1" />
 		<property name="nextFreeSpellURN" value="1" />
 		<property name="nextFreeCombatAreaEffectURN" value="1" />
+		<property name="nextFreeHeroItemURN" value="1" />
 	</bean>
 
 	<bean id="gpk" class="momime.common.messages.MomGeneralPublicKnowledge" scope="prototype" />
@@ -733,6 +744,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverDatabaseUnmarshaller" ref="serverDatabaseUnmarshaller" />
 		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 	</bean>
 	
 </beans>

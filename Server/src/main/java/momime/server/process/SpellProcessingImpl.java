@@ -39,8 +39,10 @@ import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -58,6 +60,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
+import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
@@ -115,6 +118,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Map generator */
 	private CombatMapGenerator combatMapGenerator;
 	
+	/** Methods dealing with hero items */
+	private HeroItemServerUtils heroItemServerUtils;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -168,12 +174,18 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Enchant item / Create artifact
 		else if ((sectionID == SpellBookSectionID.SUMMONING) && (heroItem != null))
 		{
-			// Put new item in players' bank
-			priv.getUnassignedHeroItem ().add (heroItem);
+			// Put new item in players' bank on the server
+			final NumberedHeroItem numberedHeroItem = getHeroItemServerUtils ().createNumberedHeroItem (heroItem, gsk);
+			priv.getUnassignedHeroItem ().add (numberedHeroItem);
 
-			// Show on new turn messages for the player who summoned it
+			// Put new item in players' bank on the client
 			if (player.getPlayerDescription ().isHuman ())
 			{
+				final AddUnassignedHeroItemMessage addItemMsg = new AddUnassignedHeroItemMessage ();
+				addItemMsg.setHeroItem (numberedHeroItem);
+				player.getConnection ().sendMessageToClient (addItemMsg);
+			
+				// Show on new turn messages for the player who summoned it
 				final NewTurnMessageCreateArtifact createArtifactSpell = new NewTurnMessageCreateArtifact ();
 				createArtifactSpell.setMsgType (NewTurnMessageTypeID.CREATE_ARTIFACT);
 				createArtifactSpell.setSpellID (spell.getSpellID ());
@@ -796,5 +808,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setCombatMapGenerator (final CombatMapGenerator gen)
 	{
 		combatMapGenerator = gen;
+	}
+
+	/**
+	 * @return Methods dealing with hero items
+	 */
+	public final HeroItemServerUtils getHeroItemServerUtils ()
+	{
+		return heroItemServerUtils;
+	}
+
+	/**
+	 * @param util Methods dealing with hero items
+	 */
+	public final void setHeroItemServerUtils (final HeroItemServerUtils util)
+	{
+		heroItemServerUtils = util;
 	}
 }

@@ -4,7 +4,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
-import momime.common.database.HeroItem;
+import momime.common.messages.NumberedHeroItem;
 
 /**
  * Provides support for dragging and dropping hero items
@@ -15,7 +15,7 @@ public final class TransferableHeroItem implements Transferable
 	private DataFlavor heroItemFlavour;
 	
 	/** The item being dragged and dropped */
-	private HeroItem heroItem;
+	private NumberedHeroItem heroItem;
 	
 	/**
 	 * @return Hero items are the only data flavour supported
@@ -68,7 +68,7 @@ public final class TransferableHeroItem implements Transferable
 	/**
 	 * @return The item being dragged and dropped
 	 */
-	public final HeroItem getHeroItem ()
+	public final NumberedHeroItem getHeroItem ()
 	{
 		return heroItem;
 	}
@@ -76,7 +76,7 @@ public final class TransferableHeroItem implements Transferable
 	/**
 	 * @param item The item being dragged and dropped
 	 */
-	public final void setHeroItem (final HeroItem item)
+	public final void setHeroItem (final NumberedHeroItem item)
 	{
 		heroItem = item;
 	}

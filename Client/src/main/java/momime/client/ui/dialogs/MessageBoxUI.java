@@ -27,13 +27,15 @@ import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.NewTurnMessagesUI;
-import momime.common.database.HeroItem;
 import momime.common.database.Shortcut;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.DismissUnitMessage;
+import momime.common.messages.clienttoserver.HeroItemLocationID;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.RushBuyMessage;
@@ -114,7 +116,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 	private MemoryMaintainedSpell switchOffSpell;
 	
 	/** Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item */
-	private HeroItem destroyHeroItem;
+	private NumberedHeroItem destroyHeroItem;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -219,7 +221,11 @@ public final class MessageBoxUI extends MomClientDialogUI
 			// Destroy a hero item
 			else if (getDestroyHeroItem () != null)
 			{
-				System.out.println ("Requesting to destroy hero item " + getDestroyHeroItem ().getHeroItemName ());
+				final RequestMoveHeroItemMessage msg = new RequestMoveHeroItemMessage ();
+				msg.setFromLocation (HeroItemLocationID.UNASSIGNED);
+				msg.setToLocation (HeroItemLocationID.DESTROY);
+				msg.setHeroItemURN (getDestroyHeroItem ().getHeroItemURN ());
+				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			
 			else
@@ -617,7 +623,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/**
 	 * @return Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item
 	 */
-	public final HeroItem getDestroyHeroItem ()
+	public final NumberedHeroItem getDestroyHeroItem ()
 	{
 		return destroyHeroItem;
 	}
@@ -625,7 +631,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/**
 	 * @param item Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item
 	 */
-	public final void setDestroyHeroItem (final HeroItem item)
+	public final void setDestroyHeroItem (final NumberedHeroItem item)
 	{
 		destroyHeroItem = item;
 	}

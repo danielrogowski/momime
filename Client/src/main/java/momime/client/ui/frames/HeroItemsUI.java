@@ -38,7 +38,7 @@ import momime.client.ui.draganddrop.TransferableHeroItem;
 import momime.client.ui.renderer.UnassignedHeroItemCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.HeroItemCalculations;
-import momime.common.database.HeroItem;
+import momime.common.messages.NumberedHeroItem;
 
 /**
  * Screen for redistributing items between heroes, the bank vault, or destroying them on the anvil for MP
@@ -76,10 +76,10 @@ public final class HeroItemsUI extends MomClientFrameUI
 	private JLabel bankTitle;
 
 	/** Items not assigned to any hero */
-	private DefaultListModel<HeroItem> bankItems; 
+	private DefaultListModel<NumberedHeroItem> bankItems; 
 	
 	/** Items not assigned to any hero */
-	private JList<HeroItem> bankList;
+	private JList<NumberedHeroItem> bankList;
 	
 	/** Bank cell renderer */
 	private UnassignedHeroItemCellRenderer unassignedHeroItemCellRenderer;
@@ -140,7 +140,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 				if (canImport (support))
 					try
 					{
-						final HeroItem item = (HeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
+						final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
 						final int manaGained = getHeroItemCalculations ().calculateCraftingCost (item, getClient ().getClientDB ()) / 2;
 
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
@@ -166,8 +166,8 @@ public final class HeroItemsUI extends MomClientFrameUI
 		getUnassignedHeroItemCellRenderer ().init ();
 		
 		// Set up the list
-		bankItems = new DefaultListModel<HeroItem> ();
-		bankList = new JList<HeroItem> ();
+		bankItems = new DefaultListModel<NumberedHeroItem> ();
+		bankList = new JList<NumberedHeroItem> ();
 		bankList.setOpaque (false);
 		bankList.setModel (bankItems);
 		bankList.setCellRenderer (getUnassignedHeroItemCellRenderer ());
@@ -184,7 +184,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 			if ((index >= 0) && (index < bankItems.size ()) && (bankList.getCellBounds (index, index).contains (ev.getDragOrigin ())))
 				try
 				{
-					final HeroItem item = bankItems.get (index);
+					final NumberedHeroItem item = bankItems.get (index);
 					
 					// Create a mouse cursor that looks like the chosen item
 					final HeroItemTypeGfx itemGfx = getGraphicsDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
@@ -227,9 +227,12 @@ public final class HeroItemsUI extends MomClientFrameUI
 	{
 		log.trace ("Entering refreshItemsBank");
 
-		bankItems.clear ();
-		for (final HeroItem item : getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ())
-			bankItems.addElement (item);
+		if (bankItems != null)
+		{
+			bankItems.clear ();
+			for (final NumberedHeroItem item : getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ())
+				bankItems.addElement (item);
+		}
 		
 		log.trace ("Exiting refreshItemsBank");
 	}

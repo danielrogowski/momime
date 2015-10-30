@@ -56,6 +56,7 @@
     			<value>momime.common.messages.clienttoserver.TargetSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage</value>
     			<value>momime.common.messages.clienttoserver.UploadCustomPhotoMessage</value>
+    			<value>momime.common.messages.clienttoserver.RequestMoveHeroItemMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -137,21 +138,21 @@
     			<value>momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage</value>
     			<value>momime.common.messages.servertoclient.YourPhotoIsOkMessage</value>
     			<value>momime.common.messages.servertoclient.YourRaceIsOkMessage</value>
+    			<value>momime.common.messages.servertoclient.AddUnassignedHeroItemMessage</value>
+    			<value>momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateCityMessage</value>
     			<value>momime.common.messages.servertoclient.AddBuildingMessage</value>
     			<value>momime.common.messages.servertoclient.DestroyBuildingMessage</value>
-    			<value>momime.common.messages.servertoclient.AddUnitMessage</value>
+    			<value>momime.common.messages.servertoclient.AddOrUpdateUnitMessage</value>
     			<value>momime.common.messages.servertoclient.KillUnitMessage</value>
     			<value>momime.common.messages.servertoclient.AddMaintainedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.AddCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.CancelCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage</value>
-    			<value>momime.common.messages.servertoclient.UpdateDamageTakenAndExperienceMessage</value>
-    			<value>momime.common.messages.servertoclient.UpdateUnitNameMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateUnitToAliveMessage</value>
     		</list>
    		</constructor-arg>
@@ -249,6 +250,8 @@
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 	</bean>
+
+	<bean id="heroItemUtils" class="momime.common.utils.HeroItemUtilsImpl" />
 
 	<bean id="heroItemCalculations" class="momime.common.calculations.HeroItemCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />

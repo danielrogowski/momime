@@ -278,7 +278,7 @@ public interface FogOfWarMidTurnChanges
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
-	 * Informs clients who can see this unit of its damage taken & experience
+	 * Informs clients who can see this unit of any changes
 	 *
 	 * @param tu True unit details
 	 * @param trueTerrain True terrain map
@@ -291,25 +291,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void updatePlayerMemoryOfUnit_DamageTakenAndExperience (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
-	
-	/**
-	 * After setting new unit name on server, updates player memories and clients who can see the unit
-	 *
-	 * @param tu True unit details
-	 * @param trueTerrain True terrain map
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
-	 */
-	public void updatePlayerMemoryOfUnit_UnitName (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
+	public void updatePlayerMemoryOfUnit (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	

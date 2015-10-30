@@ -24,12 +24,12 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.HeroItemTypeGfx;
 import momime.client.ui.MomUIConstants;
-import momime.common.database.HeroItem;
+import momime.common.messages.NumberedHeroItem;
 
 /**
  * Renderer for drawing each row of the bank vault (items not assigned to any hero) 
  */
-public final class UnassignedHeroItemCellRenderer extends JPanel implements ListCellRenderer<HeroItem>
+public final class UnassignedHeroItemCellRenderer extends JPanel implements ListCellRenderer<NumberedHeroItem>
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnassignedHeroItemCellRenderer.class);
@@ -76,8 +76,8 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	 * Return this panel to draw itself
 	 */
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends HeroItem> list,
-		final HeroItem value, final int index, final boolean isSelected, final boolean cellHasFocus)
+	public final Component getListCellRendererComponent (final JList<? extends NumberedHeroItem> list,
+		final NumberedHeroItem value, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		Image doubleSizeImage = null;
 		try

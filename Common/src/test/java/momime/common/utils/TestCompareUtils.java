@@ -8,6 +8,8 @@ import org.junit.Test;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
+import momime.common.messages.NumberedHeroItem;
+
 /**
  * Tests the CompareUtils class
  */
@@ -73,5 +75,28 @@ public final class TestCompareUtils
 		assertFalse (CompareUtils.safeCombatMapCoordinatesCompare (null, firstCoords));
 		assertFalse (CompareUtils.safeCombatMapCoordinatesCompare (firstCoords, null));
 		assertFalse (CompareUtils.safeCombatMapCoordinatesCompare (firstCoords, thirdCoords));
+	}
+	
+	/**
+	 * Tests the safeNumberedHeroItemCompare method
+	 */
+	@Test
+	public final void testSafeNumberedHeroItemCompare ()
+	{
+		final NumberedHeroItem firstItem = new NumberedHeroItem ();
+		firstItem.setHeroItemURN (1);
+		
+		final NumberedHeroItem secondItem = new NumberedHeroItem ();
+		secondItem.setHeroItemURN (1);
+		
+		final NumberedHeroItem thirdItem = new NumberedHeroItem ();
+		thirdItem.setHeroItemURN (2);
+		
+		assertTrue (CompareUtils.safeNumberedHeroItemCompare (null, null));
+		assertTrue (CompareUtils.safeNumberedHeroItemCompare (firstItem, firstItem));
+		assertTrue (CompareUtils.safeNumberedHeroItemCompare (firstItem, secondItem));
+		assertFalse (CompareUtils.safeNumberedHeroItemCompare (null, firstItem));
+		assertFalse (CompareUtils.safeNumberedHeroItemCompare (firstItem, null));
+		assertFalse (CompareUtils.safeNumberedHeroItemCompare (firstItem, thirdItem));
 	}
 }

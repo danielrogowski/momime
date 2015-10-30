@@ -11240,11 +11240,11 @@
 		<unitHasSkill unitSkillID="HS07">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Dwarf</unitName>
-		<hiringFame>0</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Dwarf</unitName>
+		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN001_HN01" />
 		<heroName heroNameID="UN001_HN02" />
 		<heroName heroNameID="UN001_HN03" />
@@ -11280,11 +11280,11 @@
 		<unitHasSkill unitSkillID="HS11">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Barbarian</unitName>
-		<hiringFame>0</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Barbarian</unitName>
+		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN002_HN01" />
 		<heroName heroNameID="UN002_HN02" />
 		<heroName heroNameID="UN002_HN03" />
@@ -11324,11 +11324,11 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Sage</unitName>
-		<hiringFame>0</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Sage</unitName>
+		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN003_HN01" />
 		<heroName heroNameID="UN003_HN02" />
 		<heroName heroNameID="UN003_HN03" />
@@ -11368,11 +11368,11 @@
 		<unitHasSkill unitSkillID="HS12">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Dervish</unitName>
-		<hiringFame>0</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST02" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Dervish</unitName>
+		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN004_HN01" />
 		<heroName heroNameID="UN004_HN02" />
 		<heroName heroNameID="UN004_HN03" />
@@ -11409,11 +11409,11 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Beastmaster</unitName>
-		<hiringFame>0</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Beastmaster</unitName>
+		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN005_HN01" />
 		<heroName heroNameID="UN005_HN02" />
 		<heroName heroNameID="UN005_HN03" />
@@ -11449,11 +11449,11 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Bard</unitName>
-		<hiringFame>0</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Bard</unitName>
+		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN006_HN01" />
 		<heroName heroNameID="UN006_HN02" />
 		<heroName heroNameID="UN006_HN03" />
@@ -11487,13 +11487,13 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="US002" />
 		<unitHasSkill unitSkillID="USX01" />
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Orc Warrior</unitName>
 		<hiringFame>0</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN007_HN01" />
 		<heroName heroNameID="UN007_HN02" />
 		<heroName heroNameID="UN007_HN03" />
@@ -11531,13 +11531,13 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Healer</unitName>
 		<hiringFame>0</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN008_HN01" />
 		<heroName heroNameID="UN008_HN02" />
 		<heroName heroNameID="UN008_HN03" />
@@ -11578,13 +11578,13 @@
 		<unitHasSkill unitSkillID="HS04">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST02" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Huntress</unitName>
 		<hiringFame>0</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST02" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN009_HN01" />
 		<heroName heroNameID="UN009_HN02" />
 		<heroName heroNameID="UN009_HN03" />
@@ -11620,11 +11620,11 @@
 		<unitHasSkill unitSkillID="HS06">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Thief</unitName>
-		<hiringFame>0</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Thief</unitName>
+		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN010_HN01" />
 		<heroName heroNameID="UN010_HN02" />
 		<heroName heroNameID="UN010_HN03" />
@@ -11665,11 +11665,11 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Druid</unitName>
-		<hiringFame>5</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Druid</unitName>
+		<hiringFame>5</hiringFame>
 		<heroName heroNameID="UN011_HN01" />
 		<heroName heroNameID="UN011_HN02" />
 		<heroName heroNameID="UN011_HN03" />
@@ -11702,13 +11702,13 @@
 		<unitHasSkill unitSkillID="HS01">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>War Monk</unitName>
 		<hiringFame>5</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN012_HN01" />
 		<heroName heroNameID="UN012_HN02" />
 		<heroName heroNameID="UN012_HN03" />
@@ -11745,12 +11745,12 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Warrior Mage</unitName>
-		<hiringFame>5</hiringFame>
-		<heroRandomPickCount>1</heroRandomPickCount>
 		<heroItemSlot heroItemSlotTypeID="IST03" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Warrior Mage</unitName>
+		<hiringFame>5</hiringFame>
+		<heroRandomPickCount>1</heroRandomPickCount>
 		<heroName heroNameID="UN013_HN01" />
 		<heroName heroNameID="UN013_HN02" />
 		<heroName heroNameID="UN013_HN03" />
@@ -11791,13 +11791,13 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Magician</unitName>
 		<hiringFame>5</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST04" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN014_HN01" />
 		<heroName heroNameID="UN014_HN02" />
 		<heroName heroNameID="UN014_HN03" />
@@ -11833,13 +11833,13 @@
 		<unitHasSkill unitSkillID="HS04">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Assassin</unitName>
 		<hiringFame>5</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN015_HN01" />
 		<heroName heroNameID="UN015_HN02" />
 		<heroName heroNameID="UN015_HN03" />
@@ -11877,13 +11877,13 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>3</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Wind Mage</unitName>
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST04" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN016_HN01" />
 		<heroName heroNameID="UN016_HN02" />
 		<heroName heroNameID="UN016_HN03" />
@@ -11930,11 +11930,11 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Ranger</unitName>
-		<hiringFame>10</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST02" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Ranger</unitName>
+		<hiringFame>10</hiringFame>
 		<heroName heroNameID="UN017_HN01" />
 		<heroName heroNameID="UN017_HN02" />
 		<heroName heroNameID="UN017_HN03" />
@@ -11970,13 +11970,13 @@
 		<unitHasSkill unitSkillID="HS11">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Draconian</unitName>
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN018_HN01" />
 		<heroName heroNameID="UN018_HN02" />
 		<heroName heroNameID="UN018_HN03" />
@@ -12017,13 +12017,13 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Witch</unitName>
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST04" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN019_HN01" />
 		<heroName heroNameID="UN019_HN02" />
 		<heroName heroNameID="UN019_HN03" />
@@ -12060,12 +12060,12 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Golden One</unitName>
-		<hiringFame>10</hiringFame>
-		<heroRandomPickCount>2</heroRandomPickCount>
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Golden One</unitName>
+		<hiringFame>10</hiringFame>
+		<heroRandomPickCount>2</heroRandomPickCount>
 		<heroName heroNameID="UN020_HN01" />
 		<heroName heroNameID="UN020_HN02" />
 		<heroName heroNameID="UN020_HN03" />
@@ -12099,13 +12099,13 @@
 		<unitHasSkill unitSkillID="HS04">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Ninja</unitName>
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN021_HN01" />
 		<heroName heroNameID="UN021_HN02" />
 		<heroName heroNameID="UN021_HN03" />
@@ -12141,13 +12141,13 @@
 		<unitHasSkill unitSkillID="HS09">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Rogue</unitName>
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN022_HN01" />
 		<heroName heroNameID="UN022_HN02" />
 		<heroName heroNameID="UN022_HN03" />
@@ -12189,13 +12189,13 @@
 		<unitHasSkill unitSkillID="HS04">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Amazon</unitName>
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN023_HN01" />
 		<heroName heroNameID="UN023_HN02" />
 		<heroName heroNameID="UN023_HN03" />
@@ -12233,13 +12233,13 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>6</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Warlock</unitName>
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST04" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN024_HN01" />
 		<heroName heroNameID="UN024_HN02" />
 		<heroName heroNameID="UN024_HN03" />
@@ -12276,12 +12276,12 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Unknown</unitName>
-		<hiringFame>20</hiringFame>
-		<heroRandomPickCount>5</heroRandomPickCount>
 		<heroItemSlot heroItemSlotTypeID="IST03" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Unknown</unitName>
+		<hiringFame>20</hiringFame>
+		<heroRandomPickCount>5</heroRandomPickCount>
 		<heroName heroNameID="UN025_HN01" />
 		<heroName heroNameID="UN025_HN02" />
 		<heroName heroNameID="UN025_HN03" />
@@ -12320,13 +12320,13 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Illusionist</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST04" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN026_HN01" />
 		<heroName heroNameID="UN026_HN02" />
 		<heroName heroNameID="UN026_HN03" />
@@ -12371,13 +12371,13 @@
 		<unitHasSkill unitSkillID="HS11">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Swordsman</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN027_HN01" />
 		<heroName heroNameID="UN027_HN02" />
 		<heroName heroNameID="UN027_HN03" />
@@ -12428,11 +12428,11 @@
 		<unitHasSkill unitSkillID="HS13">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Priestess</unitName>
-		<hiringFame>40</hiringFame>
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Priestess</unitName>
+		<hiringFame>40</hiringFame>
 		<heroName heroNameID="UN028_HN01" />
 		<heroName heroNameID="UN028_HN02" />
 		<heroName heroNameID="UN028_HN03" />
@@ -12475,13 +12475,13 @@
 		<unitHasSkill unitSkillID="HS09">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Paladin</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN029_HN01" />
 		<heroName heroNameID="UN029_HN02" />
 		<heroName heroNameID="UN029_HN03" />
@@ -12526,13 +12526,13 @@
 		<unitHasSkill unitSkillID="HS07">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Black Knight</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN030_HN01" />
 		<heroName heroNameID="UN030_HN02" />
 		<heroName heroNameID="UN030_HN03" />
@@ -12573,12 +12573,12 @@
 		<unitHasSkill unitSkillID="HS04">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Elven Archer</unitName>
-		<hiringFame>40</hiringFame>
-		<heroRandomPickCount>3</heroRandomPickCount>
 		<heroItemSlot heroItemSlotTypeID="IST02" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Elven Archer</unitName>
+		<hiringFame>40</hiringFame>
+		<heroRandomPickCount>3</heroRandomPickCount>
 		<heroName heroNameID="UN031_HN01" />
 		<heroName heroNameID="UN031_HN02" />
 		<heroName heroNameID="UN031_HN03" />
@@ -12620,13 +12620,13 @@
 		<unitHasSkill unitSkillID="HS12">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST01" />
+		<heroItemSlot heroItemSlotTypeID="IST06" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Knight</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>F</heroRandomPickType>
 		<heroRandomPickCount>1</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST01" />
-		<heroItemSlot heroItemSlotTypeID="IST06" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN032_HN01" />
 		<heroName heroNameID="UN032_HN02" />
 		<heroName heroNameID="UN032_HN03" />
@@ -12668,13 +12668,13 @@
 		<unitHasSkill unitSkillID="HS05">
 			<unitSkillValue>5</unitSkillValue>
 		</unitHasSkill>
+		<heroItemSlot heroItemSlotTypeID="IST04" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<unitName>Necromancer</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
 		<heroRandomPickCount>2</heroRandomPickCount>
-		<heroItemSlot heroItemSlotTypeID="IST04" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
-		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroName heroNameID="UN033_HN01" />
 		<heroName heroNameID="UN033_HN02" />
 		<heroName heroNameID="UN033_HN03" />
@@ -12718,12 +12718,12 @@
 		<unitHasSkill unitSkillID="HS02">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Chaos Warrior</unitName>
-		<hiringFame>40</hiringFame>
-		<heroRandomPickCount>3</heroRandomPickCount>
 		<heroItemSlot heroItemSlotTypeID="IST03" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Chaos Warrior</unitName>
+		<hiringFame>40</hiringFame>
+		<heroRandomPickCount>3</heroRandomPickCount>
 		<heroName heroNameID="UN034_HN01" />
 		<heroName heroNameID="UN034_HN02" />
 		<heroName heroNameID="UN034_HN03" />
@@ -12770,12 +12770,12 @@
 		<unitHasSkill unitSkillID="HS11">
 			<unitSkillValue>2</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Chosen</unitName>
-		<hiringFame>50</hiringFame>
-		<heroRandomPickCount>2</heroRandomPickCount>
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitName>Chosen</unitName>
+		<hiringFame>50</hiringFame>
+		<heroRandomPickCount>2</heroRandomPickCount>
 		<heroName heroNameID="UN035_HN01" />
 		<heroName heroNameID="UN035_HN02" />
 		<heroName heroNameID="UN035_HN03" />
@@ -13337,10 +13337,10 @@
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
 		<unitHasSkill unitSkillID="US025" />
-		<unitName>Priests</unitName>
 		<unitCanCast unitSpellID="SP125">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Priests</unitName>
 	</unit>
 	<unit unitID="UN052">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -13379,10 +13379,10 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
-		<unitName>Magicians</unitName>
 		<unitCanCast unitSpellID="SP096">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Magicians</unitName>
 	</unit>
 	<unit unitID="UN053">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -13746,10 +13746,10 @@
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
 		<unitHasSkill unitSkillID="US025" />
-		<unitName>Priests</unitName>
 		<unitCanCast unitSpellID="SP125">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Priests</unitName>
 	</unit>
 	<unit unitID="UN063">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -13849,10 +13849,10 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
-		<unitName>Warlocks</unitName>
 		<unitCanCast unitSpellID="SP104">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Warlocks</unitName>
 	</unit>
 	<unit unitID="UN066">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -14110,10 +14110,10 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX04" />
 		<unitHasSkill unitSkillID="US009" />
-		<unitName>Magicians</unitName>
 		<unitCanCast unitSpellID="SP096">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Magicians</unitName>
 	</unit>
 	<unit unitID="UN073">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -15069,10 +15069,10 @@
 		<unitHasSkill unitSkillID="US001" />
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
-		<unitName>Magicians</unitName>
 		<unitCanCast unitSpellID="SP096">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Magicians</unitName>
 	</unit>
 	<unit unitID="UN101">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -15397,10 +15397,10 @@
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
 		<unitHasSkill unitSkillID="US025" />
-		<unitName>Priests</unitName>
 		<unitCanCast unitSpellID="SP125">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Priests</unitName>
 	</unit>
 	<unit unitID="UN110">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -15439,10 +15439,10 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
-		<unitName>Magicians</unitName>
 		<unitCanCast unitSpellID="SP096">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Magicians</unitName>
 	</unit>
 	<unit unitID="UN111">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -16141,10 +16141,10 @@
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US016" />
 		<unitHasSkill unitSkillID="US025" />
-		<unitName>Priests</unitName>
 		<unitCanCast unitSpellID="SP125">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Priests</unitName>
 	</unit>
 	<unit unitID="UN132">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -16183,10 +16183,10 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
-		<unitName>Magicians</unitName>
 		<unitCanCast unitSpellID="SP096">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Magicians</unitName>
 	</unit>
 	<unit unitID="UN133">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -16599,10 +16599,10 @@
 		</unitHasSkill>
 		<unitHasSkill unitSkillID="USX01" />
 		<unitHasSkill unitSkillID="US009" />
-		<unitName>Magicians</unitName>
 		<unitCanCast unitSpellID="SP096">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Magicians</unitName>
 	</unit>
 	<unit unitID="UN145">
 		<unitMagicRealm>LTN</unitMagicRealm>
@@ -17936,10 +17936,10 @@
 		<unitHasSkill unitSkillID="US030">
 			<unitSkillValue>4</unitSkillValue>
 		</unitHasSkill>
-		<unitName>Giant Spiders</unitName>
 		<unitCanCast unitSpellID="SP005">
 			<numberOfTimes>1</numberOfTimes>
 		</unitCanCast>
+		<unitName>Giant Spiders</unitName>
 	</unit>
 	<unit unitID="UN185">
 		<unitMagicRealm>LT04</unitMagicRealm>

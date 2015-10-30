@@ -6,12 +6,15 @@ import java.util.List;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
+import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.CompareUtils;
@@ -263,6 +266,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(!CompareUtils.safeCombatMapCoordinatesCompare ((MapCoordinates2DEx) source.getCombatPosition (), (MapCoordinates2DEx) dest.getCombatPosition ())) ||
 				(!CompareUtils.safeIntegerCompare (source.getCombatHeading (), dest.getCombatHeading ())) ||
 				(source.getCombatSide () != dest.getCombatSide ()) ||
+				(source.getHeroItemSlot ().size () != dest.getHeroItemSlot ().size ()) ||
 
 				// Should these work same as city currentlyConstructing? where only the owner can 'see' the values?
 				// Similarly only the two sides involved in a combat should be able to 'see' the combat related values
@@ -270,13 +274,28 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(source.getSpecialOrder () != dest.getSpecialOrder ()) ||
 				(source.getDoubleCombatMovesLeft () != dest.getDoubleCombatMovesLeft ());
 
-			// AvailableUnit - compare skills in detail - already know the number of skills matches, so just need to verify their existance and values
+			// AvailableUnit - compare skills in detail - already know the number of skills matches, so just need to verify their existance and values.
+			// NB. The order here isn't really important, A=1, B=2 is the same as B=2, A=1. 
 			final Iterator<UnitSkillAndValue> sourceSkillsIter = source.getUnitHasSkill ().iterator ();
 			while ((!needToUpdate) && (sourceSkillsIter.hasNext ()))
 			{
 				final UnitSkillAndValue srcSkill = sourceSkillsIter.next ();
 				final int expectedValue = (srcSkill.getUnitSkillValue () == null) ? 0 : srcSkill.getUnitSkillValue ();
 				if (getUnitUtils ().getBasicSkillValue (dest.getUnitHasSkill (), srcSkill.getUnitSkillID ()) != expectedValue)
+					needToUpdate = true;
+			}
+			
+			// MemoryUnit - compare hero slots in detail - already know the number of slots matches, so just need to verify their values.
+			// NB. The order here is important, even for magic heroes where slots 2 & 3 are both rings ("miscellaneous accessory"),
+			// we can move the same item between those slots and that must be considered a "change" to the unit.
+			final Iterator<MemoryUnitHeroItemSlot> sourceItemSlots = source.getHeroItemSlot ().iterator ();
+			final Iterator<MemoryUnitHeroItemSlot> destItemSlots = dest.getHeroItemSlot ().iterator ();
+			while ((!needToUpdate) && (sourceItemSlots.hasNext ()) && (destItemSlots.hasNext ()))
+			{
+				final MemoryUnitHeroItemSlot srcItemSlot = sourceItemSlots.next ();
+				final MemoryUnitHeroItemSlot destItemSlot = destItemSlots.next ();
+				
+				if (!CompareUtils.safeNumberedHeroItemCompare (srcItemSlot.getHeroItem (), destItemSlot.getHeroItem ()))
 					needToUpdate = true;
 			}
 		}
@@ -294,6 +313,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			else
 				dest.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getUnitLocation ()));
 
+			// AvailableUnit - skills list
 			dest.getUnitHasSkill ().clear ();
 			for (final UnitSkillAndValue srcSkill : source.getUnitHasSkill ())
 			{
@@ -327,6 +347,33 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				dest.setCombatPosition (null);
 			else
 				dest.setCombatPosition (new MapCoordinates2DEx ((MapCoordinates2DEx) source.getCombatPosition ()));
+			
+			// MemoryUnit - hero item slots list
+			dest.getHeroItemSlot ().clear ();
+			for (final MemoryUnitHeroItemSlot srcItemSlot : source.getHeroItemSlot ())
+			{
+				final MemoryUnitHeroItemSlot destItemSlot = new MemoryUnitHeroItemSlot ();
+				if (srcItemSlot.getHeroItem () != null)
+				{
+					final NumberedHeroItem srcItem = srcItemSlot.getHeroItem ();
+					final NumberedHeroItem destItem = new NumberedHeroItem ();
+					
+					destItem.setHeroItemURN (srcItem.getHeroItemURN ());
+					destItem.setHeroItemName (srcItem.getHeroItemName ());
+					destItem.setHeroItemTypeID (srcItem.getHeroItemTypeID ());
+					destItem.setHeroItemImageNumber (srcItem.getHeroItemImageNumber ());
+					destItem.setSpellID (srcItem.getSpellID ());
+					destItem.setSpellChargeCount (srcItem.getSpellChargeCount ());
+					
+					for (final HeroItemTypeAllowedBonus srcBonus : srcItem.getHeroItemChosenBonus ())
+					{
+						final HeroItemTypeAllowedBonus destBonus = new HeroItemTypeAllowedBonus ();
+						destBonus.setHeroItemBonusID (srcBonus.getHeroItemBonusID ());
+						destItem.getHeroItemChosenBonus ().add (destBonus);
+					}
+				}
+				dest.getHeroItemSlot ().add (destItemSlot);
+			}
 		}
 
 		return needToUpdate;

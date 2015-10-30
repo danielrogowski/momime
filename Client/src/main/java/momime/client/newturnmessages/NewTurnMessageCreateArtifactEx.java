@@ -14,13 +14,14 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.HeroItemsUI;
 import momime.common.messages.NewTurnMessageCreateArtifact;
 
 /**
  * NTM describing that we finished crafting a hero item
  */
 public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateArtifact
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic, NewTurnMessageClickable
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewTurnMessageCreateArtifactEx.class);
@@ -40,6 +41,9 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
+	/** Hero items UI */
+	private HeroItemsUI heroItemsUI;
+
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
 	 */
@@ -100,6 +104,16 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 			(getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? "CreateArtifactLastTurn" : "CreateArtifact");
 		
 		return text.replaceAll ("ITEM_NAME", getHeroItemName ());
+	}
+	
+	/**
+	 * Show the items screen when clicked on
+	 * @throws Exception If there was a problem
+	 */
+	@Override
+	public final void clicked () throws Exception
+	{
+		getHeroItemsUI ().setVisible (true);
 	}
 	
 	/**
@@ -209,5 +223,21 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return Hero items UI
+	 */
+	public final HeroItemsUI getHeroItemsUI ()
+	{
+		return heroItemsUI;
+	}
+
+	/**
+	 * @param ui Hero items UI
+	 */
+	public final void setHeroItemsUI (final HeroItemsUI ui)
+	{
+		heroItemsUI = ui;
 	}
 }

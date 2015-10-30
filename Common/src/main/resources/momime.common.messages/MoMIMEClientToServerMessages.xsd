@@ -550,5 +550,61 @@ this indicates the damage chosen when casting the spell, beteween baseDamage and
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
+
+<!-- Hero items, new for 0.9.7 -->
+
+	<xsd:element name="requestMoveHeroItemMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends to request that a hero item be moved from one location to another.
+The to/from locations can be their bank, the anvil, or actually being used by a hero.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="heroItemURN" type="momimemsgs:heroItemURN" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="fromLocation" type="momimectos:heroItemLocationID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="toLocation" type="momimectos:heroItemLocationID" />
+
+						<xsd:element minOccurs="0" maxOccurs="1" name="fromUnitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="fromSlotNumber" type="momimectos:heroItemSlotNumber" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="toUnitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="toSlotNumber" type="momimectos:heroItemSlotNumber" />
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+<!-- Simple types -->
+
+	<xsd:simpleType name="heroItemSlotNumber">
+	    <xsd:annotation>
+    		<xsd:documentation>Numbers the individual hero items slots on a particular unit (0, 1, 2).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
 	
+<!--  Enums -->
+
+	<xsd:simpleType name="heroItemLocationID">
+	    <xsd:annotation>
+    		<xsd:documentation>The possible places we can move a hero item from/to</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="U"><xsd:annotation>
+				<xsd:documentation>Unassigned (sitting in bank vault in wizard's fortress)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNASSIGNED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Destroyed on anvil to get MP (this obviously isn't valid as a "from" location)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DESTROY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Being used by one of our heroes</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 </xsd:schema>

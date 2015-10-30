@@ -6,7 +6,8 @@ import momime.common.messages.servertoclient.AddBuildingMessage;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
-import momime.common.messages.servertoclient.AddUnitMessage;
+import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
+import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.BroadcastChatMessage;
@@ -37,6 +38,7 @@ import momime.common.messages.servertoclient.OverlandMovementTypesMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
+import momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
@@ -52,13 +54,11 @@ import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
-import momime.common.messages.servertoclient.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
-import momime.common.messages.servertoclient.UpdateUnitNameMessage;
 import momime.common.messages.servertoclient.UpdateUnitToAliveMessage;
 import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.YourRaceIsOkMessage;
@@ -393,18 +393,9 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final UpdateDamageTakenAndExperienceMessage createUpdateDamageTakenAndExperienceMessage ()
+	public final AddOrUpdateUnitMessage createAddOrUpdateUnitMessage ()
 	{
-		return getFactory ().createUpdateDamageTakenAndExperienceMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final AddUnitMessage createAddUnitMessage ()
-	{
-		return getFactory ().createAddUnitMessage ();
+		return getFactory ().createAddOrUpdateUnitMessage ();
 	}
 
 	/**
@@ -468,15 +459,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final RemoveQueuedSpellMessage createRemoveQueuedSpellMessage ()
 	{
 		return getFactory ().createRemoveQueuedSpellMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final UpdateUnitNameMessage createUpdateUnitNameMessage ()
-	{
-		return getFactory ().createUpdateUnitNameMessage ();
 	}
 
 	/**
@@ -576,6 +558,24 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final UpdateUnitToAliveMessage createUpdateUnitToAliveMessage ()
 	{
 		return getFactory ().createUpdateUnitToAliveMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public AddUnassignedHeroItemMessage createAddUnassignedHeroItemMessage ()
+	{
+		return getFactory ().createAddUnassignedHeroItemMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public RemoveUnassignedHeroItemMessage createRemoveUnassignedHeroItemMessage ()
+	{
+		return getFactory ().createRemoveUnassignedHeroItemMessage ();
 	}
 
 	/**

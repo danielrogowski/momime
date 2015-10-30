@@ -322,7 +322,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				// Inform any clients who know about this unit
 				if (sendMsg)
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit_DamageTakenAndExperience (thisUnit, trueTerrain, players, db, fogOfWarSettings);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueTerrain, players, db, fogOfWarSettings);
 			}
 
 		log.trace ("Exiting healUnitsAndGainExperience");
@@ -362,7 +362,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					getUnitUtils ().setBasicSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp+1);
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit_DamageTakenAndExperience (trueUnit, trueTerrain, players, db, fogOfWarSettings);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
 				}				
 			}
 

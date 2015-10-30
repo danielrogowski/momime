@@ -100,6 +100,18 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
         </xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="numberedHeroItem">
+	    <xsd:annotation>
+    		<xsd:documentation>Hero items don't have a unique key in the database, but we need some way for the client and server to
+identify them to each other at runtime, e.g. client requests to move hero item no. 57 to the 3rd slot on Unit URN 123.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimecommon:heroItem">
+				<xsd:attribute name="heroItemURN" type="momimemsgs:heroItemURN" use="required" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="momPersistentPlayerPrivateKnowledge">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all private knowledge that a player only knows about themselves, they can't see the values for other players,
@@ -123,7 +135,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 								that is taking us more than one turn to cast (instant spells are cast instantly!)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="unassignedHeroItem" type="momimecommon:heroItem">
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="unassignedHeroItem" type="momimemsgs:numberedHeroItem">
 						<xsd:annotation>
 							<xsd:documentation>Hero items that the player has just sitting in the bank, not being used by any hero at the moment</xsd:documentation>
 						</xsd:annotation>
@@ -692,7 +704,7 @@ there is no item in the first slot but there is in the second, JAXB might not sa
 of these containers is created when the unit is created and then the items just assigned and removed from here as necessary.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="heroItem" type="momimecommon:heroItem" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="heroItem" type="momimemsgs:numberedHeroItem" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -1047,6 +1059,13 @@ constructed/summoned, bump it to the outlying squares, or we could fail to place
 	<xsd:simpleType name="combatAreaEffectURN">
 	    <xsd:annotation>
     		<xsd:documentation>Unique identifier allocated to each CAE existing in a particular game.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="heroItemURN">
+	    <xsd:annotation>
+    		<xsd:documentation>Unique identifier allocated to each hero item existing in a particular game.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>

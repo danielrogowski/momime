@@ -805,8 +805,26 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPrerequisite" type="momimecommon:unitPrerequisite" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitHasSkill" type="momimecommon:unitSkillAndValue" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlot" type="momimecommon:heroItemSlot" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitCanCast" type="momimecommon:unitCanCast" />
 		</xsd:sequence>
 		<xsd:attribute name="unitID" type="momimecommon:unitID" use="required" nxe:label="Unit ID" nxe:gridwidth="50" />
+	</xsd:complexType>
+
+	<xsd:complexType name="unitCanCast" nxe:singular="Unit Spell" nxe:plural="Unit Spells">
+        <xsd:annotation>
+        	<xsd:documentation>Defines fixed spells a particular unit can cast - Priests casting Healing, Magicians casting Fireball, Warlocks casting Doom Bolt, and Giant Spiders "casting" Web.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfTimes" type="momimecommon:spellCount" nxe:label="Number of Times can cast it" nxe:gridwidth="200" />
+		</xsd:sequence>
+		<xsd:attribute name="unitSpellID" type="momimecommon:spellID" use="required" nxe:label="Spell" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>spellName</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitSkillAndValue" nxe:singular="Unit Skills" nxe:plural="Unit Skills">
@@ -1189,6 +1207,19 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:element minOccurs="0" maxOccurs="1" name="spellChargeCount" type="momimecommon:spellCount" nxe:label="Spell Charge Count" nxe:gridwidth="150" />
 		<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemChosenBonus" type="momimecommon:heroItemTypeAllowedBonus" nxe:label="Bonus" nxe:gridwidth="100" />
 		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemSlot" nxe:singular="Hero Item Slot" nxe:plural="Hero Item Slots">
+        <xsd:annotation>
+        	<xsd:documentation>Lists the 3 "item slots" a hero has, so that fighter-type heroes typically have a Sword slot, Shield slot and a special item (Ring) slot, whereas mage-type heroes typically have a Wand slot and two special item (Ring) slots.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Item Type">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>slotTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 <!-- Generic simple data types that are not really MoM specific -->

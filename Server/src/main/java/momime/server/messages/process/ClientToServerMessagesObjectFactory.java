@@ -24,6 +24,7 @@ import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.ObjectFactory;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
+import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
@@ -333,6 +334,15 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 	public final CaptureCityDecisionMessage createCaptureCityDecisionMessage ()
 	{
 		return getFactory ().createCaptureCityDecisionMessage ();
+	}
+
+	/**
+	 * @return Newly created RequestMoveHeroItemMessage
+	 */
+	@Override
+	public final RequestMoveHeroItemMessage createRequestMoveHeroItemMessage ()
+	{
+		return getFactory ().createRequestMoveHeroItemMessage ();
 	}
 
 	/**

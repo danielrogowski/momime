@@ -7,10 +7,19 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
@@ -32,7 +41,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddBuildingMessage;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
-import momime.common.messages.servertoclient.AddUnitMessage;
+import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
@@ -42,10 +51,8 @@ import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
-import momime.common.messages.servertoclient.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
-import momime.common.messages.servertoclient.UpdateUnitNameMessage;
 import momime.common.messages.servertoclient.UpdateUnitToAliveMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -57,16 +64,6 @@ import momime.server.database.CitySpellEffectSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.utils.UnitServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * This contains all methods that allow changes in the server's true memory to be replicated into each player's memory and send update messages to each client
@@ -351,7 +348,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
 		if (players != null)
 		{
-			final AddUnitMessage addMsg = new AddUnitMessage ();
+			final AddOrUpdateUnitMessage addMsg = new AddOrUpdateUnitMessage ();
 			addMsg.setMemoryUnit (trueUnit);
 
 			final UpdateUnitToAliveMessage updateMsg = new UpdateUnitToAliveMessage ();
@@ -942,7 +939,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 
 	/**
-	 * Informs clients who can see this unit of its damage taken & experience
+	 * Informs clients who can see this unit of any changes
 	 *
 	 * @param tu True unit details
 	 * @param trueTerrain True terrain map
@@ -956,17 +953,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void updatePlayerMemoryOfUnit_DamageTakenAndExperience (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
+	public final void updatePlayerMemoryOfUnit (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering updatePlayerMemoryOfUnit_DamageTakenAndExperience: Unit URN " + tu.getUnitURN ());
+		log.trace ("Entering updatePlayerMemoryOfUnit: Unit URN " + tu.getUnitURN ());
 
 		// First build the message
-		final UpdateDamageTakenAndExperienceMessage msg = new UpdateDamageTakenAndExperienceMessage ();
-		msg.setUnitURN (tu.getUnitURN ());
-		msg.setDamageTaken (tu.getDamageTaken ());
-		msg.setExperience (getUnitUtils ().getBasicSkillValue (tu.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+		final AddOrUpdateUnitMessage msg = new AddOrUpdateUnitMessage ();
+		msg.setMemoryUnit (tu);
 
 		// Check which players can see the unit
 		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
@@ -975,70 +970,18 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 			if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tu, trueTerrain, thisPlayer, db, fogOfWarSettings))
-			{
-				// Update player's memory on server
-				final MemoryUnit mu = getUnitUtils ().findUnitURN (tu.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience");
-				mu.setDamageTaken (msg.getDamageTaken ());
 				
-				if (msg.getExperience () >= 0)
-					getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, msg.getExperience ());
-
-				// Update player's memory on client
-				if (thisPlayer.getPlayerDescription ().isHuman ())
-					thisPlayer.getConnection ().sendMessageToClient (msg);
-			}
-		}
-
-		log.trace ("Exiting updatePlayerMemoryOfUnit_DamageTakenAndExperience");
-	}
-
-	/**
-	 * After setting new unit name on server, updates player memories and clients who can see the unit
-	 *
-	 * @param tu True unit details
-	 * @param trueTerrain True terrain map
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
-	 */
-	@Override
-	public final void updatePlayerMemoryOfUnit_UnitName (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		log.trace ("Entering updatePlayerMemoryOfUnit_UnitName: Unit URN " + tu.getUnitURN ());
-
-		// First build the message
-		final UpdateUnitNameMessage msg = new UpdateUnitNameMessage ();
-		msg.setUnitURN (tu.getUnitURN ());
-		msg.setUnitName (tu.getUnitName ());
-
-		// Check which players can see the unit
-		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
-		// what they saw, but cannot see it now - in that case they shouldn't receive any updates about the unit
-		for (final PlayerServerDetails thisPlayer : players)
-		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-			if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tu, trueTerrain, thisPlayer, db, fogOfWarSettings))
-			{
 				// Update player's memory on server
-				final MemoryUnit mu = getUnitUtils ().findUnitURN (tu.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "updatePlayerMemoryOfUnit_UnitName");
-				mu.setUnitName (msg.getUnitName ());
-
-				// Update player's memory on client
-				if (thisPlayer.getPlayerDescription ().isHuman ())
-					thisPlayer.getConnection ().sendMessageToClient (msg);
-			}
+				if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit ()))
+					
+					// Update player's memory on client
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+						thisPlayer.getConnection ().sendMessageToClient (msg);
 		}
 
-		log.trace ("Exiting updatePlayerMemoryOfUnit_UnitName");
+		log.trace ("Exiting updatePlayerMemoryOfUnit");
 	}
-	
+
 	/**
 	 * Informs clients who can see any of the units involved about how much combat damage an attacker and/or defender(s) have taken.
 	 * The two players in combat use this to show the animation of the attack, be it a melee, ranged or spell attack.
@@ -1177,7 +1120,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit ()))
 				if (player.getPlayerDescription ().isHuman ())
 				{
-					final AddUnitMessage msg = new AddUnitMessage ();
+					final AddOrUpdateUnitMessage msg = new AddOrUpdateUnitMessage ();
 					msg.setMemoryUnit (tu);
 					player.getConnection ().sendMessageToClient (msg);
 				}

@@ -1,9 +1,9 @@
 package momime.client.ui.frames;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.anyString;
 
 import java.awt.datatransfer.DataFlavor;
 
@@ -24,8 +24,8 @@ import momime.client.ui.draganddrop.TransferableFactory;
 import momime.client.ui.draganddrop.TransferableHeroItem;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.UnassignedHeroItemCellRenderer;
-import momime.common.database.HeroItem;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.NumberedHeroItem;
 
 /**
  * Tests the HeroItemsUI class
@@ -68,7 +68,7 @@ public final class TestHeroItemsUI
 		
 		for (int n = 1; n <= 4; n++)
 		{
-			final HeroItem item = new HeroItem ();
+			final NumberedHeroItem item = new NumberedHeroItem ();
 			item.setHeroItemTypeID ("IT01");
 			item.setHeroItemName ("Sword no. " + n);
 			item.setHeroItemImageNumber (n - 1);
@@ -81,7 +81,7 @@ public final class TestHeroItemsUI
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Drag and drop flavours
-		final DataFlavor heroItemFlavour = new DataFlavor (DataFlavor.javaJVMLocalObjectMimeType + ";class=" + HeroItem.class.getName ());
+		final DataFlavor heroItemFlavour = new DataFlavor (DataFlavor.javaJVMLocalObjectMimeType + ";class=" + NumberedHeroItem.class.getName ());
 		
 		final TransferableFactory transferableFactory = new TransferableFactory ()
 		{

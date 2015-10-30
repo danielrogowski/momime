@@ -187,12 +187,7 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public UpdateDamageTakenAndExperienceMessageImpl createUpdateDamageTakenAndExperienceMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public AddUnitMessageImpl createAddUnitMessage ();
+	public AddOrUpdateUnitMessageImpl createAddOrUpdateUnitMessage ();
 
 	/**
 	 * @return Newly created message
@@ -228,11 +223,6 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public RemoveQueuedSpellMessageImpl createRemoveQueuedSpellMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public UpdateUnitNameMessageImpl createUpdateUnitNameMessage ();
 
 	/**
 	 * @return Newly created message
@@ -288,7 +278,17 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public UpdateUnitToAliveMessageImpl createUpdateUnitToAliveMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public AddUnassignedHeroItemMessageImpl createAddUnassignedHeroItemMessage ();
 
+	/**
+	 * @return Newly created message
+	 */
+	public RemoveUnassignedHeroItemMessageImpl createRemoveUnassignedHeroItemMessage ();
+	
 	/**
 	 * @return Damage breakdown line with with injected dependencies
 	 */

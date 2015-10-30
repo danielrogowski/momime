@@ -7,7 +7,19 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
+import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
+import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
+import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
+import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
+
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItem;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MagicPowerDistribution;
@@ -38,17 +50,7 @@ import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.MomServerUIHolder;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
-import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
-import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
-import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
-import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
+import momime.server.utils.HeroItemServerUtils;
 
 /**
  * Thread that handles everything going on in one MoM session
@@ -81,6 +83,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** Methods dealing with hero items */
+	private HeroItemServerUtils heroItemServerUtils;
 	
 	/**
 	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
@@ -126,8 +131,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		mapGen.generateOverlandTerrain ();
 		mapGen.generateInitialCombatAreaEffects ();
 		
-		// Make all predefined hero items available
-		getGeneralServerKnowledge ().getAvailableHeroItem ().addAll (getServerDB ().getHeroItem ());
+		// Make all predefined hero items available - need to allocate a number for each
+		for (final HeroItem item : getServerDB ().getHeroItem ())
+			getGeneralServerKnowledge ().getAvailableHeroItem ().add (getHeroItemServerUtils ().createNumberedHeroItem (item, getGeneralServerKnowledge ()));
 
 		getSessionLogger ().info ("Session startup completed");
 		log.trace ("Exiting initializeNewGame");
@@ -498,5 +504,21 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return Methods dealing with hero items
+	 */
+	public final HeroItemServerUtils getHeroItemServerUtils ()
+	{
+		return heroItemServerUtils;
+	}
+
+	/**
+	 * @param util Methods dealing with hero items
+	 */
+	public final void setHeroItemServerUtils (final HeroItemServerUtils util)
+	{
+		heroItemServerUtils = util;
 	}
 }

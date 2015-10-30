@@ -10,7 +10,7 @@ import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.AddUnitMessage;
+import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
@@ -29,10 +29,10 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  * 
  * Bulk adds (fogOfWarVisibleAreaChanged) can contain a mixture of units with and without skill lists included.
  */
-public final class AddUnitMessageImpl extends AddUnitMessage implements BaseServerToClientMessage
+public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AddUnitMessageImpl.class);
+	private final Log log = LogFactory.getLog (AddOrUpdateUnitMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

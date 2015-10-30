@@ -164,4 +164,9 @@ public interface ClientToServerMessagesFactory
 	 * @return Newly created message
 	 */
 	public ChangeCityConstructionMessageImpl createChangeCityConstructionMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public RequestMoveHeroItemMessageImpl createRequestMoveHeroItemMessage ();
 }

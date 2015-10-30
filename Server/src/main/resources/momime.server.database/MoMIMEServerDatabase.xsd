@@ -1113,41 +1113,10 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickType" type="momimesvr:heroSkillTypeID" nxe:label="Hero Random Pick Type" nxe:showmaincolumn="false" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickCount" type="momimesvr:heroRandomPickCount" nxe:label="Hero Random Picks" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="freeAtStartCount" type="momimesvr:freeAtStartCount" nxe:label="Nbr. Free at Start" nxe:gridwidth="100" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlot" type="momimesvr:heroItemSlot" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitCanCast" type="momimesvr:unitCanCast" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroName" type="momimesvr:heroName" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="heroItemSlot" nxe:singular="Hero Item Slot" nxe:plural="Hero Item Slots">
-        <xsd:annotation>
-        	<xsd:documentation>Lists the 3 "item slots" a hero has, so that fighter-type heroes typically have a Sword slot, Shield slot and a special item (Ring) slot, whereas mage-type heroes typically have a Wand slot and two special item (Ring) slots.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Item Type">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>slotTypeDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-
-	<xsd:complexType name="unitCanCast" nxe:singular="Unit Spell" nxe:plural="Unit Spells">
-        <xsd:annotation>
-        	<xsd:documentation>Defines fixed spells a particular unit can cast - Priests casting Healing, Magicians casting Fireball, Warlocks casting Doom Bolt, and Giant Spiders "casting" Web.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfTimes" type="momimesvr:unitCanCastSpellNumberOfTimes" nxe:label="Number of Times can cast it" nxe:gridwidth="200" />
-		</xsd:sequence>
-		<xsd:attribute name="unitSpellID" type="momimecommon:spellID" use="required" nxe:label="Spell" nxe:showmaincolumn="false">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>spellName</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="heroName" nxe:singular="Hero Name ID" nxe:plural="Hero Name IDs">
@@ -1589,10 +1558,6 @@ Defaults to 1 if omitted.</xsd:documentation>
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="heroSkillMaxOccurrences">
-		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="unitCanCastSpellNumberOfTimes">
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	

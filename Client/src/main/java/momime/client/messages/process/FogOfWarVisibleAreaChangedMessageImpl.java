@@ -60,7 +60,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	{
 		if (log.isTraceEnabled ())
 			log.trace ("Entering start: " + getTriggeredFrom () + ", " + getTerrainUpdate ().size () + ", " + getCityUpdate ().size () + ", " +
-				getAddBuilding ().size () + ", " + getDestroyBuilding ().size () + ", " + getAddUnit ().size () + ", " + getKillUnit ().size () + ", " +
+				getAddBuilding ().size () + ", " + getDestroyBuilding ().size () + ", " + getAddOrUpdateUnit ().size () + ", " + getKillUnit ().size () + ", " +
 				getAddMaintainedSpell ().size () + ", " + getSwitchOffMaintainedSpell ().size () + ", " +
 				getAddCombatAreaEffect ().size () + ", " + getCancelCombaAreaEffect ().size () + ", " + getFogOfWarUpdate ().size ());
 		
@@ -112,11 +112,11 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			}
 		}
 		
-		// Units added or come into view
-		if (getAddUnit ().size () > 0)
+		// Units added, changed or come into view
+		if (getAddOrUpdateUnit ().size () > 0)
 		{
-			final AddUnitMessageImpl proc = getFactory ().createAddUnitMessage ();
-			for (final MemoryUnit thisUnit : getAddUnit ())
+			final AddOrUpdateUnitMessageImpl proc = getFactory ().createAddOrUpdateUnitMessage ();
+			for (final MemoryUnit thisUnit : getAddOrUpdateUnit ())
 			{
 				proc.setMemoryUnit (thisUnit);
 				proc.start ();

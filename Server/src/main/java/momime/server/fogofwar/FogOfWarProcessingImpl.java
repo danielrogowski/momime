@@ -562,7 +562,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 					log.debug ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
 					if ((unitChanged) && (msg != null))
-						msg.getAddUnit ().add (thisUnit);
+						msg.getAddOrUpdateUnit ().add (thisUnit);
 				}
 			}
 

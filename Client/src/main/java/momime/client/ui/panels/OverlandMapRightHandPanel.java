@@ -365,9 +365,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Actions
 		nextTurnAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().nextTurnButton ());
 		doneAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().selectedUnitsDone ());
-		patrolAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().selectedUnitsPatrol ());
 		waitAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().selectedUnitsWait ());
 
+		patrolAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.PATROL));
 		createOutpostAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_CITY));
 		buildRoadAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_ROAD));
 		meldWithNodeAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.MELD_WITH_NODE));
@@ -684,10 +684,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 									final PendingMovement pendingMovement = getPendingMovementUtils ().findPendingMoveForUnit
 										(getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
 								
-									// We don't need to tell the server about cancelling 'Patrol' orders since this is basically 'do nothing' -
-									// but cancelling any other kind of special order we do need to notify the server.
-									if ((pendingMovement != null) ||
-										((selectUnitButton.getUnit ().getSpecialOrder () != null) && (selectUnitButton.getUnit ().getSpecialOrder () != UnitSpecialOrder.PATROL)))
+									// Notify the server of the cancel
+									if ((pendingMovement != null) || (selectUnitButton.getUnit ().getSpecialOrder () != null))
 									{
 										// Remove on server
 										final CancelPendingMovementAndSpecialOrdersMessage msg = new CancelPendingMovementAndSpecialOrdersMessage ();

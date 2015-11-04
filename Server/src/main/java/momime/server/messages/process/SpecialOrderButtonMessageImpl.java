@@ -100,6 +100,10 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE;
 				break;
 				
+			case PATROL:
+				necessarySkillID = null;
+				break;
+				
 			default:
 				throw new MomException (SpecialOrderButtonMessageImpl.class.getName () + " does not know skill ID corresponding to order of " + getSpecialOrder ());
 		}
@@ -134,8 +138,8 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "Some of the units you are trying to give a special order to are not at the right location";
 			
 			// Does it have the necessary skill?
-			else if (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) >= 0)
+			else if ((necessarySkillID == null) || (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID,
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) >= 0))
 				
 				unitsWithNecessarySkillID.add (thisUnit);
 		}
@@ -145,7 +149,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		{
 			if (unitsWithNecessarySkillID.size () == 0)
 				error = "No unit in the unit stack has the necessary skill to perform the requested special order";
-			else if (unitsWithNecessarySkillID.size () > 1)
+			else if ((necessarySkillID != null) && (unitsWithNecessarySkillID.size () > 1))
 			{
 				switch (getSpecialOrder ())
 				{
@@ -187,24 +191,26 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		}
 		else
 		{
-			final MemoryUnit trueUnit = unitsWithNecessarySkillID.get (0);
-			
 			// In a simultaneous turns game, settlers are put on special orders and the city isn't built until movement resolution
 			// But we still have to confirm to the client that their unit selection/build location was fine
-			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender);
+			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (getSpecialOrder () == UnitSpecialOrder.PATROL))
+			{
+				for (final MemoryUnit trueUnit : unitsWithNecessarySkillID)
+					getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender);
+			}
 			else
 			{
 				// In a one-player-at-a-time game, actions take place immediately
 				switch (getSpecialOrder ())
 				{
 					case BUILD_CITY:
-						getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), sender, trueUnit, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), sender,
+							unitsWithNecessarySkillID.get (0), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						break;
 						
 					case MELD_WITH_NODE:
 						// If successful, this will generate messages about the node capture
-						getOverlandMapServerUtils ().attemptToMeldWithNode (trueUnit, mom.getGeneralServerKnowledge ().getTrueMap (),
+						getOverlandMapServerUtils ().attemptToMeldWithNode (unitsWithNecessarySkillID.get (0), mom.getGeneralServerKnowledge ().getTrueMap (),
 							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
 						getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);						

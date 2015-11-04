@@ -385,22 +385,6 @@ It is also only sent to the player whose turn it now is.</xsd:documentation>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="setSpecialOrderMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to the player owning the units to set a special order on them (not used for Patrolling)</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="specialOrder" type="momimecommon:unitSpecialOrder" />
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="pendingMovementMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to clients who request that units move further than they can reach in one turn, or in "simultaneous turns" mode.

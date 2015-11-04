@@ -157,11 +157,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public SetSpecialOrderMessageImpl createSetSpecialOrderMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public ChooseYourRaceNowMessageImpl createChooseYourRaceNowMessage ();
 
 	/**

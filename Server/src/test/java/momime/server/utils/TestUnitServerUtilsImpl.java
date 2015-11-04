@@ -28,6 +28,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillComponent;
@@ -35,26 +36,25 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.database.HeroNameSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 /**
  * Tests the UnitServerUtils class
@@ -575,52 +575,45 @@ public final class TestUnitServerUtilsImpl
 	@Test
 	public final void testSetAndSendSpecialOrder () throws Exception
 	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge (); 
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
-
-		priv.setFogOfWarMemory (new FogOfWarMemory ());
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, trans);
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
-		
-		// Connection
-		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
-		player.setConnection (msgs);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player);
 		
 		// Unit
 		final MemoryUnit trueUnit = new MemoryUnit ();
 		trueUnit.setUnitURN (5);
-
-		final MemoryUnit memoryUnit = new MemoryUnit ();
-		memoryUnit.setUnitURN (5);
+		
+		// Terrain
+		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		
+		// Session description
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		
 		// Set up object to test
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (5, priv.getFogOfWarMemory ().getUnit (), "setAndSendSpecialOrder")).thenReturn (memoryUnit);
-		
 		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
 		utils.setPendingMovementUtils (pendingMovementUtils);
+		utils.setFogOfWarMidTurnChanges (midTurn);
 		
 		// Run test
-		utils.setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.BUILD_ROAD, player);
+		utils.setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.BUILD_ROAD, player, trueTerrain, players, db, fogOfWarSettings);
 		
 		// Check results
 		assertEquals (UnitSpecialOrder.BUILD_ROAD, trueUnit.getSpecialOrder ());
-		assertEquals (UnitSpecialOrder.BUILD_ROAD, memoryUnit.getSpecialOrder ());
 		
 		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (trans.getPendingMovement (), 5);
-		
-		assertEquals (1, msgs.getMessages ().size ());
-		final SetSpecialOrderMessage msg = (SetSpecialOrderMessage) msgs.getMessages ().get (0);
-		assertEquals (1, msg.getUnitURN ().size ());
-		assertEquals (5, msg.getUnitURN ().get (0).intValue ());
-		assertEquals (UnitSpecialOrder.BUILD_ROAD, msg.getSpecialOrder ());
+		verify (midTurn).updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
 	}
 
 	/**

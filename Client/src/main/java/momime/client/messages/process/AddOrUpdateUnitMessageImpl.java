@@ -5,19 +5,21 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.ui.frames.ArmyListUI;
-import momime.client.ui.frames.CityViewUI;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
-import momime.common.utils.UnitUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
+import momime.client.MomClient;
+import momime.client.process.OverlandMapProcessing;
+import momime.client.ui.frames.ArmyListUI;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.UnitInfoUI;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
+import momime.common.utils.UnitUtils;
 
 /**
  * Server sends this to clients to tell them about a new unit added to the map, or can add them in bulk as part of fogOfWarVisibleAreaChanged.
@@ -43,6 +45,9 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	/** Army list */
 	private ArmyListUI armyListUI;
 	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -58,7 +63,24 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		// This stops us screwing up references to the existing MemoryUnit obj, especially in the unitsLeftToMoveOverland list and the selectUnitButtons.
 		final MemoryUnit oldUnit = getUnitUtils ().findUnitURN (getMemoryUnit ().getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		if (oldUnit != null)
+		{
+			// If it had no special order before, and it now does - then the only way that can happen if its our unit and our turn
+			if ((oldUnit.getSpecialOrder () == null) && (getMemoryUnit ().getSpecialOrder () != null))
+			{
+				// So in that case, remove it from the wait list
+				getOverlandMapProcessing ().removeUnitFromLeftToMoveOverland (oldUnit);
+				
+				// Close down any unit info screen that may be open for it
+				final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (oldUnit.getUnitURN ());
+				if (unitInfo != null)
+					unitInfo.close ();
+			
+				getOverlandMapProcessing ().selectNextUnitToMoveOverland ();
+			}
+
+			// Now copy it
 			getUnitUtils ().copyUnitValues (getMemoryUnit (), oldUnit, true);
+		}
 		else
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (getMemoryUnit ());
 		
@@ -122,5 +144,21 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	public final void setArmyListUI (final ArmyListUI ui)
 	{
 		armyListUI = ui;
+	}
+
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
 	}
 }

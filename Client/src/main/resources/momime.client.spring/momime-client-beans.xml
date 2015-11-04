@@ -478,12 +478,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 	</bean>
 	
-	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
-	</bean>
-	
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
 	
@@ -523,6 +517,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">

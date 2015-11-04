@@ -196,7 +196,8 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (getSpecialOrder () == UnitSpecialOrder.PATROL))
 			{
 				for (final MemoryUnit trueUnit : unitsWithNecessarySkillID)
-					getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender);
+					getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender,
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 			}
 			else
 			{

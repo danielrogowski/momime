@@ -19,6 +19,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
@@ -27,14 +28,13 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -42,6 +42,7 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.ServerMemoryGridCellUtils;
 
 /**
@@ -73,6 +74,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/**
 	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
 	 * @param unitID Type of unit to create
@@ -191,32 +195,33 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param trueUnit Unit to give an order to
 	 * @param specialOrder Order to give to this unit
 	 * @param player Player who owns the unit
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param fogOfWarSettings Fog of war settings from session description
 	 * @throws RecordNotFoundException If we can't find the unit in the player's memory (they don't know about their own unit?)
 	 * @throws JAXBException If there is a problem sending the message to the client
 	 * @throws XMLStreamException If there is a problem sending the message to the client
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player) throws RecordNotFoundException, JAXBException, XMLStreamException
+	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player,
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering findUnitWithPlayerAndID: Player ID " + player.getPlayerDescription ().getPlayerID () +
 			", Unit URN " + trueUnit.getUnitURN () + ", " + specialOrder);
 
 		// Setting a special order cancels any other kind of move
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (trans.getPendingMovement (), trueUnit.getUnitURN ());
 
 		// Set in true memory
 		trueUnit.setSpecialOrder (specialOrder);
 
-		// Set in server's copy of player memory
-		getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "setAndSendSpecialOrder").setSpecialOrder (specialOrder);
-
-		// Set in client's copy of player memory
-		final SetSpecialOrderMessage msg = new SetSpecialOrderMessage ();
-		msg.setSpecialOrder (specialOrder);
-		msg.getUnitURN ().add (trueUnit.getUnitURN ());
-		player.getConnection ().sendMessageToClient (msg);
+		// Update in player's memory and on clients
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
 
 		log.trace ("Exiting findUnitWithPlayerAndID");
 	}
@@ -558,5 +563,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

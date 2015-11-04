@@ -90,7 +90,8 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 		{
 			// Do immediately or at end of turn?
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.DISMISS, sender);
+				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.DISMISS, sender,
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 			else
 			{
 				// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server

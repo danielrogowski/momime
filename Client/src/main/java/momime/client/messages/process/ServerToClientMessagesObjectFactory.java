@@ -43,7 +43,6 @@ import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
-import momime.common.messages.servertoclient.SetSpecialOrderMessage;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
@@ -333,15 +332,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final ChosenCustomPhotoMessage createChosenCustomPhotoMessage ()
 	{
 		return getFactory ().createChosenCustomPhotoMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final SetSpecialOrderMessage createSetSpecialOrderMessage ()
-	{
-		return getFactory ().createSetSpecialOrderMessage ();
 	}
 
 	/**

@@ -364,14 +364,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					if (getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ()) == null)
 					{
 						// Player doesn't know about unit, so add it
-						if (getFogOfWarDuplication ().copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit ()))
+						if (getFogOfWarDuplication ().copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit (), trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
 							if (player.getPlayerDescription ().isHuman ())
 								player.getConnection ().sendMessageToClient (addMsg);
 					}
 					else
 					{
 						// Player already knows about unit, so just update it to alive
-						if (getFogOfWarDuplication ().copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit ()))
+						if (getFogOfWarDuplication ().copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit (), trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
 							if (player.getPlayerDescription ().isHuman ())
 								player.getConnection ().sendMessageToClient (updateMsg);
 					}
@@ -972,7 +972,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tu, trueTerrain, thisPlayer, db, fogOfWarSettings))
 				
 				// Update player's memory on server
-				if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit ()))
+				if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit (), tu.getOwningPlayerID () == thisPlayer.getPlayerDescription ().getPlayerID ()))
 					
 					// Update player's memory on client
 					if (thisPlayer.getPlayerDescription ().isHuman ())
@@ -1117,7 +1117,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			unitURNs.add (tu.getUnitURN ());
 
-			if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit ()))
+			if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit (), tu.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
 				if (player.getPlayerDescription ().isHuman ())
 				{
 					final AddOrUpdateUnitMessage msg = new AddOrUpdateUnitMessage ();

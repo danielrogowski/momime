@@ -6,15 +6,14 @@ import java.util.List;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
-import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.CompareUtils;
@@ -230,10 +229,11 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	 * Copies a unit from source into the destination list
 	 * @param source The unit to copy from (i.e. the true unit details)
 	 * @param destination The building list to copy into (i.e. the player's memory of buildings)
+	 * @param includeMovementFields Only the player who owns a unit can see its movement remaining and special orders
 	 * @return Whether any update actually happened (i.e. false if the unit was already in the list AND all the details already exactly matched)
 	 */
 	@Override
-	public final boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination)
+	public final boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination, final boolean includeMovementFields)
 	{
 		// First see if the unit is in the destination list at all
 		boolean needToUpdate;
@@ -246,7 +246,11 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		}
 		else
 		{
-			// Compare every field to see if anything has changed
+			// Destination values for a couple of movement related fields depend on input param
+			final int newDoubleOverlandMovesLeft = includeMovementFields ? source.getDoubleOverlandMovesLeft () : 0;
+			final Integer newDoubleCombatMovesLeft = includeMovementFields ? source.getDoubleCombatMovesLeft () : null;
+			final UnitSpecialOrder newSpecialOrder = includeMovementFields ? source.getSpecialOrder () : null;
+
 			// AvailableUnit fields + number of skills
 			needToUpdate = (source.getOwningPlayerID () != dest.getOwningPlayerID ()) ||
 				(!CompareUtils.safeStringCompare (source.getUnitID (), dest.getUnitID ())) ||
@@ -268,11 +272,11 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(source.getCombatSide () != dest.getCombatSide ()) ||
 				(source.getHeroItemSlot ().size () != dest.getHeroItemSlot ().size ()) ||
 
-				// Should these work same as city currentlyConstructing? where only the owner can 'see' the values?
-				// Similarly only the two sides involved in a combat should be able to 'see' the combat related values
-				(source.getDoubleOverlandMovesLeft () != dest.getDoubleOverlandMovesLeft ()) ||
-				(source.getSpecialOrder () != dest.getSpecialOrder ()) ||
-				(source.getDoubleCombatMovesLeft () != dest.getDoubleCombatMovesLeft ());
+				// These work same as city currentlyConstructing? where only the owner can 'see' the values.
+				// Similarly only the two sides involved in a combat should be able to 'see' the combat related values, but don't worry about that for now.
+				(newDoubleOverlandMovesLeft != dest.getDoubleOverlandMovesLeft ()) ||
+				(newSpecialOrder != dest.getSpecialOrder ()) ||
+				(!CompareUtils.safeIntegerCompare (newDoubleCombatMovesLeft, dest.getDoubleCombatMovesLeft ()));
 
 			// AvailableUnit - compare skills in detail - already know the number of skills matches, so just need to verify their existance and values.
 			// NB. The order here isn't really important, A=1, B=2 is the same as B=2, A=1. 
@@ -301,80 +305,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		}
 
 		if (needToUpdate)
-		{
-			// Copy every field from source to dest
-			// AvailableUnit fields
-			dest.setOwningPlayerID (source.getOwningPlayerID ());
-			dest.setUnitID (source.getUnitID ());
-			dest.setWeaponGrade (source.getWeaponGrade ());
-
-			if (source.getUnitLocation () == null)
-				dest.setUnitLocation (null);
-			else
-				dest.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getUnitLocation ()));
-
-			// AvailableUnit - skills list
-			dest.getUnitHasSkill ().clear ();
-			for (final UnitSkillAndValue srcSkill : source.getUnitHasSkill ())
-			{
-				final UnitSkillAndValue destSkill = new UnitSkillAndValue ();
-				destSkill.setUnitSkillID (srcSkill.getUnitSkillID ());
-				destSkill.setUnitSkillValue (srcSkill.getUnitSkillValue ());
-				dest.getUnitHasSkill ().add (destSkill);
-			}
-
-			// MemoryUnit fields
-			dest.setUnitURN (source.getUnitURN ());
-			dest.setHeroNameID (source.getHeroNameID ());
-			dest.setUnitName (source.getUnitName ());
-			dest.setRangedAttackAmmo (source.getRangedAttackAmmo ());
-			dest.setManaRemaining (source.getManaRemaining ());
-			dest.setDamageTaken (source.getDamageTaken ());
-			dest.setDoubleOverlandMovesLeft (source.getDoubleOverlandMovesLeft ());
-			dest.setSpecialOrder (source.getSpecialOrder ());
-			dest.setStatus (source.getStatus ());
-			dest.setWasSummonedInCombat (source.isWasSummonedInCombat ());
-			dest.setCombatHeading (source.getCombatHeading ());
-			dest.setCombatSide (source.getCombatSide ());
-			dest.setDoubleCombatMovesLeft (source.getDoubleCombatMovesLeft ());
-
-			if (source.getCombatLocation () == null)
-				dest.setCombatLocation (null);
-			else
-				dest.setCombatLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCombatLocation ()));
-
-			if (source.getCombatPosition () == null)
-				dest.setCombatPosition (null);
-			else
-				dest.setCombatPosition (new MapCoordinates2DEx ((MapCoordinates2DEx) source.getCombatPosition ()));
-			
-			// MemoryUnit - hero item slots list
-			dest.getHeroItemSlot ().clear ();
-			for (final MemoryUnitHeroItemSlot srcItemSlot : source.getHeroItemSlot ())
-			{
-				final MemoryUnitHeroItemSlot destItemSlot = new MemoryUnitHeroItemSlot ();
-				if (srcItemSlot.getHeroItem () != null)
-				{
-					final NumberedHeroItem srcItem = srcItemSlot.getHeroItem ();
-					final NumberedHeroItem destItem = new NumberedHeroItem ();
-					
-					destItem.setHeroItemURN (srcItem.getHeroItemURN ());
-					destItem.setHeroItemName (srcItem.getHeroItemName ());
-					destItem.setHeroItemTypeID (srcItem.getHeroItemTypeID ());
-					destItem.setHeroItemImageNumber (srcItem.getHeroItemImageNumber ());
-					destItem.setSpellID (srcItem.getSpellID ());
-					destItem.setSpellChargeCount (srcItem.getSpellChargeCount ());
-					
-					for (final HeroItemTypeAllowedBonus srcBonus : srcItem.getHeroItemChosenBonus ())
-					{
-						final HeroItemTypeAllowedBonus destBonus = new HeroItemTypeAllowedBonus ();
-						destBonus.setHeroItemBonusID (srcBonus.getHeroItemBonusID ());
-						destItem.getHeroItemChosenBonus ().add (destBonus);
-					}
-				}
-				dest.getHeroItemSlot ().add (destItemSlot);
-			}
-		}
+			getUnitUtils ().copyUnitValues (source, dest, includeMovementFields);
 
 		return needToUpdate;
 	}

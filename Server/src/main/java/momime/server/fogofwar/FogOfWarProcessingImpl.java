@@ -557,7 +557,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)) &&
 					(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)))
 				{
-					final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit ());
+					final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit (),
+						thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ());
 					updatedUnitURNs.add (thisUnit.getUnitURN ());
 
 					log.debug ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);

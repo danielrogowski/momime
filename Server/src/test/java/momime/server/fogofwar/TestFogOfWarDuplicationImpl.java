@@ -336,15 +336,15 @@ public final class TestFogOfWarDuplicationImpl
 		unitOne.setUnitLocation (unitOneLocation);
 		unitOne.setOwningPlayerID (2);
 
-		assertTrue (dup.copyUnit (unitOne, destination));
+		assertTrue (dup.copyUnit (unitOne, destination, true));
 
 		// Check again without changing anything
-		assertFalse (dup.copyUnit (unitOne, destination));
+		assertFalse (dup.copyUnit (unitOne, destination, true));
 
 		// Change a value
 		unitOne.setDamageTaken (1);
-		assertTrue (dup.copyUnit (unitOne, destination));
-		assertFalse (dup.copyUnit (unitOne, destination));
+		assertTrue (dup.copyUnit (unitOne, destination, true));
+		assertFalse (dup.copyUnit (unitOne, destination, true));
 
 		// Second unit (magicians)
 		final MapCoordinates3DEx unitTwoLocation = new MapCoordinates3DEx (22, 12, 1);
@@ -358,21 +358,21 @@ public final class TestFogOfWarDuplicationImpl
 		unitTwoAmmo.setUnitSkillValue (5);
 		unitTwo.getUnitHasSkill ().add (unitTwoAmmo);
 
-		assertTrue (dup.copyUnit (unitTwo, destination));
-		assertFalse (dup.copyUnit (unitTwo, destination));
+		assertTrue (dup.copyUnit (unitTwo, destination, true));
+		assertFalse (dup.copyUnit (unitTwo, destination, true));
 
 		// Give them more ammo
 		unitTwoAmmo.setUnitSkillValue (20);
-		assertTrue (dup.copyUnit (unitTwo, destination));
-		assertFalse (dup.copyUnit (unitTwo, destination));
+		assertTrue (dup.copyUnit (unitTwo, destination, true));
+		assertFalse (dup.copyUnit (unitTwo, destination, true));
 
 		// Cast flight on them (ok so normally this is done via the spells list and merging that into the unit skills list, but this is what's appropriate for this test...)
 		final UnitSkillAndValue flight = new UnitSkillAndValue ();
 		flight.setUnitSkillID ("SS056");
 		unitTwo.getUnitHasSkill ().add (flight);
 
-		assertTrue (dup.copyUnit (unitTwo, destination));
-		assertFalse (dup.copyUnit (unitTwo, destination));
+		assertTrue (dup.copyUnit (unitTwo, destination, true));
+		assertFalse (dup.copyUnit (unitTwo, destination, true));
 	}
 
 	/**

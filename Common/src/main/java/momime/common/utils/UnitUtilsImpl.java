@@ -19,18 +19,22 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 
@@ -684,6 +688,97 @@ public final class UnitUtilsImpl implements UnitUtils
 
 		log.trace ("Exiting findAliveUnitInCombatAt = " + found);
 		return found;
+	}
+	
+	/**
+	 * Performs a deep copy (i.e. creates copies of every sub object rather than copying the references) of every field value from one unit to another
+	 * @param source Unit to copy values from
+	 * @param dest Unit to copy values to
+	 * @param includeMovementFields Only the player who owns a unit can see its movement remaining and special orders
+	 */
+	@Override
+	public final void copyUnitValues (final MemoryUnit source, final MemoryUnit dest, final boolean includeMovementFields)
+	{
+		log.trace ("Entering copyUnitValues: Unit URN" + source.getUnitURN ());
+		
+		// Destination values for a couple of movement related fields depend on input param
+		final int newDoubleOverlandMovesLeft = includeMovementFields ? source.getDoubleOverlandMovesLeft () : 0;
+		final Integer newDoubleCombatMovesLeft = includeMovementFields ? source.getDoubleCombatMovesLeft () : null;
+		final UnitSpecialOrder newSpecialOrder = includeMovementFields ? source.getSpecialOrder () : null;
+		
+		// AvailableUnit fields
+		dest.setOwningPlayerID (source.getOwningPlayerID ());
+		dest.setUnitID (source.getUnitID ());
+		dest.setWeaponGrade (source.getWeaponGrade ());
+
+		if (source.getUnitLocation () == null)
+			dest.setUnitLocation (null);
+		else
+			dest.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getUnitLocation ()));
+
+		// AvailableUnit - skills list
+		dest.getUnitHasSkill ().clear ();
+		for (final UnitSkillAndValue srcSkill : source.getUnitHasSkill ())
+		{
+			final UnitSkillAndValue destSkill = new UnitSkillAndValue ();
+			destSkill.setUnitSkillID (srcSkill.getUnitSkillID ());
+			destSkill.setUnitSkillValue (srcSkill.getUnitSkillValue ());
+			dest.getUnitHasSkill ().add (destSkill);
+		}
+
+		// MemoryUnit fields
+		dest.setUnitURN (source.getUnitURN ());
+		dest.setHeroNameID (source.getHeroNameID ());
+		dest.setUnitName (source.getUnitName ());
+		dest.setRangedAttackAmmo (source.getRangedAttackAmmo ());
+		dest.setManaRemaining (source.getManaRemaining ());
+		dest.setDamageTaken (source.getDamageTaken ());
+		dest.setDoubleOverlandMovesLeft (newDoubleOverlandMovesLeft);
+		dest.setSpecialOrder (newSpecialOrder);
+		dest.setStatus (source.getStatus ());
+		dest.setWasSummonedInCombat (source.isWasSummonedInCombat ());
+		dest.setCombatHeading (source.getCombatHeading ());
+		dest.setCombatSide (source.getCombatSide ());
+		dest.setDoubleCombatMovesLeft (newDoubleCombatMovesLeft);
+
+		if (source.getCombatLocation () == null)
+			dest.setCombatLocation (null);
+		else
+			dest.setCombatLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCombatLocation ()));
+
+		if (source.getCombatPosition () == null)
+			dest.setCombatPosition (null);
+		else
+			dest.setCombatPosition (new MapCoordinates2DEx ((MapCoordinates2DEx) source.getCombatPosition ()));
+		
+		// MemoryUnit - hero item slots list
+		dest.getHeroItemSlot ().clear ();
+		for (final MemoryUnitHeroItemSlot srcItemSlot : source.getHeroItemSlot ())
+		{
+			final MemoryUnitHeroItemSlot destItemSlot = new MemoryUnitHeroItemSlot ();
+			if (srcItemSlot.getHeroItem () != null)
+			{
+				final NumberedHeroItem srcItem = srcItemSlot.getHeroItem ();
+				final NumberedHeroItem destItem = new NumberedHeroItem ();
+				
+				destItem.setHeroItemURN (srcItem.getHeroItemURN ());
+				destItem.setHeroItemName (srcItem.getHeroItemName ());
+				destItem.setHeroItemTypeID (srcItem.getHeroItemTypeID ());
+				destItem.setHeroItemImageNumber (srcItem.getHeroItemImageNumber ());
+				destItem.setSpellID (srcItem.getSpellID ());
+				destItem.setSpellChargeCount (srcItem.getSpellChargeCount ());
+				
+				for (final HeroItemTypeAllowedBonus srcBonus : srcItem.getHeroItemChosenBonus ())
+				{
+					final HeroItemTypeAllowedBonus destBonus = new HeroItemTypeAllowedBonus ();
+					destBonus.setHeroItemBonusID (srcBonus.getHeroItemBonusID ());
+					destItem.getHeroItemChosenBonus ().add (destBonus);
+				}
+			}
+			dest.getHeroItemSlot ().add (destItemSlot);
+		}
+		
+		log.trace ("Exiting copyUnitValues");
 	}
 	
 	/**

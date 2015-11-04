@@ -61,9 +61,10 @@ public interface FogOfWarDuplication
 	 * Copies a unit from source into the destination list
 	 * @param source The unit to copy from (i.e. the true unit details)
 	 * @param destination The building list to copy into (i.e. the player's memory of buildings)
+	 * @param includeMovementFields Only the player who owns a unit can see its movement remaining and special orders
 	 * @return Whether any update actually happened (i.e. false if the unit was already in the list AND all the details already exactly matched)
 	 */
-	public boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination);
+	public boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination, final boolean includeMovementFields);
 
 	/**
 	 * Copies a spell from source into the destination list

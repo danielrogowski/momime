@@ -199,4 +199,12 @@ public interface UnitUtils
 	 * @return Unit at this position, or null if there isn't one
 	 */
 	public MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition);
+	
+	/**
+	 * Performs a deep copy (i.e. creates copies of every sub object rather than copying the references) of every field value from one unit to another
+	 * @param source Unit to copy values from
+	 * @param dest Unit to copy values to
+	 * @param includeMovementFields Only the player who owns a unit can see its movement remaining and special orders
+	 */
+	public void copyUnitValues (final MemoryUnit source, final MemoryUnit dest, final boolean includeMovementFields);
 }

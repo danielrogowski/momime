@@ -54,14 +54,13 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		log.trace ("Entering start: Unit URN " + getMemoryUnit ().getUnitURN ());
 		
 		// Since Java server now supports units set to 'remember as last seen', its possible to get an 'add unit' message just to
-		// update a unit that we remember in a different state - easiest way to handle this is to see if the UnitURN already
-		// exists in our list, and if it does, free it before adding the updated copy of it
+		// update a unit that we remember in a different state - so if we already have the unit, update the existing one, otherwise add it.
+		// This stops us screwing up references to the existing MemoryUnit obj, especially in the unitsLeftToMoveOverland list and the selectUnitButtons.
 		final MemoryUnit oldUnit = getUnitUtils ().findUnitURN (getMemoryUnit ().getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		if (oldUnit != null)
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().remove (oldUnit);
-		
-		// Add it
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (getMemoryUnit ());
+			getUnitUtils ().copyUnitValues (getMemoryUnit (), oldUnit, true);
+		else
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (getMemoryUnit ());
 		
 		// Select unit buttons on the City screen
 		if ((getMemoryUnit ().getStatus () == UnitStatusID.ALIVE) && (getMemoryUnit ().getUnitLocation () != null))

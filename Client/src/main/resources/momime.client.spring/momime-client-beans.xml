@@ -442,6 +442,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype">
@@ -517,6 +518,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
@@ -525,6 +527,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype">
@@ -1520,13 +1523,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="largeFont" ref="largeFont" />
+		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="transferableFactory" ref="transferableFactory" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="alchemyUI" ref="alchemyUI" />
 		<property name="heroItemFlavour" ref="heroItemFlavour" />
 		<property name="unassignedHeroItemCellRenderer" ref="unassignedHeroItemCellRenderer" />
+		<property name="heroTableCellRenderer" ref="heroTableCellRenderer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 	</bean>
@@ -1593,6 +1599,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unassignedHeroItemLayout" ref="unassignedHeroItemLayout" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
+		<property name="mediumFont" ref="mediumFont" />
+	</bean>
+
+	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemsUI-Hero.xml" />
+	</bean>
+
+	<bean id="heroTableCellRenderer" class="momime.client.ui.renderer.HeroTableCellRenderer" scope="prototype">
+		<property name="heroLayout" ref="heroLayout" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="client" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="mediumFont" ref="mediumFont" />
 	</bean>
 

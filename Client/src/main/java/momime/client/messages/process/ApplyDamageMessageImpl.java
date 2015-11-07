@@ -31,6 +31,7 @@ import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
@@ -112,6 +113,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** Army list */
 	private ArmyListUI armyListUI;
+
+	/** Hero items UI */
+	private HeroItemsUI heroItemsUI;
 	
 	/** The attacking unit; null if we can't see it */
 	private MemoryUnit attackerUnit;
@@ -487,7 +491,15 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				getUnitClientUtils ().killUnit (attackerUnit, transmittedAction, untransmittedAction);
 				
 				if (attackerUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())
+				{
 					getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) attackerUnit.getUnitLocation ());
+
+					if (getClient ().getClientDB ().findUnit (attackerUnit.getUnitID (), "ApplyDamageMessageImpl").getUnitMagicRealm ().equals
+						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+							
+						getHeroItemsUI ().refreshHeroes ();
+					
+				}
 			}
 			else
 			{
@@ -532,7 +544,14 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				getUnitClientUtils ().killUnit (thisUnit.getDefUnit (), transmittedAction, untransmittedAction);
 				
 				if (thisUnit.getDefUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
+				{
 					getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) thisUnit.getDefUnit ().getUnitLocation ());
+
+					if (getClient ().getClientDB ().findUnit (thisUnit.getDefUnit ().getUnitID (), "ApplyDamageMessageImpl").getUnitMagicRealm ().equals
+						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+								
+						getHeroItemsUI ().refreshHeroes ();
+				}
 			}
 			else
 			{
@@ -778,6 +797,22 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final void setArmyListUI (final ArmyListUI ui)
 	{
 		armyListUI = ui;
+	}
+	
+	/**
+	 * @return Hero items UI
+	 */
+	public final HeroItemsUI getHeroItemsUI ()
+	{
+		return heroItemsUI;
+	}
+
+	/**
+	 * @param ui Hero items UI
+	 */
+	public final void setHeroItemsUI (final HeroItemsUI ui)
+	{
+		heroItemsUI = ui;
 	}
 	
 	/**

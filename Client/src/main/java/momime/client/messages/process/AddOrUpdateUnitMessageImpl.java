@@ -15,7 +15,9 @@ import momime.client.MomClient;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
@@ -44,6 +46,9 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	
 	/** Army list */
 	private ArmyListUI armyListUI;
+
+	/** Hero items UI */
+	private HeroItemsUI heroItemsUI;
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
@@ -93,7 +98,14 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		}
 		
 		if (getMemoryUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
+		{
 			getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) getMemoryUnit ().getUnitLocation ());
+			
+			if (getClient ().getClientDB ().findUnit (getMemoryUnit ().getUnitID (), "AddOrUpdateUnitMessageImpl").getUnitMagicRealm ().equals
+				(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+				
+				getHeroItemsUI ().refreshHeroes ();
+		}
 		
 		log.trace ("Exiting start");
 	}
@@ -160,5 +172,21 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return Hero items UI
+	 */
+	public final HeroItemsUI getHeroItemsUI ()
+	{
+		return heroItemsUI;
+	}
+
+	/**
+	 * @param ui Hero items UI
+	 */
+	public final void setHeroItemsUI (final HeroItemsUI ui)
+	{
+		heroItemsUI = ui;
 	}
 }

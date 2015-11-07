@@ -24,4 +24,24 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmHeroItemsHeroes">
+		<left>18</left>
+		<top>16</top>
+		<width>532</width>
+		<height>276</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmHeroItemsAlchemy">
+		<left>438</left>
+		<top>310</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmHeroItemsOK">
+		<left>438</left>
+		<top>350</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 </ns2:xmlLayoutContainer>

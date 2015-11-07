@@ -177,9 +177,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Items in the Enchantments box */
 	private SpellsTableModel spellsTableModel;
 
-	/** Enchantments table */
-	private JTable spellsTable;
-	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -464,7 +461,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		// Overland enchantments grid
 		spellsTableModel = new SpellsTableModel ();
-		spellsTable = new JTable ();
+		final JTable spellsTable = new JTable ();
 		spellsTable.setOpaque (false);
 		spellsTable.setModel (spellsTableModel);
 		spellsTable.setDefaultRenderer (MemoryMaintainedSpell.class, getMemoryMaintainedSpellTableCellRenderer ());

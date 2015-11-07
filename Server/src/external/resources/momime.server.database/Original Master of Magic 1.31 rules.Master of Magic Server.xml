@@ -24283,6 +24283,8 @@
 	<languageCategory languageCategoryID="frmHeroItems">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Bank" />
+		<languageEntry languageEntryID="Alchemy" />
+		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="DestroyTitle" />
 		<languageEntry languageEntryID="Destroy" />
 	</languageCategory>

@@ -6636,6 +6636,12 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="Bank">
 			<languageEntryText>Fortress Vault</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Alchemy">
+			<languageEntryText>Alchemy</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="DestroyTitle">
 			<languageEntryText>Destroy hero item</languageEntryText>
 		</languageEntry>

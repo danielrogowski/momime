@@ -12,19 +12,26 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -35,10 +42,15 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.draganddrop.TransferableFactory;
 import momime.client.ui.draganddrop.TransferableHeroItem;
+import momime.client.ui.renderer.HeroTableCellRenderer;
 import momime.client.ui.renderer.UnassignedHeroItemCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.HeroItemCalculations;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Screen for redistributing items between heroes, the bank vault, or destroying them on the anvil for MP
@@ -54,6 +66,9 @@ public final class HeroItemsUI extends MomClientFrameUI
 	/** Small font */
 	private Font smallFont;
 	
+	/** Medium font */
+	private Font mediumFont;
+
 	/** Large font */
 	private Font largeFont;
 	
@@ -69,6 +84,9 @@ public final class HeroItemsUI extends MomClientFrameUI
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 	
+	/** Alchemy UI */
+	private AlchemyUI alchemyUI;
+	
 	/** The data flavour for hero items */
 	private DataFlavor heroItemFlavour;
 	
@@ -81,14 +99,26 @@ public final class HeroItemsUI extends MomClientFrameUI
 	/** Items not assigned to any hero */
 	private JList<NumberedHeroItem> bankList;
 	
-	/** Bank cell renderer */
+	/** Bank list cell renderer */
 	private UnassignedHeroItemCellRenderer unassignedHeroItemCellRenderer;
+
+	/** Hero table cell renderer */
+	private HeroTableCellRenderer heroTableCellRenderer;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 
 	/** Hero item calculations */
 	private HeroItemCalculations heroItemCalculations;
+	
+	/** Heroes in the grid */
+	private HeroesTableModel heroesTableModel;
+
+	/** Alchemy action */
+	private Action alchemyAction;
+	
+	/** OK action */
+	private Action okAction;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -101,8 +131,12 @@ public final class HeroItemsUI extends MomClientFrameUI
 
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/heroItems/background.png");
+		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button118x30Normal.png");
+		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button118x30Pressed.png");
 		
 		// Actions
+		alchemyAction = new LoggingAction ((ev) -> getAlchemyUI ().setVisible (true));
+		okAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
@@ -119,6 +153,14 @@ public final class HeroItemsUI extends MomClientFrameUI
 		
 		bankTitle = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (bankTitle, "frmHeroItemsBankLabel");
+
+		final JButton alchemyButton = getUtils ().createImageButton (alchemyAction, MomUIConstants.GRAY, MomUIConstants.SILVER, getMediumFont (),
+			buttonNormal, buttonPressed, buttonNormal);
+		contentPane.add (alchemyButton, "frmHeroItemsAlchemy");
+		
+		final JButton okButton = getUtils ().createImageButton (okAction, MomUIConstants.GRAY, MomUIConstants.SILVER, getMediumFont (),
+			buttonNormal, buttonPressed, buttonNormal);
+		contentPane.add (okButton, "frmHeroItemsOK");
 		
 		// Dragging items onto the anvil destroys them and gets MP back
 		final JPanel anvil = new JPanel ();
@@ -162,8 +204,9 @@ public final class HeroItemsUI extends MomClientFrameUI
 			}
 		});
 		
-		// Set up cell renderer
+		// Set up renderers
 		getUnassignedHeroItemCellRenderer ().init ();
+		getHeroTableCellRenderer ().init ();
 		
 		// Set up the list
 		bankItems = new DefaultListModel<NumberedHeroItem> ();
@@ -177,7 +220,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 		spellsScroll.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add (spellsScroll, "frmHeroItemsBank");
 
-		// Set up dragging and dropping
+		// Dragging items from the unassigned list
 		DragSource.getDefaultDragSource ().createDefaultDragGestureRecognizer (bankList, DnDConstants.ACTION_MOVE, (ev) ->
 		{
 			final int index = bankList.locationToIndex (ev.getDragOrigin ());
@@ -204,7 +247,24 @@ public final class HeroItemsUI extends MomClientFrameUI
 				}
 		});
 		
-		// Load the initial list
+		// Heroes grid
+		heroesTableModel = new HeroesTableModel ();
+		final JTable heroesTable = new JTable ();
+		heroesTable.setOpaque (false);
+		heroesTable.setModel (heroesTableModel);
+		heroesTable.setDefaultRenderer (MemoryUnit.class, getHeroTableCellRenderer ());
+		heroesTable.setRowHeight (getUtils ().loadImage ("/momime.client.graphics/ui/heroItems/heroItemsGridCell.png").getHeight ());
+		heroesTable.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
+		heroesTable.setTableHeader (null);
+		heroesTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);
+		heroesTable.getColumnModel ().getColumn (0).setPreferredWidth (270);
+		heroesTable.getColumnModel ().getColumn (1).setPreferredWidth (262);
+
+		final JScrollPane heroesScrollPane = getUtils ().createTransparentScrollPane (heroesTable);
+		contentPane.add (heroesScrollPane, "frmHeroItemsHeroes");
+		
+		// Load the initial lists
+		refreshHeroes ();
 		refreshItemsBank ();
 		
 		// Lock frame size
@@ -218,6 +278,28 @@ public final class HeroItemsUI extends MomClientFrameUI
 			8));
 		
 		log.trace ("Exiting init");
+	}
+	
+	/**
+	 * Refresh list of heroes
+	 * @throws RecordNotFoundException If we can't find the unit definition of one of our units
+	 */
+	public final void refreshHeroes () throws RecordNotFoundException
+	{
+		log.trace ("Entering refreshHeroes");
+
+		if (heroesTableModel != null)
+		{
+			heroesTableModel.getUnits ().clear ();
+			for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+				if ((thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+					(getClient ().getClientDB ().findUnit (thisUnit.getUnitID (), "refreshHeroes").getUnitMagicRealm ().equals
+						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
+					
+					heroesTableModel.getUnits ().add (thisUnit);
+		}
+		
+		log.trace ("Exiting refreshHeroes");
 	}
 	
 	/**
@@ -246,8 +328,11 @@ public final class HeroItemsUI extends MomClientFrameUI
 		log.trace ("Entering languageChanged");
 
 		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmHeroItems", "Title"));
-		
 		bankTitle.setText (getLanguage ().findCategoryEntry ("frmHeroItems", "Bank"));
+
+		// Buttons
+		alchemyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmHeroItems", "Alchemy"));
+		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmHeroItems", "OK"));
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -284,6 +369,22 @@ public final class HeroItemsUI extends MomClientFrameUI
 		smallFont = font;
 	}
 
+	/**
+	 * @return Medium font
+	 */
+	public final Font getMediumFont ()
+	{
+		return mediumFont;
+	}
+
+	/**
+	 * @param font Medium font
+	 */
+	public final void setMediumFont (final Font font)
+	{
+		mediumFont = font;
+	}
+	
 	/**
 	 * @return Large font
 	 */
@@ -365,6 +466,22 @@ public final class HeroItemsUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return Alchemy UI
+	 */
+	public final AlchemyUI getAlchemyUI ()
+	{
+		return alchemyUI;
+	}
+
+	/**
+	 * @param ui Alchemy UI
+	 */
+	public final void setAlchemyUI (final AlchemyUI ui)
+	{
+		alchemyUI = ui;
+	}
+	
+	/**
 	 * @return The data flavour for hero items
 	 */
 	public final DataFlavor getHeroItemFlavour ()
@@ -397,6 +514,22 @@ public final class HeroItemsUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return Hero table cell renderer
+	 */
+	public final HeroTableCellRenderer getHeroTableCellRenderer ()
+	{
+		return heroTableCellRenderer;
+	}
+
+	/**
+	 * @param rend Hero table cell renderer
+	 */
+	public final void setHeroTableCellRenderer (final HeroTableCellRenderer rend)
+	{
+		heroTableCellRenderer = rend;
+	}
+	
+	/**
 	 * @return Prototype frame creator
 	 */
 	public final PrototypeFrameCreator getPrototypeFrameCreator ()
@@ -426,5 +559,59 @@ public final class HeroItemsUI extends MomClientFrameUI
 	public final void setHeroItemCalculations (final HeroItemCalculations calc)
 	{
 		heroItemCalculations = calc;
+	}
+
+	/**
+	 * Table model for displaying the heroesgrid
+	 */
+	private class HeroesTableModel extends AbstractTableModel
+	{
+		/** Underlying storage */
+		private List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		/**
+		 * @return Underlying storage
+		 */
+		public final List<MemoryUnit> getUnits ()
+		{
+			return units;
+		}
+		
+		/**
+		 * @return Enough rows to fit however many heroes we have to draw, rounding up
+		 */
+		@Override
+		public final int getRowCount ()
+		{
+			return (getUnits ().size () + 1) / 2;
+		}
+
+		/**
+		 * @return Fixed at 2 columns
+		 */
+		@Override
+		public final int getColumnCount ()
+		{
+			return 2;
+		}
+
+		/**
+		 * @return Hero to display at the specified grid location
+		 */
+		@Override
+		public final Object getValueAt (final int rowIndex, final int columnIndex)
+		{
+			final int index = (rowIndex * 2) + columnIndex;
+			return ((index < 0) || (index >= getUnits ().size ())) ? null : getUnits ().get (index);
+		}
+
+		/**
+		 * @return Columns are all units
+		 */
+		@Override
+		public final Class<?> getColumnClass (final int columnIndex)
+		{
+			return MemoryUnit.class;
+		}
 	}
 }

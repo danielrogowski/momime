@@ -139,15 +139,16 @@ public final class TestHeroItemsUI
 			unit.setStatus (UnitStatusID.ALIVE);
 			unit.setOwningPlayerID (1);
 			fow.getUnit ().add (unit);
+			
+			for (int s = 0; s < 3; s++)
+				unit.getHeroItemSlot ().add (new MemoryUnitHeroItemSlot ());
 
 			// Hero name
 			when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Name of hero #" + n);
 		}
 		
 		// Give one of them a real item (cheat by reusing one of the unassigned ones to save building another object)
-		final MemoryUnitHeroItemSlot itemContainer = new MemoryUnitHeroItemSlot ();
-		itemContainer.setHeroItem (priv.getUnassignedHeroItem ().get (0));
-		fow.getUnit ().get (0).getHeroItemSlot ().add (itemContainer);
+		fow.getUnit ().get (0).getHeroItemSlot ().get (0).setHeroItem (priv.getUnassignedHeroItem ().get (0));
 		
 		// Client
 		final MomClient client = mock (MomClient.class);

@@ -21,6 +21,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Unit;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
@@ -31,6 +32,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.UnitAddBumpTypeID;
@@ -99,7 +101,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		newUnit.setWeaponGrade (weaponGrade);
 		newUnit.setStatus (UnitStatusID.ALIVE);		// Assume unit is alive - heroes being initialized will reset this value
 
-		getUnitUtils ().initializeUnitSkills (newUnit, startingExperience, db);
+		final Unit unitDef = getUnitUtils ().initializeUnitSkills (newUnit, startingExperience, db);
+		
+		// Add empty slots for hero items
+		for (int slotNumber = 0; slotNumber < unitDef.getHeroItemSlot ().size (); slotNumber++)
+			newUnit.getHeroItemSlot ().add (new MemoryUnitHeroItemSlot ());
 
 		log.trace ("Exiting createMemoryUnit");
 		return newUnit;

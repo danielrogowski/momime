@@ -102,6 +102,23 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 	}
 	
 	/**
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @return Slot number (0,1,2) at this location within the panel, or -1 if the location is outside the panel or not part of one of the slots
+	 */
+	public final int getSlotNumberAt (final int x, final int y)
+	{
+		final int slotNumber;
+		final XmlLayoutComponent slot = getHeroLayout ().findComponentAt (x, y);
+		if ((slot != null) && (slot.getName ().startsWith ("frmHeroItemsSlot")))
+			slotNumber = Integer.parseInt (slot.getName ().substring (slot.getName ().length () - 1)) - 1;
+		else
+			slotNumber = -1;
+		
+		return slotNumber;
+	}
+	
+	/**
 	 * Show the hero portrait, and either the item slots or the item itself if there is one in the slot
 	 */
 	@Override

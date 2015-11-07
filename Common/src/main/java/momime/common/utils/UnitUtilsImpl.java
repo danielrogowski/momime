@@ -774,6 +774,8 @@ public final class UnitUtilsImpl implements UnitUtils
 					destBonus.setHeroItemBonusID (srcBonus.getHeroItemBonusID ());
 					destItem.getHeroItemChosenBonus ().add (destBonus);
 				}
+				
+				destItemSlot.setHeroItem (destItem);
 			}
 			dest.getHeroItemSlot ().add (destItemSlot);
 		}

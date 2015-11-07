@@ -19,18 +19,24 @@
 	<component name="frmHeroItemsSlot1">
 		<left>94</left>
 		<top>42</top>
+		<width>34</width>
+		<height>34</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmHeroItemsSlot2">
 		<left>152</left>
 		<top>42</top>
+		<width>34</width>
+		<height>34</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmHeroItemsSlot3">
 		<left>210</left>
 		<top>42</top>
+		<width>34</width>
+		<height>34</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

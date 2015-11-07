@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
@@ -47,10 +48,15 @@ import momime.client.ui.renderer.UnassignedHeroItemCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemSlotType;
+import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.clienttoserver.HeroItemLocationID;
+import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
 
 /**
  * Screen for redistributing items between heroes, the bank vault, or destroying them on the anvil for MP
@@ -261,7 +267,106 @@ public final class HeroItemsUI extends MomClientFrameUI
 		heroesTable.getColumnModel ().getColumn (1).setPreferredWidth (262);
 
 		final JScrollPane heroesScrollPane = getUtils ().createTransparentScrollPane (heroesTable);
+		heroesScrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add (heroesScrollPane, "frmHeroItemsHeroes");
+
+		// Handle dragging items onto the heroes
+		heroesTable.setTransferHandler (new TransferHandler ()
+		{
+			/**
+			 * @return Whether the location the mouse was released on within the heroes grid can accept a dragged item or not
+			 */
+			@Override
+			public final boolean canImport (final TransferSupport support)
+			{
+				boolean imported = false;
+				if (support.getTransferable ().isDataFlavorSupported (getHeroItemFlavour ()))
+					try
+					{
+						final JTable.DropLocation dropLocation = (JTable.DropLocation) support.getDropLocation ();
+						final int index = (dropLocation.getRow () * 2) + dropLocation.getColumn ();
+						if ((index >= 0) && (index < heroesTableModel.getUnits ().size ()))
+						{
+							final MemoryUnit dropUnit = heroesTableModel.getUnits ().get (index);
+							
+							// Now check the exact point within this unit that the mouse it at
+							final Rectangle cellRect = heroesTable.getCellRect (dropLocation.getRow (), dropLocation.getColumn (), false);
+							final int x = dropLocation.getDropPoint ().x - cellRect.x;
+							final int y = dropLocation.getDropPoint ().y - cellRect.y;
+							final int slotNumber = getHeroTableCellRenderer ().getSlotNumberAt (x, y);
+							if (slotNumber >= 0)
+								
+								// Is there an item already in the slot?
+								if ((slotNumber < dropUnit.getHeroItemSlot ().size ()) && (dropUnit.getHeroItemSlot ().get (slotNumber).getHeroItem () == null))
+								{
+									// Is the item being dragged appropriate for the slot type?
+									final Unit unitDef = getClient ().getClientDB ().findUnit (dropUnit.getUnitID (), "HeroItemsUI-canImport");
+									if (slotNumber < unitDef.getHeroItemSlot ().size ())
+									{
+										final String slotTypeID = unitDef.getHeroItemSlot ().get (slotNumber).getHeroItemSlotTypeID ();
+										final HeroItemSlotType slotType = getClient ().getClientDB ().findHeroItemSlotType (slotTypeID, "HeroItemsUI-canImport");
+										final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
+										
+										for (final HeroSlotAllowedItemType allowed : slotType.getHeroSlotAllowedItemType ())
+											if (allowed.getHeroItemTypeID ().equals (item.getHeroItemTypeID ()))
+												imported = true;
+									}
+								}
+						}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				
+				return imported;
+			}
+			
+			/**
+			 * Handles actually dragging an item onto a hero (either from another hero, or the bank of unassigned items)
+			 */
+			@Override
+			public final boolean importData (final TransferSupport support)
+			{
+				boolean imported = false;
+				if (canImport (support))
+					try
+					{
+						final JTable.DropLocation dropLocation = (JTable.DropLocation) support.getDropLocation ();
+						final int index = (dropLocation.getRow () * 2) + dropLocation.getColumn ();
+						if ((index >= 0) && (index < heroesTableModel.getUnits ().size ()))
+						{
+							final MemoryUnit dropUnit = heroesTableModel.getUnits ().get (index);
+
+							// Now check the exact point within this unit that the mouse was released
+							final Rectangle cellRect = heroesTable.getCellRect (dropLocation.getRow (), dropLocation.getColumn (), false);
+							final int x = dropLocation.getDropPoint ().x - cellRect.x;
+							final int y = dropLocation.getDropPoint ().y - cellRect.y;
+							final int slotNumber = getHeroTableCellRenderer ().getSlotNumberAt (x, y);
+							if (slotNumber >= 0)
+							{
+								// We've already checked that its allowed, so just send the message
+								final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
+								
+								final RequestMoveHeroItemMessage msg = new RequestMoveHeroItemMessage ();
+								msg.setFromLocation (HeroItemLocationID.UNASSIGNED);
+								msg.setToLocation (HeroItemLocationID.HERO);
+								msg.setToUnitURN (dropUnit.getUnitURN ());
+								msg.setToSlotNumber (slotNumber);
+								msg.setHeroItemURN (item.getHeroItemURN ());
+								getClient ().getServerConnection ().sendMessageToServer (msg);
+								
+								imported = true;
+							}
+						}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				return imported;
+			}
+		});
 		
 		// Load the initial lists
 		refreshHeroes ();
@@ -297,6 +402,8 @@ public final class HeroItemsUI extends MomClientFrameUI
 						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
 					
 					heroesTableModel.getUnits ().add (thisUnit);
+			
+			heroesTableModel.fireTableDataChanged ();
 		}
 		
 		log.trace ("Exiting refreshHeroes");

@@ -163,7 +163,10 @@ public final class TestOverlandMapUI
 			}
 		});
 		
-		// Layout
+		// Layouts
+		final XmlLayoutContainerEx rhpLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel.xml"));
+		rhpLayout.buildMaps ();
+
 		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
 		surveyorLayout.buildMaps ();
 		
@@ -181,6 +184,7 @@ public final class TestOverlandMapUI
 		rhp.setSmallFont (CreateFontsForTests.getSmallFont ());
 		rhp.setMediumFont (CreateFontsForTests.getMediumFont ());
 		rhp.setLargeFont (CreateFontsForTests.getLargeFont ());
+		rhp.setOverlandMapRightHandPanelLayout (rhpLayout);
 		rhp.setSurveyorLayout (surveyorLayout);
 		rhp.setWizardClientUtils (wizardClientUtils);
 

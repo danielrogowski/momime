@@ -3,7 +3,6 @@ package momime.client.ui.frames;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -19,11 +18,13 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
@@ -39,6 +40,8 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.HeroItemTypeGfx;
+import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.ShortcutKeyLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.draganddrop.TransferableFactory;
@@ -51,12 +54,14 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Shortcut;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.HeroItemLocationID;
 import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
+import momime.common.utils.ResourceValueUtils;
 
 /**
  * Screen for redistributing items between heroes, the bank vault, or destroying them on the anvil for MP
@@ -116,6 +121,9 @@ public final class HeroItemsUI extends MomClientFrameUI
 
 	/** Hero item calculations */
 	private HeroItemCalculations heroItemCalculations;
+
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
 	
 	/** Heroes in the grid */
 	private HeroesTableModel heroesTableModel;
@@ -125,6 +133,18 @@ public final class HeroItemsUI extends MomClientFrameUI
 	
 	/** OK action */
 	private Action okAction;
+
+	/** Partially filled out movement message - created and the "from" parts filled out when we start a drag - completed and sent when we end a drop */
+	private RequestMoveHeroItemMessage requestMoveHeroItemMessage;
+
+	/** Content pane */
+	private JPanel contentPane;
+	
+	/** Gold amount stored */
+	private JLabel goldAmountStored;
+	
+	/** Mana amount stored */
+	private JLabel manaAmountStored;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -145,7 +165,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 		okAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
+		contentPane = new JPanel ()
 		{
 			@Override
 			protected final void paintComponent (final Graphics g)
@@ -167,6 +187,12 @@ public final class HeroItemsUI extends MomClientFrameUI
 		final JButton okButton = getUtils ().createImageButton (okAction, MomUIConstants.GRAY, MomUIConstants.SILVER, getMediumFont (),
 			buttonNormal, buttonPressed, buttonNormal);
 		contentPane.add (okButton, "frmHeroItemsOK");
+
+		goldAmountStored = getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont ());
+		contentPane.add (goldAmountStored, "frmHeroItemsGoldStored");
+		
+		manaAmountStored = getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont ());
+		contentPane.add (manaAmountStored, "frmHeroItemsManaStored");
 		
 		// Dragging items onto the anvil destroys them and gets MP back
 		final JPanel anvil = new JPanel ();
@@ -185,7 +211,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 			public final boolean importData (final TransferSupport support)
 			{
 				boolean imported = false;
-				if (canImport (support))
+				if ((requestMoveHeroItemMessage != null) && (canImport (support)))
 					try
 					{
 						final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
@@ -197,9 +223,10 @@ public final class HeroItemsUI extends MomClientFrameUI
 						msg.setText (getLanguage ().findCategoryEntry ("frmHeroItems", "Destroy").replaceAll
 							("ITEM_NAME", item.getHeroItemName ()).replaceAll
 							("MANA_GAINED", getTextUtils ().intToStrCommas (manaGained)));
-						msg.setDestroyHeroItem (item);
+						msg.setDestroyHeroItemMessage (requestMoveHeroItemMessage);
 						msg.setVisible (true);
 						
+						requestMoveHeroItemMessage = null;
 						imported = true;
 					}
 					catch (final Exception e)
@@ -238,9 +265,13 @@ public final class HeroItemsUI extends MomClientFrameUI
 					// Create a mouse cursor that looks like the chosen item
 					final HeroItemTypeGfx itemGfx = getGraphicsDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
 					final BufferedImage itemImage = getUtils ().loadImage (itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ()));
-					final Image doubleItemImage = getUtils ().doubleSize (itemImage);
 					final Cursor cursor = Toolkit.getDefaultToolkit ().createCustomCursor
-						(doubleItemImage, new Point (itemImage.getWidth (), itemImage.getHeight ()), item.getHeroItemName ());
+						(getUtils ().doubleSize (itemImage), new Point (itemImage.getWidth (), itemImage.getHeight ()), item.getHeroItemName ());
+					
+					// Keep a note of where we dragged it from, and which item it is
+					requestMoveHeroItemMessage = new RequestMoveHeroItemMessage ();
+					requestMoveHeroItemMessage.setFromLocation (HeroItemLocationID.UNASSIGNED);
+					requestMoveHeroItemMessage.setHeroItemURN (item.getHeroItemURN ());
 					
 					// Initiate drag and drop
 					final TransferableHeroItem trans = getTransferableFactory ().createTransferableHeroItem ();
@@ -251,6 +282,50 @@ public final class HeroItemsUI extends MomClientFrameUI
 				{
 					log.error (e, e);
 				}
+		});
+
+		// Dragging items to the unassigned list
+		bankList.setTransferHandler (new TransferHandler ()
+		{
+			@Override
+			public final boolean canImport (final TransferSupport support)
+			{
+				return support.getTransferable ().isDataFlavorSupported (getHeroItemFlavour ());
+			}
+			
+			@Override
+			public final boolean importData (final TransferSupport support)
+			{
+				boolean imported = false;
+				if ((requestMoveHeroItemMessage != null) && (canImport (support)))
+					try
+					{
+						// Check if bank is full
+						if ((getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank () != null) &&
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ().size () >= getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank ()))
+						{
+							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+							msg.setTitleLanguageCategoryID ("frmHeroItems");
+							msg.setTitleLanguageEntryID ("BankFullTitle");
+							msg.setTextLanguageCategoryID ("frmHeroItems");
+							msg.setTextLanguageEntryID ("BankFull");
+							msg.setVisible (true);
+						}
+						else
+						{
+							requestMoveHeroItemMessage.setToLocation (HeroItemLocationID.UNASSIGNED);
+							getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
+							imported = true;
+						}
+
+						requestMoveHeroItemMessage = null;
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				return imported;
+			}
 		});
 		
 		// Heroes grid
@@ -270,7 +345,55 @@ public final class HeroItemsUI extends MomClientFrameUI
 		heroesScrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add (heroesScrollPane, "frmHeroItemsHeroes");
 
-		// Handle dragging items onto the heroes
+		// Dragging items from heroes
+		DragSource.getDefaultDragSource ().createDefaultDragGestureRecognizer (heroesTable, DnDConstants.ACTION_MOVE, (ev) ->
+		{
+			final int rowIndex = heroesTable.rowAtPoint (ev.getDragOrigin ());
+			final int columnIndex = heroesTable.columnAtPoint (ev.getDragOrigin ());
+			final int index = (rowIndex * 2) + columnIndex;
+			if ((index >= 0) && (index < heroesTableModel.getUnits ().size ()))
+				try
+				{
+					final MemoryUnit dragUnit = heroesTableModel.getUnits ().get (index);
+
+					// Now check the exact point within this unit that the mouse it at
+					final Rectangle cellRect = heroesTable.getCellRect (rowIndex, columnIndex, false);
+					final int x = ev.getDragOrigin ().x - cellRect.x;
+					final int y = ev.getDragOrigin ().y - cellRect.y;
+					final int slotNumber = getHeroTableCellRenderer ().getSlotNumberAt (x, y);
+					if ((slotNumber >= 0) && (slotNumber < dragUnit.getHeroItemSlot ().size ()))
+					{
+						// Is there an item in the slot to drag?
+						final NumberedHeroItem item = dragUnit.getHeroItemSlot ().get (slotNumber).getHeroItem ();
+						if (item != null)
+						{
+							// Create a mouse cursor that looks like the chosen item
+							final HeroItemTypeGfx itemGfx = getGraphicsDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
+							final BufferedImage itemImage = getUtils ().loadImage (itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ()));
+							final Cursor cursor = Toolkit.getDefaultToolkit ().createCustomCursor
+								(getUtils ().doubleSize (itemImage), new Point (itemImage.getWidth (), itemImage.getHeight ()), item.getHeroItemName ());
+							
+							// Keep a note of where we dragged it from, and which item it is
+							requestMoveHeroItemMessage = new RequestMoveHeroItemMessage ();
+							requestMoveHeroItemMessage.setFromLocation (HeroItemLocationID.HERO);
+							requestMoveHeroItemMessage.setFromUnitURN (dragUnit.getUnitURN ());
+							requestMoveHeroItemMessage.setFromSlotNumber (slotNumber);
+							requestMoveHeroItemMessage.setHeroItemURN (item.getHeroItemURN ());
+							
+							// Initiate drag and drop
+							final TransferableHeroItem trans = getTransferableFactory ().createTransferableHeroItem ();
+							trans.setHeroItem (item);
+							ev.startDrag (cursor, trans);
+						}
+					}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+		});
+		
+		// Handle dragging items onto heroes
 		heroesTable.setTransferHandler (new TransferHandler ()
 		{
 			/**
@@ -329,7 +452,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 			public final boolean importData (final TransferSupport support)
 			{
 				boolean imported = false;
-				if (canImport (support))
+				if ((requestMoveHeroItemMessage != null) && (canImport (support)))
 					try
 					{
 						final JTable.DropLocation dropLocation = (JTable.DropLocation) support.getDropLocation ();
@@ -345,17 +468,13 @@ public final class HeroItemsUI extends MomClientFrameUI
 							final int slotNumber = getHeroTableCellRenderer ().getSlotNumberAt (x, y);
 							if (slotNumber >= 0)
 							{
-								// We've already checked that its allowed, so just send the message
-								final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
-								
-								final RequestMoveHeroItemMessage msg = new RequestMoveHeroItemMessage ();
-								msg.setFromLocation (HeroItemLocationID.UNASSIGNED);
-								msg.setToLocation (HeroItemLocationID.HERO);
-								msg.setToUnitURN (dropUnit.getUnitURN ());
-								msg.setToSlotNumber (slotNumber);
-								msg.setHeroItemURN (item.getHeroItemURN ());
-								getClient ().getServerConnection ().sendMessageToServer (msg);
-								
+								// We've already checked that its allowed and filled out the "from" parts, so just send the message
+								requestMoveHeroItemMessage.setToLocation (HeroItemLocationID.HERO);
+								requestMoveHeroItemMessage.setToUnitURN (dropUnit.getUnitURN ());
+								requestMoveHeroItemMessage.setToSlotNumber (slotNumber);
+								getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
+
+								requestMoveHeroItemMessage = null;
 								imported = true;
 							}
 						}
@@ -371,6 +490,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 		// Load the initial lists
 		refreshHeroes ();
 		refreshItemsBank ();
+		updateGlobalEconomyValues ();
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -381,6 +501,9 @@ public final class HeroItemsUI extends MomClientFrameUI
 			(new int [] {0, 798, 798, 570, 570, 182, 182, 0},
 			new int [] {0, 0, 304, 304, 394, 394, 304, 304},
 			8));
+		
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.ALCHEMY, alchemyAction);
 		
 		log.trace ("Exiting init");
 	}
@@ -427,6 +550,41 @@ public final class HeroItemsUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * Updates one 'stored' global economy value
+	 * 
+	 * @param label Label to update
+	 * @param productionTypeID Production type to display in this label
+	 */
+	private final void updateAmountStored (final JLabel label, final String productionTypeID)
+	{
+		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
+		if (label != null)
+		{
+			String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID));
+		
+			final ProductionTypeLang productionType = getLanguage ().findProductionType (productionTypeID);
+			if ((productionType != null) && (productionType.getProductionTypeSuffix () != null))
+				amountStored = amountStored + " " + productionType.getProductionTypeSuffix ();
+			
+			label.setText (amountStored);
+		}
+	}
+	
+	/**
+	 * Updates the form when our resource values change 
+	 */
+	public final void updateGlobalEconomyValues ()
+	{
+		log.trace ("Entering updateGlobalEconomyValues");
+		
+		updateAmountStored (goldAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		updateAmountStored (manaAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+		
+		log.trace ("Exiting updateGlobalEconomyValues");
+	}
+	
+	/**
 	 * Update all labels and such from the chosen language 
 	 */
 	@Override
@@ -440,6 +598,23 @@ public final class HeroItemsUI extends MomClientFrameUI
 		// Buttons
 		alchemyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmHeroItems", "Alchemy"));
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmHeroItems", "OK"));
+	
+		// Shortcut keys
+		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
+		for (final Object shortcut : contentPane.getActionMap ().keys ())
+			if (shortcut instanceof Shortcut)
+			{
+				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				if (shortcutKey != null)
+				{
+					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
+					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
+					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
+				}
+			}
+		
+		// GP or MP suffix may have changed
+		updateGlobalEconomyValues ();
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -668,6 +843,22 @@ public final class HeroItemsUI extends MomClientFrameUI
 		heroItemCalculations = calc;
 	}
 
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+	
 	/**
 	 * Table model for displaying the heroesgrid
 	 */

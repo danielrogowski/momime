@@ -19,10 +19,12 @@ import java.util.Map.Entry;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -43,12 +45,14 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.ShortcutKeyLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.ArmyListCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -145,6 +149,9 @@ public final class ArmyListUI extends MomClientFrameUI
 	/** Rations upkeep for entire army */
 	private JLabel rationsUpkeepLabel;
 	
+	/** Content pane */
+	private JPanel contentPane;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -168,7 +175,7 @@ public final class ArmyListUI extends MomClientFrameUI
 		okAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
+		contentPane = new JPanel ()
 		{
 			@Override
 			protected final void paintComponent (final Graphics g)
@@ -313,6 +320,9 @@ public final class ArmyListUI extends MomClientFrameUI
 			(new int [] {10, 6, 6, 10, 0, 0,		830, 830, 820, 824, 824, 820,		820, 824, 824, 820, 830, 830,		0, 0, 10, 6, 6, 10},
 			new int [] {38, 38, 30, 30, 10, 0,	0, 10, 30, 30, 38, 38,					378, 378, 386, 386, 406, 416,		416, 406, 386, 386, 378, 378},
 			24));		
+		
+		// Shortcut keys
+		contentPane.getActionMap ().put (Shortcut.HERO_ITEMS, heroItemsAction);
 		
 		log.trace ("Exiting init");
 	}
@@ -480,6 +490,20 @@ public final class ArmyListUI extends MomClientFrameUI
 		// Buttons
 		heroItemsAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmArmyList", "HeroItems"));
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmArmyList", "OK"));
+		
+		// Shortcut keys
+		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
+		for (final Object shortcut : contentPane.getActionMap ().keys ())
+			if (shortcut instanceof Shortcut)
+			{
+				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
+				if (shortcutKey != null)
+				{
+					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
+					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
+					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
+				}
+			}
 		
 		log.trace ("Exiting languageChanged");
 	}

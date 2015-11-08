@@ -24287,6 +24287,8 @@
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="DestroyTitle" />
 		<languageEntry languageEntryID="Destroy" />
+		<languageEntry languageEntryID="BankFullTitle" />
+		<languageEntry languageEntryID="BankFull" />
 	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />

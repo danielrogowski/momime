@@ -5,8 +5,14 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -15,6 +21,8 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.UnitGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -32,6 +40,8 @@ import momime.common.database.Unit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
@@ -62,6 +72,11 @@ public final class TestUnitInfoUI
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from Graphics XML
+		final UnitGfx unitGfx = new UnitGfx ();
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
 
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
@@ -72,7 +87,6 @@ public final class TestUnitInfoUI
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
-		when (client.getOurPlayerID ()).thenReturn (3);
 		
 		// FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -90,11 +104,28 @@ public final class TestUnitInfoUI
 		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		pd.setPlayerID (3);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (pd, pub, null);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (unitOwner);
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "showUnit")).thenReturn (unitOwner);
 
+		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
+		when (client.getPlayers ()).thenReturn (players);
+		
 		// Set up unit to display
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("UN001");
-		unit.setOwningPlayerID (3);
+		unit.setOwningPlayerID (pd.getPlayerID ());
 		
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
@@ -127,6 +158,7 @@ public final class TestUnitInfoUI
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
+		panel.setGraphicsDB (gfx);
 		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
@@ -137,6 +169,8 @@ public final class TestUnitInfoUI
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
+		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		panel.setPlayerPickUtils (mock (PlayerPickUtils.class));
 		
 		// Set up form
 		final UnitInfoUI frame = new UnitInfoUI (); 
@@ -176,6 +210,11 @@ public final class TestUnitInfoUI
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
+		// Mock entries from Graphics XML
+		final UnitGfx unitGfx = new UnitGfx ();
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
+		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
@@ -185,7 +224,6 @@ public final class TestUnitInfoUI
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
-		when (client.getOurPlayerID ()).thenReturn (3);
 		
 		// FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -204,10 +242,27 @@ public final class TestUnitInfoUI
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
 
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		pd.setPlayerID (3);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (pd, pub, null);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (unitOwner);
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "showUnit")).thenReturn (unitOwner);
+
+		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID () + 1);		// Purposefully make it different
+		when (client.getPlayers ()).thenReturn (players);
+		
 		// Set up unit to display
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("UN001");
-		unit.setOwningPlayerID (4);
+		unit.setOwningPlayerID (pd.getPlayerID ());
 		
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
@@ -240,6 +295,7 @@ public final class TestUnitInfoUI
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
+		panel.setGraphicsDB (gfx);
 		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
@@ -250,6 +306,8 @@ public final class TestUnitInfoUI
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
+		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		panel.setPlayerPickUtils (mock (PlayerPickUtils.class));
 		
 		// Set up form
 		final UnitInfoUI frame = new UnitInfoUI (); 

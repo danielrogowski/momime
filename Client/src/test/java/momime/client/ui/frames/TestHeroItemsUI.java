@@ -28,6 +28,7 @@ import momime.client.ui.draganddrop.TransferableHeroItem;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.HeroTableCellRenderer;
 import momime.client.ui.renderer.UnassignedHeroItemCellRenderer;
+import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.CommonDatabaseConstants;
@@ -39,6 +40,7 @@ import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ResourceValueUtils;
 
 /**
  * Tests the HeroItemsUI class
@@ -197,6 +199,8 @@ public final class TestHeroItemsUI
 		tableRenderer.setClient (client);
 		
 		// Set up form
+		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
+		
 		final HeroItemsUI items = new HeroItemsUI ();
 		items.setHeroItemsLayout (layout);
 		items.setUtils (utils);
@@ -211,10 +215,12 @@ public final class TestHeroItemsUI
 		items.setHeroTableCellRenderer (tableRenderer);
 		items.setTransferableFactory (transferableFactory);
 		items.setHeroItemFlavour (heroItemFlavour);
+		items.setResourceValueUtils (resourceValueUtils);
+		items.setTextUtils (new TextUtilsImpl ());
 		
 		// Display form		
 		items.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 		items.setVisible (false);
 	}	
 }

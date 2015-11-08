@@ -29,6 +29,7 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.HeroItemSlot;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillComponent;
@@ -73,8 +74,12 @@ public final class TestUnitServerUtilsImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.getHeroItemSlot ().add (new HeroItemSlot ());
+		
 		// Initialize skills method returns the unit definition
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.initializeUnitSkills (any (MemoryUnit.class), eq (100), eq (db))).thenReturn (unitDef);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
@@ -88,9 +93,7 @@ public final class TestUnitServerUtilsImpl
 		assertEquals ("UN001", unit.getUnitID ());
 		assertEquals (3, unit.getWeaponGrade ().intValue ());
 		assertEquals (UnitStatusID.ALIVE, unit.getStatus ());
-		
-		// Ensure skills were initialized
-		verify (unitUtils).initializeUnitSkills (any (AvailableUnit.class), eq (100), eq (db));
+		assertEquals (1, unit.getHeroItemSlot ().size ());
 	}
 	
 	/**

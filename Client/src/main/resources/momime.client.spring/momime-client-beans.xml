@@ -287,6 +287,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="alchemyUI" ref="alchemyUI" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype">
@@ -1535,6 +1536,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroTableCellRenderer" ref="heroTableCellRenderer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->

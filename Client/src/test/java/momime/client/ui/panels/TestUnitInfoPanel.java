@@ -15,7 +15,9 @@ import javax.swing.WindowConstants;
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.actions.LoggingAction;
@@ -25,11 +27,13 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeGfx;
 import momime.client.graphics.database.ProductionTypeImageGfx;
+import momime.client.graphics.database.UnitGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.BuildingLang;
@@ -56,6 +60,8 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 
 /**
@@ -238,6 +244,9 @@ public final class TestUnitInfoPanel
 		rationsImages.buildMap ();
 		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (rationsImages);
 		
+		final UnitGfx unitGfx = new UnitGfx ();
+		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
+		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
@@ -259,8 +268,19 @@ public final class TestUnitInfoPanel
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Players
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		pd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
 		when (client.getPlayers ()).thenReturn (players);
+
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "showUnit")).thenReturn (player);
 		
 		// FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -284,6 +304,7 @@ public final class TestUnitInfoPanel
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID ("UN001");
 		unit.setWeaponGrade (2);
+		unit.setOwningPlayerID (1);
 		
 		// Skills
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
@@ -378,6 +399,7 @@ public final class TestUnitInfoPanel
 		
 		// Set up panel
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUnitInfoLayout (layout);
@@ -397,6 +419,9 @@ public final class TestUnitInfoPanel
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
+		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		panel.setPlayerPickUtils (playerPickUtils);
+		panel.setClientConfig (new MomImeClientConfigEx ());
 		
 		if (actions != null)
 			for (final Action action : actions)

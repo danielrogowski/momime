@@ -30,7 +30,6 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.common.database.Shortcut;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.DismissUnitMessage;
 import momime.common.messages.clienttoserver.HeroItemLocationID;
@@ -116,7 +115,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 	private MemoryMaintainedSpell switchOffSpell;
 	
 	/** Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item */
-	private NumberedHeroItem destroyHeroItem;
+	private RequestMoveHeroItemMessage destroyHeroItemMessage;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -219,13 +218,11 @@ public final class MessageBoxUI extends MomClientDialogUI
 			}
 			
 			// Destroy a hero item
-			else if (getDestroyHeroItem () != null)
+			else if (getDestroyHeroItemMessage () != null)
 			{
-				final RequestMoveHeroItemMessage msg = new RequestMoveHeroItemMessage ();
-				msg.setFromLocation (HeroItemLocationID.UNASSIGNED);
-				msg.setToLocation (HeroItemLocationID.DESTROY);
-				msg.setHeroItemURN (getDestroyHeroItem ().getHeroItemURN ());
-				getClient ().getServerConnection ().sendMessageToServer (msg);
+				// The "from" parts of the message must have already been filled out
+				getDestroyHeroItemMessage ().setToLocation (HeroItemLocationID.DESTROY);
+				getClient ().getServerConnection ().sendMessageToServer (getDestroyHeroItemMessage ());
 			}
 			
 			else
@@ -254,7 +251,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		contentPane.setLayout (new XmlLayoutManager (getMessageBoxLayout ()));
 		
 		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
-			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItem () == null)) ? 1 : 2;
+			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItemMessage () == null)) ? 1 : 2;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmMessageBoxText");
@@ -623,16 +620,16 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/**
 	 * @return Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item
 	 */
-	public final NumberedHeroItem getDestroyHeroItem ()
+	public final RequestMoveHeroItemMessage getDestroyHeroItemMessage ()
 	{
-		return destroyHeroItem;
+		return destroyHeroItemMessage;
 	}
 
 	/**
-	 * @param item Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item
+	 * @param msg Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item
 	 */
-	public final void setDestroyHeroItem (final NumberedHeroItem item)
+	public final void setDestroyHeroItemMessage (final RequestMoveHeroItemMessage msg)
 	{
-		destroyHeroItem = item;
+		destroyHeroItemMessage = msg;
 	}
 }

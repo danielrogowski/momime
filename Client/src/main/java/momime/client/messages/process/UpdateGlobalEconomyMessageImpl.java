@@ -9,6 +9,7 @@ import momime.client.MomClient;
 import momime.client.ui.frames.AlchemyUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
@@ -52,6 +53,9 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	/** Combat UI */
 	private CombatUI combatUI;
 	
+	/** Hero items UI */
+	private HeroItemsUI heroItemsUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -73,6 +77,7 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		getMagicSlidersUI ().updateProductionLabels ();
 		getAlchemyUI ().updateSliderMaximum ();
+		getHeroItemsUI ().updateGlobalEconomyValues ();
 		
 		// We may now have more gold to rush buy construction projects
 		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
@@ -164,5 +169,21 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return Hero items UI
+	 */
+	public final HeroItemsUI getHeroItemsUI ()
+	{
+		return heroItemsUI;
+	}
+
+	/**
+	 * @param ui Hero items UI
+	 */
+	public final void setHeroItemsUI (final HeroItemsUI ui)
+	{
+		heroItemsUI = ui;
 	}
 }

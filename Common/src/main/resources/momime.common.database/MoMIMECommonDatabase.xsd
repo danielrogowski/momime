@@ -2186,6 +2186,7 @@ Units with special orders won't be asked for movement orders and look visibly di
 			
 			<!-- Other screen shortcut keys -->
 			<xsd:enumeration value="ALCHEMY" />
+			<xsd:enumeration value="HERO_ITEMS" />
 			
 			<!-- Generic message box shortcut keys -->
 			<xsd:enumeration value="MESSAGE_BOX_CLOSE" />

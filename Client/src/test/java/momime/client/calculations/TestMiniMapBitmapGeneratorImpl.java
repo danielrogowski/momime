@@ -129,10 +129,10 @@ public final class TestMiniMapBitmapGeneratorImpl
 		assertEquals (mapSize.getWidth (), image.getWidth ());
 		assertEquals (mapSize.getHeight (), image.getHeight ());
 		
-		assertEquals (1, image.getRGB (0, 0));
-		assertEquals (2, image.getRGB (1, 0));
-		assertEquals (3, image.getRGB (2, 0));
-		assertEquals (4, image.getRGB (0, 1));
+		assertEquals (-0xFFFFFF, image.getRGB (0, 0));
+		assertEquals (-0xFFFFFE, image.getRGB (1, 0));
+		assertEquals (-0xFFFFFD, image.getRGB (2, 0));
+		assertEquals (-0xFFFFFC, image.getRGB (0, 1));
 		assertEquals (0, image.getRGB (1, 1));
 		assertEquals (0, image.getRGB (2, 1));
 	}

@@ -119,6 +119,17 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 	}
 	
 	/**
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @return Whether or not the coordinates fall within the hero portrait
+	 */
+	public final boolean isWithinHeroPortrait (final int x, final int y)
+	{
+		final XmlLayoutComponent slot = getHeroLayout ().findComponentAt (x, y);
+		return (slot != null) && (slot.getName ().equals ("frmHeroItemsHeroPortrait"));
+	}
+	
+	/**
 	 * Show the hero portrait, and either the item slots or the item itself if there is one in the slot
 	 */
 	@Override

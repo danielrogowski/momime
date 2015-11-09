@@ -1869,5 +1869,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
 	</bean>
+
+	<bean id="heroItemInfoLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemInfoUI.xml" />
+	</bean>
+	
+	<bean id="heroItemInfoUI" class="momime.client.ui.frames.HeroItemInfoUI" scope="prototype">
+		<property name="heroItemInfoLayout" ref="heroItemInfoLayout" />
+		<property name="client" ref="client" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+	</bean>
 	
 </beans>

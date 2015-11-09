@@ -60,4 +60,9 @@ public interface PrototypeFrameCreator
 	 * @return New unit row display
 	 */
 	public UnitRowDisplayUI createUnitRowDisplay ();
+	
+	/**
+	 * @return New hero item info UI
+	 */
+	public HeroItemInfoUI createHeroItemInfo ();
 }

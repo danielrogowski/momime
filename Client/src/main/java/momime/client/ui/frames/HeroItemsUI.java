@@ -10,6 +10,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.table.AbstractTableModel;
 
@@ -328,6 +331,40 @@ public final class HeroItemsUI extends MomClientFrameUI
 			}
 		});
 		
+		// Right clicks open up item info panel
+		bankList.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isRightMouseButton (ev))
+				{
+					final int index = bankList.locationToIndex (ev.getPoint ());
+					if ((index >= 0) && (index < bankItems.size ()) && (bankList.getCellBounds (index, index).contains (ev.getPoint ())))
+						try
+						{
+							final NumberedHeroItem item = bankItems.get (index);
+							if (item != null)
+							{
+								// Is there an item info screen already open for this item?
+								HeroItemInfoUI itemInfo = getClient ().getHeroItemInfos ().get (item.getHeroItemURN ());
+								if (itemInfo == null)
+								{
+									itemInfo = getPrototypeFrameCreator ().createHeroItemInfo ();
+									itemInfo.setItem (item);
+									getClient ().getHeroItemInfos ().put (item.getHeroItemURN (), itemInfo);
+								}
+								itemInfo.setVisible (true);
+							}
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
+			}
+		});
+		
 		// Heroes grid
 		heroesTableModel = new HeroesTableModel ();
 		final JTable heroesTable = new JTable ();
@@ -484,6 +521,65 @@ public final class HeroItemsUI extends MomClientFrameUI
 						log.error (e, e);
 					}
 				return imported;
+			}
+		});
+		
+		// Right clicks open up the unit info panel, or the item info panel
+		heroesTable.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				if (SwingUtilities.isRightMouseButton (ev))
+				{
+					final int rowIndex = heroesTable.rowAtPoint (ev.getPoint ());
+					final int columnIndex = heroesTable.columnAtPoint (ev.getPoint ());
+					final int index = (rowIndex * 2) + columnIndex;
+					if ((index >= 0) && (index < heroesTableModel.getUnits ().size ()))
+						try
+						{
+							final MemoryUnit unit = heroesTableModel.getUnits ().get (index);
+
+							// Now check the exact point within this unit that the mouse it at
+							final Rectangle cellRect = heroesTable.getCellRect (rowIndex, columnIndex, false);
+							final int x = ev.getPoint ().x - cellRect.x;
+							final int y = ev.getPoint ().y - cellRect.y;
+							final int slotNumber = getHeroTableCellRenderer ().getSlotNumberAt (x, y);
+							if ((slotNumber >= 0) && (slotNumber < unit.getHeroItemSlot ().size ()))
+							{
+								// Is there an item in the slot to view?
+								final NumberedHeroItem item = unit.getHeroItemSlot ().get (slotNumber).getHeroItem ();
+								if (item != null)
+								{
+									// Is there an item info screen already open for this item?
+									HeroItemInfoUI itemInfo = getClient ().getHeroItemInfos ().get (item.getHeroItemURN ());
+									if (itemInfo == null)
+									{
+										itemInfo = getPrototypeFrameCreator ().createHeroItemInfo ();
+										itemInfo.setItem (item);
+										getClient ().getHeroItemInfos ().put (item.getHeroItemURN (), itemInfo);
+									}
+									itemInfo.setVisible (true);
+								}
+							}
+							else if (getHeroTableCellRenderer ().isWithinHeroPortrait (x, y))
+							{
+								// Is there a unit info screen already open for this unit?
+								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());
+								if (unitInfo == null)
+								{
+									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
+									unitInfo.setUnit (unit);
+									getClient ().getUnitInfos ().put (unit.getUnitURN (), unitInfo);
+								}
+								unitInfo.setVisible (true);
+							}							
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
 			}
 		});
 		

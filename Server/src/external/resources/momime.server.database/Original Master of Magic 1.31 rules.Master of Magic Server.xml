@@ -24290,6 +24290,9 @@
 		<languageEntry languageEntryID="BankFullTitle" />
 		<languageEntry languageEntryID="BankFull" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmHeroItemInfo">
+		<languageEntry languageEntryID="Close" />
+	</languageCategory>	
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="RequestingUsToPlayCategory" />

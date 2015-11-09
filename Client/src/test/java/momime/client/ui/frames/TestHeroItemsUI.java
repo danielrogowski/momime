@@ -124,6 +124,7 @@ public final class TestHeroItemsUI
 			item.setHeroItemTypeID ("IT01");
 			item.setHeroItemName ("Sword no. " + n);
 			item.setHeroItemImageNumber (n - 1);
+			item.setHeroItemURN (n);
 			
 			priv.getUnassignedHeroItem ().add (item);
 		}
@@ -140,6 +141,7 @@ public final class TestHeroItemsUI
 			unit.setUnitID ("UN00" + n);
 			unit.setStatus (UnitStatusID.ALIVE);
 			unit.setOwningPlayerID (1);
+			unit.setUnitURN (n);
 			fow.getUnit ().add (unit);
 			
 			for (int s = 0; s < 3; s++)

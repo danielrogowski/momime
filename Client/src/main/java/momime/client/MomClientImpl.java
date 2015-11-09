@@ -9,32 +9,6 @@ import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.audio.AudioPlayer;
-import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.database.ClientDatabaseExImpl;
-import momime.client.database.NewGameDatabase;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.ui.dialogs.MessageBoxUI;
-import momime.client.ui.frames.ChangeConstructionUI;
-import momime.client.ui.frames.CityViewUI;
-import momime.client.ui.frames.ConnectToServerUI;
-import momime.client.ui.frames.JoinGameUI;
-import momime.client.ui.frames.LoadGameUI;
-import momime.client.ui.frames.MainMenuUI;
-import momime.client.ui.frames.NewGameUI;
-import momime.client.ui.frames.OverlandMapUI;
-import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.client.ui.frames.TaxRateUI;
-import momime.client.ui.frames.UnitInfoUI;
-import momime.common.messages.MomGeneralPublicKnowledge;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,6 +29,33 @@ import com.ndg.multiplayer.sessionbase.SavedGamePoint;
 import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.audio.AudioPlayer;
+import momime.client.calculations.CombatMapBitmapGenerator;
+import momime.client.calculations.OverlandMapBitmapGenerator;
+import momime.client.database.ClientDatabaseEx;
+import momime.client.database.ClientDatabaseExImpl;
+import momime.client.database.NewGameDatabase;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.ChangeConstructionUI;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.ConnectToServerUI;
+import momime.client.ui.frames.HeroItemInfoUI;
+import momime.client.ui.frames.JoinGameUI;
+import momime.client.ui.frames.LoadGameUI;
+import momime.client.ui.frames.MainMenuUI;
+import momime.client.ui.frames.NewGameUI;
+import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.TaxRateUI;
+import momime.client.ui.frames.UnitInfoUI;
+import momime.common.messages.MomGeneralPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 /**
  * Main multiplayer controller class for the client
@@ -117,6 +118,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** List of all unit info screens currently open, keyed by Unit URN */
 	private Map<Integer, UnitInfoUI> unitInfos = new HashMap<Integer, UnitInfoUI> ();
+	
+	/** List of all hero item info screens currently open, keyed by Hero Item URN */
+	private Map<Integer, HeroItemInfoUI> heroItemInfos = new HashMap<Integer, HeroItemInfoUI> ();
 	
 	/**
 	 * Kick off method invoked by spring's init-method
@@ -774,5 +778,14 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final Map<Integer, UnitInfoUI> getUnitInfos ()
 	{
 		return unitInfos;
+	}
+
+	/**
+	 * @return List of all hero item info screens currently open, keyed by Hero Item URN
+	 */
+	@Override
+	public final Map<Integer, HeroItemInfoUI> getHeroItemInfos ()
+	{
+		return heroItemInfos;
 	}
 }

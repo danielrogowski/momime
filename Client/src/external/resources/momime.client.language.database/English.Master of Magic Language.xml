@@ -6655,6 +6655,11 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>Your item vault is already full.  Assign an item to a hero or destroy an item on the anvil to make more space.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmHeroItemInfo">
+		<languageEntry languageEntryID="Close">
+			<languageEntryText>Close</languageEntryText>
+		</languageEntry>
+	</languageCategory>	
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Combats</languageEntryText>

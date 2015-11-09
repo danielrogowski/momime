@@ -7,19 +7,20 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.ClientToServerConnection;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.NewGameDatabase;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.HeroItemInfoUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
-
-import com.ndg.multiplayer.base.client.ClientToServerConnection;
-import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * A lot of data structures, especially the db, are accessed from the client, but in ways that can't easily be
@@ -122,6 +123,11 @@ public interface MomClient
 	 * @return List of all unit info screens currently open, keyed by Unit URN
 	 */
 	public Map<Integer, UnitInfoUI> getUnitInfos ();
+	
+	/**
+	 * @return List of all hero item info screens currently open, keyed by Hero Item URN
+	 */
+	public Map<Integer, HeroItemInfoUI> getHeroItemInfos ();
 
 	/**
 	 * @return Info we need in order to create games; sent from server

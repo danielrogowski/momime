@@ -377,6 +377,9 @@
 	<unitSkillComponentImage unitSkillComponentID="H">
 		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/heroSkills.png</unitSkillComponentImageFile>
 	</unitSkillComponentImage>
+	<unitSkillComponentImage unitSkillComponentID="I">
+		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/heroItems.png</unitSkillComponentImageFile>
+	</unitSkillComponentImage>
 	<unitSkillComponentImage unitSkillComponentID="C">
 		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/combatAreaEffect.png</unitSkillComponentImageFile>
 	</unitSkillComponentImage>

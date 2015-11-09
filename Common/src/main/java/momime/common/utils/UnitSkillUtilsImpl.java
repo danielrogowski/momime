@@ -17,6 +17,8 @@ import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.HeroItemTypeAllowedBonus;
+import momime.common.database.HeroItemTypeAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkill;
@@ -27,6 +29,7 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
@@ -251,6 +254,26 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 		
 									total = total + addToSkillValue (caeBonusCache.getUnitSkillValue (), positiveNegative);
 						}
+				
+				// Any bonuses from hero items?
+				if ((unit instanceof MemoryUnit) && ((component == UnitSkillComponent.HERO_ITEMS) || (component == UnitSkillComponent.ALL)))
+					for (final MemoryUnitHeroItemSlot slot : ((MemoryUnit) unit).getHeroItemSlot ())
+						if (slot.getHeroItem () != null)
+							for (final HeroItemTypeAllowedBonus bonus : slot.getHeroItem ().getHeroItemChosenBonus ())
+								for (final UnitSkillAndValue bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "getModifiedSkillValue").getHeroItemBonusStat ())
+									
+									// +Attack bonus - these apply to one or more specific skills, depending on the type of the item.
+									// This deals with that e.g. swords don't add to "Thrown Weapons" skill but axes do.
+									if (bonusStat.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM))
+									{
+										for (final HeroItemTypeAttackType attackSkill : db.findHeroItemType (slot.getHeroItem ().getHeroItemTypeID (), "getModifiedSkillValue").getHeroItemTypeAttackType ())
+											if (attackSkill.getUnitSkillID ().equals (unitSkillID))
+												total = total + addToSkillValue (bonusStat.getUnitSkillValue (), positiveNegative);
+									}
+				
+									// Regular bonus
+									else if (bonusStat.getUnitSkillID ().equals (unitSkillID))
+										total = total + addToSkillValue (bonusStat.getUnitSkillValue (), positiveNegative);
 			}
 			
 			// If we were searching for a + to hit or + to block bonus and never found one, and the unit didn't have the skill to begin with, then revert to returning -1

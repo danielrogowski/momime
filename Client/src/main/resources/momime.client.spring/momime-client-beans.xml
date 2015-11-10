@@ -583,12 +583,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addUnassignedHeroItemMessage" class="momime.client.messages.process.AddUnassignedHeroItemMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="removeUnassignedHeroItemMessage" class="momime.client.messages.process.RemoveUnassignedHeroItemMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="heroItemUtils" ref="heroItemUtils" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<!-- Create extended versions of NTMs which include drawing implementations -->

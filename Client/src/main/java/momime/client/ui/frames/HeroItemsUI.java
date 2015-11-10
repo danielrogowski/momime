@@ -303,23 +303,10 @@ public final class HeroItemsUI extends MomClientFrameUI
 				if ((requestMoveHeroItemMessage != null) && (canImport (support)))
 					try
 					{
-						// Check if bank is full
-						if ((getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank () != null) &&
-							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ().size () >= getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank ()))
-						{
-							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-							msg.setTitleLanguageCategoryID ("frmHeroItems");
-							msg.setTitleLanguageEntryID ("BankFullTitle");
-							msg.setTextLanguageCategoryID ("frmHeroItems");
-							msg.setTextLanguageEntryID ("BankFull");
-							msg.setVisible (true);
-						}
-						else
-						{
-							requestMoveHeroItemMessage.setToLocation (HeroItemLocationID.UNASSIGNED);
-							getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
-							imported = true;
-						}
+						// Moving to bank is always OK
+						requestMoveHeroItemMessage.setToLocation (HeroItemLocationID.UNASSIGNED);
+						getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
+						imported = true;
 
 						requestMoveHeroItemMessage = null;
 					}

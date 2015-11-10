@@ -5588,6 +5588,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="CannotEndTurnNTMs">
 			<languageEntryText>You have completed casting spells that you still need to choose targets for.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CannotEndTurnUnassignedHeroItems">
+			<languageEntryText>Your item vault is overfull.  You must assign some items to heros, or destroy them on the anvil to make more space.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title">
@@ -6647,12 +6650,6 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Destroy">
 			<languageEntryText>Do you want to destroy your ITEM_NAME and gain MANA_GAINED mana crystals?</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="BankFullTitle">
-			<languageEntryText>Store hero item</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="BankFull">
-			<languageEntryText>Your item vault is already full.  Assign an item to a hero or destroy an item on the anvil to make more space.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmHeroItemInfo">

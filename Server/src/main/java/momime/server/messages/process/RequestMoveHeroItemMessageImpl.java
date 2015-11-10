@@ -134,14 +134,9 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 				switch (getToLocation ())
 				{
 					// Breaking item on the anvil is always OK
+					// Moving to the bank is always OK
 					case DESTROY:
-						break;
-						
-					// Moving to the bank is OK as long as there is space
 					case UNASSIGNED:
-						if ((mom.getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank () != null) &&
-							(priv.getUnassignedHeroItem ().size () >= mom.getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank ()))
-							error = "Your bank of unassigned hero items is already full.";
 						break;
 
 					case HERO:

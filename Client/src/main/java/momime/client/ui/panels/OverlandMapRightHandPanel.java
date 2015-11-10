@@ -1273,6 +1273,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToNTMs.png");
 				text.append (BULLET_POINT + getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnNTMs") + System.lineSeparator ());
 			}
+			
+			// Is our bank of unassigned hero items overfull?
+			if ((getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank () != null) &&
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ().size () > getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank ()))
+			{
+				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToUnassignedHeroItems.png");
+				text.append (BULLET_POINT + getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnUnassignedHeroItems") + System.lineSeparator ());
+			}
 	
 			// Regenerate disabled button?
 			if (resourceIconFilenames.size () > 0)

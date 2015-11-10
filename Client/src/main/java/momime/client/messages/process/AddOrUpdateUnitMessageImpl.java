@@ -70,21 +70,28 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		if (oldUnit != null)
 		{
 			// If it had no special order before, and it now does - then the only way that can happen if its our unit and our turn
+			UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (oldUnit.getUnitURN ());
 			if ((oldUnit.getSpecialOrder () == null) && (getMemoryUnit ().getSpecialOrder () != null))
 			{
 				// So in that case, remove it from the wait list
 				getOverlandMapProcessing ().removeUnitFromLeftToMoveOverland (oldUnit);
 				
 				// Close down any unit info screen that may be open for it
-				final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (oldUnit.getUnitURN ());
 				if (unitInfo != null)
+				{
 					unitInfo.close ();
+					unitInfo = null;
+				}
 			
 				getOverlandMapProcessing ().selectNextUnitToMoveOverland ();
 			}
 
 			// Now copy it
 			getUnitUtils ().copyUnitValues (getMemoryUnit (), oldUnit, true);
+			
+			// Update any unit info screen that may be open
+			if (unitInfo != null)
+				unitInfo.getUnitInfoPanel ().showUnit (oldUnit);
 		}
 		else
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (getMemoryUnit ());

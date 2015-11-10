@@ -12,6 +12,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.HeroItemsUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage;
 import momime.common.utils.HeroItemUtils;
@@ -34,6 +35,9 @@ public final class RemoveUnassignedHeroItemMessageImpl extends RemoveUnassignedH
 	/** Hero item utils */
 	private HeroItemUtils heroItemUtils;
 	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -52,6 +56,7 @@ public final class RemoveUnassignedHeroItemMessageImpl extends RemoveUnassignedH
 		{
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ().remove (item);
 			getHeroItemsUI ().refreshItemsBank ();
+			getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		}
 		
 		log.trace ("Exiting start");
@@ -103,5 +108,21 @@ public final class RemoveUnassignedHeroItemMessageImpl extends RemoveUnassignedH
 	public final void setHeroItemUtils (final HeroItemUtils util)
 	{
 		heroItemUtils = util;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

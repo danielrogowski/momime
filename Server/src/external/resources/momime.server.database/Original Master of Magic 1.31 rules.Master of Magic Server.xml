@@ -23893,6 +23893,7 @@
 		<languageEntry languageEntryID="CannotEndTurnPrefix" />
 		<languageEntry languageEntryID="CannotEndTurnResearch" />
 		<languageEntry languageEntryID="CannotEndTurnNTMs" />
+		<languageEntry languageEntryID="CannotEndTurnUnassignedHeroItems" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title" />
@@ -24287,8 +24288,6 @@
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="DestroyTitle" />
 		<languageEntry languageEntryID="Destroy" />
-		<languageEntry languageEntryID="BankFullTitle" />
-		<languageEntry languageEntryID="BankFull" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmHeroItemInfo">
 		<languageEntry languageEntryID="Close" />

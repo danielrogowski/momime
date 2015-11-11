@@ -273,6 +273,7 @@
 		<property name="filenameElements">
 			<list>
 				<value>heroItemSlotTypeImageFile</value>
+				<value>heroItemSlotTypeImageFileWithBackground</value>
 			</list>
 		</property>
 	</bean>

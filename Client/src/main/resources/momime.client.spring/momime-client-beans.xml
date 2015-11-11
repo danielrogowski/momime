@@ -1539,6 +1539,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="helpUI" ref="helpUI" />
 	</bean>
 
 	<!-- Prototype UI components -->

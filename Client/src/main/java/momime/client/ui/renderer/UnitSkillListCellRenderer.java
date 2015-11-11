@@ -1,6 +1,7 @@
 package momime.client.ui.renderer;
 
 import java.awt.Component;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
@@ -16,13 +17,14 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.HeroItemTypeGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.ui.panels.UnitSkillOrHeroItemSlot;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
@@ -31,7 +33,7 @@ import momime.common.utils.UnitSkillUtils;
 /**
  * Renderer for drawing the icon and name of a unit skill
  */
-public final class UnitSkillListCellRenderer extends JLabel implements ListCellRenderer<UnitSkillAndValue>
+public final class UnitSkillListCellRenderer extends JLabel implements ListCellRenderer<UnitSkillOrHeroItemSlot>
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitSkillListCellRenderer.class);
@@ -73,46 +75,77 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	 * Sets up the image and label to draw the list cell
 	 */
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends UnitSkillAndValue> list, final UnitSkillAndValue value, final int index, final boolean isSelected, final boolean cellHasFocus)
+	public final Component getListCellRendererComponent (final JList<? extends UnitSkillOrHeroItemSlot> list,
+		final UnitSkillOrHeroItemSlot value, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
-		// Look up the name of the skill
-		final UnitSkillLang skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());
-		if (skillLang == null)
-			setText (value.getUnitSkillID ());
+		// Items have a fixed name so are easy; slots display no text at all
+		if (value.getHeroItem () != null)
+			setText (value.getHeroItem ().getHeroItemName ());
+		else if (value.getHeroItemSlotTypeID () != null)
+			setText (null);
 		else
 		{
-			getUnitStatsReplacer ().setUnit (getUnit ());
-			String skillText = getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ());
-			
-			// Show strength of skills, e.g. Fire Breath 2
-			if ((value.getUnitSkillValue () != null) && (value.getUnitSkillValue () > 0) &&
-				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
-				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) &&
-				(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO)) &&
-				(!value.getUnitSkillID ().startsWith ("HS")))	// This is a bit of a hack, but better than listing all hero skills out separately, and the client
-																				// doesn't have all the skill rolling data like the "maxOccurrences" value and so on
+			// Look up the name of the skill
+			final UnitSkillLang skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());
+			if (skillLang == null)
+				setText (value.getUnitSkillID ());
+			else
+			{
+				getUnitStatsReplacer ().setUnit (getUnit ());
+				String skillText = getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ());
 				
-				try
-				{
-					skillText = skillText + " " + getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), value.getUnitSkillID (),
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			
-			// Trim off the annoying leading space on hero skills like "Armsmaster", which is there in case it needs to put "Super Armsmaster"
-			setText (skillText.trim ());
+				// Show strength of skills, e.g. Fire Breath 2
+				if ((value.getUnitSkillValue () != null) && (value.getUnitSkillValue () > 0) &&
+					(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
+					(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) &&
+					(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO)) &&
+					(!value.getUnitSkillID ().startsWith ("HS")))	// This is a bit of a hack, but better than listing all hero skills out separately, and the client
+																					// doesn't have all the skill rolling data like the "maxOccurrences" value and so on
+					
+					try
+					{
+						skillText = skillText + " " + getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), value.getUnitSkillID (),
+							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				
+				// Trim off the annoying leading space on hero skills like "Armsmaster", which is there in case it needs to put "Super Armsmaster"
+				setText (skillText.trim ());
+			}
 		}
 		
 		setIcon (null);
 		try
 		{
-			// Look up the image for the skill
-			final BufferedImage image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, value.getUnitSkillID ());
-				setIcon (new ImageIcon (image));
+			final BufferedImage image;
+			if (value.getUnitSkillID () != null)
+				image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, value.getUnitSkillID ());
+			else if (value.getHeroItemSlotTypeID () != null)
+				image = getUtils ().loadImage (getGraphicsDB ().findHeroItemSlotType (value.getHeroItemSlotTypeID (), "UnitSkillListCellRenderer").getHeroItemSlotTypeImageFileWithBackground ());
+			else
+			{
+				// For items, need to superimpose the item image onto a square background
+				final HeroItemTypeGfx itemType = getGraphicsDB ().findHeroItemType (value.getHeroItem ().getHeroItemTypeID (), "UnitSkillListCellRenderer");
+				
+				final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/heroItems/unitSkillsHeroItemBackground.png");
+				image = new BufferedImage (background.getWidth (), background.getHeight (), BufferedImage.TYPE_INT_ARGB);
+				final Graphics2D g = image.createGraphics ();
+				try
+				{
+					g.drawImage (background, 0, 0, null);
+					g.drawImage (getUtils ().loadImage (itemType.getHeroItemTypeImageFile ().get (value.getHeroItem ().getHeroItemImageNumber ())), 0, 0, null);
+				}
+				finally
+				{
+					g.dispose ();
+				}
+			}
+			
+			setIcon (new ImageIcon (image));
 		}
 		catch (final Exception e)
 		{

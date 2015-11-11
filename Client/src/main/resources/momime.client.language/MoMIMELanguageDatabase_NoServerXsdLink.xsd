@@ -49,6 +49,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimelang:spell" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimelang:citySpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimelang:heroItemType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimelang:heroItemSlotType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonus" type="momimelang:heroItemBonus" />
 			
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimelang:overlandMapSize" />
@@ -208,6 +209,10 @@
 		<xsd:key name="heroItemTypePK">
 			<xsd:selector xpath="heroItemType" />
 			<xsd:field xpath="@heroItemTypeID" />
+		</xsd:key>
+		<xsd:key name="heroItemSlotTypePK">
+			<xsd:selector xpath="heroItemSlotType" />
+			<xsd:field xpath="@heroItemSlotTypeID" />
 		</xsd:key>
 		<xsd:key name="heroItemBonusPK">
 			<xsd:selector xpath="heroItemBonus" />
@@ -642,6 +647,19 @@
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="slotTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Item Type ID" nxe:gridwidth="100">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>slotTypeDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

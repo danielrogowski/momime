@@ -48,6 +48,7 @@ import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.HelpUI;
+import momime.client.ui.frames.HeroItemInfoUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.renderer.UnitAttributeListCellRenderer;
 import momime.client.ui.renderer.UnitAttributeWithBreakdownImage;
@@ -62,6 +63,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemSlot;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -75,6 +77,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
@@ -196,7 +199,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private DefaultListModel<UnitAttributeWithBreakdownImage> unitAttributesItems;
 	
 	/** List model of unit skills */
-	private DefaultListModel<UnitSkillAndValue> unitSkillsItems;
+	private DefaultListModel<UnitSkillOrHeroItemSlot> unitSkillsItems;
 
 	/** Scroll pane containing the list of unit attributes */
 	private JScrollPane unitAttributesScrollPane;
@@ -288,9 +291,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					}
 					
 					// Draw unit
-					if (unit != null)
+					if (getUnit () != null)
 					{
-						final UnitGfx unitGfx = getGraphicsDB ().findUnit (unit.getUnitID (), "heroPortrait");
+						final UnitGfx unitGfx = getGraphicsDB ().findUnit (getUnit ().getUnitID (), "heroPortrait");
 						if ((unitGfx.getHeroPortraitImageFile () != null) && (getClientConfig ().isShowHeroPortraits ()))
 						{
 							// Show static hero portrait
@@ -304,8 +307,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						{
 							// Show combat anim of unit 
 							zOrderGraphics.setGraphics (g);
-							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-							getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0);
+							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
+							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0);
 						}
 					}
 				}
@@ -387,9 +390,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		getUnitSkillListCellRenderer ().setForeground (MomUIConstants.AQUA);
 		getUnitSkillListCellRenderer ().init ();
 		
-		unitSkillsItems = new DefaultListModel<UnitSkillAndValue> ();
+		unitSkillsItems = new DefaultListModel<UnitSkillOrHeroItemSlot> ();
 		
-		final JList<UnitSkillAndValue> unitSkillsList = new JList<UnitSkillAndValue>  ();		
+		final JList<UnitSkillOrHeroItemSlot> unitSkillsList = new JList<UnitSkillOrHeroItemSlot>  ();		
 		unitSkillsList.setOpaque (false);
 		unitSkillsList.setModel (unitSkillsItems);
 		unitSkillsList.setCellRenderer (getUnitSkillListCellRenderer ());
@@ -402,43 +405,46 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Clicking a unit skill from a spell asks about cancelling it
 		unitSkillsList.addListSelectionListener ((ev) ->
 		{
-			if ((unit instanceof MemoryUnit) && (unitSkillsList.getSelectedIndex () >= 0))
+			if ((getUnit () instanceof MemoryUnit) && (unitSkillsList.getSelectedIndex () >= 0))
 			{
-				final MemoryUnit memoryUnit = (MemoryUnit) unit;
-				final UnitSkillAndValue skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
+				final MemoryUnit memoryUnit = (MemoryUnit) getUnit ();
+				final UnitSkillOrHeroItemSlot skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
 				
 				// We want to ignore clicks on regular skills, and only do something about clicks on skills granted by spells.
 				// So search through maintained spells looking for this unitSkillID on this unit and see if we find anything.
-				final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					null, null, memoryUnit.getUnitURN (), skill.getUnitSkillID (), null, null);
-				
-				if (spell != null)
-					try
-					{
-						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("SpellCasting");
-						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
-
-						final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-						
-						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
-							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-						else
+				if (skill.getUnitSkillID () != null)
+				{
+					final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+						null, null, memoryUnit.getUnitURN (), skill.getUnitSkillID (), null, null);
+					
+					if (spell != null)
+						try
 						{
-							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
-							msg.setSwitchOffSpell (spell);
+							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+							msg.setTitleLanguageCategoryID ("SpellCasting");
+							msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+	
+							final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
+							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+							
+							if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+								msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
+									("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+							else
+							{
+								msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+									("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+								msg.setSwitchOffSpell (spell);
+							}
+	
+							msg.setVisible (true);
 						}
-
-						msg.setVisible (true);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
 			}
 		});
 		
@@ -467,7 +473,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			}
 		});
 		
-		// Right clicking on skills shows help text about them
+		// Right clicking on skills, slots or item hero items shows help text about them
 		unitSkillsList.addMouseListener (new MouseAdapter ()
 		{
 			@Override
@@ -478,10 +484,25 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					final int row = unitSkillsList.locationToIndex (ev.getPoint ());
 					if ((row >= 0) && (row < unitSkillsItems.size ()))
 					{
-						final UnitSkillAndValue unitSkill = unitSkillsItems.get (row);
+						final UnitSkillOrHeroItemSlot skill = unitSkillsItems.get (row);
 						try
 						{
-							getHelpUI ().showUnitSkillID (unitSkill.getUnitSkillID (), getUnit ());
+							if (skill.getUnitSkillID () != null)
+								getHelpUI ().showUnitSkillID (skill.getUnitSkillID (), getUnit ());
+							else if (skill.getHeroItemSlotTypeID () != null)
+								getHelpUI ().showHeroItemSlotTypeID (skill.getHeroItemSlotTypeID ());
+							else
+							{
+								// Is there an item info screen already open for this item?
+								HeroItemInfoUI itemInfo = getClient ().getHeroItemInfos ().get (skill.getHeroItem ().getHeroItemURN ());
+								if (itemInfo == null)
+								{
+									itemInfo = getPrototypeFrameCreator ().createHeroItemInfo ();
+									itemInfo.setItem (skill.getHeroItem ());
+									getClient ().getHeroItemInfos ().put (skill.getHeroItem ().getHeroItemURN (), itemInfo);
+								}
+								itemInfo.setVisible (true);
+							}
 						}
 						catch (final Exception e)
 						{
@@ -615,7 +636,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Find details about this kind of unit
 		unit = showUnit;
 		building = null;
-		final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "showUnit");
+		final Unit unitInfo = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "showUnit");
 
 		// Update language independant labels
 		currentlyConstructingProductionCost.setText ((unitInfo.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (unitInfo.getProductionCost ()));
@@ -625,15 +646,15 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final Map<String, Integer> upkeepsMap = new HashMap<String, Integer> ();
 		for (final ProductionTypeAndUndoubledValue upkeepValue : unitInfo.getUnitUpkeep ())
 			upkeepsMap.put (upkeepValue.getProductionTypeID (),
-				getUnitSkillUtils ().getModifiedUpkeepValue (unit, upkeepValue.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
+				getUnitSkillUtils ().getModifiedUpkeepValue (getUnit (), upkeepValue.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
 		
 		// Search for upkeeps from spells cast on the unit
-		if (unit instanceof MemoryUnit)
+		if (getUnit () instanceof MemoryUnit)
 		{
-			final int unitURN = ((MemoryUnit) unit).getUnitURN ();
+			final int unitURN = ((MemoryUnit) getUnit ()).getUnitURN ();
 			
 			for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
-				if ((spell.getCastingPlayerID () == unit.getOwningPlayerID ()) && (unitURN == spell.getUnitURN ()))
+				if ((spell.getCastingPlayerID () == getUnit ().getOwningPlayerID ()) && (unitURN == spell.getUnitURN ()))
 				{
 					final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "showUnit");
 					for (final ProductionTypeAndUndoubledValue upkeepValue : spellDef.getSpellUpkeep ())
@@ -659,7 +680,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}).collect (Collectors.toList ());
 
 		// Generate an image from the upkeeps
-		final PlayerPublicDetails unitOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), unit.getOwningPlayerID (), "showUnit");
+		final PlayerPublicDetails unitOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getUnit ().getOwningPlayerID (), "showUnit");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
 
 		final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps,
@@ -669,11 +690,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Add list items to display unit attributes and skills
 		final List<UnitSkillAndValue> mergedSkills;
-		if (unit instanceof MemoryUnit)
+		if (getUnit () instanceof MemoryUnit)
 			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit, getClient ().getClientDB ());
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) getUnit (), getClient ().getClientDB ());
 		else
-			mergedSkills = unit.getUnitHasSkill ();
+			mergedSkills = getUnit ().getUnitHasSkill ();
 		
 		// If the unit has no + to hit / + to defence skill, but gains it through some other means, e.g. experience, then display it
 		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK})
@@ -694,7 +715,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}
 		
 		// Add each skill
-		getUnitSkillListCellRenderer ().setUnit (unit);
+		getUnitSkillListCellRenderer ().setUnit (getUnit ());
 		for (final UnitSkillAndValue thisSkill : mergedSkills)
 		{
 			// Which list do we display it in?
@@ -716,9 +737,41 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				// Experience is an exception since its images are derived differently.
 				if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
 					(getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit").getUnitSkillImageFile () != null))
-	
-					unitSkillsItems.addElement (thisSkill);
+				{
+					final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
+					skill.setUnitSkillID (thisSkill.getUnitSkillID ());
+					skill.setUnitSkillValue (thisSkill.getUnitSkillValue ());
+					unitSkillsItems.addElement (skill);
+				}
 			}
+		}
+		
+		// Add hero item slots
+		int slotNumber = 0;
+		for (final HeroItemSlot slot : unitInfo.getHeroItemSlot ())
+		{
+			// Is there an item in this slot?
+			NumberedHeroItem item = null;
+			if (getUnit () instanceof MemoryUnit)
+				if (slotNumber < ((MemoryUnit) getUnit ()).getHeroItemSlot ().size ())
+					item = ((MemoryUnit) getUnit ()).getHeroItemSlot ().get (slotNumber).getHeroItem ();
+			
+			if (item != null)
+			{
+				// Add item image
+				final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
+				skill.setHeroItem (item);
+				unitSkillsItems.addElement (skill);
+			}
+			else
+			{
+				// Add empty slot image
+				final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
+				skill.setHeroItemSlotTypeID (slot.getHeroItemSlotTypeID ());
+				unitSkillsItems.addElement (skill);
+			}
+			
+			slotNumber++;
 		}
 		
 		// Update language dependant labels
@@ -726,8 +779,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 		// Show the image of the selected unit
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
-		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-		getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), movingActionID, 4, currentlyConstructingImage); 
+		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
+		getUnitClientUtils ().registerUnitFiguresAnimation (getUnit ().getUnitID (), movingActionID, 4, currentlyConstructingImage); 
 		
 		// Show URN?
 		if ((showUnit instanceof MemoryUnit) && (((MemoryUnit) showUnit).getUnitURN () > 0) && (getClientConfig ().isDebugShowURNs ()))
@@ -799,12 +852,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}
 		
 		// Labels if showing a unit
-		else if (unit != null)
+		else if (getUnit () != null)
 		{
 			String unitName = null;
 			try
 			{
-				unitName = getUnitClientUtils ().getUnitName (unit, UnitNameType.RACE_UNIT_NAME);
+				unitName = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME);
 			}
 			catch (final RecordNotFoundException e)
 			{

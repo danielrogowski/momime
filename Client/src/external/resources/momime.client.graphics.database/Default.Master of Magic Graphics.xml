@@ -42472,21 +42472,27 @@
 	</heroItemType>
 	<heroItemSlotType heroItemSlotTypeID="IST01">
 		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/melee.png</heroItemSlotTypeImageFile>
+		<heroItemSlotTypeImageFileWithBackground>/momime.client.graphics/heroItems/slots/melee-bkg.png</heroItemSlotTypeImageFileWithBackground>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST02">
 		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/bowOrMelee.png</heroItemSlotTypeImageFile>
+		<heroItemSlotTypeImageFileWithBackground>/momime.client.graphics/heroItems/slots/bowOrMelee-bkg.png</heroItemSlotTypeImageFileWithBackground>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST03">
 		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/meleeOrMagic.png</heroItemSlotTypeImageFile>
+		<heroItemSlotTypeImageFileWithBackground>/momime.client.graphics/heroItems/slots/meleeOrMagic-bkg.png</heroItemSlotTypeImageFileWithBackground>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST04">
 		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/magic.png</heroItemSlotTypeImageFile>
+		<heroItemSlotTypeImageFileWithBackground>/momime.client.graphics/heroItems/slots/magic-bkg.png</heroItemSlotTypeImageFileWithBackground>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST05">
 		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/misc.png</heroItemSlotTypeImageFile>
+		<heroItemSlotTypeImageFileWithBackground>/momime.client.graphics/heroItems/slots/misc-bkg.png</heroItemSlotTypeImageFileWithBackground>
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST06">
 		<heroItemSlotTypeImageFile>/momime.client.graphics/heroItems/slots/armour.png</heroItemSlotTypeImageFile>
+		<heroItemSlotTypeImageFileWithBackground>/momime.client.graphics/heroItems/slots/armour-bkg.png</heroItemSlotTypeImageFileWithBackground>
 	</heroItemSlotType>
 	<animation animationID="UN001_D1_WALKFLY">
 		<animationDescription>Dwarf walking/flying up</animationDescription>

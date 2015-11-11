@@ -38,6 +38,7 @@ import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.HeroItemSlotTypeGfx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.CombatAreaEffectLang;
@@ -53,6 +54,7 @@ import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.AvailableUnit;
@@ -147,6 +149,9 @@ public final class HelpUI extends MomClientFrameUI
 	
 	/** City spell effect ID we're displaying help text about, null if displaying help text about something other than a city spell effect */
 	private String citySpellEffectID;
+	
+	/** Hero item slot type ID we're displaying help text about, null if displaying help text about something other than a hero item slot */
+	private String heroItemSlotTypeID;
 
 	/** Player who owns the spell or city spell effect we're displaying help text about, null if displaying help text about something other than a spell or city spell effect*/
 	private PlayerPublicDetails castingPlayer;
@@ -385,6 +390,26 @@ public final class HelpUI extends MomClientFrameUI
 			title.setText ((caeTitle != null) ? caeTitle : combatAreaEffectID);
 			indentedText.setText ((caeHelpText != null) ? caeHelpText : combatAreaEffectID);
 		}
+		else if (heroItemSlotTypeID != null)
+		{
+			title.setText (getLanguage ().findHeroItemSlotTypeDescription (heroItemSlotTypeID));
+			
+			final StringBuilder description = new StringBuilder ();
+			description.append (getLanguage ().findCategoryEntry ("frmHeroItemInfo", "ItemSlotHelpTextPrefix"));
+			
+			// List all the item types that can go into this slot
+			try
+			{
+				for (final HeroSlotAllowedItemType allowed : getClient ().getClientDB ().findHeroItemSlotType (heroItemSlotTypeID, "HelpUI").getHeroSlotAllowedItemType ())
+					description.append (System.lineSeparator () + "\u2022 " + getLanguage ().findHeroItemTypeDescription (allowed.getHeroItemTypeID ()));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+			
+			indentedText.setText (description.toString ());
+		}
 		else if (spellID != null)
 		{
 			final SpellLang spell = getLanguage ().findSpell (spellID);
@@ -543,6 +568,7 @@ public final class HelpUI extends MomClientFrameUI
 		castingPlayer = null;
 		citySpellEffectID = null;
 		combatAreaEffectID = null;
+		heroItemSlotTypeID = null;
 
 		log.trace ("Exiting clear");
 	}
@@ -718,6 +744,28 @@ public final class HelpUI extends MomClientFrameUI
 
 		log.trace ("Exiting showUnitSkillID");
 	}
+	
+	/**
+	 * @param id Hero item slot type ID to display help text about
+	 * @throws IOException If a resource cannot be found
+	 */
+	public final void showHeroItemSlotTypeID (final String id) throws IOException
+	{
+		log.trace ("Entering showHeroItemSlotTypeID: " + id);
+
+		clear ();
+		heroItemSlotTypeID = id;
+
+		final HeroItemSlotTypeGfx slotType = getGraphicsDB ().findHeroItemSlotType (heroItemSlotTypeID, "showHeroItemSlotTypeID");
+		imageLabel.setIcon (new ImageIcon (getUtils ().loadImage (slotType.getHeroItemSlotTypeImageFileWithBackground ())));
+		imageLabel.setVisible (true);
+		
+		languageChanged ();
+		setVisible (true);
+
+		log.trace ("Exiting showHeroItemSlotTypeID");
+	}
+
 	
 	/**
 	 * @return XML layout

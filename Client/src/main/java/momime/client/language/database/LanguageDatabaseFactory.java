@@ -10,6 +10,7 @@ import momime.client.language.database.v0_9_7.DifficultyLevel;
 import momime.client.language.database.v0_9_7.FogOfWarSetting;
 import momime.client.language.database.v0_9_7.Hero;
 import momime.client.language.database.v0_9_7.HeroItemBonus;
+import momime.client.language.database.v0_9_7.HeroItemSlotType;
 import momime.client.language.database.v0_9_7.HeroItemType;
 import momime.client.language.database.v0_9_7.KnownServer;
 import momime.client.language.database.v0_9_7.LandProportion;
@@ -280,12 +281,21 @@ public final class LanguageDatabaseFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Custom extended KnowHeroItemType
+	 * @return Custom extended HeroItemType
 	 */
 	@Override
 	public final HeroItemType createHeroItemType ()
 	{
 		return new HeroItemTypeLang ();
+	}
+
+	/**
+	 * @return Custom extended HeroItemSlotType
+	 */
+	@Override
+	public final HeroItemSlotType createHeroItemSlotType ()
+	{
+		return new HeroItemSlotTypeLang ();
 	}
 
 	/**

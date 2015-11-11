@@ -23,6 +23,7 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.HeroItemSlotTypeGfx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.UnitSkillComponentImageGfx;
 import momime.client.graphics.database.UnitSkillGfx;
@@ -44,6 +45,8 @@ import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemSlotType;
+import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSkillComponent;
@@ -72,6 +75,7 @@ public final class TestHelpUI
 		when (lang.findCategoryEntry ("frmHelp", "Title")).thenReturn ("Help");
 		when (lang.findCategoryEntry ("frmHelp", "SpellBookSection")).thenReturn ("Spell book section: SPELL_BOOK_SECTION");
 		when (lang.findCategoryEntry ("frmHelp", "SpellBookResearchCostNotOurs")).thenReturn ("Research cost: RESEARCH_TOTAL PRODUCTION_TYPE");
+		when (lang.findCategoryEntry ("frmHeroItemInfo", "ItemSlotHelpTextPrefix")).thenReturn ("The following types of hero items can be used in this slot:");
 		
 		final PickLang retort = new PickLang ();
 		retort.setPickDescriptionSingular ("Alchemy");
@@ -248,6 +252,30 @@ public final class TestHelpUI
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
+		// Hero item slots
+		final HeroItemSlotTypeGfx slotType = new HeroItemSlotTypeGfx ();
+		slotType.setHeroItemSlotTypeImageFileWithBackground ("/momime.client.graphics/heroItems/slots/armour-bkg.png");
+		when (gfx.findHeroItemSlotType ("IST01", "showHeroItemSlotTypeID")).thenReturn (slotType);
+		
+		when (lang.findHeroItemSlotTypeDescription ("IST01")).thenReturn ("Armour slot");
+		
+		final HeroItemSlotType slot = new HeroItemSlotType ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroSlotAllowedItemType allowed = new HeroSlotAllowedItemType ();
+			allowed.setHeroItemTypeID ("IT0"+ n);
+			slot.getHeroSlotAllowedItemType ().add (allowed);
+		}
+		
+		when (db.findHeroItemSlotType ("IST01", "HelpUI")).thenReturn (slot);
+		
+		int n = 0;
+		for (final String itemTypeDescription : new String [] {"Shield", "Chain", "Plate"})
+		{
+			n++;
+			when (lang.findHeroItemTypeDescription ("IT0" + n)).thenReturn (itemTypeDescription);
+		}
+		
 		// EL replacer
 		final StandardEvaluationContext context = new StandardEvaluationContext ();
 		context.setRootObject (gfx);
@@ -383,6 +411,19 @@ public final class TestHelpUI
 		
 		final HelpUI help = createHelpUI ();
 		help.showSpellID ("SP048", castingPlayer);
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a hero item slot type
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_HeroItemSlotType () throws Exception
+	{
+		final HelpUI help = createHelpUI ();
+		help.showHeroItemSlotTypeID ("IST01");
 		Thread.sleep (5000);
 		help.setVisible (false);
 	}

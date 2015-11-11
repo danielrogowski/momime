@@ -496,6 +496,27 @@ public final class TestLanguageDatabaseExImpl
 	}
 	
 	/**
+	 * Tests the findHeroItemSlotTypeDescription method
+	 */
+	@Test
+	public final void testFindHeroItemSlotTypeDescription ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final HeroItemSlotTypeLang newMapSize = new HeroItemSlotTypeLang ();
+			newMapSize.setHeroItemSlotTypeID ("IST0" + n);
+			newMapSize.setSlotTypeDescription ("ISTDesc0" + n);
+			lang.getHeroItemSlotType ().add (newMapSize);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("ISTDesc02", lang.findHeroItemSlotTypeDescription ("IST02"));
+		assertEquals ("IST04", lang.findHeroItemSlotTypeDescription ("IST04"));
+	}
+	
+	/**
 	 * Tests the findHeroItemBonusDescription method
 	 */
 	@Test

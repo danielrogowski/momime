@@ -147,6 +147,12 @@ public interface LanguageDatabaseEx
 	 * @return Hero item type description; or replays back the ID if no description exists
 	 */
 	public String findHeroItemTypeDescription (final String heroItemTypeID);
+
+	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @return Hero item slot type description; or replays back the ID if no description exists
+	 */
+	public String findHeroItemSlotTypeDescription (final String heroItemSlotTypeID);
 	
 	/**
 	 * @param heroItemBonusID Hero item bonus ID to search for

@@ -989,6 +989,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 	<xsd:complexType name="heroItemSlotType" nxe:singular="Hero Item Slot Type" nxe:plural="Hero Item Slot Types" nxe:submenu="Hero items">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFile" type="momimegfx:imageFilename" nxe:label="Hero Item Slot Image" nxe:gridwidth="350" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFileWithBackground" type="momimegfx:imageFilename" nxe:label="Slot Image with Background" nxe:gridwidth="350" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Slot Type ID" nxe:gridwidth="100">
 			<xsd:annotation>

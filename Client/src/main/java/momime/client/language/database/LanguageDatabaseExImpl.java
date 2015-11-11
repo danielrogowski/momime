@@ -15,6 +15,7 @@ import momime.client.language.database.v0_9_7.DifficultyLevel;
 import momime.client.language.database.v0_9_7.FogOfWarSetting;
 import momime.client.language.database.v0_9_7.Hero;
 import momime.client.language.database.v0_9_7.HeroItemBonus;
+import momime.client.language.database.v0_9_7.HeroItemSlotType;
 import momime.client.language.database.v0_9_7.HeroItemType;
 import momime.client.language.database.v0_9_7.LandProportion;
 import momime.client.language.database.v0_9_7.LanguageCategory;
@@ -120,6 +121,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/** Map of hero item type IDs to hero item type objects */
 	private Map<String, HeroItemTypeLang> heroItemTypesMap;
+	
+	/** Map of hero item slot type IDs to hero item slot type objects */
+	private Map<String, HeroItemSlotTypeLang> heroItemSlotTypesMap;
 	
 	/** Map of hero item bonus IDs to hero item bonus objects */
 	private Map<String, HeroItemBonusLang> heroItemBonusesMap;
@@ -276,6 +280,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		heroItemTypesMap = new HashMap<String, HeroItemTypeLang> ();
 		for (final HeroItemType thisHeroItemType : getHeroItemType ())
 			heroItemTypesMap.put (thisHeroItemType.getHeroItemTypeID (), (HeroItemTypeLang) thisHeroItemType);
+		
+		// Create hero item slot types map
+		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotTypeLang> ();
+		for (final HeroItemSlotType thisHeroItemSlotType : getHeroItemSlotType ())
+			heroItemSlotTypesMap.put (thisHeroItemSlotType.getHeroItemSlotTypeID (), (HeroItemSlotTypeLang) thisHeroItemSlotType);
 		
 		// Create hero item bonuses map
 		heroItemBonusesMap = new HashMap<String, HeroItemBonusLang> ();
@@ -574,6 +583,18 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		final HeroItemTypeLang thisHeroItemType = heroItemTypesMap.get (heroItemTypeID);
 		final String desc = (thisHeroItemType != null) ? thisHeroItemType.getHeroItemTypeDescription () : null;
 		return (desc != null) ? desc : heroItemTypeID;
+	}
+	
+	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @return Hero item slot type description; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findHeroItemSlotTypeDescription (final String heroItemSlotTypeID)
+	{
+		final HeroItemSlotTypeLang thisHeroItemSlotType = heroItemSlotTypesMap.get (heroItemSlotTypeID);
+		final String desc = (thisHeroItemSlotType != null) ? thisHeroItemSlotType.getSlotTypeDescription () : null;
+		return (desc != null) ? desc : heroItemSlotTypeID;
 	}
 	
 	/**

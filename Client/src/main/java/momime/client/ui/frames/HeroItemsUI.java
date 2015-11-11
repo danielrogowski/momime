@@ -127,6 +127,9 @@ public final class HeroItemsUI extends MomClientFrameUI
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+
+	/** Help text scroll */
+	private HelpUI helpUI;
 	
 	/** Heroes in the grid */
 	private HeroesTableModel heroesTableModel;
@@ -536,7 +539,14 @@ public final class HeroItemsUI extends MomClientFrameUI
 							{
 								// Is there an item in the slot to view?
 								final NumberedHeroItem item = unit.getHeroItemSlot ().get (slotNumber).getHeroItem ();
-								if (item != null)
+								if (item == null)
+								{
+									// Show info about the slot type
+									final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "HeroItemsUI-slotHelp");
+									if (slotNumber < unitDef.getHeroItemSlot ().size ())
+										getHelpUI ().showHeroItemSlotTypeID (unitDef.getHeroItemSlot ().get (slotNumber).getHeroItemSlotTypeID ());
+								}
+								else
 								{
 									// Is there an item info screen already open for this item?
 									HeroItemInfoUI itemInfo = getClient ().getHeroItemInfos ().get (item.getHeroItemURN ());
@@ -932,6 +942,22 @@ public final class HeroItemsUI extends MomClientFrameUI
 	public final ResourceValueUtils getResourceValueUtils ()
 	{
 		return resourceValueUtils;
+	}
+
+	/**
+	 * @return Help text scroll
+	 */
+	public final HelpUI getHelpUI ()
+	{
+		return helpUI;
+	}
+
+	/**
+	 * @param ui Help text scroll
+	 */
+	public final void setHelpUI (final HelpUI ui)
+	{
+		helpUI = ui;
 	}
 
 	/**

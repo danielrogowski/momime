@@ -1010,7 +1010,7 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 		<unitSkillHelpText>Caster allows the unit to cast spells like a wizard in combat, without cost of mana points drawn from the wizard's mana reserve. Furthermore, heroes with caster ability add half the caster's skill to a wizard casting overland spells if the hero is inside the wizard's fortress. You must still provide the required mana to support the skill.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="HS06">
-		<unitSkillDescription>Charmed_</unitSkillDescription>
+		<unitSkillDescription>Charmed</unitSkillDescription>
 		<unitSkillHelpText>Charmed heroes never fail a resistance roll.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="HS07">
@@ -1026,7 +1026,7 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 		<unitSkillHelpText>Legendary represents the hero's reputation and increases the frequency and strength of mercenaries approaching the wizard for hire, as well as decreases the initial hiring cost. The hero adds +3 fame per level of the hero directly to the controlling wizard's fame total.  Super Legendary increases this bonus by 50%.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="HS10">
-		<unitSkillDescription>Lucky_</unitSkillDescription>
+		<unitSkillDescription>Lucky</unitSkillDescription>
 		<unitSkillHelpText>Luck adds +1 to all of the hero's rolls, including attack, defense, and resistance.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="HS11">
@@ -1034,7 +1034,7 @@ Thrown weapons are available in a number of weapon grades which confer improved 
 		<unitSkillHelpText>Might increases the hero's hand-to-hand attack by +1 per level of experience.  Super Might increases this bonus by 50%.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="HS12">
-		<unitSkillDescription>Noble_</unitSkillDescription>
+		<unitSkillDescription>Noble</unitSkillDescription>
 		<unitSkillHelpText>Noble heroes do not cost money but instead contribute 10 gold to your cause each turn.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="HS13">
@@ -4367,6 +4367,24 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 	<heroItemType heroItemTypeID="IT10">
 		<heroItemTypeDescription>Plate</heroItemTypeDescription>
 	</heroItemType>
+	<heroItemSlotType heroItemSlotTypeID="IST01">
+		<slotTypeDescription>Melee weapon slot</slotTypeDescription>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST02">
+		<slotTypeDescription>Bow or Melee weapon slot</slotTypeDescription>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST03">
+		<slotTypeDescription>Melee or Magic weapon slot</slotTypeDescription>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST04">
+		<slotTypeDescription>Magic weapon slot</slotTypeDescription>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST05">
+		<slotTypeDescription>Miscellaneous accessory slot</slotTypeDescription>
+	</heroItemSlotType>
+	<heroItemSlotType heroItemSlotTypeID="IST06">
+		<slotTypeDescription>Armour slot</slotTypeDescription>
+	</heroItemSlotType>
 	<heroItemBonus heroItemBonusID="IB01">
 		<heroItemBonusDescription>+1 Attack</heroItemBonusDescription>
 	</heroItemBonus>
@@ -6656,7 +6674,10 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="Close">
 			<languageEntryText>Close</languageEntryText>
 		</languageEntry>
-	</languageCategory>	
+		<languageEntry languageEntryID="ItemSlotHelpTextPrefix">
+			<languageEntryText>The following types of hero items can be used in this slot:</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Combats</languageEntryText>

@@ -24291,6 +24291,7 @@
 	</languageCategory>
 	<languageCategory languageCategoryID="frmHeroItemInfo">
 		<languageEntry languageEntryID="Close" />
+		<languageEntry languageEntryID="ItemSlotHelpTextPrefix" />
 	</languageCategory>	
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />

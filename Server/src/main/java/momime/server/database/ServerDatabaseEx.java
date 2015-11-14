@@ -201,6 +201,15 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public CitySpellEffectSvr findCitySpellEffect (final String citySpellEffectID, final String caller) throws RecordNotFoundException;
 	
 	/**
+	 * @param heroItemBonusID Hero item bonus ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemBonus object
+	 * @throws RecordNotFoundException If the hero item bonus ID doesn't exist
+	 */
+	@Override
+	public HeroItemBonusSvr findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @return Complete list of all picks in game
 	 */
 	@Override

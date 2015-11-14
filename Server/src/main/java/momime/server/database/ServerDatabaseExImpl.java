@@ -118,7 +118,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	private Map<String, HeroItemType> heroItemTypesMap;
 
 	/** Map of hero item bonus IDs to hero item bonus objects */
-	private Map<String, HeroItemBonus> heroItemBonusesMap;
+	private Map<String, HeroItemBonusSvr> heroItemBonusesMap;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -243,9 +243,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			heroItemTypesMap.put (thisHeroItemType.getHeroItemTypeID (), thisHeroItemType);
 
 		// Create hero item bonuses map
-		heroItemBonusesMap = new HashMap<String, HeroItemBonus> ();
+		heroItemBonusesMap = new HashMap<String, HeroItemBonusSvr> ();
 		for (final HeroItemBonus thisHeroItemBonus : getHeroItemBonus ())
-			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), thisHeroItemBonus);
+			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), (HeroItemBonusSvr) thisHeroItemBonus);
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -929,9 +929,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	 * @throws RecordNotFoundException If the hero item bonus ID doesn't exist
 	 */
 	@Override
-	public final HeroItemBonus findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException
+	public final HeroItemBonusSvr findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException
 	{
-		final HeroItemBonus found = heroItemBonusesMap.get (heroItemBonusID);
+		final HeroItemBonusSvr found = heroItemBonusesMap.get (heroItemBonusID);
 		if (found == null)
 			throw new RecordNotFoundException (HeroItemBonus.class, heroItemBonusID, caller);
 

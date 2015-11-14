@@ -49,6 +49,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.utils.HeroItemServerUtils;
 
 /**
  * Methods for validating spell requests and deciding whether to queue them up or cast immediately.
@@ -95,6 +96,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
+	/** Hero item server utils */
+	private HeroItemServerUtils heroItemServerUtils;
 	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -298,6 +302,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "You have already cast all possible effects of this combat enchantment";
 			}
 		}
+		
+		// Separate routine to validate hero items we're trying to craft
+		if ((msg == null) && (heroItem != null))
+			msg = getHeroItemServerUtils ().validateHeroItem (player, spell, heroItem, mom.getSessionDescription ().getUnitSetting (), mom.getServerDB ());
 		
 		// Ok to go ahead and cast (or queue) it?
 		if (msg != null)
@@ -627,5 +635,21 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return Hero item server utils
+	 */
+	public final HeroItemServerUtils getHeroItemServerUtils ()
+	{
+		return heroItemServerUtils;
+	}
+
+	/**
+	 * @param util Hero item server utils
+	 */
+	public final void setHeroItemServerUtils (final HeroItemServerUtils util)
+	{
+		heroItemServerUtils = util;
 	}
 }

@@ -15,6 +15,7 @@ import momime.server.database.v0_9_7.CombatTileBorder;
 import momime.server.database.v0_9_7.CombatTileType;
 import momime.server.database.v0_9_7.DifficultyLevel;
 import momime.server.database.v0_9_7.FogOfWarSetting;
+import momime.server.database.v0_9_7.HeroItemBonus;
 import momime.server.database.v0_9_7.LandProportion;
 import momime.server.database.v0_9_7.MapFeature;
 import momime.server.database.v0_9_7.MapFeatureMagicRealm;
@@ -421,6 +422,15 @@ public final class ServerDatabaseObjectFactory extends ObjectFactory
 	public final AttackResolutionStep createAttackResolutionStep ()
 	{
 		return new AttackResolutionStepSvr ();
+	}
+
+	/**
+	 * @return Custom extended HeroItemBonus
+	 */
+	@Override
+	public final HeroItemBonus createHeroItemBonus ()
+	{
+		return new HeroItemBonusSvr ();
 	}
 
 	/**

@@ -1164,6 +1164,31 @@ they're destroying it on the anvil, or moving it from there to a hero to make us
 		</xsd:complexType>
 	</xsd:element>
 	
+<!-- Treasure rewards, new for 0.9.7 -->
+
+	<xsd:element name="treasureReward">
+	    <xsd:annotation>
+    		<xsd:documentation>Stores all the treasure gained from capturing a node/lair/tower.
+This is purely informational, like NTMs.  Other messages (e.g. add hero item, full spell list) will be sent containing the actual updates.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimemsgs:numberedHeroItem" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellID" type="momimecommon:spellID" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="resource" type="momimecommon:productionTypeAndUndoubledValue" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pickAndQuantity" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="prisoner" type="momimestoc:treasureRewardPrisoner" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="treasureRewardPrisoner">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="prisonerUnitURN" type="momimemsgs:unitURN" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitAddBumpType" type="momimemsgs:unitAddBumpTypeID" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 <!-- Map areas -->
 
 	<!-- Equivalent of TMomOverlandMoveTypeArea -->

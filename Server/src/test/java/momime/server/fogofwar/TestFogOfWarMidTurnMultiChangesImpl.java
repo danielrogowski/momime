@@ -12,6 +12,12 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
@@ -35,12 +41,7 @@ import momime.server.database.MapFeatureMagicRealmSvr;
 import momime.server.database.MapFeatureSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
 
 /**
  * Tests the FogOfWarMidTurnMultiChangesImpl class
@@ -361,6 +362,9 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
 		moveToCell.setMapFeatureID ("MF01");
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
 		final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx (20, 10, 1);
 		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
@@ -499,7 +503,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		multi.setUnitUtils (unitUtils);
 
 		// Run method
-		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, trueMap, sd, db);
+		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
 		
 		// Check player 1
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
@@ -589,6 +593,9 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
 		moveToCell.setMapFeatureID ("MF01");
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
 		final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx (20, 10, 1);
 		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
@@ -657,7 +664,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		multi.setMemoryGridCellUtils (memoryGridCellUtils);
 		
 		// Run method
-		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, trueMap, sd, db);
+		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
 		
 		// Check player 1
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
@@ -732,6 +739,9 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCellOtherPlane);
 		moveToCellOtherPlane.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
 		final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx (20, 10, 1);
 		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
@@ -800,7 +810,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		multi.setMemoryGridCellUtils (memoryGridCellUtils);
 		
 		// Run method
-		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, trueMap, sd, db);
+		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
 		
 		// Check player 1
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);

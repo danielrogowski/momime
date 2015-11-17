@@ -874,7 +874,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 	}
 
 	/**
@@ -1018,7 +1018,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward, in the process jumping to plane 0
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 0), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 0), players, gsk, sd, db);
 	}
 	
 	/**
@@ -1205,7 +1205,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward into the city
 		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
@@ -1407,7 +1407,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward into where the city used to be
 		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
@@ -1557,7 +1557,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check pending movement was removed
 		assertEquals (1, attackingTrans.getPendingMovement ().size ());
@@ -1691,7 +1691,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units do not advanced forward
 		verify (midTurn, times (0)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check pending movement was removed
 		assertNull (gc.getCombatAttackerPendingMovement ());

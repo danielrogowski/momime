@@ -402,6 +402,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
+
+	<bean id="treasureUtils" class="momime.server.utils.TreasureUtilsImpl">
+		<property name="heroItemUtils" ref="heroItemUtils" />
+		<property name="heroItemCalculations" ref="heroItemCalculations" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
 	
 	<!-- Calculations -->
 	
@@ -692,6 +704,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="treasureUtils" ref="treasureUtils" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">

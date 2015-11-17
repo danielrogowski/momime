@@ -299,4 +299,9 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @return Complete list of all pre-defined hero items
 	 */
 	public List<HeroItem> getHeroItem ();
+
+	/**
+	 * @return Complete list of all spell ranks in game
+	 */
+	public List<SpellRankSvr> getSpellRanks ();
 }

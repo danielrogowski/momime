@@ -5,6 +5,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
@@ -16,11 +20,8 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PendingMovement;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
 import momime.server.process.OneCellPendingMovement;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * This contains methods for updating multiple mid turn changes at once, e.g. remove all spells in a location.
@@ -170,7 +171,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 *			of moveTo.getPlane () is by what map cell the player clicked on in the UI.
 	 *
 	 * @param players List of players in the session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param gsk Server knowledge structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -181,7 +182,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 */
 	public void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 
 	/**

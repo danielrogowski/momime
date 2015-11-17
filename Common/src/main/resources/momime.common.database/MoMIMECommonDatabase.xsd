@@ -350,6 +350,11 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines types of picks that can be chosen at the start of the game, i.e. Spell Books &amp; Retorts.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="maximumQuantity" nxe:label="Max. Quantity" type="momimecommon:pickTypeCount">
+		        <xsd:annotation>
+		        	<xsd:documentation>Retorts can only be picked once; books have no such limit so have a null here.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPickTypeProduction" type="momimecommon:productionTypeAndDoubledValue">
 		        <xsd:annotation>
 		        	<xsd:documentation>Models that a Wizards' Fortress generates +2 magic power for each spell book the wizard has.</xsd:documentation>

@@ -231,8 +231,13 @@ public final class CommonDatabaseConstants
 	
 	// hero items
 	
-	/** Specail hero item bonus ID for the ability to cast a spell a number of times in combat for free */
+	/** Special hero item bonus ID for the ability to cast a spell a number of times in combat for free */
 	public static final String HERO_ITEM_BONUS_ID_SPELL_CHARGES = "IB65";
+	
+	// spells
+	
+	/** Summon hero spell - used as a means to get a list of the heroes we can rescue from lairs/nodes/towers */
+	public static final String SPELL_ID_SUMMON_HERO = "SP208";
 	
 	/**
 	 * Prevent instatiation of this class

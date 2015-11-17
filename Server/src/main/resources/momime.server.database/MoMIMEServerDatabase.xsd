@@ -754,6 +754,16 @@
 			<xsd:selector xpath="heroItem/heroItemChosenBonus" />
 			<xsd:field xpath="@heroItemBonusID" />
 		</xsd:keyref>
+
+		<!-- Treasure rewards, new for 0.9.7 -->
+		<xsd:keyref refer="momimesvr:pickPK" name="tileTypeFKpick">
+			<xsd:selector xpath="tileType" />
+			<xsd:field xpath="tileTypeTreasureBookReward" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:pickPK" name="mapFeatureTreasureBookRewardFKpick">
+			<xsd:selector xpath="mapFeature/mapFeatureTreasureBookReward" />
+			<xsd:field xpath="@pickID" />
+		</xsd:keyref>
 		
 	</xsd:element>
 		
@@ -804,6 +814,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					<xsd:element minOccurs="1" maxOccurs="1" name="mapFeatureDescription" type="momimecommon:description" nxe:label="Map Feature Description" nxe:gridwidth="160" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="cityQualityEstimate" type="momimesvr:cityQualityEstimate" nxe:label="+ to City Quality Estimate" nxe:gridwidth="150" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureMagicRealm" type="momimesvr:mapFeatureMagicRealm" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureTreasureBookReward" type="momimesvr:mapFeatureTreasureBookReward" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -825,6 +836,19 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		</xsd:attribute>
 	</xsd:complexType>
 
+	<xsd:complexType name="mapFeatureTreasureBookReward" nxe:singular="Treasure Book Reward" nxe:plural="Treasure Book Rewards">
+        <xsd:annotation>
+        	<xsd:documentation>Lists the different books we can win from "special" awards when capturing a lair of this type.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="pickID" type="momimecommon:pickID" use="required" nxe:label="Pick" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
 	<xsd:complexType name="tileType" nxe:singular="Tile Type" nxe:plural="Tile Types" nxe:submenu="Overland Map">
         <xsd:annotation>
         	<xsd:documentation>Defines the types of terrain tiles that make up the map, e.g. Grassland, Forest, Mountains, Ocean, Nodes, plus some special entries which aren't really "terrain" - roads and fog of war - for defining movement rate rules.</xsd:documentation>
@@ -837,6 +861,13 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatDarkTiles" type="momimesvr:combatMapTileCount" nxe:label="Combat Dark Tiles" nxe:gridwidth="120" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatRidgeTiles" type="momimesvr:combatMapTileCount" nxe:label="Combat Ridge Tiles" nxe:gridwidth="120" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatTerrainFeatures" type="momimesvr:combatMapTileCount" nxe:label="Combat Features (e.g. trees)" nxe:gridwidth="180" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeTreasureBookReward" type="momimecommon:pickID" nxe:label="Treasure Book Reward" nxe:gridwidth="200">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeFeatureChance" type="momimesvr:tileTypeFeatureChance" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeAreaEffect" type="momimesvr:tileTypeAreaEffect" />
 				</xsd:sequence>
@@ -890,6 +921,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:complexContent>
 			<xsd:extension base="momimecommon:pickType">
 				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="relativeChance" type="momimecommon:percentage" nxe:label="Special Treasure Rel. Chance" nxe:gridwidth="150" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="pickTypeDescription" type="momimecommon:description" nxe:label="Pick Type Description" nxe:gridwidth="150" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeCount" type="momimesvr:pickTypeCountContainer">
 						<xsd:key name="spellCountPK">
@@ -1242,6 +1274,12 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellRankDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="treasureRewardCost" type="momimecommon:spellCastingCost" nxe:label="Treasure Cost" nxe:gridwidth="150">
+		        <xsd:annotation>
+        			<xsd:documentation>Cost to receive a spell of this rank from a node/lair/tower; null = spells of this rank can't be received as
+treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="spellRankID" type="momimecommon:spellRankID" use="required" nxe:label="Spell Rank ID" nxe:gridwidth="100" />
 	</xsd:complexType>

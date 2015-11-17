@@ -14,6 +14,7 @@ public final class ServerGridCellEx extends ServerGridCell
 	/**
 	 * Stores the random roll between 0..1 for where between min and max the various stats of a node/lair/tower are.
 	 * e.g. for nodes, this keeps the size of the aura, the strength of the defending monsters, and the quality of treasure reward all at the same level.
+	 * Same as "lairWeak", this is only used temporarily during map generation, so doesn't need to be persisted into saved game files. 
 	 */
 	private Double nodeLairTowerPowerProportion;
 

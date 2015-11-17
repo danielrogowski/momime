@@ -391,7 +391,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Its possible to get a list of 0 here, if the only surviving attacking units were combat summons like phantom warriors which have now been removed
 				if (unitStack.size () > 0)
 					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
-						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Deal with cities
 				if (captureCityDecision == CaptureCityDecisionID.CAPTURE)

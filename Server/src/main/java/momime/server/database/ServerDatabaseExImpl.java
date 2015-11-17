@@ -937,6 +937,16 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 
 		return found;
 	}
+
+	/**
+	 * @return Complete list of all spell ranks in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<SpellRankSvr> getSpellRanks ()
+	{
+		return (List<SpellRankSvr>) (List<?>) getSpellRank ();
+	}
 	
 	/**
 	 * @return Unit utils

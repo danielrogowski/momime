@@ -33,6 +33,7 @@ import momime.server.database.v0_9_7.Race;
 import momime.server.database.v0_9_7.RangedAttackType;
 import momime.server.database.v0_9_7.ServerDatabase;
 import momime.server.database.v0_9_7.Spell;
+import momime.server.database.v0_9_7.SpellRank;
 import momime.server.database.v0_9_7.SpellSetting;
 import momime.server.database.v0_9_7.TileType;
 import momime.server.database.v0_9_7.TileTypeAreaEffect;
@@ -431,6 +432,15 @@ public final class ServerDatabaseObjectFactory extends ObjectFactory
 	public final HeroItemBonus createHeroItemBonus ()
 	{
 		return new HeroItemBonusSvr ();
+	}
+
+	/**
+	 * @return Custom extended SpellRank
+	 */
+	@Override
+	public final SpellRank createSpellRank ()
+	{
+		return new SpellRankSvr ();
 	}
 
 	/**

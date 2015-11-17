@@ -65,6 +65,11 @@ or offered for sale from merchants.</xsd:documentation>
     														displace when someone else tries to take over the node.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="treasureValue" type="momimecommon:spellCastingCost">
+					    <xsd:annotation>
+    						<xsd:documentation>Value of random treasure at lairs/nodes/towers.  Gets nulled out when the treasure is claimed.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="raiderCityAdditionalPopulationCap" type="xsd:int">
 					    <xsd:annotation>
     						<xsd:documentation>Raiders have a special population cap that prevents cities expanding by more than a certain value, see strategy guide p426.</xsd:documentation>

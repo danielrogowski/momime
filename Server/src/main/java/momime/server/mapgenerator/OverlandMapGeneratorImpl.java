@@ -1681,6 +1681,25 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	}
 
 	/**
+	 * Sets the treasure value according to the powerProportion rolled at this location
+	 * See strategy guide pages 416 & 418
+	 *
+	 * @param gridCell Cell to set the treasure value for
+	 * @param treasureMin Minimum value of treasure to assign
+	 * @param treasureMax Maximum value of treasure to assign
+	 */
+	final void assignTreasureValue (final ServerGridCellEx gridCell, final int treasureMin, final int treasureMax)
+	{
+		log.trace ("Entering assignTreasureValue: " + treasureMin + "-" + treasureMax + ", " +
+			new DecimalFormat ("0.000").format (gridCell.getNodeLairTowerPowerProportion ()));
+
+		final int treasureValue = treasureMin + (int) Math.round ((treasureMax - treasureMin) * gridCell.getNodeLairTowerPowerProportion ());
+		gridCell.setTreasureValue (treasureValue);
+
+		log.trace ("Exiting assignTreasureValue = " + treasureValue);
+	}
+	
+	/**
 	 * Fills all nodes, lairs and towers of wizardry on the map with random monsters
 	 * This is really separate from the rest of the methods in this class which are to do with generating the terrain
 	 * However its still to do with generating the map so this class is still the most sensible place for it
@@ -1787,19 +1806,29 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 								final MapCoordinates3DEx lairLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());								
 
 								if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (thisCell.getTerrainData ()))
+								{
 									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										sd.getDifficultyLevel ().getTowerMonstersMinimum (), sd.getDifficultyLevel ().getTowerMonstersMaximum (),
 										thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
-
+									
+									assignTreasureValue (thisCell, sd.getDifficultyLevel ().getTowerTreasureMinimum (), sd.getDifficultyLevel ().getTowerTreasureMaximum ());
+								}
 								else if (thisCell.isLairWeak ())
+								{
 									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										plane.getWeakLairMonstersMinimum (), plane.getWeakLairMonstersMaximum (),
 										thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
-
+									
+									assignTreasureValue (thisCell, plane.getWeakLairTreasureMinimum (), plane.getWeakLairTreasureMaximum ());
+								}
 								else
+								{
 									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										plane.getNormalLairMonstersMinimum (), plane.getNormalLairMonstersMaximum (),
 										thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
+									
+									assignTreasureValue (thisCell, plane.getNormalLairTreasureMinimum (), plane.getNormalLairTreasureMaximum ());
+								}
 							}
 						}
 					}
@@ -1809,9 +1838,13 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					{
 						final TileTypeSvr tileType = db.findTileType (thisCell.getTerrainData ().getTileTypeID (), "fillNodesLairsAndTowersWithMonsters");
 						if (tileType.getMagicRealmID () != null)
+						{
 							fillSingleLairOrTowerWithMonsters (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()), tileType.getMagicRealmID (),
 								nodeStrength.getMonstersMinimum (), nodeStrength.getMonstersMaximum (),
 								thisCell.getNodeLairTowerPowerProportion (), monsterPlayer);
+							
+							assignTreasureValue (thisCell, nodeStrength.getTreasureMinimum (), nodeStrength.getTreasureMaximum ());
+						}
 					}
 				}
 		}

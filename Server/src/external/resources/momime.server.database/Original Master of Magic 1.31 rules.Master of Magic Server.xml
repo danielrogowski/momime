@@ -198,6 +198,11 @@
 		<mapFeatureMagicRealm magicRealm="LT05">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB01" />
+		<mapFeatureTreasureBookReward pickID="MB02" />
+		<mapFeatureTreasureBookReward pickID="MB03" />
+		<mapFeatureTreasureBookReward pickID="MB04" />
+		<mapFeatureTreasureBookReward pickID="MB05" />
 	</mapFeature>
 	<mapFeature mapFeatureID="MF12B">
 		<canBuildCity>false</canBuildCity>
@@ -230,6 +235,11 @@
 		<mapFeatureMagicRealm magicRealm="LT04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB01" />
+		<mapFeatureTreasureBookReward pickID="MB02" />
+		<mapFeatureTreasureBookReward pickID="MB03" />
+		<mapFeatureTreasureBookReward pickID="MB04" />
+		<mapFeatureTreasureBookReward pickID="MB05" />
 	</mapFeature>
 	<mapFeature mapFeatureID="MF14">
 		<canBuildCity>false</canBuildCity>
@@ -243,6 +253,11 @@
 		<mapFeatureMagicRealm magicRealm="LT04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB01" />
+		<mapFeatureTreasureBookReward pickID="MB02" />
+		<mapFeatureTreasureBookReward pickID="MB03" />
+		<mapFeatureTreasureBookReward pickID="MB04" />
+		<mapFeatureTreasureBookReward pickID="MB05" />
 	</mapFeature>
 	<mapFeature mapFeatureID="MF15">
 		<canBuildCity>false</canBuildCity>
@@ -256,6 +271,7 @@
 		<mapFeatureMagicRealm magicRealm="LT04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB02" />
 	</mapFeature>
 	<mapFeature mapFeatureID="MF16">
 		<canBuildCity>false</canBuildCity>
@@ -266,6 +282,7 @@
 		<mapFeatureMagicRealm magicRealm="LT02">
 			<featureChance>3</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB02" />
 	</mapFeature>
 	<mapFeature mapFeatureID="MF17">
 		<canBuildCity>false</canBuildCity>
@@ -279,6 +296,7 @@
 		<mapFeatureMagicRealm magicRealm="LT04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB02" />
 	</mapFeature>
 	<mapFeature mapFeatureID="MF18">
 		<canBuildCity>false</canBuildCity>
@@ -289,6 +307,7 @@
 		<mapFeatureMagicRealm magicRealm="LT02">
 			<featureChance>3</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB01" />
 	</mapFeature>
 	<mapFeature mapFeatureID="MF19">
 		<canBuildCity>false</canBuildCity>
@@ -299,6 +318,7 @@
 		<mapFeatureMagicRealm magicRealm="LT02">
 			<featureChance>3</featureChance>
 		</mapFeatureMagicRealm>
+		<mapFeatureTreasureBookReward pickID="MB01" />
 	</mapFeature>
 	<tileType tileTypeID="TT01">
 		<land>true</land>
@@ -572,6 +592,7 @@
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
+		<tileTypeTreasureBookReward>MB05</tileTypeTreasureBookReward>
 		<tileTypeAreaEffect combatAreaEffectID="CAE05" />
 		<tileTypeAreaEffect combatAreaEffectID="CAE06">
 			<extendAcrossNodeAura>true</extendAcrossNodeAura>
@@ -588,6 +609,7 @@
 		<combatDarkTiles>35</combatDarkTiles>
 		<combatRidgeTiles>25</combatRidgeTiles>
 		<combatTerrainFeatures>70</combatTerrainFeatures>
+		<tileTypeTreasureBookReward>MB04</tileTypeTreasureBookReward>
 		<tileTypeAreaEffect combatAreaEffectID="CAE03" />
 		<tileTypeAreaEffect combatAreaEffectID="CAE04">
 			<extendAcrossNodeAura>true</extendAcrossNodeAura>
@@ -603,6 +625,7 @@
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
 		<combatTerrainFeatures>15</combatTerrainFeatures>
+		<tileTypeTreasureBookReward>MB03</tileTypeTreasureBookReward>
 		<tileTypeAreaEffect combatAreaEffectID="CAE01" />
 		<tileTypeAreaEffect combatAreaEffectID="CAE02">
 			<extendAcrossNodeAura>true</extendAcrossNodeAura>
@@ -636,6 +659,7 @@
 		<fortressPickTypeProduction productionTypeID="RE04">
 			<doubledProductionValue>2</doubledProductionValue>
 		</fortressPickTypeProduction>
+		<relativeChance>3</relativeChance>
 		<pickTypeDescription>Spell Book</pickTypeDescription>
 		<pickTypeCount count="1">
 			<spellCount spellRank="SR01">
@@ -950,6 +974,8 @@
 		</pickTypeCount>
 	</pickType>
 	<pickType pickTypeID="R">
+		<maximumQuantity>1</maximumQuantity>
+		<relativeChance>1</relativeChance>
 		<pickTypeDescription>Retort</pickTypeDescription>
 	</pickType>
 	<pick pickID="MB01">
@@ -19094,15 +19120,19 @@
 	</combatAreaEffect>
 	<spellRank spellRankID="SR01">
 		<spellRankDescription>Common</spellRankDescription>
+		<treasureRewardCost>50</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR02">
 		<spellRankDescription>Uncommon</spellRankDescription>
+		<treasureRewardCost>200</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR03">
 		<spellRankDescription>Rare</spellRankDescription>
+		<treasureRewardCost>450</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR04">
 		<spellRankDescription>Very Rare</spellRankDescription>
+		<treasureRewardCost>800</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR05">
 		<spellRankDescription>Very Rare [Special rank for Spell of Mastery to ensure that this is always the last spell to appear in list of available spells to research]</spellRankDescription>
@@ -24292,7 +24322,7 @@
 	<languageCategory languageCategoryID="frmHeroItemInfo">
 		<languageEntry languageEntryID="Close" />
 		<languageEntry languageEntryID="ItemSlotHelpTextPrefix" />
-	</languageCategory>	
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="RequestingUsToPlayCategory" />

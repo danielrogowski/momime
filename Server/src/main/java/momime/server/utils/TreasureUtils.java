@@ -12,7 +12,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.servertoclient.TreasureReward;
+import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
 
@@ -53,7 +53,18 @@ public interface TreasureUtils
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public TreasureReward rollTreasureReward (final int treasureValue, final PlayerServerDetails player, final MapCoordinates3DEx lairNodeTowerLocation,
+	public TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player, final MapCoordinates3DEx lairNodeTowerLocation,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * Sends the reward info to the client, including all separate messages to e.g. add hero items and so on.
+	 * 
+	 * @param reward Details of treasure reward to send
+	 * @param player Player who earned the reward
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player)
+		throws JAXBException, XMLStreamException;
 }

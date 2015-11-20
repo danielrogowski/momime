@@ -298,4 +298,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Damage breakdown line with with injected dependencies
 	 */
 	public DamageCalculationDefenceDataEx createDamageCalculationDefenceData ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public TreasureRewardMessageImpl createTreasureRewardMessage ();
 }

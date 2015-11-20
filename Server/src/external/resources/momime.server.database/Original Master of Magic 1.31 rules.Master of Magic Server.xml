@@ -24323,6 +24323,17 @@
 		<languageEntry languageEntryID="Close" />
 		<languageEntry languageEntryID="ItemSlotHelpTextPrefix" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmTreasure">
+		<languageEntry languageEntryID="OK" />
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Text" />
+		<languageEntry languageEntryID="Nothing" />
+		<languageEntry languageEntryID="Spell" />
+		<languageEntry languageEntryID="Retort" />
+		<languageEntry languageEntryID="PrisonerC" />
+		<languageEntry languageEntryID="PrisonerB" />
+		<languageEntry languageEntryID="PrisonerN" />
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="RequestingUsToPlayCategory" />

@@ -139,6 +139,7 @@
     			<value>momime.common.messages.servertoclient.YourRaceIsOkMessage</value>
     			<value>momime.common.messages.servertoclient.AddUnassignedHeroItemMessage</value>
     			<value>momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage</value>
+    			<value>momime.common.messages.servertoclient.TreasureRewardMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>

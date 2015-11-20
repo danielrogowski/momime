@@ -51,6 +51,7 @@ import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
@@ -593,6 +594,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final DamageCalculationDefenceData createDamageCalculationDefenceData ()
 	{
 		return getFactory ().createDamageCalculationDefenceData ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final TreasureRewardMessage createTreasureRewardMessage ()
+	{
+		return getFactory ().createTreasureRewardMessage ();
 	}
 
 	/**

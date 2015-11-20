@@ -37,7 +37,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.TreasureReward;
+import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.TreasureRewardPrisoner;
 import momime.common.utils.HeroItemUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -193,7 +193,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final TreasureReward rollTreasureReward (final int treasureValue, final PlayerServerDetails player, final MapCoordinates3DEx lairNodeTowerLocation,
+	public final TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player, final MapCoordinates3DEx lairNodeTowerLocation,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -203,9 +203,16 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		final SpellSvr summonHero = db.findSpell (CommonDatabaseConstants.SPELL_ID_SUMMON_HERO, "rollTreasureReward");
+
+		// Initialize message
+		final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get
+			(lairNodeTowerLocation.getZ ()).getRow ().get (lairNodeTowerLocation.getY ()).getCell ().get (lairNodeTowerLocation.getX ()).getTerrainData ();
+
+		final TreasureRewardMessage reward = new TreasureRewardMessage ();
+		reward.setTileTypeID (terrainData.getTileTypeID ());
+		reward.setMapFeatureID (terrainData.getMapFeatureID ());
 		
 		// Keep going until we run out of points to spend
-		final TreasureReward reward = new TreasureReward ();
 		int specialRewardCount = 0;		// Which picks/retort(s) are awarded is decided at the end, after the main loop - for now just record a count
 		int remainingTreasureValue = treasureValue;
 		
@@ -240,7 +247,9 @@ public final class TreasureUtilsImpl implements TreasureUtils
 								found = true;
 						}
 					}
-					availableSpellRanks.add (spellRank);
+					
+					if (found)
+						availableSpellRanks.add (spellRank);
 				}
 
 			// Get a list of non-dead heroes who aren't currently in service (heroes that we dismiss go back to "Generated")
@@ -313,14 +322,14 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					final SpellRankSvr spellRank = availableSpellRanks.get (getRandomUtils ().nextInt (availableSpellRanks.size ()));
 					final List<SpellResearchStatus> availableSpells = new ArrayList<SpellResearchStatus> ();
 					for (final SpellSvr spell : db.getSpells ())
-					if (spell.getSpellRank ().equals (spellRank.getSpellRankID ()))
-					{
-						final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
-						if ((researchStatus != null) && ((researchStatus.getStatus () == SpellResearchStatusID.NOT_IN_SPELL_BOOK) ||
-							(researchStatus.getStatus () == SpellResearchStatusID.RESEARCHABLE) || (researchStatus.getStatus () == SpellResearchStatusID.RESEARCHABLE_NOW)))
-							
-							availableSpells.add (researchStatus);
-					}
+						if (spell.getSpellRank ().equals (spellRank.getSpellRankID ()))
+						{
+							final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
+							if ((researchStatus != null) && ((researchStatus.getStatus () == SpellResearchStatusID.NOT_IN_SPELL_BOOK) ||
+								(researchStatus.getStatus () == SpellResearchStatusID.RESEARCHABLE) || (researchStatus.getStatus () == SpellResearchStatusID.RESEARCHABLE_NOW)))
+								
+								availableSpells.add (researchStatus);
+						}
 					
 					final SpellResearchStatus spell = availableSpells.get (getRandomUtils ().nextInt (availableSpells.size ()));
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation + " rolled " +
@@ -408,9 +417,6 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		if (specialRewardCount > 0)
 		{
 			// Spell books are limited according to the type of lair/node/tower that we captured
-			final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get
-				(lairNodeTowerLocation.getZ ()).getRow ().get (lairNodeTowerLocation.getY ()).getCell ().get (lairNodeTowerLocation.getX ()).getTerrainData ();
-			
 			final List<String> availableSpellBookIDs = new ArrayList<String> ();
 			
 			if (terrainData.getMapFeatureID () != null)
@@ -604,6 +610,35 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	{
 		for (int n = 0; n < rewardType.getRelativeChance (); n++)
 			list.add (rewardType);
+	}
+	
+	/**
+	 * Sends the reward info to the client, including all separate messages to e.g. add hero items and so on.
+	 * 
+	 * @param reward Details of treasure reward to send
+	 * @param player Player who earned the reward
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player)
+		throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering sendTreasureReward");
+		
+		if (player.getPlayerDescription ().isHuman ())
+		{
+			// Send hero items
+			
+			// Send picks
+			
+			// Send revised spell list
+
+			// Send main message
+			player.getConnection ().sendMessageToClient (reward);
+		}
+		
+		log.trace ("Exiting sendTreasureReward");
 	}
 
 	/**

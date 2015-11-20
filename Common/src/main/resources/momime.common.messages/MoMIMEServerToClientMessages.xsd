@@ -1166,19 +1166,33 @@ they're destroying it on the anvil, or moving it from there to a hero to make us
 	
 <!-- Treasure rewards, new for 0.9.7 -->
 
-	<xsd:element name="treasureReward">
+	<xsd:element name="treasureRewardMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Stores all the treasure gained from capturing a node/lair/tower.
 This is purely informational, like NTMs.  Other messages (e.g. add hero item, full spell list) will be sent containing the actual updates.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimemsgs:numberedHeroItem" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellID" type="momimecommon:spellID" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="resource" type="momimecommon:productionTypeAndUndoubledValue" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pickAndQuantity" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="prisoner" type="momimestoc:treasureRewardPrisoner" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID">
+						    <xsd:annotation>
+		  							<xsd:documentation>Either tileTypeID or mapFeatureID will be filled in, but not both, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID">
+						    <xsd:annotation>
+		  							<xsd:documentation>Either tileTypeID or mapFeatureID will be filled in, but not both, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimemsgs:numberedHeroItem" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellID" type="momimecommon:spellID" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="resource" type="momimecommon:productionTypeAndUndoubledValue" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pickAndQuantity" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="prisoner" type="momimestoc:treasureRewardPrisoner" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 	

@@ -4,6 +4,7 @@ import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
+import momime.client.ui.dialogs.TreasureUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 
 /**
@@ -65,4 +66,9 @@ public interface PrototypeFrameCreator
 	 * @return New hero item info UI
 	 */
 	public HeroItemInfoUI createHeroItemInfo ();
+
+	/**
+	 * @return New treasure reward UI
+	 */
+	public TreasureUI createTreasureReward ();
 }

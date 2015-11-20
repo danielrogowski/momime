@@ -593,6 +593,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
+	<bean id="treasureRewardMessage" class="momime.client.messages.process.TreasureRewardMessageImpl" scope="prototype">
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">
@@ -1886,6 +1890,22 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+	</bean>
+	
+	<bean id="treasureLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/TreasureUI.xml" />
+	</bean>
+	
+	<bean id="treasureUI" class="momime.client.ui.dialogs.TreasureUI" scope="prototype">
+		<property name="treasureLayout" ref="treasureLayout" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 	
 </beans>

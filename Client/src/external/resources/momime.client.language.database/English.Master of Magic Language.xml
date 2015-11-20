@@ -6678,6 +6678,35 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>The following types of hero items can be used in this slot:</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmTreasure">
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Treasure</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Text">
+			<languageEntryText>Inside the LOCATION_DESCRIPTION you find:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Nothing">
+			<languageEntryText>Absolutely nothing!</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Spell">
+			<languageEntryText>SPELL_NAME spell</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Retort">
+			<languageEntryText>Retort of PICK_NAME_SINGULAR</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PrisonerC">
+			<languageEntryText>A_UNIT_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PrisonerB">
+			<languageEntryText>A_UNIT_NAME, who would not fit here so was moved to an adjacent tile</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PrisonerN">
+			<languageEntryText>A_UNIT_NAME, who would not fit anywhere so escaped</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Combats</languageEntryText>

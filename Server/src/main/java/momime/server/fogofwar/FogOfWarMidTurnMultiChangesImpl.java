@@ -522,7 +522,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final ServerGridCellEx tc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
 		if (tc.getTreasureValue () != null)
 		{
-			getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, players, gsk, sd, db);
+			getTreasureUtils ().sendTreasureReward
+				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, players, gsk, sd, db), unitStackOwner);
 			tc.setTreasureValue (null);
 		}
 

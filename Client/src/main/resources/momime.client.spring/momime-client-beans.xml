@@ -1906,6 +1906,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="client" ref="client" />
 	</bean>
 	
 </beans>

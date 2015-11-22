@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -37,6 +38,9 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
+import momime.common.messages.servertoclient.FullSpellListMessage;
+import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.TreasureRewardPrisoner;
 import momime.common.utils.HeroItemUtils;
@@ -44,7 +48,9 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitSkillUtils;
+import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.MapFeatureSvr;
+import momime.server.database.PickFreeSpellSvr;
 import momime.server.database.PickSvr;
 import momime.server.database.PickTypeSvr;
 import momime.server.database.ServerDatabaseEx;
@@ -101,6 +107,12 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** Server-only spell calculations */
+	private ServerSpellCalculations serverSpellCalculations;
 	
 	/**
 	 * The treasure reward process detailed in the strategy guide (Appendix C) and on the MoM Wiki is awkward to implement, and in
@@ -591,6 +603,10 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						rewardPick.setQuantity (1);
 						reward.getPick ().add (rewardPick);
 					}
+					
+					// If the pick grants any spells (Artificer) then learn them
+					for (final PickFreeSpellSvr freeSpell : pick.getPickFreeSpells ())
+						getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), freeSpell.getFreeSpellID ()).setStatus (SpellResearchStatusID.AVAILABLE);
 				}
 			}
 		}
@@ -617,22 +633,55 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 * 
 	 * @param reward Details of treasure reward to send
 	 * @param player Player who earned the reward
+	 * @param players List of players in this session
+	 * @param db Lookup lists built over the XML database
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	@Override
-	public final void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player)
-		throws JAXBException, XMLStreamException
+	public final void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.trace ("Entering sendTreasureReward");
+		log.trace ("Entering sendTreasureReward: Player " + player.getPlayerDescription ().getPlayerID ());
+
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
+		// Send picks - everybody can see these
+		if (reward.getPick ().size () > 0)
+		{
+			// Resend all of them, not just the new ones
+			final ReplacePicksMessage msg = new ReplacePicksMessage ();
+			msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+			msg.getPick ().addAll (pub.getPick ());
+			
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
+		}
+			
+		// Did gaining another book add more spells available for us to research in future?
+		getServerSpellCalculations ().randomizeResearchableSpells (priv.getSpellResearchStatus (), pub.getPick (), db);
+
+		// Make sure we still have 8 spells available to research, in case one of the 8 already listed was now gained for free,
+		// or maybe we had less than 8 unresearched spells in total but now gained some more
+		getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
+		
+		// Send private info
 		if (player.getPlayerDescription ().isHuman ())
 		{
 			// Send hero items
+			for (final NumberedHeroItem item : reward.getHeroItem ())
+			{
+				final AddUnassignedHeroItemMessage msg = new AddUnassignedHeroItemMessage ();
+				msg.setHeroItem (item);
+				player.getConnection ().sendMessageToClient (msg);
+			}
 			
-			// Send picks
-			
-			// Send revised spell list
+			// Send revised spell list - its a bit difficult to tell whether anything actually changed here; so for now, just send it always
+			final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+			spellsMsg.getSpellResearchStatus ().addAll (priv.getSpellResearchStatus ());
+			player.getConnection ().sendMessageToClient (spellsMsg);
 
 			// Send main message
 			player.getConnection ().sendMessageToClient (reward);
@@ -783,5 +832,37 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Server-only spell calculations
+	 */
+	public final ServerSpellCalculations getServerSpellCalculations ()
+	{
+		return serverSpellCalculations;
+	}
+
+	/**
+	 * @param calc Server-only spell calculations
+	 */
+	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
+	{
+		serverSpellCalculations = calc;
 	}
 }

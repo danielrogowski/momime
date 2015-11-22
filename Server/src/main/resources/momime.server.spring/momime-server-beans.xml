@@ -413,6 +413,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 	</bean>
 	
 	<!-- Calculations -->

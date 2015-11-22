@@ -62,9 +62,13 @@ public interface TreasureUtils
 	 * 
 	 * @param reward Details of treasure reward to send
 	 * @param player Player who earned the reward
+	 * @param players List of players in this session
+	 * @param db Lookup lists built over the XML database
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
-	public void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player)
-		throws JAXBException, XMLStreamException;
+	public void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException;
 }

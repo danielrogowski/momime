@@ -523,7 +523,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		if (tc.getTreasureValue () != null)
 		{
 			getTreasureUtils ().sendTreasureReward
-				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, players, gsk, sd, db), unitStackOwner);
+				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, players, gsk, sd, db),
+					unitStackOwner, players, db);
 			tc.setTreasureValue (null);
 		}
 

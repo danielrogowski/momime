@@ -654,7 +654,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			final int unitURN = ((MemoryUnit) getUnit ()).getUnitURN ();
 			
 			for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
-				if ((spell.getCastingPlayerID () == getUnit ().getOwningPlayerID ()) && (unitURN == spell.getUnitURN ()))
+				if ((spell.getCastingPlayerID () == getUnit ().getOwningPlayerID ()) && (spell.getUnitURN () != null) && (unitURN == spell.getUnitURN ()))
 				{
 					final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "showUnit");
 					for (final ProductionTypeAndUndoubledValue upkeepValue : spellDef.getSpellUpkeep ())

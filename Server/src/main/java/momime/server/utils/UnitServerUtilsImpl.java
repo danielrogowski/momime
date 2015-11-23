@@ -37,6 +37,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -45,7 +46,6 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.ServerMemoryGridCellUtils;
 
 /**
  * Server side only helper methods for dealing with units
@@ -78,6 +78,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/**
 	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
@@ -291,16 +294,20 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 
 		// If ok so far, check the unit is allowed on this type of terrain
 
-		// Also specifically check for nodes/lairs/towers, since although we've checked for units, we can't place a unit on top of an empty lair either
-		// Technically if we own a cleared tower or node, we could place units there, but that's hard to deal with since we need to use the players'
-		// knowledge that the tower has been cleared so then this can't just be TrueMap-based anymore
+		// Also specifically check for nodes/lairs/towers, since although we've checked for units, we can't place a unit on top of an empty lair either.
+		// But we can put units onto empty nodes and towers.
 		final boolean okToAdd;
 		if (!unitCheckOk)
 			okToAdd = false;
 		else
 		{
 			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (addLocation.getZ ()).getRow ().get (addLocation.getY ()).getCell ().get (addLocation.getX ());
-			if ((ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) || (getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
+			if (((tc.getTerrainData ().getMapFeatureID () != null) &&
+				(db.findMapFeature (tc.getTerrainData ().getMapFeatureID (), "canUnitBeAddedHere").getMapFeatureMagicRealm ().size () > 0) &&
+				(!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))) ||
+					
+				// Terrain must be passable (so building boats get bumped to ocean tiles)
+				(getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
 
 				okToAdd = false;
 			else
@@ -319,7 +326,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	}
 
 	/**
-	 * When a unit is built or summoned, works out where to put it If the city is already full, will resort to bumping the new unit into one of the outlying 8 squares
+	 * When a unit is built or summoned, works out where to put it.
+	 * If the city is already full, will resort to bumping the new unit into one of the outlying 8 squares.
+	 * This is also used for when prisoners are rescued from a node/lair/tower.
 	 * 
 	 * @param desiredLocation Location that we're trying to add a unit
 	 * @param unitID Type of unit that we're trying to add
@@ -585,5 +594,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

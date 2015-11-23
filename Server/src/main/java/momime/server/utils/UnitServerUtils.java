@@ -82,8 +82,9 @@ public interface UnitServerUtils
 	public MemoryUnit findUnitWithPlayerAndID (final List<MemoryUnit> units, final int playerID, final String unitID);
 
 	/**
-	 * When a unit is built or summoned, works out where to put it
-	 * If the city is already full, will resort to bumping the new unit into one of the outlying 8 squares
+	 * When a unit is built or summoned, works out where to put it.
+	 * If the city is already full, will resort to bumping the new unit into one of the outlying 8 squares.
+	 * This is also used for when prisoners are rescued from a node/lair/tower.
 	 *
 	 * @param desiredLocation Location that we're trying to add a unit
 	 * @param unitID Type of unit that we're trying to add

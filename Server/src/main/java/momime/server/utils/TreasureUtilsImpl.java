@@ -34,7 +34,6 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.NumberedHeroItem;
-import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
@@ -76,7 +75,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	private final static int MAXIMUM_RESOURCE_REWARD = 200;
 	
 	/** Cost to the treasure budget of being awarded a special/pick */
-	private final static int SPECIAL_REWARD_COST = 2000;
+	private final static int SPECIAL_REWARD_COST = 2500;
 
 	/** Cost to the treasure budget of being awarded a prisoner hero */
 	private final static int PRISONER_REWARD_COST = 1000;
@@ -193,6 +192,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 * @param treasureValue Amount of treasure to award
 	 * @param player Player who captured the lair/node/tower
 	 * @param lairNodeTowerLocation The location of where the lair/node/tower was
+	 * @param tileTypeID The tile type that the lair/node/tower was, before it was possibly altered/removed by capturing it
+	 * @param mapFeatureID The map feature that the lair/node/tower was, before it was possibly altered/removed by capturing it (will be null for nodes/towers)
 	 * @param players List of players in this session
 	 * @param gsk Server knowledge structure
 	 * @param sd Session description
@@ -205,7 +206,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player, final MapCoordinates3DEx lairNodeTowerLocation,
+	public final TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
+		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -217,12 +219,9 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		final SpellSvr summonHero = db.findSpell (CommonDatabaseConstants.SPELL_ID_SUMMON_HERO, "rollTreasureReward");
 
 		// Initialize message
-		final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get
-			(lairNodeTowerLocation.getZ ()).getRow ().get (lairNodeTowerLocation.getY ()).getCell ().get (lairNodeTowerLocation.getX ()).getTerrainData ();
-
 		final TreasureRewardMessage reward = new TreasureRewardMessage ();
-		reward.setTileTypeID (terrainData.getTileTypeID ());
-		reward.setMapFeatureID (terrainData.getMapFeatureID ());
+		reward.setTileTypeID (tileTypeID);
+		reward.setMapFeatureID (mapFeatureID);
 		
 		// Keep going until we run out of points to spend
 		int specialRewardCount = 0;		// Which picks/retort(s) are awarded is decided at the end, after the main loop - for now just record a count
@@ -431,9 +430,9 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			// Spell books are limited according to the type of lair/node/tower that we captured
 			final List<String> availableSpellBookIDs = new ArrayList<String> ();
 			
-			if (terrainData.getMapFeatureID () != null)
+			if (mapFeatureID != null)
 			{
-				final MapFeatureSvr mapFeature = db.findMapFeature (terrainData.getMapFeatureID (), "rollTreasureReward");
+				final MapFeatureSvr mapFeature = db.findMapFeature (mapFeatureID, "rollTreasureReward");
 				for (final MapFeatureTreasureBookReward book : mapFeature.getMapFeatureTreasureBookReward ())
 					availableSpellBookIDs.add (book.getPickID ());
 			}
@@ -441,7 +440,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			// If we got none, then either there was no map feature there, or its not a lair type of feature, e.g. gold
 			if (availableSpellBookIDs.size () == 0)
 			{
-				final TileTypeSvr tileType = db.findTileType (terrainData.getTileTypeID (), "rollTreasureReward");
+				final TileTypeSvr tileType = db.findTileType (tileTypeID, "rollTreasureReward");
 				if (tileType.getTileTypeTreasureBookReward () != null)
 					availableSpellBookIDs.add (tileType.getTileTypeTreasureBookReward ());
 			}
@@ -450,8 +449,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			if (log.isDebugEnabled ())
 			{
 				final StringBuilder debug = new StringBuilder ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation +
-					" awarded " + specialRewardCount + " special(s); possible books from tile type " + terrainData.getTileTypeID () + " map feature " +
-					terrainData.getMapFeatureID () + " are: ");
+					" awarded " + specialRewardCount + " special(s); possible books from tile type " + tileTypeID + " map feature " +
+					mapFeatureID + " are: ");
 				boolean first = true;
 				for (final String magicRealmID : availableSpellBookIDs)
 				{

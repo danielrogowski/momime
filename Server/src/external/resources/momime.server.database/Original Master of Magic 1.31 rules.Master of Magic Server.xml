@@ -19120,19 +19120,19 @@
 	</combatAreaEffect>
 	<spellRank spellRankID="SR01">
 		<spellRankDescription>Common</spellRankDescription>
-		<treasureRewardCost>50</treasureRewardCost>
+		<treasureRewardCost>100</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR02">
 		<spellRankDescription>Uncommon</spellRankDescription>
-		<treasureRewardCost>200</treasureRewardCost>
+		<treasureRewardCost>400</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR03">
 		<spellRankDescription>Rare</spellRankDescription>
-		<treasureRewardCost>450</treasureRewardCost>
+		<treasureRewardCost>800</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR04">
 		<spellRankDescription>Very Rare</spellRankDescription>
-		<treasureRewardCost>800</treasureRewardCost>
+		<treasureRewardCost>1600</treasureRewardCost>
 	</spellRank>
 	<spellRank spellRankID="SR05">
 		<spellRankDescription>Very Rare [Special rank for Spell of Mastery to ensure that this is always the last spell to appear in list of available spells to research]</spellRankDescription>

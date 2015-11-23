@@ -42,6 +42,8 @@ public interface TreasureUtils
 	 * @param treasureValue Amount of treasure to award
 	 * @param player Player who captured the lair/node/tower
 	 * @param lairNodeTowerLocation The location of where the lair/node/tower was
+	 * @param tileTypeID The tile type that the lair/node/tower was, before it was possibly altered/removed by capturing it
+	 * @param mapFeatureID The map feature that the lair/node/tower was, before it was possibly altered/removed by capturing it (will be null for nodes/towers)
 	 * @param players List of players in this session
 	 * @param gsk Server knowledge structure
 	 * @param sd Session description
@@ -53,7 +55,8 @@ public interface TreasureUtils
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player, final MapCoordinates3DEx lairNodeTowerLocation,
+	public TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
+		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 

@@ -517,17 +517,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			}
 		}
 		
-		// If we captured a node/lair/tower then award the treasure.  NB. We must do this before removing lairs from the map below,
-		// because the treasure awarding routine needs to know what was captured (e.g. what type of lair).
+		// Record the current tile type and map feature, in case we captured a node/lair/tower and have treasure to award.
+		// In case there's a prisoner, we need lairs to have been removed so that the prisoner doesn't get bumped to an adjacent cell unnecessarily,
+		// but the rollTreasureReward routine still needs to know what the type of lair that was removed was, since it affects the type of spell books that can be obtained.
 		final ServerGridCellEx tc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
-		if (tc.getTreasureValue () != null)
-		{
-			getTreasureUtils ().sendTreasureReward
-				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, players, gsk, sd, db),
-					unitStackOwner, players, db);
-			tc.setTreasureValue (null);
-		}
-
+		final String tileTypeID = tc.getTerrainData ().getTileTypeID ();
+		final String mapFeatureID = tc.getTerrainData ().getMapFeatureID ();
+		
 		// If we captured a monster lair, temple, etc. then remove it from the map (don't remove nodes or towers of course).
 		// This is now part of movement, rather than part of cleaning up after a combat, because capturing empty lairs no longer even initiates a combat.
 		// If the monsters in a lair are killed in a combat, then the attackers advance after the combat using this same routine, so that also works.
@@ -552,6 +548,15 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					(towerCoords.getX ()).getTerrainData ().setMapFeatureID (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (gsk.getTrueMap ().getMap (), players, towerCoords, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			}
+		}
+
+		// If we captured a node/lair/tower then award the treasure.
+		if (tc.getTreasureValue () != null)
+		{
+			getTreasureUtils ().sendTreasureReward
+				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, tileTypeID, mapFeatureID, players, gsk, sd, db),
+					unitStackOwner, players, db);
+			tc.setTreasureValue (null);
 		}
 		
 		log.trace ("Exiting moveUnitStackOneCellOnServerAndClients");

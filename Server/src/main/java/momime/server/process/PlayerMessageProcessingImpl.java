@@ -1055,7 +1055,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					for (final Integer unitURN : thisMove.getUnitURN ())
 						unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "continueMovement"));
 					
-					getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, player,
+					getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, player, false,
 						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), false, mom);
 				}
 			}
@@ -1231,7 +1231,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement"));
 			
 			// Execute the move
-			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, oneCell.getUnitStackOwner (),
+			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, oneCell.getUnitStackOwner (), true,
 				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getOneStep (), false, mom);
 			
 			// If they got to their destination, remove the pending move completely

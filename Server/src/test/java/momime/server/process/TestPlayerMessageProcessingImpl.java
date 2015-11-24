@@ -387,8 +387,8 @@ public final class TestPlayerMessageProcessingImpl
 		proc.continueMovement (0, mom);
 		
 		// Check results
-		verify (midTurn, times (1)).moveUnitStack (unitStack1, player1, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
-		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+		verify (midTurn, times (1)).moveUnitStack (unitStack1, player1, false, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
+		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, false, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
 	}
 
 	/**
@@ -474,8 +474,8 @@ public final class TestPlayerMessageProcessingImpl
 		proc.continueMovement (2, mom);
 		
 		// Check results
-		verify (midTurn, times (0)).moveUnitStack (unitStack1, player1, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
-		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+		verify (midTurn, times (0)).moveUnitStack (unitStack1, player1, false, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
+		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, false, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
 	}
 	
 	/**
@@ -766,7 +766,7 @@ public final class TestPlayerMessageProcessingImpl
 		assertEquals (new MapCoordinates3DEx (22, 12, 1), move2.getMoveTo ());
 		
 		// Check the units actually moved
-		verify (midTurn, times (1)).moveUnitStack (move2Stack, player2, new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (21, 11, 1), false, mom);
+		verify (midTurn, times (1)).moveUnitStack (move2Stack, player2, true, new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (21, 11, 1), false, mom);
 	}
 
 	/**
@@ -899,7 +899,7 @@ public final class TestPlayerMessageProcessingImpl
 		assertSame (move3, trans2.getPendingMovement ().get (0));
 		
 		// Check the units actually moved
-		verify (midTurn, times (1)).moveUnitStack (move2Stack, player2, new MapCoordinates3DEx (21, 11, 1), new MapCoordinates3DEx (22, 12, 1), false, mom);
+		verify (midTurn, times (1)).moveUnitStack (move2Stack, player2, true, new MapCoordinates3DEx (21, 11, 1), new MapCoordinates3DEx (22, 12, 1), false, mom);
 	}
 
 	/**

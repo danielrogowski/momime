@@ -910,7 +910,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));		// Adding onto empty nodes is now allowed
 	}
 	
 	/**
@@ -1205,10 +1205,8 @@ public final class TestUnitServerUtilsImpl
 		enemyUnit.setOwningPlayerID (3);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 9, 1, 0)).thenReturn (enemyUnit);
 		
-		// Make the tile up-right of us a node so we can't fit there either
-		trueMap.getMap ().getPlane ().get (1).getRow ().get (9).getCell ().get (21).getTerrainData ().setTileTypeID ("TT02");
-		
-		// Make the tile right of us something impassable (like water), so we can't fit there either
+		// Make the tiles up-right and right of us something impassable (like water), so we can't fit there either
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (9).getCell ().get (21).getTerrainData ().setTileTypeID ("TT03");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (21).getTerrainData ().setTileTypeID ("TT03");
 
 		// Set up object to test

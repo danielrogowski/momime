@@ -192,6 +192,8 @@ public interface FogOfWarMidTurnMultiChanges
 	 *
 	 * @param selectedUnits The units we want to move (true unit versions)
 	 * @param unitStackOwner The player who owns the units
+	 * @param processCombats If true will allow combats to be started; if false any move that would initiate a combat will be cancelled and ignored.
+	 *		This is used when executing pending movements at the start of one-player-at-a-time game turns.
 	 * @param originalMoveFrom Location to move from
 	 *
 	 * @param moveTo Location to move to
@@ -207,7 +209,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void moveUnitStack (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public void moveUnitStack (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;

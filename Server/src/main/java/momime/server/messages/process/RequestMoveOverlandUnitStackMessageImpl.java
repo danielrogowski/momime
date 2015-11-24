@@ -101,7 +101,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		else
 		{
 			// Proceed with move
-			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, sender, (MapCoordinates3DEx) getMoveFrom (), (MapCoordinates3DEx) getMoveTo (),
+			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, sender, true, (MapCoordinates3DEx) getMoveFrom (), (MapCoordinates3DEx) getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
 		}
 

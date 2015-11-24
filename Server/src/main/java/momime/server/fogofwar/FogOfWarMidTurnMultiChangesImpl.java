@@ -569,6 +569,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 *
 	 * @param selectedUnits The units we want to move (true unit versions)
 	 * @param unitStackOwner The player who owns the units
+	 * @param processCombats If true will allow combats to be started; if false any move that would initiate a combat will be cancelled and ignored.
+	 *		This is used when executing pending movements at the start of one-player-at-a-time game turns.
 	 * @param originalMoveFrom Location to move from
 	 *
 	 * @param moveTo Location to move to
@@ -585,13 +587,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void moveUnitStack (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public final void moveUnitStack (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering moveUnitStack: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
-			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + originalMoveFrom.toString () + ", " + moveTo.toString ());
+			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + originalMoveFrom.toString () + ", " + moveTo.toString () + ", " + processCombats);
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (selectedUnits, priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
@@ -654,29 +656,32 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Update the movement remaining for each unit
 				if (!combatInitiated)
 					getFogOfWarMidTurnChanges ().reduceMovementRemaining (movingUnits, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
-				else
+				else if (processCombats)
 				{
 					// Attacking uses up all movement
 					for (final MemoryUnit thisUnit : allUnits)
 						thisUnit.setDoubleOverlandMovesLeft (0);
 				}
-
+				
 				// Tell the client how much movement each unit has left, while we're at it recheck the lowest movement remaining of anyone in the stack
-				final UpdateOverlandMovementRemainingMessage movementRemainingMsg = new UpdateOverlandMovementRemainingMessage ();
-				doubleMovementRemaining = Integer.MAX_VALUE;
-
-				// If entering a combat, ALL units have their movement zeroed, even ones sitting in transports; for regular movement only the transports' movementRemaining is updated
-				for (final MemoryUnit thisUnit : (combatInitiated ? allUnits : movingUnits))
+				if ((!combatInitiated) || (processCombats))
 				{
-					final UpdateOverlandMovementRemainingUnit msgUnit = new UpdateOverlandMovementRemainingUnit ();
-					msgUnit.setUnitURN (thisUnit.getUnitURN ());
-					msgUnit.setDoubleMovesLeft (thisUnit.getDoubleOverlandMovesLeft ());
-					movementRemainingMsg.getUnit ().add (msgUnit);
-
-					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
-						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+					final UpdateOverlandMovementRemainingMessage movementRemainingMsg = new UpdateOverlandMovementRemainingMessage ();
+					doubleMovementRemaining = Integer.MAX_VALUE;
+	
+					// If entering a combat, ALL units have their movement zeroed, even ones sitting in transports; for regular movement only the transports' movementRemaining is updated
+					for (final MemoryUnit thisUnit : (combatInitiated ? allUnits : movingUnits))
+					{
+						final UpdateOverlandMovementRemainingUnit msgUnit = new UpdateOverlandMovementRemainingUnit ();
+						msgUnit.setUnitURN (thisUnit.getUnitURN ());
+						msgUnit.setDoubleMovesLeft (thisUnit.getDoubleOverlandMovesLeft ());
+						movementRemainingMsg.getUnit ().add (msgUnit);
+	
+						if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
+							doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+					}
+					unitStackOwner.getConnection ().sendMessageToClient (movementRemainingMsg);
 				}
-				unitStackOwner.getConnection ().sendMessageToClient (movementRemainingMsg);
 
 				// Make our 1 movement?
 				if (!combatInitiated)
@@ -758,6 +763,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			// No combat, so tell the client to ask for the next unit to move
 			unitStackOwner.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
 		}
+		else if (!processCombats)
+			log.debug ("Would have started combat, but processCombats is false");
 		else
 		{
 			// What plane will the monsters/defenders be on?

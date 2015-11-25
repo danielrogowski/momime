@@ -147,21 +147,35 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
 		for (final MemoryUnit defender : defenders)
 		{
-			final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (attacker, defender, attackSkillID, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-			
-			final List<List<AttackResolutionStepSvr>> steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
+			// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
+			// If its an attack from a spell, just make a dummy list with a null in it - processAttackResolutionStep looks for this.
+			final List<List<AttackResolutionStepSvr>> steps;
+			if (commonPotentialDamageToDefenders != null)
+			{
+				final List<AttackResolutionStepSvr> dummySteps = new ArrayList<AttackResolutionStepSvr> ();
+				dummySteps.add (null);
+				
+				steps = new ArrayList<List<AttackResolutionStepSvr>> ();
+				steps.add (dummySteps);
+			}
+			else
+			{
+				final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (attacker, defender, attackSkillID, mom.getPlayers (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
+			}
 			
 			// Some figures being frozen in fear lasts for the duration of one attack resolution,
 			// i.e. spans multiple resolution steps so have to keep track of it out here
-			final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+			final AttackResolutionUnit attackerWrapper = (attacker == null) ? null : new AttackResolutionUnit (attacker);
 			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 			
 			// Process each step
 			for (final List<AttackResolutionStepSvr> step : steps)
 				
 				// Skip the entire step if either unit is already dead
-				if ((getUnitCalculations ().calculateAliveFigureCount (attacker, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0) &&
+				if (((attacker == null) || (getUnitCalculations ().calculateAliveFigureCount (attacker, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0)) &&
 					(getUnitCalculations ().calculateAliveFigureCount (defender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0))
 				{
 					final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep

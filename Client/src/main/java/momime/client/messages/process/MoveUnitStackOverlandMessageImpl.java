@@ -158,6 +158,14 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		
 		log.trace ("Exiting start");
 	}
+	
+	/**
+	 * @return Plane which the overland map must be viewing to see the unit stack moving
+	 */
+	public final int getAnimationPlane ()
+	{
+		return Math.max (getMoveFrom ().getZ (), getMoveTo ().getZ ());
+	}
 
 	/**
 	 * @return Number of seconds that the animation takes to display

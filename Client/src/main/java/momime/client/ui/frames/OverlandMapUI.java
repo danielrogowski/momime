@@ -493,7 +493,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 						}
 
 				// Draw the unit stack that's halfway between two cells during movement
-				if (getUnitStackMoving () != null)
+				if ((getUnitStackMoving () != null) && (getUnitStackMoving ().getAnimationPlane () == mapViewPlane))
 				{
 					final MemoryUnit unit = getUnitStackMoving ().getUnitToDraw ();
 					try

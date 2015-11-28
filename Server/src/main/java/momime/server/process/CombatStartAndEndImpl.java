@@ -6,6 +6,14 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -15,7 +23,6 @@ import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
@@ -39,14 +46,6 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Routines dealing with starting and ending combats
@@ -503,12 +502,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// If its a border conflict, do not clean up the PendingMovement - the unit stack didn't advance yet and still needs to do so
 				// so only clear the ref to the pending movements from the grid cell
 				if (tc.getCombatDefenderPendingMovement () == null)
-				{
+					
 					// NB. PendingMovements of the side who was wiped out will already have been removed from the list as the last unit died
 					// (see killUnitOnServerAndClients) so we may actually have nothing to remove here
-					final MomTransientPlayerPrivateKnowledge atkTrans = (MomTransientPlayerPrivateKnowledge) attackingPlayer.getTransientPlayerPrivateKnowledge ();
-					atkTrans.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
-				}
+					atkPriv.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
 
 				tc.setCombatAttackerPendingMovement (null);
 				tc.setCombatDefenderPendingMovement (null);

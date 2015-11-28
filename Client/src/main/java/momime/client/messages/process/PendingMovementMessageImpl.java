@@ -48,7 +48,7 @@ public final class PendingMovementMessageImpl extends PendingMovementMessage imp
 		log.trace ("Entering start");
 		
 		// Add the pending movement to our local storage
-		getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ().add (getPendingMovement ());
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement ().add (getPendingMovement ());
 		
 		// Remove the units from the 'left to move' list.
 		// The server will send a separate message to tell us to call SelectNextUnitToMoveOverland

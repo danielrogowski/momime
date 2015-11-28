@@ -1043,10 +1043,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// If a pending movement doesn't finish this turn then the moveUnitStack routine will recreate the pending movement object and add it to the end of the list
 				// So we need to make sure we don't keep going through the list and end up processing pending moves that have only just been added
 				// Simplest way to do it is just to copy the list and run down that instead
-				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 				final List<PendingMovement> moves = new ArrayList<PendingMovement> ();
-				moves.addAll (trans.getPendingMovement ());
-				trans.getPendingMovement ().clear ();
+				moves.addAll (priv.getPendingMovement ());
+				priv.getPendingMovement ().clear ();
 				
 				for (final PendingMovement thisMove : moves)
 				{
@@ -1103,8 +1103,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			for (final PlayerServerDetails player : mom.getPlayers ())
 				if (player.getPlayerDescription ().isHuman ())
 				{
-					final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-					final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
+					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+					final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
 					while (iter.hasNext ())
 					{
 						final PendingMovement thisMove = iter.next ();
@@ -1173,8 +1173,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final List<OneCellPendingMovement> moves = new ArrayList<OneCellPendingMovement> ();
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
-			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-			final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
 			while (iter.hasNext ())
 			{
 				final PendingMovement thisMove = iter.next ();
@@ -1237,8 +1237,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// If they got to their destination, remove the pending move completely
 			if (oneCell.getOneStep ().equals (oneCell.getPendingMovement ().getMoveTo ()))
 			{
-				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) oneCell.getUnitStackOwner ().getTransientPlayerPrivateKnowledge ();
-				trans.getPendingMovement ().remove (oneCell.getPendingMovement ());
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) oneCell.getUnitStackOwner ().getPersistentPlayerPrivateKnowledge ();
+				priv.getPendingMovement ().remove (oneCell.getPendingMovement ());
 			}
 			
 			// Otherwise update the pending movement with the new start position
@@ -1271,8 +1271,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final List<OneCellPendingMovement> combats = new ArrayList<OneCellPendingMovement> ();
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
-			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-			final Iterator<PendingMovement> iter = trans.getPendingMovement ().iterator ();
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
 			while (iter.hasNext ())
 			{
 				final PendingMovement thisMove = iter.next ();
@@ -1399,8 +1399,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 				for (final PlayerServerDetails player : mom.getPlayers ())
 				{
-					final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-					for (final PendingMovement pendingMove : trans.getPendingMovement ())
+					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+					for (final PendingMovement pendingMove : priv.getPendingMovement ())
 						defendingUnitURNs.removeAll (pendingMove.getUnitURN ());
 				}
 				

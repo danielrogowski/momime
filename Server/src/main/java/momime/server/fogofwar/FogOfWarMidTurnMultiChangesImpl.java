@@ -32,7 +32,6 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
@@ -726,7 +725,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 			if (validMoveFound)
 			{
-				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) unitStackOwner.getTransientPlayerPrivateKnowledge ();
 				final PendingMovement pending = new PendingMovement ();
 				pending.setMoveFrom (moveFrom);
 				pending.setMoveTo (moveTo);
@@ -748,7 +746,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 						throw new MomException ("moveUnitStack: Server map tracing moved to a cell off the map");
 				}
 
-				trans.getPendingMovement ().add (pending);
+				priv.getPendingMovement ().add (pending);
 
 				// Send the pending movement to the client
 				final PendingMovementMessage pendingMsg = new PendingMovementMessage ();

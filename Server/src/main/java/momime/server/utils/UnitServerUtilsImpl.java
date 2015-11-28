@@ -33,8 +33,8 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
@@ -223,8 +223,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			", Unit URN " + trueUnit.getUnitURN () + ", " + specialOrder);
 
 		// Setting a special order cancels any other kind of move
-		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (trans.getPendingMovement (), trueUnit.getUnitURN ());
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (priv.getPendingMovement (), trueUnit.getUnitURN ());
 
 		// Set in true memory
 		trueUnit.setSpecialOrder (specialOrder);

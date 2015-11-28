@@ -40,8 +40,8 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitAddBumpTypeID;
@@ -585,8 +585,8 @@ public final class TestUnitServerUtilsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		
-		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, trans);
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player);
@@ -615,7 +615,7 @@ public final class TestUnitServerUtilsImpl
 		// Check results
 		assertEquals (UnitSpecialOrder.BUILD_ROAD, trueUnit.getSpecialOrder ());
 		
-		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (trans.getPendingMovement (), 5);
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv.getPendingMovement (), 5);
 		verify (midTurn).updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
 	}
 

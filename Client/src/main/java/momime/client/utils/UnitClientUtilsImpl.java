@@ -311,7 +311,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		log.trace ("Entering killUnit: Unit URN " + unit.getUnitURN () + ", " + transmittedAction + ", " + untransmittedAction);
 
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
-		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), unit.getUnitURN ());
+		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), unit.getUnitURN ());
 		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unit.getUnitURN ());	// Removes spells cast on unit
 		
 		// Is there a unit info screen open for it?

@@ -142,6 +142,7 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWar" type="momimemsgs:mapVolumeOfFogOfWarStates" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarMemory" type="momimemsgs:fogOfWarMemory" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pendingMovement" type="momimemsgs:pendingMovement" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -343,7 +344,6 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 			<xsd:extension base="mps:transientPlayerPrivateKnowledge">
 		        <xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="overlandCastingSkillRemainingThisTurn" type="momimecommon:spellCastingCost" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pendingMovement" type="momimemsgs:pendingMovement" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="newTurnMessage" type="momimemsgs:newTurnMessageData">
 					    <xsd:annotation>
     						<xsd:documentation>The use of this list store is slightly different on the client and server.  The server uses it as a storage area to

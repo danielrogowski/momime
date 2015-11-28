@@ -34,7 +34,7 @@ public final class ErasePendingMovementsMessageImpl extends ErasePendingMovement
 	{
 		log.trace ("Entering start");
 		
-		getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ().clear ();
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement ().clear ();
 		
 		log.trace ("Exiting start");
 	}

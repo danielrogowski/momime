@@ -682,7 +682,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 								{
 									// Remove any pending movements for this unit and blank out any special orders
 									final PendingMovement pendingMovement = getPendingMovementUtils ().findPendingMoveForUnit
-										(getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
+										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
 								
 									// Notify the server of the cancel
 									if ((pendingMovement != null) || (selectUnitButton.getUnit ().getSpecialOrder () != null))
@@ -695,7 +695,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 									// Remove on client
 									getPendingMovementUtils ().removeUnitFromAnyPendingMoves
-										(getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
+										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
 									selectUnitButton.getUnit ().setSpecialOrder (null);
 									
 									// Select/deselect unit

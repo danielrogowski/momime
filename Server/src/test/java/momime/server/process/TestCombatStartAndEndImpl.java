@@ -16,6 +16,14 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -32,7 +40,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
@@ -62,14 +69,6 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the CombatStartAndEndImpl class
@@ -1449,9 +1448,9 @@ public final class TestCombatStartAndEndImpl
 		attackingPd.setHuman (true);
 		attackingPd.setPlayerID (3);
 		
-		final MomTransientPlayerPrivateKnowledge attackingTrans = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, attackingTrans);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 		
 		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
 		attackingPlayer.setConnection (attackingMsgs);
@@ -1524,8 +1523,8 @@ public final class TestCombatStartAndEndImpl
 		gc.setCombatAttackerPendingMovement (attackerPendingMovement);
 		
 		final PendingMovement attackerOtherPendingMovement = new PendingMovement ();
-		attackingTrans.getPendingMovement ().add (attackerOtherPendingMovement);
-		attackingTrans.getPendingMovement ().add (attackerPendingMovement);
+		attackingPriv.getPendingMovement ().add (attackerOtherPendingMovement);
+		attackingPriv.getPendingMovement ().add (attackerPendingMovement);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -1560,8 +1559,8 @@ public final class TestCombatStartAndEndImpl
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check pending movement was removed
-		assertEquals (1, attackingTrans.getPendingMovement ().size ());
-		assertSame (attackerOtherPendingMovement, attackingTrans.getPendingMovement ().get (0));
+		assertEquals (1, attackingPriv.getPendingMovement ().size ());
+		assertSame (attackerOtherPendingMovement, attackingPriv.getPendingMovement ().get (0));
 		assertNull (gc.getCombatAttackerPendingMovement ());
 	}
 

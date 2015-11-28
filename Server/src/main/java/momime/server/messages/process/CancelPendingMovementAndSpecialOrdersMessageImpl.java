@@ -5,8 +5,15 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
@@ -15,13 +22,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.utils.UnitServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client sends this to server if they decide to cancel a pending movement and/or special orders
@@ -82,8 +82,8 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 		}
 		else
 		{
-			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) sender.getTransientPlayerPrivateKnowledge ();
-			getPendingMovementUtils ().removeAnyPendingMovesThatIncludeUnit (trans.getPendingMovement (), getUnitURN ());
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
+			getPendingMovementUtils ().removeAnyPendingMovesThatIncludeUnit (priv.getPendingMovement (), getUnitURN ());
 		
 			// Clear special orders - if the unit was on a 'die' order, this means its going to start using upkeep again
 			final boolean recalcProduction = getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (trueUnit.getSpecialOrder ());

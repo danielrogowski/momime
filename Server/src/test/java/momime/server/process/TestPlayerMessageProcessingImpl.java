@@ -34,6 +34,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageData;
 import momime.common.messages.PendingMovement;
@@ -329,11 +330,11 @@ public final class TestPlayerMessageProcessingImpl
 		gsk.setTrueMap (trueMap);
 		
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
-		final PlayerServerDetails player1 = new PlayerServerDetails (null, null, null, null, trans1);
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player1 = new PlayerServerDetails (null, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
-		final PlayerServerDetails player2 = new PlayerServerDetails (null, null, null, null, trans2);
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player2 = new PlayerServerDetails (null, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -362,8 +363,8 @@ public final class TestPlayerMessageProcessingImpl
 		move2.getPath ().add (7);
 		move2.getUnitURN ().add (2);
 		
-		trans1.getPendingMovement ().add (move1);
-		trans2.getPendingMovement ().add (move2);
+		priv1.getPendingMovement ().add (move1);
+		priv2.getPendingMovement ().add (move2);
 		
 		// Unit searches
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -405,17 +406,17 @@ public final class TestPlayerMessageProcessingImpl
 		gsk.setTrueMap (trueMap);
 		
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -448,8 +449,8 @@ public final class TestPlayerMessageProcessingImpl
 		move2.getPath ().add (7);
 		move2.getUnitURN ().add (2);
 		
-		trans1.getPendingMovement ().add (move1);
-		trans2.getPendingMovement ().add (move2);
+		priv1.getPendingMovement ().add (move1);
+		priv2.getPendingMovement ().add (move2);
 		
 		// Unit searches
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -486,17 +487,17 @@ public final class TestPlayerMessageProcessingImpl
 	public final void testFindAndProcessOneCellPendingMovement_None () throws Exception
 	{
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -525,17 +526,17 @@ public final class TestPlayerMessageProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -558,7 +559,7 @@ public final class TestPlayerMessageProcessingImpl
 
 		// Combat move
 		final PendingMovement move1 = new PendingMovement ();
-		trans1.getPendingMovement ().add (move1);
+		priv1.getPendingMovement ().add (move1);
 
 		final MemoryUnit move1Unit = new MemoryUnit ();
 		move1Unit.setUnitURN (1);
@@ -576,7 +577,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Move where the unit stack has no movement left
 		final PendingMovement move2 = new PendingMovement ();
-		trans2.getPendingMovement ().add (move2);
+		priv2.getPendingMovement ().add (move2);
 
 		final MemoryUnit move2Unit = new MemoryUnit ();
 		move2Unit.setUnitURN (2);
@@ -594,7 +595,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Move where the destination is unreachable
 		final PendingMovement move3 = new PendingMovement ();
-		trans2.getPendingMovement ().add (move3);
+		priv2.getPendingMovement ().add (move3);
 
 		final MemoryUnit move3Unit = new MemoryUnit ();
 		move3Unit.setUnitURN (3);
@@ -625,11 +626,11 @@ public final class TestPlayerMessageProcessingImpl
 		assertFalse (proc.findAndProcessOneCellPendingMovement (mom));
 		
 		// Check that only the unreachable move was removed
-		assertEquals (1, trans1.getPendingMovement ().size ());
-		assertSame (move1, trans1.getPendingMovement ().get (0));
+		assertEquals (1, priv1.getPendingMovement ().size ());
+		assertSame (move1, priv1.getPendingMovement ().get (0));
 
-		assertEquals (1, trans2.getPendingMovement ().size ());
-		assertSame (move2, trans2.getPendingMovement ().get (0));
+		assertEquals (1, priv2.getPendingMovement ().size ());
+		assertSame (move2, priv2.getPendingMovement ().get (0));
 	}
 
 	/**
@@ -644,17 +645,17 @@ public final class TestPlayerMessageProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -677,7 +678,7 @@ public final class TestPlayerMessageProcessingImpl
 
 		// Combat move
 		final PendingMovement move1 = new PendingMovement ();
-		trans1.getPendingMovement ().add (move1);
+		priv1.getPendingMovement ().add (move1);
 
 		final MemoryUnit move1Unit = new MemoryUnit ();
 		move1Unit.setUnitURN (1);
@@ -695,7 +696,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Move where the unit stack has no movement left
 		final PendingMovement move2 = new PendingMovement ();
-		trans2.getPendingMovement ().add (move2);
+		priv2.getPendingMovement ().add (move2);
 
 		final MemoryUnit move2Unit = new MemoryUnit ();
 		move2Unit.setUnitURN (2);
@@ -713,7 +714,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Move where the destination is unreachable
 		final PendingMovement move3 = new PendingMovement ();
-		trans2.getPendingMovement ().add (move3);
+		priv2.getPendingMovement ().add (move3);
 
 		final MemoryUnit move3Unit = new MemoryUnit ();
 		move3Unit.setUnitURN (3);
@@ -755,12 +756,12 @@ public final class TestPlayerMessageProcessingImpl
 		assertTrue (proc.findAndProcessOneCellPendingMovement (mom));
 		
 		// Check that all movements were retained
-		assertEquals (1, trans1.getPendingMovement ().size ());
-		assertSame (move1, trans1.getPendingMovement ().get (0));
+		assertEquals (1, priv1.getPendingMovement ().size ());
+		assertSame (move1, priv1.getPendingMovement ().get (0));
 
-		assertEquals (2, trans2.getPendingMovement ().size ());
-		assertSame (move2, trans2.getPendingMovement ().get (0));
-		assertSame (move3, trans2.getPendingMovement ().get (1));
+		assertEquals (2, priv2.getPendingMovement ().size ());
+		assertSame (move2, priv2.getPendingMovement ().get (0));
+		assertSame (move3, priv2.getPendingMovement ().get (1));
 		
 		assertEquals (new MapCoordinates3DEx (21, 11, 1), move2.getMoveFrom ());	// <-- This moved forward one step
 		assertEquals (new MapCoordinates3DEx (22, 12, 1), move2.getMoveTo ());
@@ -781,17 +782,17 @@ public final class TestPlayerMessageProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -814,7 +815,7 @@ public final class TestPlayerMessageProcessingImpl
 
 		// Combat move
 		final PendingMovement move1 = new PendingMovement ();
-		trans1.getPendingMovement ().add (move1);
+		priv1.getPendingMovement ().add (move1);
 
 		final MemoryUnit move1Unit = new MemoryUnit ();
 		move1Unit.setUnitURN (1);
@@ -832,7 +833,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Move where the unit stack has no movement left
 		final PendingMovement move2 = new PendingMovement ();
-		trans2.getPendingMovement ().add (move2);
+		priv2.getPendingMovement ().add (move2);
 
 		final MemoryUnit move2Unit = new MemoryUnit ();
 		move2Unit.setUnitURN (2);
@@ -850,7 +851,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Move where the destination is unreachable
 		final PendingMovement move3 = new PendingMovement ();
-		trans2.getPendingMovement ().add (move3);
+		priv2.getPendingMovement ().add (move3);
 
 		final MemoryUnit move3Unit = new MemoryUnit ();
 		move3Unit.setUnitURN (3);
@@ -892,11 +893,11 @@ public final class TestPlayerMessageProcessingImpl
 		assertTrue (proc.findAndProcessOneCellPendingMovement (mom));
 		
 		// Check the pending move that was processed was removed
-		assertEquals (1, trans1.getPendingMovement ().size ());
-		assertSame (move1, trans1.getPendingMovement ().get (0));
+		assertEquals (1, priv1.getPendingMovement ().size ());
+		assertSame (move1, priv1.getPendingMovement ().get (0));
 
-		assertEquals (1, trans2.getPendingMovement ().size ());
-		assertSame (move3, trans2.getPendingMovement ().get (0));
+		assertEquals (1, priv2.getPendingMovement ().size ());
+		assertSame (move3, priv2.getPendingMovement ().get (0));
 		
 		// Check the units actually moved
 		verify (midTurn, times (1)).moveUnitStack (move2Stack, player2, true, new MapCoordinates3DEx (21, 11, 1), new MapCoordinates3DEx (22, 12, 1), false, mom);
@@ -910,17 +911,17 @@ public final class TestPlayerMessageProcessingImpl
 	public final void testFindAndProcessOneCombat_None () throws Exception
 	{
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -946,17 +947,17 @@ public final class TestPlayerMessageProcessingImpl
 	public final void testFindAndProcessOneCombat_Unreachable () throws Exception
 	{
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -978,7 +979,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Unreachable
 		final PendingMovement move1 = new PendingMovement ();
-		trans1.getPendingMovement ().add (move1);
+		priv1.getPendingMovement ().add (move1);
 
 		final MemoryUnit move1Unit = new MemoryUnit ();
 		move1Unit.setUnitURN (1);
@@ -1011,17 +1012,17 @@ public final class TestPlayerMessageProcessingImpl
 	public final void testFindAndProcessOneCombat_Move () throws Exception
 	{
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -1043,7 +1044,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Normal move
 		final PendingMovement move1 = new PendingMovement ();
-		trans1.getPendingMovement ().add (move1);
+		priv1.getPendingMovement ().add (move1);
 
 		final MemoryUnit move1Unit = new MemoryUnit ();
 		move1Unit.setUnitURN (1);
@@ -1079,17 +1080,17 @@ public final class TestPlayerMessageProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -1113,7 +1114,7 @@ public final class TestPlayerMessageProcessingImpl
 		// 1st Combat
 		final PendingMovement move1 = new PendingMovement ();
 		move1.setMoveFrom (new MapCoordinates3DEx (20, 10, 1));
-		trans1.getPendingMovement ().add (move1);
+		priv1.getPendingMovement ().add (move1);
 
 		final MemoryUnit move1Unit = new MemoryUnit ();
 		move1Unit.setUnitURN (1);
@@ -1140,7 +1141,7 @@ public final class TestPlayerMessageProcessingImpl
 		// 2nd Combat - note these are attacking the location the 1st stack is moving *from*, so attacks only the non-moving unit
 		final PendingMovement move2 = new PendingMovement ();
 		move2.setMoveFrom (new MapCoordinates3DEx (20, 11, 1));
-		trans2.getPendingMovement ().add (move2);
+		priv2.getPendingMovement ().add (move2);
 
 		final MemoryUnit move2Unit = new MemoryUnit ();
 		move2Unit.setUnitURN (2);
@@ -1159,7 +1160,7 @@ public final class TestPlayerMessageProcessingImpl
 		// 3rd Combat
 		final PendingMovement move3 = new PendingMovement ();
 		move3.setMoveFrom (new MapCoordinates3DEx (20, 12, 1));
-		trans2.getPendingMovement ().add (move3);
+		priv2.getPendingMovement ().add (move3);
 
 		final MemoryUnit move3Unit = new MemoryUnit ();
 		move3Unit.setUnitURN (3);
@@ -1220,17 +1221,17 @@ public final class TestPlayerMessageProcessingImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		// Players
-		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 
-		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
@@ -1258,7 +1259,7 @@ public final class TestPlayerMessageProcessingImpl
 		// 1st Combat - attacking the 2nd stack
 		final PendingMovement move1 = new PendingMovement ();
 		move1.setMoveFrom (new MapCoordinates3DEx (20, 10, 1));
-		trans1.getPendingMovement ().add (move1);
+		priv1.getPendingMovement ().add (move1);
 
 		final MemoryUnit move1Unit = new MemoryUnit ();
 		move1Unit.setUnitURN (1);
@@ -1285,7 +1286,7 @@ public final class TestPlayerMessageProcessingImpl
 		// 2nd Combat - attacking the 1st stack
 		final PendingMovement move2 = new PendingMovement ();
 		move2.setMoveFrom (new MapCoordinates3DEx (20, 11, 1));
-		trans2.getPendingMovement ().add (move2);
+		priv2.getPendingMovement ().add (move2);
 
 		final MemoryUnit move2Unit = new MemoryUnit ();
 		move2Unit.setUnitURN (2);
@@ -1304,7 +1305,7 @@ public final class TestPlayerMessageProcessingImpl
 		// 3rd Combat
 		final PendingMovement move3 = new PendingMovement ();
 		move3.setMoveFrom (new MapCoordinates3DEx (20, 12, 1));
-		trans2.getPendingMovement ().add (move3);
+		priv2.getPendingMovement ().add (move3);
 
 		final MemoryUnit move3Unit = new MemoryUnit ();
 		move3Unit.setUnitURN (3);

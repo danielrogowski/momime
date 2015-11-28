@@ -97,7 +97,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 			if ((mu.getOwningPlayerID () == getClient ().getOurPlayerID ()) && (mu.getDoubleOverlandMovesLeft () > 0) &&
 				(mu.getSpecialOrder () == null) && (mu.getStatus () == UnitStatusID.ALIVE) &&
-				(getPendingMovementUtils ().findPendingMoveForUnit (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), mu.getUnitURN ()) == null))
+				(getPendingMovementUtils ().findPendingMoveForUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), mu.getUnitURN ()) == null))
 				
 				unitsLeftToMoveOverland.add (mu);
 		

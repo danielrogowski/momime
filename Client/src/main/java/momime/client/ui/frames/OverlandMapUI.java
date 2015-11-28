@@ -544,7 +544,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 				}
 				
 				// Show pending movements
-				if (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ().size () > 0)
+				if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement ().size () > 0)
 				{
 					try
 					{
@@ -559,7 +559,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 						final int arrowZoomedWidth = (overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
 						final int arrowZoomedHeight = (overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
 						
-						for (final PendingMovement pendingMovement : getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ())
+						for (final PendingMovement pendingMovement : getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement ())
 							if (pendingMovement.getMoveTo ().getZ () == mapViewPlane)
 							{
 								// Note we actually start from the destination and walk backwards to the current unit location

@@ -75,7 +75,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	private final static int MAXIMUM_RESOURCE_REWARD = 200;
 	
 	/** Cost to the treasure budget of being awarded a special/pick */
-	private final static int SPECIAL_REWARD_COST = 2500;
+	private final static int SPECIAL_REWARD_COST = 2000;
 
 	/** Cost to the treasure budget of being awarded a prisoner hero */
 	private final static int PRISONER_REWARD_COST = 1000;

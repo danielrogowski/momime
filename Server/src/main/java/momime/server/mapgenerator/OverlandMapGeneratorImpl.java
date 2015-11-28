@@ -1695,6 +1695,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 		final int treasureValue = treasureMin + (int) Math.round ((treasureMax - treasureMin) * gridCell.getNodeLairTowerPowerProportion ());
 		gridCell.setTreasureValue (treasureValue);
+		
+		log.debug ("Treasure value for " + gridCell.getTerrainData ().getTileTypeID () + ", " + gridCell.getTerrainData ().getMapFeatureID () + " is " + treasureValue);
 
 		log.trace ("Exiting assignTreasureValue = " + treasureValue);
 	}

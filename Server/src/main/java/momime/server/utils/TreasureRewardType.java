@@ -6,22 +6,22 @@ package momime.server.utils;
 enum TreasureRewardType
 {
 	/** Hero item reward */
-	HERO_ITEM (5),
+	HERO_ITEM (1),
 	
 	/** Learn a spell reward */
-	SPELL (3),
+	SPELL (2),
 	
 	/** Gold coins reward */
-	GOLD (2),
+	GOLD (1),
 
 	/** Mana crystals reward */
-	MANA (2),
+	MANA (1),
 	
 	/** Special/picks reward, i.e. spell book or retort */
-	SPECIAL (2),
+	SPECIAL (3),
 	
 	/** Prisoner reward, i.e. as per summon hero spell */
-	PRISONER (1);
+	PRISONER (2);
 
 	/** Relative chance of receiving each reward, e.g. hero items are most likely to be chosen */
 	private final int relativeChance;

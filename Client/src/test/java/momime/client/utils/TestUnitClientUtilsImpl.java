@@ -144,13 +144,20 @@ public final class TestUnitClientUtilsImpl
 		when (lang.findCategoryEntry ("UnitName", "TheUnitOfNameSingular")).thenReturn ("the RACE_UNIT_NAME");
 		when (lang.findCategoryEntry ("UnitName", "TheUnitOfNamePlural")).thenReturn ("the unit of RACE_UNIT_NAME");
 		
+		when (lang.findHeroName ("UN001_HN01")).thenReturn ("Valana the Bard");				
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
 		
 		// Create one of each kind of unit
-		final MemoryUnit hero = new MemoryUnit ();
-		hero.setUnitID ("UN001");
-		hero.setUnitName ("Valana the Bard");
+		final MemoryUnit heroOverridden = new MemoryUnit ();
+		heroOverridden.setUnitID ("UN001");
+		heroOverridden.setHeroNameID ("UN001_HN01");
+		heroOverridden.setUnitName ("Renamed Hero");
+		
+		final MemoryUnit heroGenerated = new MemoryUnit ();
+		heroGenerated.setUnitID ("UN001");
+		heroGenerated.setHeroNameID ("UN001_HN01");
 		
 		final AvailableUnit nonRaceSpecific = new AvailableUnit ();
 		nonRaceSpecific.setUnitID ("UN002");
@@ -176,7 +183,8 @@ public final class TestUnitClientUtilsImpl
 		utils.setLanguageHolder (langHolder);
 		
 		// Test SIMPLE_UNIT_NAME
-		assertEquals ("Valana the Bard",	utils.getUnitName (hero,							UnitNameType.SIMPLE_UNIT_NAME));
+		assertEquals ("Renamed Hero",	utils.getUnitName (heroOverridden,			UnitNameType.SIMPLE_UNIT_NAME));
+		assertEquals ("Valana the Bard",	utils.getUnitName (heroGenerated,			UnitNameType.SIMPLE_UNIT_NAME));
 		assertEquals ("Trireme",				utils.getUnitName (nonRaceSpecific,			UnitNameType.SIMPLE_UNIT_NAME));
 		assertEquals ("Swordsmen",		utils.getUnitName (raceSpecific,				UnitNameType.SIMPLE_UNIT_NAME));
 		assertEquals ("Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.SIMPLE_UNIT_NAME));
@@ -185,7 +193,8 @@ public final class TestUnitClientUtilsImpl
 		assertEquals ("UN007",				utils.getUnitName (unknown,					UnitNameType.SIMPLE_UNIT_NAME));
 
 		// Test RACE_UNIT_NAME
-		assertEquals ("Valana the Bard",	utils.getUnitName (hero,							UnitNameType.RACE_UNIT_NAME));
+		assertEquals ("Renamed Hero",	utils.getUnitName (heroOverridden,			UnitNameType.RACE_UNIT_NAME));
+		assertEquals ("Valana the Bard",	utils.getUnitName (heroGenerated,			UnitNameType.RACE_UNIT_NAME));
 		assertEquals ("Trireme",				utils.getUnitName (nonRaceSpecific,			UnitNameType.RACE_UNIT_NAME));
 		assertEquals ("Orc Swordsmen",	utils.getUnitName (raceSpecific,				UnitNameType.RACE_UNIT_NAME));
 		assertEquals ("Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.RACE_UNIT_NAME));
@@ -194,7 +203,8 @@ public final class TestUnitClientUtilsImpl
 		assertEquals ("RC02 UN007",		utils.getUnitName (unknown,					UnitNameType.RACE_UNIT_NAME));
 
 		// Test A_UNIT_NAME
-		assertEquals ("Valana the Bard",	utils.getUnitName (hero,							UnitNameType.A_UNIT_NAME));
+		assertEquals ("Renamed Hero",	utils.getUnitName (heroOverridden,			UnitNameType.A_UNIT_NAME));
+		assertEquals ("Valana the Bard",	utils.getUnitName (heroGenerated,			UnitNameType.A_UNIT_NAME));
 		assertEquals ("a Trireme",			utils.getUnitName (nonRaceSpecific,			UnitNameType.A_UNIT_NAME));
 		assertEquals ("Orc Swordsmen",	utils.getUnitName (raceSpecific,				UnitNameType.A_UNIT_NAME));
 		assertEquals ("Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.A_UNIT_NAME));
@@ -203,7 +213,8 @@ public final class TestUnitClientUtilsImpl
 		assertEquals ("RC02 UN007",		utils.getUnitName (unknown,					UnitNameType.A_UNIT_NAME));
 
 		// Test THE_UNIT_OF_NAME
-		assertEquals ("Valana the Bard",					utils.getUnitName (hero,							UnitNameType.THE_UNIT_OF_NAME));
+		assertEquals ("Renamed Hero",					utils.getUnitName (heroOverridden,			UnitNameType.THE_UNIT_OF_NAME));
+		assertEquals ("Valana the Bard",					utils.getUnitName (heroGenerated,			UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the Trireme",						utils.getUnitName (nonRaceSpecific,			UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of Orc Swordsmen",	utils.getUnitName (raceSpecific,				UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.THE_UNIT_OF_NAME));

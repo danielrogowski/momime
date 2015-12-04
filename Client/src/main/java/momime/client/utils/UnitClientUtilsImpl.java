@@ -141,7 +141,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Heroes just output their name for all unitNameTypes, so in that case we don't need to look up anything at all
 		String unitName = null;
 		if (unit instanceof MemoryUnit)
-			unitName = ((MemoryUnit) unit).getUnitName ();
+		{
+			final MemoryUnit mu = (MemoryUnit) unit;
+			if (mu.getUnitName () != null)
+				unitName = mu.getUnitName ();
+			else if (mu.getHeroNameID () != null)
+				unitName = getLanguage ().findHeroName (mu.getHeroNameID ());
+		}
 		
 		if (unitName == null)
 		{

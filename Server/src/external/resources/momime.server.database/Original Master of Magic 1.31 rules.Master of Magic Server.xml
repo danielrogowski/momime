@@ -23939,6 +23939,7 @@
 		<languageEntry languageEntryID="RushBuy" />
 		<languageEntry languageEntryID="ChangeConstruction" />
 		<languageEntry languageEntryID="OK" />
+		<languageEntry languageEntryID="Rename" />
 		<languageEntry languageEntryID="MaxCitySize" />
 		<languageEntry languageEntryID="PopulationMaxed" />
 		<languageEntry languageEntryID="PopulationAndGrowth" />

@@ -127,7 +127,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 			tc.getCityData ().setProductionSoFar (productionCost);
 
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
+				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
 		
 		log.trace ("Exiting process");

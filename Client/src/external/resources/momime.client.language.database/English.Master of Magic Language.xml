@@ -5615,7 +5615,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Name City</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Prompt">
-			<languageEntryText>Enter name for new City</languageEntryText>
+			<languageEntryText>Enter new name for City</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmCity">
@@ -5645,6 +5645,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Rename">
+			<languageEntryText>Rename</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="MaxCitySize">
 			<languageEntryText>maximum MAX_CITY_SIZE</languageEntryText>

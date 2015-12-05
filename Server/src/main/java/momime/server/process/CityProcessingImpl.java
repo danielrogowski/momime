@@ -416,7 +416,7 @@ public final class CityProcessingImpl implements CityProcessing
 						}
 
 						// Now update player memory with all the changes
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 					}
 				}
 
@@ -515,7 +515,7 @@ public final class CityProcessingImpl implements CityProcessing
 			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
 
 			// Send the updated city stats to any clients that can see the city
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 		}
 
 		log.trace ("Exiting sellBuilding");
@@ -589,7 +589,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 						}
 					}
 			

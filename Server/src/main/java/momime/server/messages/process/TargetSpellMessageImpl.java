@@ -256,7 +256,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				{
 					cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), (MapCoordinates3DEx) cityLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
+						mom.getPlayers (), (MapCoordinates3DEx) cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 				}
 				
 				// First create the building(s) on the server

@@ -497,7 +497,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="armyListUI" ref="armyListUI" />
-		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 	</bean>
 

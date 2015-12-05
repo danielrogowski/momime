@@ -124,6 +124,7 @@ public final class TestCityViewUI
 		when (lang.findCategoryEntry ("frmCity", "RushBuy")).thenReturn ("Buy");
 		when (lang.findCategoryEntry ("frmCity", "ChangeConstruction")).thenReturn ("Change");
 		when (lang.findCategoryEntry ("frmCity", "OK")).thenReturn ("OK");
+		when (lang.findCategoryEntry ("frmCity", "Rename")).thenReturn ("Rename");
 		
 		when (lang.findCitySizeName ("CS01")).thenReturn ("Test City of CITY_NAME");
 		when (lang.findCategoryEntry ("frmCity", "MaxCitySize")).thenReturn ("maximum MAX_CITY_SIZE");

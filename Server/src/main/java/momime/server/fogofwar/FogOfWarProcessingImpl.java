@@ -331,7 +331,6 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param player The player whose FOW we are recalculating
 	 * @param players List of players in the session
-	 * @param nameCitiesAtStartOfGame Set only for the first time this is called during game startup, and tells all the clients to ask for names for their starting cities
 	 * @param triggeredFrom What caused the change in visible area - this is only used for debug messages on the client
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
@@ -343,8 +342,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 */
 	@Override
 	public final void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final boolean nameCitiesAtStartOfGame,
-		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering updateAndSendFogOfWar: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -434,7 +432,6 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 									final UpdateCityMessageData cityMsg = new UpdateCityMessageData ();
 									cityMsg.setMapLocation (coords);
 									cityMsg.setCityData (mc.getCityData ());
-									cityMsg.setAskForCityName ((nameCitiesAtStartOfGame) && (tc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()));
 									msg.getCityUpdate ().add (cityMsg);
 								}
 							break;

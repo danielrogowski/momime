@@ -50,7 +50,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 
 			// Then send the change to all players who can see the city
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
+				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
 		else
 		{

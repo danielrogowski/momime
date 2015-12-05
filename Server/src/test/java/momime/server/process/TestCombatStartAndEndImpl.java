@@ -737,8 +737,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, false, "combatEnded-A", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -864,8 +864,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, false, "combatEnded-A", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1008,8 +1008,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, false, "combatEnded-A", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1189,8 +1189,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, false, "combatEnded-A", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1199,7 +1199,7 @@ public final class TestCombatStartAndEndImpl
 		// Check the city owner was updated
 		assertEquals (attackingPd.getPlayerID ().intValue (), cityData.getCityOwnerID ());
 		assertEquals (2, cityData.getNumberOfRebels ());
-		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings, false);
+		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings);
 		verify (serverCityCalc, times (1)).ensureNotTooManyOptionalFarmers (cityData);
 		
 		// Check the attacker's units advanced forward into the city
@@ -1393,8 +1393,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, false, "combatEnded-A", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1402,7 +1402,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the city was trashed
 		assertNull (gc.getCityData ());
-		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings, false);
+		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings);
 		
 		// Check the attacker's units advanced forward into where the city used to be
 		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1547,8 +1547,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, false, "combatEnded-A", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1681,8 +1681,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, false, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, false, "combatEnded-A", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);

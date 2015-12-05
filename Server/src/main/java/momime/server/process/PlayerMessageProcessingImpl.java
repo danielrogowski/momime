@@ -537,7 +537,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			mom.getSessionLogger ().info ("Generating and sending initial fog of war...");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), thisPlayer,
-					mom.getPlayers (), true, "checkIfCanStartGame", mom.getSessionDescription (), mom.getServerDB ());
+					mom.getPlayers (), "checkIfCanStartGame", mom.getSessionDescription (), mom.getServerDB ());
 
 			// Give each wizard initial skill and gold, and setting optional farmers in all cities
 			mom.getSessionLogger ().info ("Setting wizards' initial skill and gold, and optional farmers in all cities");

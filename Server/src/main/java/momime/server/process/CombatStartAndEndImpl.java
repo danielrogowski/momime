@@ -435,7 +435,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
 					
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), combatLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
+						mom.getPlayers (), combatLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 				}
 				else if (captureCityDecision == CaptureCityDecisionID.RAZE)
 				{
@@ -450,7 +450,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					// Wreck the city
 					tc.setCityData (null);
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
-						combatLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
+						combatLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 				}
 			}
 			else
@@ -474,12 +474,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// So easiest to just recalculate FOW for both players
 			if (defendingPlayer != null)
 				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-					defendingPlayer, mom.getPlayers (), false, "combatEnded-D", mom.getSessionDescription (), mom.getServerDB ());
+					defendingPlayer, mom.getPlayers (), "combatEnded-D", mom.getSessionDescription (), mom.getServerDB ());
 			
 			// If attacker won, we'll have already recalc'd their FOW when their units advanced 1 square
 			// But lets do it anyway - maybe they captured a city with an Oracle
 			getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-				attackingPlayer, mom.getPlayers (), false, "combatEnded-A", mom.getSessionDescription (), mom.getServerDB ());
+				attackingPlayer, mom.getPlayers (), "combatEnded-A", mom.getSessionDescription (), mom.getServerDB ());
 			
 			// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
 			log.debug ("Removing all spell CAEs");

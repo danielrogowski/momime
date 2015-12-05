@@ -20,6 +20,7 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -228,6 +229,12 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** OK (close) action */
 	private Action okAction;
+
+	/** Rename city action */
+	private Action renameAction;
+	
+	/** Rename city button */
+	private JButton renameButton;
 	
 	/** Panel where all the civilians are drawn */
 	private JPanel civilianPanel;
@@ -359,6 +366,21 @@ public final class CityViewUI extends MomClientFrameUI
 		});
 		
 		okAction = new LoggingAction ((ev) -> getFrame ().dispose ());
+
+		renameAction = new LoggingAction ((ev) ->
+		{
+			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+			
+			final EditStringUI askForCityName = getPrototypeFrameCreator ().createEditString ();
+			askForCityName.setTitleLanguageCategoryID ("frmNameCity");
+			askForCityName.setTitleLanguageEntryID ("Title");
+			askForCityName.setPromptLanguageCategoryID ("frmNameCity");
+			askForCityName.setPromptLanguageEntryID ("Prompt");
+			askForCityName.setCityBeingNamed (getCityLocation ());
+			askForCityName.setText (cityData.getCityName ());
+			askForCityName.setVisible (true);
+		});
 		
 		// Explain the max size calculation
 		maximumPopulationAction = new LoggingAction ((ev) ->
@@ -495,6 +517,9 @@ public final class CityViewUI extends MomClientFrameUI
 		// Buttons
 		contentPane.add (getUtils ().createImageButton (rushBuyAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityBuy");
 		contentPane.add (getUtils ().createImageButton (changeConstructionAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityChange");
+		
+		renameButton = getUtils ().createImageButton (renameAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled);
+		contentPane.add (renameButton, "frmCityRename");
 		
 		// Set up the mini terrain panel
 		miniMapPanel = new JPanel ()
@@ -933,6 +958,7 @@ public final class CityViewUI extends MomClientFrameUI
 		rushBuyAction.putValue					(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "RushBuy"));
 		changeConstructionAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "ChangeConstruction"));
 		okAction.putValue							(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "OK"));
+		renameAction.putValue					(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "Rename"));
 		
 		languageOrCityDataChanged ();
 		
@@ -1110,6 +1136,7 @@ public final class CityViewUI extends MomClientFrameUI
 		notOursPanel.setVisible (!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()));
 		production.setVisible (!notOursPanel.isVisible ());
 		changeConstructionAction.setEnabled (!notOursPanel.isVisible ());
+		renameButton.setVisible (!notOursPanel.isVisible ());
 		
 		// Can we see what this city is constructing?
 		cannotSeeConstructionPanel.setVisible ((!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) &&

@@ -224,7 +224,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setFogOfWarDuplication (dup);
 
 		// Run test
-		calc.updatePlayerMemoryOfCity (trueTerrain, players, new MapCoordinates3DEx (20, 10, 1), fowSettings, false);
+		calc.updatePlayerMemoryOfCity (trueTerrain, players, new MapCoordinates3DEx (20, 10, 1), fowSettings);
 		
 		// Players 1-4 can't even see the location so shouldn't get the dup method called; players 5-8 should
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
@@ -254,7 +254,6 @@ public final class TestFogOfWarMidTurnChangesImpl
 					assertEquals (20, updateMsg.getData ().getMapLocation ().getX ());
 					assertEquals (10, updateMsg.getData ().getMapLocation ().getY ());
 					assertEquals (1, updateMsg.getData ().getMapLocation ().getZ ());
-					assertFalse (updateMsg.getData ().isAskForCityName ());
 					assertSame (mc.getCityData (), updateMsg.getData ().getCityData ());
 				}
 			}
@@ -371,7 +370,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Only the casters FOW should be updated
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
 			verify (proc, times (playerIndex == (trueSpell.getCastingPlayerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, false, "addExistingTrueMaintainedSpellToClients", sd, db);
+				(trueMap, players.get (playerIndex), players, "addExistingTrueMaintainedSpellToClients", sd, db);
 	}
 	
 	/**
@@ -480,7 +479,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Only the casters FOW should be updated
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (trueSpell.getCastingPlayerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, false, "switchOffMaintainedSpellOnServerAndClients", sd, db);
+				(trueMap, players.get (playerIndex), players, "switchOffMaintainedSpellOnServerAndClients", sd, db);
 	}
 	
 	/**
@@ -623,7 +622,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Only the city owner's FOW should be updated
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, false, "addBuildingOnServerAndClients", sd, db);
+				(trueMap, players.get (playerIndex), players, "addBuildingOnServerAndClients", sd, db);
 	}
 
 	/**
@@ -774,7 +773,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Only the city owner's FOW should be updated
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, false, "addBuildingOnServerAndClients", sd, db);
+				(trueMap, players.get (playerIndex), players, "addBuildingOnServerAndClients", sd, db);
 	}
 	
 	/**
@@ -906,6 +905,6 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Only the city owner's FOW should be updated
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, false, "destroyBuildingOnServerAndClients", sd, db);
+				(trueMap, players.get (playerIndex), players, "destroyBuildingOnServerAndClients", sd, db);
 	}
 }

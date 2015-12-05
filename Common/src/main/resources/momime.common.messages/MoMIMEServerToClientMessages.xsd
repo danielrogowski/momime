@@ -827,11 +827,6 @@ and just as types so that they can be included in the massive fogOfWarVisibleAre
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="map:mapCoordinates3D" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityData" type="momimemsgs:overlandMapCityData" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="askForCityName" type="xsd:boolean">
-			    <xsd:annotation>
-    				<xsd:documentation>Prompts the client to ask for a name for this city, i.e. = city is yours AND newly added this turn.</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 

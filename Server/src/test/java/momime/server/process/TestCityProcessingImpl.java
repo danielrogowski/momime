@@ -646,7 +646,7 @@ public final class TestCityProcessingImpl
 		verify (serverCityCalc, times (3)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
 		// Gets called once per city
-		verify (midTurn, times (3)).updatePlayerMemoryOfCity (eq (trueTerrain), eq (players), any (MapCoordinates3DEx.class), eq (fogOfWarSettings), eq (false));
+		verify (midTurn, times (3)).updatePlayerMemoryOfCity (eq (trueTerrain), eq (players), any (MapCoordinates3DEx.class), eq (fogOfWarSettings));
 	}
 	
 	/**
@@ -742,7 +742,7 @@ public final class TestCityProcessingImpl
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
-		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting (), false);
+		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 	}
 
 	/**
@@ -838,7 +838,7 @@ public final class TestCityProcessingImpl
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
-		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting (), false);
+		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 	}
 
 	/**
@@ -934,7 +934,7 @@ public final class TestCityProcessingImpl
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
-		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting (), false);
+		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 	}
 
 	/**
@@ -1134,14 +1134,14 @@ public final class TestCityProcessingImpl
 		
 		assertEquals (4, cityData1.getNumberOfRebels ());
 		verify (serverCityCalculations, times (1)).ensureNotTooManyOptionalFarmers (cityData1);
-		verify (midTurn, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation1, sd.getFogOfWarSetting (), false);
+		verify (midTurn, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation1, sd.getFogOfWarSetting ());
 
 		assertEquals (5, cityData2.getNumberOfRebels ());
 		verify (serverCityCalculations, times (1)).ensureNotTooManyOptionalFarmers (cityData2);
-		verify (midTurn, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation2, sd.getFogOfWarSetting (), false);
+		verify (midTurn, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation2, sd.getFogOfWarSetting ());
 
 		assertEquals (0, cityData3.getNumberOfRebels ());
 		verify (serverCityCalculations, times (0)).ensureNotTooManyOptionalFarmers (cityData3);
-		verify (midTurn, times (0)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation3, sd.getFogOfWarSetting (), false);
+		verify (midTurn, times (0)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation3, sd.getFogOfWarSetting ());
 	}
 }

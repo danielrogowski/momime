@@ -96,6 +96,12 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmCityRename">
+		<left>505</left>
+		<top>3</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmCityView">
 		<left>8</left>
 		<top>212</top>

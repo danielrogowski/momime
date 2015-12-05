@@ -5,22 +5,20 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.ui.frames.ArmyListUI;
-import momime.client.ui.frames.CityViewUI;
-import momime.client.ui.frames.EditStringUI;
-import momime.client.ui.frames.NewTurnMessagesUI;
-import momime.client.ui.frames.OverlandMapUI;
-import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.client.ui.panels.OverlandMapRightHandPanel;
-import momime.common.messages.MemoryGridCell;
-import momime.common.messages.servertoclient.UpdateCityMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
+import momime.client.MomClient;
+import momime.client.ui.frames.ArmyListUI;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.NewTurnMessagesUI;
+import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.servertoclient.UpdateCityMessage;
 
 /**
  * Server sends this to the client to tell them the map scenery
@@ -41,9 +39,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	
 	/** Army list */
 	private ArmyListUI armyListUI;
-	
-	/** Prototype frame creator */
-	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
@@ -82,26 +77,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 			(getData ().getMapLocation ().getZ ()).getRow ().get (getData ().getMapLocation ().getY ()).getCell ().get (getData ().getMapLocation ().getX ());
 		
 		gc.setCityData (getData ().getCityData ());
-		
-		// Server works out whether or not this is our city and if it has just been newly added, and so we need to name it
-		if ((getData ().isAskForCityName () != null) && (getData ().isAskForCityName ()))
-		{
-			final EditStringUI askForCityName = getPrototypeFrameCreator ().createEditString ();
-			askForCityName.setTitleLanguageCategoryID ("frmNameCity");
-			askForCityName.setTitleLanguageEntryID ("Title");
-			askForCityName.setPromptLanguageCategoryID ("frmNameCity");
-			askForCityName.setPromptLanguageEntryID ("Prompt");
-			askForCityName.setCityBeingNamed ((MapCoordinates3DEx) getData ().getMapLocation ());
-			askForCityName.setText (getData ().getCityData ().getCityName ());
-			try
-			{
-				askForCityName.setVisible (true);
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}
-		}
 		
 		// If any city screen(s) are displaying this city then we need to update the display
 		final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getMapLocation ().toString ());
@@ -165,23 +140,7 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	{
 		overlandMapRightHandPanel = panel;
 	}
-
-	/**
-	 * @return Prototype frame creator
-	 */
-	public final PrototypeFrameCreator getPrototypeFrameCreator ()
-	{
-		return prototypeFrameCreator;
-	}
-
-	/**
-	 * @param obj Prototype frame creator
-	 */
-	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
-	{
-		prototypeFrameCreator = obj;
-	}
-
+	
 	/**
 	 * @return New turn messages UI
 	 */

@@ -170,13 +170,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param coords Location of the city that has been updated
 	 * @param fogOfWarSettings Fog of War settings from session description
-	 * @param newlyAddedCity Whether the reason we're seeing this city is because it has just been built (used so that client asks the player who built it to name the city)
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	@Override
 	public final void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx coords, final FogOfWarSetting fogOfWarSettings, final boolean newlyAddedCity)
+		final List<PlayerServerDetails> players, final MapCoordinates3DEx coords, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException
 	{
 		log.trace ("Entering updatePlayerMemoryOfCity: " + coords);
@@ -224,7 +223,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						// Note unlike the terrain msg which we can build once and send to each applicable player, the data for the city msg
 						// needs to be reset for each player, since their visibility of the currentlyConstructing value may be different
 						cityMsg.setCityData (mc.getCityData ());
-						cityMsg.setAskForCityName (newlyAddedCity && (thisPlayer.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ())));
 						thisPlayer.getConnection ().sendMessageToClient (cityMsgContainer);
 					}
 			}
@@ -341,7 +339,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// What can the new unit see? (it may expand the unit owner's vision to see things that they couldn't previously)
 		if ((players != null) && (trueUnit.getCombatLocation () == null))
-			getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, unitOwner, players, false, "updateUnitStatusToAliveOnServerAndClients", sd, db);
+			getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, unitOwner, players, "updateUnitStatusToAliveOnServerAndClients", sd, db);
 
 		// Tell clients?
 		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
@@ -553,7 +551,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// While it may seem a bit odd to do this here (since the spell already existed on the server before calling this),
 		// the spell would have been in an untargetted state so we wouldn't know what city to apply it to, so this is definitely the right place to do this
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "addExistingTrueMaintainedSpellToClients");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), castingPlayer, players, false, "addExistingTrueMaintainedSpellToClients", sd, db);
+		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), castingPlayer, players, "addExistingTrueMaintainedSpellToClients", sd, db);
 
 		log.trace ("Exiting addExistingTrueMaintainedSpellToClients");
 	}
@@ -672,7 +670,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffMaintainedSpellOnServerAndClients");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, false, "switchOffMaintainedSpellOnServerAndClients", sd, db);
+		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, "switchOffMaintainedSpellOnServerAndClients", sd, db);
 
 		log.trace ("Exiting switchOffMaintainedSpellOnServerAndClients");
 	}
@@ -873,7 +871,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			// routine, so this doesn't cause a bunch of FOW recalculations before the game starts
 			final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
-			getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, false, "addBuildingOnServerAndClients", sd, db);
+			getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, "addBuildingOnServerAndClients", sd, db);
 		}
 
 		log.trace ("Exiting addBuildingOnServerAndClients");
@@ -931,7 +929,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// The destroyed building might be an Oracle, so recalculate fog of war
 		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "destroyBuildingOnServerAndClients");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, cityOwner, players, false, "destroyBuildingOnServerAndClients", sd, db);
+		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, cityOwner, players, "destroyBuildingOnServerAndClients", sd, db);
 
 		log.trace ("Exiting destroyBuildingOnServerAndClients");
 	}

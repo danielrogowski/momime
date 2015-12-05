@@ -494,7 +494,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			thisUnit.setUnitLocation (new MapCoordinates3DEx (moveTo));
 
 		// See what the units can see from their new location
-		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), unitStackOwner, players, false, "moveUnitStackOneCellOnServerAndClients", sd, db);
+		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), unitStackOwner, players, "moveUnitStackOneCellOnServerAndClients", sd, db);
 
 		// If we moved out of or into a city, then need to recalc rebels, production, because the units may now be (or may now no longer be) helping ease unrest.
 		// Note this doesn't deal with capturing cities - attacking even an empty city is treated as a combat, so we can pick Capture/Raze.
@@ -512,7 +512,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 			}
 		}
 		

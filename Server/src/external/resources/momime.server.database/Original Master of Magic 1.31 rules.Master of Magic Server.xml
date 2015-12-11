@@ -24105,6 +24105,7 @@
 		<languageEntry languageEntryID="SwitchOffSpellTitle" />
 		<languageEntry languageEntryID="SwitchOffSpell" />
 		<languageEntry languageEntryID="SwitchOffSpellNotOurs" />
+		<languageEntry languageEntryID="WhoWillCastTitle" />		
 	</languageCategory>
 	<languageCategory languageCategoryID="VariableMana">
 		<languageEntry languageEntryID="Title" />

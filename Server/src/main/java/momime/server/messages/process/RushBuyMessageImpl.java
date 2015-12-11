@@ -120,7 +120,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		{
 			// All ok - deduct money & send to client
 			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -rushBuyCost);
-			getServerResourceCalculations ().sendGlobalProductionValues (sender, 0);
+			getServerResourceCalculations ().sendGlobalProductionValues (sender, null);
 			
 			// Finish construction & send to client
 			// We don't actually construct the building/unit here - that only happens when we end turn, same as in the original MoM

@@ -60,6 +60,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SwitchResearch;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
@@ -535,13 +536,12 @@ public final class SpellBookUI extends MomClientFrameUI
 										final boolean proceed;
 										
 										// Ignore trying to cast spells in combat when it isn't our turn
-										if ((getCastType () == SpellCastType.COMBAT) && (!getCombatUI ().isSpellActionEnabled ()))
+										if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
 											proceed = false;
 										else
 										{										
 											// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
-											final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
-												getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+											final Integer combatCost = getReducedCombatCastingCost (spell, pub.getPick ());
 											
 											if ((getCastType () == SpellCastType.OVERLAND) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 												proceed = false;
@@ -550,7 +550,7 @@ public final class SpellBookUI extends MomClientFrameUI
 												proceed = false;
 											
 											else if ((getCastType () == SpellCastType.COMBAT) &&
-												((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatUI ().getMaxCastable ())))
+												((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatMaxCastable ())))
 												proceed = false;
 											
 											// Check if it is an overland enchantment that we already have
@@ -629,7 +629,7 @@ public final class SpellBookUI extends MomClientFrameUI
 										if (proceed)
 										{
 											// Prevent casting more than one combat spell each turn
-											if ((getCastType () == SpellCastType.COMBAT) && (!getCombatUI ().isSpellActionEnabled ()))
+											if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
 											{
 												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 												msg.setTitleLanguageCategoryID ("frmSpellBook");
@@ -677,7 +677,11 @@ public final class SpellBookUI extends MomClientFrameUI
 												msg.setSpellID (spell.getSpellID ());
 												
 												if (getCastType () == SpellCastType.COMBAT)
+												{
 													msg.setCombatLocation (getCombatUI ().getCombatLocation ());
+													if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
+														msg.setCombatCastingUnitURN (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitURN ());
+												}
 												
 												getClient ().getServerConnection ().sendMessageToServer (msg);
 											}
@@ -968,8 +972,7 @@ public final class SpellBookUI extends MomClientFrameUI
 												overlandCost = (spell.getOverlandCastingCost () == null) ? null :
 													getSpellUtils ().getReducedOverlandCastingCost (spell, null, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
-												combatCost = (spell.getCombatCastingCost () == null) ? null :
-													getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+												combatCost = getReducedCombatCastingCost (spell, pub.getPick ());
 											}
 
 											if (overlandCost != null)
@@ -984,7 +987,7 @@ public final class SpellBookUI extends MomClientFrameUI
 											{
 												case COMBAT:
 													spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
-													if ((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatUI ().getMaxCastable ()))
+													if ((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatMaxCastable ()))
 													{
 														spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
 														spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
@@ -1051,6 +1054,56 @@ public final class SpellBookUI extends MomClientFrameUI
 		}
 		
 		log.trace ("Exiting languageOrPageChanged");
+	}
+
+	/**
+	 * This isn't straightforward anymore, so pulled it out into a separate method.  The casting cost reduction from having a lot of spell books in one magic
+	 * realm, or retorts like Runemaster that might also reduce casting cost, only apply if it is the wizard casting the spell, and not a hero or a unit
+	 * with the caster ability e.g. Archangel.
+	 * 
+	 * @param spell Spell to calculate the combat casting cost for
+	 * @param picks Player's picks
+	 * @return Combat casting cost for this spell, or null if it can't be cast in combat
+	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
+	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
+	 */
+	private final Integer getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks) throws MomException, RecordNotFoundException
+	{
+		final Integer combatCost;
+		
+		if (spell.getCombatCastingCost () == null)
+			combatCost = null;
+		
+		// If casting overland, then its the wizard casting, so show their cost reduction even though the combat MP costs are greyed out at the moment
+		else if ((getCastType () != SpellCastType.COMBAT) || (getCombatUI ().getCastingSource () == null))
+			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, picks, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+		
+		// If its the wizard casting in combat, then again show their cost reduction
+		else if (getCombatUI ().getCastingSource ().getCastingUnit () == null)
+			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, picks, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+		
+		// Its a unit or hero casting in combat, so show no reduction
+		else
+			combatCost = spell.getCombatCastingCost ();
+		
+		return combatCost;
+	}
+	
+	/**
+	 * Similar to above, this now varies between being derived from the wizard's MP pool, casting skill and how many spells they have cast so far this combat,
+	 * or can be taken from the unit's MP pool.
+	 * 
+	 * @return Highest MP cost of combat spell that we can cast
+	 */
+	private final int getCombatMaxCastable ()
+	{
+		final int maxCastable;
+		if ((getCombatUI ().getCastingSource () == null) || (getCombatUI ().getCastingSource ().getCastingUnit () == null))
+			maxCastable = getCombatUI ().getMaxCastable ();
+		else
+			maxCastable = getCombatUI ().getCastingSource ().getCastingUnit ().getManaRemaining ();
+		
+		return maxCastable;
 	}
 
 	/**

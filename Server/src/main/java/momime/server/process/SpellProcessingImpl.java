@@ -315,6 +315,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * or both (like Firebolt), then the client will already have done all this and supplied us with the chosen values.
 	 * 
 	 * @param castingPlayer Player who is casting the spell
+	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param spell Which spell they want to cast
 	 * @param reducedCombatCastingCost Skill cost of the spell, reduced by any book or retort bonuses the player may have
 	 * @param multipliedManaCost MP cost of the spell, reduced as above, then multiplied up according to the distance the combat is from the wizard's fortress
@@ -332,7 +333,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castCombatNow (final PlayerServerDetails castingPlayer, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+	public final void castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final SpellSvr spell,
+		final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
@@ -482,32 +484,45 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else
 			throw new MomException ("Cast a combat spell with a section ID that there is no code to deal with yet: " + spell.getSpellBookSectionID ());
 		
-		// Charge mana
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
-		getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
-		
-		// Charge skill
-		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		final int sendSkillValue;
-		if (castingPlayer == defendingPlayer)
+		// Who is casting the spell?
+		if (combatCastingUnit == null)
 		{
-			gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
-			sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
-		}
-		else if (castingPlayer == attackingPlayer)
-		{
-			gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
-			sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
+			// Wizard casting - so charge them the mana cost
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
+			
+			// Charge skill
+			final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			final int sendSkillValue;
+			if (castingPlayer == defendingPlayer)
+			{
+				gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
+				sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
+			}
+			else if (castingPlayer == attackingPlayer)
+			{
+				gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
+				sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
+			}
+			else
+				throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
+			
+			// Send both values to client
+			getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
+			
+			// Only allow casting one spell each combat turn
+			gc.setSpellCastThisCombatTurn (true);
 		}
 		else
-			throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
-		
-		// Send both values to client
-		getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
-		
-		// Only allow casting one spell each combat turn
-		gc.setSpellCastThisCombatTurn (true);
+		{
+			// Unit or hero casting - so charge them the mana cost and zero their movement
+			combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
+			combatCastingUnit.setDoubleCombatMovesLeft (0);
+			
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+		}
 
 		log.trace ("Exiting castCombatNow");
 	}

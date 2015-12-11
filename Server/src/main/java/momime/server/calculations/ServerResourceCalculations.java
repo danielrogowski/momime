@@ -23,7 +23,7 @@ public interface ServerResourceCalculations
 	 * Java version operates only on one player because each player now has their own resource list
 	 *
 	 * @param player Player whose values to send
-	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast, thereby reducing skill and mana
+	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast by the wizard, thereby reducing skill and mana
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */

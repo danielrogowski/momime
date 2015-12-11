@@ -730,7 +730,8 @@ public final class UnitUtilsImpl implements UnitUtils
 		dest.setUnitURN (source.getUnitURN ());
 		dest.setHeroNameID (source.getHeroNameID ());
 		dest.setUnitName (source.getUnitName ());
-		dest.setRangedAttackAmmo (source.getRangedAttackAmmo ());
+		dest.setAmmoRemaining (source.getAmmoRemaining ());
+		dest.getHeroItemSpellChargesRemaining ().addAll (source.getHeroItemSpellChargesRemaining ());
 		dest.setManaRemaining (source.getManaRemaining ());
 		dest.setDamageTaken (source.getDamageTaken ());
 		dest.setDoubleOverlandMovesLeft (newDoubleOverlandMovesLeft);

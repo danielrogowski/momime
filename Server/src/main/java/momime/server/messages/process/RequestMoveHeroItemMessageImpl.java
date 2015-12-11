@@ -221,7 +221,7 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 				case DESTROY:
 					final int manaGained = getHeroItemCalculations ().calculateCraftingCost (item, mom.getServerDB ()) / 2;
 					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, manaGained);
-					getServerResourceCalculations ().sendGlobalProductionValues (sender, 0);
+					getServerResourceCalculations ().sendGlobalProductionValues (sender, null);
 					break;
 					
 				case UNASSIGNED:

@@ -261,8 +261,9 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				// MemoryUnit fields
 				(!CompareUtils.safeStringCompare (source.getHeroNameID (), dest.getHeroNameID ())) ||
 				(!CompareUtils.safeStringCompare (source.getUnitName (), dest.getUnitName ())) ||
-				(source.getRangedAttackAmmo () != dest.getRangedAttackAmmo ()) ||
+				(source.getAmmoRemaining () != dest.getAmmoRemaining ()) ||
 				(source.getManaRemaining () != dest.getManaRemaining ()) ||
+				(source.getHeroItemSpellChargesRemaining ().size () != dest.getHeroItemSpellChargesRemaining ().size ()) ||
 				(source.getDamageTaken () != dest.getDamageTaken ()) ||
 				(source.getStatus () != dest.getStatus ()) ||
 				(source.isWasSummonedInCombat () != dest.isWasSummonedInCombat ()) ||
@@ -277,6 +278,13 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(newDoubleOverlandMovesLeft != dest.getDoubleOverlandMovesLeft ()) ||
 				(newSpecialOrder != dest.getSpecialOrder ()) ||
 				(!CompareUtils.safeIntegerCompare (newDoubleCombatMovesLeft, dest.getDoubleCombatMovesLeft ()));
+			
+			// MemoryUnit - spell charges remaining - already know the number of skills matches; order here is important.
+			final Iterator<Integer> sourceSpellCharges = source.getHeroItemSpellChargesRemaining ().iterator ();
+			final Iterator<Integer> destSpellCharges = dest.getHeroItemSpellChargesRemaining ().iterator ();
+			while ((!needToUpdate) && (sourceSpellCharges.hasNext ()) && (destSpellCharges.hasNext ()))
+				if (!CompareUtils.safeIntegerCompare (sourceSpellCharges.next (), destSpellCharges.next ()))
+					needToUpdate = true;
 
 			// AvailableUnit - compare skills in detail - already know the number of skills matches, so just need to verify their existance and values.
 			// NB. The order here isn't really important, A=1, B=2 is the same as B=2, A=1. 

@@ -12,6 +12,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
+import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
@@ -53,6 +54,9 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
+	/** Combat map processing */
+	private CombatMapProcessing combatMapProcessing;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -86,12 +90,24 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 				getOverlandMapProcessing ().selectNextUnitToMoveOverland ();
 			}
 
+			// Check this now, before we trash over the oldUnit values
+			final boolean selectNextCombatUnit = ((getMemoryUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()) && (getMemoryUnit ().getCombatLocation () != null) &&
+				(oldUnit.getDoubleCombatMovesLeft () != null) && (oldUnit.getDoubleCombatMovesLeft () > 0) &&
+				(getMemoryUnit ().getDoubleCombatMovesLeft () != null) && (getMemoryUnit ().getDoubleCombatMovesLeft () <= 0));
+				
 			// Now copy it
 			getUnitUtils ().copyUnitValues (getMemoryUnit (), oldUnit, true);
 			
 			// Update any unit info screen that may be open
 			if (unitInfo != null)
 				unitInfo.getUnitInfoPanel ().showUnit (oldUnit);
+			
+			// If its our unit, and it expended all its combat movement, then trigger next unit to move
+			if (selectNextCombatUnit)
+			{
+				getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (oldUnit);
+				getCombatMapProcessing ().selectNextUnitToMoveCombat ();
+			}
 		}
 		else
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (getMemoryUnit ());
@@ -195,5 +211,21 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	public final void setHeroItemsUI (final HeroItemsUI ui)
 	{
 		heroItemsUI = ui;
+	}
+
+	/**
+	 * @return Combat map processing
+	 */
+	public final CombatMapProcessing getCombatMapProcessing ()
+	{
+		return combatMapProcessing;
+	}
+
+	/**
+	 * @param proc Combat map processing
+	 */
+	public final void setCombatMapProcessing (final CombatMapProcessing proc)
+	{
+		combatMapProcessing = proc;
 	}
 }

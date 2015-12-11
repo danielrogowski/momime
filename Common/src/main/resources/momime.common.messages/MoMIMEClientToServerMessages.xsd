@@ -490,6 +490,18 @@ If in combat, and casting at a location (e.g. summoning), combatTargetLocation w
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetLocation" type="map:mapCoordinates2D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetUnitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingUnitURN" type="momimemsgs:unitURN">
+						    <xsd:annotation>
+    							<xsd:documentation>In combat, if spell is being cast by a unit with their own mana pool (e.g. Archangel or hero), or from the spell charges imbued
+into a hero item, then this will be set.  If spell is being cast by the wizard themselves then this remains as null.  Not applicable for overland cast requests.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingSlotNumber" type="momimectos:heroItemSlotNumber">
+						    <xsd:annotation>
+    							<xsd:documentation>In combat, if using one of the spell charges imbued into a hero item, this indicates which slot the item is in;
+combatCastingUnitURN must also be set.  If casting from the wizard's or a unit's MP pool then this is left null.  Not applicable for overland cast requests.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="variableDamage" type="momimecommon:unitSkillValue">
 						    <xsd:annotation>
     							<xsd:documentation>For spells such as fire bolt where variable mana can be channeled into the spell to increase damage,

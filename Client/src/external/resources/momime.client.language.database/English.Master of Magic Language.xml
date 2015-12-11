@@ -6094,6 +6094,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="SwitchOffSpellNotOurs">
 			<languageEntryText>You didn't cast the SPELL_NAME spell and so cannot switch it off.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="WhoWillCastTitle">
+			<languageEntryText>Select who, or which item, will cast a spell</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="VariableMana">
 		<languageEntry languageEntryID="Title">

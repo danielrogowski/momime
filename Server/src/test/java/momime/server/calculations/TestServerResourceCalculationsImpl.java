@@ -365,7 +365,7 @@ public final class TestServerResourceCalculationsImpl
 		assertEquals (1, msgs.getMessages ().size ());
 		
 		final UpdateGlobalEconomyMessage msg = (UpdateGlobalEconomyMessage) msgs.getMessages ().get (0);
-		assertEquals (17, msg.getCastingSkillRemainingThisCombat ());
+		assertEquals (17, msg.getCastingSkillRemainingThisCombat ().intValue ());
 		assertEquals (25, msg.getOverlandCastingSkillRemainingThisTurn ());
 		assertEquals (2, msg.getResourceValue ().size ());
 		

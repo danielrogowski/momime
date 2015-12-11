@@ -84,9 +84,12 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 			cityView.recheckRushBuyEnabled ();
 		
 		// Update remaining casting skill and MP in the combat we're in.
-		// Also the only reason we'll get this message during combat is if we cast a combat spell, so stop us from casting another one this turn (2nd param)
-		if (getCombatUI ().isVisible ())
-			getCombatUI ().updateRemainingCastingSkill (getCastingSkillRemainingThisCombat (), false);
+		// Also the only reason this value is ever non-null is if our wizard casts a combat spell, so stop us from casting another one this turn
+		if ((getCombatUI ().isVisible ()) && (getCastingSkillRemainingThisCombat () != null))
+		{
+			getCombatUI ().updateRemainingCastingSkill (getCastingSkillRemainingThisCombat ());
+			getCombatUI ().setSpellCastThisCombatTurn (true);
+		}
 		
 		log.trace ("Exiting start");
 	}

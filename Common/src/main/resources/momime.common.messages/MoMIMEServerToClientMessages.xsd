@@ -310,17 +310,20 @@ will result in mana being reduced so new GPVs will need to be sent anyway (and r
 
 Similarly the OverlandCastingSkillRemainingThisTurn value needs to be set on the client at the start of each turn, so why not include it in the GPV message.
 
-Also both stored mana and OverlandCastingSkillRemainingThisTurn being set on the client simultaneously is convenient for working out EffectiveCastingSkillRemainingThisTurn.
-
-CastingSkillRemainingThisCombat is also sent by the server to avoid having to repeat the skill calc on the client,
-since new GPVs are sent (to update mana) every time we cast a combat spell.</xsd:documentation>
+Also both stored mana and OverlandCastingSkillRemainingThisTurn being set on the client simultaneously is convenient for working out EffectiveCastingSkillRemainingThisTurn.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="overlandCastingSkillRemainingThisTurn" type="momimecommon:undoubledProductionValue" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="castingSkillRemainingThisCombat" type="momimecommon:undoubledProductionValue" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="castingSkillRemainingThisCombat" type="momimecommon:undoubledProductionValue">
+						    <xsd:annotation>
+    							<xsd:documentation>At the start of a combat, the client sets the casting skill remaining for the wizard during that combat from the player's resource values.
+When the wizard casts a spell in combat, this message is resent with the castingSkillRemainingThisCombat filled in to say how much casting skill now remaing.
+Therefore this value being non-null also implies that the wizard cannot cast another spell during this combat turn - it is set to null in all other situations.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="resourceValue" type="momimemsgs:momResourceValue" />
 					</xsd:sequence>
 				</xsd:extension>

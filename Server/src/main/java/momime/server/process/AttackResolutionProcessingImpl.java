@@ -341,7 +341,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						switch (potentialDamage.getDamageType ())
 						{
 							case ZEROES_AMMO:
-								unitBeingAttacked.getUnit ().setRangedAttackAmmo (0);
+								unitBeingAttacked.getUnit ().setAmmoRemaining (0);
 								
 								// Make sure ammo is zeroed on the client as well
 								if (!specialDamageTypesApplied.contains (potentialDamage.getDamageType ()))

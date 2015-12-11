@@ -529,7 +529,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				switch (damageType)
 				{
 					case ZEROES_AMMO:
-						thisUnit.getDefUnit ().setRangedAttackAmmo (0);
+						thisUnit.getDefUnit ().setAmmoRemaining (0);
 						break;
 						
 					default:

@@ -198,7 +198,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Sends one player's global production values to them Note Delphi version could either send the values to one player or all players Java version operates only on one player because each player now has their own resource list
 	 * 
 	 * @param player Player whose values to send
-	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast, thereby reducing skill and mana
+	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast by the wizard, thereby reducing skill and mana
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
@@ -213,9 +213,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		final UpdateGlobalEconomyMessage msg = new UpdateGlobalEconomyMessage ();
 		msg.getResourceValue ().addAll (priv.getResourceValue ());
 		msg.setOverlandCastingSkillRemainingThisTurn (trans.getOverlandCastingSkillRemainingThisTurn ());
-
-		if (castingSkillRemainingThisCombat != null)
-			msg.setCastingSkillRemainingThisCombat (castingSkillRemainingThisCombat);
+		msg.setCastingSkillRemainingThisCombat (castingSkillRemainingThisCombat);
 
 		player.getConnection ().sendMessageToClient (msg);
 
@@ -600,7 +598,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 					else if (player.getPlayerDescription ().isHuman ())
 
 						// No need to send values during start phase, since the start phase calls recalculateGlobalProductionValues () for a second time with DuringStartPhase set to False
-						sendGlobalProductionValues (player, 0);
+						sendGlobalProductionValues (player, null);
 				}
 			}
 

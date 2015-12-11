@@ -58,8 +58,10 @@ import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.CastCombatSpellFromUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.VariableManaUI;
+import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.client.utils.AnimationController;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtils;
@@ -223,6 +225,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Client-side spell utils */
 	private SpellClientUtils spellClientUtils;
 	
+	/** Select casting source popup */
+	private CastCombatSpellFromUI castCombatSpellFromUI;
+	
 	/** Spell book action */
 	private Action spellAction;
 	
@@ -273,6 +278,12 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Max castable spell cost */
 	private int maxCastable;
+	
+	/** Whether our wizard has cast a spell yet during this combat turn (can only cast 1 spell per combat turn) */
+	private boolean spellCastThisCombatTurn;
+	
+	/** Source that is currently casting a combat spell */
+	private CastCombatSpellFrom castingSource;
 	
 	/** Unit name label */
 	private JLabel selectedUnitName;
@@ -420,7 +431,6 @@ public final class CombatUI extends MomClientFrameUI
 		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI");
 		
 		// Actions
-		spellAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
 		waitAction = new LoggingAction ((ev) -> getCombatMapProcessing ().selectedUnitWait ());
 		doneAction = new LoggingAction ((ev) -> getCombatMapProcessing ().selectedUnitDone ());
 		fleeAction = new LoggingAction ((ev) -> {});
@@ -440,6 +450,24 @@ public final class CombatUI extends MomClientFrameUI
 
 		final Action toggleDamageCalculationsAction = new LoggingAction
 			((ev) -> getDamageCalculationsUI ().setVisible (!getDamageCalculationsUI ().isVisible ()));
+
+		spellAction = new LoggingAction ((ev) ->
+		{
+			final List<CastCombatSpellFrom> castingSources = listCastingSources ();
+			if (castingSources.size () == 1)
+				setCastingSource (castingSources.get (0), true);
+			
+			else if (castingSources.size () > 1)
+			{
+				setCastingSource (null, false);
+				getCastCombatSpellFromUI ().setCastingSources (castingSources);
+				getCastCombatSpellFromUI ().setVisible (true);
+			}
+			
+			else
+				// Should never get here, because the button shouldn't have been enabled
+				setCastingSource (null, false);
+		});
 		
 		cancelTargetSpellAction = new LoggingAction ((ev) ->
 		{
@@ -911,6 +939,8 @@ public final class CombatUI extends MomClientFrameUI
 						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
 						msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
 						msg.setCombatLocation (getCombatLocation ());
+						if ((getCastingSource () != null) && (getCastingSource ().getCastingUnit () != null))
+							msg.setCombatCastingUnitURN (getCastingSource ().getCastingUnit ().getUnitURN ());
 						
 						// Does the spell have varying cost?
 						if (getSpellBeingTargetted ().getCombatMaxDamage () != null)
@@ -1081,8 +1111,11 @@ public final class CombatUI extends MomClientFrameUI
 				castableLabel.setVisible (true);
 
 				// Set up initial casting values
-				updateRemainingCastingSkill (getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ()), true);
+				updateRemainingCastingSkill (getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ()));
 			}
+			
+			// Can't cast anything, at least until it is our turn
+			spellAction.setEnabled (false);
 			
 			// Generates the bitmap for the static portion of the terrain
 			smoothCombatMapAndGenerateBitmaps ();
@@ -1159,9 +1192,8 @@ public final class CombatUI extends MomClientFrameUI
 
 	/**
 	 * @param currentSkill How much skill and MP we have remaining to use in this combat
-	 * @param enableCasting Whether to enable the spell button; i.e. set to false if we've already cast a spell this combat turn
 	 */
-	public final void updateRemainingCastingSkill (final int currentSkill, final boolean enableCasting)
+	public final void updateRemainingCastingSkill (final int currentSkill)
 	{
 		log.trace ("Entering updateRemainingCastingSkill: " + currentSkill);
 
@@ -1180,25 +1212,96 @@ public final class CombatUI extends MomClientFrameUI
 		
 		// Additional spells may need to be greyed out in the spell book now we have less casting skill/MP
 		getSpellBookUI ().languageOrPageChanged ();
-		spellAction.setEnabled (enableCasting);
 
 		log.trace ("Exiting updateRemainingCastingSkill");
 	}
 
 	/**
-	 * @return Whether to enable the spells button
+	 * @param b Whether our wizard has cast a spell yet during this combat turn (can only cast 1 spell per combat turn)
 	 */
-	public final boolean isSpellActionEnabled ()
+	public final void setSpellCastThisCombatTurn (final boolean b)
 	{
-		return spellAction.isEnabled ();
+		spellCastThisCombatTurn = b;
+		enableOrDisableSpellAction ();
 	}
 	
 	/**
-	 * @param b Whether to enable the spells button
+	 * Checks whether any casting sources can currently cast a spell or not (i.e. our wizard, the current unit,
+	 * or any charges in hero items held by the current unit), and enables or disables the spell button accordingly.
 	 */
-	public final void setSpellActionEnabled (final boolean b)
+	private final void enableOrDisableSpellAction ()
 	{
-		spellAction.setEnabled (b);
+		spellAction.setEnabled ((getClient ().getOurPlayerID ().equals (currentPlayerID)) && (listCastingSources ().size () > 0));
+	}
+	
+	/**
+	 * @return A list of all possible sources that can currently cast a spell (i.e. our wizard, the current unit, or any charges in hero items held by the current unit)
+	 */
+	private final List<CastCombatSpellFrom> listCastingSources ()
+	{
+		final List<CastCombatSpellFrom> sources = new ArrayList<CastCombatSpellFrom> ();
+		
+		// Wizard casting
+		if (!spellCastThisCombatTurn)
+			sources.add (new CastCombatSpellFrom (null, null));
+		
+		if ((getSelectedUnitInCombat () != null) && (getSelectedUnitInCombat ().getDoubleCombatMovesLeft () != null) &&
+			(getSelectedUnitInCombat ().getDoubleCombatMovesLeft () > 0) && (getSelectedUnitInCombat ().getManaRemaining () > 0))
+		{
+			// Unit or hero casting
+			if ((getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO) >= 0) ||
+				(getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) >= 0))
+				
+				sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), null));
+			
+			// Spell charges imbued in hero items
+			int slotNumber = 0;
+			for (final Integer charges : getSelectedUnitInCombat ().getHeroItemSpellChargesRemaining ())
+			{
+				if ((charges != null) && (charges > 0))
+					sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), slotNumber));
+				
+				slotNumber++;
+			}
+		}
+		
+		return sources;
+	}
+	
+	/**
+	 * @return Source that is currently casting a combat spell
+	 */
+	public final CastCombatSpellFrom getCastingSource ()
+	{
+		return castingSource;
+	}
+	
+	/**
+	 * @param aCastingSource Source that is currently casting a combat spell
+	 * @param makeVisible True if we're calling this because the player deliberately hit the "Spell" button to cast a combat spell; false if just calling it to reset back to default
+	 * @throws IOException If a resource cannot be found
+	 */
+	public final void setCastingSource (final CastCombatSpellFrom aCastingSource, final boolean makeVisible) throws IOException
+	{
+		castingSource = aCastingSource;
+		if (castingSource != null)
+		{
+			// Wizard casting
+			if (castingSource.getCastingUnit () == null)
+				if ((makeVisible) && (!getSpellBookUI ().isVisible ()))
+					spellBookUI.setVisible (true);
+			
+			// Unit or hero casting
+			if (castingSource.getHeroItemSlotNumber () == null)
+			{
+				getSpellBookUI ().updateSpellBook ();		// Switch to showing what the unit can cast, rather than what the wizard can cast
+				if ((makeVisible) && (!getSpellBookUI ().isVisible ()))
+					spellBookUI.setVisible (true);
+			}
+			
+			else
+				throw new UnsupportedOperationException ("selectCastingSource from hero item");
+		}
 	}
 	
 	/**
@@ -1508,6 +1611,7 @@ public final class CombatUI extends MomClientFrameUI
 				(getGraphicsDB ().findUnit (unit.getUnitID (), "setSelectedUnitInCombat").getUnitOverlandImageFile ())));
 		}
 		
+		enableOrDisableSpellAction ();
 		languageOrSelectedUnitChanged ();
 		
 		log.trace ("Exiting setSelectedUnitInCombat");
@@ -2260,5 +2364,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setSpellClientUtils (final SpellClientUtils utils)
 	{
 		spellClientUtils = utils;
+	}
+
+	/**
+	 * @return Select casting source popup
+	 */
+	public final CastCombatSpellFromUI getCastCombatSpellFromUI ()
+	{
+		return castCombatSpellFromUI;
+	}
+
+	/**
+	 * @param ui Select casting source popup
+	 */
+	public final void setCastCombatSpellFromUI (final CastCombatSpellFromUI ui)
+	{
+		castCombatSpellFromUI = ui;
 	}
 }

@@ -187,7 +187,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 			else if (getCastSpellID () != null)
 			{
 				final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-				msg.setSpellID (getResearchSpellID ());
+				msg.setSpellID (getCastSpellID ());
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			

@@ -37,6 +37,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
@@ -303,9 +304,24 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	{
 		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
 		
-		// Now set the values
-		unit.setRangedAttackAmmo (calculateFullRangedAttackAmmo (unit, mergedSkills, players, mem, db));
+		// Easy values
+		unit.setAmmoRemaining (calculateFullRangedAttackAmmo (unit, mergedSkills, players, mem, db));
 		unit.setManaRemaining (calculateManaTotal (unit, mergedSkills, players, mem, db));
+		
+		// Spell charges on hero items
+		unit.getHeroItemSpellChargesRemaining ().clear ();
+		for (final MemoryUnitHeroItemSlot slot : unit.getHeroItemSlot ())
+		{
+			final int count;
+			if (slot.getHeroItem () == null)
+				count = -1;
+			else if (slot.getHeroItem ().getSpellChargeCount () == null)
+				count = -1;
+			else
+				count = slot.getHeroItem ().getSpellChargeCount ();
+			
+			unit.getHeroItemSpellChargesRemaining ().add (count);
+		}
 	}
 
 	/**
@@ -315,8 +331,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final void decreaseRangedAttackAmmo (final MemoryUnit unit)
 	{
-		if (unit.getRangedAttackAmmo () > 0)
-			unit.setRangedAttackAmmo (unit.getRangedAttackAmmo () - 1);
+		if (unit.getAmmoRemaining () > 0)
+			unit.setAmmoRemaining (unit.getAmmoRemaining () - 1);
 		else
 			unit.setManaRemaining (unit.getManaRemaining () - 3);
 	}
@@ -430,7 +446,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			result = false;
 		
 		// If we have ranged attack ammo left then this is easy
-		else if (unit.getRangedAttackAmmo () > 0)
+		else if (unit.getAmmoRemaining () > 0)
 			result = true;
 		
 		// If we don't have enough spare mana then we can't use it to fire with

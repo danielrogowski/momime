@@ -341,7 +341,11 @@ public final class VariableManaUI extends MomClientDialogUI
 			msg.setSpellID (spell.getSpellID ());
 
 			if (getCastType () == SpellCastType.COMBAT)
+			{
 				msg.setCombatLocation (getCombatUI ().getCombatLocation ());
+				if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
+					msg.setCombatCastingUnitURN (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitURN ());
+			}
 			
 			msg.setVariableDamage (getVariableDamage ());
 			

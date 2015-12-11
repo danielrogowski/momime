@@ -31,6 +31,7 @@ public interface SpellQueueing
 	 * routine does all the checks to see if it can be instantly cast or needs to be queued up and cast over multiple turns
 	 * 
 	 * @param player Player who is casting the spell
+	 * @param combatCastingUnitURN Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
@@ -44,7 +45,7 @@ public interface SpellQueueing
 	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public void requestCastSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem,
+	public void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;

@@ -520,6 +520,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="armyListUI" ref="armyListUI" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="combatMapProcessing" ref="combatMapProcessing" />
 	</bean>
 
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">
@@ -1322,6 +1323,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 		<property name="variableManaUI" ref="variableManaUI" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
+		<property name="castCombatSpellFromUI" ref="castCombatSpellFromUI" />
+	</bean>
+
+	<bean id="castCombatSpellFromUI" class="momime.client.ui.dialogs.CastCombatSpellFromUI">
+		<property name="selectAdvisorLayout" ref="selectAdvisorLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

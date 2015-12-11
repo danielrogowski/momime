@@ -29,6 +29,7 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
@@ -106,6 +107,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * routine does all the checks to see if it can be instantly cast or needs to be queued up and cast over multiple turns
 	 * 
 	 * @param player Player who is casting the spell
+	 * @param combatCastingUnitURN Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
@@ -120,12 +122,13 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void requestCastSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem,
+	public final void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering requestCastSpell: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
+		log.trace ("Entering requestCastSpell: Player ID " + player.getPlayerDescription ().getPlayerID () + ", caster unit URN " + combatCastingUnitURN + ", " + spellID + ", " +
+			combatLocation + ", " + combatTargetLocation + ", " + combatTargetUnitURN + ", " + variableDamage);
 		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -133,14 +136,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 		
 		// Find the spell in the player's search list
 		final SpellSvr spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
-		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 		
-		// Do validation checks
+		// Validation checks on the type of spell and whether it needs a target
 		String msg;
-		if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
-			msg = "You don't have that spell researched and/or available so can't cast it.";
-		
-		else if ((combatLocation == null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
+		if ((combatLocation == null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 			msg = "That spell cannot be cast overland.";
 		
 		else if ((combatLocation != null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
@@ -161,6 +160,40 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else
 			msg = null;
 		
+		// Validation checks about who is casting it (wizard or a unit)
+		MemoryUnit combatCastingUnit = null;
+		if (msg == null)
+		{
+			if (combatCastingUnitURN == null)
+			{
+				// Wizard casting
+				final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
+				if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
+					msg = "You don't have that spell researched and/or available so can't cast it.";
+			}
+			
+			else if (combatLocation == null)
+				msg = "A unit or hero cannot cast an overland spell.";
+			
+			else
+			{
+				// Unit or hero casting
+				combatCastingUnit = getUnitUtils ().findUnitURN (combatCastingUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				if (combatCastingUnit == null)
+					msg = "Cannot find the unit who is trying to cast a spell.";
+				
+				else if (combatCastingUnit.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ())
+					msg = "The unit you are trying to cast a spell from belongs to somebody else.";
+				
+				else if (combatCastingUnit.getStatus () != UnitStatusID.ALIVE)
+					msg = "The unit you are trying to cast a spell from is dead";
+				
+				else if ((!combatLocation.equals (combatCastingUnit.getCombatLocation ())) || (combatCastingUnit.getCombatHeading () == null) ||
+					(combatCastingUnit.getCombatSide () == null) || (combatCastingUnit.getCombatPosition () == null))
+					msg = "The unit you are trying to cast a spell from is not in the correct combat.";
+			}
+		}
+		
 		// Casting cost is only relevant for validation if we're casting in combat - if overland,
 		// it can be as expensive spell as we like, its still valid, it'll just take ages to cast it
 		int reducedCombatCastingCost = Integer.MAX_VALUE;
@@ -175,58 +208,71 @@ public final class SpellQueueingImpl implements SpellQueueing
 			
 			final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
+			// Work out unmodified casting cost
+			final int unmodifiedCombatCastingCost = (variableDamage == null) ? spell.getCombatCastingCost () :
+				spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
 			
 			if (!combatPlayers.bothFound ())
 				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
-
-			else if ((gc.isSpellCastThisCombatTurn () != null) && (gc.isSpellCastThisCombatTurn ()))
-				msg = "You have already cast a spell this combat turn.";
 			
-			else
+			else if (combatCastingUnit == null)
 			{
-				// Work out unmodified casting cost
-				final int unmodifiedCombatCastingCost = (variableDamage == null) ? spell.getCombatCastingCost () :
-					spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
-				
-				// Apply books/retorts that make spell cheaper to cast
-				reducedCombatCastingCost = getSpellUtils ().getReducedCastingCost
-					(spell, unmodifiedCombatCastingCost, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
-				
-				// What our remaining skill?
-				final int ourSkill;
-				if (player == combatPlayers.getAttackingPlayer ())
-					ourSkill = gc.getCombatAttackerCastingSkillRemaining ();
-				else if (player == combatPlayers.getDefendingPlayer ())
-					ourSkill = gc.getCombatDefenderCastingSkillRemaining ();
+				// Validate wizard casting
+				if ((gc.isSpellCastThisCombatTurn () != null) && (gc.isSpellCastThisCombatTurn ()))
+					msg = "You have already cast a spell this combat turn.";
 				else
 				{
-					ourSkill = -1;
-					msg = "You tried to cast a combat spell in a combat that you are not participating in.";
-				}
-				
-				// Check range penalty
-				if (msg == null)
-				{
-					final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
-						getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-						mom.getSessionDescription ().getOverlandMapSize ());
-				
-					if (doubleRangePenalty == null)
-						msg = "You cannot cast combat spells while you are banished.";
+					// Apply books/retorts that make spell cheaper to cast
+					reducedCombatCastingCost = getSpellUtils ().getReducedCastingCost
+						(spell, unmodifiedCombatCastingCost, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+					
+					// What our remaining skill?
+					final int ourSkill;
+					if (player == combatPlayers.getAttackingPlayer ())
+						ourSkill = gc.getCombatAttackerCastingSkillRemaining ();
+					else if (player == combatPlayers.getDefendingPlayer ())
+						ourSkill = gc.getCombatDefenderCastingSkillRemaining ();
 					else
-						multipliedManaCost = (reducedCombatCastingCost * doubleRangePenalty + 1) / 2;
+					{
+						ourSkill = -1;
+						msg = "You tried to cast a combat spell in a combat that you are not participating in.";
+					}
+					
+					// Check range penalty
+					if (msg == null)
+					{
+						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
+							getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+							mom.getSessionDescription ().getOverlandMapSize ());
+					
+						if (doubleRangePenalty == null)
+							msg = "You cannot cast combat spells while you are banished.";
+						else
+							multipliedManaCost = (reducedCombatCastingCost * doubleRangePenalty + 1) / 2;
+					}
+					
+					// Casting skill/MP checks
+					if (msg != null)
+					{
+						// Do nothing - more serious message already generated
+					}
+					else if (reducedCombatCastingCost > ourSkill)
+						msg = "You don't have enough casting skill remaining to cast that spell in combat.";
+					else if (multipliedManaCost > getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
+						msg = "You don't have enough mana remaining to cast that spell in combat at this range.";
 				}
+			}
+			else
+			{
+				// Validate unit or hero casting
+				// Reductions for number of spell books, or certain retorts, only apply when the wizard is casting, but on the plus side, the range penalty doesn't apply
+				reducedCombatCastingCost = unmodifiedCombatCastingCost;
+				multipliedManaCost = unmodifiedCombatCastingCost;
 				
-				// Casting skill/MP checks
-				if (msg != null)
-				{
-					// Do nothing - more serious message already generated
-				}
-				else if (reducedCombatCastingCost > ourSkill)
-					msg = "You don't have enough casting skill remaining to cast that spell in combat.";
-				else if (multipliedManaCost > getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
-					msg = "You don't have enough mana remaining to cast that spell in combat at this range.";
+				if (multipliedManaCost > combatCastingUnit.getManaRemaining ())
+					msg = "This unit or hero doesn't have enough mana remaining to cast the spell.";
 			}
 			
 			// Validation for specific types of combat spells
@@ -321,7 +367,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Cast combat spell
 			// Always cast instantly
 			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
-			getSpellProcessing ().castCombatNow (player, spell, reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
+			getSpellProcessing ().castCombatNow (player, combatCastingUnit, spell, reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				combatTargetUnit, combatTargetLocation, mom);
 		}

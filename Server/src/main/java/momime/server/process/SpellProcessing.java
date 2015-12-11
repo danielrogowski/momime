@@ -52,6 +52,7 @@ public interface SpellProcessing
 	 * or both (like Firebolt), then the client will already have done all this and supplied us with the chosen values.
 	 * 
 	 * @param castingPlayer Player who is casting the spell
+	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param spell Which spell they want to cast
 	 * @param reducedCombatCastingCost Skill cost of the spell, reduced by any book or retort bonuses the player may have
 	 * @param multipliedManaCost MP cost of the spell, reduced as above, then multiplied up according to the distance the combat is from the wizard's fortress
@@ -68,7 +69,8 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void castCombatNow (final PlayerServerDetails castingPlayer, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+	public void castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final SpellSvr spell,
+		final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;

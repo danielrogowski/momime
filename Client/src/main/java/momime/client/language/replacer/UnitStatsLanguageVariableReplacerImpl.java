@@ -121,7 +121,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				
 			case "AMMO_REMAINING":
 				if (getUnit () instanceof MemoryUnit)
-					text = new Integer (((MemoryUnit) getUnit ()).getRangedAttackAmmo ()).toString ();
+					text = new Integer (((MemoryUnit) getUnit ()).getAmmoRemaining ()).toString ();
 				else
 					text = "AMMO_TOTAL";
 				break;

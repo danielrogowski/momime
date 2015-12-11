@@ -36,13 +36,13 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	private final Log log = LogFactory.getLog (SelectAdvisorUI.class);
 
 	/** Width of the gold border */
-	final static int BORDER_WIDTH = 15;
+	public final static int BORDER_WIDTH = 15;
 
 	/** Height of the gold border at the top */
-	final static int TOP_HEIGHT = 17;
+	public final static int TOP_HEIGHT = 17;
 	
 	/** Height of the gold border at the bottom */
-	final static int BOTTOM_HEIGHT = 13;
+	public final static int BOTTOM_HEIGHT = 13;
 	
 	/** XML layout */
 	private XmlLayoutContainerEx selectAdvisorLayout;

@@ -14,6 +14,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import momime.client.MomClient;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.calculations.UnitCalculations;
 import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
@@ -54,8 +55,8 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 		{
 			log.debug ("Its our combat turn, auto = " + getCombatUI ().isAutoControl ());
 			
-			// We can cast a spell again
-			getCombatUI ().setSpellActionEnabled (true);
+			// We can cast a spell again; and default to casting from the wizard
+			getCombatUI ().setCastingSource (new CastCombatSpellFrom (null, null), false);
 			
 			// Tell the server to auto control our units?
 			if (getCombatUI ().isAutoControl ())
@@ -78,7 +79,9 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 		else
 		{
 			log.debug ("Its their combat turn");
-			getCombatUI ().setSpellActionEnabled (false);
+			
+			// This disables spell casting because it realises it isn't our turn
+			getCombatUI ().setCastingSource (null, false);
 		}
 		
 		log.trace ("Exiting start");

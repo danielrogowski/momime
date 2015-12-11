@@ -49,8 +49,10 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
@@ -559,8 +561,9 @@ public final class TestUnitCalculationsImpl
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
 		calc.giveUnitFullRangedAmmoAndMana (melee, players, fow, db);
 		
-		assertEquals (-1, melee.getRangedAttackAmmo ());
+		assertEquals (-1, melee.getAmmoRemaining ());
 		assertEquals (-1, melee.getManaRemaining ());
+		assertEquals (0, melee.getHeroItemSpellChargesRemaining ().size ());
 
 		// Test a unit that has some of each
 		final ExperienceLevel level4 = new ExperienceLevel ();
@@ -575,10 +578,32 @@ public final class TestUnitCalculationsImpl
 		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (rangedCaster, true, players, fow.getCombatAreaEffect (), db)).thenReturn (level4);
+		
+		for (int n = 0; n < 3; n++)
+		{
+			final MemoryUnitHeroItemSlot slot = new MemoryUnitHeroItemSlot ();
+			
+			if (n != 1)
+			{
+				final NumberedHeroItem item = new NumberedHeroItem ();
+				if (n == 2)
+					item.setSpellChargeCount (3);
+				
+				slot.setHeroItem (item);
+			}
+			
+			rangedCaster.getHeroItemSlot ().add (slot);
+		}
+
 		calc.giveUnitFullRangedAmmoAndMana (rangedCaster, players, fow, db);
 		
-		assertEquals (8, rangedCaster.getRangedAttackAmmo ());
+		assertEquals (8, rangedCaster.getAmmoRemaining ());
 		assertEquals (102, rangedCaster.getManaRemaining ());
+		
+		assertEquals (3, rangedCaster.getHeroItemSpellChargesRemaining ().size ());
+		assertEquals (-1, rangedCaster.getHeroItemSpellChargesRemaining ().get (0).intValue ());
+		assertEquals (-1, rangedCaster.getHeroItemSpellChargesRemaining ().get (1).intValue ());
+		assertEquals (3, rangedCaster.getHeroItemSpellChargesRemaining ().get (2).intValue ());
 	}
 	
 	/**
@@ -594,20 +619,20 @@ public final class TestUnitCalculationsImpl
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		
 		// Unit has ranged ammo only, e.g. ammo
-		unit.setRangedAttackAmmo (8);
+		unit.setAmmoRemaining (8);
 		calc.decreaseRangedAttackAmmo (unit);
-		assertEquals (7, unit.getRangedAttackAmmo ());
+		assertEquals (7, unit.getAmmoRemaining ());
 		
 		// Unit has both ranged ammo and mana (MoM units are actually cleverly designed to ensure this can never happen)
 		unit.setManaRemaining (10);
 		calc.decreaseRangedAttackAmmo (unit);
-		assertEquals (6, unit.getRangedAttackAmmo ());
+		assertEquals (6, unit.getAmmoRemaining ());
 		assertEquals (10, unit.getManaRemaining ());
 		
 		// Unit has only mana
-		unit.setRangedAttackAmmo (0);
+		unit.setAmmoRemaining (0);
 		calc.decreaseRangedAttackAmmo (unit);
-		assertEquals (0, unit.getRangedAttackAmmo ());
+		assertEquals (0, unit.getAmmoRemaining ());
 		assertEquals (7, unit.getManaRemaining ());
 	}
 	
@@ -814,7 +839,7 @@ public final class TestUnitCalculationsImpl
 
 		// Bow with remaining ammo
 		final MemoryUnit hasAmmo = new MemoryUnit ();
-		hasAmmo.setRangedAttackAmmo (1);
+		hasAmmo.setAmmoRemaining (1);
 		when (unitSkillUtils.getModifiedSkillValue (hasAmmo, hasAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
 		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, fow, db));

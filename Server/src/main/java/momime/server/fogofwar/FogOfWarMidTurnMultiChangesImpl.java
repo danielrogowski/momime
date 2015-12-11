@@ -645,10 +645,19 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Work out where this moves us to
 				final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom);
 				getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), oneStep, movementDirection);
-
-				final MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				
+				MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 					(oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
 
+				// Adjust move to plane if moving onto or off of a tower
+				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
+					oneStep.setZ (0);
+				else
+					oneStep.setZ (moveTo.getZ ());
+				
+				oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
+				
 				// Does this initiate a combat?
 				combatInitiated = movingHereResultsInAttack [oneStep.getZ ()] [oneStep.getY ()] [oneStep.getX ()];
 
@@ -685,12 +694,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Make our 1 movement?
 				if (!combatInitiated)
 				{
-					// Adjust move to plane if moving onto or off of a tower
-					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
-						oneStep.setZ (0);
-					else
-						oneStep.setZ (moveTo.getZ ());
-
 					// Actually move the units
 					moveUnitStackOneCellOnServerAndClients (allUnits, unitStackOwner, moveFrom, oneStep, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 

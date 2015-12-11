@@ -99,7 +99,8 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		else
 		{
 			// Check if we have enough gold
-			rushBuyCost = getCityCalculations ().goldToRushBuy (productionCost, tc.getCityData ().getProductionSoFar ());
+			final int productionSoFar = (tc.getCityData ().getProductionSoFar () == null) ? 0 : tc.getCityData ().getProductionSoFar ();
+			rushBuyCost = getCityCalculations ().goldToRushBuy (productionCost, productionSoFar);
 			
 			if (getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD) < rushBuyCost)
 				msg = "You cannot afford to rush buy the construction project in this city.";

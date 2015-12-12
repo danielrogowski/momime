@@ -28,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -456,13 +458,11 @@ public final class SpellBookUI extends MomClientFrameUI
 								
 								try
 								{
-									final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
-									final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-
 									if (SwingUtilities.isRightMouseButton (ev))
 									{
 										// Right clicking on a spell to get help text for it
 										// Don't allow right clicking on ????? spells to find out what they are!
+										final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
 										if (sectionID != SpellBookSectionID.RESEARCHABLE)
 											getHelpUI ().showSpellID (spell.getSpellID (), ourPlayer);
 									}
@@ -531,165 +531,7 @@ public final class SpellBookUI extends MomClientFrameUI
 										}
 									}
 									else if (sectionID != SpellBookSectionID.RESEARCHABLE)
-									{
-										// Clicking on a spell to cast it
-										final boolean proceed;
-										
-										// Ignore trying to cast spells in combat when it isn't our turn
-										if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
-											proceed = false;
-										else
-										{										
-											// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
-											final Integer combatCost = getReducedCombatCastingCost (spell, pub.getPick ());
-											
-											if ((getCastType () == SpellCastType.OVERLAND) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
-												proceed = false;
-
-											else if ((getCastType () == SpellCastType.SPELL_CHARGES) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
-												proceed = false;
-											
-											else if ((getCastType () == SpellCastType.COMBAT) &&
-												((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatMaxCastable ())))
-												proceed = false;
-											
-											// Check if it is an overland enchantment that we already have
-											else if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
-											{
-												proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-													(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-													getClient ().getOurPlayerID (), spell.getSpellID (), null, null, null, null) == null);
-												if (!proceed)
-												{
-													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-													msg.setTitleLanguageCategoryID ("frmSpellBook");
-													msg.setTitleLanguageEntryID ("CastSpellTitle");
-													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "RequestCastExistingOverlandEnchantment").replaceAll
-														("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
-		
-													msg.setCastSpellID (spell.getSpellID ());
-													msg.setVisible (true);
-												}
-											}
-											
-											// If its a combat spell then make sure there's at least something we can target it on
-											// Only do this for spells without variable damage, because otherwise we might raise or lower the saving throw modifier
-											// enough to make a difference as to whether there are any valid targets 
-											else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () == null) &&
-												((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
-												(sectionID == SpellBookSectionID.ATTACK_SPELLS)))
-											{
-												boolean found = false;
-												final Iterator<MemoryUnit> iter = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().iterator ();
-												while ((!found) && (iter.hasNext ()))
-													if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-														(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, iter.next (),
-														getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-														getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
-														
-														found = true;
-												
-												proceed = found;
-												if (!proceed)
-												{
-													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-													msg.setTitleLanguageCategoryID ("frmSpellBook");
-													msg.setTitleLanguageEntryID ("CastSpellTitle");
-													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoValidTargets").replaceAll
-														("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
-		
-													msg.setVisible (true);
-												}
-											}
-											
-											// Check combat enchantments have some available effects left
-											else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.COMBAT_ENCHANTMENTS))
-											{
-												final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation
-													(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
-													spell, getClient ().getOurPlayerID (), getCombatUI ().getCombatLocation ());
-												
-												proceed = ((combatAreaEffectIDs != null) && (combatAreaEffectIDs.size () > 0));
-												if (!proceed)
-												{
-													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-													msg.setTitleLanguageCategoryID ("frmSpellBook");
-													msg.setTitleLanguageEntryID ("CastSpellTitle");
-													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook",
-														(combatAreaEffectIDs == null) ? "NoCombatSpellEffectIDsDefined" : "AlreadyHasAllPossibleCombatSpellEffects").replaceAll
-														("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
-		
-													msg.setVisible (true);
-												}
-											}
-											else
-												proceed = true;
-										}
-										
-										if (proceed)
-										{
-											// Prevent casting more than one combat spell each turn
-											if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
-											{
-												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-												msg.setTitleLanguageCategoryID ("frmSpellBook");
-												msg.setTitleLanguageEntryID ("CastSpellTitle");
-												msg.setTextLanguageCategoryID ("frmCombat");
-												msg.setTextLanguageEntryID ("OneSpellPerTurn");
-												msg.setVisible (true);
-											}
-											
-											// Is it a spell with variable MP cost so we need to pop up a window with a slider to choose how much to put into it?
-											else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null))
-											{
-												getVariableManaUI ().setSpellBeingTargetted (spell);
-												
-												// If we've only got enough casting skill/MP to cast the spell at base cost, then don't even bother showing the variable damage form 
-												if (getVariableManaUI ().anySelectableRange ())
-													getVariableManaUI ().setVisible (true);
-												else
-													getVariableManaUI ().variableDamageChosen ();
-											}
-											
-											// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
-											else if ((getCastType () == SpellCastType.COMBAT) &&
-												((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
-												(sectionID == SpellBookSectionID.SUMMONING) ||
-												((sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
-												
-												getCombatUI ().setSpellBeingTargetted (spell);
-											
-											// Show item crafting window for Enchant Item / Create Artifact
-											else if (spell.getHeroItemBonusMaximumCraftingCost () != null)
-											{
-												getCreateArtifactUI ().setSpell (spell);
-												getCreateArtifactUI ().setVisible (true);
-											}
-											
-											// Go back to the create artifact UI
-											else if (getCastType () == SpellCastType.SPELL_CHARGES)
-												getCreateArtifactUI ().setSpellCharges (spell);
-												
-											// Tell server to cast it
-											else
-											{
-												final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-												msg.setSpellID (spell.getSpellID ());
-												
-												if (getCastType () == SpellCastType.COMBAT)
-												{
-													msg.setCombatLocation (getCombatUI ().getCombatLocation ());
-													if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
-														msg.setCombatCastingUnitURN (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitURN ());
-												}
-												
-												getClient ().getServerConnection ().sendMessageToServer (msg);
-											}
-											
-											// Close the spell book
-											setVisible (false);
-										}
-									}
+										castSpell (spell);
 								}
 								catch (final Exception e)
 								{
@@ -758,6 +600,193 @@ public final class SpellBookUI extends MomClientFrameUI
 		updateSpellBook ();
 		turnPageLeftButton.setHidden (true);
 		log.trace ("Exiting init");
+	}
+
+	/**
+	 * Handles clicking on a spell to cast it.  This is in its own method because casting spells imbued into hero items
+	 * comes here directly without showing the spell book UI at all.
+	 * 
+	 * @param spell Spell to calculate the combat casting cost for
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws IOException If there are any other problems
+	 */
+	public final void castSpell (final Spell spell) throws IOException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering castSpell");
+
+		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
+
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		
+		// Look up name
+		final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
+		String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
+		if (spellName == null)
+			spellName = spell.getSpellID ();
+		
+		// Ignore trying to cast spells in combat when it isn't our turn
+		final boolean proceed;
+		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
+			proceed = false;
+		else
+		{										
+			// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
+			final Integer combatCost = getReducedCombatCastingCost (spell, pub.getPick ());
+			
+			if ((getCastType () == SpellCastType.OVERLAND) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
+				proceed = false;
+
+			else if ((getCastType () == SpellCastType.SPELL_CHARGES) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
+				proceed = false;
+			
+			else if ((getCastType () == SpellCastType.COMBAT) &&
+				((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatMaxCastable ())))
+				proceed = false;
+			
+			// Check if it is an overland enchantment that we already have
+			else if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+			{
+				proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPlayerID (), spell.getSpellID (), null, null, null, null) == null);
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("frmSpellBook");
+					msg.setTitleLanguageEntryID ("CastSpellTitle");
+					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "RequestCastExistingOverlandEnchantment").replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setCastSpellID (spell.getSpellID ());
+					msg.setVisible (true);
+				}
+			}
+			
+			// If its a combat spell then make sure there's at least something we can target it on
+			// Only do this for spells without variable damage, because otherwise we might raise or lower the saving throw modifier
+			// enough to make a difference as to whether there are any valid targets 
+			else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () == null) &&
+				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
+				(sectionID == SpellBookSectionID.ATTACK_SPELLS)))
+			{
+				boolean found = false;
+				final Iterator<MemoryUnit> iter = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().iterator ();
+				while ((!found) && (iter.hasNext ()))
+					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, iter.next (),
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+						getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+						
+						found = true;
+				
+				proceed = found;
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("frmSpellBook");
+					msg.setTitleLanguageEntryID ("CastSpellTitle");
+					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoValidTargets").replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}
+			
+			// Check combat enchantments have some available effects left
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.COMBAT_ENCHANTMENTS))
+			{
+				final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+					spell, getClient ().getOurPlayerID (), getCombatUI ().getCombatLocation ());
+				
+				proceed = ((combatAreaEffectIDs != null) && (combatAreaEffectIDs.size () > 0));
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("frmSpellBook");
+					msg.setTitleLanguageEntryID ("CastSpellTitle");
+					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook",
+						(combatAreaEffectIDs == null) ? "NoCombatSpellEffectIDsDefined" : "AlreadyHasAllPossibleCombatSpellEffects").replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}
+			else
+				proceed = true;
+		}
+		
+		if (proceed)
+		{
+			// Prevent casting more than one combat spell each turn
+			if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
+			{
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setTitleLanguageCategoryID ("frmSpellBook");
+				msg.setTitleLanguageEntryID ("CastSpellTitle");
+				msg.setTextLanguageCategoryID ("frmCombat");
+				msg.setTextLanguageEntryID ("OneSpellPerTurn");
+				msg.setVisible (true);
+			}
+			
+			// Is it a spell with variable MP cost so we need to pop up a window with a slider to choose how much to put into it?
+			else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null) &&
+				(getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null))		// Can't put additional power into spells imbued into items
+			{
+				getVariableManaUI ().setSpellBeingTargetted (spell);
+				
+				// If we've only got enough casting skill/MP to cast the spell at base cost, then don't even bother showing the variable damage form 
+				if (getVariableManaUI ().anySelectableRange ())
+					getVariableManaUI ().setVisible (true);
+				else
+					getVariableManaUI ().variableDamageChosen ();
+			}
+			
+			// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
+			else if ((getCastType () == SpellCastType.COMBAT) &&
+				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
+				(sectionID == SpellBookSectionID.SUMMONING) ||
+				((sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+				
+				getCombatUI ().setSpellBeingTargetted (spell);
+			
+			// Show item crafting window for Enchant Item / Create Artifact
+			else if (spell.getHeroItemBonusMaximumCraftingCost () != null)
+			{
+				getCreateArtifactUI ().setSpell (spell);
+				getCreateArtifactUI ().setVisible (true);
+			}
+			
+			// Go back to the create artifact UI
+			else if (getCastType () == SpellCastType.SPELL_CHARGES)
+				getCreateArtifactUI ().setSpellCharges (spell);
+				
+			// Tell server to cast it
+			else
+			{
+				final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+				msg.setSpellID (spell.getSpellID ());
+				
+				if (getCastType () == SpellCastType.COMBAT)
+				{
+					msg.setCombatLocation (getCombatUI ().getCombatLocation ());
+					if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
+					{
+						msg.setCombatCastingUnitURN (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitURN ());
+						msg.setCombatCastingSlotNumber (getCombatUI ().getCastingSource ().getHeroItemSlotNumber ());
+					}
+				}
+				
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+			
+			// Close the spell book
+			setVisible (false);
+		}
+		
+		log.trace ("Exiting castSpell");
 	}
 	
 	/**
@@ -1098,10 +1127,18 @@ public final class SpellBookUI extends MomClientFrameUI
 	private final int getCombatMaxCastable ()
 	{
 		final int maxCastable;
+		
+		// Wizard casting limit is worked out by the combatUI, taking into account casting skill, spells cast already this combat, MP pool and range from fortress
 		if ((getCombatUI ().getCastingSource () == null) || (getCombatUI ().getCastingSource ().getCastingUnit () == null))
 			maxCastable = getCombatUI ().getMaxCastable ();
-		else
+		
+		// Unit or hero casting limit is simply the amount of MP they have left
+		else if (getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null)
 			maxCastable = getCombatUI ().getCastingSource ().getCastingUnit ().getManaRemaining ();
+		
+		// Disable casting limits for casting spells from hero items - the spell is already imbued - we don't have to "pay" for it
+		else
+			maxCastable = Integer.MAX_VALUE;
 		
 		return maxCastable;
 	}

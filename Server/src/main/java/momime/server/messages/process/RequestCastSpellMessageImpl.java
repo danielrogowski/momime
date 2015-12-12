@@ -53,10 +53,7 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		if (getCombatCastingSlotNumber () != null)
-			throw new UnsupportedOperationException ("RequestCastSpellMessageImpl doesn't handle spells imued in items yet");		
-		
-		getSpellQueueing ().requestCastSpell (sender, getCombatCastingUnitURN (), getSpellID (), getHeroItem (),
+		getSpellQueueing ().requestCastSpell (sender, getCombatCastingUnitURN (), getCombatCastingSlotNumber (), getSpellID (), getHeroItem (),
 			(MapCoordinates3DEx) getCombatLocation (), (MapCoordinates2DEx) getCombatTargetLocation (), getCombatTargetUnitURN (), getVariableDamage (), mom);
 
 		log.trace ("Exiting process");

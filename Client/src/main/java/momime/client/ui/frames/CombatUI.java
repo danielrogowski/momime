@@ -22,6 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -887,7 +889,8 @@ public final class CombatUI extends MomClientFrameUI
 		bottomPanel.add (commonCAEs, "frmCombatCommonCombatAreaEffects");
 		
 		// The first time the CombatUI opens, we'll have skipped the call to initNewCombat () because it takes place before init (), so do it now
-		initNewCombat ();
+		if (getCombatLocation () != null)
+			initNewCombat ();
 		
 		// Capture mouse clicks on the scenery panel
 		topPanel.addMouseListener (new MouseAdapter ()
@@ -940,10 +943,13 @@ public final class CombatUI extends MomClientFrameUI
 						msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
 						msg.setCombatLocation (getCombatLocation ());
 						if ((getCastingSource () != null) && (getCastingSource ().getCastingUnit () != null))
+						{
 							msg.setCombatCastingUnitURN (getCastingSource ().getCastingUnit ().getUnitURN ());
+							msg.setCombatCastingSlotNumber (getCastingSource ().getHeroItemSlotNumber ());
+						}
 						
-						// Does the spell have varying cost?
-						if (getSpellBeingTargetted ().getCombatMaxDamage () != null)
+						// Does the spell have varying cost?  Ignore this if its being cast from a hero item
+						if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) && (msg.getCombatCastingSlotNumber () == null))
 							msg.setVariableDamage (getVariableManaUI ().getVariableDamage ());
 									
 						boolean isValidTarget = false;
@@ -1279,9 +1285,12 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param aCastingSource Source that is currently casting a combat spell
 	 * @param makeVisible True if we're calling this because the player deliberately hit the "Spell" button to cast a combat spell; false if just calling it to reset back to default
-	 * @throws IOException If a resource cannot be found
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws IOException If there are any other problems
 	 */
-	public final void setCastingSource (final CastCombatSpellFrom aCastingSource, final boolean makeVisible) throws IOException
+	public final void setCastingSource (final CastCombatSpellFrom aCastingSource, final boolean makeVisible)
+		throws IOException, JAXBException, XMLStreamException
 	{
 		castingSource = aCastingSource;
 		if (castingSource != null)
@@ -1299,8 +1308,12 @@ public final class CombatUI extends MomClientFrameUI
 					spellBookUI.setVisible (true);
 			}
 			
+			// Casting spell imbued into hero item - don't need to show spell book to ask which spell to pick, so just cast it directly
 			else
-				throw new UnsupportedOperationException ("selectCastingSource from hero item");
+			{
+				final String spellID = castingSource.getCastingUnit ().getHeroItemSlot ().get (castingSource.getHeroItemSlotNumber ()).getHeroItem ().getSpellID ();
+				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource"));
+			}
 		}
 	}
 	
@@ -1411,54 +1424,58 @@ public final class CombatUI extends MomClientFrameUI
 		rangeLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Range") + ":");
 		castableLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Castable") + ":");
 
-		// Set the player name labels to the correct colours.
-		// Prefer this was done in initNewCombat, but there's no guarantee that the labels exist yet at that point.
-		final MomTransientPlayerPublicKnowledge atkTrans = (MomTransientPlayerPublicKnowledge) players.getAttackingPlayer ().getTransientPlayerPublicKnowledge ();
-		attackingPlayerName.setForeground (new Color (Integer.parseInt (atkTrans.getFlagColour (), 16)));
-
-		final MomTransientPlayerPublicKnowledge defTrans = (MomTransientPlayerPublicKnowledge) players.getDefendingPlayer ().getTransientPlayerPublicKnowledge ();
-		defendingPlayerName.setForeground (new Color (Integer.parseInt (defTrans.getFlagColour (), 16)));
-		
-		// Set the player name labels to the correct text.
-		// If its the monsters player, use the name of the map cell (Ancient Temple, Nature Node, etc) - they're only actually called "Rampaging Monsters"
-		// if they're openly walking around the map or attack us; this is how the original MoM works.
-		attackingPlayerName.setText (getWizardClientUtils ().getPlayerName (players.getAttackingPlayer ()));
-		
-		String defPlayerName = getWizardClientUtils ().getPlayerName (players.getDefendingPlayer ());
-		if (!players.getDefendingPlayer ().getPlayerDescription ().isHuman ())
+		if (players != null)
 		{
-			final MomPersistentPlayerPublicKnowledge defPub = (MomPersistentPlayerPublicKnowledge) players.getDefendingPlayer ().getPersistentPlayerPublicKnowledge ();
-			if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defPub.getWizardID ()))
+			// Set the player name labels to the correct colours.
+			// Prefer this was done in initNewCombat, but there's no guarantee that the labels exist yet at that point.
+			final MomTransientPlayerPublicKnowledge atkTrans = (MomTransientPlayerPublicKnowledge) players.getAttackingPlayer ().getTransientPlayerPublicKnowledge ();
+			attackingPlayerName.setForeground (new Color (Integer.parseInt (atkTrans.getFlagColour (), 16)));
+	
+			final MomTransientPlayerPublicKnowledge defTrans = (MomTransientPlayerPublicKnowledge) players.getDefendingPlayer ().getTransientPlayerPublicKnowledge ();
+			defendingPlayerName.setForeground (new Color (Integer.parseInt (defTrans.getFlagColour (), 16)));
+			
+			// Set the player name labels to the correct text.
+			// If its the monsters player, use the name of the map cell (Ancient Temple, Nature Node, etc) - they're only actually called "Rampaging Monsters"
+			// if they're openly walking around the map or attack us; this is how the original MoM works.
+			attackingPlayerName.setText (getWizardClientUtils ().getPlayerName (players.getAttackingPlayer ()));
+			
+			String defPlayerName = getWizardClientUtils ().getPlayerName (players.getDefendingPlayer ());
+			if (!players.getDefendingPlayer ().getPlayerDescription ().isHuman ())
 			{
-				final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
-				if ((mc != null) && (mc.getTerrainData () != null))
-					try
-					{
-						// Tile types (nodes)
-						if ((mc.getTerrainData ().getTileTypeID () != null) && (getClient ().getClientDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "CombatUI").getMagicRealmID () != null))
+				final MomPersistentPlayerPublicKnowledge defPub = (MomPersistentPlayerPublicKnowledge) players.getDefendingPlayer ().getPersistentPlayerPublicKnowledge ();
+				if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defPub.getWizardID ()))
+				{
+					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
+					if ((mc != null) && (mc.getTerrainData () != null))
+						try
 						{
-							final TileTypeLang tileType = getLanguage ().findTileType (mc.getTerrainData ().getTileTypeID ());
-							if ((tileType != null) && (tileType.getTileTypeShowAsFeature () != null))
-								defPlayerName = tileType.getTileTypeShowAsFeature ();
+							// Tile types (nodes)
+							if ((mc.getTerrainData ().getTileTypeID () != null) && (getClient ().getClientDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "CombatUI").getMagicRealmID () != null))
+							{
+								final TileTypeLang tileType = getLanguage ().findTileType (mc.getTerrainData ().getTileTypeID ());
+								if ((tileType != null) && (tileType.getTileTypeShowAsFeature () != null))
+									defPlayerName = tileType.getTileTypeShowAsFeature ();
+							}
+							
+							// Map features (lairs and towers)
+							else if ((mc.getTerrainData ().getMapFeatureID () != null) && (getClient ().getClientDB ().findMapFeature (mc.getTerrainData ().getMapFeatureID (), "CombatUI").isAnyMagicRealmsDefined ()))
+							{
+								final MapFeatureLang mapFeature = getLanguage ().findMapFeature (mc.getTerrainData ().getMapFeatureID ());
+								if ((mapFeature != null) && (mapFeature.getMapFeatureDescription () != null))
+									defPlayerName = mapFeature.getMapFeatureDescription (); 
+							}
 						}
-						
-						// Map features (lairs and towers)
-						else if ((mc.getTerrainData ().getMapFeatureID () != null) && (getClient ().getClientDB ().findMapFeature (mc.getTerrainData ().getMapFeatureID (), "CombatUI").isAnyMagicRealmsDefined ()))
+						catch (final RecordNotFoundException e)
 						{
-							final MapFeatureLang mapFeature = getLanguage ().findMapFeature (mc.getTerrainData ().getMapFeatureID ());
-							if ((mapFeature != null) && (mapFeature.getMapFeatureDescription () != null))
-								defPlayerName = mapFeature.getMapFeatureDescription (); 
+							log.error (e, e);
 						}
-					}
-					catch (final RecordNotFoundException e)
-					{
-						log.error (e, e);
-					}
+				}
 			}
+			
+			defendingPlayerName.setText (defPlayerName);
 		}
 		
-		defendingPlayerName.setText (defPlayerName);
 		languageOrSelectedUnitChanged ();
 		
 		// Shortcut keys

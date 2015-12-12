@@ -731,7 +731,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		dest.setHeroNameID (source.getHeroNameID ());
 		dest.setUnitName (source.getUnitName ());
 		dest.setAmmoRemaining (source.getAmmoRemaining ());
-		dest.getHeroItemSpellChargesRemaining ().addAll (source.getHeroItemSpellChargesRemaining ());
+		
 		dest.setManaRemaining (source.getManaRemaining ());
 		dest.setDamageTaken (source.getDamageTaken ());
 		dest.setDoubleOverlandMovesLeft (newDoubleOverlandMovesLeft);
@@ -742,6 +742,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		dest.setCombatSide (source.getCombatSide ());
 		dest.setDoubleCombatMovesLeft (newDoubleCombatMovesLeft);
 
+		dest.getHeroItemSpellChargesRemaining ().clear ();
+		dest.getHeroItemSpellChargesRemaining ().addAll (source.getHeroItemSpellChargesRemaining ());
+		
 		if (source.getCombatLocation () == null)
 			dest.setCombatLocation (null);
 		else

@@ -108,6 +108,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * 
 	 * @param player Player who is casting the spell
 	 * @param combatCastingUnitURN Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
+	 * @param combatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2); for other types of casting this is null
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
@@ -122,7 +123,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final String spellID, final HeroItem heroItem,
+	public final void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingSlotNumber,
+		final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
@@ -164,10 +166,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 		MemoryUnit combatCastingUnit = null;
 		if (msg == null)
 		{
+			final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 			if (combatCastingUnitURN == null)
 			{
 				// Wizard casting
-				final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 				if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
 					msg = "You don't have that spell researched and/or available so can't cast it.";
 			}
@@ -191,6 +193,31 @@ public final class SpellQueueingImpl implements SpellQueueing
 				else if ((!combatLocation.equals (combatCastingUnit.getCombatLocation ())) || (combatCastingUnit.getCombatHeading () == null) ||
 					(combatCastingUnit.getCombatSide () == null) || (combatCastingUnit.getCombatPosition () == null))
 					msg = "The unit you are trying to cast a spell from is not in the correct combat.";
+
+				else
+				{
+					if (combatCastingSlotNumber == null)
+					{
+						if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
+							msg = "You don't have that spell researched and/or available so can't cast it.";
+					}
+					else
+					{
+						// Validation for using spells imbued in hero items
+						if ((combatCastingSlotNumber >= combatCastingUnit.getHeroItemSlot ().size ()) ||
+							(combatCastingSlotNumber >= combatCastingUnit.getHeroItemSpellChargesRemaining ().size ()))
+							msg = "This hero doesn't have the item slot that you are trying to cast an imbued spell from.";
+						
+						else if (combatCastingUnit.getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) <= 0)
+							msg = "The spell charges in this hero item are all used up.";
+						
+						else if (combatCastingUnit.getHeroItemSlot ().get (combatCastingSlotNumber).getHeroItem () == null)
+							msg = "This hero has no item in the slot that you are trying to cast an imbued spell from.";
+						
+						else if (!spellID.equals (combatCastingUnit.getHeroItemSlot ().get (combatCastingSlotNumber).getHeroItem ().getSpellID ()))
+							msg = "The spell you are trying to cast doesn't match the spell imbued into this hero item.";
+					}
+				}
 			}
 		}
 		
@@ -264,7 +291,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						msg = "You don't have enough mana remaining to cast that spell in combat at this range.";
 				}
 			}
-			else
+			else if (combatCastingSlotNumber == null)
 			{
 				// Validate unit or hero casting
 				// Reductions for number of spell books, or certain retorts, only apply when the wizard is casting, but on the plus side, the range penalty doesn't apply
@@ -367,7 +394,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Cast combat spell
 			// Always cast instantly
 			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
-			getSpellProcessing ().castCombatNow (player, combatCastingUnit, spell, reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
+			getSpellProcessing ().castCombatNow (player, combatCastingUnit, combatCastingSlotNumber, spell,
+				reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				combatTargetUnit, combatTargetLocation, mom);
 		}

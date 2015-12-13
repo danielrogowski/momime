@@ -14,6 +14,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -22,6 +23,8 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.common.database.Unit;
+import momime.common.database.UnitCanCast;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.NumberedHeroItem;
@@ -46,9 +49,13 @@ public final class TestCastCombatSpellFromUI
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("SpellCasting", "WhoWillCastTitle")).thenReturn ("Select who, or which item, will cast a spell");
 		
-		final SpellLang spell = new SpellLang ();
-		spell.setSpellName ("High Prayer");
-		when (lang.findSpell ("SP001")).thenReturn (spell);
+		final SpellLang firstSpell = new SpellLang ();
+		firstSpell.setSpellName ("High Prayer");
+		when (lang.findSpell ("SP001")).thenReturn (firstSpell);
+
+		final SpellLang secondSpell = new SpellLang ();
+		secondSpell.setSpellName ("Web");
+		when (lang.findSpell ("SP002")).thenReturn (secondSpell);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -60,13 +67,26 @@ public final class TestCastCombatSpellFromUI
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPlayerName ()).thenReturn ("Ariel");
 		
+		// Unit definition
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		final UnitCanCast unitCanCast = new UnitCanCast ();
+		unitCanCast.setUnitSpellID ("SP002");
+		
+		final Unit unitDef = new Unit ();
+		unitDef.getUnitCanCast ().add (unitCanCast);
+		when (db.findUnit ("UN001", "CastCombatSpellFromUI")).thenReturn (unitDef);
+		
 		// Mock casting unit
 		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
 		
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.SIMPLE_UNIT_NAME)).thenReturn ("Archangel");
 		
-		// Mock item with spell charges
+		// Mock fixed spells, and item with spell charges
+		unit.getFixedSpellsRemaining ().add (1);
 		unit.getHeroItemSpellChargesRemaining ().add (-1);
 		unit.getHeroItemSpellChargesRemaining ().add (3);
 		unit.getHeroItemSpellChargesRemaining ().add (-1);
@@ -84,9 +104,10 @@ public final class TestCastCombatSpellFromUI
 		
 		// Sample list of casting choices
 		final List<CastCombatSpellFrom> castingSources = new ArrayList<CastCombatSpellFrom> ();
-		castingSources.add (new CastCombatSpellFrom (null, null));
-		castingSources.add (new CastCombatSpellFrom (unit, null));
-		castingSources.add (new CastCombatSpellFrom (unit, 1));
+		castingSources.add (new CastCombatSpellFrom (null, null, null));
+		castingSources.add (new CastCombatSpellFrom (unit, null, null));
+		castingSources.add (new CastCombatSpellFrom (unit, 0, null));
+		castingSources.add (new CastCombatSpellFrom (unit, null, 1));
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));

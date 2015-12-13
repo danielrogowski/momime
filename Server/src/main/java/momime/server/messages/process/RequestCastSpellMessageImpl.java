@@ -53,7 +53,8 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		getSpellQueueing ().requestCastSpell (sender, getCombatCastingUnitURN (), getCombatCastingSlotNumber (), getSpellID (), getHeroItem (),
+		getSpellQueueing ().requestCastSpell (sender, getCombatCastingUnitURN (), getCombatCastingFixedSpellNumber (),
+			getCombatCastingSlotNumber (), getSpellID (), getHeroItem (),
 			(MapCoordinates3DEx) getCombatLocation (), (MapCoordinates2DEx) getCombatTargetLocation (), getCombatTargetUnitURN (), getVariableDamage (), mom);
 
 		log.trace ("Exiting process");

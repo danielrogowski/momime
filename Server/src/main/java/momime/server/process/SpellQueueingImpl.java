@@ -48,6 +48,7 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.HeroItemServerUtils;
@@ -108,6 +109,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * 
 	 * @param player Player who is casting the spell
 	 * @param combatCastingUnitURN Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
+	 * @param combatCastingFixedSpellNumber For casting fixed spells the unit knows (e.g. Giant Spiders casting web), indicates the spell number; for other types of casting this is null
 	 * @param combatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2); for other types of casting this is null
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
@@ -123,8 +125,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingSlotNumber,
-		final String spellID, final HeroItem heroItem,
+	public final void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
+		final Integer combatCastingSlotNumber, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
@@ -196,15 +198,24 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 				else
 				{
-					if (combatCastingSlotNumber == null)
+					if (combatCastingFixedSpellNumber != null)
 					{
-						if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
-							msg = "You don't have that spell researched and/or available so can't cast it.";
+						// Validation for using fixed spells, e.g. Giant Spiders casting Web
+						final UnitSvr unitDef = mom.getServerDB ().findUnit (combatCastingUnit.getUnitID (), "requestCastSpell");
+						if ((combatCastingFixedSpellNumber < 0) || (combatCastingFixedSpellNumber >= combatCastingUnit.getFixedSpellsRemaining ().size ()) ||
+							(combatCastingFixedSpellNumber >= unitDef.getUnitCanCast ().size ()))
+							msg = "This unit doesn't have the fixed spell number that you are trying to cast.";
+						
+						else if (combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) <= 0)
+							msg = "The unit has all of this kind of spell used up already for this combat.";
+						
+						else if (!spellID.equals (unitDef.getUnitCanCast ().get (combatCastingFixedSpellNumber).getUnitSpellID ()))
+							msg = "The spell you are trying to cast doesn't match the fixed spell that this unit has.";
 					}
-					else
+					else if (combatCastingSlotNumber != null)
 					{
 						// Validation for using spells imbued in hero items
-						if ((combatCastingSlotNumber >= combatCastingUnit.getHeroItemSlot ().size ()) ||
+						if ((combatCastingSlotNumber < 0) || (combatCastingSlotNumber >= combatCastingUnit.getHeroItemSlot ().size ()) ||
 							(combatCastingSlotNumber >= combatCastingUnit.getHeroItemSpellChargesRemaining ().size ()))
 							msg = "This hero doesn't have the item slot that you are trying to cast an imbued spell from.";
 						
@@ -216,6 +227,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 						
 						else if (!spellID.equals (combatCastingUnit.getHeroItemSlot ().get (combatCastingSlotNumber).getHeroItem ().getSpellID ()))
 							msg = "The spell you are trying to cast doesn't match the spell imbued into this hero item.";
+					}
+					else
+					{
+						// Unit or hero casting from their own MP pool
+						if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
+							msg = "You don't have that spell researched and/or available so can't cast it.";
 					}
 				}
 			}
@@ -291,7 +308,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						msg = "You don't have enough mana remaining to cast that spell in combat at this range.";
 				}
 			}
-			else if (combatCastingSlotNumber == null)
+			else if ((combatCastingSlotNumber == null) && (combatCastingFixedSpellNumber == null))
 			{
 				// Validate unit or hero casting
 				// Reductions for number of spell books, or certain retorts, only apply when the wizard is casting, but on the plus side, the range penalty doesn't apply
@@ -394,7 +411,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Cast combat spell
 			// Always cast instantly
 			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
-			getSpellProcessing ().castCombatNow (player, combatCastingUnit, combatCastingSlotNumber, spell,
+			getSpellProcessing ().castCombatNow (player, combatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
 				reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				combatTargetUnit, combatTargetLocation, mom);

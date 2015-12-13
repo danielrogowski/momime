@@ -31,6 +31,7 @@ import momime.client.ui.frames.SelectAdvisorUI;
 import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.common.database.Unit;
 import momime.common.messages.NumberedHeroItem;
 
 /**
@@ -176,12 +177,27 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 			{
 				// Work out text for this line
 				final String text;
-				
+
+				// Wizard casting
 				if (castingSourceAction.getKey ().getCastingUnit () == null)
 					text = getClient ().getOurPlayerName ();
-				else if (castingSourceAction.getKey ().getHeroItemSlotNumber () == null)
-					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit (), UnitNameType.SIMPLE_UNIT_NAME);
-				else
+				
+				// Casting unit fixed spell, e.g. Giant Spiders casting Web
+				else if (castingSourceAction.getKey ().getFixedSpellNumber () != null)
+				{
+					final Unit unitDef = getClient ().getClientDB ().findUnit (castingSourceAction.getKey ().getCastingUnit ().getUnitID (), "CastCombatSpellFromUI");
+					final String spellID = unitDef.getUnitCanCast ().get (castingSourceAction.getKey ().getFixedSpellNumber ()).getUnitSpellID ();
+
+					final SpellLang spell = getLanguage ().findSpell (spellID);
+					final String spellName = (spell == null) ? null : spell.getSpellName ();
+
+					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit (), UnitNameType.SIMPLE_UNIT_NAME) + " - " +
+						castingSourceAction.getKey ().getCastingUnit ().getFixedSpellsRemaining ().get
+							(castingSourceAction.getKey ().getFixedSpellNumber ()) + "x " + ((spellName != null) ? spellName : spellID);
+				}
+				
+				// Casting spell imbued in a hero item
+				else if (castingSourceAction.getKey ().getHeroItemSlotNumber () != null)
 				{
 					final NumberedHeroItem item = castingSourceAction.getKey ().getCastingUnit ().getHeroItemSlot ().get
 						(castingSourceAction.getKey ().getHeroItemSlotNumber ()).getHeroItem ();
@@ -190,9 +206,11 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 					final String spellName = (spell == null) ? null : spell.getSpellName ();
 					
 					text = item.getHeroItemName () + " - " + castingSourceAction.getKey ().getCastingUnit ().getHeroItemSpellChargesRemaining ().get
-						(castingSourceAction.getKey ().getHeroItemSlotNumber ()) + "x " +
-						((spellName != null) ? spellName : item.getSpellID ());
+						(castingSourceAction.getKey ().getHeroItemSlotNumber ()) + "x " + ((spellName != null) ? spellName : item.getSpellID ());
 				}
+				else
+					// Hero or unit casting from their own MP pool
+					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit (), UnitNameType.SIMPLE_UNIT_NAME);
 				
 				castingSourceAction.getValue ().putValue (Action.NAME, text);
 			}

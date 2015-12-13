@@ -316,6 +316,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * 
 	 * @param castingPlayer Player who is casting the spell
 	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
+	 * @param combatCastingFixedSpellNumber For casting fixed spells the unit knows (e.g. Giant Spiders casting web), indicates the spell number; for other types of casting this is null
 	 * @param combatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2); for other types of casting this is null
 	 * @param spell Which spell they want to cast
 	 * @param reducedCombatCastingCost Skill cost of the spell, reduced by any book or retort bonuses the player may have
@@ -334,8 +335,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingSlotNumber,
-		final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+	public final void castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingFixedSpellNumber,
+		final Integer combatCastingSlotNumber, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
@@ -515,16 +516,18 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Only allow casting one spell each combat turn
 			gc.setSpellCastThisCombatTurn (true);
 		}
-		else if (combatCastingSlotNumber == null)
+		else if (combatCastingFixedSpellNumber != null)
 		{
-			// Unit or hero casting - so charge them the mana cost and zero their movement
-			combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
+			// Casting a fixed spell that's part of the unit definition
 			combatCastingUnit.setDoubleCombatMovesLeft (0);
-			
+
+			combatCastingUnit.getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
+				combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
+
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
-		else
+		else if (combatCastingSlotNumber != null)
 		{
 			// Casting a spell imbued into a hero item
 			combatCastingUnit.setDoubleCombatMovesLeft (0);
@@ -532,6 +535,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 			combatCastingUnit.getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
 				combatCastingUnit.getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
 
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+		}
+		else
+		{
+			// Unit or hero casting - so charge them the mana cost and zero their movement
+			combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
+			combatCastingUnit.setDoubleCombatMovesLeft (0);
+			
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}

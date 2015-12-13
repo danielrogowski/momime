@@ -263,6 +263,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(!CompareUtils.safeStringCompare (source.getUnitName (), dest.getUnitName ())) ||
 				(source.getAmmoRemaining () != dest.getAmmoRemaining ()) ||
 				(source.getManaRemaining () != dest.getManaRemaining ()) ||
+				(source.getFixedSpellsRemaining ().size () != dest.getFixedSpellsRemaining ().size ()) ||
 				(source.getHeroItemSpellChargesRemaining ().size () != dest.getHeroItemSpellChargesRemaining ().size ()) ||
 				(source.getDamageTaken () != dest.getDamageTaken ()) ||
 				(source.getStatus () != dest.getStatus ()) ||
@@ -278,6 +279,13 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(newDoubleOverlandMovesLeft != dest.getDoubleOverlandMovesLeft ()) ||
 				(newSpecialOrder != dest.getSpecialOrder ()) ||
 				(!CompareUtils.safeIntegerCompare (newDoubleCombatMovesLeft, dest.getDoubleCombatMovesLeft ()));
+
+			// MemoryUnit - fixed spells remaining - already know the number of spells matches; order here is important.
+			final Iterator<Integer> sourceFixedSpells = source.getFixedSpellsRemaining ().iterator ();
+			final Iterator<Integer> destFixedSpells = dest.getFixedSpellsRemaining ().iterator ();
+			while ((!needToUpdate) && (sourceFixedSpells.hasNext ()) && (destFixedSpells.hasNext ()))
+				if (!CompareUtils.safeIntegerCompare (sourceFixedSpells.next (), destFixedSpells.next ()))
+					needToUpdate = true;
 			
 			// MemoryUnit - spell charges remaining - already know the number of skills matches; order here is important.
 			final Iterator<Integer> sourceSpellCharges = source.getHeroItemSpellChargesRemaining ().iterator ();

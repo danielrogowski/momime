@@ -496,6 +496,12 @@ If in combat, and casting at a location (e.g. summoning), combatTargetLocation w
 into a hero item, then this will be set.  If spell is being cast by the wizard themselves then this remains as null.  Not applicable for overland cast requests.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingFixedSpellNumber" type="momimectos:heroItemSlotNumber">
+						    <xsd:annotation>
+    							<xsd:documentation>In combat, if using one of a unit's fixed spells (e.g. Giant Spiders casting Web), this indicates which number spell it is;
+combatCastingUnitURN must also be set.  If casting from the wizard's or a unit's MP pool then this is left null.  Not applicable for overland cast requests.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingSlotNumber" type="momimectos:heroItemSlotNumber">
 						    <xsd:annotation>
     							<xsd:documentation>In combat, if using one of the spell charges imbued into a hero item, this indicates which slot the item is in;

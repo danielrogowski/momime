@@ -742,6 +742,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		dest.setCombatSide (source.getCombatSide ());
 		dest.setDoubleCombatMovesLeft (newDoubleCombatMovesLeft);
 
+		dest.getFixedSpellsRemaining ().clear ();
+		dest.getFixedSpellsRemaining ().addAll (source.getFixedSpellsRemaining ());
+		
 		dest.getHeroItemSpellChargesRemaining ().clear ();
 		dest.getHeroItemSpellChargesRemaining ().addAll (source.getHeroItemSpellChargesRemaining ());
 		

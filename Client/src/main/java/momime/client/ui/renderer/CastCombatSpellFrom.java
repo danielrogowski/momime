@@ -12,16 +12,21 @@ public final class CastCombatSpellFrom
 	/** The unit casting the spell, if casting from their own MP poor or a hero item; null if the wizard is casting the spell */
 	private final MemoryUnit castingUnit; 
 	
-	/** Slot number of the item the hero is casting a spell charge from; null if the wizard is casting the spell or the hero is casting from their MP pool and not an item */ 
+	/** Index into the list of fixed spells that this unit can cast, e.g. Giant Spiders casting Web; null for all other casting types */
+	private final Integer fixedSpellNumber;
+	
+	/** Slot number of the item the hero is casting a spell charge from; null for all other casting types */ 
 	private final Integer heroItemSlotNumber;
 
 	/**
 	 * @param aCastingUnit The unit casting the spell, if casting from their own MP poor or a hero item; null if the wizard is casting the spell
-	 * @param aHeroItemSlotNumber Slot number of the item the hero is casting a spell charge from; null if the wizard is casting the spell or the hero is casting from their MP pool and not an item
+	 * @param aFixedSpellNumber Index into the list of fixed spells that this unit can cast, e.g. Giant Spiders casting Web; null for all other casting types
+	 * @param aHeroItemSlotNumber Slot number of the item the hero is casting a spell charge from; null for all other casting types
 	 */
-	public CastCombatSpellFrom (final MemoryUnit aCastingUnit, final Integer aHeroItemSlotNumber)
+	public CastCombatSpellFrom (final MemoryUnit aCastingUnit, final Integer aFixedSpellNumber, final Integer aHeroItemSlotNumber)
 	{
 		castingUnit = aCastingUnit;
+		fixedSpellNumber = aFixedSpellNumber;
 		heroItemSlotNumber = aHeroItemSlotNumber;
 	}
 
@@ -31,6 +36,14 @@ public final class CastCombatSpellFrom
 	public final MemoryUnit getCastingUnit () 
 	{
 		return castingUnit;
+	}
+
+	/**
+	 * @return Index into the list of fixed spells that this unit can cast, e.g. Giant Spiders casting Web; null for all other casting types
+	 */
+	public final Integer getFixedSpellNumber ()
+	{
+		return fixedSpellNumber;
 	}
 	
 	/**

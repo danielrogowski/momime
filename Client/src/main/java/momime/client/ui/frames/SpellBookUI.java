@@ -733,7 +733,8 @@ public final class SpellBookUI extends MomClientFrameUI
 			
 			// Is it a spell with variable MP cost so we need to pop up a window with a slider to choose how much to put into it?
 			else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null) &&
-				(getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null))		// Can't put additional power into spells imbued into items
+				(getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
+				(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
 			{
 				getVariableManaUI ().setSpellBeingTargetted (spell);
 				
@@ -775,6 +776,7 @@ public final class SpellBookUI extends MomClientFrameUI
 					if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
 					{
 						msg.setCombatCastingUnitURN (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitURN ());
+						msg.setCombatCastingFixedSpellNumber (getCombatUI ().getCastingSource ().getFixedSpellNumber ());
 						msg.setCombatCastingSlotNumber (getCombatUI ().getCastingSource ().getHeroItemSlotNumber ());
 					}
 				}
@@ -1133,10 +1135,10 @@ public final class SpellBookUI extends MomClientFrameUI
 			maxCastable = getCombatUI ().getMaxCastable ();
 		
 		// Unit or hero casting limit is simply the amount of MP they have left
-		else if (getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null)
+		else if ((getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) && (getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))
 			maxCastable = getCombatUI ().getCastingSource ().getCastingUnit ().getManaRemaining ();
 		
-		// Disable casting limits for casting spells from hero items - the spell is already imbued - we don't have to "pay" for it
+		// Disable casting limits for casting spells from hero items or casting fixed spells - the spell is already imbued - we don't have to "pay" for it
 		else
 			maxCastable = Integer.MAX_VALUE;
 		

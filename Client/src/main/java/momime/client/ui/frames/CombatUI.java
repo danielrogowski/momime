@@ -82,6 +82,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.Unit;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
@@ -542,9 +543,9 @@ public final class CombatUI extends MomClientFrameUI
 								// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
 								validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 									(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
-									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
-									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-									getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+										(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+										unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+										getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 							}
 							
 							moveTypeFilename = "/momime.client.graphics/ui/combat/moveType-" + (validTarget ? "spell" : "cannot") + ".png";
@@ -945,11 +946,13 @@ public final class CombatUI extends MomClientFrameUI
 						if ((getCastingSource () != null) && (getCastingSource ().getCastingUnit () != null))
 						{
 							msg.setCombatCastingUnitURN (getCastingSource ().getCastingUnit ().getUnitURN ());
+							msg.setCombatCastingFixedSpellNumber (getCastingSource ().getFixedSpellNumber ());
 							msg.setCombatCastingSlotNumber (getCastingSource ().getHeroItemSlotNumber ());
 						}
 						
-						// Does the spell have varying cost?  Ignore this if its being cast from a hero item
-						if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) && (msg.getCombatCastingSlotNumber () == null))
+						// Does the spell have varying cost?  Ignore this if its being cast from a hero item or a fixed spell
+						if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) &&
+							(msg.getCombatCastingSlotNumber () == null) && (msg.getCombatCastingFixedSpellNumber () == null))
 							msg.setVariableDamage (getVariableManaUI ().getVariableDamage ());
 									
 						boolean isValidTarget = false;
@@ -1249,23 +1252,34 @@ public final class CombatUI extends MomClientFrameUI
 		
 		// Wizard casting
 		if (!spellCastThisCombatTurn)
-			sources.add (new CastCombatSpellFrom (null, null));
+			sources.add (new CastCombatSpellFrom (null, null, null));
 		
 		if ((getSelectedUnitInCombat () != null) && (getSelectedUnitInCombat ().getDoubleCombatMovesLeft () != null) &&
-			(getSelectedUnitInCombat ().getDoubleCombatMovesLeft () > 0) && (getSelectedUnitInCombat ().getManaRemaining () > 0))
+			(getSelectedUnitInCombat ().getDoubleCombatMovesLeft () > 0))
 		{
-			// Unit or hero casting
-			if ((getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO) >= 0) ||
-				(getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) >= 0))
+			// Unit or hero casting from their own MP pool
+			if ((getSelectedUnitInCombat ().getManaRemaining () > 0) &&
+				((getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO) >= 0) ||
+				(getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) >= 0)))
 				
-				sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), null));
+				sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), null, null));
+			
+			// Units with fixed spells, e.g. Giant Spiders casting Web
+			int spellNumber = 0;
+			for (final Integer casts : getSelectedUnitInCombat ().getFixedSpellsRemaining ())
+			{
+				if ((casts != null) && (casts > 0))
+					sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), spellNumber, null));
+				
+				spellNumber++;
+			}
 			
 			// Spell charges imbued in hero items
 			int slotNumber = 0;
 			for (final Integer charges : getSelectedUnitInCombat ().getHeroItemSpellChargesRemaining ())
 			{
 				if ((charges != null) && (charges > 0))
-					sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), slotNumber));
+					sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), null, slotNumber));
 				
 				slotNumber++;
 			}
@@ -1297,22 +1311,32 @@ public final class CombatUI extends MomClientFrameUI
 		{
 			// Wizard casting
 			if (castingSource.getCastingUnit () == null)
-				if ((makeVisible) && (!getSpellBookUI ().isVisible ()))
-					spellBookUI.setVisible (true);
-			
-			// Unit or hero casting
-			if (castingSource.getHeroItemSlotNumber () == null)
 			{
-				getSpellBookUI ().updateSpellBook ();		// Switch to showing what the unit can cast, rather than what the wizard can cast
 				if ((makeVisible) && (!getSpellBookUI ().isVisible ()))
 					spellBookUI.setVisible (true);
 			}
 			
+			// Casting unit's fixed spell, e.g. Giant Spiders casting web - don't need to show spell book to ask which spell to pick, so just cast it directly
+			else if (castingSource.getFixedSpellNumber () != null)
+			{
+				final Unit unitDef = getClient ().getClientDB ().findUnit (castingSource.getCastingUnit ().getUnitID (), "setCastingSource");
+				final String spellID = unitDef.getUnitCanCast ().get (castingSource.getFixedSpellNumber ()).getUnitSpellID ();
+				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource-F"));
+			}
+			
 			// Casting spell imbued into hero item - don't need to show spell book to ask which spell to pick, so just cast it directly
-			else
+			else if (castingSource.getHeroItemSlotNumber () != null)
 			{
 				final String spellID = castingSource.getCastingUnit ().getHeroItemSlot ().get (castingSource.getHeroItemSlotNumber ()).getHeroItem ().getSpellID ();
-				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource"));
+				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource-I"));
+			}
+			
+			// Unit or hero casting from their own MP pool
+			else
+			{
+				getSpellBookUI ().updateSpellBook ();		// Switch to showing what the unit can cast, rather than what the wizard can cast
+				if ((makeVisible) && (!getSpellBookUI ().isVisible ()))
+					spellBookUI.setVisible (true);
 			}
 		}
 	}

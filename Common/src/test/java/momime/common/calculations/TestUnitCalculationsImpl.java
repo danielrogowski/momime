@@ -38,6 +38,7 @@ import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
+import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
@@ -537,6 +538,18 @@ public final class TestUnitCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final Unit meleeDef = new Unit ();
+		when (db.findUnit ("UN001", "giveUnitFullRangedAmmoAndMana")).thenReturn (meleeDef);
+
+		final Unit rangedCasterDef = new Unit ();
+		for (final int count : new int [] {4, 6})
+		{
+			final UnitCanCast fixedSpell = new UnitCanCast ();
+			fixedSpell.setNumberOfTimes (count);
+			rangedCasterDef.getUnitCanCast ().add (fixedSpell);
+		}
+		when (db.findUnit ("UN002", "giveUnitFullRangedAmmoAndMana")).thenReturn (rangedCasterDef);
+		
 		// These are all only used for the mock so doesn't matter if there's anything in them
 		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -552,6 +565,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Test a unit that has nothing
 		final MemoryUnit melee = new MemoryUnit ();
+		melee.setUnitID ("UN001");
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), melee, db)).thenReturn (skills);
 		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
@@ -563,6 +577,7 @@ public final class TestUnitCalculationsImpl
 		
 		assertEquals (-1, melee.getAmmoRemaining ());
 		assertEquals (-1, melee.getManaRemaining ());
+		assertEquals (0, melee.getFixedSpellsRemaining ().size ());
 		assertEquals (0, melee.getHeroItemSpellChargesRemaining ().size ());
 
 		// Test a unit that has some of each
@@ -570,6 +585,7 @@ public final class TestUnitCalculationsImpl
 		level4.setLevelNumber (4);
 
 		final MemoryUnit rangedCaster = new MemoryUnit ();
+		rangedCaster.setUnitID ("UN002");
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), rangedCaster, db)).thenReturn (skills);
 		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (8);
@@ -595,10 +611,16 @@ public final class TestUnitCalculationsImpl
 			rangedCaster.getHeroItemSlot ().add (slot);
 		}
 
+		// Run method
 		calc.giveUnitFullRangedAmmoAndMana (rangedCaster, players, fow, db);
 		
+		// Check result
 		assertEquals (8, rangedCaster.getAmmoRemaining ());
 		assertEquals (102, rangedCaster.getManaRemaining ());
+
+		assertEquals (2, rangedCaster.getFixedSpellsRemaining ().size ());
+		assertEquals (4, rangedCaster.getFixedSpellsRemaining ().get (0).intValue ());
+		assertEquals (6, rangedCaster.getFixedSpellsRemaining ().get (1).intValue ());
 		
 		assertEquals (3, rangedCaster.getHeroItemSpellChargesRemaining ().size ());
 		assertEquals (-1, rangedCaster.getHeroItemSpellChargesRemaining ().get (0).intValue ());

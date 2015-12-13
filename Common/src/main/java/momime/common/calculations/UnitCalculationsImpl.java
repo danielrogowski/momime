@@ -27,6 +27,7 @@ import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
+import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -199,6 +200,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final int calculateDoubleMovementToEnterCombatTile (final MomCombatTile tile, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
+		log.trace ("Entering calculateDoubleMovementToEnterCombatTile");
+
 		int result = -1;		// Impassable
 		
 		if (!tile.isOffMapEdge ())
@@ -227,6 +230,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			}
 		}
 		
+		log.trace ("Exiting calculateDoubleMovementToEnterCombatTile = " + result);
 		return result;
 	}
 
@@ -264,6 +268,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final int calculateManaTotal (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		log.trace ("Entering calculateManaTotal: " + unit.getUnitID ());
+		
 		// Unit caster skill is easy, this directly says how many MP the unit has
 		int total = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
@@ -282,6 +288,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				total = total + heroSkillValue;
 		}
 		
+		log.trace ("Exiting calculateManaTotal = " + total);
 		return total;
 	}
 
@@ -302,11 +309,19 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final void giveUnitFullRangedAmmoAndMana (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		log.trace ("Entering giveUnitFullRangedAmmoAndMana: Unit URN " + unit.getUnitURN () + ", " + unit.getUnitID ());
+		
+		final Unit unitDef = db.findUnit (unit.getUnitID (), "giveUnitFullRangedAmmoAndMana");
 		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
 		
 		// Easy values
 		unit.setAmmoRemaining (calculateFullRangedAttackAmmo (unit, mergedSkills, players, mem, db));
 		unit.setManaRemaining (calculateManaTotal (unit, mergedSkills, players, mem, db));
+
+		// Fixed spells, like Giant Spiders 'casting' web or Magicians casting Fireball
+		unit.getFixedSpellsRemaining ().clear ();
+		for (final UnitCanCast fixedSpell : unitDef.getUnitCanCast ())
+			unit.getFixedSpellsRemaining ().add (fixedSpell.getNumberOfTimes ());
 		
 		// Spell charges on hero items
 		unit.getHeroItemSpellChargesRemaining ().clear ();
@@ -322,6 +337,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			
 			unit.getHeroItemSpellChargesRemaining ().add (count);
 		}
+
+		log.trace ("Exiting giveUnitFullRangedAmmoAndMana");
 	}
 
 	/**
@@ -331,10 +348,14 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final void decreaseRangedAttackAmmo (final MemoryUnit unit)
 	{
+		log.trace ("Entering decreaseRangedAttackAmmo: Unit URN " + unit.getUnitURN () + ", " + unit.getAmmoRemaining () + ", " + unit.getManaRemaining ());
+		
 		if (unit.getAmmoRemaining () > 0)
 			unit.setAmmoRemaining (unit.getAmmoRemaining () - 1);
 		else
 			unit.setManaRemaining (unit.getManaRemaining () - 3);
+
+		log.trace ("Exiting decreaseRangedAttackAmmo = " + unit.getAmmoRemaining () + ", " + unit.getManaRemaining ());
 	}
 	
 	/**
@@ -351,11 +372,16 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final int calculateHitPointsRemaining (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
+		log.trace ("Entering calculateHitPointsRemaining: Unit URN " + unit.getUnitURN ());
+		
 		final int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateHitPointsRemaining"));
 		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 		
-		return (figures * hitPointsPerFigure) - unit.getDamageTaken ();
+		final int result = (figures * hitPointsPerFigure) - unit.getDamageTaken ();
+		
+		log.trace ("Exiting calculateHitPointsRemaining = " + result);
+		return result;
 	}
 	
 	/**
@@ -374,6 +400,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final int calculateAliveFigureCount (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
+		log.trace ("Entering calculateAliveFigureCount: Unit URN " + unit.getUnitURN ());
+		
 		int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateAliveFigureCount")) -
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
@@ -384,6 +412,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		if (figures < 0)
 			figures = 0;
 		
+		log.trace ("Exiting calculateAliveFigureCount = " + figures);
 		return figures;
 	}
 	
@@ -404,6 +433,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final int calculateHitPointsRemainingOfFirstFigure (final AvailableUnit unit, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
+		log.trace ("Entering calculateHitPointsRemainingOfFirstFigure: " + unit.getUnitID ());
+		
 		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
 		
@@ -417,7 +448,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final int firstFigureDamageTaken = damageTaken % hitPointsPerFigure;
 		
 		// Then from that work out how many hit points the first figure has left
-		return hitPointsPerFigure - firstFigureDamageTaken;
+		final int result = hitPointsPerFigure - firstFigureDamageTaken;
+		
+		log.trace ("Exiting calculateHitPointsRemainingOfFirstFigure = " + result);
+		return result;
 	}
 	
 	/**
@@ -437,6 +471,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final boolean canMakeRangedAttack (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
+		log.trace ("Entering canMakeRangedAttack: Unit URN " + unit.getUnitURN ());
+		
 		final boolean result;
 		
 		// First we have to actually have a ranged attack
@@ -467,6 +503,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			}
 		}
 		
+		log.trace ("Entering canMakeRangedAttack = " + result);
 		return result;
 	}
 	

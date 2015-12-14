@@ -7,6 +7,18 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.OverlandMapSize;
@@ -23,6 +35,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.ServerTestData;
@@ -32,18 +45,6 @@ import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
-
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the FogOfWarProcessing class
@@ -59,31 +60,38 @@ public final class TestFogOfWarProcessingImpl
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 		
+		// True terrain
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+
+		// Towers
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		
 		// Set up test object
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
+		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 
 		// Never seen, so now seeing it for the first time
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
-		proc.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, trueTerrain, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
-		proc.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, trueTerrain, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
 		// Have seen on a previous turn, then lost sight of it, and now seeing it again
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.HAVE_SEEN);
-		proc.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, trueTerrain, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
-		proc.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, trueTerrain, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
 		// Can see, so could see it last turn and still can
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		proc.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, trueTerrain, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_CAN_STILL_SEE, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
-		proc.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, trueTerrain, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_CAN_STILL_SEE, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 	}
 
@@ -96,6 +104,12 @@ public final class TestFogOfWarProcessingImpl
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
+		// True terrain
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		
+		// Towers
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		
 		// There's 6 FOW states, so put a 7x7 area with the top row clipped off the top of the map
 		// The in the leftmost column (which is wrapped to the right edge of the map), put one of each FOW states to test they get modified correctly
 		int y = 0;
@@ -108,9 +122,10 @@ public final class TestFogOfWarProcessingImpl
 		// Set up test object
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 
 		// Run method
-		proc.canSeeRadius (fogOfWarArea, sys, 2, 2, 1, 3);
+		proc.canSeeRadius (fogOfWarArea, trueTerrain, sys, 2, 2, 1, 3);
 
 		// Check results of right hand area which is all the same value
 		for (int x = 0; x <= 5; x++)

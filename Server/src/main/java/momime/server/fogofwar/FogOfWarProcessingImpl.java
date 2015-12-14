@@ -7,6 +7,18 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.FogOfWarValue;
@@ -14,6 +26,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
@@ -38,18 +51,6 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * This contains the methods that recheck what areas of the map a specific player can see, and depending which areas
@@ -97,51 +98,65 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	/**
 	 * Marks that we can see a particular cell
 	 * @param fogOfWarArea Player's fog of war area
+	 * @param trueTerrain True overland map terrain
 	 * @param x X coordinate of map cell to update
 	 * @param y Y coordinate of map cell to update
 	 * @param plane Plane of map cell to update
 	 */
-	final void canSee (final MapVolumeOfFogOfWarStates fogOfWarArea, final int x, final int y, final int plane)
+	final void canSee (final MapVolumeOfFogOfWarStates fogOfWarArea, final MapVolumeOfMemoryGridCells trueTerrain, final int x, final int y, final int plane)
 	{
-		final List<FogOfWarStateID> row = fogOfWarArea.getPlane ().get (plane).getRow ().get (y).getCell ();
-
-		switch (row.get (x))
+		// If there's a tower here, then we can see through it to the other plane
+		final List<Integer> planes = new ArrayList<Integer> ();
+		if (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueTerrain.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ()))
+			planes.add (plane);
+		else
+			for (int n = 0; n < trueTerrain.getPlane ().size (); n++)
+				planes.add (n);
+		
+		for (final Integer thisPlane : planes)
 		{
-			// Never seen this cell before - now we can
-			case NEVER_SEEN:
-				row.set (x, FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME);
-				break;
-
-			// Saw this cell once before but have only been remembering what is there ever since - now we can see it properly again
-			case HAVE_SEEN:
-				row.set (x, FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT);
-				break;
-
-			// Could see this cell last turn and still can
-			case CAN_SEE:
-				row.set (x, FogOfWarStateID.TEMP_CAN_STILL_SEE);
-				break;
-				
-			// If its any of the TEMP values, then means we can see that cell more than once, which has no further effect
-			case TEMP_SEEING_IT_FOR_FIRST_TIME:
-			case TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT:
-			case TEMP_CAN_STILL_SEE:
+			final List<FogOfWarStateID> row = fogOfWarArea.getPlane ().get (thisPlane).getRow ().get (y).getCell ();
+	
+			switch (row.get (x))
+			{
+				// Never seen this cell before - now we can
+				case NEVER_SEEN:
+					row.set (x, FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME);
+					break;
+	
+				// Saw this cell once before but have only been remembering what is there ever since - now we can see it properly again
+				case HAVE_SEEN:
+					row.set (x, FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT);
+					break;
+	
+				// Could see this cell last turn and still can
+				case CAN_SEE:
+					row.set (x, FogOfWarStateID.TEMP_CAN_STILL_SEE);
+					break;
+					
+				// If its any of the TEMP values, then means we can see that cell more than once, which has no further effect
+				case TEMP_SEEING_IT_FOR_FIRST_TIME:
+				case TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT:
+				case TEMP_CAN_STILL_SEE:
+			}
 		}
 	}
 
 	/**
 	 * Marks that we can see all cells within a particular radius
 	 * @param fogOfWarArea Player's fog of war area
+	 * @param trueTerrain True overland map terrain
 	 * @param sys Overland map coordinate system
 	 * @param x X coordinate of map cell to update
 	 * @param y Y coordinate of map cell to update
 	 * @param plane Plane of map cell to update
 	 * @param radius Visible radius (negative = do nothing, 0 = this cell only, 1 = 1 ring around this cell, and so on)
 	 */
-	final void canSeeRadius (final MapVolumeOfFogOfWarStates fogOfWarArea, final CoordinateSystem sys, final int x, final int y, final int plane, final int radius)
+	final void canSeeRadius (final MapVolumeOfFogOfWarStates fogOfWarArea, final MapVolumeOfMemoryGridCells trueTerrain,
+		final CoordinateSystem sys, final int x, final int y, final int plane, final int radius)
 	{
 		// First the centre square }
-		canSee (fogOfWarArea, x, y, plane);
+		canSee (fogOfWarArea, trueTerrain, x, y, plane);
 
 		// Then around the each square 'ring'
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (x, y);
@@ -157,7 +172,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				final int d = (directionChk * 2) + 1;
 				for (int traceSide = 0; traceSide < ringNumber * 2; traceSide++)
 					if (getCoordinateSystemUtils ().move2DCoordinates (sys, coords, d))
-						canSee (fogOfWarArea, coords.getX (), coords.getY (), plane);
+						canSee (fogOfWarArea, trueTerrain, coords.getX (), coords.getY (), plane);
 			}
 		}
 	}
@@ -191,7 +206,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			for (final PlaneSvr plane : db.getPlanes ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-						canSee (priv.getFogOfWar (), x, y, plane.getPlaneNumber ());
+						canSee (priv.getFogOfWar (), trueMap.getMap (), x, y, plane.getPlaneNumber ());
 		}
 		else
 		{
@@ -216,13 +231,13 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 								// This does not handle the "Nature's Eye" spell - this is done with the spells below
 								final int scoutingRange = getServerCityCalculations ().calculateCityScoutingRange (trueMap.getBuilding (), coords, db);
 								if (scoutingRange >= 0)
-									canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), scoutingRange);
+									canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), scoutingRange);
 								else
 								{
 									// Standard city pattern
 									for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 										if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, direction.getDirectionID ()))
-											canSee (priv.getFogOfWar (), coords.getX (), coords.getY (), coords.getZ ());
+											canSee (priv.getFogOfWar (), trueMap.getMap (), coords.getX (), coords.getY (), coords.getZ ());
 								}
 							}
 
@@ -230,7 +245,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 							else if ((awareness) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
 								(trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), null, null, null, coords, null) != null))
 
-								canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), 1);
+								canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), 1);
 						}
 					}
 
@@ -245,11 +260,13 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
 						for (final PlaneSvr plane : db.getPlanes ())
-							canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
+							canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (),
+								thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
 					}
 					else
 						// Can see single plane only
-						canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), thisUnit.getUnitLocation ().getZ (), scoutingRange);
+						canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (),
+							thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), thisUnit.getUnitLocation ().getZ (), scoutingRange);
 				}
 
 			// Check what areas we can see because of visibility spells
@@ -260,7 +277,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					// See if this spell has a scouting range
 					final Integer scoutingRange = db.findSpell (thisSpell.getSpellID (), "markVisibleArea").getSpellScoutingRange ();
 					if (scoutingRange != null)
-						canSeeRadius (priv.getFogOfWar (), sd.getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
+						canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
 							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), scoutingRange);
 				}
 		}

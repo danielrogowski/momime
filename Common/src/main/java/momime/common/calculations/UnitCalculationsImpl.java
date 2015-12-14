@@ -321,7 +321,15 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		// Fixed spells, like Giant Spiders 'casting' web or Magicians casting Fireball
 		unit.getFixedSpellsRemaining ().clear ();
 		for (final UnitCanCast fixedSpell : unitDef.getUnitCanCast ())
-			unit.getFixedSpellsRemaining ().add (fixedSpell.getNumberOfTimes ());
+		{
+			final int count;
+			if ((fixedSpell.getNumberOfTimes () != null) && (fixedSpell.getNumberOfTimes () > 0))
+				count = fixedSpell.getNumberOfTimes ();
+			else
+				count = -1;
+				
+			unit.getFixedSpellsRemaining ().add (count);
+		}
 		
 		// Spell charges on hero items
 		unit.getHeroItemSpellChargesRemaining ().clear ();

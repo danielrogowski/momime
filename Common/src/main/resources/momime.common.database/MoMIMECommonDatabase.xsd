@@ -818,10 +818,11 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 
 	<xsd:complexType name="unitCanCast" nxe:singular="Unit Spell" nxe:plural="Unit Spells">
         <xsd:annotation>
-        	<xsd:documentation>Defines fixed spells a particular unit can cast - Priests casting Healing, Magicians casting Fireball, Warlocks casting Doom Bolt, and Giant Spiders "casting" Web.</xsd:documentation>
+        	<xsd:documentation>Defines fixed spells a particular unit can cast - Priests casting Healing, Magicians casting Fireball, Warlocks casting Doom Bolt, and Giant Spiders "casting" Web.
+Heroes have entries with numberOfTimes left null for the additional spells they know, e.g. Serena the Healer always knows the Healing spell even if her controlling wizard doesn't.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfTimes" type="momimecommon:spellCount" nxe:label="Number of Times can cast it" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="numberOfTimes" type="momimecommon:spellCount" nxe:label="Number of Times can cast it" nxe:gridwidth="200" />
 		</xsd:sequence>
 		<xsd:attribute name="unitSpellID" type="momimecommon:spellID" use="required" nxe:label="Spell" nxe:showmaincolumn="false">
 			<xsd:annotation>

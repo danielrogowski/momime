@@ -231,7 +231,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws MomException If getStatus () returns an unexpected status
 	 */
 	@Override
-	public final SpellBookSectionID getModifiedSectionID (final Spell spell, final SpellResearchStatus researchStatus, final boolean considerWhetherResearched)
+	public final SpellBookSectionID getModifiedSectionID (final Spell spell, final SpellResearchStatusID researchStatus, final boolean considerWhetherResearched)
 		throws MomException
 	{
 		log.trace ("Entering getModifiedSectionID: " + researchStatus + ", " + considerWhetherResearched);
@@ -243,7 +243,7 @@ public final class SpellUtilsImpl implements SpellUtils
 			result = spell.getSpellBookSectionID ();
 		}
 		else
-			switch (researchStatus.getStatus ())
+			switch (researchStatus)
 			{
 				case UNAVAILABLE:
 				case NOT_IN_SPELL_BOOK:
@@ -259,7 +259,7 @@ public final class SpellUtilsImpl implements SpellUtils
 					result = spell.getSpellBookSectionID ();
 					break;
 				default:
-					throw new MomException ("getSectionID: Unknown spell status " + researchStatus.getStatus ());
+					throw new MomException ("getSectionID: Unknown spell status " + researchStatus);
 			}
 
 		log.trace ("Exiting getModifiedSectionID = " + result);
@@ -592,7 +592,7 @@ public final class SpellUtilsImpl implements SpellUtils
 			final Spell thisSpell = db.findSpell (thisSpellResearchStatus.getSpellID (), "getSortedSpellsInSection");
 
 			// Check section matches
-			final SpellBookSectionID modifiedSectionID = getModifiedSectionID (thisSpell, thisSpellResearchStatus, true);
+			final SpellBookSectionID modifiedSectionID = getModifiedSectionID (thisSpell, thisSpellResearchStatus.getStatus (), true);
 
 			if (((desiredSectionID == null) && (modifiedSectionID == null)) ||
 				((desiredSectionID != null) && (desiredSectionID.equals (modifiedSectionID))))

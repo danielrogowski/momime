@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
@@ -76,6 +77,10 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 		
 		if ((getClient ().getOurPlayerID ().equals (getCombatUI ().getCurrentPlayerID ())) && (!getCombatUI ().isAutoControl ()))
 		{
+			// Revert back to the spells the wizard knows, and their cost reductions, in case the spell book was showing casting for a particular unit
+			if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
+				getCombatUI ().setCastingSource (new CastCombatSpellFrom (null, null, null), false);
+			
 			if (unitsLeftToMoveCombat.size () == 0)
 			{
 				getCombatUI ().setSelectedUnitInCombat (null);

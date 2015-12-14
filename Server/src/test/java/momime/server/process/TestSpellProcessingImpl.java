@@ -41,6 +41,7 @@ import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
@@ -88,10 +89,11 @@ public final class TestSpellProcessingImpl
 		
 		// Isn't researched yet
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.RESEARCHABLE_NOW);		// Can research, but don't know it yet
+		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.RESEARCHABLE_NOW);		// Can research, but don't know it yet
 		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -169,10 +171,11 @@ public final class TestSpellProcessingImpl
 
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -255,10 +258,11 @@ public final class TestSpellProcessingImpl
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 
 		// We've already cast it
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -345,10 +349,11 @@ public final class TestSpellProcessingImpl
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.SUMMONING);
+		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.SUMMONING);
 		
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (summoningCircleLocation, UnitAddBumpTypeID.CITY);
@@ -445,10 +450,11 @@ public final class TestSpellProcessingImpl
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.SUMMONING);
+		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.SUMMONING);
 		
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (summoningCircleLocation, UnitAddBumpTypeID.CITY);
@@ -558,10 +564,11 @@ public final class TestSpellProcessingImpl
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.SUMMONING);
+		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.SUMMONING);
 		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -614,10 +621,11 @@ public final class TestSpellProcessingImpl
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
+		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class); 
@@ -1035,12 +1043,15 @@ public final class TestSpellProcessingImpl
 		
 		// Research status
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (castingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
+		when (spellUtils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		// The spell being switched off
 		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
+		trueSpell.setSpellID ("SP001");
 		trueSpell.setSpellURN (3);
 		trueSpell.setCastingPlayerID (castingPd.getPlayerID ());
 		
@@ -1103,9 +1114,11 @@ public final class TestSpellProcessingImpl
 		
 		// Research status
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (castingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		when (spellUtils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		
 		// One of the effects is actually cast
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
@@ -1116,6 +1129,7 @@ public final class TestSpellProcessingImpl
 
 		// The spell being switched off
 		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
+		trueSpell.setSpellID ("SP001");
 		trueSpell.setSpellURN (3);
 		trueSpell.setCastingPlayerID (castingPd.getPlayerID ());
 		

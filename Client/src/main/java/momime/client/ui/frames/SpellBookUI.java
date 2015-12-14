@@ -60,10 +60,13 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SwitchResearch;
+import momime.common.database.Unit;
+import momime.common.database.UnitCanCast;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -820,11 +823,24 @@ public final class SpellBookUI extends MomClientFrameUI
 	{
 		log.trace ("Entering updateSpellBook");
 		
+		// Get a list of any spells this hero knows, in addition to being able to cast spells from their controlling wizard
+		final List<String> heroKnownSpellIDs = new ArrayList<String> ();
+		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
+			(getCombatUI ().getCastingSource ().getCastingUnit () != null) && (getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&
+			(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))
+		{
+			final Unit unitDef = getClient ().getClientDB ().findUnit (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitID (), "updateSpellBook");
+			for (final UnitCanCast knownSpell : unitDef.getUnitCanCast ())
+				if (knownSpell.getNumberOfTimes () == null)
+					heroKnownSpellIDs.add (knownSpell.getUnitSpellID ());
+		}
+			
 		// Get a list of all spells we know, and all spells we can research now; grouped by section
 		final Map<SpellBookSectionID, List<Spell>> sections = new HashMap<SpellBookSectionID, List<Spell>> ();
 		for (final Spell spell : getClient ().getClientDB ().getSpells ())
 		{
-			final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ());
+			final SpellResearchStatusID researchStatus = heroKnownSpellIDs.contains (spell.getSpellID ()) ? SpellResearchStatusID.AVAILABLE :
+				getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ()).getStatus ();
 			final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
 			if (sectionID != null)
 			{

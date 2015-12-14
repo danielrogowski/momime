@@ -1312,6 +1312,7 @@ public final class CombatUI extends MomClientFrameUI
 			// Wizard casting
 			if (castingSource.getCastingUnit () == null)
 			{
+				getSpellBookUI ().updateSpellBook ();		// Switch back to showing what the wizard can cast, in case we were previously showing what a particular unit/hero could cast
 				if ((makeVisible) && (!getSpellBookUI ().isVisible ()))
 					spellBookUI.setVisible (true);
 			}

@@ -103,7 +103,7 @@ public interface SpellUtils
 	 * @return sectionID as described above
 	 * @throws MomException If getStatus () returns an unexpected status
 	 */
-	public SpellBookSectionID getModifiedSectionID (final Spell spell, final SpellResearchStatus researchStatus, final boolean considerWhetherResearched)
+	public SpellBookSectionID getModifiedSectionID (final Spell spell, final SpellResearchStatusID researchStatus, final boolean considerWhetherResearched)
 		throws MomException;
 
 	/**

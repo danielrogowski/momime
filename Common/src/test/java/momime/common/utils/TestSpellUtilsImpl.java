@@ -347,12 +347,11 @@ public final class TestSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
-		// Unmodified section
-		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-		researchStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
-
+		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertNull (utils.getModifiedSectionID (spell, researchStatus, true));
+		
+		// Run method
+		assertNull (utils.getModifiedSectionID (spell, SpellResearchStatusID.UNAVAILABLE, true));
 	}
 
 	/**
@@ -365,12 +364,11 @@ public final class TestSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
-		// Unmodified section
-		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-		researchStatus.setStatus (SpellResearchStatusID.NOT_IN_SPELL_BOOK);
-
+		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertNull (utils.getModifiedSectionID (spell, researchStatus, true));
+		
+		// Run method
+		assertNull (utils.getModifiedSectionID (spell, SpellResearchStatusID.NOT_IN_SPELL_BOOK, true));
 	}
 
 	/**
@@ -383,12 +381,11 @@ public final class TestSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
-		// Unmodified section
-		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE);
-
+		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (SpellBookSectionID.RESEARCHABLE, utils.getModifiedSectionID (spell, researchStatus, true));
+		
+		// Run method
+		assertEquals (SpellBookSectionID.RESEARCHABLE, utils.getModifiedSectionID (spell, SpellResearchStatusID.RESEARCHABLE, true));
 	}
 
 	/**
@@ -401,12 +398,11 @@ public final class TestSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
-		// Unmodified section
-		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
-
+		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (SpellBookSectionID.RESEARCHABLE_NOW, utils.getModifiedSectionID (spell, researchStatus, true));
+		
+		// Run method
+		assertEquals (SpellBookSectionID.RESEARCHABLE_NOW, utils.getModifiedSectionID (spell, SpellResearchStatusID.RESEARCHABLE_NOW, true));
 	}
 
 	/**
@@ -419,12 +415,11 @@ public final class TestSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
-		// Unmodified section
-		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
-
+		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (SpellBookSectionID.SUMMONING, utils.getModifiedSectionID (spell, researchStatus, true));
+		
+		// Run method
+		assertEquals (SpellBookSectionID.SUMMONING, utils.getModifiedSectionID (spell, SpellResearchStatusID.AVAILABLE, true));
 	}
 
 	/**

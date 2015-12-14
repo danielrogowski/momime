@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -21,13 +22,13 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitCanCast;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.QueuedSpell;
-import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
@@ -168,11 +169,11 @@ public final class SpellQueueingImpl implements SpellQueueing
 		MemoryUnit combatCastingUnit = null;
 		if (msg == null)
 		{
-			final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
+			final SpellResearchStatusID researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID).getStatus ();
 			if (combatCastingUnitURN == null)
 			{
 				// Wizard casting
-				if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
+				if (researchStatus != SpellResearchStatusID.AVAILABLE)
 					msg = "You don't have that spell researched and/or available so can't cast it.";
 			}
 			
@@ -198,10 +199,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 				else
 				{
+					final UnitSvr unitDef = mom.getServerDB ().findUnit (combatCastingUnit.getUnitID (), "requestCastSpell");
 					if (combatCastingFixedSpellNumber != null)
 					{
 						// Validation for using fixed spells, e.g. Giant Spiders casting Web
-						final UnitSvr unitDef = mom.getServerDB ().findUnit (combatCastingUnit.getUnitID (), "requestCastSpell");
 						if ((combatCastingFixedSpellNumber < 0) || (combatCastingFixedSpellNumber >= combatCastingUnit.getFixedSpellsRemaining ().size ()) ||
 							(combatCastingFixedSpellNumber >= unitDef.getUnitCanCast ().size ()))
 							msg = "This unit doesn't have the fixed spell number that you are trying to cast.";
@@ -231,7 +232,16 @@ public final class SpellQueueingImpl implements SpellQueueing
 					else
 					{
 						// Unit or hero casting from their own MP pool
-						if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
+						boolean knowSpell = (researchStatus == SpellResearchStatusID.AVAILABLE);
+						final Iterator<UnitCanCast> knownSpellsIter = unitDef.getUnitCanCast ().iterator ();
+						while ((!knowSpell) && (knownSpellsIter.hasNext ()))
+						{
+							final UnitCanCast thisKnownSpell = knownSpellsIter.next ();
+							if ((thisKnownSpell.getUnitSpellID ().equals (spellID)) && (thisKnownSpell.getNumberOfTimes () == null))
+								knowSpell = true;
+						}
+						
+						if (!knowSpell)
 							msg = "You don't have that spell researched and/or available so can't cast it.";
 					}
 				}

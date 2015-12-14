@@ -11353,6 +11353,8 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP048" />
+		<unitCanCast unitSpellID="SP042" />
 		<unitName>Sage</unitName>
 		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN003_HN01" />
@@ -11438,6 +11440,7 @@
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP002" />
 		<unitName>Beastmaster</unitName>
 		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN005_HN01" />
@@ -11478,6 +11481,8 @@
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP046" />
+		<unitCanCast unitSpellID="SP053" />
 		<unitName>Bard</unitName>
 		<hiringFame>0</hiringFame>
 		<heroName heroNameID="UN006_HN01" />
@@ -11560,6 +11565,7 @@
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP125" />
 		<unitName>Healer</unitName>
 		<hiringFame>0</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
@@ -11694,6 +11700,9 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP013" />
+		<unitCanCast unitSpellID="SP022" />
+		<unitCanCast unitSpellID="SP005" />
 		<unitName>Druid</unitName>
 		<hiringFame>5</hiringFame>
 		<heroName heroNameID="UN011_HN01" />
@@ -11774,6 +11783,9 @@
 		<heroItemSlot heroItemSlotTypeID="IST03" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP094" />
+		<unitCanCast unitSpellID="SP088" />
+		<unitCanCast unitSpellID="SP086" />
 		<unitName>Warrior Mage</unitName>
 		<hiringFame>5</hiringFame>
 		<heroRandomPickCount>1</heroRandomPickCount>
@@ -11820,6 +11832,10 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP083" />
+		<unitCanCast unitSpellID="SP096" />
+		<unitCanCast unitSpellID="SP109" />
+		<unitCanCast unitSpellID="SP090" />
 		<unitName>Magician</unitName>
 		<hiringFame>5</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
@@ -11906,6 +11922,8 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP044" />
+		<unitCanCast unitSpellID="SP047" />
 		<unitName>Wind Mage</unitName>
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
@@ -11959,6 +11977,8 @@
 		<heroItemSlot heroItemSlotTypeID="IST02" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP002" />
+		<unitCanCast unitSpellID="SP007" />
 		<unitName>Ranger</unitName>
 		<hiringFame>10</hiringFame>
 		<heroName heroNameID="UN017_HN01" />
@@ -12046,6 +12066,10 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP169" />
+		<unitCanCast unitSpellID="SP172" />
+		<unitCanCast unitSpellID="SP174" />
+		<unitCanCast unitSpellID="SP170" />
 		<unitName>Witch</unitName>
 		<hiringFame>10</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
@@ -12262,6 +12286,9 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP091" />
+		<unitCanCast unitSpellID="SP104" />
+		<unitCanCast unitSpellID="SP101" />
 		<unitName>Warlock</unitName>
 		<hiringFame>20</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
@@ -12349,6 +12376,9 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP050" />
+		<unitCanCast unitSpellID="SP053" />
+		<unitCanCast unitSpellID="SP067" />
 		<unitName>Illusionist</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
@@ -12457,6 +12487,10 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP134" />
+		<unitCanCast unitSpellID="SP125" />
+		<unitCanCast unitSpellID="SP140" />
+		<unitCanCast unitSpellID="SP150" />
 		<unitName>Priestess</unitName>
 		<hiringFame>40</hiringFame>
 		<heroName heroNameID="UN028_HN01" />
@@ -12602,6 +12636,8 @@
 		<heroItemSlot heroItemSlotTypeID="IST02" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP041" />
+		<unitCanCast unitSpellID="SP056" />
 		<unitName>Elven Archer</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickCount>3</heroRandomPickCount>
@@ -12697,6 +12733,10 @@
 		<heroItemSlot heroItemSlotTypeID="IST04" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP162" />
+		<unitCanCast unitSpellID="SP165" />
+		<unitCanCast unitSpellID="SP195" />
+		<unitCanCast unitSpellID="SP182" />
 		<unitName>Necromancer</unitName>
 		<hiringFame>40</hiringFame>
 		<heroRandomPickType>M</heroRandomPickType>
@@ -12799,6 +12839,9 @@
 		<heroItemSlot heroItemSlotTypeID="IST01" />
 		<heroItemSlot heroItemSlotTypeID="IST06" />
 		<heroItemSlot heroItemSlotTypeID="IST05" />
+		<unitCanCast unitSpellID="SP125" />
+		<unitCanCast unitSpellID="SP126" />
+		<unitCanCast unitSpellID="SP141" />
 		<unitName>Chosen</unitName>
 		<hiringFame>50</hiringFame>
 		<heroRandomPickCount>2</heroRandomPickCount>
@@ -24105,7 +24148,7 @@
 		<languageEntry languageEntryID="SwitchOffSpellTitle" />
 		<languageEntry languageEntryID="SwitchOffSpell" />
 		<languageEntry languageEntryID="SwitchOffSpellNotOurs" />
-		<languageEntry languageEntryID="WhoWillCastTitle" />		
+		<languageEntry languageEntryID="WhoWillCastTitle" />
 	</languageCategory>
 	<languageCategory languageCategoryID="VariableMana">
 		<languageEntry languageEntryID="Title" />

@@ -147,7 +147,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
-		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
+		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
 
 		// Overland enchantments
 		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
@@ -587,7 +587,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final SpellSvr spell = db.findSpell (trueSpell.getSpellID (), "switchOffSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), trueSpell.getSpellID ());
-		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
+		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
 
 		// Overland enchantments
 		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)

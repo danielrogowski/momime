@@ -177,7 +177,7 @@ public final class TestSpellBookUI
 				researchStatus.setStatus ((n < m) ? SpellResearchStatusID.AVAILABLE : SpellResearchStatusID.UNAVAILABLE);
 				
 				when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), researchStatus.getSpellID ())).thenReturn (researchStatus);
-				when (spellUtils.getModifiedSectionID (spells.get ((m*10) + n), researchStatus, true)).thenReturn ((n < m) ? sectionID : null);
+				when (spellUtils.getModifiedSectionID (spells.get ((m*10) + n), researchStatus.getStatus (), true)).thenReturn ((n < m) ? sectionID : null);
 			}
 		}
 		

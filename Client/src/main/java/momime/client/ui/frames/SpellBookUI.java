@@ -1178,7 +1178,7 @@ public final class SpellBookUI extends MomClientFrameUI
 	 * 
 	 * @return Highest MP cost of combat spell that we can cast
 	 */
-	private final int getCombatMaxCastable ()
+	public final int getCombatMaxCastable ()
 	{
 		final int maxCastable;
 		

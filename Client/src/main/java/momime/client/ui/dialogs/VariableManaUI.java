@@ -29,6 +29,7 @@ import momime.client.MomClient;
 import momime.client.language.database.ProductionTypeLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.SpellBookUI;
 import momime.client.utils.TextUtils;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
@@ -69,6 +70,9 @@ public final class VariableManaUI extends MomClientDialogUI
 
 	/** Combat UI */
 	private CombatUI combatUI;
+	
+	/** Spell book */
+	private SpellBookUI spellBookUI;
 	
 	/** OK action */
 	private Action okAction;
@@ -266,6 +270,9 @@ public final class VariableManaUI extends MomClientDialogUI
 	public final void setSpellBeingTargetted (final Spell spell) throws IOException
 	{
 		log.trace ("Entering setSpellBeingTargetted: " + spell.getSpellID ());
+
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "setSpellBeingTargetted");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		
 		// This has to work and be able to calculate the minimum+maximum damage even if the form has never been displayed
 		// so that we can handle the situation where the first variable damage spell cast is one that we don't have enough skill/MP
@@ -288,14 +295,15 @@ public final class VariableManaUI extends MomClientDialogUI
 				final int unmodifiedCost = getSpellBeingTargetted ().getCombatCastingCost () +
 					((maximumDamage - minimumDamage) * getSpellBeingTargetted ().getCombatManaPerAdditionalDamagePoint ());
 					
-				// Work out the modified MP cost, reduced if we have a lot of spell books
-				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "setSpellBeingTargetted");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-		
-				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargetted (), unmodifiedCost,
-					pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+				// Work out the modified MP cost, reduced if we have a lot of spell books; but first check whether its the wizard casting, or a unit
+				final int modifiedCost;
+				if ((getCombatUI ().getCastingSource () == null) || (getCombatUI ().getCastingSource ().getCastingUnit () == null))
+					modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargetted (), unmodifiedCost,
+						pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+				else
+					modifiedCost = unmodifiedCost;
 				
-				if (modifiedCost > getCombatUI ().getMaxCastable ())
+				if (modifiedCost > getSpellBookUI ().getCombatMaxCastable ())
 					maximumDamage--;
 				else
 					done = true;
@@ -492,5 +500,21 @@ public final class VariableManaUI extends MomClientDialogUI
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
 	}
 }

@@ -231,14 +231,31 @@ public final class SpellQueueingImpl implements SpellQueueing
 					}
 					else
 					{
-						// Unit or hero casting from their own MP pool
-						boolean knowSpell = (researchStatus == SpellResearchStatusID.AVAILABLE);
-						final Iterator<UnitCanCast> knownSpellsIter = unitDef.getUnitCanCast ().iterator ();
-						while ((!knowSpell) && (knownSpellsIter.hasNext ()))
+						// Unit or hero casting from their own MP pool.
+						// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
+						// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
+						String overridePickID = null;
+						if (getUnitUtils ().getBasicSkillValue (combatCastingUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) > 0)
 						{
-							final UnitCanCast thisKnownSpell = knownSpellsIter.next ();
-							if ((thisKnownSpell.getUnitSpellID ().equals (spellID)) && (thisKnownSpell.getNumberOfTimes () == null))
-								knowSpell = true;
+							final String unitMagicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (combatCastingUnit,
+								combatCastingUnit.getUnitHasSkill (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+								
+							overridePickID = mom.getServerDB ().findUnitMagicRealm (unitMagicRealmID, "requestCastSpell").getCastSpellsFromPickID ();
+						}
+
+						boolean knowSpell;
+						if (overridePickID != null)
+							knowSpell = overridePickID.equals (spell.getSpellRealm ());
+						else
+						{
+							knowSpell = (researchStatus == SpellResearchStatusID.AVAILABLE);
+							final Iterator<UnitCanCast> knownSpellsIter = unitDef.getUnitCanCast ().iterator ();
+							while ((!knowSpell) && (knownSpellsIter.hasNext ()))
+							{
+								final UnitCanCast thisKnownSpell = knownSpellsIter.next ();
+								if ((thisKnownSpell.getUnitSpellID ().equals (spellID)) && (thisKnownSpell.getNumberOfTimes () == null))
+									knowSpell = true;
+							}
 						}
 						
 						if (!knowSpell)

@@ -763,6 +763,13 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="castSpellsFromPickID" type="momimecommon:pickID" nxe:label="Caster skill (unit) casts spells of which pick?" nxe:gridwidth="300" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="unitMagicRealmID" type="momimecommon:unitMagicRealmID" use="required" nxe:label="Unit Magic Realm ID" nxe:gridwidth="150" />
 	</xsd:complexType>

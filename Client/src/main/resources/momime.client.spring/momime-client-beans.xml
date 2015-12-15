@@ -1279,6 +1279,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="variableManaUI" ref="variableManaUI" />
 		<property name="createArtifactUI" ref="createArtifactUI" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

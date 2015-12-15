@@ -532,6 +532,10 @@
 			<xsd:selector xpath="unitMagicRealm" />
 			<xsd:field xpath="unitTypeID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:pickPK" name="unitMagicRealmFKpick">
+			<xsd:selector xpath="unitMagicRealm" />
+			<xsd:field xpath="castSpellsFromPickID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:productionTypePK" name="unitUpkeepFKproductionType">
 			<xsd:selector xpath="unit/unitUpkeep" />
 			<xsd:field xpath="@productionTypeID" />

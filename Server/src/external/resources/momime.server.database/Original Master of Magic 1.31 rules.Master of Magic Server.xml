@@ -22106,6 +22106,7 @@
 	</unitMagicRealm>
 	<unitMagicRealm unitMagicRealmID="LT01">
 		<unitTypeID>S</unitTypeID>
+		<castSpellsFromPickID>MB01</castSpellsFromPickID>
 		<unitMagicRealmName>Life creature</unitMagicRealmName>
 	</unitMagicRealm>
 	<unitMagicRealm unitMagicRealmID="LT02">
@@ -22114,6 +22115,7 @@
 	</unitMagicRealm>
 	<unitMagicRealm unitMagicRealmID="LT03">
 		<unitTypeID>S</unitTypeID>
+		<castSpellsFromPickID>MB03</castSpellsFromPickID>
 		<unitMagicRealmName>Chaos creature</unitMagicRealmName>
 	</unitMagicRealm>
 	<unitMagicRealm unitMagicRealmID="LT04">
@@ -22122,6 +22124,7 @@
 	</unitMagicRealm>
 	<unitMagicRealm unitMagicRealmID="LT05">
 		<unitTypeID>S</unitTypeID>
+		<castSpellsFromPickID>MB05</castSpellsFromPickID>
 		<unitMagicRealmName>Sorcery creature</unitMagicRealmName>
 	</unitMagicRealm>
 	<unitMagicRealm unitMagicRealmID="LT06">
@@ -22132,6 +22135,7 @@
 		<unitMagicRealmName>Chaos channeled unit</unitMagicRealmName>
 	</unitMagicRealm>
 	<unitMagicRealm unitMagicRealmID="LTU">
+		<castSpellsFromPickID>MB02</castSpellsFromPickID>
 		<unitMagicRealmName>Undead (killed by Ghouls/Life Steal or Black Channeled units)</unitMagicRealmName>
 	</unitMagicRealm>
 	<overlandMapSize overlandMapSizeID="MS01">

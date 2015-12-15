@@ -74,6 +74,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
+import momime.common.utils.UnitUtils;
 
 /**
  * Spell book with fancy turning pages - the same book is used for casting spells overland, in combat, and research
@@ -129,6 +130,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
 	private final static int SPELLS_PER_PAGE = 4;
@@ -822,25 +826,57 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void updateSpellBook () throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering updateSpellBook");
-		
-		// Get a list of any spells this hero knows, in addition to being able to cast spells from their controlling wizard
+
+		// If it is a unit casting, rather than the wizard
 		final List<String> heroKnownSpellIDs = new ArrayList<String> ();
+		String overridePickID = null;
+		int overrideMaximumMP = -1;
 		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
 			(getCombatUI ().getCastingSource ().getCastingUnit () != null) && (getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&
 			(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))
 		{
-			final Unit unitDef = getClient ().getClientDB ().findUnit (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitID (), "updateSpellBook");
-			for (final UnitCanCast knownSpell : unitDef.getUnitCanCast ())
-				if (knownSpell.getNumberOfTimes () == null)
-					heroKnownSpellIDs.add (knownSpell.getUnitSpellID ());
+			// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
+			// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
+			// overrideMaximumMP isn't essential, but there's no point us listing spells in the spell book that the unit doesn't have enough MP to cast.
+			overrideMaximumMP = getUnitUtils ().getBasicSkillValue (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
+			if (overrideMaximumMP > 0)
+			{
+				final String unitMagicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (getCombatUI ().getCastingSource ().getCastingUnit (),
+					getCombatUI ().getCastingSource ().getCastingUnit ().getUnitHasSkill (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ());
+				
+				overridePickID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "updateSpellBook").getCastSpellsFromPickID ();
+			}
+			
+			if (overridePickID == null)
+			{
+				// Get a list of any spells this hero knows, in addition to being able to cast spells from their controlling wizard
+				final Unit unitDef = getClient ().getClientDB ().findUnit (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitID (), "updateSpellBook");
+				for (final UnitCanCast knownSpell : unitDef.getUnitCanCast ())
+					if (knownSpell.getNumberOfTimes () == null)
+						heroKnownSpellIDs.add (knownSpell.getUnitSpellID ());
+			}
 		}
 			
 		// Get a list of all spells we know, and all spells we can research now; grouped by section
 		final Map<SpellBookSectionID, List<Spell>> sections = new HashMap<SpellBookSectionID, List<Spell>> ();
 		for (final Spell spell : getClient ().getClientDB ().getSpells ())
 		{
-			final SpellResearchStatusID researchStatus = heroKnownSpellIDs.contains (spell.getSpellID ()) ? SpellResearchStatusID.AVAILABLE :
-				getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ()).getStatus ();
+			final SpellResearchStatusID researchStatus;
+			
+			// Units can cast spells from a specific magic realm, up to a their maximum MP
+			if (overridePickID != null)
+				researchStatus = ((overridePickID.equals (spell.getSpellRealm ())) && (spell.getCombatCastingCost () != null) && (spell.getCombatCastingCost () <= overrideMaximumMP)) 
+					? SpellResearchStatusID.AVAILABLE : SpellResearchStatusID.UNAVAILABLE;
+			
+			// Heroes knowing their own spells in addition to spells from their controlling wizard
+			else if (heroKnownSpellIDs.contains (spell.getSpellID ()))
+				researchStatus = SpellResearchStatusID.AVAILABLE;
+			
+			// Normal situation of wizard casting, or hero casting spells their controlling wizard knows
+			else
+				researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ()).getStatus ();
+			
 			final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
 			if (sectionID != null)
 			{
@@ -1416,6 +1452,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 	
 	/**

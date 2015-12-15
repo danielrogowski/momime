@@ -25,7 +25,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
-import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
@@ -409,47 +408,6 @@ public final class TestClientDatabaseExImpl
 		assertNull (db.findUnitType ("T4", "testFindUnitType_NotExists"));
 	}
 
-
-	/**
-	 * Tests the findUnitMagicRealm method to find a unitMagicRealm ID that does exist
-	 * @throws RecordNotFoundException If we can't find it
-	 */
-	@Test
-	public final void testFindUnitMagicRealm_Exists () throws RecordNotFoundException
-	{
-		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
-			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
-			db.getUnitMagicRealm ().add (newUnitMagicRealm);
-		}
-
-		db.buildMaps ();
-
-		assertEquals ("LT02", db.findUnitMagicRealm ("LT02", "testFindUnitMagicRealm_Exists").getUnitMagicRealmID ());
-	}
-
-	/**
-	 * Tests the findUnitMagicRealm method to find a unitMagicRealm ID that doesn't exist
-	 * @throws RecordNotFoundException If we can't find it as expected
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnitMagicRealm_NotExists () throws RecordNotFoundException
-	{
-		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
-			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
-			db.getUnitMagicRealm ().add (newUnitMagicRealm);
-		}
-
-		db.buildMaps ();
-
-		assertNull (db.findUnitMagicRealm ("LT04", "testFindUnitMagicRealm_NotExists"));
-	}
-	
 	/**
 	 * Tests the findUnitID method to find a unit ID that does exist
 	 * @throws RecordNotFoundException If we can't find it

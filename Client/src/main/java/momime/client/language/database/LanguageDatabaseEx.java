@@ -83,12 +83,6 @@ public interface LanguageDatabaseEx
 	public UnitSkillLang findUnitSkill (final String unitSkillID);
 	
 	/**
-	 * @param magicRealmLifeformTypeID Magic realm/Lifeform type ID to search for
-	 * @return Magic realm/Lifeform type descriptions object; or null if not found
-	 */
-	public UnitMagicRealmLang findUnitMagicRealm (final String magicRealmLifeformTypeID);
-	
-	/**
 	 * @param rangedAttackTypeID Ranged attack type ID to search for
 	 * @return Ranged attack type description; or replays back the ID if no description exists
 	 */

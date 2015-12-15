@@ -92,7 +92,7 @@ public final class TestVariableManaUI
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "sliderPositionChanged")).thenReturn (player);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "setSpellBeingTargetted")).thenReturn (player);
 		
 		// Example spell
 		final Spell spell = new Spell ();

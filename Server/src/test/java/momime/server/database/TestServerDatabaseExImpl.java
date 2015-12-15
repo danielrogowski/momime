@@ -360,47 +360,6 @@ public final class TestServerDatabaseExImpl
 		assertNull (db.findUnitType ("T4", "testFindUnitType_NotExists"));
 	}
 
-
-	/**
-	 * Tests the findUnitMagicRealm method to find a unitMagicRealm ID that does exist
-	 * @throws RecordNotFoundException If we can't find it
-	 */
-	@Test
-	public final void testFindUnitMagicRealm_Exists () throws RecordNotFoundException
-	{
-		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitMagicRealmSvr newUnitMagicRealm = new UnitMagicRealmSvr ();
-			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
-			db.getUnitMagicRealm ().add (newUnitMagicRealm);
-		}
-
-		db.buildMaps ();
-
-		assertEquals ("LT02", db.findUnitMagicRealm ("LT02", "testFindUnitMagicRealm_Exists").getUnitMagicRealmID ());
-	}
-
-	/**
-	 * Tests the findUnitMagicRealm method to find a unitMagicRealm ID that doesn't exist
-	 * @throws RecordNotFoundException If we can't find it as expected
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnitMagicRealm_NotExists () throws RecordNotFoundException
-	{
-		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitMagicRealmSvr newUnitMagicRealm = new UnitMagicRealmSvr ();
-			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
-			db.getUnitMagicRealm ().add (newUnitMagicRealm);
-		}
-
-		db.buildMaps ();
-
-		assertNull (db.findUnitMagicRealm ("LT04", "testFindUnitMagicRealm_NotExists"));
-	}
-	
 	/**
 	 * Tests the findUnitID method to find a unit ID that does exist
 	 * @throws RecordNotFoundException If we can't find it

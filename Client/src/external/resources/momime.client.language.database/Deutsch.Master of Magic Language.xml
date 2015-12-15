@@ -1363,36 +1363,6 @@ For example a unit with 6 figures with 3 hit points each can take a total of 18 
 The background colour of each icon depicts the source of the attribute:
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitSkillHelpText>
 	</unitSkill>
-	<unitMagicRealm unitMagicRealmID="LTN">
-		<unitMagicRealmPlural>Normal units</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTH">
-		<unitMagicRealmPlural>Heroes</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT01">
-		<unitMagicRealmPlural>Summoned Life creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT02">
-		<unitMagicRealmPlural>Summoned Death creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT03">
-		<unitMagicRealmPlural>Summoned Chaos creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT04">
-		<unitMagicRealmPlural>Summoned Nature creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT05">
-		<unitMagicRealmPlural>Summoned Sorcery creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT06">
-		<unitMagicRealmPlural>Summoned Arcane creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTCC">
-		<unitMagicRealmPlural>Chaos Channeled units</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTU">
-		<unitMagicRealmPlural>Undead</unitMagicRealmPlural>
-	</unitMagicRealm>
 	<rangedAttackType rangedAttackTypeID="RAT14">
 		<rangedAttackTypeDescription>Arrows</rangedAttackTypeDescription>
 	</rangedAttackType>

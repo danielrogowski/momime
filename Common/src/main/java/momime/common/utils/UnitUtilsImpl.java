@@ -152,7 +152,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		// handle it separately here - in this case, experience will be -1 or null
 		if ((startingExperience != null) && (startingExperience >= 0))
 		{
-			final String unitTypeID = db.findUnitMagicRealm (unitDefinition.getUnitMagicRealm (), "initializeUnitSkills").getUnitTypeID ();
+			final String unitTypeID = db.findPick (unitDefinition.getUnitMagicRealm (), "initializeUnitSkills").getUnitTypeID ();
 			final UnitType unitType = db.findUnitType (unitTypeID, "initializeUnitSkills");
 
 			if (unitType.getExperienceLevel ().size () > 0)
@@ -354,7 +354,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			// Check all experience levels defined under the unit type
 			// This checks them all so we aren't relying on them being defined in the correct orer
 			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getExperienceLevel").getUnitMagicRealm ();
-			final String unitTypeID = db.findUnitMagicRealm (unitMagicRealmID, "getExperienceLevel").getUnitTypeID ();
+			final String unitTypeID = db.findPick (unitMagicRealmID, "getExperienceLevel").getUnitTypeID ();
 			final UnitType unitType = db.findUnitType (unitTypeID, "getExperienceLevel");
 
 			ExperienceLevel levelFromExperience = null;

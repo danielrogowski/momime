@@ -20,8 +20,8 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.PickLang;
 import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.UnitMagicRealmLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
@@ -123,7 +123,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
 			if (target.getTargetMagicRealmID () != null)
 			{
-				final UnitMagicRealmLang magicRealm = getLanguage ().findUnitMagicRealm (target.getTargetMagicRealmID ());
+				final PickLang magicRealm = getLanguage ().findPick (target.getTargetMagicRealmID ());
 				final String magicRealmPlural = (magicRealm == null) ? null : magicRealm.getUnitMagicRealmPlural ();
 				
 				magicRealms.append (System.lineSeparator () +

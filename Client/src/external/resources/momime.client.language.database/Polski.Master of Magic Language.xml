@@ -264,30 +264,35 @@
 		<pickDescriptionSingular>Księga Życia</pickDescriptionSingular>
 		<pickDescriptionPlural>Księgi Życia</pickDescriptionPlural>
 		<bookshelfDescription>Życie</bookshelfDescription>
+		<unitMagicRealmPlural>Przyzwane stwory Życia</unitMagicRealmPlural>
 		<pickHelpText>Czary magii życia skupiają się leczeniu, ochronie i czarach wspierających, a także podróży pomiędzy sferami. Magia życia mocno przeciwstawia się mocom śmierci i częściowo mocom chaosu.</pickHelpText>
 	</pick>
 	<pick pickID="MB02">
 		<pickDescriptionSingular>Księga Śmierci</pickDescriptionSingular>
 		<pickDescriptionPlural>Księgi Śmierci</pickDescriptionPlural>
 		<bookshelfDescription>Śmierć</bookshelfDescription>
+		<unitMagicRealmPlural>Przyzwane stwory Śmierci</unitMagicRealmPlural>
 		<pickHelpText>Czary magii śmierci zapewniają przywoływanie i kontrolę nad umarłymi i siłami ciemności. Magia śmierci posiada potężne uroki, które powodują choroby i nieszczęście u jej przeciwników.</pickHelpText>
 	</pick>
 	<pick pickID="MB03">
 		<pickDescriptionSingular>Księga Chaosu</pickDescriptionSingular>
 		<pickDescriptionPlural>Księgi Chaosu</pickDescriptionPlural>
 		<bookshelfDescription>Chaos</bookshelfDescription>
+		<unitMagicRealmPlural>Przyzwane stwory Chaosu</unitMagicRealmPlural>
 		<pickHelpText>Czary magii chaosu przede wszystkim powiązane są z zepsuciem i destrukcją, przywoływując zmienne siły żywiołów</pickHelpText>
 	</pick>
 	<pick pickID="MB04">
 		<pickDescriptionSingular>Księga Natury</pickDescriptionSingular>
 		<pickDescriptionPlural>Księgi Natury</pickDescriptionPlural>
 		<bookshelfDescription>Natura</bookshelfDescription>
+		<unitMagicRealmPlural>Przyzwane stwory Natury</unitMagicRealmPlural>
 		<pickHelpText>Czary magii natury kontrolują pierwotne siły ziemi i wody, jak również płodności i wzrostu.</pickHelpText>
 	</pick>
 	<pick pickID="MB05">
 		<pickDescriptionSingular>Księga Czarnoksięstwa</pickDescriptionSingular>
 		<pickDescriptionPlural>Księgi Czarnoksięstwa</pickDescriptionPlural>
 		<bookshelfDescription>Czarnoksięstwo</bookshelfDescription>
+		<unitMagicRealmPlural>Przyzwane stwory Czarnoksięstwa</unitMagicRealmPlural>
 		<pickHelpText>Czary magii czarnoksięskiej skupiają się na siłach żywiołu powietrza i iluzjach. Czarnoksięstwo posiada także liczne czary meta-magiczne, które przeciwstawiają się lub kontrolują czary innych czarodziei.</pickHelpText>
 	</pick>
 	<pick pickID="RT01">
@@ -383,6 +388,21 @@ Dodatkowo, wszystkie kary dyplomatyczne za negatywne akcje są zmniejszane o po�
 		<pickHelpText>Mistrz Węzłów podwaja magiczną moc zdobywaną z wszystkich węzłów.
 
 Dodatkowo, czarodziej może dowolnie wewnątrz węzłów rzucać czary, które normalnie mogłyby zostać rozproszone.</pickHelpText>
+	</pick>
+	<pick pickID="LTN">
+		<unitMagicRealmPlural>Normalne jednostki</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTH">
+		<unitMagicRealmPlural>Bohaterowie</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTA">
+		<unitMagicRealmPlural>Przyzwane Tajemne stwory</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTC">
+		<unitMagicRealmPlural>Oddziały Prądów Chaosu</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTU">
+		<unitMagicRealmPlural>Nieumarłe</unitMagicRealmPlural>
 	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders</wizardName>
@@ -1364,36 +1384,6 @@ For example a unit with 6 figures with 3 hit points each can take a total of 18 
 The background colour of each icon depicts the source of the attribute:
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitSkillHelpText>
 	</unitSkill>
-	<unitMagicRealm unitMagicRealmID="LTN">
-		<unitMagicRealmPlural>Normalne jednostki</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTH">
-		<unitMagicRealmPlural>Bohaterowie</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT01">
-		<unitMagicRealmPlural>Przyzwane stwory Życia</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT02">
-		<unitMagicRealmPlural>Przyzwane stwory Śmierci</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT03">
-		<unitMagicRealmPlural>Przyzwane stwory Chaosu</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT04">
-		<unitMagicRealmPlural>Przyzwane stwory Natury</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT05">
-		<unitMagicRealmPlural>Przyzwane stwory Czarnoksięstwa</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT06">
-		<unitMagicRealmPlural>Przyzwane Tajemne stwory</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTCC">
-		<unitMagicRealmPlural>oddziały Prądów Chaosu</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTU">
-		<unitMagicRealmPlural>Nieumarłe</unitMagicRealmPlural>
-	</unitMagicRealm>
 	<rangedAttackType rangedAttackTypeID="RAT14">
 		<rangedAttackTypeDescription>Strzał</rangedAttackTypeDescription>
 	</rangedAttackType>

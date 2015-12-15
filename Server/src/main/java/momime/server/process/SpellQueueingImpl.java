@@ -240,7 +240,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 							final String unitMagicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (combatCastingUnit,
 								combatCastingUnit.getUnitHasSkill (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
 								
-							overridePickID = mom.getServerDB ().findUnitMagicRealm (unitMagicRealmID, "requestCastSpell").getCastSpellsFromPickID ();
+							overridePickID = mom.getServerDB ().findPick (unitMagicRealmID, "requestCastSpell").getCastSpellsFromPickID ();
+							if (overridePickID == null)
+								overridePickID = unitMagicRealmID;
 						}
 
 						boolean knowSpell;

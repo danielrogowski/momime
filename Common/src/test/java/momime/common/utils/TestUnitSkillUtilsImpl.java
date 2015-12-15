@@ -19,8 +19,8 @@ import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.Pick;
 import momime.common.database.Unit;
-import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
@@ -201,9 +201,9 @@ public final class TestUnitSkillUtilsImpl
 		unitDef.setUnitMagicRealm ("A");
 		when (db.findUnit ("UN001", "getModifiedUpkeepValue")).thenReturn (unitDef);
 		
-		final UnitMagicRealm magicRealm = new UnitMagicRealm ();
+		final Pick magicRealm = new Pick ();
 		magicRealm.setUnitTypeID ("T");
-		when (db.findUnitMagicRealm ("A", "getModifiedUpkeepValue")).thenReturn (magicRealm);
+		when (db.findPick ("A", "getModifiedUpkeepValue")).thenReturn (magicRealm);
 		
 		// Lists
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();

@@ -845,7 +845,9 @@ public final class SpellBookUI extends MomClientFrameUI
 					getCombatUI ().getCastingSource ().getCastingUnit ().getUnitHasSkill (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ());
 				
-				overridePickID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "updateSpellBook").getCastSpellsFromPickID ();
+				overridePickID = getClient ().getClientDB ().findPick (unitMagicRealmID, "updateSpellBook").getCastSpellsFromPickID ();
+				if (overridePickID == null)
+					overridePickID = unitMagicRealmID;
 			}
 			
 			if (overridePickID == null)

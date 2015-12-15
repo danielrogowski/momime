@@ -200,7 +200,6 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		dest.getWeaponGrade ().addAll (src.getWeaponGrades ());
 		dest.getCombatAreaEffect ().addAll (src.getCombatAreaEffects ());
 		dest.getSpell ().addAll (src.getSpells ());
-		dest.getUnitMagicRealm ().addAll (src.getUnitMagicRealms ());
 		dest.getCombatTileType ().addAll (src.getCombatTileTypes ());
 		dest.getCombatTileBorder ().addAll (src.getCombatTileBorders ());
 		dest.getMovementRateRule ().addAll (src.getMovementRateRule ());

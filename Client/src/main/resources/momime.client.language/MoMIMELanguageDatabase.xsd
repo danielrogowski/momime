@@ -46,7 +46,6 @@
 				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimelang:unitSkill" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimelang:unitMagicRealm" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimelang:rangedAttackType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimelang:unit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="hero" type="momimelang:hero" />
@@ -130,10 +129,6 @@
 		<xsd:key name="unitSkillPK">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="@unitSkillID" />
-		</xsd:key>
-		<xsd:key name="unitMagicRealmPK">
-			<xsd:selector xpath="unitMagicRealm" />
-			<xsd:field xpath="@unitMagicRealmID" />
 		</xsd:key>
 		<xsd:key name="rangedAttackTypePK">
 			<xsd:selector xpath="rangedAttackType" />
@@ -279,10 +274,6 @@
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="unitSkillFKunitSkill">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="@unitSkillID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="unitMagicRealmFKunitMagicRealm">
-			<xsd:selector xpath="unitMagicRealm" />
-			<xsd:field xpath="@unitMagicRealmID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:rangedAttackTypePK" name="rangedAttackTypeFKrangedAttackType">
 			<xsd:selector xpath="rangedAttackType" />
@@ -446,10 +437,11 @@
 	
 	<xsd:complexType name="pick" nxe:singular="Pick" nxe:plural="Picks" nxe:submenu="Magic">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="pickDescriptionSingular" type="momimecommon:description" nxe:label="Singular" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickDescriptionSingular" type="momimecommon:description" nxe:label="Singular" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickDescriptionPlural" type="momimecommon:description" nxe:label="Plural" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="bookshelfDescription" type="momimecommon:description" nxe:label="Label on Bookshelf" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="pickHelpText" type="momimelang:helpText" nxe:label="Help Text" nxe:gridwidth="600" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitMagicRealmPlural" type="momimecommon:description" nxe:label="Unit Magic Realm" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickHelpText" type="momimelang:helpText" nxe:label="Help Text" nxe:gridwidth="600" />
 		</xsd:sequence>
 		<xsd:attribute name="pickID" type="momimecommon:pickID" use="required" nxe:label="Pick Type ID" nxe:gridwidth="100">
 			<xsd:annotation>
@@ -539,19 +531,6 @@
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-	
-	<xsd:complexType name="unitMagicRealm" nxe:singular="Unit Magic Realm/Lifeform Type" nxe:plural="Unit Magic Realms/Lifeform Types" nxe:submenu="Units">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitMagicRealmPlural" type="momimecommon:description" nxe:label="Plural" nxe:gridwidth="200" />
-		</xsd:sequence>
-		<xsd:attribute name="unitMagicRealmID" type="momimecommon:unitMagicRealmID" use="required" nxe:label="Unit Magic Realm ID" nxe:gridwidth="150">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

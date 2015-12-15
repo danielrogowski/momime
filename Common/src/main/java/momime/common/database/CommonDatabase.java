@@ -108,14 +108,6 @@ public interface CommonDatabase
 	public UnitType findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException;
 
 	/**
-	 * @param unitMagicRealmID Unit magic realm ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit magic realm object
-	 * @throws RecordNotFoundException If the unitMagicRealmID doesn't exist
-	 */
-	public UnitMagicRealm findUnitMagicRealm (final String unitMagicRealmID, final String caller) throws RecordNotFoundException;
-
-	/**
 	 * @return Complete list of all units in game
 	 */
 	public List<? extends Unit> getUnits ();

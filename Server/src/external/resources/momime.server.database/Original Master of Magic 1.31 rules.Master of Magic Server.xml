@@ -183,19 +183,19 @@
 	<mapFeature mapFeatureID="MF12A">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Uncleared Tower of Wizardry</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT01">
+		<mapFeatureMagicRealm magicRealm="MB01">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>2</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT03">
+		<mapFeatureMagicRealm magicRealm="MB03">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT04">
+		<mapFeatureMagicRealm magicRealm="MB04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT05">
+		<mapFeatureMagicRealm magicRealm="MB05">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB01" />
@@ -207,32 +207,32 @@
 	<mapFeature mapFeatureID="MF12B">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Cleared Tower of Wizardry</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT01">
+		<mapFeatureMagicRealm magicRealm="MB01">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>2</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT03">
+		<mapFeatureMagicRealm magicRealm="MB03">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT04">
+		<mapFeatureMagicRealm magicRealm="MB04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT05">
+		<mapFeatureMagicRealm magicRealm="MB05">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
 	</mapFeature>
 	<mapFeature mapFeatureID="MF13">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Monster Lair</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT03">
+		<mapFeatureMagicRealm magicRealm="MB03">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT04">
+		<mapFeatureMagicRealm magicRealm="MB04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB01" />
@@ -244,13 +244,13 @@
 	<mapFeature mapFeatureID="MF14">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Mysterious Cave</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT03">
+		<mapFeatureMagicRealm magicRealm="MB03">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT04">
+		<mapFeatureMagicRealm magicRealm="MB04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB01" />
@@ -262,13 +262,13 @@
 	<mapFeature mapFeatureID="MF15">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Abandoned Keep</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT03">
+		<mapFeatureMagicRealm magicRealm="MB03">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT04">
+		<mapFeatureMagicRealm magicRealm="MB04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB02" />
@@ -276,10 +276,10 @@
 	<mapFeature mapFeatureID="MF16">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Ancient Ruins</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT01">
+		<mapFeatureMagicRealm magicRealm="MB01">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>3</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB02" />
@@ -287,13 +287,13 @@
 	<mapFeature mapFeatureID="MF17">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Dungeon</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT03">
+		<mapFeatureMagicRealm magicRealm="MB03">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT04">
+		<mapFeatureMagicRealm magicRealm="MB04">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB02" />
@@ -301,10 +301,10 @@
 	<mapFeature mapFeatureID="MF18">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Ancient Temple</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT01">
+		<mapFeatureMagicRealm magicRealm="MB01">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>3</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB01" />
@@ -312,10 +312,10 @@
 	<mapFeature mapFeatureID="MF19">
 		<canBuildCity>false</canBuildCity>
 		<mapFeatureDescription>Fallen Temple</mapFeatureDescription>
-		<mapFeatureMagicRealm magicRealm="LT01">
+		<mapFeatureMagicRealm magicRealm="MB01">
 			<featureChance>1</featureChance>
 		</mapFeatureMagicRealm>
-		<mapFeatureMagicRealm magicRealm="LT02">
+		<mapFeatureMagicRealm magicRealm="MB02">
 			<featureChance>3</featureChance>
 		</mapFeatureMagicRealm>
 		<mapFeatureTreasureBookReward pickID="MB01" />
@@ -586,13 +586,12 @@
 		<land>true</land>
 		<doubleFood>3</doubleFood>
 		<canBuildCity>false</canBuildCity>
-		<magicRealmID>LT05</magicRealmID>
+		<magicRealmID>MB05</magicRealmID>
 		<tileTypeDescription>Grasslands (Sorcery Node)</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
-		<tileTypeTreasureBookReward>MB05</tileTypeTreasureBookReward>
 		<tileTypeAreaEffect combatAreaEffectID="CAE05" />
 		<tileTypeAreaEffect combatAreaEffectID="CAE06">
 			<extendAcrossNodeAura>true</extendAcrossNodeAura>
@@ -603,13 +602,12 @@
 		<productionBonus>3</productionBonus>
 		<doubleFood>1</doubleFood>
 		<canBuildCity>false</canBuildCity>
-		<magicRealmID>LT04</magicRealmID>
+		<magicRealmID>MB04</magicRealmID>
 		<tileTypeDescription>Forest (Nature Node)</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>35</combatDarkTiles>
 		<combatRidgeTiles>25</combatRidgeTiles>
 		<combatTerrainFeatures>70</combatTerrainFeatures>
-		<tileTypeTreasureBookReward>MB04</tileTypeTreasureBookReward>
 		<tileTypeAreaEffect combatAreaEffectID="CAE03" />
 		<tileTypeAreaEffect combatAreaEffectID="CAE04">
 			<extendAcrossNodeAura>true</extendAcrossNodeAura>
@@ -619,13 +617,12 @@
 		<land>true</land>
 		<productionBonus>5</productionBonus>
 		<canBuildCity>false</canBuildCity>
-		<magicRealmID>LT03</magicRealmID>
+		<magicRealmID>MB03</magicRealmID>
 		<tileTypeDescription>Volcano/Mountain (Chaos Node)</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
 		<combatTerrainFeatures>15</combatTerrainFeatures>
-		<tileTypeTreasureBookReward>MB03</tileTypeTreasureBookReward>
 		<tileTypeAreaEffect combatAreaEffectID="CAE01" />
 		<tileTypeAreaEffect combatAreaEffectID="CAE02">
 			<extendAcrossNodeAura>true</extendAcrossNodeAura>
@@ -978,9 +975,13 @@
 		<relativeChance>1</relativeChance>
 		<pickTypeDescription>Retort</pickTypeDescription>
 	</pickType>
+	<pickType pickTypeID="L">
+		<pickTypeDescription>Lifeform type</pickTypeDescription>
+	</pickType>
 	<pick pickID="MB01">
 		<pickType>B</pickType>
 		<pickCost>1</pickCost>
+		<unitTypeID>S</unitTypeID>
 		<pickExclusiveFrom pickExclusiveFromID="MB02" />
 		<pickDescription>Life Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
@@ -988,6 +989,7 @@
 	<pick pickID="MB02">
 		<pickType>B</pickType>
 		<pickCost>1</pickCost>
+		<unitTypeID>S</unitTypeID>
 		<pickExclusiveFrom pickExclusiveFromID="MB01" />
 		<pickDescription>Death Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
@@ -995,18 +997,21 @@
 	<pick pickID="MB03">
 		<pickType>B</pickType>
 		<pickCost>1</pickCost>
+		<unitTypeID>S</unitTypeID>
 		<pickDescription>Chaos Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 	</pick>
 	<pick pickID="MB04">
 		<pickType>B</pickType>
 		<pickCost>1</pickCost>
+		<unitTypeID>S</unitTypeID>
 		<pickDescription>Nature Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 	</pick>
 	<pick pickID="MB05">
 		<pickType>B</pickType>
 		<pickCost>1</pickCost>
+		<unitTypeID>S</unitTypeID>
 		<pickDescription>Sorcery Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 	</pick>
@@ -1222,6 +1227,30 @@
 			<prerequisiteCount>1</prerequisiteCount>
 		</pickPrerequisite>
 		<pickDescription>Node Mastery (Immune to dispelling effects, 2x mana from nodes)</pickDescription>
+	</pick>
+	<pick pickID="LTN">
+		<pickType>L</pickType>
+		<unitTypeID>N</unitTypeID>
+		<pickDescription>Normal unit</pickDescription>
+	</pick>
+	<pick pickID="LTH">
+		<pickType>L</pickType>
+		<unitTypeID>H</unitTypeID>
+		<pickDescription>Hero</pickDescription>
+	</pick>
+	<pick pickID="LTA">
+		<pickType>L</pickType>
+		<unitTypeID>S</unitTypeID>
+		<pickDescription>Arcane summoned creature</pickDescription>
+	</pick>
+	<pick pickID="LTC">
+		<pickType>L</pickType>
+		<pickDescription>Chaos channeled unit</pickDescription>
+	</pick>
+	<pick pickID="LTU">
+		<pickType>L</pickType>
+		<castSpellsFromPickID>MB02</castSpellsFromPickID>
+		<pickDescription>Undead (killed by Ghouls/Life Steal or Black Channeled units)</pickDescription>
 	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders (Neutral cities)</wizardName>
@@ -10910,7 +10939,7 @@
 		<unitSkillDescription>Eldritch Weapon</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093A">
-		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
+		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
 		<addsToSkill>
 			<addsToSkillID>UA04</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
@@ -10919,14 +10948,14 @@
 		<unitSkillDescription>Chaos Channels - Demon Skin Armour</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093B">
-		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
+		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>S</damageType>
 		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
-		<changesUnitToMagicRealm>LTCC</changesUnitToMagicRealm>
+		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Flight</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
@@ -17000,7 +17029,7 @@
 		<unitName>War Mammoths</unitName>
 	</unit>
 	<unit unitID="UN155">
-		<unitMagicRealm>LT06</unitMagicRealm>
+		<unitMagicRealm>LTA</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>30</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17028,7 +17057,7 @@
 		<unitName>Magic Spirit</unitName>
 	</unit>
 	<unit unitID="UN156">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>40</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17059,7 +17088,7 @@
 		<unitName>Hell Hounds</unitName>
 	</unit>
 	<unit unitID="UN157">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17089,7 +17118,7 @@
 		<unitName>Gargoyles</unitName>
 	</unit>
 	<unit unitID="UN158">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>150</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -17127,7 +17156,7 @@
 		<unitName>Fire Giant</unitName>
 	</unit>
 	<unit unitID="UN159">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>100</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17155,7 +17184,7 @@
 		<unitName>Fire Elemental</unitName>
 	</unit>
 	<unit unitID="UN160">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>400</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17193,7 +17222,7 @@
 		<unitName>Chaos Spawn</unitName>
 	</unit>
 	<unit unitID="UN161">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>350</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17224,7 +17253,7 @@
 		<unitName>Chimeras</unitName>
 	</unit>
 	<unit unitID="UN162">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>300</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17255,7 +17284,7 @@
 		<unitName>Doom Bat</unitName>
 	</unit>
 	<unit unitID="UN163">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>550</productionCost>
 		<rangedAttackType>RAT1F</rangedAttackType>
@@ -17291,7 +17320,7 @@
 		<unitName>Efreet</unitName>
 	</unit>
 	<unit unitID="UN164">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>9</figureCount>
 		<productionCost>650</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17323,7 +17352,7 @@
 		<unitName>Hydra</unitName>
 	</unit>
 	<unit unitID="UN165">
-		<unitMagicRealm>LT03</unitMagicRealm>
+		<unitMagicRealm>MB03</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>900</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17354,7 +17383,7 @@
 		<unitName>Great Drake</unitName>
 	</unit>
 	<unit unitID="UN166">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>6</figureCount>
 		<productionCost>25</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17387,7 +17416,7 @@
 		<unitName>Skeletons</unitName>
 	</unit>
 	<unit unitID="UN167">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17423,7 +17452,7 @@
 		<unitName>Ghouls</unitName>
 	</unit>
 	<unit unitID="UN168">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17459,7 +17488,7 @@
 		<unitName>Night Stalker</unitName>
 	</unit>
 	<unit unitID="UN169">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>6</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17493,7 +17522,7 @@
 		<unitName>Werewolves</unitName>
 	</unit>
 	<unit unitID="UN170">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>80</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17527,7 +17556,7 @@
 		<unitName>Demon</unitName>
 	</unit>
 	<unit unitID="UN171">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>500</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17564,7 +17593,7 @@
 		<unitName>Wraiths</unitName>
 	</unit>
 	<unit unitID="UN172">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>325</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
@@ -17607,7 +17636,7 @@
 		<unitName>Shadow Demons</unitName>
 	</unit>
 	<unit unitID="UN173">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>600</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17645,7 +17674,7 @@
 		<unitName>Death Knights</unitName>
 	</unit>
 	<unit unitID="UN174">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>900</productionCost>
 		<rangedAttackType>RAT21</rangedAttackType>
@@ -17692,7 +17721,7 @@
 		<unitName>Demon Lord</unitName>
 	</unit>
 	<unit unitID="UN175">
-		<unitMagicRealm>LT02</unitMagicRealm>
+		<unitMagicRealm>MB02</unitMagicRealm>
 		<figureCount>6</figureCount>
 		<productionCost>30</productionCost>
 		<unitHasSkill unitSkillID="UA01">
@@ -17721,7 +17750,7 @@
 		<unitName>Zombies</unitName>
 	</unit>
 	<unit unitID="UN176">
-		<unitMagicRealm>LT01</unitMagicRealm>
+		<unitMagicRealm>MB01</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>250</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17754,7 +17783,7 @@
 		<unitName>Unicorns</unitName>
 	</unit>
 	<unit unitID="UN177">
-		<unitMagicRealm>LT01</unitMagicRealm>
+		<unitMagicRealm>MB01</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>50</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17785,7 +17814,7 @@
 		<unitName>Guardian Spirit</unitName>
 	</unit>
 	<unit unitID="UN178">
-		<unitMagicRealm>LT01</unitMagicRealm>
+		<unitMagicRealm>MB01</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>550</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17818,7 +17847,7 @@
 		<unitName>Angel</unitName>
 	</unit>
 	<unit unitID="UN179">
-		<unitMagicRealm>LT01</unitMagicRealm>
+		<unitMagicRealm>MB01</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>950</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17853,7 +17882,7 @@
 		<unitName>Arch Angel</unitName>
 	</unit>
 	<unit unitID="UN180">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>2</figureCount>
 		<productionCost>70</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17879,7 +17908,7 @@
 		<unitName>War Bears</unitName>
 	</unit>
 	<unit unitID="UN181">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>100</productionCost>
 		<rangedAttackType>RAT25</rangedAttackType>
@@ -17915,7 +17944,7 @@
 		<unitName>Sprites</unitName>
 	</unit>
 	<unit unitID="UN182">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>275</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17946,7 +17975,7 @@
 		<unitName>Cockatrices</unitName>
 	</unit>
 	<unit unitID="UN183">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>325</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -17977,7 +18006,7 @@
 		<unitName>Basilisk</unitName>
 	</unit>
 	<unit unitID="UN184">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>2</figureCount>
 		<productionCost>200</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18011,7 +18040,7 @@
 		<unitName>Giant Spiders</unitName>
 	</unit>
 	<unit unitID="UN185">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>450</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -18050,7 +18079,7 @@
 		<unitName>Stone Giant</unitName>
 	</unit>
 	<unit unitID="UN186">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>800</productionCost>
 		<rangedAttackType>RAT0A</rangedAttackType>
@@ -18089,7 +18118,7 @@
 		<unitName>Colossus</unitName>
 	</unit>
 	<unit unitID="UN187">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>4</figureCount>
 		<productionCost>599</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18120,7 +18149,7 @@
 		<unitName>Gorgons</unitName>
 	</unit>
 	<unit unitID="UN188">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>160</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18151,7 +18180,7 @@
 		<unitName>Earth Elemental</unitName>
 	</unit>
 	<unit unitID="UN189">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>700</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18179,7 +18208,7 @@
 		<unitName>Behemoth</unitName>
 	</unit>
 	<unit unitID="UN190">
-		<unitMagicRealm>LT04</unitMagicRealm>
+		<unitMagicRealm>MB04</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>1000</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18211,7 +18240,7 @@
 		<unitName>Great Wyrm</unitName>
 	</unit>
 	<unit unitID="UN191">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<transportCapacity>8</transportCapacity>
 		<unitUpkeep productionTypeID="RE09">
@@ -18233,7 +18262,7 @@
 		<unitName>Floating Island</unitName>
 	</unit>
 	<unit unitID="UN192">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>225</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18262,7 +18291,7 @@
 		<unitName>Phantom Beast</unitName>
 	</unit>
 	<unit unitID="UN193">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>6</figureCount>
 		<productionCost>20</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18288,7 +18317,7 @@
 		<unitName>Phantom Warriors</unitName>
 	</unit>
 	<unit unitID="UN194">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>500</productionCost>
 		<rangedAttackType>RAT1E</rangedAttackType>
@@ -18325,7 +18354,7 @@
 		<unitName>Storm Giant</unitName>
 	</unit>
 	<unit unitID="UN195">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>170</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18357,7 +18386,7 @@
 		<unitName>Air Elemental</unitName>
 	</unit>
 	<unit unitID="UN196">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>650</productionCost>
 		<rangedAttackType>RAT22</rangedAttackType>
@@ -18394,7 +18423,7 @@
 		<unitName>Djinn</unitName>
 	</unit>
 	<unit unitID="UN197">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>1</figureCount>
 		<productionCost>1000</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18427,7 +18456,7 @@
 		<unitName>Sky Drake</unitName>
 	</unit>
 	<unit unitID="UN198">
-		<unitMagicRealm>LT05</unitMagicRealm>
+		<unitMagicRealm>MB05</unitMagicRealm>
 		<figureCount>2</figureCount>
 		<productionCost>120</productionCost>
 		<unitUpkeep productionTypeID="RE09">
@@ -18511,75 +18540,75 @@
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Node Aura (+2 to various stats for Chaos creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -18590,39 +18619,39 @@
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Nature Node Aura (+2 to various stats for Nature creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -18633,39 +18662,39 @@
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Sorcery Node Aura (+2 to various stats for Sorcery creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -18705,11 +18734,11 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Metal Fires</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -18725,23 +18754,23 @@
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA03">
 			<unitSkillValue>-2</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA03">
 			<unitSkillValue>-2</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA03">
 			<unitSkillValue>-2</unitSkillValue>
-			<effectMagicRealm>LT04</effectMagicRealm>
+			<effectMagicRealm>MB04</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA03">
 			<unitSkillValue>-2</unitSkillValue>
-			<effectMagicRealm>LT05</effectMagicRealm>
+			<effectMagicRealm>MB05</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA03">
 			<unitSkillValue>-2</unitSkillValue>
-			<effectMagicRealm>LT06</effectMagicRealm>
+			<effectMagicRealm>LTA</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA03">
 			<unitSkillValue>-2</unitSkillValue>
@@ -18753,59 +18782,59 @@
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LT03</effectMagicRealm>
+			<effectMagicRealm>MB03</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
-			<effectMagicRealm>LTCC</effectMagicRealm>
+			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Surge</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -18813,75 +18842,75 @@
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>True Light</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -18973,75 +19002,75 @@
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Darkness</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -19089,75 +19118,75 @@
 		<combatAreaAffectsPlayers>A</combatAreaAffectsPlayers>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA02">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA04">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA05">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>1</unitSkillValue>
-			<effectMagicRealm>LT02</effectMagicRealm>
+			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US133">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US130">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US126">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>-1</unitSkillValue>
-			<effectMagicRealm>LT01</effectMagicRealm>
+			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Eternal Night</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -20118,7 +20147,7 @@
 		<unitSpellEffect unitSkillID="SS086" />
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
@@ -20228,7 +20257,7 @@
 		<unitSpellEffect unitSkillID="SS094" />
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
@@ -20537,9 +20566,9 @@
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<attackSpellDamageType>S</attackSpellDamageType>
 		<combatBaseDamage>15</combatBaseDamage>
-		<spellValidUnitTarget targetMagicRealmID="LT02" />
-		<spellValidUnitTarget targetMagicRealmID="LT03" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="MB02" />
+		<spellValidUnitTarget targetMagicRealmID="MB03" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellValidUnitTarget targetMagicRealmID="LTU" />
 		<spellName>Star Fires</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -20567,7 +20596,7 @@
 		<unitSpellEffect unitSkillID="SS124" />
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
@@ -20592,7 +20621,7 @@
 		<unitSpellEffect unitSkillID="SS126" />
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
@@ -20641,7 +20670,7 @@
 		<unitSpellEffect unitSkillID="SS130" />
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>2</undoubledProductionValue>
 		</spellUpkeep>
@@ -20687,9 +20716,9 @@
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<attackSpellDamageType>P</attackSpellDamageType>
 		<combatBaseDamage>4</combatBaseDamage>
-		<spellValidUnitTarget targetMagicRealmID="LT02" />
-		<spellValidUnitTarget targetMagicRealmID="LT03" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="MB02" />
+		<spellValidUnitTarget targetMagicRealmID="MB03" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellValidUnitTarget targetMagicRealmID="LTU">
 			<savingThrowSkillID>UA05</savingThrowSkillID>
 			<savingThrowModifier>5</savingThrowModifier>
@@ -20881,13 +20910,13 @@
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
 		<attackSpellDamageType>P</attackSpellDamageType>
 		<combatBaseDamage>2</combatBaseDamage>
-		<spellValidUnitTarget targetMagicRealmID="LT01" />
-		<spellValidUnitTarget targetMagicRealmID="LT02" />
-		<spellValidUnitTarget targetMagicRealmID="LT03" />
-		<spellValidUnitTarget targetMagicRealmID="LT04" />
-		<spellValidUnitTarget targetMagicRealmID="LT05" />
-		<spellValidUnitTarget targetMagicRealmID="LT06" />
-		<spellValidUnitTarget targetMagicRealmID="LTCC" />
+		<spellValidUnitTarget targetMagicRealmID="MB01" />
+		<spellValidUnitTarget targetMagicRealmID="MB02" />
+		<spellValidUnitTarget targetMagicRealmID="MB03" />
+		<spellValidUnitTarget targetMagicRealmID="MB04" />
+		<spellValidUnitTarget targetMagicRealmID="MB05" />
+		<spellValidUnitTarget targetMagicRealmID="LTA" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellValidUnitTarget targetMagicRealmID="LTU">
 			<savingThrowSkillID>UA05</savingThrowSkillID>
 			<savingThrowModifier>5</savingThrowModifier>
@@ -22096,48 +22125,6 @@
 	<citySpellEffect citySpellEffectID="SE196">
 		<citySpellEffectName>Pestilence</citySpellEffectName>
 	</citySpellEffect>
-	<unitMagicRealm unitMagicRealmID="LTN">
-		<unitTypeID>N</unitTypeID>
-		<unitMagicRealmName>Normal unit</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTH">
-		<unitTypeID>H</unitTypeID>
-		<unitMagicRealmName>Hero</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT01">
-		<unitTypeID>S</unitTypeID>
-		<castSpellsFromPickID>MB01</castSpellsFromPickID>
-		<unitMagicRealmName>Life creature</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT02">
-		<unitTypeID>S</unitTypeID>
-		<unitMagicRealmName>Death creature</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT03">
-		<unitTypeID>S</unitTypeID>
-		<castSpellsFromPickID>MB03</castSpellsFromPickID>
-		<unitMagicRealmName>Chaos creature</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT04">
-		<unitTypeID>S</unitTypeID>
-		<unitMagicRealmName>Nature creature</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT05">
-		<unitTypeID>S</unitTypeID>
-		<castSpellsFromPickID>MB05</castSpellsFromPickID>
-		<unitMagicRealmName>Sorcery creature</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT06">
-		<unitTypeID>S</unitTypeID>
-		<unitMagicRealmName>Arcane summoned creature</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTCC">
-		<unitMagicRealmName>Chaos channeled unit</unitMagicRealmName>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTU">
-		<castSpellsFromPickID>MB02</castSpellsFromPickID>
-		<unitMagicRealmName>Undead (killed by Ghouls/Life Steal or Black Channeled units)</unitMagicRealmName>
-	</unitMagicRealm>
 	<overlandMapSize overlandMapSizeID="MS01">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>30</width>

@@ -39,7 +39,6 @@ import momime.server.database.v0_9_7.TileType;
 import momime.server.database.v0_9_7.TileTypeAreaEffect;
 import momime.server.database.v0_9_7.TileTypeFeatureChance;
 import momime.server.database.v0_9_7.Unit;
-import momime.server.database.v0_9_7.UnitMagicRealm;
 import momime.server.database.v0_9_7.UnitSetting;
 import momime.server.database.v0_9_7.UnitSkill;
 import momime.server.database.v0_9_7.UnitType;
@@ -216,15 +215,6 @@ public final class ServerDatabaseObjectFactory extends ObjectFactory
 	public final Spell createSpell ()
 	{
 		return new SpellSvr ();
-	}
-
-	/**
-	 * @return Custom extended UnitMagicRealm 
-	 */
-	@Override
-	public final UnitMagicRealm createUnitMagicRealm ()
-	{
-		return new UnitMagicRealmSvr ();
 	}
 
 	/**

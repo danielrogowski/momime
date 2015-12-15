@@ -365,6 +365,11 @@
 	<pick pickID="RT16" />
 	<pick pickID="RT17" />
 	<pick pickID="RT18" />
+	<pick pickID="LTN" />
+	<pick pickID="LTH" />
+	<pick pickID="LTA" />
+	<pick pickID="LTC" />
+	<pick pickID="LTU" />
 	<unitSkillComponentImage unitSkillComponentID="B">
 		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/basic.png</unitSkillComponentImageFile>
 	</unitSkillComponentImage>

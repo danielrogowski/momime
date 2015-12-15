@@ -264,30 +264,35 @@
 		<pickDescriptionSingular>Livre de Vie</pickDescriptionSingular>
 		<pickDescriptionPlural>Livres des Vie</pickDescriptionPlural>
 		<bookshelfDescription>Vie</bookshelfDescription>
+		<unitMagicRealmPlural>Créatures de Vie Invoquées</unitMagicRealmPlural>
 		<pickHelpText>Les sorts de Vie se concentrent sur les enchantements de soins, protections et d'inspirations, ainsi que le voyage entre les plans. La magie de Vie s'oppose vigoureusement aux forces de mort et résiste modérément aux forces du chaos.</pickHelpText>
 	</pick>
 	<pick pickID="MB02">
 		<pickDescriptionSingular>Livre de Mort</pickDescriptionSingular>
 		<pickDescriptionPlural>Livres des Mort</pickDescriptionPlural>
 		<bookshelfDescription>Mort</bookshelfDescription>
+		<unitMagicRealmPlural>Créatures de Mort Invoquées</unitMagicRealmPlural>
 		<pickHelpText>Les sorts de Mort procurent l'invocation et le contrôle de la mort et des forces de l'ombre. La magie de Mort dispose d'enchantements puissants qui frappent maladie et malheur sur ses ennemis.</pickHelpText>
 	</pick>
 	<pick pickID="MB03">
 		<pickDescriptionSingular>Livre de Chaos</pickDescriptionSingular>
 		<pickDescriptionPlural>Livres des Chaos</pickDescriptionPlural>
 		<bookshelfDescription>Chaos</bookshelfDescription>
+		<unitMagicRealmPlural>Créatures de Chaos Invoquées</unitMagicRealmPlural>
 		<pickHelpText>Les sorts de Chaos traitent primairement de corruption et destruction, invoquant les forces élémentales du changement.</pickHelpText>
 	</pick>
 	<pick pickID="MB04">
 		<pickDescriptionSingular>Livre de Nature</pickDescriptionSingular>
 		<pickDescriptionPlural>Livres des Nature</pickDescriptionPlural>
 		<bookshelfDescription>Nature</bookshelfDescription>
+		<unitMagicRealmPlural>Créatures de Nature Invoquées</unitMagicRealmPlural>
 		<pickHelpText>Les sorts de Nature contrôlent les forces brutes de la terre et l'eau, aussi bien que la fertilité et la croissance.</pickHelpText>
 	</pick>
 	<pick pickID="MB05">
 		<pickDescriptionSingular>Livre de Sorcellerie</pickDescriptionSingular>
 		<pickDescriptionPlural>Livres des Sorcellerie</pickDescriptionPlural>
 		<bookshelfDescription>Sorcellerie</bookshelfDescription>
+		<unitMagicRealmPlural>Créatures de Sorcellerie Invoquées</unitMagicRealmPlural>
 		<pickHelpText>Les sorts de Sorcellerie se concentrent sur les forces élémentales de l'air de et l'illusion. La sorcellerie dispose également de nombres de sorts méta-magiques qui résistent et contrôlent les sorts des autres sorciers.</pickHelpText>
 	</pick>
 	<pick pickID="RT01">
@@ -383,6 +388,21 @@ En supplément, toutes les conséquences diplomatiques des actions négatives so
 		<pickHelpText>Maître des Noeuds double la puissance magique obtenue par tous les noeuds.
 
 En supplément le sorcier est capable de lancer librement des sorts à l'intérieur des noeuds alors qu'ils auraient normalement un risque d'être dissipés.</pickHelpText>
+	</pick>
+	<pick pickID="LTN">
+		<unitMagicRealmPlural>Unités Normales</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTH">
+		<unitMagicRealmPlural>Héros</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTA">
+		<unitMagicRealmPlural>Créatures d'Arcane Invoquées</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTC">
+		<unitMagicRealmPlural>Unités Reliées au Chaos</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTU">
+		<unitMagicRealmPlural>Non-Mort</unitMagicRealmPlural>
 	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Bandits</wizardName>
@@ -1364,36 +1384,6 @@ Par exemple une unité de 6 personnages avec 3 points de frappe chacun peut subi
 La couleur de fond de chaque icone dépaint la source de l'attribut :
 IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus provenant du sort Haute Prière</unitSkillHelpText>
 	</unitSkill>
-	<unitMagicRealm unitMagicRealmID="LTN">
-		<unitMagicRealmPlural>Unités Normales</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTH">
-		<unitMagicRealmPlural>Héros</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT01">
-		<unitMagicRealmPlural>Créatures de Vie Invoquées</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT02">
-		<unitMagicRealmPlural>Créatures de Mort Invoquées</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT03">
-		<unitMagicRealmPlural>Créatures de Chaos Invoquées</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT04">
-		<unitMagicRealmPlural>Créatures de Nature Invoquées</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT05">
-		<unitMagicRealmPlural>Créatures de Sorcellerie Invoquées</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT06">
-		<unitMagicRealmPlural>Créatures d'Arcane Invoquées</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTCC">
-		<unitMagicRealmPlural>Unités Reliées au Chaos</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTU">
-		<unitMagicRealmPlural>Non-Mort</unitMagicRealmPlural>
-	</unitMagicRealm>
 	<rangedAttackType rangedAttackTypeID="RAT14">
 		<rangedAttackTypeDescription>Flèches</rangedAttackTypeDescription>
 	</rangedAttackType>

@@ -36,6 +36,7 @@ import momime.common.database.DifficultyLevel;
 import momime.common.database.GenerateTestData;
 import momime.common.database.MapFeature;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionType;
@@ -48,7 +49,6 @@ import momime.common.database.RoundingDirectionID;
 import momime.common.database.TaxRate;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
-import momime.common.database.UnitMagicRealm;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
@@ -659,25 +659,25 @@ public final class TestCityCalculationsImpl
 		normalUnitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
 		
-		final UnitMagicRealm normalMagicRealm = new UnitMagicRealm ();
+		final Pick normalMagicRealm = new Pick ();
 		normalMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
 
 		final Unit summonedUnitDef = new Unit ();
 		summonedUnitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN002", "calculateCityRebels")).thenReturn (summonedUnitDef);
 		
-		final UnitMagicRealm summonedMagicRealm = new UnitMagicRealm ();
+		final Pick summonedMagicRealm = new Pick ();
 		summonedMagicRealm.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
-		when (db.findUnitMagicRealm ("MB01", "calculateCityRebels")).thenReturn (summonedMagicRealm);
+		when (db.findPick ("MB01", "calculateCityRebels")).thenReturn (summonedMagicRealm);
 		
 		final Unit heroUnitDef = new Unit ();
 		heroUnitDef.setUnitMagicRealm ("LTH");
 		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
 		
-		final UnitMagicRealm heroMagicRealm = new UnitMagicRealm ();
+		final Pick heroMagicRealm = new Pick ();
 		heroMagicRealm.setUnitTypeID ("H");
-		when (db.findUnitMagicRealm ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
 		
 		// Races
 		final RaceUnrest klackonUnrest = new RaceUnrest ();

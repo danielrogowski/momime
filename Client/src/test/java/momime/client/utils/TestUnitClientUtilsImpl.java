@@ -51,10 +51,10 @@ import momime.client.language.database.RaceLang;
 import momime.client.language.database.UnitLang;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatScale;
-import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
@@ -353,9 +353,9 @@ public final class TestUnitClientUtilsImpl
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "getUnitSkillSingleIcon")).thenReturn (unitDef);
 		
-		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillSingleIcon")).thenReturn (unitMagicRealm);
+		when (db.findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillSingleIcon")).thenReturn (unitMagicRealm);
 
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
@@ -530,13 +530,13 @@ public final class TestUnitClientUtilsImpl
 		// Mock entries from client database
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
-		final UnitMagicRealm normalUnits = new UnitMagicRealm ();
+		final Pick normalUnits = new Pick ();
 		normalUnits.setUnitTypeID ("X");
-		when (db.findUnitMagicRealm ("N", "calculateWalkTiming")).thenReturn (normalUnits);				
+		when (db.findPick ("N", "calculateWalkTiming")).thenReturn (normalUnits);				
 
-		final UnitMagicRealm summonedUnits = new UnitMagicRealm ();
+		final Pick summonedUnits = new Pick ();
 		summonedUnits.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
-		when (db.findUnitMagicRealm ("S", "calculateWalkTiming")).thenReturn (summonedUnits);				
+		when (db.findPick ("S", "calculateWalkTiming")).thenReturn (summonedUnits);				
 		
 		// Unit definitions
 		final Unit regularUnitDef = new Unit ();

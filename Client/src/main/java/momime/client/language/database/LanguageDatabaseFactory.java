@@ -34,7 +34,6 @@ import momime.client.language.database.v0_9_7.SpellRank;
 import momime.client.language.database.v0_9_7.SpellSetting;
 import momime.client.language.database.v0_9_7.TileType;
 import momime.client.language.database.v0_9_7.Unit;
-import momime.client.language.database.v0_9_7.UnitMagicRealm;
 import momime.client.language.database.v0_9_7.UnitSetting;
 import momime.client.language.database.v0_9_7.UnitSkill;
 import momime.client.language.database.v0_9_7.UnitType;
@@ -217,15 +216,6 @@ public final class LanguageDatabaseFactory extends ObjectFactory
 		return new UnitSkillLang ();
 	}
 	
-	/**
-	 * @return Custom extended UnitMagicRealm
-	 */
-	@Override
-	public final UnitMagicRealm createUnitMagicRealm ()
-	{
-		return new UnitMagicRealmLang ();
-	}
-
 	/**
 	 * @return Custom extended KnownServer
 	 */

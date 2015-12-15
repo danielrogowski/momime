@@ -441,8 +441,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			if (availableSpellBookIDs.size () == 0)
 			{
 				final TileTypeSvr tileType = db.findTileType (tileTypeID, "rollTreasureReward");
-				if (tileType.getTileTypeTreasureBookReward () != null)
-					availableSpellBookIDs.add (tileType.getTileTypeTreasureBookReward ());
+				if (tileType.getMagicRealmID () != null)
+					availableSpellBookIDs.add (tileType.getMagicRealmID ());
 			}
 			
 			// Debug book choices
@@ -571,8 +571,12 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					// Choose pick type to award - have to list the pick types by their relative chance (75% chance to get books, 25% to get retorts)
 					final List<String> availablePickTypesList = new ArrayList<String> ();
 					for (final String pickTypeID : availablePickTypes.keySet ())
-						for (int n = 0; n < db.findPickType (pickTypeID, "rollTreasureReward").getRelativeChance (); n++)
-							availablePickTypesList.add (pickTypeID);
+					{
+						final Integer relativeChance = db.findPickType (pickTypeID, "rollTreasureReward").getRelativeChance ();
+						if (relativeChance != null)
+							for (int n = 0; n < relativeChance; n++)
+								availablePickTypesList.add (pickTypeID);
+					}
 					
 					final String pickTypeID = availablePickTypesList.get (getRandomUtils ().nextInt (availablePickTypesList.size ()));
 					

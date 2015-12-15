@@ -2,10 +2,11 @@ package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import momime.common.database.Shortcut;
-import momime.common.database.SpellBookSectionID;
 
 import org.junit.Test;
+
+import momime.common.database.Shortcut;
+import momime.common.database.SpellBookSectionID;
 
 /**
  * Tests the LanguageDatabaseExImpl class
@@ -264,27 +265,6 @@ public final class TestLanguageDatabaseExImpl
 		assertNull (lang.findUnitSkill ("US04"));
 	}
 
-	/**
-	 * Tests the findUnitMagicRealm method
-	 */
-	@Test
-	public final void testFindUnitMagicRealm ()
-	{
-		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitMagicRealmLang newUnitMagicRealm = new UnitMagicRealmLang ();
-			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
-			newUnitMagicRealm.setUnitMagicRealmPlural ("LTDesc0" + n);
-			lang.getUnitMagicRealm ().add (newUnitMagicRealm);
-		}
-
-		lang.buildMaps ();
-
-		assertEquals ("LTDesc02", lang.findUnitMagicRealm ("LT02").getUnitMagicRealmPlural ());
-		assertNull (lang.findUnitMagicRealm ("LT04"));
-	}
-	
 	/**
 	 * Tests the findRangedAttackTypeDescription method
 	 */

@@ -359,7 +359,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 
 			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getModifiedUpkeepValue").getUnitMagicRealm ();
-			final String unitTypeID = db.findUnitMagicRealm (unitMagicRealmID, "getModifiedUpkeepValue").getUnitTypeID ();
+			final String unitTypeID = db.findPick (unitMagicRealmID, "getModifiedUpkeepValue").getUnitTypeID ();
 
 			final int percentageReduction = getPlayerPickUtils ().totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, unitTypeID, picks, db);
 

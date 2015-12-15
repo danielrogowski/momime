@@ -31,7 +31,6 @@ import momime.server.database.v0_9_7.ServerDatabase;
 import momime.server.database.v0_9_7.Spell;
 import momime.server.database.v0_9_7.TileType;
 import momime.server.database.v0_9_7.Unit;
-import momime.server.database.v0_9_7.UnitMagicRealm;
 import momime.server.database.v0_9_7.UnitSkill;
 import momime.server.database.v0_9_7.UnitType;
 import momime.server.database.v0_9_7.WeaponGrade;
@@ -71,9 +70,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 
 	/** Map of unit type IDs to unit type XML objects */
 	private Map<String, UnitType> unitTypesMap;
-
-	/** Map of unit magic realm IDs to unit magic realm XML objects */
-	private Map<String, UnitMagicRealm> unitMagicRealmsMap;
 
 	/** Map of unit IDs to unit XML objects */
 	private Map<String, UnitSvr> unitsMap;
@@ -166,11 +162,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		unitTypesMap = new HashMap<String, UnitType> ();
 		for (final UnitType thisUnitType : getUnitType ())
 			unitTypesMap.put (thisUnitType.getUnitTypeID (), thisUnitType);
-
-		// Create unit magic realms map
-		unitMagicRealmsMap = new HashMap<String, UnitMagicRealm> ();
-		for (final UnitMagicRealm thisUnitMagicRealm : getUnitMagicRealm ())
-			unitMagicRealmsMap.put (thisUnitMagicRealm.getUnitMagicRealmID (), thisUnitMagicRealm);
 
 		// Create units map
 		unitsMap = new HashMap<String, UnitSvr> ();
@@ -488,32 +479,6 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		final UnitType found = unitTypesMap.get (unitTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
-
-		return found;
-	}
-
-	/**
-	 * @return Complete list of all unit magic realms in game
-	 */
-	@Override
-	@SuppressWarnings ("unchecked")
-	public final List<UnitMagicRealmSvr> getUnitMagicRealms ()
-	{
-		return (List<UnitMagicRealmSvr>) (List<?>) getUnitMagicRealm ();
-	}
-	
-	/**
-	 * @param unitMagicRealmID Unit magic realm ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit magic realm object
-	 * @throws RecordNotFoundException If the unitMagicRealmID doesn't exist
-	 */
-	@Override
-	public final UnitMagicRealm findUnitMagicRealm (final String unitMagicRealmID, final String caller) throws RecordNotFoundException
-	{
-		final UnitMagicRealm found = unitMagicRealmsMap.get (unitMagicRealmID);
-		if (found == null)
-			throw new RecordNotFoundException (UnitMagicRealm.class, unitMagicRealmID, caller);
 
 		return found;
 	}

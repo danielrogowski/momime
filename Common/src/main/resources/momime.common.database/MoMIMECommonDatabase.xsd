@@ -334,7 +334,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonusSurroundingTiles" type="xsd:boolean" nxe:label="Gold Bonus from Surrounding Tiles?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="doubleFood" type="momimecommon:doubledProductionValue" nxe:label="2x Food Harvest from Tile" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="canBuildCity" type="xsd:boolean" nxe:label="Can Build City on this Terrain?" nxe:gridwidth="180" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:unitMagicRealmID" nxe:label="Fill with Monsters" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:pickID" nxe:label="Fill with Monsters" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
@@ -370,12 +370,26 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="pickType" type="momimecommon:pickTypeID" nxe:label="Pick Type" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="pickCost" type="momimecommon:pickCost" nxe:label="Cost" nxe:gridwidth="60" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickCost" type="momimecommon:pickCost" nxe:label="Cost" nxe:gridwidth="60" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickReligiousBuildingBonus" type="momimecommon:percentage" nxe:label="Religious Building Bonus %" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>weaponGradeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitTypeID" type="momimecommon:unitTypeID" nxe:label="Unit Type" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitTypeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="castSpellsFromPickID" type="momimecommon:pickID" nxe:label="Caster skill (unit) casts spells of which pick?" nxe:gridwidth="300" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -672,7 +686,7 @@ i.e. both the lists of top half and bottom half of the unit info screen.  Their 
 is defined in the graphics XML file.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:pickID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
@@ -751,35 +765,12 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 		<xsd:attribute name="levelNumber" type="momimecommon:experienceLevelNumber" use="required" nxe:label="Level" nxe:gridwidth="50" />
 	</xsd:complexType>
 
-	<xsd:complexType name="unitMagicRealm" nxe:singular="Unit Magic Realm/Lifeform Type" nxe:plural="Unit Magic Realms/Lifeform Types" nxe:submenu="Units">
-        <xsd:annotation>
-        	<xsd:documentation>Defines all the possible magic realms of summoned units, and other types of lifeform, namely Undead and Chaos Channeled units.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitTypeID" type="momimecommon:unitTypeID" nxe:label="Unit Type" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitTypeDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="castSpellsFromPickID" type="momimecommon:pickID" nxe:label="Caster skill (unit) casts spells of which pick?" nxe:gridwidth="300" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attribute name="unitMagicRealmID" type="momimecommon:unitMagicRealmID" use="required" nxe:label="Unit Magic Realm ID" nxe:gridwidth="150" />
-	</xsd:complexType>
-	
 	<xsd:complexType name="unit" nxe:singular="Unit" nxe:plural="Units" nxe:submenu="Units">
         <xsd:annotation>
         	<xsd:documentation>Defines all the units available in the game.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitMagicRealm" type="momimecommon:pickID" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
@@ -934,7 +925,7 @@ but kept these separate to make it totally clear when production values are reco
         <xsd:complexContent>
 			<xsd:extension base="momimecommon:unitSkillAndValue">
 				<xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:unitMagicRealmID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
+					<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:pickID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
 						<xsd:annotation>
 							<xsd:appinfo>
 								<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
@@ -1042,7 +1033,7 @@ Can have different saving throw depending on the type of unit.</xsd:documentatio
 			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowSkillID" type="momimecommon:unitSkillID" nxe:label="Saving Throw rolls against Target Skill" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowModifier" type="momimecommon:savingThrowModifier" nxe:label="Saving Throw Modifier" nxe:gridwidth="150" />
 		</xsd:sequence>
-		<xsd:attribute name="targetMagicRealmID" type="momimecommon:unitMagicRealmID" use="optional" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
+		<xsd:attribute name="targetMagicRealmID" type="momimecommon:pickID" use="optional" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 			<xsd:annotation>
 				<xsd:documentation>If targetMagicRealmID is filled in on any spellValidUnitTarget records under a spell, then the spell can only be cast on units of the specified unit type(s).  e.g. Chaos Channels can only be cast on Normal Units or Heroes, and the
 saving throw elements (if present) describe what attribute and penalty each type of unit gets to make saving throw against.  (If no saving throw defined, the target gets no chance to save!)
@@ -1326,10 +1317,6 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="unitTypeID">
-		<xsd:restriction base="xsd:normalizedString" />
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="unitMagicRealmID">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	

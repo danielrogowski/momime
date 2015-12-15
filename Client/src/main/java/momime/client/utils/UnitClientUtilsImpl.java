@@ -282,7 +282,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			else
 			{
 				final String unitMagicRealmID = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitSkillSingleIcon").getUnitMagicRealm ();
-				final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "getUnitSkillSingleIcon").getUnitTypeID ();
+				final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "getUnitSkillSingleIcon").getUnitTypeID ();
 				final UnitTypeGfx unitType = getGraphicsDB ().findUnitType (unitTypeID, "getUnitSkillSingleIcon");
 				image = unitType.findExperienceLevelImageFile (expLvl.getLevelNumber (), "getUnitSkillSingleIcon");
 			}
@@ -653,7 +653,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		if (aliveFigureCount > 0)
 		{
 			// Get unit type
-			final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitDef.getUnitMagicRealm (), "drawUnitFigures").getUnitTypeID ();
+			final String unitTypeID = getClient ().getClientDB ().findPick (unitDef.getUnitMagicRealm (), "drawUnitFigures").getUnitTypeID ();
 			
 			// Get sample tile
 			final String sampleTileImageFile;
@@ -703,7 +703,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				final int totalFigureCount = getUnitUtils ().getFullFigureCount (unitDef);
 
 				// Get unit type
-				final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitDef.getUnitMagicRealm (), "calculateWalkTiming").getUnitTypeID ();
+				final String unitTypeID = getClient ().getClientDB ().findPick (unitDef.getUnitMagicRealm (), "calculateWalkTiming").getUnitTypeID ();
 				
 				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
 				break;

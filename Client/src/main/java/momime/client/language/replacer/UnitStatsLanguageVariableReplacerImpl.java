@@ -146,7 +146,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				else
 				{
 					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getUnitMagicRealm ();
-					final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
+					final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
 					final UnitTypeLang unitType = getLanguage ().findUnitType (unitTypeID);
 					if (unitType == null)
 						text = null;
@@ -169,7 +169,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				else
 				{
 					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getUnitMagicRealm ();
-					final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
+					final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
 					final UnitTypeLang unitType = getLanguage ().findUnitType (unitTypeID);
 					if (unitType == null)
 						text = null;
@@ -243,7 +243,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				else
 				{
 					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getUnitMagicRealm ();
-					final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
+					final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
 					final UnitType unitType = getClient ().getClientDB ().findUnitType (unitTypeID, "UnitStatsLanguageVariableReplacer");
 					
 					final ExperienceLevel nextExpLevel = UnitTypeUtils.findExperienceLevel (unitType, naturalExpLvl.getLevelNumber () + 1);

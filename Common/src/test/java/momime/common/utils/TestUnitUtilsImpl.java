@@ -26,12 +26,12 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitType;
@@ -170,9 +170,9 @@ public final class TestUnitUtilsImpl
 		unitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
-		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
 		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
@@ -205,9 +205,9 @@ public final class TestUnitUtilsImpl
 		unitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
-		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
 		unitType.getExperienceLevel ().add (null);		// Any record here is good enough
@@ -248,9 +248,9 @@ public final class TestUnitUtilsImpl
 		unitDef.getUnitHasSkill ().add (unitDefSkill);
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
-		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
 		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
@@ -290,9 +290,9 @@ public final class TestUnitUtilsImpl
 		unitDef.getUnitHasSkill ().add (unitDefSkill);
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
-		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
+		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
 		unitType.getExperienceLevel ().add (null);		// Any record here is good enough
@@ -552,9 +552,9 @@ public final class TestUnitUtilsImpl
 		unitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN001", "getExperienceLevel")).thenReturn (unitDef);
 		
-		final UnitMagicRealm unitMagicRealm = new UnitMagicRealm ();
+		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findUnitMagicRealm ("MB01", "getExperienceLevel")).thenReturn (unitMagicRealm);
+		when (db.findPick ("MB01", "getExperienceLevel")).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
 		when (db.findUnitType ("N", "getExperienceLevel")).thenReturn (unitType);

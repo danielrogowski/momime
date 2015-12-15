@@ -29,8 +29,8 @@ import momime.client.graphics.database.UnitGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.PickLang;
 import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.UnitMagicRealmLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
@@ -218,13 +218,13 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		
-		final UnitMagicRealmLang magicRealm1 = new UnitMagicRealmLang ();
+		final PickLang magicRealm1 = new PickLang ();
 		magicRealm1.setUnitMagicRealmPlural ("Chaos units");
-		when (lang.findUnitMagicRealm ("LT01")).thenReturn (magicRealm1);
+		when (lang.findPick ("LT01")).thenReturn (magicRealm1);
 
-		final UnitMagicRealmLang magicRealm3 = new UnitMagicRealmLang ();
+		final PickLang magicRealm3 = new PickLang ();
 		magicRealm3.setUnitMagicRealmPlural ("Death units");
-		when (lang.findUnitMagicRealm ("LT03")).thenReturn (magicRealm3);
+		when (lang.findPick ("LT03")).thenReturn (magicRealm3);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);

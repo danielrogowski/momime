@@ -182,7 +182,6 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimesvr:citySpellEffect" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimesvr:unitMagicRealm" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimesvr:overlandMapSize">
 				<xsd:key name="overlandMapSizePlanePK">
 					<xsd:selector xpath="overlandMapSizePlane" />
@@ -299,10 +298,6 @@
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="@unitSkillID" />
 		</xsd:key>
-		<xsd:key name="unitMagicRealmPK">
-			<xsd:selector xpath="unitMagicRealm" />
-			<xsd:field xpath="@unitMagicRealmID" />
-		</xsd:key>
 		<xsd:key name="heroSkillTypePK">
 			<xsd:selector xpath="heroSkillType" />
 			<xsd:field xpath="@heroSkillTypeID" />
@@ -400,7 +395,7 @@
 			<xsd:selector xpath="mapFeature" />
 			<xsd:field xpath="featureMagicWeapons" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="tileTypeFKunitMagicRealm">
+		<xsd:keyref refer="momimesvr:pickPK" name="tileTypeFKpick">
 			<xsd:selector xpath="tileType" />
 			<xsd:field xpath="magicRealmID" />
 		</xsd:keyref>
@@ -496,7 +491,7 @@
 			<xsd:selector xpath="unit" />
 			<xsd:field xpath="unitRaceID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="unitFKunitMagicRealm">
+		<xsd:keyref refer="momimesvr:pickPK" name="unitFKpick">
 			<xsd:selector xpath="unit" />
 			<xsd:field xpath="unitMagicRealm" />
 		</xsd:keyref>
@@ -516,7 +511,7 @@
 			<xsd:selector xpath="unitSkill/addsToSkill" />
 			<xsd:field xpath="addsToSkillID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="unitSkillFKunitMagicRealm">
+		<xsd:keyref refer="momimesvr:pickPK" name="unitSkillFKpick">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="changesUnitToMagicRealm" />
 		</xsd:keyref>
@@ -528,12 +523,12 @@
 			<xsd:selector xpath="unit/unitCanCast" />
 			<xsd:field xpath="@unitSpellID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitTypePK" name="unitMagicRealmFKunitType">
-			<xsd:selector xpath="unitMagicRealm" />
+		<xsd:keyref refer="momimesvr:unitTypePK" name="pickFKunitType">
+			<xsd:selector xpath="pick" />
 			<xsd:field xpath="unitTypeID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:pickPK" name="unitMagicRealmFKpick">
-			<xsd:selector xpath="unitMagicRealm" />
+		<xsd:keyref refer="momimesvr:pickPK" name="pickFKpick">
+			<xsd:selector xpath="pick" />
 			<xsd:field xpath="castSpellsFromPickID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:productionTypePK" name="unitUpkeepFKproductionType">
@@ -548,7 +543,7 @@
 			<xsd:selector xpath="unitType/experienceLevel/experienceSkillBonus" />
 			<xsd:field xpath="@unitSkillID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="mapFeatureMagicRealmFKunitMagicRealm">
+		<xsd:keyref refer="momimesvr:pickPK" name="mapFeatureMagicRealmFKpick">
 			<xsd:selector xpath="mapFeature/mapFeatureMagicRealm" />
 			<xsd:field xpath="@magicRealm" />
 		</xsd:keyref>
@@ -564,11 +559,11 @@
 			<xsd:selector xpath="tileType/tileTypeAreaEffect" />
 			<xsd:field xpath="@combatAreaEffectID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="combatAreaEffectAttributeBonusFKunitMagicRealm">
+		<xsd:keyref refer="momimesvr:pickPK" name="combatAreaEffectAttributeBonusFKpick">
 			<xsd:selector xpath="combatAreaEffect/combatAreaEffectAttributeBonus" />
 			<xsd:field xpath="effectMagicRealm" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="combatAreaEffectSkillBonusFKunitMagicRealm">
+		<xsd:keyref refer="momimesvr:pickPK" name="combatAreaEffectSkillBonusFKpick">
 			<xsd:selector xpath="combatAreaEffect/combatAreaEffectSkillBonus" />
 			<xsd:field xpath="effectMagicRealm" />
 		</xsd:keyref>
@@ -640,7 +635,7 @@
 			<xsd:selector xpath="spell/spellHasCombatEffect" />
 			<xsd:field xpath="@combatAreaEffectID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="spellValidUnitTargetFKunitMagicRealm">
+		<xsd:keyref refer="momimesvr:pickPK" name="spellValidUnitTargetFKpick">
 			<xsd:selector xpath="spell/spellValidUnitTarget" />
 			<xsd:field xpath="@targetMagicRealmID" />
 		</xsd:keyref>
@@ -760,10 +755,6 @@
 		</xsd:keyref>
 
 		<!-- Treasure rewards, new for 0.9.7 -->
-		<xsd:keyref refer="momimesvr:pickPK" name="tileTypeFKpick">
-			<xsd:selector xpath="tileType" />
-			<xsd:field xpath="tileTypeTreasureBookReward" />
-		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:pickPK" name="mapFeatureTreasureBookRewardFKpick">
 			<xsd:selector xpath="mapFeature/mapFeatureTreasureBookReward" />
 			<xsd:field xpath="@pickID" />
@@ -831,10 +822,10 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimecommon:featureChance" nxe:label="Feature Chance" nxe:gridwidth="100" />
 		</xsd:sequence>
-		<xsd:attribute name="magicRealm" type="momimecommon:unitMagicRealmID" use="required" nxe:label="Magic Realm" nxe:showmaincolumn="false">
+		<xsd:attribute name="magicRealm" type="momimecommon:pickID" use="required" nxe:label="Magic Realm" nxe:showmaincolumn="false">
 			<xsd:annotation>
 				<xsd:appinfo>
-					<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
+					<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -865,13 +856,6 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatDarkTiles" type="momimesvr:combatMapTileCount" nxe:label="Combat Dark Tiles" nxe:gridwidth="120" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatRidgeTiles" type="momimesvr:combatMapTileCount" nxe:label="Combat Ridge Tiles" nxe:gridwidth="120" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatTerrainFeatures" type="momimesvr:combatMapTileCount" nxe:label="Combat Features (e.g. trees)" nxe:gridwidth="180" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeTreasureBookReward" type="momimecommon:pickID" nxe:label="Treasure Book Reward" nxe:gridwidth="200">
-						<xsd:annotation>
-							<xsd:appinfo>
-								<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
-							</xsd:appinfo>
-						</xsd:annotation>
-					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeFeatureChance" type="momimesvr:tileTypeFeatureChance" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeAreaEffect" type="momimesvr:tileTypeAreaEffect" />
 				</xsd:sequence>
@@ -925,7 +909,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:complexContent>
 			<xsd:extension base="momimecommon:pickType">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="relativeChance" type="momimecommon:percentage" nxe:label="Special Treasure Rel. Chance" nxe:gridwidth="150" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="relativeChance" type="momimecommon:percentage" nxe:label="Special Treasure Rel. Chance" nxe:gridwidth="150" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="pickTypeDescription" type="momimecommon:description" nxe:label="Pick Type Description" nxe:gridwidth="150" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeCount" type="momimesvr:pickTypeCountContainer">
 						<xsd:key name="spellCountPK">
@@ -1119,19 +1103,6 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 			<xsd:extension base="momimecommon:unitType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="unitMagicRealm" nxe:singular="Unit Magic Realm/Lifeform Type" nxe:plural="Unit Magic Realms/Lifeform Types" nxe:submenu="Units">
-        <xsd:annotation>
-        	<xsd:documentation>Defines all the possible magic realms of summoned units, and other types of lifeform, namely Undead and Chaos Channeled units.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimecommon:unitMagicRealm">
-				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="unitMagicRealmName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="250" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

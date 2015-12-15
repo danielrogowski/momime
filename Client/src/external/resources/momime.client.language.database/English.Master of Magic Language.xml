@@ -226,34 +226,42 @@
 	<pickType pickTypeID="R">
 		<pickTypeDescriptionSingular>Retort</pickTypeDescriptionSingular>
 	</pickType>
+	<pickType pickTypeID="L">
+		<pickTypeDescriptionSingular>Lifeform type</pickTypeDescriptionSingular>
+	</pickType>
 	<pick pickID="MB01">
 		<pickDescriptionSingular>Life Book</pickDescriptionSingular>
 		<pickDescriptionPlural>Life Books</pickDescriptionPlural>
 		<bookshelfDescription>Life</bookshelfDescription>
+		<unitMagicRealmPlural>Summoned Life creatures</unitMagicRealmPlural>
 		<pickHelpText>Life spells focus on healing, protections and inspirational enchantments, and planar travel.  Life magic forcefully opposes the forces of death and mildly resists the forces of chaos.</pickHelpText>
 	</pick>
 	<pick pickID="MB02">
 		<pickDescriptionSingular>Death Book</pickDescriptionSingular>
 		<pickDescriptionPlural>Death Books</pickDescriptionPlural>
 		<bookshelfDescription>Death</bookshelfDescription>
+		<unitMagicRealmPlural>Summoned Death creatures</unitMagicRealmPlural>
 		<pickHelpText>Death spells provide the summoning and controlling of the dead and the forces of darkness.  Death magic has powerful enchantments that strike disease and misfortune upon their enemies.</pickHelpText>
 	</pick>
 	<pick pickID="MB03">
 		<pickDescriptionSingular>Chaos Book</pickDescriptionSingular>
 		<pickDescriptionPlural>Chaos Books</pickDescriptionPlural>
 		<bookshelfDescription>Chaos</bookshelfDescription>
+		<unitMagicRealmPlural>Summoned Chaos creatures</unitMagicRealmPlural>
 		<pickHelpText>Chaos spells deal primarily with corruption and destruction, calling upon the elemental forces of change.</pickHelpText>
 	</pick>
 	<pick pickID="MB04">
 		<pickDescriptionSingular>Nature Book</pickDescriptionSingular>
 		<pickDescriptionPlural>Nature Books</pickDescriptionPlural>
 		<bookshelfDescription>Nature</bookshelfDescription>
+		<unitMagicRealmPlural>Summoned Nature creatures</unitMagicRealmPlural>
 		<pickHelpText>Nature spells control the raw forces of earth and water, as well as fertility and growth.</pickHelpText>
 	</pick>
 	<pick pickID="MB05">
 		<pickDescriptionSingular>Sorcery Book</pickDescriptionSingular>
 		<pickDescriptionPlural>Sorcery Books</pickDescriptionPlural>
 		<bookshelfDescription>Sorcery</bookshelfDescription>
+		<unitMagicRealmPlural>Summoned Sorcery creatures</unitMagicRealmPlural>
 		<pickHelpText>Sorcery spells focus on elemental forces of air and illusion.  Sorcery also has a number of meta-magic spells that resist and control other wizard's spells.</pickHelpText>
 	</pick>
 	<pick pickID="RT01">
@@ -349,6 +357,21 @@ In addition, all diplomatic penalties from negative actions are halved and good 
 		<pickHelpText>Node Mastery doubles the magical power obtained from all nodes.
 
 In addition the wizard is able to freely cast spells inside nodes which would normally have a chance of being dispelled.</pickHelpText>
+	</pick>
+	<pick pickID="LTN">
+		<unitMagicRealmPlural>Normal units</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTH">
+		<unitMagicRealmPlural>Heroes</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTA">
+		<unitMagicRealmPlural>Summoned Arcane creatures</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTC">
+		<unitMagicRealmPlural>Chaos Channeled units</unitMagicRealmPlural>
+	</pick>
+	<pick pickID="LTU">
+		<unitMagicRealmPlural>Undead</unitMagicRealmPlural>
 	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders</wizardName>
@@ -1362,36 +1385,6 @@ The background colour of each icon depicts the source of the attribute:
 		
 The type of movement icon indicates the unit's primary movement skill, although it may have multiple, especially if it has enchantments cast upon on.</unitSkillHelpText>
 	</unitSkill>
-	<unitMagicRealm unitMagicRealmID="LTN">
-		<unitMagicRealmPlural>Normal units</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTH">
-		<unitMagicRealmPlural>Heroes</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT01">
-		<unitMagicRealmPlural>Summoned Life creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT02">
-		<unitMagicRealmPlural>Summoned Death creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT03">
-		<unitMagicRealmPlural>Summoned Chaos creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT04">
-		<unitMagicRealmPlural>Summoned Nature creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT05">
-		<unitMagicRealmPlural>Summoned Sorcery creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LT06">
-		<unitMagicRealmPlural>Summoned Arcane creatures</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTCC">
-		<unitMagicRealmPlural>Chaos Channeled units</unitMagicRealmPlural>
-	</unitMagicRealm>
-	<unitMagicRealm unitMagicRealmID="LTU">
-		<unitMagicRealmPlural>Undead</unitMagicRealmPlural>
-	</unitMagicRealm>
 	<rangedAttackType rangedAttackTypeID="RAT14">
 		<rangedAttackTypeDescription>Arrows</rangedAttackTypeDescription>
 	</rangedAttackType>

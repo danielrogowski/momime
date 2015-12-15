@@ -160,13 +160,15 @@ public final class TestSpellBookUI
 		
 		// Research statuses - we know 0 of SP000 - SP009, 1 of SP010 - SP019 and so on
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		for (int m = 1; m < 10; m++)
+		for (int m = 0; m < 10; m++)
 		{
 			final SpellBookSectionID sectionID;
 			if (m == 9)
 				sectionID = SpellBookSectionID.RESEARCHABLE;
 			else if (m == 8)
 				sectionID = SpellBookSectionID.RESEARCHABLE_NOW;
+			else if (m == 0)
+				sectionID = SpellBookSectionID.SUMMONING;
 			else
 				sectionID = SpellBookSectionID.fromValue ("SC0" + m);
 

@@ -62,7 +62,6 @@ the server XML and send to the client once they join a session.</xsd:documentati
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimecommon:spell" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealm" type="momimecommon:unitMagicRealm" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />

@@ -92,7 +92,7 @@ public final class SpellUtilsImpl implements SpellUtils
 				final String thisMagicRealmID = db.findUnit (spellSummonsUnit.getSummonedUnitID (), "spellSummonsUnitTypeID").getUnitMagicRealm ();
 
 				// Use the cache for the magic realm / lifeform type to get the Unit Type ID
-				final String unitTypeID = db.findUnitMagicRealm (thisMagicRealmID, "spellSummonsUnitTypeID").getUnitTypeID ();
+				final String unitTypeID = db.findPick (thisMagicRealmID, "spellSummonsUnitTypeID").getUnitTypeID ();
 
 				// We need to only end up with a single Unit Type ID, so it must either be the first one encountered or the same as what we already have
 				if (result == null)

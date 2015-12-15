@@ -16,6 +16,7 @@ import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -23,7 +24,6 @@ import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
 import momime.common.database.Unit;
-import momime.common.database.UnitMagicRealm;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -104,9 +104,9 @@ public final class TestSpellUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitMagicRealm magicRealm = new UnitMagicRealm ();
+		final Pick magicRealm = new Pick ();
 		magicRealm.setUnitTypeID ("X");
-		when (db.findUnitMagicRealm ("MB01", "spellSummonsUnitTypeID")).thenReturn (magicRealm);
+		when (db.findPick ("MB01", "spellSummonsUnitTypeID")).thenReturn (magicRealm);
 		
 		final Spell nonSummoningSpell = new Spell ();
 		nonSummoningSpell.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
@@ -144,13 +144,13 @@ public final class TestSpellUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitMagicRealm magicRealmOne = new UnitMagicRealm ();
+		final Pick magicRealmOne = new Pick ();
 		magicRealmOne.setUnitTypeID ("X");
-		when (db.findUnitMagicRealm ("MB01", "spellSummonsUnitTypeID")).thenReturn (magicRealmOne);
+		when (db.findPick ("MB01", "spellSummonsUnitTypeID")).thenReturn (magicRealmOne);
 		
-		final UnitMagicRealm magicRealmTwo = new UnitMagicRealm ();
+		final Pick magicRealmTwo = new Pick ();
 		magicRealmTwo.setUnitTypeID ("Y");
-		when (db.findUnitMagicRealm ("MB02", "spellSummonsUnitTypeID")).thenReturn (magicRealmTwo);
+		when (db.findPick ("MB02", "spellSummonsUnitTypeID")).thenReturn (magicRealmTwo);
 		
 		final Spell summoningSpell = new Spell ();
 		summoningSpell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);

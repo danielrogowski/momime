@@ -221,11 +221,6 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public List<CitySizeSvr> getCitySizes ();
 
 	/**
-	 * @return Complete list of all unit magic realms in game
-	 */
-	public List<UnitMagicRealmSvr> getUnitMagicRealms ();
-
-	/**
 	 * @return Complete list of all unit types in game
 	 */
 	public List<UnitTypeSvr> getUnitTypes ();

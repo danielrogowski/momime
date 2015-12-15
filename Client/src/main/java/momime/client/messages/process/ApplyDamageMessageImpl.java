@@ -235,7 +235,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				
 				// Get the start location of every individual missile
 				final Unit attackerUnitDef = getClient ().getClientDB ().findUnit (attackerUnit.getUnitID (), "ApplyDamageMessageImpl");
-				final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (attackerUnitDef.getUnitMagicRealm (), "ApplyDamageMessageImpl").getUnitTypeID ();
+				final String unitTypeID = getClient ().getClientDB ().findPick (attackerUnitDef.getUnitMagicRealm (), "ApplyDamageMessageImpl").getUnitTypeID ();
 				final int totalFigureCount = getUnitUtils ().getFullFigureCount (attackerUnitDef);
 				final int aliveFigureCount = getUnitCalculations ().calculateAliveFigureCount (attackerUnit, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());

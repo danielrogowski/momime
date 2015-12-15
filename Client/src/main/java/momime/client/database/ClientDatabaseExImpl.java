@@ -26,7 +26,6 @@ import momime.common.database.Spell;
 import momime.common.database.TaxRate;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
-import momime.common.database.UnitMagicRealm;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
@@ -62,9 +61,6 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 
 	/** Map of unit type IDs to unit type XML objects */
 	private Map<String, UnitType> unitTypesMap;
-
-	/** Map of unit magic realm IDs to unit magic realm XML objects */
-	private Map<String, UnitMagicRealm> unitMagicRealmsMap;
 
 	/** Map of unit IDs to unit XML objects */
 	private Map<String, Unit> unitsMap;
@@ -157,11 +153,6 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		unitTypesMap = new HashMap<String, UnitType> ();
 		for (final UnitType thisUnitType : getUnitType ())
 			unitTypesMap.put (thisUnitType.getUnitTypeID (), thisUnitType);
-
-		// Create unit magic realms map
-		unitMagicRealmsMap = new HashMap<String, UnitMagicRealm> ();
-		for (final UnitMagicRealm thisUnitMagicRealm : getUnitMagicRealm ())
-			unitMagicRealmsMap.put (thisUnitMagicRealm.getUnitMagicRealmID (), thisUnitMagicRealm);
 
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
@@ -461,22 +452,6 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		final UnitType found = unitTypesMap.get (unitTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
-
-		return found;
-	}
-
-	/**
-	 * @param unitMagicRealmID Unit magic realm ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit magic realm object
-	 * @throws RecordNotFoundException If the unitMagicRealmID doesn't exist
-	 */
-	@Override
-	public final UnitMagicRealm findUnitMagicRealm (final String unitMagicRealmID, final String caller) throws RecordNotFoundException
-	{
-		final UnitMagicRealm found = unitMagicRealmsMap.get (unitMagicRealmID);
-		if (found == null)
-			throw new RecordNotFoundException (UnitMagicRealm.class, unitMagicRealmID, caller);
 
 		return found;
 	}

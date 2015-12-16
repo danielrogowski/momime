@@ -2739,91 +2739,93 @@ public final class NewGameUI extends MomClientFrameUI
 		// First we need to count how many bookshelves we need
 		int bookshelfCount = 0;
 		for (final Pick pick : getClient ().getClientDB ().getPicks ())
-		{
-			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
-			if (pickGfx.getBookImageFile ().size () > 0)
-				bookshelfCount++;
-		}
+			if (pick.getPickCost () != null)
+			{
+				final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+				if (pickGfx.getBookImageFile ().size () > 0)
+					bookshelfCount++;
+			}
 		
 		int retortNo = 0;
 		for (final Pick pick : getClient ().getClientDB ().getPicks ())
-		{
-			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
-			if (pickGfx.getBookImageFile ().size () == 0)
+			if (pick.getPickCost () != null)
 			{
-				// Show as a retort label in the top half of the screen
-				retortNo++;
-				final ToggleAction retortAction = new ToggleAction ()
+				final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "afterJoinedSession");
+				if (pickGfx.getBookImageFile ().size () == 0)
 				{
-					@Override
-					protected final void selectedChanged ()
+					// Show as a retort label in the top half of the screen
+					retortNo++;
+					final ToggleAction retortAction = new ToggleAction ()
 					{
-						try
+						@Override
+						protected final void selectedChanged ()
 						{
-							getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), isSelected () ? 1 : -1);
-							updateCustomPicksCount ();
-							updateRetortsFromPicks (-1);
-						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-					}
-				};
-				
-				retortButtonActions.put (pick.getPickID (), retortAction);
-				
-				final JButton retortButton = getUtils ().createTextOnlyButton (retortAction, MomUIConstants.DULL_GOLD, getSmallFont ());
-				picksPanel.add (retortButton, "frmCustomPicksRetort" + retortNo);
-				customPicksComponents.add (retortButton);
-				
-				// Right clicking on reports gets help text
-				retortButton.addMouseListener (new MouseAdapter ()
-				{
-					@Override
-					public final void mouseClicked (final MouseEvent ev)
-					{
-						try
-						{
-							// Right clicking gets help text describing the retort
-							if (SwingUtilities.isRightMouseButton (ev))
-								getHelpUI ().showPickID (pick.getPickID ());
-							
-							// Clicking on disabled retorts explains why they're disabled
-							else if (!retortAction.isEnabled ())
+							try
 							{
-								final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-								msg.setTitleLanguageCategoryID ("frmCustomPicks");
-								msg.setTitleLanguageEntryID ("Title");
-								
-								final PickLang pickLang = getLanguage ().findPick (pick.getPickID ());
-								final String pickDescription = (pickLang == null) ? null : pickLang.getPickDescriptionSingular ();
-								
-								final String languageEntryID;
-								final int count = getPlayerPickUtils ().getTotalPickCost (picks, getClient ().getClientDB ());
-								if (count == getClient ().getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ())
-									languageEntryID = "NoPicks";
-								else if (count + pick.getPickCost () > getClient ().getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ())
-									languageEntryID = "InsufficientPicks";
-								else
-									languageEntryID = "Prerequisites";
-								
-								msg.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", languageEntryID).replaceAll
-									("PICK_COUNT", new Integer (pick.getPickCost ()).toString ()).replaceAll
-									("PICK", (pickDescription != null) ? pickDescription : pick.getPickID ()).replaceAll
-									("PREREQUISITES", getPlayerPickClientUtils ().describePickPreRequisites (pick)));
-								
-								msg.setVisible (true);
+								getPlayerPickUtils ().updatePickQuantity (picks, pick.getPickID (), isSelected () ? 1 : -1);
+								updateCustomPicksCount ();
+								updateRetortsFromPicks (-1);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
 							}
 						}
-						catch (final Exception e)
+					};
+					
+					retortButtonActions.put (pick.getPickID (), retortAction);
+					
+					final JButton retortButton = getUtils ().createTextOnlyButton (retortAction, MomUIConstants.DULL_GOLD, getSmallFont ());
+					picksPanel.add (retortButton, "frmCustomPicksRetort" + retortNo);
+					customPicksComponents.add (retortButton);
+					
+					// Right clicking on reports gets help text
+					retortButton.addMouseListener (new MouseAdapter ()
+					{
+						@Override
+						public final void mouseClicked (final MouseEvent ev)
 						{
-							log.error (e, e);
+							try
+							{
+								// Right clicking gets help text describing the retort
+								if (SwingUtilities.isRightMouseButton (ev))
+									getHelpUI ().showPickID (pick.getPickID ());
+								
+								// Clicking on disabled retorts explains why they're disabled
+								else if (!retortAction.isEnabled ())
+								{
+									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+									msg.setTitleLanguageCategoryID ("frmCustomPicks");
+									msg.setTitleLanguageEntryID ("Title");
+									
+									final PickLang pickLang = getLanguage ().findPick (pick.getPickID ());
+									final String pickDescription = (pickLang == null) ? null : pickLang.getPickDescriptionSingular ();
+									
+									final String languageEntryID;
+									final int count = getPlayerPickUtils ().getTotalPickCost (picks, getClient ().getClientDB ());
+									if (count == getClient ().getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ())
+										languageEntryID = "NoPicks";
+									else if (count + pick.getPickCost () > getClient ().getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ())
+										languageEntryID = "InsufficientPicks";
+									else
+										languageEntryID = "Prerequisites";
+									
+									msg.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", languageEntryID).replaceAll
+										("PICK_COUNT", new Integer (pick.getPickCost ()).toString ()).replaceAll
+										("PICK", (pickDescription != null) ? pickDescription : pick.getPickID ()).replaceAll
+										("PREREQUISITES", getPlayerPickClientUtils ().describePickPreRequisites (pick)));
+									
+									msg.setVisible (true);
+								}
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
 						}
-					}
-				});
+					});
+				}
 			}
-		}
 
 		int bookshelfNo = 0;
 		for (final Pick pick : getClient ().getClientDB ().getPicks ())

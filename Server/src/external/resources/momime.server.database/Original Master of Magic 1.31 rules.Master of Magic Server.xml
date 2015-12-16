@@ -10539,6 +10539,31 @@
 			<addsToSkillID>UA04</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>2</addsToSkillFixed>
+			<onlyVersusAttacksFromSkillID>UA02</onlyVersusAttacksFromSkillID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+			<onlyVersusAttacksFromSkillID>US126</onlyVersusAttacksFromSkillID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+			<onlyVersusAttacksFromSkillID>US133</onlyVersusAttacksFromSkillID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+			<onlyVersusAttacksFromSkillID>US134</onlyVersusAttacksFromSkillID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+			<onlyVersusAttacksFromSkillID>SS093B</onlyVersusAttacksFromSkillID>
 		</addsToSkill>
 		<unitSkillDescription>Large Shield</unitSkillDescription>
 	</unitSkill>
@@ -10850,11 +10875,25 @@
 			<addsToSkillID>UA05</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB04</onlyVersusAttacksFromMagicRealmID>
 		</addsToSkill>
 		<addsToSkill>
 			<addsToSkillID>UA04</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB04</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
 		</addsToSkill>
 		<unitSkillDescription>Resist Elements</unitSkillDescription>
 	</unitSkill>
@@ -10885,11 +10924,25 @@
 			<addsToSkillID>UA05</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>10</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB04</onlyVersusAttacksFromMagicRealmID>
 		</addsToSkill>
 		<addsToSkill>
 			<addsToSkillID>UA04</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>10</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB04</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>10</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>10</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
 		</addsToSkill>
 		<unitSkillDescription>Elemental Armour</unitSkillDescription>
 	</unitSkill>
@@ -10966,14 +11019,21 @@
 			<addsToSkillFixed>2</addsToSkillFixed>
 		</addsToSkill>
 		<addsToSkill>
-			<addsToSkillID>UA02</addsToSkillID>
+			<addsToSkillID>US126</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>2</addsToSkillFixed>
 		</addsToSkill>
 		<addsToSkill>
-			<addsToSkillID>US126</addsToSkillID>
+			<addsToSkillID>UA02</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>2</addsToSkillFixed>
+			<rangedAttackTypeID>RAT14</rangedAttackTypeID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA02</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>2</addsToSkillFixed>
+			<rangedAttackTypeID>RAT15</rangedAttackTypeID>
 		</addsToSkill>
 		<unitSkillDescription>Flame Blade</unitSkillDescription>
 	</unitSkill>
@@ -10988,11 +11048,25 @@
 			<addsToSkillID>UA05</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
 		</addsToSkill>
 		<addsToSkill>
 			<addsToSkillID>UA04</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB02</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>3</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB02</onlyVersusAttacksFromMagicRealmID>
 		</addsToSkill>
 		<unitSkillDescription>Bless</unitSkillDescription>
 	</unitSkill>
@@ -11066,6 +11140,30 @@
 		<unitSkillDescription>Invulnerability</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS144">
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>30</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA05</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>30</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB02</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>50</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
+		<addsToSkill>
+			<addsToSkillID>UA04</addsToSkillID>
+			<affectsEntireStack>false</affectsEntireStack>
+			<addsToSkillFixed>50</addsToSkillFixed>
+			<onlyVersusAttacksFromMagicRealmID>MB02</onlyVersusAttacksFromMagicRealmID>
+		</addsToSkill>
 		<unitSkillDescription>Righteousness</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS164">

@@ -337,7 +337,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:pickID" nxe:label="Fill with Monsters" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -689,7 +689,7 @@ is defined in the graphics XML file.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:pickID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -734,6 +734,31 @@ If addsToSkillID is non-null, either addsToSkillDivisor or addsToSkillFixed must
 bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2".</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="rangedAttackTypeID" type="momimecommon:rangedAttackTypeID" nxe:label="Ranged attack type" nxe:showmaincolumn="false">
+				<xsd:annotation>
+        			<xsd:documentation>This is principally here for the "Flame Blade" skill, which only gives +2 ranged attack for certain RATs but not others.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>rangedAttackTypeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="onlyVersusAttacksFromSkillID" type="momimecommon:unitSkillID" nxe:label="Only applies vs atks from skill" nxe:showmaincolumn="false">
+				<xsd:annotation>
+        			<xsd:documentation>This is principally here for the "Large Shield" skill, which only gives +2 defence vs. incoming ranged attacks, but not melee.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="onlyVersusAttacksFromMagicRealmID" type="momimecommon:pickID" nxe:label="Only applies vs atks from magic realm" nxe:showmaincolumn="false">
+				<xsd:annotation>
+        			<xsd:documentation>Some spell effects, e.g. Resist Elements or Bless, only provide a stat bonus when the unit is attacked by certain realms of magic.
+In that case, the restriction is put here, with multiple addsToSkill records if necessary.  A null here means the bonus always applies no matter the kind of attack.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -773,7 +798,7 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitMagicRealm" type="momimecommon:pickID" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -928,7 +953,7 @@ but kept these separate to make it totally clear when production values are reco
 					<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:pickID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
 						<xsd:annotation>
 							<xsd:appinfo>
-								<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
+								<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 							</xsd:appinfo>
 						</xsd:annotation>
 					</xsd:element>
@@ -1041,7 +1066,7 @@ This is to model spells which have different saving throws for different types o
 
 If targetMagicRealmID is ommitted, the spell can be cast on all types of unit and has the same saving throw (if any) against all types of unit.</xsd:documentation>
 				<xsd:appinfo>
-					<nxe:showreferencedfield>unitMagicRealmName</nxe:showreferencedfield>
+					<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

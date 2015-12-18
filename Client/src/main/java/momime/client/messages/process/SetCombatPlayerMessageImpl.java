@@ -57,6 +57,7 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 			
 			// We can cast a spell again; and default to casting from the wizard
 			getCombatUI ().setCastingSource (new CastCombatSpellFrom (null, null, null), false);
+			getCombatUI ().setSpellCastThisCombatTurn (false);
 			
 			// Tell the server to auto control our units?
 			if (getCombatUI ().isAutoControl ())

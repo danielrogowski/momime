@@ -98,7 +98,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					players, mem, db));
+					null, null, players, mem, db));
 
 		log.trace ("Exiting resetUnitOverlandMovement");
 	}
@@ -128,7 +128,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 					
 				thisUnit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					players, mem, db));
+					null, null, players, mem, db));
 
 		log.trace ("Exiting resetUnitCombatMovement");
 	}
@@ -250,7 +250,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		return getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
 	}
 
 	/**
@@ -272,11 +272,11 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		// Unit caster skill is easy, this directly says how many MP the unit has
 		int total = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
 		
 		// The hero caster skill is a bit more of a pain, since we get more mana at higher experience levels
 		int heroSkillValue = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
 		if (heroSkillValue > 0)
 		{
 			final int expLevel = getUnitUtils ().getExperienceLevel (unit, true, players, mem.getCombatAreaEffect (), db).getLevelNumber ();
@@ -384,7 +384,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		final int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateHitPointsRemaining"));
 		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
 		
 		final int result = (figures * hitPointsPerFigure) - unit.getDamageTaken ();
 		
@@ -414,7 +414,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
 			(unit.getDamageTaken () / Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db)));
+				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db)));
 		
 		// Protect against weird results
 		if (figures < 0)
@@ -444,7 +444,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		log.trace ("Entering calculateHitPointsRemainingOfFirstFigure: " + unit.getUnitID ());
 		
 		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
 		
 		// Work out how much damage the first figure has taken
 		final int damageTaken;
@@ -485,7 +485,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		// First we have to actually have a ranged attack
 		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) <= 0)
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) <= 0)
 			
 			result = false;
 		

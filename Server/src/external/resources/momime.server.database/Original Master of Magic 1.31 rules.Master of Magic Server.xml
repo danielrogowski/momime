@@ -10603,12 +10603,14 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>P</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB04</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>F</damageType>
 		<damagePerFigure>S</damagePerFigure>
+		<magicRealmID>MB04</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US028">
 		<unitSkillDescription>Armour Piercing</unitSkillDescription>
@@ -10621,18 +10623,21 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>T</damageType>
 		<damagePerFigure>C</damagePerFigure>
+		<magicRealmID>MB04</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillDescription>Life Stealing</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>R</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
 		<unitSkillDescription>Immolation</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>M</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
 		<addsToSkill>
@@ -10716,24 +10721,28 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>Y</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>P</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB01</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>D</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
 		<unitSkillDescription>Death Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>P</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
 		<unitSkillDescription>Ranged Attack Ammo</unitSkillDescription>
@@ -10743,12 +10752,14 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>A</damageType>
 		<damagePerFigure>S</damagePerFigure>
+		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
 		<unitSkillDescription>Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>S</damageType>
 		<damagePerFigure>S</damagePerFigure>
+		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US135">
 		<unitSkillDescription>Summon Demons</unitSkillDescription>
@@ -11006,6 +11017,7 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>S</damageType>
 		<damagePerFigure>S</damagePerFigure>
+		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
 		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
@@ -11042,6 +11054,7 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>M</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
 		<addsToSkill>
@@ -11171,6 +11184,7 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>Y</damageType>
 		<damagePerFigure>U</damagePerFigure>
+		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="SS175">
 		<addsToSkill>

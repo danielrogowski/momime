@@ -175,29 +175,29 @@ public final class TestCombatProcessingImpl
 		when (unitUtils.mergeSpellEffectsIntoSkillList (eq (fow.getMaintainedSpell ()), any (MemoryUnit.class), eq (db))).thenReturn (unitSkills);
 		
 		when (unitSkillUtils.getModifiedSkillValue (dwarfHero, dwarfHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (dwarfHero, dwarfHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
 		
 		when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
 			
 		when (unitSkillUtils.getModifiedSkillValue (archerHero, archerHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (archerHero, archerHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 				
 		when (unitSkillUtils.getModifiedSkillValue (bowmen, bowmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (bowmen, bowmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 					
 		when (unitSkillUtils.getModifiedSkillValue (settlers, settlers.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
 		when (unitSkillUtils.getModifiedSkillValue (settlers, settlers.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (0);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
 						
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -3752,7 +3752,7 @@ public final class TestCombatProcessingImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (tu, tu.getUnitHasSkill (),
 			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, trueMap, db)).thenReturn (3);
+			null, null, players, trueMap, db)).thenReturn (3);
 		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();

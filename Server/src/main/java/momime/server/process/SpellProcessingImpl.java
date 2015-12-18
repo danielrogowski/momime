@@ -265,7 +265,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						// Let it move this turn
 						newUnit.setDoubleOverlandMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (newUnit, newUnit.getUnitHasSkill (),
 							CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-							players, gsk.getTrueMap (), db));
+							null, null, players, gsk.getTrueMap (), db));
 					}
 
 					// Show on new turn messages for the player who summoned it
@@ -457,7 +457,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Allow it to be moved this combat turn
 				tu.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+					null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 				
 				// Make sure we remove it after combat
 				tu.setWasSummonedInCombat (true);

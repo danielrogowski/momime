@@ -163,14 +163,14 @@ public final class TestCombatAIImpl
 		// Unit without the caster skill
 		when (unitCalculations.canMakeRangedAttack (unit, players, fow, db)).thenReturn (false);
 		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		assertEquals (3, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
 		
 		// Caster without MP remaining
 		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		assertEquals (4, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
 	}
 	

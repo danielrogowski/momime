@@ -111,7 +111,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		// Actual scouting skill
 		scoutingRange = Math.max (scoutingRange, getUnitSkillUtils ().getModifiedSkillValue
 			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
 		for (final UnitSkillAndValue thisSkill : mergedSkills)
@@ -656,7 +656,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			
 			// Long range skill?
 			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) >= 0))
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0))
 				
 				penalty = 1;
 		}

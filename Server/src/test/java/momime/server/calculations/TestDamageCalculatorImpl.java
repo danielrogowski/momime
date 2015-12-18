@@ -173,10 +173,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has 6 figures...
 
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
 
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);	// ..with 40% chance to hit on each
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -263,10 +263,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has 6 figures...
 
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
 
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);	// ..with 40% chance to hit on each
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -328,7 +328,7 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has some figures
 		
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (-1);	// But doesn't have the skill
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);	// But doesn't have the skill
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -371,7 +371,7 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has some figures
 		
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (1);	// We have the skill, but can't use since all 6 figures are frozen in fear
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);	// We have the skill, but can't use since all 6 figures are frozen in fear
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -554,10 +554,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 shields...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
 
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -576,8 +576,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE, null, 1),
-			players, fow, db));
+		assertEquals (3, calc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE, null, null, null, 1), players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -653,10 +653,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 shields...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
 
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -675,8 +675,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (3, calc.calculateArmourPiercingDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ARMOUR_PIERCING, null, 1),
-			players, fow, db));
+		assertEquals (3, calc.calculateArmourPiercingDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (18, 1, DamageTypeID.ARMOUR_PIERCING, null, null, null, 1), players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -752,10 +752,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 shields...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
 
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -774,8 +774,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (6, calc.calculateIllusionaryDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (18, 1, DamageTypeID.ILLUSIONARY, null, 1),
-			players, fow, db));
+		assertEquals (6, calc.calculateIllusionaryDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (18, 1, DamageTypeID.ILLUSIONARY, null, null, null, 1), players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -851,13 +851,13 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 shields...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 				
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
@@ -879,8 +879,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (4, 1, DamageTypeID.MULTI_FIGURE, null, 1),
-			players, fow, db));
+		assertEquals (5, calc.calculateMultiFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (4, 1, DamageTypeID.MULTI_FIGURE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -959,8 +959,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateDoomDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (6, 1, DamageTypeID.DOOM, null, 1),
-			players, fow, db));
+		assertEquals (6, calc.calculateDoomDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (6, 1, DamageTypeID.DOOM, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1044,8 +1044,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
-			players, fow, db));
+		assertEquals (6, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1129,8 +1129,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (0, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, 1),
-			players, fow, db));
+		assertEquals (0, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1206,10 +1206,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 				
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
@@ -1225,8 +1225,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, 1),
-			players, fow, db));
+		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1302,10 +1302,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 				
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
@@ -1321,8 +1321,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, 1),
-			players, fow, db));
+		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (2, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1398,10 +1398,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 				
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
@@ -1417,8 +1417,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, 1),
-			players, fow, db));
+		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1494,10 +1494,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 				
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
@@ -1513,8 +1513,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, 1),
-			players, fow, db));
+		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1586,10 +1586,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 				
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
@@ -1609,8 +1609,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (2, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
-			players, fow, db));
+		assertEquals (2, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1682,10 +1682,10 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 				
 		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
@@ -1705,8 +1705,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (5, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (3, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, 1),
-			players, fow, db));
+		assertEquals (5, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (3, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1778,7 +1778,7 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance
 		
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -1796,8 +1796,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
-		assertEquals (2, calc.calculateResistanceRollsDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (6, 0, DamageTypeID.RESISTANCE_ROLLS, null, 1),
-			players, fow, db));
+		assertEquals (2, calc.calculateResistanceRollsDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (6, 0, DamageTypeID.RESISTANCE_ROLLS, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1869,7 +1869,7 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
 		
 		// Mock the damage being applied
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
@@ -1882,8 +1882,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (6, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE, null, 1),
-			players, fow, db));
+		assertEquals (6, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1955,7 +1955,7 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (12);	// ..and 12 resistance...
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (12);	// ..and 12 resistance...
 		
 		// Mock the damage being applied
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
@@ -1968,8 +1968,8 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitServerUtils (unitServerUtils);
 	
 		// Run test
-		assertEquals (0, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE, null, 1),
-			players, fow, db));
+		assertEquals (0, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -2042,7 +2042,7 @@ public final class TestDamageCalculatorImpl
 		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 5 figures unit but 1's dead already + 2 frozen
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (6);	// ..and 6 resistance but -2 modifier
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (6);	// ..and 6 resistance but -2 modifier
 
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -2055,8 +2055,8 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 	
 		// Run test
-		calc.calculateFearDamage (defenderWrapper, attackingPlayer, defendingPlayer, new AttackDamage (2, 0, DamageTypeID.FEAR, null, 1),
-			players, fow, db);
+		calc.calculateFearDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+			new AttackDamage (2, 0, DamageTypeID.FEAR, null, null, null, 1), players, fow, db);
 		
 		// Check value recorded on server
 		assertEquals (4, defenderWrapper.getFiguresFrozenInFear ());

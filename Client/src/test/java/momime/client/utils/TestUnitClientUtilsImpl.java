@@ -771,11 +771,11 @@ public final class TestUnitClientUtilsImpl
 		// Generate image for when the unit has a single basic stat value of 1
 		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "UA01")).thenReturn (1);
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (1);		
+			null, null, players, fow, db)).thenReturn (1);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (1);		
+			null, null, players, fow, db)).thenReturn (1);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (1);		
+			null, null, players, fow, db)).thenReturn (1);		
 		
 		checkImage (obj.generateAttributeImage (unit, "UA01"),
 			"SB                                                                   " + System.lineSeparator () +
@@ -785,19 +785,19 @@ public final class TestUnitClientUtilsImpl
 
 		// Generate image for when the unit has a makeup of 3 basic + 4 wep grade + 5 experience + 6 hero skills + 2 CAE = 20
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (20);		
+			null, null, players, fow, db)).thenReturn (20);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (20);		
+			null, null, players, fow, db)).thenReturn (20);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (3);		
+			null, null, players, fow, db)).thenReturn (3);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (4);		
+			null, null, players, fow, db)).thenReturn (4);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (5);		
+			null, null, players, fow, db)).thenReturn (5);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (6);		
+			null, null, players, fow, db)).thenReturn (6);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (2);		
+			null, null, players, fow, db)).thenReturn (2);		
 
 		checkImage (obj.generateAttributeImage (unit, "UA01"),
 			"SB SB SB SW SW   SW SW SE SE SE   SE SE SH SH SH   SH SH SH SC SC    " + System.lineSeparator () +
@@ -807,19 +807,19 @@ public final class TestUnitClientUtilsImpl
 
 		// Generate image for when the unit has a makeup of 4 basic + 5 wep grade + 7 experience + 8 hero skills + 3 CAE = 27 - 6 penalty = 21
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (27);		
+			null, null, players, fow, db)).thenReturn (27);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, fow, db)).thenReturn (21);		
+			null, null, players, fow, db)).thenReturn (21);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (4);		
+			null, null, players, fow, db)).thenReturn (4);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (5);		
+			null, null, players, fow, db)).thenReturn (5);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (7);		
+			null, null, players, fow, db)).thenReturn (7);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (8);		
+			null, null, players, fow, db)).thenReturn (8);		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "UA01", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.POSITIVE,
-			players, fow, db)).thenReturn (3);		
+			null, null, players, fow, db)).thenReturn (3);		
 
 		checkImage (obj.generateAttributeImage (unit, "UA01"),
 			"SB SB SB SB SW   SW SW SW SW SE   SE SE SE SE SE   SE SH SH SH SH    " + System.lineSeparator () +

@@ -779,7 +779,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			mergedSkills = unit.getUnitHasSkill ();
 		
 		final BufferedImage image;
-		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null,
 			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
 			
 			image = null;
@@ -806,7 +806,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			else
 				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			final Graphics2D g = image.createGraphics ();
@@ -822,7 +822,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
 						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, attrComponent,
 							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+							null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						if (totalValue > 0)
 						{

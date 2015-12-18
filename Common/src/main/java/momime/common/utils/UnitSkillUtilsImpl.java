@@ -86,6 +86,10 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @param unitSkillID Unique identifier for this skill
 	 * @param component Which component(s) making up this attribute to calculate
 	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
+	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -97,11 +101,11 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 */
 	@Override
 	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final String unitSkillID,
-		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db)
+		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final String attackFromSkillID, final String attackFromMagicRealmID,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering getModifiedSkillValue: " + unit.getUnitID () + ", " + unitSkillID);
+		log.trace ("Entering getModifiedSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + attackFromSkillID + ", " + attackFromMagicRealmID);
 
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
 		final List<UnitSkillAndValue> mergedSkills;
@@ -138,6 +142,8 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 			// Exclude experience, otherwise we get a repetitive loop as the call to expLvl = getExperienceLevel () lower down calls getSkillValue!
 			if (!unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE))
 			{
+				final Unit unitDefinition = db.findUnit (unit.getUnitID (), "getModifiedSkillValue");
+				
 				// Any bonuses due to weapon grades?
 				if ((unit.getWeaponGrade () != null) &&
 					((component == UnitSkillComponent.WEAPON_GRADE) || (component == UnitSkillComponent.ALL)))
@@ -146,7 +152,6 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 					final boolean weaponGradeBonusApplies;
 					if (unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
 					{
-						final Unit unitDefinition = db.findUnit (unit.getUnitID (), "getModifiedSkillValue");
 						if (unitDefinition.getRangedAttackType () == null)
 							weaponGradeBonusApplies = false;
 						else
@@ -181,7 +186,12 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 						for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 							
 							// Does this skill add to the skill we're calculating?  Also filter out skills that aren't the type (breakdown component) that we're looking for
+							// Also does the skill only apply to particular ranged attack types, and incoming skill IDs or incoming attacks of only particular magic realms?
+							// (This deals with all conditional bonuses, such as Resist Elements, Large Shield or Flame Blade)
 							if ((unitSkillID.equals (addsToSkill.getAddsToSkillID ())) &&
+								((addsToSkill.getRangedAttackTypeID () == null) || (addsToSkill.getRangedAttackTypeID ().equals (unitDefinition.getRangedAttackType ()))) &&
+								((addsToSkill.getOnlyVersusAttacksFromSkillID () == null) || (addsToSkill.getOnlyVersusAttacksFromSkillID ().equals (attackFromSkillID))) &&
+								((addsToSkill.getOnlyVersusAttacksFromMagicRealmID () == null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID ().equals (attackFromMagicRealmID))) &&
 								((component == UnitSkillComponent.ALL) ||
 								(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
 								(!addsToSkill.isAffectsEntireStack () && ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.HERO_SKILLS)))))
@@ -192,7 +202,8 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 									multiplier = getHighestModifiedSkillValue ((MapCoordinates3DEx) unit.getUnitLocation (), unitCombatLocation, unit.getOwningPlayerID (),
 										skillDef.getUnitSkillID (), players, mem, db);
 								else
-									multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (), UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
+									multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (), UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+										attackFromSkillID, attackFromMagicRealmID, players, mem, db);
 								
 								if (multiplier >= 0)
 								{
@@ -321,8 +332,10 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 					(((unitCombatLocation == null) && (thisUnit.getCombatLocation () == null)) ||
 					((unitCombatLocation != null) && (unitCombatLocation.equals (thisUnit.getCombatLocation ())))))
 					
+					// This is used for "Resistance to All" and "Holy Bonus" rather than bonuses that depends on the kind of incoming attack
+					// so its good enough to just pass nulls in for the attack values
 					highest = Math.max (highest, getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), unitSkillID,
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db));
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
 
 		log.trace ("Exiting getHighestModifiedSkillValue = " + highest);
 		return highest;

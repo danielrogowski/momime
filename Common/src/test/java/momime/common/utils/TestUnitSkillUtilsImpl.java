@@ -153,38 +153,38 @@ public final class TestUnitSkillUtilsImpl
 
 		// Skill that we don't have
 		assertEquals (-1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 		
 		// Skill that we don't have so bonuses to it still don't apply
 		assertEquals (-1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US002",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 
 		// Skill that we do have, to which no bonuses apply
 		assertEquals (1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US003",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 		
 		// Skill that we do have, and has weapon grade, experience and CAE bonuses
 		assertEquals (11114, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 		
 		// Test asking for specific breakdown components		
 		assertEquals (1, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 
 		assertEquals (10, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-				UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.BOTH, players, fow, db));
+				UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 
 		assertEquals (100, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-				UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.BOTH, players, fow, db));
+				UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 		
 		assertEquals (1000, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 
 		assertEquals (10000, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.SPELL_EFFECTS, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.SPELL_EFFECTS, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 		
 		assertEquals (3, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US004",
-			UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.BOTH, players, fow, db));
+			UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
 	}
 	
 	/**

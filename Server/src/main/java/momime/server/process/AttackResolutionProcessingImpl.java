@@ -92,10 +92,10 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			{
 				final AttackResolutionConditionSvr condition = conditions.next ();
 				
-				// Check this condition
+				// Check this condition; these are things like haste + first strike, so its ok to pass in nulls here - we don't know the actual attack steps yet
 				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
 				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (),
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) < 0)
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) < 0)
 					
 					conditionsMatch = false;
 			}

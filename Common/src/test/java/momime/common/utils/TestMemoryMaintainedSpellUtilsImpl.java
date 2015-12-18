@@ -630,7 +630,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		unit.setCombatSide (UnitCombatSideID.ATTACKER);
 		
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, fow, db)).thenReturn (12);
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (12);
 		
 		// Set up object to test
 		final SpellUtils spellUtils = mock (SpellUtils.class);

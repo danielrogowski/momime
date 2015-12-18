@@ -523,9 +523,13 @@
 			<xsd:selector xpath="unitSkill/addsToSkill" />
 			<xsd:field xpath="rangedAttackTypeID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:pickPK" name="unitSkillFKpick">
+		<xsd:keyref refer="momimesvr:pickPK" name="unitSkillFKpick1">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="changesUnitToMagicRealm" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:pickPK" name="unitSkillFKpick2">
+			<xsd:selector xpath="unitSkill" />
+			<xsd:field xpath="magicRealmID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="unitHasSkillFKunitSkill">
 			<xsd:selector xpath="unit/unitHasSkill" />
@@ -1101,6 +1105,14 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 attacks and so the rating of the unit skill is multiplied up by the number of figures left alive to get the strength of the attack.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:pickID" nxe:label="Magic Realm of Attack" nxe:showmaincolumn="false">
+						<xsd:annotation>
+							<xsd:documentation>Magic realm of the damage dealt, e.g. lightning breath is considered a Chaos attack.</xsd:documentation>
+							<xsd:appinfo>
+								<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolution" type="momimesvr:attackResolution" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -1500,6 +1512,7 @@ If multiple steps have the same step number, they are executed simultaneously, i
 						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
 						<nxe:showreferencedfield>damageType</nxe:showreferencedfield>
 						<nxe:showreferencedfield>damagePerFigure</nxe:showreferencedfield>
+						<nxe:showreferencedfield>magicRealmID</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>

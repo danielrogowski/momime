@@ -547,7 +547,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
+			eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
 		
 		// Fix random result
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -679,7 +679,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()),
 			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
+			eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
 		
 		// Fix random result
 		final RandomUtils randomUtils = mock (RandomUtils.class);

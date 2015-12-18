@@ -185,7 +185,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Does this unit have a ranged attack?
 		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) > 0)
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) > 0)
 		{
 			// Ranged hero or regular unit?
 			if (db.findUnit (unit.getUnitID (), "calculateUnitCombatClass").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
@@ -196,7 +196,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Does this unit have a melee attack?
 		else if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db) > 0)
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) > 0)
 		{
 			// Melee hero or regular unit?
 			if (db.findUnit (unit.getUnitID (), "calculateUnitCombatClass").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
@@ -1017,7 +1017,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
 				reduceMovementRemaining (tu, getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));				
+					null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));				
 			
 			// Actually put the units in that location on the server
 			tu.setCombatPosition (movePath);

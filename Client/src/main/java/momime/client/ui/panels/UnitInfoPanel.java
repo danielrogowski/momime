@@ -706,7 +706,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					exists = true;
 			
 			if ((!exists) && (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 0))
+				null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 0))
 			{
 				final UnitSkillAndValue plus = new UnitSkillAndValue ();
 				plus.setUnitSkillID (unitSkillID);

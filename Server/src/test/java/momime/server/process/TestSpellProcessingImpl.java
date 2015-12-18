@@ -971,7 +971,7 @@ public final class TestSpellProcessingImpl
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (summonedUnit, summonedUnit.getUnitHasSkill (),
 			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			players, trueMap, db)).thenReturn (49);
+			null, null, players, trueMap, db)).thenReturn (49);
 		
 		// Set up test object
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);

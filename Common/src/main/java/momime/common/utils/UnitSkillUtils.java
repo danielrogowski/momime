@@ -25,6 +25,10 @@ public interface UnitSkillUtils
 	 * @param unitSkillID Unique identifier for this skill
 	 * @param component Which component(s) making up this attribute to calculate
 	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
+	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -35,8 +39,8 @@ public interface UnitSkillUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
 	 */
 	public int getModifiedSkillValue (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final String unitSkillID,
-		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db)
+		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final String attackFromSkillID, final String attackFromMagicRealmID,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

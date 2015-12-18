@@ -158,7 +158,7 @@ public final class SelectUnitButton extends JToggleButton
 				{
 					final double totalHits = getUnitUtils ().getFullFigureCount (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton")) *
 						getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
+							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					healthProportion = 1 - (getUnit ().getDamageTaken () / totalHits);

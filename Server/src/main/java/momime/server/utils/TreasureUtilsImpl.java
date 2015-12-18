@@ -415,7 +415,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						// Let it move this turn
 						hero.setDoubleOverlandMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (hero, hero.getUnitHasSkill (),
 							CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-							players, gsk.getTrueMap (), db));
+							null, null, players, gsk.getTrueMap (), db));
 					}
 					break;
 

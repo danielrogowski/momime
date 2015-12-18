@@ -24,6 +24,12 @@ public final class AttackDamage
 	
 	/** The spell that's causing the damage; or null if the attack isn't coming from a spell */
 	private final SpellSvr spell;
+
+	/** The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks */
+	private final String attackFromSkillID;
+	
+	/** The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks */
+	private final String attackFromMagicRealmID;
 	
 	/**
 	 * The number of times this damage is dealt - typically 1, but e.g. the "thrown 1" attack of a barbarian unit with 6 figures is actually made as 6 separate
@@ -36,15 +42,22 @@ public final class AttackDamage
 	 * @param aPlusToHit Any bonus to the standard 30% hit rate
 	 * @param aDamageType Kind of damage being dealt
 	 * @param aSpell The spell that's causing the damage; or null if the attack isn't coming from a spell
+	 * @param anAttackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param anAttackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against; ignored for spells
 	 * @param aRepetitions The number of times this damage is dealt
 	 */
-	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageTypeID aDamageType, final SpellSvr aSpell, final int aRepetitions)
+	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageTypeID aDamageType, final SpellSvr aSpell,
+		final String anAttackFromSkillID, final String anAttackFromMagicRealmID, final int aRepetitions)
 	{
 		super ();
 		potentialHits = aPotentialHits;
 		chanceToHit = aPlusToHit + 3;
 		damageType = aDamageType;
 		spell = aSpell;
+		attackFromSkillID = anAttackFromSkillID;
+		attackFromMagicRealmID = (spell != null) ? spell.getSpellRealm () : anAttackFromMagicRealmID;
 		repetitions = aRepetitions;
 	}
 	
@@ -97,6 +110,22 @@ public final class AttackDamage
 		return spell;
 	}
 
+	/**
+	 * @return The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks
+	 */
+	public final String getAttackFromSkillID ()
+	{
+		return attackFromSkillID;
+	}
+	
+	/**
+	 * @return The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks
+	 */
+	public final String getAttackFromMagicRealmID ()
+	{
+		return attackFromMagicRealmID;
+	}
+	
 	/**
 	 * @return The number of times this damage is dealt 
 	 */

@@ -460,7 +460,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				defendingFiguresRemaining--;
 				hitPointsRemainingOfFirstFigure = getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (),
 					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, players, mem, db);
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);		// Nulls ok - no skill will grant +HP only part of the time
 			}
 		}
 		

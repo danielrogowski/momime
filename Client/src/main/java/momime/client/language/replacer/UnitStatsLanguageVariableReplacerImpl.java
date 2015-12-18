@@ -191,7 +191,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 							
 							// Don't mention skills that the unit does not have
 							if ((bonus.getUnitSkillValue () != null) && (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, bonus.getUnitSkillID (),
-								UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH,
+								UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH, null, null,
 								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0))
 							{
 								if (bonuses.length () > 0)
@@ -298,14 +298,14 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				// This outputs the value of the specified skill, e.g. SKILL_VALUE_US098 outputs how much experience the unit has
 				if (code.startsWith ("SKILL_VALUE_"))
 					text = new Integer (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (12),
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ())).toString ();
 				
 				// This outputs 'Super' if the value of the specified skill is 2 or more
 				else if (code.startsWith ("SUPER_"))
 				{
 					text = (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (6),
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, getClient ().getPlayers (),
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 1) ? "Super" : "";
 				}
 				

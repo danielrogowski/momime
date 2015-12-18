@@ -185,67 +185,86 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 					for (final UnitSkill skillDef : db.getUnitSkills ())
 						for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 							
-							// Does this skill add to the skill we're calculating?  Also filter out skills that aren't the type (breakdown component) that we're looking for
-							// Also does the skill only apply to particular ranged attack types, and incoming skill IDs or incoming attacks of only particular magic realms?
-							// (This deals with all conditional bonuses, such as Resist Elements, Large Shield or Flame Blade)
-							if ((unitSkillID.equals (addsToSkill.getAddsToSkillID ())) &&
-								((addsToSkill.getRangedAttackTypeID () == null) || (addsToSkill.getRangedAttackTypeID ().equals (unitDefinition.getRangedAttackType ()))) &&
-								((addsToSkill.getOnlyVersusAttacksFromSkillID () == null) || (addsToSkill.getOnlyVersusAttacksFromSkillID ().equals (attackFromSkillID))) &&
-								((addsToSkill.getOnlyVersusAttacksFromMagicRealmID () == null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID ().equals (attackFromMagicRealmID))) &&
-								((component == UnitSkillComponent.ALL) ||
-								(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
-								(!addsToSkill.isAffectsEntireStack () && ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.HERO_SKILLS)))))
+							// If we have no info about the kind of attack being made, or this isn't in reference to an attack at all, then discount the bonus
+							// if it has any restrictions that depend on the kind of incoming attack, even if we match those restrictions.
+							// This is to stop the bonus from Large Shield showing on the unit info screen.
+							if ((attackFromSkillID == null) && (attackFromMagicRealmID == null) &&
+								(addsToSkill.getOnlyVersusAttacksFromSkillID () != null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID () != null))
 							{
-								// Now see if the unit has that skill; or any unit in the stack, as appropriate
-								int multiplier;
-								if (addsToSkill.isAffectsEntireStack ())
-									multiplier = getHighestModifiedSkillValue ((MapCoordinates3DEx) unit.getUnitLocation (), unitCombatLocation, unit.getOwningPlayerID (),
-										skillDef.getUnitSkillID (), players, mem, db);
-								else
-									multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (), UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-										attackFromSkillID, attackFromMagicRealmID, players, mem, db);
+								// Ignore
+							}
+							else
+							{
+								// Deal with negative checks first, so the "if" below doesn't get too complicated; the value here is irrelevant if onlyVersusAttacksFromSkillID is null
+								// NB. attackFromSkillID of "null" (i.e. spell based attacks) are considered as not matching the required skill ID
+								// which is what we want - so Large Shield DOES give its bonus against incoming spell attacks such as Fire Bolt
+								boolean onlyVersusAttacksFromSkillIDCheckPasses = (addsToSkill.getOnlyVersusAttacksFromSkillID () != null) &&
+									(addsToSkill.getOnlyVersusAttacksFromSkillID ().equals (attackFromSkillID));
+								if ((addsToSkill.isNegateOnlyVersusAttacksFromSkillID () != null) && (addsToSkill.isNegateOnlyVersusAttacksFromSkillID ()))
+									onlyVersusAttacksFromSkillIDCheckPasses = !onlyVersusAttacksFromSkillIDCheckPasses;
 								
-								if (multiplier >= 0)
+								// Does this skill add to the skill we're calculating?  Also filter out skills that aren't the type (breakdown component) that we're looking for
+								// Also does the skill only apply to particular ranged attack types, and incoming skill IDs or incoming attacks of only particular magic realms?
+								// (This deals with all conditional bonuses, such as Resist Elements, Large Shield or Flame Blade)
+								if ((unitSkillID.equals (addsToSkill.getAddsToSkillID ())) &&
+									((addsToSkill.getRangedAttackTypeID () == null) || (addsToSkill.getRangedAttackTypeID ().equals (unitDefinition.getRangedAttackType ()))) &&
+									((addsToSkill.getOnlyVersusAttacksFromSkillID () == null) || (onlyVersusAttacksFromSkillIDCheckPasses)) &&
+									((addsToSkill.getOnlyVersusAttacksFromMagicRealmID () == null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID ().equals (attackFromMagicRealmID))) &&
+									((component == UnitSkillComponent.ALL) ||
+									(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
+									(!addsToSkill.isAffectsEntireStack () && ((component == UnitSkillComponent.SPELL_EFFECTS) || (component == UnitSkillComponent.HERO_SKILLS)))))
 								{
-									// Defining both isn't valid
-									if ((addsToSkill.getAddsToSkillDivisor () != null) && (addsToSkill.getAddsToSkillFixed () != null))
-										throw new MomException ("Unit skill " + skillDef.getUnitSkillID () + " adds to skill " + addsToSkill.getAddsToSkillID () +
-											" but specifies both a level divisor and a fixed amount");
+									// Now see if the unit has that skill; or any unit in the stack, as appropriate
+									int multiplier;
+									if (addsToSkill.isAffectsEntireStack ())
+										multiplier = getHighestModifiedSkillValue ((MapCoordinates3DEx) unit.getUnitLocation (), unitCombatLocation, unit.getOwningPlayerID (),
+											skillDef.getUnitSkillID (), players, mem, db);
+									else
+										multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (), UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+											attackFromSkillID, attackFromMagicRealmID, players, mem, db);
 									
-									// Any bonuses from hero skills? (Might gives +melee, Constitution gives +hit points, Agility gives +defence, and so on)
-									else if (addsToSkill.getAddsToSkillDivisor () != null)
+									if (multiplier >= 0)
 									{
-										if ((expLvl != null) && (multiplier > 0) &&
-											((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.ALL)))
-										{
-											// Multiplier will either equal 1 or 2, indicating whether we have the regular or super version of the skill - change this to be 2 for regular or 3 for super
-											multiplier++;
-											
-											// Some skills take more than 1 level to gain 1 attribute point, so get this value
-											final int divisor = (addsToSkill.getAddsToSkillDivisor () == null) ? 1 : addsToSkill.getAddsToSkillDivisor ();
-											
-											// Now can do the calculation
-											final int bonus = ((expLvl.getLevelNumber () + 1) * multiplier) / (divisor*2);
-											total = total + addToSkillValue (bonus, positiveNegative);
-										}
-									}
-									
-									// Any fixed bonuses from one skill to another?  e.g. Holy Armour gives +2 to defence
-									else if (addsToSkill.getAddsToSkillFixed () != null)
-									{
-										if ((component == UnitSkillComponent.ALL) ||
-											(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
-											(!addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS)))
-													
-											total = total + addToSkillValue (addsToSkill.getAddsToSkillFixed (), positiveNegative);
-									}
-									
-									// Neither divisor nor fixed value specified, so the value must come from the skill itself
-									else if ((multiplier > 0) && ((component == UnitSkillComponent.ALL) ||
-										(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
-										(!addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS))))
+										// Defining both isn't valid
+										if ((addsToSkill.getAddsToSkillDivisor () != null) && (addsToSkill.getAddsToSkillFixed () != null))
+											throw new MomException ("Unit skill " + skillDef.getUnitSkillID () + " adds to skill " + addsToSkill.getAddsToSkillID () +
+												" but specifies both a level divisor and a fixed amount");
 										
-										total = total + multiplier;
+										// Any bonuses from hero skills? (Might gives +melee, Constitution gives +hit points, Agility gives +defence, and so on)
+										else if (addsToSkill.getAddsToSkillDivisor () != null)
+										{
+											if ((expLvl != null) && (multiplier > 0) &&
+												((component == UnitSkillComponent.HERO_SKILLS) || (component == UnitSkillComponent.ALL)))
+											{
+												// Multiplier will either equal 1 or 2, indicating whether we have the regular or super version of the skill - change this to be 2 for regular or 3 for super
+												multiplier++;
+												
+												// Some skills take more than 1 level to gain 1 attribute point, so get this value
+												final int divisor = (addsToSkill.getAddsToSkillDivisor () == null) ? 1 : addsToSkill.getAddsToSkillDivisor ();
+												
+												// Now can do the calculation
+												final int bonus = ((expLvl.getLevelNumber () + 1) * multiplier) / (divisor*2);
+												total = total + addToSkillValue (bonus, positiveNegative);
+											}
+										}
+										
+										// Any fixed bonuses from one skill to another?  e.g. Holy Armour gives +2 to defence
+										else if (addsToSkill.getAddsToSkillFixed () != null)
+										{
+											if ((component == UnitSkillComponent.ALL) ||
+												(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
+												(!addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS)))
+														
+												total = total + addToSkillValue (addsToSkill.getAddsToSkillFixed (), positiveNegative);
+										}
+										
+										// Neither divisor nor fixed value specified, so the value must come from the skill itself
+										else if ((multiplier > 0) && ((component == UnitSkillComponent.ALL) ||
+											(addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS_STACK)) ||
+											(!addsToSkill.isAffectsEntireStack () && (component == UnitSkillComponent.SPELL_EFFECTS))))
+											
+											total = total + multiplier;
+									}
 								}
 							}
 				}

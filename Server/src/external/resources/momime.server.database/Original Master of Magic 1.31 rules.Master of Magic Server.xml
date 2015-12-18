@@ -10539,31 +10539,8 @@
 			<addsToSkillID>UA04</addsToSkillID>
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>2</addsToSkillFixed>
-			<onlyVersusAttacksFromSkillID>UA02</onlyVersusAttacksFromSkillID>
-		</addsToSkill>
-		<addsToSkill>
-			<addsToSkillID>UA04</addsToSkillID>
-			<affectsEntireStack>false</affectsEntireStack>
-			<addsToSkillFixed>2</addsToSkillFixed>
-			<onlyVersusAttacksFromSkillID>US126</onlyVersusAttacksFromSkillID>
-		</addsToSkill>
-		<addsToSkill>
-			<addsToSkillID>UA04</addsToSkillID>
-			<affectsEntireStack>false</affectsEntireStack>
-			<addsToSkillFixed>2</addsToSkillFixed>
-			<onlyVersusAttacksFromSkillID>US133</onlyVersusAttacksFromSkillID>
-		</addsToSkill>
-		<addsToSkill>
-			<addsToSkillID>UA04</addsToSkillID>
-			<affectsEntireStack>false</affectsEntireStack>
-			<addsToSkillFixed>2</addsToSkillFixed>
-			<onlyVersusAttacksFromSkillID>US134</onlyVersusAttacksFromSkillID>
-		</addsToSkill>
-		<addsToSkill>
-			<addsToSkillID>UA04</addsToSkillID>
-			<affectsEntireStack>false</affectsEntireStack>
-			<addsToSkillFixed>2</addsToSkillFixed>
-			<onlyVersusAttacksFromSkillID>SS093B</onlyVersusAttacksFromSkillID>
+			<onlyVersusAttacksFromSkillID>UA01</onlyVersusAttacksFromSkillID>
+			<negateOnlyVersusAttacksFromSkillID>true</negateOnlyVersusAttacksFromSkillID>
 		</addsToSkill>
 		<unitSkillDescription>Large Shield</unitSkillDescription>
 	</unitSkill>
@@ -10623,7 +10600,6 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageType>T</damageType>
 		<damagePerFigure>C</damagePerFigure>
-		<magicRealmID>MB04</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillDescription>Life Stealing</unitSkillDescription>

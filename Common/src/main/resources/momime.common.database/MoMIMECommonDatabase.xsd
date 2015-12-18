@@ -750,6 +750,15 @@ bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="negateOnlyVersusAttacksFromSkillID" type="xsd:boolean" nxe:label="Not?" nxe:gridwidth="50">
+				<xsd:annotation>
+        			<xsd:documentation>Inverts the onlyVersusAttacksFromSkillID check, so will grant bonus if skill is NOT one of those listed.
+This is principally here for the ""Large Shield", which is defined as "gives +2 defence vs. all types of incoming attack except melee hits".</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="onlyVersusAttacksFromMagicRealmID" type="momimecommon:pickID" nxe:label="Only applies vs atks from magic realm" nxe:showmaincolumn="false">
 				<xsd:annotation>
         			<xsd:documentation>Some spell effects, e.g. Resist Elements or Bless, only provide a stat bonus when the unit is attacked by certain realms of magic.

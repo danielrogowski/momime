@@ -170,6 +170,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		// special orders, here we want any unit as long as its alive and at the right location.
 		final Iterator<HideableComponent<SelectUnitButton>> buttonIter = getOverlandMapRightHandPanel ().getSelectUnitButtons ().iterator ();
 		
+		int count = 0;
 		if (unitLocation != null)
 			for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((unitLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
@@ -178,6 +179,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 					button.getComponent ().setUnit (mu);
 					button.getComponent ().setSelected (unitsLeftToMoveOverland.contains (mu));	// Pre-select this unit as long as it hasn't already passed its allocated movement sequence
 					button.setHidden (false);
+					count++;
 				}
 
 		// Get rid of any remaining spare unused buttons
@@ -189,15 +191,22 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			button.getComponent ().setUnit (null);
 		}
 		
-		// Even if we auto selected zero units, we still have to set these, since the player might then decide to select one of the units
-		// manually to move it, in which case we need to know where its moving from
-
-        // This is the single only place unitMoveFrom is ever set
-		unitMoveFrom = unitLocation;
-
-		// Enable or disable the special order buttons like build city, purify, etc.
-		enableOrDisableSpecialOrderButtons ();
-		updateMovementRemaining ();
+		// If we found no units at all (probably player right clicked on empty piece of map) then just jump to next unit to move.
+		// This helps the game not get stuck at "Current player: you" without suggesting what unit you need to move.
+		if ((count == 0) && (unitLocation != null))
+			selectNextUnitToMoveOverland ();
+		else
+		{
+			// Even if we auto selected zero units, we still have to set these, since the player might then decide to select one of the units
+			// manually to move it, in which case we need to know where its moving from
+	
+	        // This is the single only place unitMoveFrom is ever set
+			unitMoveFrom = unitLocation;
+	
+			// Enable or disable the special order buttons like build city, purify, etc.
+			enableOrDisableSpecialOrderButtons ();
+			updateMovementRemaining ();
+		}
 		
 		log.trace ("Exiting showSelectUnitBoxes");
 	}

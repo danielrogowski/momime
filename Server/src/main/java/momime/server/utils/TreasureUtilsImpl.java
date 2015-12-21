@@ -47,6 +47,7 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitSkillUtils;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.MapFeatureSvr;
 import momime.server.database.PickFreeSpellSvr;
@@ -112,6 +113,9 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	
 	/** Server-only spell calculations */
 	private ServerSpellCalculations serverSpellCalculations;
+
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * The treasure reward process detailed in the strategy guide (Appendix C) and on the MoM Wiki is awkward to implement, and in
@@ -690,6 +694,10 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			player.getConnection ().sendMessageToClient (reward);
 		}
 		
+		// Resend resource values if we gained some gold/mana
+		if (reward.getResource ().size () > 0)
+			getServerResourceCalculations ().sendGlobalProductionValues (player, null);
+		
 		log.trace ("Exiting sendTreasureReward");
 	}
 
@@ -867,5 +875,21 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final ServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

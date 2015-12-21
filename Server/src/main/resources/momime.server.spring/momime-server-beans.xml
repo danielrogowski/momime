@@ -416,6 +416,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
 	
 	<!-- Calculations -->

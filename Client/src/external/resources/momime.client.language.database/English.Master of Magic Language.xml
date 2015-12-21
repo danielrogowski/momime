@@ -1274,18 +1274,21 @@ The unit being attacked can then use its Defence attribute to try to block some 
 
 Melee weapons are available in a number of weapon grades which confer improved stats:
 #{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon
-#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon
-#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon
-#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon
+#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon (+1 to hit)
+#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon (+1 to hit, +1 attack)
+#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon (+1 to hit, +2 attack)
 
 The background colour of each icon depicts the source of the attribute:
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').unitSkillComponentImageFile} Basic statistic of the unit
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').unitSkillComponentImageFile} Bonus from an improved weapon grade
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').unitSkillComponentImageFile} Bonus from mithril or adamantium weapons
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').unitSkillComponentImageFile} Bonus from experience
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').unitSkillComponentImageFile} Bonus from Might hero skill
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_ITEMS, 'HelpText').unitSkillComponentImageFile} Bonus from + attack attribute on hero items
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from spell effects, e.g. Giant Strength or Flame Blade
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS_STACK, 'HelpText').unitSkillComponentImageFile} Bonus from Holy Bonus unit stack effect
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from combat area effects, e.g. node aura or Prayer spell
 
-A darkened icon represents a minus, for example from a curse type spell.</unitSkillHelpText>
+A darkened icon represents a minus, for example from a curse type spell effect.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="UA02">
 		<unitSkillDescription>Ranged</unitSkillDescription>
@@ -1295,9 +1298,9 @@ The unit being attacked can then use its Defence attribute to try to block some 
 
 Standard ranged weapons are available in a number of types, and weapon grades which confer improved stats:
 #{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon
-#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon
-#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon
-#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon
+#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon (+1 to hit)
+#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon (+1 to hit, +1 attack)
+#{findRangedAttackType ('RAT14', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} #{findRangedAttackType ('RAT0A', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon (+1 to hit, +2 attack)
 
 Magical ranged attacks are always treated as a particular realm of magic, which is important for spells like Resist Elements and Bless which give defensive bonuses only against specific realms of magic:
 #{findRangedAttackType ('RAT1F', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Chaos magic ranged attack
@@ -1306,12 +1309,14 @@ Magical ranged attacks are always treated as a particular realm of magic, which 
 
 The background colour of each icon depicts the source of the attribute:
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').unitSkillComponentImageFile} Basic statistic of the unit
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').unitSkillComponentImageFile} Bonus from an improved weapon grade
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').unitSkillComponentImageFile} Bonus from mithril or adamantium weapons
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').unitSkillComponentImageFile} Bonus from experience
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').unitSkillComponentImageFile} Bonus from Arcane Power hero skill
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_ITEMS, 'HelpText').unitSkillComponentImageFile} Bonus from + attack attribute on hero items
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from spell effects, e.g. Lionheart or Flame Blade
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from combat area effects, e.g. node aura or Prayer spell
 
-A darkened icon represents a minus, for example from a curse type spell.</unitSkillHelpText>
+A darkened icon represents a minus, for example from a curse type spell effect.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="UA03">
 		<unitSkillDescription>+ to Hit</unitSkillDescription>
@@ -1321,9 +1326,12 @@ Standard ranged weapons (bows, slings and rocks) also suffer To Hit penalties th
 
 The background colour of each icon depicts the source of the attribute:
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').unitSkillComponentImageFile} Basic statistic of the unit
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').unitSkillComponentImageFile} Bonus from magic, mithril or adamantium weapons
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').unitSkillComponentImageFile} Bonus from experience
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').unitSkillComponentImageFile} Bonus from Blademaster hero skill
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').unitSkillComponentImageFile} Bonus from Blademaster hero skills
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_ITEMS, 'HelpText').unitSkillComponentImageFile} Bonus from + to hit attribute on hero items
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from unit skills or spell effects, e.g. Holy Weapon or Lucky
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from a combat area effect, e.g. High Prayer or Holy Arms
 
 A darkened icon represents a minus, for example from a curse type spell.</unitSkillHelpText>
 	</unitSkill>
@@ -1335,15 +1343,18 @@ When a unit is hit, the first figure will try to block some of the damage using 
 
 Shields are available in a number of weapon grades which confer improved stats:
 #{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard shield
-#{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril shield
-#{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium shield
+#{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril shield (+1 defence)
+#{findUnitSkill ('UA04', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium shield (+2 defence)
 
 The background colour of each icon depicts the source of the attribute:
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').unitSkillComponentImageFile} Basic statistic of the unit
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').unitSkillComponentImageFile} Bonus from an improved weapon grade
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').unitSkillComponentImageFile} Bonus from mithril or adamantium shields
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').unitSkillComponentImageFile} Bonus from experience
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').unitSkillComponentImageFile} Bonus from Agility hero skill
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_ITEMS, 'HelpText').unitSkillComponentImageFile} Bonus from + defence attribute on hero items, or Chain/Plate mail
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from spell effects, e.g. Stone Skin or Holy Armour
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS_STACK, 'HelpText').unitSkillComponentImageFile} Bonus from Holy Bonus unit stack effect
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from combat area effects, e.g. node aura or Prayer spell
 
 A darkened icon represents a minus, for example from a curse type spell.</unitSkillHelpText>
 	</unitSkill>
@@ -1354,7 +1365,10 @@ A darkened icon represents a minus, for example from a curse type spell.</unitSk
 The background colour of each icon depicts the source of the attribute:
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').unitSkillComponentImageFile} Basic statistic of the unit
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').unitSkillComponentImageFile} Bonus from experience
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_ITEMS, 'HelpText').unitSkillComponentImageFile} Bonus from + resistance attribute on hero items
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from unit skills or spell effects, e.g. Lionheart or Lucky
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS_STACK, 'HelpText').unitSkillComponentImageFile} Bonus from Holy Bonus or Resistance to All unit stack effects
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from combat area effects, e.g. node aura or Prayer spell
 
 A darkened icon represents a minus, for example from a curse type spell.</unitSkillHelpText>
 	</unitSkill>
@@ -1366,7 +1380,7 @@ The background colour of each icon depicts the source of the attribute:
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').unitSkillComponentImageFile} Basic statistic of the unit
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').unitSkillComponentImageFile} Bonus from experience
 #{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').unitSkillComponentImageFile} Bonus from Constitution hero skill
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from spell effects, e.g. Lionheart
 
 A darkened icon represents damage already taken to the first figure in the unit.  The other figures still alive in the unit will be at full health.
 
@@ -1377,13 +1391,23 @@ For example a unit with 6 figures with 3 hit points each can take a total of 18 
 		<unitSkillHelpText>Each icon represents a 10% improvement to the chance each figure has to block an attack.  The base chance to defend is 30% and there are very few situations in the game which modify this.
 
 The background colour of each icon depicts the source of the attribute:
-#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from High Prayer spell</unitSkillHelpText>
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from Lucky skill
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from High Prayer spell
+
+A darkened icon represents a minus, for example from a curse type spell.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="UA08">
 		<unitSkillDescription>Movement</unitSkillDescription>
 		<unitSkillHelpText>The number of movement icons indicate the number of map cells or combat tiles that the unit is able to move during one overland or combat turn.
 		
-The type of movement icon indicates the unit's primary movement skill, although it may have multiple, especially if it has enchantments cast upon on.</unitSkillHelpText>
+The type of movement icon indicates the unit's primary movement skill, although it may have multiple, especially if it has enchantments cast upon on.
+
+The background colour of each icon depicts the source of the addition to movement speed:
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').unitSkillComponentImageFile} Basic statistic of the unit
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_ITEMS, 'HelpText').unitSkillComponentImageFile} Bonus from + movement attribute on hero items
+#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).SPELL_EFFECTS, 'HelpText').unitSkillComponentImageFile} Bonus from spell effects, e.g. Endurance
+
+A darkened icon represents a minus, for example from a curse type spell.</unitSkillHelpText>
 	</unitSkill>
 	<rangedAttackType rangedAttackTypeID="RAT14">
 		<rangedAttackTypeDescription>Arrows</rangedAttackTypeDescription>

@@ -41,9 +41,8 @@ Here's some quick notes on how to get a game up and running in case some parts a
 
 10) Saving and loading games has now been added but note this doesn't work quite like the original MoM.
     Games are autosaved every turn, so there is no explicit save button.  Games may be reloaded only
-    by the same player who created the game in the first place.  This is still a new and
-    experimental beta test feature and so until I'm more sure that it works correctly, loading saved
-    games only works for single player games (i.e. 1 human player plus AI player(s)).
+    by the same player who created the game in the first place.  If a saved multiplayer game, the additonal
+	players must then join the loaded game just like when creating a new game, before it will start back up.
 
 11) While there are language files for a couple of languages besides English, these are now extremely
     out of date and haven't been updated for many versions, so the game won't work very well if you
@@ -52,3 +51,8 @@ Here's some quick notes on how to get a game up and running in case some parts a
 
 NB. All the windows in the client can be moved around by dragging an empty piece of the window
     away from any buttons or other controls.  Only the overland map window can be resized.
+
+I'd like to put out a thank you to the folks at the MoM wiki - http://masterofmagic.wikia.com
+The amount and level of detail of information they've collected there about the rules and all
+other aspects of the original MoM has been invaluable and saved me a lot of time and guesswork
+trying to figure out how the original MoM worked for myself.

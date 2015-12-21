@@ -362,7 +362,7 @@ public final class TestSpellProcessingImpl
 		
 		// Mock creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
-		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, summoningCircleLocation, null,
+		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null,
 			player3, UnitStatusID.ALIVE, players, sd, db)).thenReturn (new MemoryUnit ());
 		
 		// Set up test object		
@@ -378,7 +378,7 @@ public final class TestSpellProcessingImpl
 		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
 		
 		// Prove that unit got added
-		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, summoningCircleLocation, null, player3,
+		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null, player3,
 			UnitStatusID.ALIVE, players, sd, db);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup

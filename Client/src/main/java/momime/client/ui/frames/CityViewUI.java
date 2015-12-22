@@ -82,6 +82,7 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
@@ -749,9 +750,13 @@ public final class CityViewUI extends MomClientFrameUI
 				// If cancelling a pending sale, there's no lookups or confirmations or anything to do, just send the message
 				if (buildingID == null)
 				{
-					final SellBuildingMessage msg = new SellBuildingMessage ();
-					msg.setCityLocation (getCityLocation ());
-					getClient ().getServerConnection ().sendMessageToServer (msg);
+					// But ignore clicking the gold coin in one-player-at-a-time turn games - then the building is already sold, we can't change our mind
+					if (getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
+					{
+						final SellBuildingMessage msg = new SellBuildingMessage ();
+						msg.setCityLocation (getCityLocation ());
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
 				}
 				else
 				{					

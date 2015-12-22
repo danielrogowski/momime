@@ -71,6 +71,36 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 					text = null;
 				break;
 				
+			case "HOUSING_PERCENTAGE":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = new Integer (growing.getHousingPercentageBonus ()).toString ();
+				}
+				else
+					text = null;
+				break;
+				
+			case "HOUSING_MODIFIER":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = getTextUtils ().intToStrPlusMinus (growing.getHousingModifier ());
+				}
+				else
+					text = null;
+				break;
+				
+			case "TOTAL_GROWTH_RATE_INCLUDING_HOUSING":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = getTextUtils ().intToStrPlusMinus (growing.getTotalGrowthRateIncludingHousingModifier ());
+				}
+				else
+					text = null;
+				break;
+				
 			case "CAPPED_GROWTH_RATE":
 				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
 				{

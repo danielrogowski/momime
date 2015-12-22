@@ -5150,6 +5150,7 @@
 		<buildingName>Maritime Guild</buildingName>
 	</building>
 	<building buildingID="BL15">
+		<housingPercentageBonus>10</housingPercentageBonus>
 		<productionCost>100</productionCost>
 		<buildingPopulationProductionModifier productionTypeID="RE03">
 			<doubleAmount>-4</doubleAmount>
@@ -5381,6 +5382,7 @@
 		<aiBuildingTypeID>P</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL32">
+		<housingPercentageBonus>15</housingPercentageBonus>
 		<productionCost>60</productionCost>
 		<buildingPopulationProductionModifier productionTypeID="RE03">
 			<doubleAmount>-2</doubleAmount>
@@ -24296,6 +24298,7 @@
 		<languageEntry languageEntryID="RacialGrowthModifier" />
 		<languageEntry languageEntryID="GrowthBonusFromBuilding" />
 		<languageEntry languageEntryID="CityGrowthRateTotal" />
+		<languageEntry languageEntryID="Housing" />
 		<languageEntry languageEntryID="CityGrowthRateCapped" />
 		<languageEntry languageEntryID="DeathRate" />
 		<languageEntry languageEntryID="AtMaximumSize" />
@@ -24336,6 +24339,7 @@
 		<languageEntry languageEntryID="NetEffectBreakingEven" />
 		<languageEntry languageEntryID="NetEffectGain" />
 		<languageEntry languageEntryID="NetEffectLoss" />
+		<languageEntry languageEntryID="TradeGoods" />
 	</languageCategory>
 	<languageCategory languageCategoryID="UnrestCalculation">
 		<languageEntry languageEntryID="Title" />

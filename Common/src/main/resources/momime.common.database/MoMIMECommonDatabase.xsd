@@ -582,6 +582,7 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="50" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReductionImprovedByRetorts" type="xsd:boolean" nxe:label="Unrest reduction improved by DivP/InfP?" nxe:gridwidth="220" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Bonus" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="housingPercentageBonus" type="momimecommon:percentage" nxe:label="Housing %" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">
 				<xsd:annotation>

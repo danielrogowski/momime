@@ -459,12 +459,42 @@ public final class CityCalculationsImpl implements CityCalculations
 						growing.getBuildingModifier ().add (breakdownBuilding);
 					}
 				}
+			
+			// Housing setting
+			if (CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ()))
+			{
+				// Housing Bonus = (workers / total population) * 100% + 15%  if a Builders' Hall is present + 10% if a Sawmill is present
+				// Special case for city size = 1, where the first portion is always taken as 50%
+				int housingPercentage;
+				if (currentPopulation < 2000)
+					housingPercentage = 50;
+				else
+				{
+					final int workers = (currentPopulation / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels ();
+					housingPercentage = (workers * 100) / (currentPopulation / 1000);
+				}
+				
+				for (final MemoryBuilding thisBuilding : buildings)
+					if (thisBuilding.getCityLocation ().equals (cityLocation))
+					{
+						final Integer housingPercentageBonus = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityGrowthRate").getHousingPercentageBonus ();
+						if (housingPercentageBonus != null)
+							housingPercentage = housingPercentage + housingPercentageBonus;
+					}
+				
+				// Now can add it on
+				growing.setHousingPercentageBonus (housingPercentage);
+				growing.setHousingModifier ((growing.getTotalGrowthRate () * housingPercentage / 1000) * 10);
+				growing.setTotalGrowthRateIncludingHousingModifier (growing.getTotalGrowthRate () + growing.getHousingModifier ());
+			}
+			else
+				growing.setTotalGrowthRateIncludingHousingModifier (growing.getTotalGrowthRate ());
 
 			// Don't allow maximum to go over maximum population
-			if (growing.getTotalGrowthRate () > spaceLeft)
+			if (growing.getTotalGrowthRateIncludingHousingModifier () > spaceLeft)
 				growing.setCappedGrowthRate (spaceLeft);
 			else
-				growing.setCappedGrowthRate (growing.getTotalGrowthRate ());
+				growing.setCappedGrowthRate (growing.getTotalGrowthRateIncludingHousingModifier ());
 
 			growing.setFinalTotal (growing.getCappedGrowthRate ());
 			breakdown = growing;

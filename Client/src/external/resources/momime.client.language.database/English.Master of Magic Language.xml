@@ -6304,6 +6304,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="CityGrowthRateTotal">
 			<languageEntryText>Total = TOTAL_GROWTH_RATE people per turn</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Housing">
+			<languageEntryText>Housing setting adds HOUSING_PERCENTAGE% * TOTAL_GROWTH_RATE = HOUSING_MODIFIER, for overall total of TOTAL_GROWTH_RATE_INCLUDING_HOUSING people per turn</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="CityGrowthRateCapped">
 			<languageEntryText>But this would go over maximum population, so reduced to CAPPED_GROWTH_RATE people per turn</languageEntryText>
 		</languageEntry>

@@ -46,9 +46,24 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 							<xsd:documentation>Total growth = base + racial + buildings</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="housingPercentageBonus" type="momimecommon:percentage">
+						<xsd:annotation>
+							<xsd:documentation>If city production is set to "Housing", this is the percentage bonus calculated from the number of workers and types of buildings present</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="housingModifier" type="momimecommon:percentage">
+						<xsd:annotation>
+							<xsd:documentation>Housing modifier = Total growth rate * Housing percentage bonus, rounded down to the nearest 10</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateIncludingHousingModifier" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Total growth rate + Housing Modifier</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="cappedGrowthRate" type="momimecommon:cityPopulationGrowthRate">
 						<xsd:annotation>
-							<xsd:documentation>Total growth rate, possibly reduced to prevent city going over maximum size.</xsd:documentation>
+							<xsd:documentation>Total growth rate including housing modifier, possibly reduced to prevent city going over maximum size.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

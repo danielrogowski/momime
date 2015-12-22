@@ -477,7 +477,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					final PickTypeSvr pickType = db.findPickType (pick.getPickType (), "rollTreasureReward");
 					
 					// Can't pick Myrran, or spend more points than we have
-					if ((pick.getPickCost () <= 2) && (pick.getPickCost () <= specialRewardCount) &&
+					if ((pick.getPickCost () != null) && (pick.getPickCost () <= 2) && (pick.getPickCost () <= specialRewardCount) &&
 							
 						// Book types must match what is defined for the lair
 						((pickType.getMaximumQuantity () != null) || (availableSpellBookIDs.contains (pick.getPickID ()))))

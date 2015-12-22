@@ -169,7 +169,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
 
 							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (),
-								cityProduction.getCappedProductionAmount () - cityProduction.getConsumptionAmount ());
+								cityProduction.getCappedProductionAmount () - cityProduction.getConsumptionAmount () + cityProduction.getConvertToProductionAmount ());
 					}
 				}
 

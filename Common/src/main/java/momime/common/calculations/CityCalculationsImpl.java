@@ -1084,13 +1084,22 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Gold trade % from rivers and oceans
 		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
 		// into considering the potential maximum size this city will reach and cap the gold trade % accordingly
-		calculateGoldTradeBonus (productionValues.findOrAddProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD), map, cityLocation,
-			(calculatePotential ? food.getCappedProductionAmount () : null), sd.getOverlandMapSize (), db);
+		final CityProductionBreakdown gold = productionValues.findOrAddProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		calculateGoldTradeBonus (gold, map, cityLocation, (calculatePotential ? food.getCappedProductionAmount () : null), sd.getOverlandMapSize (), db);
 
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
 		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
 			if (thisProduction != food)
 				halveAddPercentageBonusAndCapProduction (thisProduction, sd.getDifficultyLevel ().getCityMaxSize (), db);
+		
+		// Convert production to gold, if set to trade goods
+		final String currentlyConstructingBuildingID = (cityData != null) ? cityData.getCurrentlyConstructingBuildingID () : null;
+		if ((CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (currentlyConstructingBuildingID)) && (production.getCappedProductionAmount () > 1))
+		{
+			gold.setConvertFromProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+			gold.setConvertFromProductionAmount (production.getCappedProductionAmount () - production.getConsumptionAmount ());
+			gold.setConvertToProductionAmount (gold.getConvertFromProductionAmount () / 2);
+		}
 
 		// Sort the list
 		Collections.sort (productionValues.getProductionType (), new CityProductionBreakdownSorter ());
@@ -1193,7 +1202,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		if (singleProductionValue == null)
 			netGain = 0;
 		else
-			netGain = singleProductionValue.getCappedProductionAmount () - singleProductionValue.getConsumptionAmount ();
+			netGain = singleProductionValue.getCappedProductionAmount () - singleProductionValue.getConsumptionAmount () + singleProductionValue.getConvertToProductionAmount ();
 
 		log.trace ("Exiting calculateSingleCityProduction = " + netGain);
 		return netGain;

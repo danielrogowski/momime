@@ -2230,7 +2230,7 @@ public final class TestCityCalculationsImpl
 		assertEquals (7, maxSize.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, maxSize.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (36, maxSize.getProductionType ().get (0).getDoubleProductionAmount ());
-		assertEquals (18, maxSize.getProductionType ().get (0).getBaseProductionAmount ());			// (2 farmers x2) + (2 x7 from wild game) = 18
+		assertEquals (18, maxSize.getProductionType ().get (0).getBaseProductionAmount ());				// (2 farmers x2) + (2 x7 from wild game) = 18
 		assertEquals (0, maxSize.getProductionType ().get (0).getPercentageBonus ());
 		assertEquals (18, maxSize.getProductionType ().get (0).getModifiedProductionAmount ());
 		assertEquals (6, maxSize.getProductionType ().get (0).getConsumptionAmount ());					// 6 population eating
@@ -2242,13 +2242,13 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, maxSize.getProductionType ().get (1).getConsumptionAmount ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, maxSize.getProductionType ().get (2).getProductionTypeID ());
 		assertEquals (35, maxSize.getProductionType ().get (2).getDoubleProductionAmount ());
-		assertEquals (17, maxSize.getProductionType ().get (2).getBaseProductionAmount ());			// (5 non-rebels x2) +7.5 from gems = 17.5
+		assertEquals (17, maxSize.getProductionType ().get (2).getBaseProductionAmount ());				// (5 non-rebels x2) +7.5 from gems = 17.5
 		assertEquals (18, maxSize.getProductionType ().get (2).getPercentageBonus ());						// Capped due to city size
 		assertEquals (20, maxSize.getProductionType ().get (2).getModifiedProductionAmount ());		// 17 * 1.18 = 20.06
 		assertEquals (7, maxSize.getProductionType ().get (2).getConsumptionAmount ());					// 2 + 2 + 3
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, maxSize.getProductionType ().get (3).getProductionTypeID ());
 		assertEquals (38, maxSize.getProductionType ().get (3).getDoubleProductionAmount ());
-		assertEquals (19, maxSize.getProductionType ().get (3).getBaseProductionAmount ());			// 8 books +5 for being on myrror +3 from adamantium = 16 x2 = 32 +6 from pop = 38
+		assertEquals (19, maxSize.getProductionType ().get (3).getBaseProductionAmount ());				// 8 books +5 for being on myrror +3 from adamantium = 16 x2 = 32 +6 from pop = 38
 		assertEquals (0, maxSize.getProductionType ().get (3).getPercentageBonus ());
 		assertEquals (19, maxSize.getProductionType ().get (3).getModifiedProductionAmount ());
 		assertEquals (0, maxSize.getProductionType ().get (3).getConsumptionAmount ());
@@ -2265,6 +2265,57 @@ public final class TestCityCalculationsImpl
 		assertEquals (28, maxSize.getProductionType ().get (5).getModifiedProductionAmount ());
 		assertEquals (25, maxSize.getProductionType ().get (5).getCappedProductionAmount ());
 		assertEquals (0, maxSize.getProductionType ().get (5).getConsumptionAmount ());
+		
+		// Test trade goods setting
+		assertNull (maxSize.getProductionType ().get (2).getConvertFromProductionTypeID ());
+		assertEquals (0, maxSize.getProductionType ().get (2).getConvertFromProductionAmount ());
+		assertEquals (0, maxSize.getProductionType ().get (2).getConvertToProductionAmount ());
+		
+		cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
+		final CityProductionBreakdownsEx tradeGoods = calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+		assertEquals (7, tradeGoods.getProductionType ().size ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, tradeGoods.getProductionType ().get (0).getProductionTypeID ());
+		assertEquals (36, tradeGoods.getProductionType ().get (0).getDoubleProductionAmount ());
+		assertEquals (18, tradeGoods.getProductionType ().get (0).getBaseProductionAmount ());			// (2 farmers x2) + (2 x7 from wild game) = 18
+		assertEquals (0, tradeGoods.getProductionType ().get (0).getPercentageBonus ());
+		assertEquals (18, tradeGoods.getProductionType ().get (0).getModifiedProductionAmount ());
+		assertEquals (6, tradeGoods.getProductionType ().get (0).getConsumptionAmount ());					// 6 population eating
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, tradeGoods.getProductionType ().get (1).getProductionTypeID ());
+		assertEquals (14, tradeGoods.getProductionType ().get (1).getDoubleProductionAmount ());
+		assertEquals (7, tradeGoods.getProductionType ().get (1).getBaseProductionAmount ());				// (2 farmers x ½) + (3 workers x 2) = 7
+		assertEquals (84, tradeGoods.getProductionType ().get (1).getPercentageBonus ());						// 3 hills giving 3% each +25% from sawmill +50% from miners' guild
+		assertEquals (12, tradeGoods.getProductionType ().get (1).getModifiedProductionAmount ());		// 7 * 1.84 = 12.88
+		assertEquals (0, tradeGoods.getProductionType ().get (1).getConsumptionAmount ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, tradeGoods.getProductionType ().get (2).getProductionTypeID ());
+		assertEquals (35, tradeGoods.getProductionType ().get (2).getDoubleProductionAmount ());
+		assertEquals (17, tradeGoods.getProductionType ().get (2).getBaseProductionAmount ());			// (5 non-rebels x2) +7.5 from gems = 17.5
+		assertEquals (18, tradeGoods.getProductionType ().get (2).getPercentageBonus ());						// Capped due to city size
+		assertEquals (20, tradeGoods.getProductionType ().get (2).getModifiedProductionAmount ());		// 17 * 1.18 = 20.06
+		assertEquals (7, tradeGoods.getProductionType ().get (2).getConsumptionAmount ());					// 2 + 2 + 3
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, tradeGoods.getProductionType ().get (3).getProductionTypeID ());
+		assertEquals (38, tradeGoods.getProductionType ().get (3).getDoubleProductionAmount ());
+		assertEquals (19, tradeGoods.getProductionType ().get (3).getBaseProductionAmount ());			// 8 books +5 for being on myrror +3 from adamantium = 16 x2 = 32 +6 from pop = 38
+		assertEquals (0, tradeGoods.getProductionType ().get (3).getPercentageBonus ());
+		assertEquals (19, tradeGoods.getProductionType ().get (3).getModifiedProductionAmount ());
+		assertEquals (0, tradeGoods.getProductionType ().get (3).getConsumptionAmount ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, tradeGoods.getProductionType ().get (4).getProductionTypeID ());
+		assertEquals (6, tradeGoods.getProductionType ().get (4).getDoubleProductionAmount ());
+		assertEquals (3, tradeGoods.getProductionType ().get (4).getBaseProductionAmount ());				// 3 from sages' guild
+		assertEquals (0, tradeGoods.getProductionType ().get (4).getPercentageBonus ());
+		assertEquals (3, tradeGoods.getProductionType ().get (4).getModifiedProductionAmount ());
+		assertEquals (0, tradeGoods.getProductionType ().get (4).getConsumptionAmount ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, tradeGoods.getProductionType ().get (5).getProductionTypeID ());
+		assertEquals (55, tradeGoods.getProductionType ().get (5).getDoubleProductionAmount ());			// 27 from terrain + (2 x7 from wild game) = 35
+		assertEquals (28, tradeGoods.getProductionType ().get (5).getBaseProductionAmount ());
+		assertEquals (0, tradeGoods.getProductionType ().get (5).getPercentageBonus ());
+		assertEquals (28, tradeGoods.getProductionType ().get (5).getModifiedProductionAmount ());
+		assertEquals (25, tradeGoods.getProductionType ().get (5).getCappedProductionAmount ());
+		assertEquals (0, tradeGoods.getProductionType ().get (5).getConsumptionAmount ());
+
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, tradeGoods.getProductionType ().get (2).getConvertFromProductionTypeID ());
+		assertEquals (12, tradeGoods.getProductionType ().get (2).getConvertFromProductionAmount ());
+		assertEquals (6, tradeGoods.getProductionType ().get (2).getConvertToProductionAmount ());
 	}
 	
 	/**

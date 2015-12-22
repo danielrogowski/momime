@@ -136,6 +136,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="changeCityConstructionMessage" class="momime.server.messages.process.ChangeCityConstructionMessageImpl" scope="prototype">
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
 	
 	<bean id="sellBuildingMessage" class="momime.server.messages.process.SellBuildingMessageImpl" scope="prototype">

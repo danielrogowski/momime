@@ -1068,7 +1068,7 @@ public final class CityViewUI extends MomClientFrameUI
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).getProductionType ())
 		{
 			final BufferedImage buttonImage = getResourceValueClientUtils ().generateProductionImage (thisProduction.getProductionTypeID (),
-				thisProduction.getCappedProductionAmount (), thisProduction.getConsumptionAmount ());
+				thisProduction.getCappedProductionAmount () + thisProduction.getConvertToProductionAmount (), thisProduction.getConsumptionAmount ());
 			
 			if (buttonImage != null)
 			{

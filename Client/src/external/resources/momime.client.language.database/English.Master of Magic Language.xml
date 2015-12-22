@@ -6420,6 +6420,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="NetEffectLoss">
 			<languageEntryText>Net loss of CONSUMPTION_AMOUNT - PRODUCTION_CAPPED = NET_LOSS</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="TradeGoods">
+			<languageEntryText>Trade Goods setting converts CONVERT_PRODUCTION_FROM_AMOUNT CONVERT_PRODUCTION_FROM_TYPE into an additional CONVERT_PRODUCTION_TO_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="UnrestCalculation">
 		<languageEntry languageEntryID="Title">

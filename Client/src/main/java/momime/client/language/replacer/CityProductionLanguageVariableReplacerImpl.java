@@ -143,6 +143,19 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 			case "NET_LOSS":
 				text = new Integer (getBreakdown ().getConsumptionAmount () - getBreakdown ().getCappedProductionAmount ()).toString ();
 				break;
+
+			case "CONVERT_PRODUCTION_FROM_TYPE":
+				final ProductionTypeLang convertProductionType = getLanguage ().findProductionType (getBreakdown ().getConvertFromProductionTypeID ());
+				text = (convertProductionType == null) ? getBreakdown ().getConvertFromProductionTypeID () : convertProductionType.getProductionTypeDescription ();
+				break;
+				
+			case "CONVERT_PRODUCTION_FROM_AMOUNT":
+				text = new Integer (getBreakdown ().getConvertFromProductionAmount ()).toString ();
+				break;
+				
+			case "CONVERT_PRODUCTION_TO_AMOUNT":
+				text = new Integer (getBreakdown ().getConvertToProductionAmount ()).toString ();
+				break;
 				
 			// Dependant on current population task
 			case "TASK_NAME_SINGULAR":

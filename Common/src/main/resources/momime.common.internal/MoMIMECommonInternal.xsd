@@ -439,6 +439,13 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 					<xsd:documentation>The amount of production the city is consuming, e.g. gold to maintain buildings, or rations eaten by the population.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			
+			<!-- Converting one production type into another - which happens after all production/percentage consumption calculations - this is used for Trade Goods -->
+			<xsd:element minOccurs="0" maxOccurs="1" name="convertFromProductionTypeID" type="momimecommon:productionTypeID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="convertFromProductionAmount" type="momimecommon:undoubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="convertToProductionAmount" type="momimecommon:undoubledProductionValue" />
+			
+			<!-- So final total needs to be read off as: cappedProductionAmount - consumptionAmount + convertToProductionAmount -->
 		</xsd:sequence>
 	</xsd:complexType>
 

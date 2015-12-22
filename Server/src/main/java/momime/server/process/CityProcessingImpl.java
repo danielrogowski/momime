@@ -308,10 +308,8 @@ public final class CityProcessingImpl implements CityProcessing
 								final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 								if (productionAmount != null)
 								{
-									if (cityData.getProductionSoFar () == null)
-										cityData.setProductionSoFar (productionAmount.getCappedProductionAmount ());
-									else
-										cityData.setProductionSoFar (cityData.getProductionSoFar () + productionAmount.getCappedProductionAmount ());
+									cityData.setProductionSoFar (((cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ()) +
+										productionAmount.getCappedProductionAmount () - productionAmount.getConsumptionAmount () + productionAmount.getConvertToProductionAmount ());
 
 									// Is it finished?
 									if (cityData.getProductionSoFar () > productionCost)
@@ -369,11 +367,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 						// Use calculated values to determine population growth
 						final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-						final int maxCitySize;
-						if (productionAmount == null)
-							maxCitySize = 0;
-						else
-							maxCitySize = productionAmount.getCappedProductionAmount ();
+						final int maxCitySize = (productionAmount == null) ? 0 : productionAmount.getCappedProductionAmount ();
 
 						final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
 							(gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, maxCitySize, db).getFinalTotal ();

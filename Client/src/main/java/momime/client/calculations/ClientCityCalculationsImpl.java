@@ -415,6 +415,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			else
 				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectLoss"));
 		}
+		
+		// Trade goods setting
+		if (calc.getConvertFromProductionTypeID () != null)
+		{
+			getProductionReplacer ().addLine (text, null);
+			getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "TradeGoods"));
+		}
 
 		log.trace ("Exiting describeCityProductionCalculation");
 		return text.toString ();

@@ -270,7 +270,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		{
 			final NewTurnMessageUI msg = msgs.nextElement ();
 			if (msg instanceof NewTurnMessageRepaintOnCityDataChanged)
-				if (((NewTurnMessageRepaintOnCityDataChanged) msg).equals (cityLocation))
+				if (((NewTurnMessageRepaintOnCityDataChanged) msg).getCityLocation ().equals (cityLocation))
 					repaint = true;
 
 			// This handles things like, if the current construction project is changed to a Sawmill then we need to kick off the Sawmill animation

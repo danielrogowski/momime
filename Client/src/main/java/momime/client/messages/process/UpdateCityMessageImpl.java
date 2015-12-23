@@ -78,13 +78,22 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		
 		gc.setCityData (getData ().getCityData ());
 		
-		// If any city screen(s) are displaying this city then we need to update the display
+		// If any city screen(s) are displaying this city then we need to update the display, or close it if the city was destroyed
 		final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getMapLocation ().toString ());
 		if (cityView != null)
 		{
-			cityView.cityDataChanged ();
-			cityView.productionSoFarChanged ();
-			cityView.recheckRushBuyEnabled ();
+			if (getData ().getCityData () != null)
+			{
+				// Update city screen
+				cityView.cityDataChanged ();
+				cityView.productionSoFarChanged ();
+				cityView.recheckRushBuyEnabled ();
+			}
+			else
+			{
+				// Close city screen
+				cityView.close ();
+			}
 		}
 		
 		// If any new turn message(s) are showing what this city may have just constructed, then we need to update those as well

@@ -1307,6 +1307,18 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * Close the unit info screen when a city is destroyed 
+	 */
+	public final void close ()
+	{
+		log.trace ("Entering close: " + getCityLocation ());
+		
+		getFrame ().dispose ();
+
+		log.trace ("Exiting close: " + getCityLocation ());
+	}
+	
+	/**
 	 * @return XML layout
 	 */
 	public final XmlLayoutContainerEx getCityViewLayout ()

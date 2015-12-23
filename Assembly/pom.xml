@@ -18,9 +18,9 @@
 
 	<properties>
 		<!-- These are needed to generate the .bat files correctly -->
-		<momime.client.version>0.9.7.0</momime.client.version>
-		<momime.server.version>0.9.7.0</momime.server.version>
-		<momime.editors.version>0.9.7.0</momime.editors.version>
+		<momime.client.version>0.9.7.1</momime.client.version>
+		<momime.server.version>0.9.7.1</momime.server.version>
+		<momime.editors.version>0.9.7.1</momime.editors.version>
 	</properties>
 
 	<build>

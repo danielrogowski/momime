@@ -68,12 +68,10 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	{
 		log.trace ("Entering start: Turn " + getTurnNumber () + ", player ID " + getCurrentPlayerID () + ", message count " + getMessage ().size () + ", expire? " + isExpireMessages ());
 		
-		// Did the turn number change, or just the player?
-		if (getClient ().getGeneralPublicKnowledge ().getTurnNumber () != getTurnNumber ())
-		{
-			getClient ().getGeneralPublicKnowledge ().setTurnNumber (getTurnNumber ());
-			getOverlandMapUI ().updateTurnLabelText ();
-		}
+		// Even if we're just changing player, and not turn, update the turn number label anyway, because when loading a saved game
+		// it will appear that the turn number isn't changing, so we need to make sure the label gets set correctly then too.
+		getClient ().getGeneralPublicKnowledge ().setTurnNumber (getTurnNumber ());
+		getOverlandMapUI ().updateTurnLabelText ();
 		
 		// Update player
 		getClient ().getGeneralPublicKnowledge ().setCurrentPlayerID (getCurrentPlayerID ());

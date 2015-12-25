@@ -32,6 +32,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -62,6 +63,7 @@ import momime.server.calculations.FogOfWarCalculations;
 import momime.server.database.CitySpellEffectSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -404,6 +406,20 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	{
 		log.trace ("Entering killUnitOnServerAndClients: Unit URN " + trueUnit.getUnitURN ());
 
+		// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
+		if ((trueUnit.getCombatLocation () != null) && (trueUnit.getHeroItemSlot ().size () > 0))
+		{
+			final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (trueUnit.getCombatLocation ().getZ ()).getRow ().get
+				(trueUnit.getCombatLocation ().getY ()).getCell ().get (trueUnit.getCombatLocation ().getX ());
+			
+			for (final MemoryUnitHeroItemSlot slot : trueUnit.getHeroItemSlot ())
+				if (slot.getHeroItem () != null)
+				{
+					gc.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
+					slot.setHeroItem (null);
+				}
+		}
+		
 		// Build the message ready to send it to whoever could see the unit
 		// Action has to be set per player depending on who can see it
 		final KillUnitMessage msg = new KillUnitMessage ();

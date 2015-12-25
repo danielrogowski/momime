@@ -201,6 +201,16 @@ public final class CombatEndedUI extends MomClientDialogUI
 			}
 		}
 		
+		// Hero items?
+		if (getMessage ().getHeroItemCount () > 0)
+		{
+			if (bottomText.length () > 0)
+				bottomText.append (System.lineSeparator ());
+			
+			bottomText.append (getLanguage ().findCategoryEntry ("frmCombatEnded", "HeroItems").replaceAll
+				("ITEM_COUNT", new Integer (getMessage ().getHeroItemCount ()).toString ()));
+		}
+		
 		headingText.setText (getLanguage ().findCategoryEntry ("frmCombatEnded", languageEntryID).replaceAll ("CITY_NAME", cityName));
 		mainText.setText (bottomText.toString ());
 		

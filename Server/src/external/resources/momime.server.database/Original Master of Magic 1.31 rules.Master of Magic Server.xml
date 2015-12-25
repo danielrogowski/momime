@@ -24163,6 +24163,7 @@
 		<languageEntry languageEntryID="EnemyCaptured" />
 		<languageEntry languageEntryID="EnemyRazed" />
 		<languageEntry languageEntryID="EnemyGotGoldFromYourCity" />
+		<languageEntry languageEntryID="HeroItems" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMagicSliders">
 		<languageEntry languageEntryID="Title" />

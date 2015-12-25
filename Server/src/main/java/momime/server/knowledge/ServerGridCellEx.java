@@ -1,5 +1,9 @@
 package momime.server.knowledge;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.PendingMovement;
 import momime.server.messages.v0_9_7.ServerGridCell;
 
@@ -35,6 +39,9 @@ public final class ServerGridCellEx extends ServerGridCell
 
 	/** In simultaneous turns games, the PendingMovement the defender made which caused the combat currently taking place at this location (border conflicts/counterattacks only) */
 	private PendingMovement combatDefenderPendingMovement;
+	
+	/** List of items held by any heroes that died in this combat, no matter which side they were on */
+	private List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
 	
 	/**
 	 * @return Whether the lair here was generated as "weak" - this is needed when populating the lair with monsters
@@ -162,5 +169,13 @@ public final class ServerGridCellEx extends ServerGridCell
 	public final void setCombatDefenderPendingMovement (final PendingMovement move)
 	{
 		combatDefenderPendingMovement = move;
+	}
+
+	/**
+	 * @return List of items held by any heroes that died in this combat, no matter which side they were on
+	 */
+	public final List<NumberedHeroItem> getItemsFromHeroesWhoDiedInCombat ()
+	{
+		return itemsFromHeroesWhoDiedInCombat;
 	}
 }

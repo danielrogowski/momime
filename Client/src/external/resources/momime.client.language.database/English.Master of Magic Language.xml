@@ -5941,6 +5941,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="EnemyGotGoldFromYourCity">
 			<languageEntryText>GOLD_FROM_CITY gold pieces were lost.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="HeroItems">
+			<languageEntryText>ITEM_COUNT hero item(s) from heroes that died in battle were added to your fortress vault.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMagicSliders">
 		<languageEntry languageEntryID="Title">

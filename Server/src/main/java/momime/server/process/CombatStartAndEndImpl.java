@@ -23,9 +23,11 @@ import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
@@ -302,6 +304,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setCombatLocation (combatLocation);
 			msg.setWinningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 			msg.setCaptureCityDecisionID (captureCityDecision);
+			msg.setHeroItemCount (tc.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
 			// Deal with the attacking player swiping gold from a city they just took - we do this first so we can send it with the CombatEnded message
 			final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -456,6 +459,25 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			else
 			{
 				log.debug ("Defender won");
+			}
+			
+			// Give any hero items to the winner
+			if (tc.getItemsFromHeroesWhoDiedInCombat ().size () > 0)
+			{
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) winningPlayer.getPersistentPlayerPrivateKnowledge ();
+				priv.getUnassignedHeroItem ().addAll (tc.getItemsFromHeroesWhoDiedInCombat ());
+				
+				if (winningPlayer.getPlayerDescription ().isHuman ())
+				{
+					final AddUnassignedHeroItemMessage heroItemMsg = new AddUnassignedHeroItemMessage ();
+					for (final NumberedHeroItem item : tc.getItemsFromHeroesWhoDiedInCombat ())
+					{
+						heroItemMsg.setHeroItem (item);
+						winningPlayer.getConnection ().sendMessageToClient (heroItemMsg);
+					}
+				}
+				
+				tc.getItemsFromHeroesWhoDiedInCombat ().clear ();
 			}
 
 			// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)

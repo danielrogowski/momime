@@ -574,6 +574,11 @@ e.g. as a result of casting Wall of Fire/Darkness in combat.</xsd:documentation>
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="winningPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="heroItemCount" type="xsd:unsignedShort">
+						    <xsd:annotation>
+    							<xsd:documentation>Number of items held by heroes who died in the combat, regardless of which side they were on.  The winner gets all such items.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="captureCityDecisionID" type="momimemsgs:captureCityDecisionID">
 						    <xsd:annotation>
     							<xsd:documentation>It the combat was at a city and the attacker won, specifies whether the attacker chose to capture or raze the city.
@@ -1289,13 +1294,6 @@ This is purely informational, like NTMs.  Other messages (e.g. add hero item, fu
 
 <!-- Simple types -->
 	
-	<xsd:simpleType name="combatCount">
-		<xsd:annotation>
-			<xsd:documentation>A count of how many scheduled combats.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-
 	<xsd:simpleType name="listIndex">
 		<xsd:annotation>
 			<xsd:documentation>An index into an unbounded list.</xsd:documentation>

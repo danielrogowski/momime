@@ -6682,6 +6682,35 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmCitiesList">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>The Cities of PLAYER_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityName">
+			<languageEntryText>Name</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityRace">
+			<languageEntryText>Race</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityPopulation">
+			<languageEntryText>Pop.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityRations">
+			<languageEntryText>Rat.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityGold">
+			<languageEntryText>Gold</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityProduction">
+			<languageEntryText>Prod.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityConstructing">
+			<languageEntryText>Constructing</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="frmHeroItems">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Hero Items</languageEntryText>

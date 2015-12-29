@@ -13,6 +13,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.ArmyListUI;
+import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
@@ -42,6 +43,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
+
+	/** Cities list */
+	private CitiesListUI citiesListUI;
 	
 	/**
 	 * Method called when this message is sent in isolation
@@ -61,6 +65,8 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 		getArmyListUI ().regenerateMiniMapBitmaps ();
+		getCitiesListUI ().refreshCitiesList ();
+		getCitiesListUI ().regenerateMiniMapBitmaps ();
 		
 		log.trace ("Exiting start");
 	}
@@ -180,5 +186,21 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	public final void setArmyListUI (final ArmyListUI ui)
 	{
 		armyListUI = ui;
+	}
+
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param ui Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI ui)
+	{
+		citiesListUI = ui;
 	}
 }

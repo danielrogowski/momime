@@ -498,6 +498,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="armyListUI" ref="armyListUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="citiesListUI" ref="citiesListUI" />
 	</bean>
 
 	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype">
@@ -573,6 +574,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="citiesListUI" ref="citiesListUI" />
 	</bean>
 
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
@@ -829,6 +831,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="unrestReplacer" ref="unrestReplacer" />
 		<property name="growthReplacer" ref="growthReplacer" />
 		<property name="productionReplacer" ref="productionReplacer" />
@@ -1200,6 +1203,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="citiesListUI" ref="citiesListUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="selectAdvisorUI" ref="selectAdvisorUI" />
 		<property name="optionsUI" ref="optionsUI" />
@@ -1534,6 +1538,28 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 	
+	<bean id="citiesListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CitiesListUI.xml" />
+	</bean>
+
+	<bean id="citiesListUI" class="momime.client.ui.frames.CitiesListUI">
+		<property name="citiesListLayout" ref="citiesListLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="citiesListCellRenderer" ref="citiesListCellRenderer" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="clientCityCalculations" ref="clientCityCalculations" />
+	</bean>
+	
 	<bean id="heroItemsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HeroItemsUI.xml" />
 	</bean>
@@ -1623,6 +1649,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
+	</bean>
+
+	<bean id="citiesListEntryLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/CitiesListUI-Row.xml" />
+	</bean>
+
+	<bean id="citiesListCellRenderer" class="momime.client.ui.renderer.CitiesListCellRenderer" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="citiesListEntryLayout" ref="citiesListEntryLayout" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
 	</bean>
 
 	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1813,12 +1850,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
-		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="anim" ref="anim" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
 		<property name="unitListCellRenderer" ref="unitListCellRenderer" />					<!-- So Spring will create and inject a new unit list renderer for each change construction UI -->

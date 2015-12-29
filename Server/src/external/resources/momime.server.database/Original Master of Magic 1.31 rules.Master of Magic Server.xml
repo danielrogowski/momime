@@ -24440,6 +24440,17 @@
 		<languageEntry languageEntryID="HeroItems" />
 		<languageEntry languageEntryID="OK" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmCitiesList">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="OK" />
+		<languageEntry languageEntryID="CityName" />
+		<languageEntry languageEntryID="CityRace" />
+		<languageEntry languageEntryID="CityPopulation" />
+		<languageEntry languageEntryID="CityRations" />
+		<languageEntry languageEntryID="CityGold" />
+		<languageEntry languageEntryID="CityProduction" />
+		<languageEntry languageEntryID="CityConstructing" />
+	</languageCategory>
 	<languageCategory languageCategoryID="frmHeroItems">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Bank" />

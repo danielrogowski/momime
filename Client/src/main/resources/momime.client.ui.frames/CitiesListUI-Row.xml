@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>538</formWidth>
+	<formHeight>28</formHeight>
+	<component name="frmCitiesListRowName">
+		<left>4</left>
+		<top>4</top>
+		<width>116</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowRace">
+		<left>128</left>
+		<top>4</top>
+		<width>90</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowPopulation">
+		<left>226</left>
+		<top>4</top>
+		<width>32</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowRations">
+		<left>266</left>
+		<top>4</top>
+		<width>32</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowGold">
+		<left>306</left>
+		<top>4</top>
+		<width>32</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowProduction">
+		<left>346</left>
+		<top>4</top>
+		<width>30</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowCurrentlyConstructing">
+		<left>384</left>
+		<top>4</top>
+		<width>152</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.ArmyListUI;
+import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.MemoryBuilding;
@@ -49,6 +50,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	
 	/** Army list */
 	private ArmyListUI armyListUI;
+	
+	/** Cities list */
+	private CitiesListUI citiesListUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -190,6 +194,8 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		getOverlandMapUI ().regenerateFogOfWarBitmap ();
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 		getArmyListUI ().regenerateMiniMapBitmaps ();
+		getCitiesListUI ().refreshCitiesList ();
+		getCitiesListUI ().regenerateMiniMapBitmaps ();
 
 		log.trace ("Exiting start");
 	}
@@ -272,5 +278,21 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	public final void setArmyListUI (final ArmyListUI ui)
 	{
 		armyListUI = ui;
+	}
+
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param ui Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI ui)
+	{
+		citiesListUI = ui;
 	}
 }

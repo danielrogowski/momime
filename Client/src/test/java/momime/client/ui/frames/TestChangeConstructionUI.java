@@ -38,7 +38,6 @@ import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
@@ -48,11 +47,9 @@ import momime.common.database.RaceCannotBuild;
 import momime.common.database.Unit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
-import momime.common.utils.MemoryBuildingUtils;
 
 /**
  * Tests the ChangeConstructionUI class
@@ -197,21 +194,14 @@ public final class TestChangeConstructionUI
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
-		// Buildings
-		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		for (int n = 0; n < buildings.size () - 1; n++)
-			when (memoryBuildingUtils.meetsBuildingRequirements (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n))).thenReturn (true);
+		// What city can construct
+		final ClientCityCalculations clientCityCalculations = mock (ClientCityCalculations.class);
 		
-		when (memoryBuildingUtils.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "BL03")).thenReturn (new MemoryBuilding ());
-		
-		for (int n = 0; n < units.size () - 1; n++)
-			when (memoryBuildingUtils.meetsUnitRequirements (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), units.get (n))).thenReturn (true);
-		
-		// Tile type reqs
-		final CityCalculations cityCalc = mock (CityCalculations.class);
-		for (int n = 1; n < buildings.size (); n++)
-			when (cityCalc.buildingPassesTileTypeRequirements (fow.getMap (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n), overlandMapSize)).thenReturn (true);
-		
+		final List<Building> buildingsCanConstruct = new ArrayList<Building> ();
+		buildingsCanConstruct.add (buildings.get (3));
+		buildingsCanConstruct.add (buildings.get (4));
+		when (clientCityCalculations.listBuildingsCityCanConstruct (new MapCoordinates3DEx (20, 10, 0))).thenReturn (buildingsCanConstruct);
+
 		// Current construction
 		cityData.setCurrentlyConstructingBuildingID ("BL05");
 		when (db.findBuilding (eq ("BL04"), anyString ())).thenReturn (buildings.get (3));
@@ -273,8 +263,7 @@ public final class TestChangeConstructionUI
 		changeConstruction.setLanguageChangeMaster (langMaster);
 		changeConstruction.setClient (client);
 		changeConstruction.setGraphicsDB (gfx);
-		changeConstruction.setMemoryBuildingUtils (memoryBuildingUtils);
-		changeConstruction.setCityCalculations (cityCalc);
+		changeConstruction.setClientCityCalculations (clientCityCalculations);
 		changeConstruction.setUnitInfoPanel (panel);
 		changeConstruction.setBuildingListCellRenderer (buildingRenderer);
 		changeConstruction.setUnitListCellRenderer (unitRenderer);

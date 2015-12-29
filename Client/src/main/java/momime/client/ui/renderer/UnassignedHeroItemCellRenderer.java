@@ -43,7 +43,7 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
-	/** Small font */
+	/** Medium font */
 	private Font mediumFont;
 
 	/** Background image */
@@ -155,7 +155,7 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	}
 
 	/**
-	 * @return Small font
+	 * @return Medium font
 	 */
 	public final Font getMediumFont ()
 	{
@@ -163,7 +163,7 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	}
 
 	/**
-	 * @param font Small font
+	 * @param font Medium font
 	 */
 	public final void setMediumFont (final Font font)
 	{

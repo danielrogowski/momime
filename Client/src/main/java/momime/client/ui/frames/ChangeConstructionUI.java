@@ -11,7 +11,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Iterator;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -33,6 +32,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
+import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.CompositeShape;
@@ -43,12 +43,8 @@ import momime.client.ui.renderer.UnitListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
-import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.Race;
-import momime.common.database.RaceCannotBuild;
 import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
@@ -87,9 +83,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
-	/** City calculations */
-	private CityCalculations cityCalculations;
-	
 	/** Renderer for the buildings list */
 	private BuildingListCellRenderer buildingListCellRenderer;
 	
@@ -110,6 +103,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Client city calculations */
+	private ClientCityCalculations clientCityCalculations;
 	
 	/** Client unit calculations */
 	private ClientUnitCalculations clientUnitCalculations;
@@ -348,75 +344,38 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 		
-		final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "updateWhatCanBeConstructed");
-		
 		// Which buildings can we construct?
 		buildingsItems.clear ();
-		for (final Building thisBuilding : getClient ().getClientDB ().getBuildings ())
+		for (final Building thisBuilding : getClientCityCalculations ().listBuildingsCityCanConstruct (getCityLocation ()))
+		{
+			buildingsItems.addElement (thisBuilding);
+			getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (thisBuilding.getBuildingID (), "updateWhatCanBeConstructed").getCityViewAnimation (), buildingsList);
 			
-			// If we don't have this building already
-			if ((getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-				getCityLocation (), thisBuilding.getBuildingID ()) == null) &&
-				
-				// and we have necessary prerequisite buildings (e.g. Farmers' Market requires a Granary)
-				(getMemoryBuildingUtils ().meetsBuildingRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-					getCityLocation (), thisBuilding)) &&
-				
-				// and we have any necessary prerequisite tile types (e.g. Ship Wrights' Guild requires an adjacent Ocean tile)
-				(getCityCalculations ().buildingPassesTileTypeRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-					getCityLocation (), thisBuilding, getClient ().getSessionDescription ().getOverlandMapSize ())))
-			{
-				// Check the race inhabiting this city can construct this kind of building
-				boolean canBuild = true;
-				final Iterator<RaceCannotBuild> iter = race.getRaceCannotBuild ().iterator ();
-				while ((canBuild) && (iter.hasNext ()))
-				{
-					final RaceCannotBuild cannotBuild = iter.next ();
-					if (cannotBuild.getCannotBuildBuildingID ().equals (thisBuilding.getBuildingID ()))
-						canBuild = false;
-				}
-				
-				if (canBuild)
-				{
-					buildingsItems.addElement (thisBuilding);
-					getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (thisBuilding.getBuildingID (), "ChangeConstructionUI.init").getCityViewAnimation (), buildingsList);
-					
-					// Pre-select whatever was previously being built when the form first opens up
-					if (thisBuilding.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))
-						buildingsList.setSelectedIndex (buildingsItems.size () - 1);
-				}
-			}
+			// Pre-select whatever was previously being built when the form first opens up
+			if (thisBuilding.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))
+				buildingsList.setSelectedIndex (buildingsItems.size () - 1);
+		}
 		
 		// Which units can we construct?
 		unitsItems.clear ();
-		for (final Unit thisUnit : getClient ().getClientDB ().getUnits ())
+		for (final Unit thisUnit : getClientCityCalculations ().listUnitsCityCanConstruct (getCityLocation ()))
+		{
+			// Create a sample unit for it now, so the list box can keep it to redraw the unit every frame
+			final AvailableUnit sampleUnit = new AvailableUnit ();
+			sampleUnit.setUnitID (thisUnit.getUnitID ());
+
+			// We don't have to get the weapon grade or experience right just to draw the figures
+			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
+
+			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+			getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), movingActionID, 4, unitsList);
+
+			unitsItems.addElement (sampleUnit);
 			
-			// If its a regular unit
-			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
-				
-				// and unit either specifies no race (e.g. Trireme) or matches the race inhabiting this city
-				((thisUnit.getUnitRaceID () == null) || (thisUnit.getUnitRaceID ().equals (cityData.getCityRaceID ()))) &&
-				
-				// and we have the necessary buildings to construct this unit
-				(getMemoryBuildingUtils ().meetsUnitRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-					getCityLocation (), thisUnit)))
-			{
-				// Create a sample unit for it now, so the list box can keep it to redraw the unit every frame
-				final AvailableUnit sampleUnit = new AvailableUnit ();
-				sampleUnit.setUnitID (thisUnit.getUnitID ());
-
-				// We don't have to get the weapon grade or experience right just to draw the figures
-				getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
-
-				final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
-				getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), movingActionID, 4, unitsList);
-
-				unitsItems.addElement (sampleUnit);
-				
-				// Pre-select whatever was previously being built when the form first opens up
-				if (thisUnit.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()))
-					unitsList.setSelectedIndex (unitsItems.size () - 1);
-			}
+			// Pre-select whatever was previously being built when the form first opens up
+			if (thisUnit.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()))
+				unitsList.setSelectedIndex (unitsItems.size () - 1);
+		}
 
 		// Select the current construction project
 		if (buildingsList.getSelectedIndex () >= 0)
@@ -549,22 +508,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	{
 		memoryBuildingUtils = utils;
 	}
-
-	/**
-	 * @return City calculations
-	 */
-	public final CityCalculations getCityCalculations ()
-	{
-		return cityCalculations;
-	}
-
-	/**
-	 * @param calc City calculations
-	 */
-	public final void setCityCalculations (final CityCalculations calc)
-	{
-		cityCalculations = calc;
-	}
 	
 	/**
 	 * @return Renderer for the buildings list
@@ -694,6 +637,22 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		multiplayerSessionUtils = util;
 	}
 
+	/**
+	 * @return Client city calculations
+	 */
+	public final ClientCityCalculations getClientCityCalculations ()
+	{
+		return clientCityCalculations;
+	}
+
+	/**
+	 * @param calc Client city calculations
+	 */
+	public final void setClientCityCalculations (final ClientCityCalculations calc)
+	{
+		clientCityCalculations = calc;
+	}
+	
 	/**
 	 * @return Client unit calculations
 	 */

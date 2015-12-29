@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
 import momime.client.MomClient;
 import momime.client.language.database.BuildingLang;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -14,11 +19,14 @@ import momime.client.language.replacer.CityUnrestLanguageVariableReplacer;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
+import momime.common.calculations.CityCalculations;
+import momime.common.database.Building;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Unit;
 import momime.common.database.UnitPrerequisite;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
@@ -35,11 +43,6 @@ import momime.common.internal.CityUnrestBreakdownBuilding;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Client side only methods dealing with city calculations
@@ -60,6 +63,9 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
@@ -525,6 +531,85 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	}
 	
 	/**
+	 * @param cityLocation City location
+	 * @return List of all buildings that the player can choose between to construct at the city (including Housing and Trade Goods)
+	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
+	 */
+	@Override
+	public final List<Building> listBuildingsCityCanConstruct (final MapCoordinates3DEx cityLocation) throws RecordNotFoundException
+	{
+		log.trace ("Entering listBuildingsCityCanConstruct: " + cityLocation);
+
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		
+		final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "listBuildingsCityCanConstruct");
+		
+		final List<Building> buildList = new ArrayList<Building> ();
+		for (final Building thisBuilding : getClient ().getClientDB ().getBuildings ())
+			
+			// If we don't have this building already
+			if ((getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+				cityLocation, thisBuilding.getBuildingID ()) == null) &&
+				
+				// and we have necessary prerequisite buildings (e.g. Farmers' Market requires a Granary)
+				(getMemoryBuildingUtils ().meetsBuildingRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+					cityLocation, thisBuilding)) &&
+				
+				// and we have any necessary prerequisite tile types (e.g. Ship Wrights' Guild requires an adjacent Ocean tile)
+				(getCityCalculations ().buildingPassesTileTypeRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+					cityLocation, thisBuilding, getClient ().getSessionDescription ().getOverlandMapSize ())))
+			{
+				// Check the race inhabiting this city can construct this kind of building
+				boolean canBuild = true;
+				final Iterator<RaceCannotBuild> iter = race.getRaceCannotBuild ().iterator ();
+				while ((canBuild) && (iter.hasNext ()))
+				{
+					final RaceCannotBuild cannotBuild = iter.next ();
+					if (cannotBuild.getCannotBuildBuildingID ().equals (thisBuilding.getBuildingID ()))
+						canBuild = false;
+				}
+				
+				if (canBuild)
+					buildList.add (thisBuilding);
+			}
+		
+		log.trace ("Exiting listBuildingsCityCanConstruct = " + buildList.size ());
+		return buildList;
+	}
+		
+	/**
+	 * @param cityLocation City location
+	 * @return List of all units that the player can choose between to construct at the city
+	 */
+	@Override
+	public final List<Unit> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation)
+	{
+		log.trace ("Entering listUnitsCityCanConstruct: " + cityLocation);
+
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		
+		final List<Unit> buildList = new ArrayList<Unit> ();
+		for (final Unit thisUnit : getClient ().getClientDB ().getUnits ())
+			
+			// If its a regular unit
+			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
+				
+				// and unit either specifies no race (e.g. Trireme) or matches the race inhabiting this city
+				((thisUnit.getUnitRaceID () == null) || (thisUnit.getUnitRaceID ().equals (cityData.getCityRaceID ()))) &&
+				
+				// and we have the necessary buildings to construct this unit
+				(getMemoryBuildingUtils ().meetsUnitRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+					cityLocation, thisUnit)))
+				
+				buildList.add (thisUnit);
+		
+		log.trace ("Exiting listUnitsCityCanConstruct = " + buildList.size ());
+		return buildList;
+	}
+
+	/**
 	 * @return Multiplayer client
 	 */
 	public final MomClient getClient ()
@@ -570,6 +655,22 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 	
 	/**

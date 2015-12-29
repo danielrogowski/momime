@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>652</formWidth>
+	<formHeight>416</formHeight>
+	<component name="frmCitiesListTitle">
+		<left>326</left>
+		<top>2</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListOK">
+		<left>490</left>
+		<top>380</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListCities">
+		<left>56</left>
+		<top>48</top>
+		<width>538</width>
+		<height>248</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListMiniMap">
+		<left>72</left>
+		<top>324</top>
+		<width>120</width>
+		<height>80</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListGold">
+		<left>497</left>
+		<top>344</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListMana">
+		<left>563</left>
+		<top>344</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingName">
+		<left>60</left>
+		<top>28</top>
+		<width>116</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingRace">
+		<left>184</left>
+		<top>28</top>
+		<width>90</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingPopulation">
+		<left>282</left>
+		<top>28</top>
+		<width>32</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingRations">
+		<left>322</left>
+		<top>28</top>
+		<width>32</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingGold">
+		<left>362</left>
+		<top>28</top>
+		<width>32</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingProduction">
+		<left>402</left>
+		<top>28</top>
+		<width>30</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListHeadingCurrentlyConstructing">
+		<left>440</left>
+		<top>28</top>
+		<width>152</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

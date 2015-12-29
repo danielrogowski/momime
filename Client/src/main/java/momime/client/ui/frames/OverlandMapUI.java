@@ -136,6 +136,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	
 	/** Army list */
 	private ArmyListUI armyListUI;
+	
+	/** Cities list */
+	private CitiesListUI citiesListUI;
 
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
@@ -277,7 +280,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		gameAction = new LoggingAction ((ev) -> {});
 		spellsAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
 		armiesAction = new LoggingAction ((ev) -> getArmyListUI ().setVisible (true));
-		citiesAction = new LoggingAction ((ev) -> {});
+		citiesAction = new LoggingAction ((ev) -> getCitiesListUI ().setVisible (true));
 		magicAction = new LoggingAction ((ev) -> getMagicSlidersUI ().setVisible (true));
 		planeAction = new LoggingAction ((ev) -> switchMapViewPlane ());
 		messagesAction = new LoggingAction ((ev) -> getNewTurnMessagesUI ().setVisible (true));
@@ -1606,6 +1609,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setArmyListUI (final ArmyListUI ui)
 	{
 		armyListUI = ui;
+	}
+	
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param ui Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI ui)
+	{
+		citiesListUI = ui;
 	}
 	
 	/**

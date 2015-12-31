@@ -20,6 +20,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.HeroItemTypeGfx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.SpellLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.panels.UnitSkillOrHeroItemSlot;
@@ -83,6 +84,16 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 			setText (value.getHeroItem ().getHeroItemName ());
 		else if (value.getHeroItemSlotTypeID () != null)
 			setText (null);
+		
+		// Ability to cast spells just says e.g. "Doom Bolt Spell"
+		else if (value.getSpellID () != null)
+		{
+			final SpellLang spellLang = getLanguage ().findSpell (value.getSpellID ());
+			final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
+			
+			setText (getLanguage ().findCategoryEntry ("frmUnitInfo", "UnitCanCast").replaceAll
+				("SPELL_NAME", (spellName != null) ? spellName : value.getSpellID ()));
+		}
 		else
 		{
 			// Look up the name of the skill
@@ -124,6 +135,8 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 			final BufferedImage image;
 			if (value.getUnitSkillID () != null)
 				image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, value.getUnitSkillID ());
+			else if (value.getSpellID () != null)
+				image = getUtils ().loadImage (getGraphicsDB ().findSpell (value.getSpellID (), "UnitSkillListCellRenderer").getUnitCanCastImageFile ());
 			else if (value.getHeroItemSlotTypeID () != null)
 				image = getUtils ().loadImage (getGraphicsDB ().findHeroItemSlotType (value.getHeroItemSlotTypeID (), "UnitSkillListCellRenderer").getHeroItemSlotTypeImageFileWithBackground ());
 			else

@@ -68,6 +68,7 @@
 		<property name="filenameElements">
 			<list>
 				<value>overlandEnchantmentImageFile</value>
+				<value>unitCanCastImageFile</value>
 			</list>
 		</property>
 	</bean>

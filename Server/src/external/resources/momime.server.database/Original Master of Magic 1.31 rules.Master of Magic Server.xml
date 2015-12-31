@@ -24085,6 +24085,7 @@
 		<languageEntry languageEntryID="DismissPrompt" />
 		<languageEntry languageEntryID="Rename" />
 		<languageEntry languageEntryID="RenamePrompt" />
+		<languageEntry languageEntryID="UnitCanCast" />
 	</languageCategory>
 	<languageCategory languageCategoryID="UnitName">
 		<languageEntry languageEntryID="TheUnitOfNameSingular" />

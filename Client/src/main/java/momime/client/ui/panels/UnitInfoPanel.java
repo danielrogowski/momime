@@ -68,6 +68,7 @@ import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
+import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -491,7 +492,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								getHelpUI ().showUnitSkillID (skill.getUnitSkillID (), getUnit ());
 							else if (skill.getHeroItemSlotTypeID () != null)
 								getHelpUI ().showHeroItemSlotTypeID (skill.getHeroItemSlotTypeID ());
-							else
+							else if (skill.getHeroItem () != null)
 							{
 								// Is there an item info screen already open for this item?
 								HeroItemInfoUI itemInfo = getClient ().getHeroItemInfos ().get (skill.getHeroItem ().getHeroItemURN ());
@@ -745,6 +746,17 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				}
 			}
 		}
+		
+		// Add ability to cast fixed spells
+		for (final UnitCanCast unitCanCast : unitInfo.getUnitCanCast ())
+			
+			// Ignore heroes having spells available to cast from their MP pool - we only want to show spells that are free to cast
+			if ((unitCanCast.getNumberOfTimes () != null) && (unitCanCast.getNumberOfTimes () > 0))
+			{
+				final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
+				skill.setSpellID (unitCanCast.getUnitSpellID ());
+				unitSkillsItems.addElement (skill);
+			}
 		
 		// Add hero item slots
 		int slotNumber = 0;

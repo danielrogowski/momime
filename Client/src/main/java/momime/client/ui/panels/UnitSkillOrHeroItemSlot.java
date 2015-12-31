@@ -14,6 +14,9 @@ public final class UnitSkillOrHeroItemSlot
 	/** Filled in only if the row represents a unit skill or spell effect that takes a strength value parameter */
 	private Integer unitSkillValue;
 	
+	/** Filled in only if the row represents the ability to cast a particular spell */
+	private String spellID;
+	
 	/** Filled in only if the row represents a hero item slot that has no item in it */
 	private String heroItemSlotTypeID;
 	
@@ -50,6 +53,22 @@ public final class UnitSkillOrHeroItemSlot
 	public final void setUnitSkillValue (final Integer value)
 	{
 		unitSkillValue = value;
+	}
+	
+	/**
+	 * @return Filled in only if the row represents the ability to cast a particular spell
+	 */
+	public final String getSpellID ()
+	{
+		return spellID;
+	}
+
+	/**
+	 * @param aSpellID Filled in only if the row represents the ability to cast a particular spell
+	 */
+	public final void setSpellID (final String aSpellID)
+	{
+		spellID = aSpellID;
 	}
 	
 	/**

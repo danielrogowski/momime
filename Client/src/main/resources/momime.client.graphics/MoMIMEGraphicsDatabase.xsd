@@ -538,6 +538,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
         		</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandEnchantmentImageFile" type="momimegfx:imageFilename" nxe:label="Overland enchantment image file" nxe:gridwidth="330" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitCanCastImageFile" type="momimegfx:imageFilename" nxe:label="Unit can cast image file" nxe:gridwidth="160" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellMusicFile" type="momimegfx:imageFilename" nxe:label="Spell music file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="soundAndImageDelay" type="momimegfx:seconds" nxe:label="Sound &amp; image delay" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellSoundFile" type="momimegfx:imageFilename" nxe:label="Spell sound file" nxe:gridwidth="150" />

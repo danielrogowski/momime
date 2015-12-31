@@ -5721,6 +5721,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="RenamePrompt">
 			<languageEntryText>Enter new name for hero</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="UnitCanCast">
+			<languageEntryText>SPELL_NAME spell</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="UnitName">
 		<languageEntry languageEntryID="TheUnitOfNameSingular">

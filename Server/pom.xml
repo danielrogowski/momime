@@ -465,7 +465,7 @@
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionserver</artifactId>
-			<version>0.2.0</version>
+			<version>0.2.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.map</groupId>

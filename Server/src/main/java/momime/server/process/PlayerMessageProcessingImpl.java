@@ -86,7 +86,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (PlayerMessageProcessingImpl.class);
-
+	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -152,6 +152,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+
+	/** Number of save points to keep for each session */
+	private int savePointKeepCount;
 	
 	/**
 	 * Message we send to the server when we choose which wizard we want to be; AI players also call this to do their wizard, picks and spells setup
@@ -738,6 +741,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				try
 				{
 					mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+					if (getSavePointKeepCount () > 0)
+						mom.deleteOldestSavePoints (getSavePointKeepCount ());
 				}
 				catch (final Exception e)
 				{
@@ -803,6 +808,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			try
 			{
 				mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+				if (getSavePointKeepCount () > 0)
+					mom.deleteOldestSavePoints (getSavePointKeepCount ());
 			}
 			catch (final Exception e)
 			{
@@ -1765,5 +1772,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Number of save points to keep for each session
+	 */
+	public final int getSavePointKeepCount ()
+	{
+		return savePointKeepCount;
+	}
+
+	/**
+	 * @param count Number of save points to keep for each session
+	 */
+	public final void setSavePointKeepCount (final int count)
+	{
+		savePointKeepCount = count;
 	}
 }

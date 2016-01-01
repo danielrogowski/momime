@@ -89,4 +89,10 @@ public interface MomSessionVariables
 	 * @throws JAXBException If there is an XML error trying to save the file
 	 */
 	public void saveGame (final String identifier) throws IOException, JAXBException;
+
+	/**
+	 * Searches for all save points of the current session and deletes the oldest ones, keeping only the number of latest save points as specified
+	 * @param keepCount Number of save points to keep
+	 */
+	public void deleteOldestSavePoints (final int keepCount);
 }

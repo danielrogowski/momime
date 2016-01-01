@@ -71,7 +71,7 @@ public final class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	@Override
 	public final QName getColumnType ()
 	{
-		return new QName (XsdConstants.NAMESPACE_URI, XsdConstants.VALUE_DATA_TYPE_SINGLE_LINE_STRING);
+		return new QName (XsdConstants.XML_SCHEMA_XSD_NAMESPACE_URI, XsdConstants.VALUE_DATA_TYPE_SINGLE_LINE_STRING);
 	}
 
 	/**

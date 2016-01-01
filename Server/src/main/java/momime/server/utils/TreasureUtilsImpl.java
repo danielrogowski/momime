@@ -57,6 +57,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellRankSvr;
 import momime.server.database.SpellSvr;
 import momime.server.database.TileTypeSvr;
+import momime.server.database.UnitSvr;
 import momime.server.database.v0_9_7.MapFeatureTreasureBookReward;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
@@ -272,10 +273,23 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			if (remainingTreasureValue >= PRISONER_REWARD_COST)
 				for (final SummonedUnit summoned : summonHero.getSummonedUnit ())
 				{
+					final UnitSvr possibleUnit = db.findUnit (summoned.getSummonedUnitID (), "rollTreasureReward");
+					
 					final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID
 						(gsk.getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summoned.getSummonedUnitID ());
 					
-					if ((hero != null) && ((hero.getStatus () == UnitStatusID.GENERATED) || (hero.getStatus () == UnitStatusID.NOT_GENERATED)))
+					boolean addToList = ((hero != null) && ((hero.getStatus () == UnitStatusID.GENERATED) || (hero.getStatus () == UnitStatusID.NOT_GENERATED)));
+
+					// Check for units that require particular picks to summon
+					final Iterator<PickAndQuantity> iter = possibleUnit.getUnitPickPrerequisite ().iterator ();
+					while ((addToList) && (iter.hasNext ()))
+					{
+						final PickAndQuantity prereq = iter.next ();
+						if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
+							addToList = false;
+					}
+					
+					if (addToList)
 						availableHeroes.add (hero);
 				}
 			

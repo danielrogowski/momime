@@ -503,6 +503,10 @@
 			<xsd:selector xpath="unit" />
 			<xsd:field xpath="heroRandomPickType" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:pickPK" name="unitPickPrerequisiteFKpick">
+			<xsd:selector xpath="unit/unitPickPrerequisite" />
+			<xsd:field xpath="@pickID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:heroSkillTypePK" name="unitSkillFKheroSkillType">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="heroSkillTypeID" />
@@ -1145,6 +1149,13 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickCount" type="momimesvr:heroRandomPickCount" nxe:label="Hero Random Picks" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="freeAtStartCount" type="momimesvr:freeAtStartCount" nxe:label="Nbr. Free at Start" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroName" type="momimesvr:heroName" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPickPrerequisite" type="momimecommon:pickAndQuantity">
+						<xsd:annotation>
+							<xsd:documentation>Lists any picks necessary in order to be able to summon this unit, e.g. to summon Ravashack the Necromancer you need at least 1 Death Book.
+Most summoning spells only summon 1 kind of unit, and hence are restricted by whether the spell can be learned, so this is only used for Summon Hero/Champion
+where a number of different heroes may be summoned at random, but some may have restrictions for whether they are available or not.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

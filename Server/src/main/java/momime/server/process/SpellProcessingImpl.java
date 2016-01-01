@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -20,6 +21,7 @@ import momime.common.MomException;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
@@ -33,6 +35,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageCreateArtifact;
@@ -47,6 +50,7 @@ import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -120,6 +124,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Methods dealing with hero items */
 	private HeroItemServerUtils heroItemServerUtils;
+
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -146,6 +153,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
 
@@ -210,7 +218,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					// Check whether we can summon this unit If its a hero, this depends on whether we've summoned the hero before, or if he's dead
 					final UnitSvr possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "castOverlandNow");
-					final boolean addToList;
+					boolean addToList;
 					if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 					{
 						final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (gsk.getTrueMap ().getUnit (),
@@ -223,6 +231,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 					}
 					else
 						addToList = true;
+					
+					// Check for units that require particular picks to summon
+					final Iterator<PickAndQuantity> iter = possibleUnit.getUnitPickPrerequisite ().iterator ();
+					while ((addToList) && (iter.hasNext ()))
+					{
+						final PickAndQuantity prereq = iter.next ();
+						if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
+							addToList = false;
+					}
 
 					if (addToList)
 						possibleUnitIDs.add (possibleSummonedUnit.getSummonedUnitID ());
@@ -863,5 +880,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setHeroItemServerUtils (final HeroItemServerUtils util)
 	{
 		heroItemServerUtils = util;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

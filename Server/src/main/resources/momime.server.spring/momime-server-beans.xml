@@ -550,6 +550,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

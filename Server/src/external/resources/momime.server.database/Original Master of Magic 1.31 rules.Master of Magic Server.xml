@@ -12617,6 +12617,9 @@
 		<heroName heroNameID="UN028_HN03" />
 		<heroName heroNameID="UN028_HN04" />
 		<heroName heroNameID="UN028_HN05" />
+		<unitPickPrerequisite pickID="MB01">
+			<quantity>1</quantity>
+		</unitPickPrerequisite>
 	</unit>
 	<unit unitID="UN029">
 		<unitMagicRealm>LTH</unitMagicRealm>
@@ -12666,6 +12669,9 @@
 		<heroName heroNameID="UN029_HN03" />
 		<heroName heroNameID="UN029_HN04" />
 		<heroName heroNameID="UN029_HN05" />
+		<unitPickPrerequisite pickID="MB01">
+			<quantity>1</quantity>
+		</unitPickPrerequisite>
 	</unit>
 	<unit unitID="UN030">
 		<unitMagicRealm>LTH</unitMagicRealm>
@@ -12717,6 +12723,9 @@
 		<heroName heroNameID="UN030_HN03" />
 		<heroName heroNameID="UN030_HN04" />
 		<heroName heroNameID="UN030_HN05" />
+		<unitPickPrerequisite pickID="MB02">
+			<quantity>1</quantity>
+		</unitPickPrerequisite>
 	</unit>
 	<unit unitID="UN031">
 		<unitMagicRealm>LTH</unitMagicRealm>
@@ -12865,6 +12874,9 @@
 		<heroName heroNameID="UN033_HN03" />
 		<heroName heroNameID="UN033_HN04" />
 		<heroName heroNameID="UN033_HN05" />
+		<unitPickPrerequisite pickID="MB02">
+			<quantity>1</quantity>
+		</unitPickPrerequisite>
 	</unit>
 	<unit unitID="UN034">
 		<unitMagicRealm>LTH</unitMagicRealm>

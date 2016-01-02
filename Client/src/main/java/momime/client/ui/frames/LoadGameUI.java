@@ -30,6 +30,7 @@ import com.ndg.utils.DateFormats;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.common.messages.MomSessionDescription;
 
 /**
@@ -51,12 +52,21 @@ public final class LoadGameUI extends MomClientFrameUI
 	
 	/** Multiplayer client */
 	private MomClient client;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** Select saved game action */
 	private Action selectSavedGameAction;
 
 	/** Select saved game button */
 	private JButton selectSavedGameButton;
+	
+	/** Delete saved game action */
+	private Action deleteSavedGameAction;
+
+	/** Delete saved game button */
+	private JButton deleteSavedGameButton;
 	
 	/** Select save point action */
 	private Action selectSavePointAction;
@@ -115,6 +125,33 @@ public final class LoadGameUI extends MomClientFrameUI
 		// Actions
 		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
+		deleteSavedGameAction = new LoggingAction ((ev) ->
+		{
+			final SavedGameSession savedGame = getSavedGames ().get (savedGamesTable.getSelectedRow ());
+			
+			final StringBuilder playersList = new StringBuilder ();
+			for (final PlayerDescription player : savedGame.getPlayer ())
+				if (player.isHuman ())
+				{
+					if (playersList.length () > 0)
+						playersList.append (", ");
+					
+					playersList.append (player.getPlayerName ());
+				}
+			
+			// Show message box to confirm
+			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+			msg.setTitleLanguageCategoryID ("Multiplayer");
+			msg.setTitleLanguageEntryID ("DeleteSavedGameTitle");
+			msg.setSavedGameID (savedGame.getSessionDescription ().getSavedGameID ());
+
+			msg.setText (getLanguage ().findCategoryEntry ("Multiplayer", "DeleteSavedGameText").replaceAll
+				("SAVED_GAME_NAME", savedGame.getSessionDescription ().getSessionName ()).replaceAll
+				("PLAYERS_LIST", playersList.toString ()));
+			
+			msg.setVisible (true);												
+		});
+		
 		selectSavedGameAction = new LoggingAction ((ev) ->
 		{
 			selectSavePointAction.setEnabled (false);
@@ -144,6 +181,7 @@ public final class LoadGameUI extends MomClientFrameUI
 		{
 			savedGamesTablePane.setVisible (true);
 			savePointsTablePane.setVisible (false);
+			deleteSavedGameButton.setVisible (true);
 			selectSavedGameButton.setVisible (true);
 			selectSavePointButton.setVisible (false);
 			backButton.setVisible (false);
@@ -165,6 +203,10 @@ public final class LoadGameUI extends MomClientFrameUI
 		backButton = getUtils ().createImageButton (backAction, MomUIConstants.DULL_GOLD, MomUIConstants.DARK_BROWN, getLargeFont (),
 			buttonNormal, buttonPressed, buttonDisabled);
 		contentPane.add (backButton, "frmJoinGameRefresh");
+
+		deleteSavedGameButton = getUtils ().createImageButton (deleteSavedGameAction, MomUIConstants.DULL_GOLD, MomUIConstants.DARK_BROWN, getLargeFont (),
+			buttonNormal, buttonPressed, buttonDisabled);
+		contentPane.add (deleteSavedGameButton, "frmJoinGameRefresh");
 		
 		selectSavedGameButton = getUtils ().createImageButton (selectSavedGameAction, MomUIConstants.DULL_GOLD, MomUIConstants.DARK_BROWN, getLargeFont (),
 			buttonNormal, buttonPressed, buttonDisabled);
@@ -198,8 +240,12 @@ public final class LoadGameUI extends MomClientFrameUI
 		savedGamesTablePane.getViewport ().setOpaque (false);
 		contentPane.add (savedGamesTablePane, "frmJoinGameSessions");
 		
-		// Enable button as soon as a row is clicked on
-		savedGamesTable.getSelectionModel ().addListSelectionListener ((ev) -> selectSavedGameAction.setEnabled (true));
+		// Enable buttons as soon as a row is clicked on
+		savedGamesTable.getSelectionModel ().addListSelectionListener ((ev) ->
+		{
+			deleteSavedGameAction.setEnabled (true);
+			selectSavedGameAction.setEnabled (true);
+		});
 		
 		// Save points table
 		savePointsTable = new JTable ();
@@ -240,10 +286,11 @@ public final class LoadGameUI extends MomClientFrameUI
 		
 		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmLoadGame", "Title"));
 		
-		selectSavedGameAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "SelectSavedGame"));
-		selectSavePointAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "SelectSavePoint"));
-		backAction.putValue					(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "Back"));
-		cancelAction.putValue					(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "Cancel"));
+		deleteSavedGameAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "DeleteSavedGame"));
+		selectSavedGameAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "SelectSavedGame"));
+		selectSavePointAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "SelectSavePoint"));
+		backAction.putValue						(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "Back"));
+		cancelAction.putValue						(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "Cancel"));
 
 		savedGamesTableModel.fireTableDataChanged ();
 		log.trace ("Exiting languageChanged");
@@ -312,6 +359,22 @@ public final class LoadGameUI extends MomClientFrameUI
 	{
 		client = obj;
 	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
 	
 	/**
 	 * @return List of saved games we can reload
@@ -325,17 +388,20 @@ public final class LoadGameUI extends MomClientFrameUI
 	 * @param games List of saved games we can reload
 	 */
 	public final void setSavedGames (final List<SavedGameSession> games)
-	{
-		selectSavedGameAction.setEnabled (false);
-		
+	{		
 		savedGames = games;
 		savedGamesTableModel.fireTableDataChanged ();
 		
 		savedGamesTablePane.setVisible (true);
 		savePointsTablePane.setVisible (false);
+		deleteSavedGameButton.setVisible (true);
 		selectSavedGameButton.setVisible (true);
 		selectSavePointButton.setVisible (false);
 		backButton.setVisible (false);
+		
+		// Must do this last, since calling fireTableDataChanged can re-enable them
+		deleteSavedGameAction.setEnabled (false);
+		selectSavedGameAction.setEnabled (false);
 	}
 	
 	/**
@@ -356,6 +422,7 @@ public final class LoadGameUI extends MomClientFrameUI
 		
 		savedGamesTablePane.setVisible (false);
 		savePointsTablePane.setVisible (true);
+		deleteSavedGameButton.setVisible (false);
 		selectSavedGameButton.setVisible (false);
 		selectSavePointButton.setVisible (true);
 		backButton.setVisible (true);

@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 	
-	<import resource="../com.ndg.multiplayer.client/session-client-beans.xml"/>
-	<import resource="../momime.common.spring/momime-common-beans.xml"/>
+	<import resource="../com.ndg.multiplayer.client/session-client-beans.xml" />
+	<import resource="../momime.common.spring/momime-common-beans.xml" />
 	
 	<!-- General XSD objects (may move these into common project at some stage) -->
 	
@@ -23,7 +23,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Client config XML -->
 	
 	<bean id="clientConfigSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg type="java.net.URL" value="/momime.client.config/MoMIMEClientConfig.xsd"/>
+		<constructor-arg type="java.net.URL" value="/momime.client.config/MoMIMEClientConfig.xsd" />
 	</bean>
 	
 	<bean id="clientConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
@@ -185,7 +185,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- XML layouts -->
 
 	<bean id="xmlLayoutSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg type="java.net.URL" value="/com.ndg.swing.layoutmanagers/XmlLayout.xsd"/>
+		<constructor-arg type="java.net.URL" value="/com.ndg.swing.layoutmanagers/XmlLayout.xsd" />
 	</bean>
 	
 	<bean id="xmlLayoutJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
@@ -1151,6 +1151,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="tinyFont" ref="tinyFont" />
 		<property name="client" ref="client" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="overlandMapRightHandPanelLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

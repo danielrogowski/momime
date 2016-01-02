@@ -16,8 +16,10 @@ import com.ndg.multiplayer.client.MultiplayerSessionClient;
 import com.ndg.multiplayer.client.MultiplayerSessionClientEvent;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.BrowseSavePointsFailedReason;
+import com.ndg.multiplayer.sessionbase.BrowseSavedGames;
 import com.ndg.multiplayer.sessionbase.BrowseSavedGamesFailedReason;
 import com.ndg.multiplayer.sessionbase.CreateAccountFailedReason;
+import com.ndg.multiplayer.sessionbase.DeleteSavedGameFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.LeaveSessionFailedReason;
@@ -344,6 +346,20 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			}
 			
 			/**
+			 * Event triggered when the server successfully deleted a saved game that we requested.
+			 * 
+			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
+			 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
+			 * @throws IOException Can be used for more general types of processing failure
+			 */
+			@Override
+			public final void savedGameDeleted () throws JAXBException, XMLStreamException, IOException
+			{
+				// Re-request the list of saved games, so the screen updates
+				getServerConnection ().sendMessageToServer (new BrowseSavedGames ());
+			}
+			
+			/**
 			 * Event triggered when the server rejects a request.  Exactly one of the failure codes will be non-null
 			 * which indicates which kind of request got rejected.
 			 * 
@@ -355,6 +371,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			 * @param leaveSessionFailed If not null, indicates why our leave request was rejected
 			 * @param browseSavedGamesFailed If not null, indicates why our browse saved games request was rejected
 			 * @param browseSavePointsFailed If not null, indicates why our browse save points request was rejected
+			 * @param deleteSavedGameFailed If not null, indicates why our delete saved game request was rejected
 			 * @param loadGameFailed If not null, indicates why our load game request was rejected
 			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 			 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -364,7 +381,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			public final void failed (final CreateAccountFailedReason createAccountFailed,
 				final LoginFailedReason loginFailed, final LogoutFailedReason logoutFailed, final RequestSessionListFailedReason requestSessionListFailed,
 				final JoinFailedReason joinFailed, final LeaveSessionFailedReason leaveSessionFailed, final BrowseSavedGamesFailedReason browseSavedGamesFailed,
-				final BrowseSavePointsFailedReason browseSavePointsFailed, final LoadGameFailedReason loadGameFailed)
+				final BrowseSavePointsFailedReason browseSavePointsFailed, final DeleteSavedGameFailedReason deleteSavedGameFailed, final LoadGameFailedReason loadGameFailed)
 				throws JAXBException, XMLStreamException, IOException
 			{
 				// Get relevant entry from language XML
@@ -419,6 +436,12 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					titleEntryID = "BrowseSavePointsFailedTitle";
 					languageCategoryID = "BrowseSavePointsFailedReason";
 					languageEntryID = browseSavePointsFailed.value ();
+				}
+				else if (deleteSavedGameFailed != null)
+				{
+					titleEntryID = "DeleteSavedGameFailedTitle";
+					languageCategoryID = "DeleteSavedGameFailedReason";
+					languageEntryID = deleteSavedGameFailed.value ();
 				}
 				else if (loadGameFailed != null)
 				{

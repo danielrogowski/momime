@@ -48,6 +48,7 @@ public final class TestLoadGameUI
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmLoadGame", "Title")).thenReturn ("Load Game");
+		when (lang.findCategoryEntry ("frmLoadGame", "DeleteSavedGame")).thenReturn ("Delete");
 		when (lang.findCategoryEntry ("frmLoadGame", "SelectSavedGame")).thenReturn ("Select");
 		when (lang.findCategoryEntry ("frmLoadGame", "SelectSavePoint")).thenReturn ("Load");
 		when (lang.findCategoryEntry ("frmLoadGame", "Back")).thenReturn ("Back");

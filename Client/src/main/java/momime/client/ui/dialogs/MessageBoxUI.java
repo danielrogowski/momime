@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.sessionbase.DeleteSavedGame;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -116,6 +117,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** Hero item we're thinking of destroying on the anvil; null if the message box isn't about destroying a hero item */
 	private RequestMoveHeroItemMessage destroyHeroItemMessage;
+	
+	/** Saved game we're thinking of deleting; null if the message box isn't about deleting a saved game */
+	private Integer savedGameID;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -225,6 +229,14 @@ public final class MessageBoxUI extends MomClientDialogUI
 				getClient ().getServerConnection ().sendMessageToServer (getDestroyHeroItemMessage ());
 			}
 			
+			// Delete saved game
+			else if (getSavedGameID () != null)
+			{
+				final DeleteSavedGame msg = new DeleteSavedGame ();
+			    msg.setSavedGameID (getSavedGameID ());
+			    getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+			
 			else
 				log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
 				
@@ -251,7 +263,8 @@ public final class MessageBoxUI extends MomClientDialogUI
 		contentPane.setLayout (new XmlLayoutManager (getMessageBoxLayout ()));
 		
 		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
-			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItemMessage () == null)) ? 1 : 2;
+			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItemMessage () == null) &&
+			(getSavedGameID () == null)) ? 1 : 2;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmMessageBoxText");
@@ -631,5 +644,21 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setDestroyHeroItemMessage (final RequestMoveHeroItemMessage msg)
 	{
 		destroyHeroItemMessage = msg;
+	}
+
+	/**
+	 * @return Saved game we're thinking of deleting; null if the message box isn't about deleting a saved game
+	 */
+	public final Integer getSavedGameID ()
+	{
+		return savedGameID;
+	}
+
+	/**
+	 * @param id Saved game we're thinking of deleting; null if the message box isn't about deleting a saved game
+	 */
+	public final void setSavedGameID (final Integer id)
+	{
+		savedGameID = id;
 	}
 }

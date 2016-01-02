@@ -23709,6 +23709,9 @@
 		<languageEntry languageEntryID="LeaveSessionFailedTitle" />
 		<languageEntry languageEntryID="BrowseSavedGamesFailedTitle" />
 		<languageEntry languageEntryID="BrowseSavePointsFailedTitle" />
+		<languageEntry languageEntryID="DeleteSavedGameFailedTitle" />
+		<languageEntry languageEntryID="DeleteSavedGameTitle" />
+		<languageEntry languageEntryID="DeleteSavedGameText" />
 		<languageEntry languageEntryID="LoadGameFailedTitle" />
 		<languageEntry languageEntryID="KickedTitle" />
 		<languageEntry languageEntryID="KickedText" />
@@ -23743,6 +23746,12 @@
 		<languageEntry languageEntryID="U" />
 	</languageCategory>
 	<languageCategory languageCategoryID="BrowseSavePointsFailedReason">
+		<languageEntry languageEntryID="L" />
+		<languageEntry languageEntryID="A" />
+		<languageEntry languageEntryID="G" />
+		<languageEntry languageEntryID="U" />
+	</languageCategory>
+	<languageCategory languageCategoryID="DeleteSavedGameFailedReason">
 		<languageEntry languageEntryID="L" />
 		<languageEntry languageEntryID="A" />
 		<languageEntry languageEntryID="G" />

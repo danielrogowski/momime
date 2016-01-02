@@ -4709,6 +4709,15 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="BrowseSavePointsFailedTitle">
 			<languageEntryText>Browse Save Points Failed</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="DeleteSavedGameFailedTitle">
+			<languageEntryText>Delete Saved Game Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DeleteSavedGameTitle">
+			<languageEntryText>Delete Saved Game?</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DeleteSavedGameText">
+			<languageEntryText>Are you sure you want to delete saved game "SAVED_GAME_NAME" with players PLAYERS_LIST?</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="LoadGameFailedTitle">
 			<languageEntryText>Load Game Failed</languageEntryText>
 		</languageEntry>
@@ -4790,6 +4799,20 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="U">
 			<languageEntryText>The server isn't configured for browsing save points.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="DeleteSavedGameFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You must log into the server before you can delete a saved game.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="A">
+			<languageEntryText>You are already in a game and cannot delete a saved game.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="G">
+			<languageEntryText>The saved game you requested to delete could not be found.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="U">
+			<languageEntryText>The server isn't configured for deleting saved games.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="LoadGameFailedReason">
@@ -5418,6 +5441,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="SavePointsColumn1">
 			<languageEntryText>Turn</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DeleteSavedGame">
+			<languageEntryText>Delete</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="SelectSavedGame">
 			<languageEntryText>Select</languageEntryText>

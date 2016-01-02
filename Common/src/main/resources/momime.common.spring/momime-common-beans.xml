@@ -19,6 +19,7 @@
     			<value>com.ndg.multiplayer.sessionbase.BrowseSavedGames</value>
     			<value>com.ndg.multiplayer.sessionbase.BrowseSavePoints</value>
     			<value>com.ndg.multiplayer.sessionbase.LoadGame</value>
+    			<value>com.ndg.multiplayer.sessionbase.DeleteSavedGame</value>
 
     			<!-- MoM multiplayer structures -->
     			<value>momime.common.messages.MomSessionDescription</value>
@@ -86,6 +87,8 @@
     			<value>com.ndg.multiplayer.sessionbase.BrowseSavePointsSuccessful</value>
     			<value>com.ndg.multiplayer.sessionbase.BrowseSavePointsFailed</value>
     			<value>com.ndg.multiplayer.sessionbase.LoadGameFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.DeleteSavedGameSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.DeleteSavedGameFailed</value>
     			
     			<!-- MoM multiplayer structures -->
     			<value>momime.common.messages.MomSessionDescription</value>

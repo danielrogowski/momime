@@ -140,16 +140,16 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	}
 	
 	/**
-	 * Kick off the first turn after loading a game.  
-	 * 
+	 * Must load server XML and regenerate client XML before adding players
+	 *    
 	 * @throws JAXBException If there is an error dealing with any XML files during creation
 	 * @throws XMLStreamException If there is an error dealing with any XML files during creation
 	 * @throws IOException Can be used for non-JAXB related errors
 	 */
 	@Override
-	public final void initializeLoadedGame () throws JAXBException, XMLStreamException, IOException
+	public final void preInitializeLoadedGame () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering initializeLoadedGame");
+		log.trace ("Entering preInitializeLoadedGame");
 
 		// Start logger for this sesssion.  These are much the same as the class loggers, except named MoMIMESession.1, MoMIMESession.2 and so on.
 		if (getUI () != null)
@@ -168,6 +168,26 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		sdb.buildMaps ();
 		sdb.consistencyChecks ();
 		setServerDB (sdb); 
+
+		// Create client database
+		getSessionLogger ().info ("Generating client XML...");
+		getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
+			(getServerDB (), getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ()));
+		
+		log.trace ("Exiting preInitializeLoadedGame");
+	}
+	
+	/**
+	 * Kick off the first turn after loading a game.  
+	 * 
+	 * @throws JAXBException If there is an error dealing with any XML files during creation
+	 * @throws XMLStreamException If there is an error dealing with any XML files during creation
+	 * @throws IOException Can be used for non-JAXB related errors
+	 */
+	@Override
+	public final void initializeLoadedGame () throws JAXBException, XMLStreamException, IOException
+	{
+		log.trace ("Entering initializeLoadedGame");
 
 		// If its a single player game, then start it immediately
 		getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);

@@ -18,6 +18,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
+import momime.client.database.ClientDatabase;
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
@@ -693,6 +694,42 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		log.trace ("Exiting startPhase");
 	}
+	
+	/**
+	 * Saves the game state for the current turn
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 */
+	private final void saveGame (final MomSessionVariables mom)
+	{
+		log.trace ("Entering saveGame");
+		
+		try
+		{
+			// Temporarily strip out the client database, so it doesn't get included in the saved game file.
+			// The server database doesn't get included either way, only its name gets saved and we reload it from the XML,
+			// so saving the client database which can be derived from it anyway doesn't make much sense.
+			final ClientDatabase clientDB = mom.getGeneralPublicKnowledge ().getClientDatabase ();
+			mom.getGeneralPublicKnowledge ().setClientDatabase (null);
+			try
+			{
+				mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+			}
+			finally
+			{
+				mom.getGeneralPublicKnowledge ().setClientDatabase (clientDB);
+			}
+			
+			if (getSavePointKeepCount () > 0)
+				mom.deleteOldestSavePoints (getSavePointKeepCount ());
+		}
+		catch (final Exception e)
+		{
+			// Don't allow failure to save the game to totally kill things if there's a problem
+			log.error (e, e);
+		}
+		
+		log.trace ("Exiting saveGame");
+	}
 
 	/**
 	 * In a one-player-at-a-time game, this gets called when a player clicks the Next Turn button to tell everyone whose turn it is now
@@ -738,17 +775,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			// Save the game on turn number changes
 			if (playerIndex == 0)
-				try
-				{
-					mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
-					if (getSavePointKeepCount () > 0)
-						mom.deleteOldestSavePoints (getSavePointKeepCount ());
-				}
-				catch (final Exception e)
-				{
-					// Don't allow failure to save the game to totally kill things if there's a problem
-					log.error (e, e);
-				}
+				saveGame (mom);
 		}
 
 		// Start phase for the new player
@@ -805,17 +832,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
 	
 			// Save the game every turn
-			try
-			{
-				mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
-				if (getSavePointKeepCount () > 0)
-					mom.deleteOldestSavePoints (getSavePointKeepCount ());
-			}
-			catch (final Exception e)
-			{
-				// Don't allow failure to save the game to totally kill things if there's a problem
-				log.error (e, e);
-			}
+			saveGame (mom);
 		}
 		
 		// Process everybody's start phases together

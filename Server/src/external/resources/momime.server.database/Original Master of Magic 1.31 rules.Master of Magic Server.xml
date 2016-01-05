@@ -8979,7 +8979,7 @@
 	<unitSkill unitSkillID="UA01">
 		<unitSkillDescription>Melee Attack Strength</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>S</damageType>
+		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<attackResolution>
 			<attackResolutionDescription>Attacker has First Strike and Haste, Defender has Haste - Attacker gets first hit in for free; then attacker makes 2nd attack with defender making simultaneous counterattack; then lastly defender makes 2nd counterattack</attackResolutionDescription>
@@ -10445,7 +10445,7 @@
 	<unitSkill unitSkillID="UA02">
 		<unitSkillDescription>Ranged Attack Strength</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>S</damageType>
+		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<attackResolution>
 			<attackResolutionDescription>Hasted ranged attack</attackResolutionDescription>
@@ -10580,14 +10580,14 @@
 	<unitSkill unitSkillID="US026">
 		<unitSkillDescription>Stoning Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>P</damageType>
+		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB04</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>F</damageType>
+		<damageResolutionTypeID>F</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB04</magicRealmID>
 	</unitSkill>
@@ -10600,20 +10600,20 @@
 	<unitSkill unitSkillID="US030">
 		<unitSkillDescription>Poison Attack</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>T</damageType>
+		<damageResolutionTypeID>T</damageResolutionTypeID>
 		<damagePerFigure>C</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillDescription>Life Stealing</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>R</damageType>
+		<damageResolutionTypeID>R</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
 		<unitSkillDescription>Immolation</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>M</damageType>
+		<damageResolutionTypeID>M</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
@@ -10691,34 +10691,34 @@
 	<unitSkill unitSkillID="US126">
 		<unitSkillDescription>Thrown Weapons</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>S</damageType>
+		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>Y</damageType>
+		<damageResolutionTypeID>Y</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>P</damageType>
+		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB01</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>D</damageType>
+		<damageResolutionTypeID>D</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
 		<unitSkillDescription>Death Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>P</damageType>
+		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
@@ -10728,14 +10728,14 @@
 	<unitSkill unitSkillID="US133">
 		<unitSkillDescription>Lightning Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>A</damageType>
+		<damageResolutionTypeID>A</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
 		<unitSkillDescription>Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>S</damageType>
+		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
@@ -10993,7 +10993,7 @@
 		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>S</damageType>
+		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
@@ -11030,7 +11030,7 @@
 	<unitSkill unitSkillID="SS099">
 		<unitSkillDescription>Immolation</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>M</damageType>
+		<damageResolutionTypeID>M</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
 	</unitSkill>
@@ -11160,7 +11160,7 @@
 	<unitSkill unitSkillID="SS164">
 		<unitSkillDescription>Cloak of Fear</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
-		<damageType>Y</damageType>
+		<damageResolutionTypeID>Y</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
 	</unitSkill>
@@ -19430,7 +19430,7 @@
 		<combatCastingCost>20</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>C</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>C</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>25</combatBaseDamage>
 		<spellName>Cracks Call</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -19456,7 +19456,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>S</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>S</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>45</combatMaxDamage>
 		<combatManaPerAdditionalDamagePoint>1</combatManaPerAdditionalDamagePoint>
@@ -19551,7 +19551,7 @@
 		<combatCastingCost>35</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>P</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<spellName>Petrify</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>
@@ -19857,7 +19857,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>I</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>I</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>25</combatMaxDamage>
 		<combatManaPerAdditionalDamagePoint>2</combatManaPerAdditionalDamagePoint>
@@ -20016,7 +20016,7 @@
 		<combatCastingCost>20</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>P</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>3</combatBaseDamage>
 		<combatMaxDamage>8</combatMaxDamage>
 		<combatManaPerAdditionalDamagePoint>15</combatManaPerAdditionalDamagePoint>
@@ -20195,7 +20195,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>Z</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>Z</attackSpellDamageResolutionTypeID>
 		<spellName>Warp Wood</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
 	</spell>
@@ -20214,7 +20214,7 @@
 		<combatCastingCost>5</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>S</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>S</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>25</combatMaxDamage>
 		<combatManaPerAdditionalDamagePoint>1</combatManaPerAdditionalDamagePoint>
@@ -20316,7 +20316,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>A</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>A</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>45</combatMaxDamage>
 		<combatManaPerAdditionalDamagePoint>1</combatManaPerAdditionalDamagePoint>
@@ -20383,7 +20383,7 @@
 		<combatCastingCost>15</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>M</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>M</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>25</combatMaxDamage>
 		<combatManaPerAdditionalDamagePoint>3</combatManaPerAdditionalDamagePoint>
@@ -20439,7 +20439,7 @@
 		<combatCastingCost>35</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>A</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>A</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>10</combatBaseDamage>
 		<spellName>Warp Lightning</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -20471,7 +20471,7 @@
 		<combatCastingCost>40</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>D</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>D</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>10</combatBaseDamage>
 		<spellName>Doom Bolt</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20519,7 +20519,7 @@
 		<combatCastingCost>60</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
-		<attackSpellDamageType>M</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>M</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>15</combatBaseDamage>
 		<spellName>Flame Strike</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20554,7 +20554,7 @@
 		<combatCastingCost>50</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>N</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>N</attackSpellDamageResolutionTypeID>
 		<spellName>Disintegrate</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
 	</spell>
@@ -20666,7 +20666,7 @@
 		<combatCastingCost>5</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>S</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>S</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>15</combatBaseDamage>
 		<spellValidUnitTarget targetMagicRealmID="MB02" />
 		<spellValidUnitTarget targetMagicRealmID="MB03" />
@@ -20816,7 +20816,7 @@
 		<combatCastingCost>25</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>P</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>4</combatBaseDamage>
 		<spellValidUnitTarget targetMagicRealmID="MB02" />
 		<spellValidUnitTarget targetMagicRealmID="MB03" />
@@ -21010,7 +21010,7 @@
 		<combatCastingCost>60</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
-		<attackSpellDamageType>P</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>2</combatBaseDamage>
 		<spellValidUnitTarget targetMagicRealmID="MB01" />
 		<spellValidUnitTarget targetMagicRealmID="MB02" />
@@ -21227,7 +21227,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>R</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>R</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>0</combatBaseDamage>
 		<combatMaxDamage>8</combatMaxDamage>
 		<combatManaPerAdditionalDamagePoint>5</combatManaPerAdditionalDamagePoint>
@@ -21503,7 +21503,7 @@
 		<combatCastingCost>40</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
-		<attackSpellDamageType>P</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<spellName>Word of Death</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -21525,7 +21525,7 @@
 		<combatCastingCost>50</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
-		<attackSpellDamageType>P</attackSpellDamageType>
+		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>2</combatBaseDamage>
 		<spellName>Death Spell</spellName>
 		<aiResearchOrder>1</aiResearchOrder>

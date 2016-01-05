@@ -17,7 +17,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -706,12 +706,12 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Combat attack spell that rolls against something other than resistance
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
-		spell.setAttackSpellDamageType (DamageTypeID.SINGLE_FIGURE);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
 			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
 		
 		// Combat attack spell that rolls against resistance, but its resistance is really high
-		spell.setAttackSpellDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
 			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
 		

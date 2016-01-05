@@ -14,7 +14,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -328,7 +328,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		
     		else
     			// Combat attack spell
-    			switch (spell.getAttackSpellDamageType ())
+    			switch (spell.getAttackSpellDamageResolutionTypeID ())
     			{
     				case EACH_FIGURE_RESIST_OR_DIE:
     				case SINGLE_FIGURE_RESIST_OR_DIE:
@@ -339,7 +339,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
     					int resistance = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
        						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db));
-    					if (spell.getAttackSpellDamageType () != DamageTypeID.RESISTANCE_ROLLS)
+    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
     					{
     						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
     						if (savingThrowModifier != null)

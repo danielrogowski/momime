@@ -82,7 +82,7 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 	public final String getText () throws IOException
 	{
 		final String languageEntryID;
-		switch (getDamageType ())
+		switch (getDamageResolutionTypeID ())
 		{
 			case RESISTANCE_ROLLS:
 				languageEntryID = "DefenceResistanceRolls";

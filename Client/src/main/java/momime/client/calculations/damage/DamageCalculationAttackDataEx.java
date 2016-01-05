@@ -112,7 +112,7 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 
 		// Now work out the rest of the text
 		final String languageEntryID;
-		switch (getDamageType ())
+		switch (getDamageResolutionTypeID ())
 		{
 			case CHANCE_OF_DEATH:
 				languageEntryID = "AttackChanceOfDeath";

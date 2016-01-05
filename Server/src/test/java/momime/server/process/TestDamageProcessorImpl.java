@@ -11,10 +11,20 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
+import com.ndg.map.CoordinateSystemType;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
@@ -36,16 +46,6 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
-
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
-import com.ndg.map.CoordinateSystemType;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the DamageProcessorImpl class
@@ -183,10 +183,10 @@ public final class TestDamageProcessorImpl
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
 			trueMap, combatMapSize, db);
 
-		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			specialDamageTypesApplied, players, trueTerrain, db, fogOfWarSettings);
+			specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -342,10 +342,10 @@ public final class TestDamageProcessorImpl
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
 			trueMap, combatMapSize, db);
 
-		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			specialDamageTypesApplied, players, trueTerrain, db, fogOfWarSettings);
+			specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 

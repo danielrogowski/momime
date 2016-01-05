@@ -16,7 +16,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -345,7 +345,7 @@ public final class TestAttackResolutionProcessingImpl
 		// We make 5 hit rolls with 40% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, null, null, 1);
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
@@ -443,11 +443,11 @@ public final class TestAttackResolutionProcessingImpl
 		// Attacker make 5 hit rolls with 40% chance of each one striking; defender makes 6 hit rolls with 30% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, null, null, 1);
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 
-		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageTypeID.SINGLE_FIGURE, null, null, null, 1);
+		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
@@ -536,11 +536,11 @@ public final class TestAttackResolutionProcessingImpl
 		// Two of the skills we have and so generate some damage, the other two we don't
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1);
+		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US002",
 			players, fow, db)).thenReturn (potentialDamageToDefender1);
 		
-		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, DamageTypeID.DOOM, null, null, null, 1);
+		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, DamageResolutionTypeID.DOOM, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US004",
 			players, fow, db)).thenReturn (potentialDamageToDefender2);
 
@@ -617,7 +617,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Spell does preset damage
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageTypeID.SINGLE_FIGURE, null, null, null, 1);
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		
 		// 3 of them actually hit
 		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,

@@ -16,7 +16,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
@@ -166,7 +166,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @return List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
+	 * @return List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
@@ -174,7 +174,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final List<DamageTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
+	public final List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
@@ -188,7 +188,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		int damageToAttacker = 0;
 		
 		// Calculate and total up all the damage before we apply any of it
-		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		for (final AttackResolutionStepSvr step : steps)
 		{
 			// Which unit is being attacked?
@@ -246,7 +246,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
 						{
 							final int thisDamage;				
-							switch (potentialDamage.getDamageType ())
+							switch (potentialDamage.getDamageResolutionTypeID ())
 							{
 								case SINGLE_FIGURE:
 									thisDamage = getDamageCalculator ().calculateSingleFigureDamage
@@ -326,7 +326,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									break;
 									
 								default:
-									throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamage.getDamageType () +
+									throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamage.getDamageResolutionTypeID () +
 										" to the unitBeingAttacked, which it does not know how to deal with yet");
 							}
 							
@@ -338,14 +338,14 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						}
 					
 						// Apply any special effect
-						switch (potentialDamage.getDamageType ())
+						switch (potentialDamage.getDamageResolutionTypeID ())
 						{
 							case ZEROES_AMMO:
 								unitBeingAttacked.getUnit ().setAmmoRemaining (0);
 								
 								// Make sure ammo is zeroed on the client as well
-								if (!specialDamageTypesApplied.contains (potentialDamage.getDamageType ()))
-									specialDamageTypesApplied.add (potentialDamage.getDamageType ());
+								if (!specialDamageResolutionsApplied.contains (potentialDamage.getDamageResolutionTypeID ()))
+									specialDamageResolutionsApplied.add (potentialDamage.getDamageResolutionTypeID ());
 								break;
 								
 							default:
@@ -369,8 +369,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		if (attacker != null)
 			attacker.getUnit ().setDamageTaken (attacker.getUnit ().getDamageTaken () + damageToAttacker);
 
-		log.trace ("Exiting processAttackResolutionStep = " + specialDamageTypesApplied.size ());
-		return specialDamageTypesApplied;
+		log.trace ("Exiting processAttackResolutionStep = " + specialDamageResolutionsApplied.size ());
+		return specialDamageResolutionsApplied;
 	}
 
 	/**

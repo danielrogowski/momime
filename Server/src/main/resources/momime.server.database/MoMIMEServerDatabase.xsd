@@ -1098,7 +1098,7 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 					<xsd:element minOccurs="0" maxOccurs="1" name="onlyIfHaveAlready" type="xsd:boolean" nxe:label="Only if have already?" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="maxOccurrences" type="momimesvr:heroSkillMaxOccurrences" nxe:label="Max. Occurrences" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="damageType" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false">
+					<xsd:element minOccurs="0" maxOccurs="1" name="damageResolutionTypeID" type="momimecommon:damageResolutionTypeID" nxe:label="Damage Res. Type" nxe:showmaincolumn="false">
 						<xsd:annotation>
 							<xsd:documentation>Damage type dealt by attack skills, e.g. gaze, breath or touch attacks.</xsd:documentation>
 						</xsd:annotation>
@@ -1521,7 +1521,7 @@ If multiple steps have the same step number, they are executed simultaneously, i
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-						<nxe:showreferencedfield>damageType</nxe:showreferencedfield>
+						<nxe:showreferencedfield>damageResolutionTypeID</nxe:showreferencedfield>
 						<nxe:showreferencedfield>damagePerFigure</nxe:showreferencedfield>
 						<nxe:showreferencedfield>magicRealmID</nxe:showreferencedfield>
 					</xsd:appinfo>

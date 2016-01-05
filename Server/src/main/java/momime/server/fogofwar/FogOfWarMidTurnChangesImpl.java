@@ -20,7 +20,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
@@ -1004,7 +1004,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param tuDefenders Server's true memory of unit(s) that got hit
 	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
 	 * @param attackSpellID Spell used to make the attack
-	 * @param specialDamageTypesApplied List of special damage types done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
+	 * @param specialDamageResolutionsApplied List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
 	 * @param db Lookup lists built over the XML database
@@ -1016,7 +1016,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final List<MemoryUnit> tuDefenders,
-		final String attackSkillID, final String attackSpellID, final List<DamageTypeID> specialDamageTypesApplied,
+		final String attackSkillID, final String attackSpellID, final List<DamageResolutionTypeID> specialDamageResolutionsApplied,
 		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
@@ -1044,7 +1044,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			{
 				msg = new ApplyDamageMessage ();
 				msg.setAttackerPlayerID (attackerPlayerID);
-				msg.getSpecialDamageType ().addAll (specialDamageTypesApplied);
+				msg.getSpecialDamageResolutionTypeID ().addAll (specialDamageResolutionsApplied);
 			}
 			else
 				msg = null;

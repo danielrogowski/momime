@@ -1002,7 +1002,7 @@ but kept these separate to make it totally clear when production values are reco
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellCombatTarget" type="momimecommon:attackSpellCombatTargetID" nxe:label="Atk Spell Combat Target" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageType" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageResolutionTypeID" type="momimecommon:damageResolutionTypeID" nxe:label="Damage Res. Type" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="MP per +1 dmg" nxe:gridwidth="100" />
@@ -1860,9 +1860,9 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<xsd:simpleType name="damageTypeID">
+	<xsd:simpleType name="damageResolutionTypeID">
         <xsd:annotation>
-        	<xsd:documentation>Different types of damage that can be dealt by different skills, attacks and attack spells</xsd:documentation>
+        	<xsd:documentation>Different rules for resolving damage that can be dealt by different skills, attacks and attack spells</xsd:documentation>
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="S"><xsd:annotation>

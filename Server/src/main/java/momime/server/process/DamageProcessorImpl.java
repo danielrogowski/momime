@@ -6,11 +6,19 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
@@ -25,14 +33,6 @@ import momime.server.database.AttackResolutionSvr;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Routines dealing with applying combat damage
@@ -144,7 +144,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer);
 		
 		// Process our attack against each defender
-		final List<DamageTypeID> specialDamageTypesApplied = new ArrayList<DamageTypeID> ();
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		for (final MemoryUnit defender : defenders)
 		{
 			// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
@@ -178,13 +178,13 @@ public final class DamageProcessorImpl implements DamageProcessor
 				if (((attacker == null) || (getUnitCalculations ().calculateAliveFigureCount (attacker, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0)) &&
 					(getUnitCalculations ().calculateAliveFigureCount (defender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0))
 				{
-					final List<DamageTypeID> thisSpecialDamageTypesApplied = getAttackResolutionProcessing ().processAttackResolutionStep
+					final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
 						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
-					for (final DamageTypeID thisSpecialDamageTypeApplied : thisSpecialDamageTypesApplied)
-						if (!specialDamageTypesApplied.contains (thisSpecialDamageTypeApplied))
-							specialDamageTypesApplied.add (thisSpecialDamageTypeApplied);
+					for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
+						if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))
+							specialDamageResolutionsApplied.add (thisSpecialDamageResolutionApplied);
 				}
 		}
 		
@@ -194,7 +194,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// This also sends the number of combat movement points the attacker has left.
 		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, damageCalculationMsg.getAttackerPlayerID (), defenders,
 			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackSpellID (),
-			specialDamageTypesApplied, mom.getPlayers (),
+			specialDamageResolutionsApplied, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose

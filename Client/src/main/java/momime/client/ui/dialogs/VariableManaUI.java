@@ -33,7 +33,7 @@ import momime.client.ui.frames.SpellBookUI;
 import momime.client.utils.TextUtils;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -211,11 +211,11 @@ public final class VariableManaUI extends MomClientDialogUI
 				// The slider value is the resulting damage of the spell
 				// How this label appears depends on what kind of damage the spell does - for regular damage spells like fire bolt we want this
 				// to say e.g. "15 damage" but for Banish and Life Drain we want it to say e.g. "-4 resistance"
-				final String languageEntryID = ((getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
-					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE) ||
-					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.RESISTANCE_ROLLS) ||
-					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.RESIST_OR_TAKE_DAMAGE) ||
-					(getSpellBeingTargetted ().getAttackSpellDamageType () == DamageTypeID.DISINTEGRATE)) ? "Resistance" : "Damage";
+				final String languageEntryID = ((getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESISTANCE_ROLLS) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE) ||
+					(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.DISINTEGRATE)) ? "Resistance" : "Damage";
 				
 				leftLabel.setText (getLanguage ().findCategoryEntry ("VariableMana", languageEntryID).replaceAll
 					("VALUE", new Integer (slider.getValue ()).toString ()));

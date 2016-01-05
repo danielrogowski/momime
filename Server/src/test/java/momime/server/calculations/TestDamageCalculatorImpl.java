@@ -19,7 +19,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamagePerFigureID;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
@@ -132,7 +132,7 @@ public final class TestDamageCalculatorImpl
 		
 		// The kind of damage inflicted by this skill
 		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
-		unitSkill.setDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
+		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_FIGURE_COMBINED);
 		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
 
@@ -189,7 +189,7 @@ public final class TestDamageCalculatorImpl
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
 		assertEquals (4, dmg.getChanceToHit ());
-		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageType ());
+		assertEquals (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageResolutionTypeID ());
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -204,7 +204,7 @@ public final class TestDamageCalculatorImpl
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertEquals ("US001", data.getAttackSkillID ());
 	    assertNull (data.getAttackSpellID ());
-	    assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageType ());
+	    assertEquals (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageResolutionTypeID ());
 	    assertEquals (4, data.getAttackerFigures ().intValue ());
 	    assertEquals (3, data.getAttackStrength ().intValue ());
 	    assertEquals (12, data.getPotentialHits ().intValue ());
@@ -222,7 +222,7 @@ public final class TestDamageCalculatorImpl
 		
 		// The kind of damage inflicted by this skill
 		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
-		unitSkill.setDamageType (DamageTypeID.RESIST_OR_TAKE_DAMAGE);
+		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_UNIT);
 		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
 
@@ -279,7 +279,7 @@ public final class TestDamageCalculatorImpl
 		// Check results
 		assertEquals (3, dmg.getPotentialHits ().intValue ());
 		assertEquals (4, dmg.getChanceToHit ());
-		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageType ());
+		assertEquals (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, dmg.getDamageResolutionTypeID ());
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -294,7 +294,7 @@ public final class TestDamageCalculatorImpl
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertEquals ("US001", data.getAttackSkillID ());
 	    assertNull (data.getAttackSpellID ());
-	    assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageType ());
+	    assertEquals (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageResolutionTypeID ());
 	    assertNull (data.getAttackerFigures ());
 	    assertNull (data.getAttackStrength ());
 	    assertEquals (3, data.getPotentialHits ().intValue ());
@@ -412,7 +412,7 @@ public final class TestDamageCalculatorImpl
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		spell.setCombatBaseDamage (12);
-		spell.setAttackSpellDamageType (DamageTypeID.DOOM);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.DOOM);
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -424,7 +424,7 @@ public final class TestDamageCalculatorImpl
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
 		assertEquals (3, dmg.getChanceToHit ());
-		assertEquals (DamageTypeID.DOOM, dmg.getDamageType ());
+		assertEquals (DamageResolutionTypeID.DOOM, dmg.getDamageResolutionTypeID ());
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -439,7 +439,7 @@ public final class TestDamageCalculatorImpl
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertNull (data.getAttackSkillID ());
 	    assertEquals ("SP001", data.getAttackSpellID ());
-	    assertEquals (DamageTypeID.DOOM, data.getDamageType ());
+	    assertEquals (DamageResolutionTypeID.DOOM, data.getDamageResolutionTypeID ());
 	    assertNull (data.getAttackerFigures ());
 	    assertNull (data.getAttackStrength ());
 	    assertEquals (12, data.getPotentialHits ().intValue ());
@@ -472,7 +472,7 @@ public final class TestDamageCalculatorImpl
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		spell.setCombatBaseDamage (12);
-		spell.setAttackSpellDamageType (DamageTypeID.DOOM);
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.DOOM);
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -484,7 +484,7 @@ public final class TestDamageCalculatorImpl
 		// Check results
 		assertEquals (20, dmg.getPotentialHits ().intValue ());
 		assertEquals (3, dmg.getChanceToHit ());
-		assertEquals (DamageTypeID.DOOM, dmg.getDamageType ());
+		assertEquals (DamageResolutionTypeID.DOOM, dmg.getDamageResolutionTypeID ());
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -499,7 +499,7 @@ public final class TestDamageCalculatorImpl
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertNull (data.getAttackSkillID ());
 	    assertEquals ("SP001", data.getAttackSpellID ());
-	    assertEquals (DamageTypeID.DOOM, data.getDamageType ());
+	    assertEquals (DamageResolutionTypeID.DOOM, data.getDamageResolutionTypeID ());
 	    assertNull (data.getAttackerFigures ());
 	    assertNull (data.getAttackStrength ());
 	    assertEquals (20, data.getPotentialHits ().intValue ());
@@ -577,7 +577,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (3, calc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (18, 1, DamageTypeID.SINGLE_FIGURE, null, null, null, 1), players, fow, db));
+			new AttackDamage (18, 1, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1), players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -594,7 +594,7 @@ public final class TestDamageCalculatorImpl
 		assertEquals (4, data.getChanceToHit ().intValue ());
 		assertEquals (72, data.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
 		assertEquals (6, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.SINGLE_FIGURE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.SINGLE_FIGURE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -676,7 +676,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (3, calc.calculateArmourPiercingDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (18, 1, DamageTypeID.ARMOUR_PIERCING, null, null, null, 1), players, fow, db));
+			new AttackDamage (18, 1, DamageResolutionTypeID.ARMOUR_PIERCING, null, null, null, 1), players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -693,7 +693,7 @@ public final class TestDamageCalculatorImpl
 		assertEquals (4, data.getChanceToHit ().intValue ());
 		assertEquals (72, data.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
 		assertEquals (6, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.ARMOUR_PIERCING, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.ARMOUR_PIERCING, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -775,7 +775,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (6, calc.calculateIllusionaryDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (18, 1, DamageTypeID.ILLUSIONARY, null, null, null, 1), players, fow, db));
+			new AttackDamage (18, 1, DamageResolutionTypeID.ILLUSIONARY, null, null, null, 1), players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -792,7 +792,7 @@ public final class TestDamageCalculatorImpl
 		assertEquals (4, data.getChanceToHit ().intValue ());
 		assertEquals (72, data.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
 		assertEquals (6, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.ILLUSIONARY, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.ILLUSIONARY, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -880,7 +880,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (5, calc.calculateMultiFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (4, 1, DamageTypeID.MULTI_FIGURE, null, null, null, 1), players, fow, db));
+			new AttackDamage (4, 1, DamageResolutionTypeID.MULTI_FIGURE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -897,7 +897,7 @@ public final class TestDamageCalculatorImpl
 		assertEquals (4, data.getChanceToHit ().intValue ());
 		assertEquals (48, data.getTenTimesAverageDamage ().intValue ());		// 4 hits * 0.4 chance * 3 alive figures = 4.8 average hits
 		assertEquals (7, data.getActualHits ().intValue ());									// 3+3+1, see comments against dice rolls
-		assertEquals (DamageTypeID.MULTI_FIGURE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.MULTI_FIGURE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -960,7 +960,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (6, calc.calculateDoomDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (6, 1, DamageTypeID.DOOM, null, null, null, 1), players, fow, db));
+			new AttackDamage (6, 1, DamageResolutionTypeID.DOOM, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -977,7 +977,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (6, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.DOOM, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.DOOM, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertNull (data.getUnmodifiedDefenceStrength ());
@@ -1045,7 +1045,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (6, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, null, null, 1), players, fow, db));
+			new AttackDamage (25, 0, DamageResolutionTypeID.CHANCE_OF_DEATH, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1062,7 +1062,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (20, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.CHANCE_OF_DEATH, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.CHANCE_OF_DEATH, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertNull (data.getUnmodifiedDefenceStrength ());
@@ -1130,7 +1130,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (0, calc.calculateChanceOfDeathDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (25, 0, DamageTypeID.CHANCE_OF_DEATH, null, null, null, 1), players, fow, db));
+			new AttackDamage (25, 0, DamageResolutionTypeID.CHANCE_OF_DEATH, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1147,7 +1147,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (80, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.CHANCE_OF_DEATH, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.CHANCE_OF_DEATH, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertNull (data.getUnmodifiedDefenceStrength ());
@@ -1226,7 +1226,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+			new AttackDamage (null, 0, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1243,7 +1243,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (2, data.getActualHits ().intValue ());									// 2 figures died
-		assertEquals (DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (5, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1322,7 +1322,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (2, 0, DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+			new AttackDamage (2, 0, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1339,7 +1339,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (4, data.getActualHits ().intValue ());									// 4 figures died
-		assertEquals (DamageTypeID.EACH_FIGURE_RESIST_OR_DIE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (5, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1418,7 +1418,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+			new AttackDamage (null, 0, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1435,7 +1435,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (0, data.getActualHits ().intValue ());									// 0 figures died
-		assertEquals (DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (5, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1514,7 +1514,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+			new AttackDamage (null, 0, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1531,7 +1531,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (1, data.getActualHits ().intValue ());									// 0 figures died
-		assertEquals (DamageTypeID.SINGLE_FIGURE_RESIST_OR_DIE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (5, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1610,7 +1610,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (2, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), players, fow, db));
+			new AttackDamage (null, 0, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1627,7 +1627,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (6, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (5, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1706,7 +1706,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (5, calc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (3, 0, DamageTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), players, fow, db));
+			new AttackDamage (3, 0, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1723,7 +1723,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (6, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (5, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1797,7 +1797,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (2, calc.calculateResistanceRollsDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (6, 0, DamageTypeID.RESISTANCE_ROLLS, null, null, null, 1), players, fow, db));
+			new AttackDamage (6, 0, DamageResolutionTypeID.RESISTANCE_ROLLS, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1814,7 +1814,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (2, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.RESISTANCE_ROLLS, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.RESISTANCE_ROLLS, data.getDamageResolutionTypeID ());
 		
 		assertEquals (5, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1883,7 +1883,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (6, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, DamageTypeID.DISINTEGRATE, null, null, null, 1), players, fow, db));
+			new AttackDamage (null, 0, DamageResolutionTypeID.DISINTEGRATE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1900,7 +1900,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertNull (data.getActualHits ());
-		assertEquals (DamageTypeID.DISINTEGRATE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.DISINTEGRATE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (4, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -1969,7 +1969,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (0, calc.calculateDisintegrateDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (2, 0, DamageTypeID.DISINTEGRATE, null, null, null, 1), players, fow, db));
+			new AttackDamage (2, 0, DamageResolutionTypeID.DISINTEGRATE, null, null, null, 1), players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1986,7 +1986,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertNull (data.getActualHits ());
-		assertEquals (DamageTypeID.DISINTEGRATE, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.DISINTEGRATE, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (12, data.getUnmodifiedDefenceStrength ().intValue ());
@@ -2056,7 +2056,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		calc.calculateFearDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (2, 0, DamageTypeID.FEAR, null, null, null, 1), players, fow, db);
+			new AttackDamage (2, 0, DamageResolutionTypeID.FEAR, null, null, null, 1), players, fow, db);
 		
 		// Check value recorded on server
 		assertEquals (4, defenderWrapper.getFiguresFrozenInFear ());
@@ -2076,7 +2076,7 @@ public final class TestDamageCalculatorImpl
 		assertNull (data.getChanceToHit ());
 		assertNull (data.getTenTimesAverageDamage ());
 		assertEquals (2, data.getActualHits ().intValue ());
-		assertEquals (DamageTypeID.FEAR, data.getDamageType ());
+		assertEquals (DamageResolutionTypeID.FEAR, data.getDamageResolutionTypeID ());
 		
 		assertEquals (3, data.getDefenderFigures ());
 		assertEquals (6, data.getUnmodifiedDefenceStrength ().intValue ());

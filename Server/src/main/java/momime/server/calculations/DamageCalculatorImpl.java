@@ -140,10 +140,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			// Different skills deal different types of damage
 			final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
 
-			if (unitSkill.getDamageType () == null)
-				throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageType defined");
+			if (unitSkill.getDamageResolutionTypeID () == null)
+				throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
 			
-			damageCalculationMsg.setDamageType (unitSkill.getDamageType ());
+			damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
 			
 			// Some skills hit just once from the whole attacking unit, some hit once per figure
 			if (unitSkill.getDamagePerFigure () == null)
@@ -197,7 +197,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
 	
-			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageCalculationMsg.getDamageType (), null,
+			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageCalculationMsg.getDamageResolutionTypeID (), null,
 				attackSkillID, attackFromMagicRealmID, repetitions);
 		}
 		
@@ -233,11 +233,11 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 		damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
 		damageCalculationMsg.setPotentialHits (damage);
-		damageCalculationMsg.setDamageType (spell.getAttackSpellDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (spell.getAttackSpellDamageResolutionTypeID ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
 		// Fill in the damage object
-		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageType (), spell, null, null, 1);
+		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageResolutionTypeID (), spell, null, null, 1);
 		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
 	}
@@ -378,7 +378,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
 		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
 		damageCalculationMsg.setTenTimesAverageDamage (attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
 		// How many actually hit
 		int actualDamage = 0;
@@ -444,7 +444,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
 		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
 		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), defender.getUnit (), db);
@@ -540,7 +540,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
 		// No to hit rolls - they automatically hit
 		damageCalculationMsg.setActualHits (attackDamage.getPotentialHits ());
@@ -586,7 +586,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
 		// Store the dice roll
 		damageCalculationMsg.setActualHits (getRandomUtils ().nextInt (100));
@@ -634,7 +634,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
 		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), defender.getUnit (), db);
@@ -725,7 +725,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
 		final UnitHasSkillMergedList defenderSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), defender.getUnit (), db);
@@ -816,7 +816,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
@@ -875,7 +875,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
@@ -932,7 +932,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
@@ -984,7 +984,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnit ().getUnitURN ());
-		damageCalculationMsg.setDamageType (attackDamage.getDamageType ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats - note the minus here, so if 2 figures are already frozen, we can't roll for them again and use those rolls to freeze other figures
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db) - defender.getFiguresFrozenInFear ());

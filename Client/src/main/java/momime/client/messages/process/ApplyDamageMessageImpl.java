@@ -39,7 +39,7 @@ import momime.client.utils.UnitClientUtils;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RangedAttackTypeActionID;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
@@ -525,8 +525,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			thisUnit.getDefUnit ().setDamageTaken (thisUnit.getDefenderDamageTakenEnd ());
 			
 			// Apply special effects
-			for (final DamageTypeID damageType : getSpecialDamageType ())
-				switch (damageType)
+			for (final DamageResolutionTypeID damageResolutionType : getSpecialDamageResolutionTypeID ())
+				switch (damageResolutionType)
 				{
 					case ZEROES_AMMO:
 						thisUnit.getDefUnit ().setAmmoRemaining (0);

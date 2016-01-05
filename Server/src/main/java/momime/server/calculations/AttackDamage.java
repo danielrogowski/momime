@@ -1,6 +1,6 @@
 package momime.server.calculations;
 
-import momime.common.database.DamageTypeID;
+import momime.common.database.DamageResolutionTypeID;
 import momime.server.database.SpellSvr;
 
 /**
@@ -19,8 +19,8 @@ public final class AttackDamage
 	/** To hit chance, in units of 10% */
 	private int chanceToHit;
 	
-	/** Kind of damage being dealt */
-	private final DamageTypeID damageType;
+	/** Rules by which the damage will be applied */
+	private final DamageResolutionTypeID damageResolutionTypeID;
 	
 	/** The spell that's causing the damage; or null if the attack isn't coming from a spell */
 	private final SpellSvr spell;
@@ -40,7 +40,7 @@ public final class AttackDamage
 	/**
 	 * @param aPotentialHits Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood
 	 * @param aPlusToHit Any bonus to the standard 30% hit rate
-	 * @param aDamageType Kind of damage being dealt
+	 * @param aDamageResolutionTypeID Rules by which the damage will be applied
 	 * @param aSpell The spell that's causing the damage; or null if the attack isn't coming from a spell
 	 * @param anAttackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
@@ -48,13 +48,13 @@ public final class AttackDamage
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against; ignored for spells
 	 * @param aRepetitions The number of times this damage is dealt
 	 */
-	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageTypeID aDamageType, final SpellSvr aSpell,
+	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageResolutionTypeID aDamageResolutionTypeID, final SpellSvr aSpell,
 		final String anAttackFromSkillID, final String anAttackFromMagicRealmID, final int aRepetitions)
 	{
 		super ();
 		potentialHits = aPotentialHits;
 		chanceToHit = aPlusToHit + 3;
-		damageType = aDamageType;
+		damageResolutionTypeID = aDamageResolutionTypeID;
 		spell = aSpell;
 		attackFromSkillID = anAttackFromSkillID;
 		attackFromMagicRealmID = (spell != null) ? spell.getSpellRealm () : anAttackFromMagicRealmID;
@@ -67,7 +67,7 @@ public final class AttackDamage
 	@Override
 	public final String toString ()
 	{
-		return "(" + getPotentialHits () + " potential damage at +" + getChanceToHit () + " to hit of type " + getDamageType () + ")"; 
+		return "(" + getPotentialHits () + " potential damage at +" + getChanceToHit () + " to hit of type " + getDamageResolutionTypeID () + ")"; 
 	}
 
 	/**
@@ -95,11 +95,11 @@ public final class AttackDamage
 	}
 	
 	/**
-	 * @return Kind of damage being dealt
+	 * @return Rules by which the damage will be applied
 	 */
-	public final DamageTypeID getDamageType ()
+	public final DamageResolutionTypeID getDamageResolutionTypeID ()
 	{
-		return damageType;
+		return damageResolutionTypeID;
 	}
 
 	/**

@@ -655,6 +655,8 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 					<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="storedDamageTypeID" type="momimecommon:storedDamageTypeID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="damageResolutionTypeID" type="momimecommon:damageResolutionTypeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerFigures" type="momimecommon:figureCount" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackStrength" type="momimecommon:unitSkillValue" />
@@ -678,6 +680,8 @@ This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="defenderFigures" type="momimecommon:figureCount" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="storedDamageTypeID" type="momimecommon:storedDamageTypeID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="damageResolutionTypeID" type="momimecommon:damageResolutionTypeID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="unmodifiedDefenceStrength" type="momimecommon:unitSkillValue" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="modifiedDefenceStrength" type="momimecommon:unitSkillValue">

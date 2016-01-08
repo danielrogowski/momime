@@ -128,6 +128,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimecommon:heroItem" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimesvr:unitSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimesvr:rangedAttackType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="damageType" type="momimesvr:damageType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimesvr:unit">
 				<xsd:key name="unitHasSkillPK">
 					<xsd:selector xpath="unitHasSkill" />
@@ -383,6 +384,12 @@
 		<xsd:key name="heroItemBonusPK">
 			<xsd:selector xpath="heroItemBonus" />
 			<xsd:field xpath="@heroItemBonusID" />
+		</xsd:key>
+		
+		<!-- Damage types and immunities, new for 0.9.7.2 -->
+		<xsd:key name="damageTypePK">
+			<xsd:selector xpath="damageType" />
+			<xsd:field xpath="@damageTypeID" />
 		</xsd:key>
 		
 <!-- Foreign keys -->
@@ -779,6 +786,28 @@
 			<xsd:selector xpath="mapFeature/mapFeatureTreasureBookReward" />
 			<xsd:field xpath="@pickID" />
 		</xsd:keyref>
+
+		<!-- Damage types and immunities, new for 0.9.7.2 -->
+		<xsd:keyref refer="momimesvr:damageTypePK" name="damageTypeFKdamageType">
+			<xsd:selector xpath="damageType" />
+			<xsd:field xpath="enhancedVersion" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="damageTypeImmunityFKunitSkill">
+			<xsd:selector xpath="damageType/damageTypeImmunity" />
+			<xsd:field xpath="@unitSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:damageTypePK" name="rangedAttackTypeFKdamageType">
+			<xsd:selector xpath="rangedAttackType" />
+			<xsd:field xpath="damageTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:damageTypePK" name="unitSkillFKdamageType">
+			<xsd:selector xpath="unitSkill" />
+			<xsd:field xpath="damageTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:damageTypePK" name="spellFKdamageType">
+			<xsd:selector xpath="spell" />
+			<xsd:field xpath="attackSpellDamageTypeID" />
+		</xsd:keyref>
 		
 	</xsd:element>
 		
@@ -1067,6 +1096,13 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:extension base="momimecommon:rangedAttackType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="250" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<nxe:showreferencedfield>damageTypeName</nxe:showreferencedfield>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1080,6 +1116,11 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:extension base="momimecommon:weaponGrade">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="weaponGradeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="enhancesDamageType" type="xsd:boolean" nxe:label="Enhances Damage Type?" nxe:gridwidth="200"> 
+						<xsd:annotation>
+							<xsd:documentation>Basically this indicates whether this weapon grade can punch through Weapon Immunity.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1098,9 +1139,16 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 					<xsd:element minOccurs="0" maxOccurs="1" name="onlyIfHaveAlready" type="xsd:boolean" nxe:label="Only if have already?" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="maxOccurrences" type="momimesvr:heroSkillMaxOccurrences" nxe:label="Max. Occurrences" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<nxe:showreferencedfield>damageTypeName</nxe:showreferencedfield>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="damageResolutionTypeID" type="momimecommon:damageResolutionTypeID" nxe:label="Damage Res. Type" nxe:showmaincolumn="false">
 						<xsd:annotation>
-							<xsd:documentation>Damage type dealt by attack skills, e.g. gaze, breath or touch attacks.</xsd:documentation>
+							<xsd:documentation>Rules for determining the amount of damage dealt by attack skills, e.g. gaze, breath or touch attacks.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="damagePerFigure" type="momimecommon:damagePerFigureID" nxe:label="Damage Per Figure" nxe:showmaincolumn="false">
@@ -1131,6 +1179,11 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 			<xsd:extension base="momimecommon:unitType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="enhancesDamageType" type="xsd:boolean" nxe:label="Enhances Damage Type?" nxe:gridwidth="200"> 
+						<xsd:annotation>
+							<xsd:documentation>Basically this indicates whether this unit type ignores Weapon Immunity.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1521,6 +1574,7 @@ If multiple steps have the same step number, they are executed simultaneously, i
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>damageTypeID</nxe:showreferencedfield>
 						<nxe:showreferencedfield>damageResolutionTypeID</nxe:showreferencedfield>
 						<nxe:showreferencedfield>damagePerFigure</nxe:showreferencedfield>
 						<nxe:showreferencedfield>magicRealmID</nxe:showreferencedfield>
@@ -1572,6 +1626,23 @@ Defaults to 1 if omitted.</xsd:documentation>
 			<xsd:extension base="momimecommon:heroItemBonus">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="heroItemBonusDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+<!-- Damage types and immunities, new for 0.9.7.2 -->
+
+	<xsd:complexType name="damageType" nxe:singular="Damage Type" nxe:plural="Damage Types" nxe:submenu="Units">
+        <xsd:annotation>
+        	<xsd:documentation>Types of damage, e.g. fire, cold, death, disintegrate - these map closely to the different immunity skills.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimecommon:damageType">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="storedDamageTypeID" type="momimecommon:storedDamageTypeID" nxe:label="Stored as" nxe:showmaincolumn="false" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="200" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

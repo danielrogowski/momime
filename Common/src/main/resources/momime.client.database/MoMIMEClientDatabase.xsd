@@ -58,6 +58,7 @@ the server XML and send to the client once they join a session.</xsd:documentati
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitType" type="momimecommon:unitType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimecommon:unitSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimecommon:rangedAttackType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="damageType" type="momimecommon:damageType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimecommon:unit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect" />

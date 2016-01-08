@@ -5662,6 +5662,7 @@
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Normal</unitTypeDescription>
+		<enhancesDamageType>false</enhancesDamageType>
 	</unitType>
 	<unitType unitTypeID="H">
 		<experienceLevel levelNumber="0">
@@ -5968,9 +5969,11 @@
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Hero</unitTypeDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</unitType>
 	<unitType unitTypeID="S">
 		<unitTypeDescription>Summoned</unitTypeDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</unitType>
 	<heroItemType heroItemTypeID="IT01">
 		<baseCraftingCost>100</baseCraftingCost>
@@ -8979,6 +8982,7 @@
 	<unitSkill unitSkillID="UA01">
 		<unitSkillDescription>Melee Attack Strength</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT01</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<attackResolution>
@@ -10560,6 +10564,8 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US019">
 		<unitSkillDescription>Create Undead</unitSkillDescription>
+		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT13</damageTypeID>
 	</unitSkill>
 	<unitSkill unitSkillID="US020">
 		<unitSkillDescription>Movement: Path Finding</unitSkillDescription>
@@ -10580,6 +10586,7 @@
 	<unitSkill unitSkillID="US026">
 		<unitSkillDescription>Stoning Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT10</damageTypeID>
 		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB04</magicRealmID>
@@ -10587,6 +10594,7 @@
 	<unitSkill unitSkillID="US027">
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT10</damageTypeID>
 		<damageResolutionTypeID>F</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB04</magicRealmID>
@@ -10600,12 +10608,14 @@
 	<unitSkill unitSkillID="US030">
 		<unitSkillDescription>Poison Attack</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT09</damageTypeID>
 		<damageResolutionTypeID>T</damageResolutionTypeID>
 		<damagePerFigure>C</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillDescription>Life Stealing</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT13</damageTypeID>
 		<damageResolutionTypeID>R</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
@@ -10613,6 +10623,7 @@
 	<unitSkill unitSkillID="US032">
 		<unitSkillDescription>Immolation</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>M</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
@@ -10691,12 +10702,14 @@
 	<unitSkill unitSkillID="US126">
 		<unitSkillDescription>Thrown Weapons</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT01</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT08</damageTypeID>
 		<damageResolutionTypeID>Y</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
@@ -10704,6 +10717,7 @@
 	<unitSkill unitSkillID="US129">
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT11</damageTypeID>
 		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB01</magicRealmID>
@@ -10711,6 +10725,7 @@
 	<unitSkill unitSkillID="US130">
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT02</damageTypeID>
 		<damageResolutionTypeID>D</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
@@ -10718,6 +10733,7 @@
 	<unitSkill unitSkillID="US131">
 		<unitSkillDescription>Death Gaze</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT08</damageTypeID>
 		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
@@ -10728,6 +10744,7 @@
 	<unitSkill unitSkillID="US133">
 		<unitSkillDescription>Lightning Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT05</damageTypeID>
 		<damageResolutionTypeID>A</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
@@ -10735,6 +10752,7 @@
 	<unitSkill unitSkillID="US134">
 		<unitSkillDescription>Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
@@ -10993,6 +11011,7 @@
 		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Fire Breath</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
@@ -11030,6 +11049,7 @@
 	<unitSkill unitSkillID="SS099">
 		<unitSkillDescription>Immolation</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>M</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
@@ -11160,6 +11180,7 @@
 	<unitSkill unitSkillID="SS164">
 		<unitSkillDescription>Cloak of Fear</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
+		<damageTypeID>DT08</damageTypeID>
 		<damageResolutionTypeID>Y</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
@@ -11304,60 +11325,199 @@
 	<rangedAttackType rangedAttackTypeID="RAT0A">
 		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Rock</rangedAttackTypeDescription>
+		<damageTypeID>DT02</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT14">
 		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Arrow</rangedAttackTypeDescription>
+		<damageTypeID>DT03</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT15">
 		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Pebbles / Bullets</rangedAttackTypeDescription>
+		<damageTypeID>DT03</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT20">
 		<magicRealmID>MB05</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Big fat blue blast</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT26">
 		<magicRealmID>MB04</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Green bolt</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT25">
 		<magicRealmID>MB04</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Tiny blue cross</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT22">
 		<magicRealmID>MB04</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Blue bolt</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT21">
 		<magicRealmID>MB03</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Purple bolt</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT1E">
 		<magicRealmID>MB03</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Lightning bolt</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT24">
 		<magicRealmID>MB03</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Purple dots</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT23">
 		<magicRealmID>MB04</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Medium blue cross</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT1F">
 		<magicRealmID>MB03</magicRealmID>
 		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
 		<rangedAttackTypeDescription>Fireball</rangedAttackTypeDescription>
+		<damageTypeID>DT05</damageTypeID>
 	</rangedAttackType>
+	<damageType damageTypeID="DT01">
+		<enhancedVersion>DT02</enhancedVersion>
+		<damageTypeImmunity unitSkillID="US008">
+			<boostsDefenceTo>10</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="SS143">
+			<boostsDefenceTo>10</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="SS181">
+			<boostsDefenceTo>10</boostsDefenceTo>
+		</damageTypeImmunity>
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Unmagical melee damage</damageTypeName>
+		<damageTypeDescription>Standard hits from normal units without magical weapons.  Can be blocked by Weapon Immunity.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT02">
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Enchanted melee damage / other unblockable damage</damageTypeName>
+		<damageTypeDescription>Defined as anything that bypasses Weapon Immunity but not "magical enough" to be blocked by Magic Immunity, so cannot be blocked by anything.  Standard hits from normal units with magical/mithril/adamantium/flame blade/eldritch weapon/etc; and hits from heroes or summoned creatures, undead or chaos channeled units.  Rock RATs (too large to be blocked by Weapon or Missile Immunity; not magical enough to be blocked by Magic Immunity); Doom Gaze.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT03">
+		<enhancedVersion>DT04</enhancedVersion>
+		<damageTypeImmunity unitSkillID="US008">
+			<boostsDefenceTo>10</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="SS143">
+			<boostsDefenceTo>10</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="SS181">
+			<boostsDefenceTo>10</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="US009">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="SS044">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Unmagical ranged damage</damageTypeName>
+		<damageTypeDescription>Standard shots from normal units without magical weapons.  Can be blocked by Weapon Immunity and Missile Immunity.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT04">
+		<damageTypeImmunity unitSkillID="US009">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="SS044">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Enchanted ranged damage</damageTypeName>
+		<damageTypeDescription>Defined as anything that bypasses Weapon Immunity but not "magical enough" to be blocked by Magic Immunity.  Still blocked by Missile Immunity.  Standard shots from normal units with magical/mithril/adamantium/flame blade/eldritch weapon/etc; and shots from heroes or summoned creatures, undead or chaos channeled units.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT05">
+		<damageTypeImmunity unitSkillID="US012">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="SS069">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Non-elemental magical damage</damageTypeName>
+		<damageTypeDescription>Defined as any healable damage that is blocked ONLY by Magic Immunity, e.g. standard magical ranged attacks from units such as Magicians and heroes.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT06">
+		<damageTypeImmunity unitSkillID="US006">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="US012" />
+		<damageTypeImmunity unitSkillID="SS069" />
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Fire damage</damageTypeName>
+		<damageTypeDescription>Blocked by Fire Immunity and Magic Immunity.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT07">
+		<damageTypeImmunity unitSkillID="US011">
+			<boostsDefenceTo>50</boostsDefenceTo>
+		</damageTypeImmunity>
+		<damageTypeImmunity unitSkillID="US012" />
+		<damageTypeImmunity unitSkillID="SS069" />
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Cold damage</damageTypeName>
+		<damageTypeDescription>Blocked by Cold Immunity and Magic Immunity.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT08">
+		<damageTypeImmunity unitSkillID="US047" />
+		<damageTypeImmunity unitSkillID="US122" />
+		<damageTypeImmunity unitSkillID="US012" />
+		<damageTypeImmunity unitSkillID="SS069" />
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Death damage</damageTypeName>
+		<damageTypeDescription>Blocked by Death Immunity and Magic Immunity.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT09">
+		<damageTypeImmunity unitSkillID="US005" />
+		<storedDamageTypeID>H</storedDamageTypeID>
+		<damageTypeName>Poison damage</damageTypeName>
+		<damageTypeDescription>Blocked only by Poison Immunity.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT10">
+		<damageTypeImmunity unitSkillID="US007" />
+		<damageTypeImmunity unitSkillID="US012" />
+		<damageTypeImmunity unitSkillID="SS069" />
+		<storedDamageTypeID>P</storedDamageTypeID>
+		<damageTypeName>Stoning damage</damageTypeName>
+		<damageTypeDescription>Blocked by Stoning Immunity and Magic Immunity.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT11">
+		<damageTypeImmunity unitSkillID="US012" />
+		<damageTypeImmunity unitSkillID="SS069" />
+		<storedDamageTypeID>P</storedDamageTypeID>
+		<damageTypeName>Disintegration damage</damageTypeName>
+		<damageTypeDescription>Defined as any permanent damage that is blocked only by Magic Immunity, e.g. Disintegrate, Banish, Dispel Evil, Holy Word, Word of Death.</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT12">
+		<storedDamageTypeID>P</storedDamageTypeID>
+		<damageTypeName>Unblockable permanent damage</damageTypeName>
+		<damageTypeDescription>Special damage type for "Cracks Call".</damageTypeDescription>
+	</damageType>
+	<damageType damageTypeID="DT13">
+		<damageTypeImmunity unitSkillID="US047" />
+		<damageTypeImmunity unitSkillID="US122" />
+		<damageTypeImmunity unitSkillID="US012" />
+		<damageTypeImmunity unitSkillID="SS069" />
+		<storedDamageTypeID>L</storedDamageTypeID>
+		<damageTypeName>Life stealing damage</damageTypeName>
+		<damageTypeDescription>Blocked by Death Immunity and Magic Immunity.  Stores as its own unique damage type.</damageTypeDescription>
+	</damageType>
 	<unit unitID="UN001">
 		<unitMagicRealm>LTH</unitMagicRealm>
 		<figureCount>1</figureCount>
@@ -18592,12 +18752,14 @@
 	</unit>
 	<weaponGrade weaponGradeNumber="0">
 		<weaponGradeDescription>Regular weapons</weaponGradeDescription>
+		<enhancesDamageType>false</enhancesDamageType>
 	</weaponGrade>
 	<weaponGrade weaponGradeNumber="1">
 		<weaponGradeSkillBonus unitSkillID="UA03">
 			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
 		<weaponGradeDescription>Magic weapons built with Alchemists' Guild or Alchemy retort</weaponGradeDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</weaponGrade>
 	<weaponGrade weaponGradeNumber="2">
 		<weaponGradeSkillBonus unitSkillID="UA03">
@@ -18616,6 +18778,7 @@
 			<unitSkillValue>1</unitSkillValue>
 		</weaponGradeSkillBonus>
 		<weaponGradeDescription>Mithril weapons</weaponGradeDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</weaponGrade>
 	<weaponGrade weaponGradeNumber="3">
 		<weaponGradeSkillBonus unitSkillID="UA03">
@@ -18634,6 +18797,7 @@
 			<unitSkillValue>2</unitSkillValue>
 		</weaponGradeSkillBonus>
 		<weaponGradeDescription>Adamantium weapons</weaponGradeDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</weaponGrade>
 	<combatAreaEffect combatAreaEffectID="CAE01">
 		<combatAreaEffectDescription>Dispells Non-Chaos with a 50 pt dispel</combatAreaEffectDescription>
@@ -19430,6 +19594,7 @@
 		<combatCastingCost>20</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT12</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>C</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>25</combatBaseDamage>
 		<spellName>Cracks Call</spellName>
@@ -19456,6 +19621,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT07</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>S</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>45</combatMaxDamage>
@@ -19551,6 +19717,7 @@
 		<combatCastingCost>35</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT10</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<spellName>Petrify</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
@@ -19857,6 +20024,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT05</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>I</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>25</combatMaxDamage>
@@ -20016,6 +20184,7 @@
 		<combatCastingCost>20</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT11</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>3</combatBaseDamage>
 		<combatMaxDamage>8</combatMaxDamage>
@@ -20195,6 +20364,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT05</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>Z</attackSpellDamageResolutionTypeID>
 		<spellName>Warp Wood</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
@@ -20214,6 +20384,7 @@
 		<combatCastingCost>5</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT06</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>S</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>25</combatMaxDamage>
@@ -20316,6 +20487,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT05</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>A</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>45</combatMaxDamage>
@@ -20383,6 +20555,7 @@
 		<combatCastingCost>15</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT06</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>M</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<combatMaxDamage>25</combatMaxDamage>
@@ -20439,6 +20612,7 @@
 		<combatCastingCost>35</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT05</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>A</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>10</combatBaseDamage>
 		<spellName>Warp Lightning</spellName>
@@ -20471,6 +20645,7 @@
 		<combatCastingCost>40</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT05</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>D</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>10</combatBaseDamage>
 		<spellName>Doom Bolt</spellName>
@@ -20519,6 +20694,7 @@
 		<combatCastingCost>60</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT06</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>M</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>15</combatBaseDamage>
 		<spellName>Flame Strike</spellName>
@@ -20554,6 +20730,7 @@
 		<combatCastingCost>50</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT11</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>N</attackSpellDamageResolutionTypeID>
 		<spellName>Disintegrate</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
@@ -20666,6 +20843,7 @@
 		<combatCastingCost>5</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT05</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>S</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>15</combatBaseDamage>
 		<spellValidUnitTarget targetMagicRealmID="MB02" />
@@ -20816,6 +20994,7 @@
 		<combatCastingCost>25</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT11</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>4</combatBaseDamage>
 		<spellValidUnitTarget targetMagicRealmID="MB02" />
@@ -21010,6 +21189,7 @@
 		<combatCastingCost>60</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT11</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>2</combatBaseDamage>
 		<spellValidUnitTarget targetMagicRealmID="MB01" />
@@ -21227,6 +21407,7 @@
 		<combatCastingCost>10</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT13</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>R</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>0</combatBaseDamage>
 		<combatMaxDamage>8</combatMaxDamage>
@@ -21503,6 +21684,7 @@
 		<combatCastingCost>40</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT11</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>5</combatBaseDamage>
 		<spellName>Word of Death</spellName>
@@ -21525,6 +21707,7 @@
 		<combatCastingCost>50</combatCastingCost>
 		<spellBookSectionID>SC08</spellBookSectionID>
 		<attackSpellCombatTarget>A</attackSpellCombatTarget>
+		<attackSpellDamageTypeID>DT08</attackSpellDamageTypeID>
 		<attackSpellDamageResolutionTypeID>P</attackSpellDamageResolutionTypeID>
 		<combatBaseDamage>2</combatBaseDamage>
 		<spellName>Death Spell</spellName>

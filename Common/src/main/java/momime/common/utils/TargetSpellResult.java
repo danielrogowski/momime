@@ -32,6 +32,9 @@ public enum TargetSpellResult
 	/** Spell rolls against resistance, and the target unit has too high resistance to possibly be affected by it */
 	TOO_HIGH_RESISTANCE ("TooHighResistance", null),
 	
+	/** The target is completely immune to this type of spell */
+	IMMUNE ("Immune", null),
+	
 	/** Units combatLocation doesn't match the combat the spell is targetted at */
 	UNIT_NOT_IN_EXPECTED_COMBAT ("UnitNotInExpectedCombat", null),
 	

@@ -15,6 +15,8 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.DamageType;
+import momime.common.database.DamageTypeImmunity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -327,35 +329,56 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			result = TargetSpellResult.VALID_TARGET;
     		
     		else
-    			// Combat attack spell
-    			switch (spell.getAttackSpellDamageResolutionTypeID ())
+    		{
+    			// Combat attack spell - immunity skill?
+    			boolean immunity = false;
+    			final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "isUnitValidTargetForSpell");
+    			final Iterator<DamageTypeImmunity> iter = damageType.getDamageTypeImmunity ().iterator ();
+    			while ((!immunity) && (iter.hasNext ()))
     			{
-    				case EACH_FIGURE_RESIST_OR_DIE:
-    				case SINGLE_FIGURE_RESIST_OR_DIE:
-    				case RESIST_OR_TAKE_DAMAGE:
-    				case RESISTANCE_ROLLS:
-    				case DISINTEGRATE:
-    					// Units with 10 or more resistance are immune to spells that roll against resistance
-    					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
-    					int resistance = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-       						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db));
-    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
-    					{
-    						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
-    						if (savingThrowModifier != null)
-    							resistance = resistance - savingThrowModifier;
-    					}
-    						
-    					if (resistance >= 10)
-    						result = TargetSpellResult.TOO_HIGH_RESISTANCE;
-    					else
-    						result = TargetSpellResult.VALID_TARGET;
-    					break;
+    				final DamageTypeImmunity imm = iter.next ();
     				
-    				default:
-    					// Combat attack spell that rolls against something other than resistance, so always a valid target
-    	    			result = TargetSpellResult.VALID_TARGET;
+    				// We only want complete immunities - even if it boots defence to 50, its still a valid target
+    				if (imm.getBoostsDefenceTo () == null)
+    					if (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), imm.getUnitSkillID (),
+           					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db) >= 0)
+    						
+    						immunity = true;
     			}
+    			
+    			if (immunity)
+    				result = TargetSpellResult.IMMUNE;
+    			else
+	    			// Immune due to resistance?
+	    			switch (spell.getAttackSpellDamageResolutionTypeID ())
+	    			{
+	    				case EACH_FIGURE_RESIST_OR_DIE:
+	    				case SINGLE_FIGURE_RESIST_OR_DIE:
+	    				case RESIST_OR_TAKE_DAMAGE:
+	    				case RESISTANCE_ROLLS:
+	    				case DISINTEGRATE:
+	    					// Units with 10 or more resistance are immune to spells that roll against resistance
+	    					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
+	    					int resistance = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+	       						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db));
+	    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
+	    					{
+	    						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
+	    						if (savingThrowModifier != null)
+	    							resistance = resistance - savingThrowModifier;
+	    					}
+	    						
+	    					if (resistance >= 10)
+	    						result = TargetSpellResult.TOO_HIGH_RESISTANCE;
+	    					else
+	    						result = TargetSpellResult.VALID_TARGET;
+	    					break;
+	    				
+	    				default:
+	    					// Combat attack spell that rolls against something other than resistance, so always a valid target
+	    	    			result = TargetSpellResult.VALID_TARGET;
+	    			}
+    		}
     	}
 
     	log.trace ("Exiting isUnitValidTargetForSpell = " + result);

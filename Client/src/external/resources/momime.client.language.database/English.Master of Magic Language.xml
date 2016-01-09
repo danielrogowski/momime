@@ -6197,6 +6197,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			
 Note some spells such as Banish and Life Drain allow additional Mana to be channeled into the spell to reduce the target's resistance.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Immune">
+			<languageEntryText>This unit is completely immune to SPELL_NAME and similar spells.</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="UnitNotInExpectedCombat">
 			<languageEntryText>This unit is not in the expected combat location.</languageEntryText>
 		</languageEntry>

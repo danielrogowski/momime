@@ -206,6 +206,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		dest.getHeroItemSlotType ().addAll (src.getHeroItemSlotType ());
 		dest.getHeroItemType ().addAll (src.getHeroItemType ());
 		dest.getHeroItemBonus ().addAll (src.getHeroItemBonus ());
+		dest.getDamageType ().addAll (src.getDamageTypes ());
 
 	    // Derive client-side only flag for map features
 		for (final MapFeatureSvr srcMapFeature : src.getMapFeatures ())

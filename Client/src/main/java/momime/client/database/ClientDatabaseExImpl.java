@@ -12,6 +12,7 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroItemType;
@@ -103,6 +104,9 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 
 	/** Map of hero item bonus IDs to hero item bonus objects */
 	private Map<String, HeroItemBonus> heroItemBonusesMap;
+	
+	/** Map of damage type IDs to damage type objects */
+	private Map<String, DamageType> damageTypesMap;
 	
 	/** Cost to construct the most expensive unit or building in the database */
 	private int mostExpensiveConstructionCost;
@@ -223,6 +227,11 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		heroItemBonusesMap = new HashMap<String, HeroItemBonus> ();
 		for (final HeroItemBonus thisHeroItemBonus : getHeroItemBonus ())
 			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), thisHeroItemBonus);
+		
+		// Create damage types map
+		damageTypesMap = new HashMap<String, DamageType> ();
+		for (final DamageType thisDamageType : getDamageType ())
+			damageTypesMap.put (thisDamageType.getDamageTypeID (), thisDamageType);
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -721,6 +730,22 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		final HeroItemBonus found = heroItemBonusesMap.get (heroItemBonusID);
 		if (found == null)
 			throw new RecordNotFoundException (HeroItemBonus.class, heroItemBonusID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param damageTypeID Damage type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return DamageType object
+	 * @throws RecordNotFoundException If the damage type ID doesn't exist
+	 */
+	@Override
+	public final DamageType findDamageType (final String damageTypeID, final String caller) throws RecordNotFoundException
+	{
+		final DamageType found = damageTypesMap.get (damageTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (DamageType.class, damageTypeID, caller);
 
 		return found;
 	}

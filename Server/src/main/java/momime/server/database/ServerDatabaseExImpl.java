@@ -17,6 +17,7 @@ import momime.server.database.v0_9_7.CitySpellEffect;
 import momime.server.database.v0_9_7.CombatAreaEffect;
 import momime.server.database.v0_9_7.CombatTileBorder;
 import momime.server.database.v0_9_7.CombatTileType;
+import momime.server.database.v0_9_7.DamageType;
 import momime.server.database.v0_9_7.HeroItemBonus;
 import momime.server.database.v0_9_7.HeroItemSlotType;
 import momime.server.database.v0_9_7.HeroItemType;
@@ -115,6 +116,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 
 	/** Map of hero item bonus IDs to hero item bonus objects */
 	private Map<String, HeroItemBonusSvr> heroItemBonusesMap;
+	
+	/** Map of damage type IDs to damage type objects */
+	private Map<String, DamageTypeSvr> damageTypesMap;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -237,6 +241,11 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		heroItemBonusesMap = new HashMap<String, HeroItemBonusSvr> ();
 		for (final HeroItemBonus thisHeroItemBonus : getHeroItemBonus ())
 			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), (HeroItemBonusSvr) thisHeroItemBonus);
+		
+		// Create damage types map
+		damageTypesMap = new HashMap<String, DamageTypeSvr> ();
+		for (final DamageType thisDamageType : getDamageType ())
+			damageTypesMap.put (thisDamageType.getDamageTypeID (), (DamageTypeSvr) thisDamageType);
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -904,6 +913,22 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	}
 
 	/**
+	 * @param damageTypeID Damage type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return DamageType object
+	 * @throws RecordNotFoundException If the damage type ID doesn't exist
+	 */
+	@Override
+	public final DamageTypeSvr findDamageType (final String damageTypeID, final String caller) throws RecordNotFoundException
+	{
+		final DamageTypeSvr found = damageTypesMap.get (damageTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (DamageType.class, damageTypeID, caller);
+
+		return found;
+	}
+	
+	/**
 	 * @return Complete list of all spell ranks in game
 	 */
 	@Override
@@ -911,6 +936,16 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	public final List<SpellRankSvr> getSpellRanks ()
 	{
 		return (List<SpellRankSvr>) (List<?>) getSpellRank ();
+	}
+	
+	/**
+	 * @return Complete list of all damage types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<DamageTypeSvr> getDamageTypes ()
+	{
+		return (List<DamageTypeSvr>) (List<?>) getDamageType ();
 	}
 	
 	/**

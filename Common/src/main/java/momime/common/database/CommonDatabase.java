@@ -268,4 +268,12 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the hero item bonus ID doesn't exist
 	 */
 	public HeroItemBonus findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param damageTypeID Damage type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return DamageType object
+	 * @throws RecordNotFoundException If the damage type ID doesn't exist
+	 */
+	public DamageType findDamageType (final String damageTypeID, final String caller) throws RecordNotFoundException;
 }

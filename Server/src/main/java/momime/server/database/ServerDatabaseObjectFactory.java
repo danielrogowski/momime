@@ -13,6 +13,7 @@ import momime.server.database.v0_9_7.CombatAreaEffect;
 import momime.server.database.v0_9_7.CombatMapElement;
 import momime.server.database.v0_9_7.CombatTileBorder;
 import momime.server.database.v0_9_7.CombatTileType;
+import momime.server.database.v0_9_7.DamageType;
 import momime.server.database.v0_9_7.DifficultyLevel;
 import momime.server.database.v0_9_7.FogOfWarSetting;
 import momime.server.database.v0_9_7.HeroItemBonus;
@@ -431,6 +432,15 @@ public final class ServerDatabaseObjectFactory extends ObjectFactory
 	public final SpellRank createSpellRank ()
 	{
 		return new SpellRankSvr ();
+	}
+	
+	/**
+	 * @return Custom extended DamageType
+	 */
+	@Override
+	public final DamageType createDamageType ()
+	{
+		return new DamageTypeSvr ();
 	}
 
 	/**

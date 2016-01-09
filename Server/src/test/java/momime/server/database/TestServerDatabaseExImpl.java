@@ -937,4 +937,44 @@ public final class TestServerDatabaseExImpl
 
 		assertNull (db.findHeroItemBonus ("IB04", "testFindHeroItemBonus_NotExists"));
 	}
+
+	/**
+	 * Tests the findDamageType method to find a damageType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindDamageType_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeSvr newDamageType = new DamageTypeSvr ();
+			newDamageType.setDamageTypeID ("DT0" + n);
+			db.getDamageType ().add (newDamageType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("DT02", db.findDamageType ("DT02", "testFindDamageType_Exists").getDamageTypeID ());
+	}
+
+	/**
+	 * Tests the findDamageType method to find a damageType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindDamageType_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeSvr newDamageType = new DamageTypeSvr ();
+			newDamageType.setDamageTypeID ("DT0" + n);
+			db.getDamageType ().add (newDamageType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findDamageType ("DT04", "testFindDamageType_NotExists"));
+	}
 }

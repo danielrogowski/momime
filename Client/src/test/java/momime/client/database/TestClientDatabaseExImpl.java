@@ -11,6 +11,7 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroItemType;
@@ -930,5 +931,45 @@ public final class TestClientDatabaseExImpl
 		db.buildMaps ();
 
 		assertNull (db.findHeroItemBonus ("IB04", "testFindHeroItemBonus_NotExists"));
+	}
+
+	/**
+	 * Tests the findDamageType method to find a damageType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindDamageType_Exists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageType newDamageType = new DamageType ();
+			newDamageType.setDamageTypeID ("DT0" + n);
+			db.getDamageType ().add (newDamageType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("DT02", db.findDamageType ("DT02", "testFindDamageType_Exists").getDamageTypeID ());
+	}
+
+	/**
+	 * Tests the findDamageType method to find a damageType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindDamageType_NotExists () throws RecordNotFoundException
+	{
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageType newDamageType = new DamageType ();
+			newDamageType.setDamageTypeID ("DT0" + n);
+			db.getDamageType ().add (newDamageType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findDamageType ("DT04", "testFindDamageType_NotExists"));
 	}
 }

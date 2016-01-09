@@ -210,6 +210,15 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public HeroItemBonusSvr findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException;
 	
 	/**
+	 * @param damageTypeID Damage type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return DamageType object
+	 * @throws RecordNotFoundException If the damage type ID doesn't exist
+	 */
+	@Override
+	public DamageTypeSvr findDamageType (final String damageTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @return Complete list of all picks in game
 	 */
 	@Override
@@ -299,4 +308,9 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @return Complete list of all spell ranks in game
 	 */
 	public List<SpellRankSvr> getSpellRanks ();
+	
+	/**
+	 * @return Complete list of all damage types in game
+	 */
+	public List<DamageTypeSvr> getDamageTypes ();
 }

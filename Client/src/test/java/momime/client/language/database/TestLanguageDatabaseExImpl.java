@@ -287,6 +287,27 @@ public final class TestLanguageDatabaseExImpl
 	}
 	
 	/**
+	 * Tests the findDamageTypeDescription method
+	 */
+	@Test
+	public final void testFindDamageTypeDescription ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final DamageTypeLang newDamageType = new DamageTypeLang ();
+			newDamageType.setDamageTypeID ("DT0" + n);
+			newDamageType.setDamageTypeName ("DTDesc0" + n);
+			lang.getDamageType ().add (newDamageType);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("DTDesc02", lang.findDamageTypeName ("DT02"));
+		assertEquals ("DT04", lang.findDamageTypeName ("DT04"));
+	}
+	
+	/**
 	 * Tests the findUnit method
 	 */
 	@Test

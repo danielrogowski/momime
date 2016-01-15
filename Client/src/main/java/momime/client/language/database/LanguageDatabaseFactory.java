@@ -6,6 +6,7 @@ import momime.client.language.database.v0_9_7.Building;
 import momime.client.language.database.v0_9_7.CitySize;
 import momime.client.language.database.v0_9_7.CitySpellEffect;
 import momime.client.language.database.v0_9_7.CombatAreaEffect;
+import momime.client.language.database.v0_9_7.DamageType;
 import momime.client.language.database.v0_9_7.DifficultyLevel;
 import momime.client.language.database.v0_9_7.FogOfWarSetting;
 import momime.client.language.database.v0_9_7.Hero;
@@ -358,5 +359,14 @@ public final class LanguageDatabaseFactory extends ObjectFactory
 	public final FogOfWarSetting createFogOfWarSetting ()
 	{
 		return new FogOfWarSettingLang ();
+	}
+
+	/**
+	 * @return Custom extended DamageType
+	 */
+	@Override
+	public final DamageType createDamageType ()
+	{
+		return new DamageTypeLang ();
 	}
 }

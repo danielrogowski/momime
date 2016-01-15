@@ -109,6 +109,20 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public WizardSvr findWizard (final String wizardID, final String caller) throws RecordNotFoundException;
 	
 	/**
+	 * @return Complete list of all unit types in game
+	 */
+	public List<UnitTypeSvr> getUnitTypes ();
+	
+	/**
+	 * @param unitTypeID Unit type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit type object
+	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
+	 */
+	@Override
+	public UnitTypeSvr findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @return Complete list of all units in game
 	 */
 	@Override
@@ -138,6 +152,34 @@ public interface ServerDatabaseEx extends CommonDatabase
 	@Override
 	public UnitSkillSvr findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException;
 
+	/**
+	 * @return Complete list of all weapon grades in game
+	 */
+	public List<WeaponGradeSvr> getWeaponGrades ();
+	
+	/**
+	 * @param weaponGradeNumber Weapon grade number to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Weapon grade object
+	 * @throws RecordNotFoundException If the weapon grade number doesn't exist
+	 */
+	@Override
+	public WeaponGradeSvr findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return Complete list of all ranged attack types in game
+	 */
+	public List<RangedAttackTypeSvr> getRangedAttackTypes ();
+	
+	/**
+	 * @param rangedAttackTypeID RAT ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return RAT object
+	 * @throws RecordNotFoundException If the RAT ID doesn't exist
+	 */
+	@Override
+	public RangedAttackTypeSvr findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException;
+	
 	/**
 	 * @return Complete list of all races in game
 	 */
@@ -228,21 +270,6 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @return Complete list of all city sizes in game
 	 */
 	public List<CitySizeSvr> getCitySizes ();
-
-	/**
-	 * @return Complete list of all unit types in game
-	 */
-	public List<UnitTypeSvr> getUnitTypes ();
-	
-	/**
-	 * @return Complete list of all ranged attack types in game
-	 */
-	public List<RangedAttackTypeSvr> getRangedAttackTypes ();
-
-	/**
-	 * @return Complete list of all weapon grades in game
-	 */
-	public List<WeaponGradeSvr> getWeaponGrades ();
 
 	/**
 	 * @return Complete list of all combat map elements in game

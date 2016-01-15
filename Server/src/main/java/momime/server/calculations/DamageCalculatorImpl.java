@@ -26,9 +26,11 @@ import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
+import momime.common.utils.DamageTypeUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.database.DamageTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
@@ -67,6 +69,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
+	/** Damage type utils */
+	private DamageTypeUtils damageTypeUtils;
+	
+	/** Damage type calculations */
+	private DamageTypeCalculations damageTypeCalculations;
+	
 	/**
 	 * Just deals with making sure we only send to human players
 	 * 
@@ -97,13 +105,14 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * Calculates the strength of an attack coming from a unit skill, e.g. Thrown Weapons, breath and gaze attacks, or Posion Touch
 	 * 
 	 * @param attacker Unit making the attack
+	 * @param defender Unit being attacked
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackSkillID The skill being used to attack
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
-	 * @return How much damage defender takes as a result of being attacked by attacker, or null if the attacker doesn't even have the requested skill
+	 * @return How much damage defender takes as a result of being attacked by attacker, or null if the attacker doesn't even have the requested skill or the defender is immune to it
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
@@ -111,7 +120,8 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public final AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -126,55 +136,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			attackDamage = null;
 		else
 		{
-			// Expend ammo server side - the client expends ammo when it receives the above message, so the two stay in step
-			if (attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-				getUnitCalculations ().decreaseRangedAttackAmmo (attacker.getUnit ());
-			
-			// Start breakdown message
-			final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
-			damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_DATA);
-			damageCalculationMsg.setAttackerUnitURN (attacker.getUnit ().getUnitURN ());
-			damageCalculationMsg.setAttackerPlayerID (attacker.getUnit ().getOwningPlayerID ());
-			damageCalculationMsg.setAttackSkillID (attackSkillID);
-			
-			// Different skills deal different types of damage
-			final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
-
-			if (unitSkill.getDamageResolutionTypeID () == null)
-				throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
-			
-			damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
-			
-			// Some skills hit just once from the whole attacking unit, some hit once per figure
-			if (unitSkill.getDamagePerFigure () == null)
-				throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damagePerFigure defined");
-			
-			final int repetitions;
-			switch (unitSkill.getDamagePerFigure ())
-			{
-				case PER_UNIT:
-					damageCalculationMsg.setPotentialHits (damage);
-					repetitions = 1;
-					break;
-
-				case PER_FIGURE_SEPARATE:
-					damageCalculationMsg.setPotentialHits (damage);
-					repetitions = figureCount;
-					break;
-
-				case PER_FIGURE_COMBINED:
-					damageCalculationMsg.setAttackerFigures (figureCount);
-					damageCalculationMsg.setAttackStrength (damage);
-					damageCalculationMsg.setPotentialHits (damage * damageCalculationMsg.getAttackerFigures ());
-					repetitions = 1;
-					break;
-					
-				default:
-					throw new MomException ("attackFromUnitSkill does not know how to handle damagePerFigure of " + unitSkill.getDamagePerFigure ());
-			}
-	
-			sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
-	
 			// Figure out the magic realm of the attack; getting a null here is fine, this just means the attack deals physical damage
 			final String attackFromMagicRealmID;
 			if (attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
@@ -191,17 +152,75 @@ public final class DamageCalculatorImpl implements DamageCalculator
 				final UnitSkillSvr unitSkillDef = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
 				attackFromMagicRealmID = unitSkillDef.getMagicRealmID ();
 			}
-			
-			// Fill in the damage object
-			final int plusToHit = getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
+
+			// Figure out the type of damage, and check whether the defender is immune to it
+			final DamageTypeSvr damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker.getUnit (), attackSkillID, db);
+			if (getDamageTypeUtils ().isUnitImmuneToDamageType (defender.getUnit (), damageType, attackSkillID, attackFromMagicRealmID, players, mem, db))
+				attackDamage = null;
+			else
+			{
+				// Expend ammo server side - the client expends ammo when it receives the above message, so the two stay in step
+				if (attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+					getUnitCalculations ().decreaseRangedAttackAmmo (attacker.getUnit ());
+				
+				// Start breakdown message
+				final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
+				damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_DATA);
+				damageCalculationMsg.setAttackerUnitURN (attacker.getUnit ().getUnitURN ());
+				damageCalculationMsg.setAttackerPlayerID (attacker.getUnit ().getOwningPlayerID ());
+				damageCalculationMsg.setAttackSkillID (attackSkillID);
+				damageCalculationMsg.setDamageTypeID (damageType.getDamageTypeID ());
+				damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
+				
+				// Different skills deal different types of damage
+				final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
 	
-			attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageCalculationMsg.getDamageResolutionTypeID (), null,
-				attackSkillID, attackFromMagicRealmID, repetitions);
+				if (unitSkill.getDamageResolutionTypeID () == null)
+					throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
+				
+				damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
+				
+				// Some skills hit just once from the whole attacking unit, some hit once per figure
+				if (unitSkill.getDamagePerFigure () == null)
+					throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damagePerFigure defined");
+				
+				final int repetitions;
+				switch (unitSkill.getDamagePerFigure ())
+				{
+					case PER_UNIT:
+						damageCalculationMsg.setPotentialHits (damage);
+						repetitions = 1;
+						break;
+	
+					case PER_FIGURE_SEPARATE:
+						damageCalculationMsg.setPotentialHits (damage);
+						repetitions = figureCount;
+						break;
+	
+					case PER_FIGURE_COMBINED:
+						damageCalculationMsg.setAttackerFigures (figureCount);
+						damageCalculationMsg.setAttackStrength (damage);
+						damageCalculationMsg.setPotentialHits (damage * damageCalculationMsg.getAttackerFigures ());
+						repetitions = 1;
+						break;
+						
+					default:
+						throw new MomException ("attackFromUnitSkill does not know how to handle damagePerFigure of " + unitSkill.getDamagePerFigure ());
+				}
+		
+				sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+				// Fill in the damage object
+				final int plusToHit = getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (),
+					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
+		
+				attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageType, damageCalculationMsg.getDamageResolutionTypeID (), null,
+					attackSkillID, attackFromMagicRealmID, repetitions);
+			}
 		}
 		
-		log.trace ("Exiting attackFromUnitAttribute = " + attackDamage);
+		log.trace ("Exiting attackFromUnitSkill = " + attackDamage);
 		return attackDamage;
 	}
 	
@@ -213,19 +232,22 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param castingPlayer The player casting the spell
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 */
 	@Override
 	public final AttackDamage attackFromSpell (final SpellSvr spell, final Integer variableDamage,
-		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer)
-		throws JAXBException, XMLStreamException
+		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.trace ("Entering attackFromSpell: Unit URN " + spell.getSpellID () + ", " + variableDamage);
 		
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
-		final Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage (); 
+		final Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
+		final DamageTypeSvr damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
 		
 		// Start breakdown message
 		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
@@ -233,11 +255,13 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 		damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
 		damageCalculationMsg.setPotentialHits (damage);
+		damageCalculationMsg.setDamageTypeID (spell.getAttackSpellDamageTypeID ());
+		damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
 		damageCalculationMsg.setDamageResolutionTypeID (spell.getAttackSpellDamageResolutionTypeID ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
 		// Fill in the damage object
-		final AttackDamage attackDamage = new AttackDamage (damage, 0, spell.getAttackSpellDamageResolutionTypeID (), spell, null, null, 1);
+		final AttackDamage attackDamage = new AttackDamage (damage, 0, damageType, null, spell, null, null, 1);
 		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
 	}
@@ -268,9 +292,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		log.trace ("Entering calculateSingleFigureDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
 		
-		final int defenderDefenceStrength = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db));
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attackDamage, 1, players, mem, db);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength,
 			attackingPlayer, defendingPlayer, attackDamage, players, mem, db);
@@ -304,11 +326,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		log.trace ("Entering calculateArmourPiercingDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
 		
-		final int defenderDefenceStrength = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db));
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attackDamage, 2, players, mem, db);
 		
-		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength / 2,
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength,
 			attackingPlayer, defendingPlayer, attackDamage, players, mem, db);
 		
 		log.trace ("Exiting calculateArmourPiercingDamage = " + totalHits);
@@ -453,7 +473,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
-		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength ());
+		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attackDamage, 1, players, mem, db));
 
 		damageCalculationMsg.setChanceToDefend (3 + Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
@@ -1108,5 +1128,37 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Damage type utils
+	 */
+	public final DamageTypeUtils getDamageTypeUtils ()
+	{
+		return damageTypeUtils;
+	}
+
+	/**
+	 * @param utils Damage type utils
+	 */
+	public final void setDamageTypeUtils (final DamageTypeUtils utils)
+	{
+		damageTypeUtils = utils;
+	}
+
+	/**
+	 * @return Damage type calculations
+	 */
+	public final DamageTypeCalculations getDamageTypeCalculations ()
+	{
+		return damageTypeCalculations;
+	}
+
+	/**
+	 * @param calc Damage type calculations
+	 */
+	public final void setDamageTypeCalculations (final DamageTypeCalculations calc)
+	{
+		damageTypeCalculations = calc;
 	}
 }

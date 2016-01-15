@@ -457,6 +457,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
+	<bean id="damageTypeCalculations" class="momime.server.calculations.DamageTypeCalculationsImpl">
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
+	</bean>
+
 	<bean id="damageCalculator" class="momime.server.calculations.DamageCalculatorImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitSkillUtils" ref="unitSkillUtils" />
@@ -464,6 +468,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="damageTypeUtils" ref="damageTypeUtils" />
+		<property name="damageTypeCalculations" ref="damageTypeCalculations" />
 	</bean>
 	
 	<bean id="combatMapGenerator" class="momime.server.mapgenerator.CombatMapGeneratorImpl">

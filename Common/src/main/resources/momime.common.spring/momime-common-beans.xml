@@ -204,6 +204,7 @@
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="damageTypeUtils" ref="damageTypeUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />
@@ -258,6 +259,10 @@
 
 	<bean id="heroItemCalculations" class="momime.common.calculations.HeroItemCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
+
+	<bean id="damageTypeUtils" class="momime.common.utils.DamageTypeUtilsImpl">
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 	</bean>
 
 </beans>

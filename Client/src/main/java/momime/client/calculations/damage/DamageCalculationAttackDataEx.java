@@ -176,6 +176,9 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		
 		if (getAttackStrength () != null)
 			text = text.replaceAll ("ATTACK_STRENGTH", getAttackStrength ().toString ());
+
+		if (getDamageTypeID () != null)
+			text = text.replaceAll ("DAMAGE_TYPE", getLanguage ().findDamageTypeName (getDamageTypeID ()));
 		
 		return text;
 	}

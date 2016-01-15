@@ -42,20 +42,22 @@ public interface DamageCalculator
 	 * Calculates the strength of an attack coming from a unit skill, e.g. Thrown Weapons, breath and gaze attacks, or Posion Touch
 	 * 
 	 * @param attacker Unit making the attack
+	 * @param defender Unit being attacked
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackSkillID The skill being used to attack
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
-	 * @return How much damage defender takes as a result of being attacked by attacker, or null if the attacker doesn't even have the requested skill
+	 * @return How much damage defender takes as a result of being attacked by attacker, or null if the attacker doesn't even have the requested skill or the defender is immune to it
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
@@ -67,13 +69,15 @@ public interface DamageCalculator
 	 * @param castingPlayer The player casting the spell
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 */
 	public AttackDamage attackFromSpell (final SpellSvr spell, final Integer variableDamage,
-		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer)
-		throws JAXBException, XMLStreamException;
+		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**
 	 * Rolls the number of actual hits and blocks for normal "single figure" type damage, where the first figure defends then takes hits, then the

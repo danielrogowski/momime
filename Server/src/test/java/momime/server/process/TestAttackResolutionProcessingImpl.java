@@ -30,6 +30,7 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.AttackResolutionConditionSvr;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
+import momime.server.database.DamageTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 
@@ -345,8 +346,10 @@ public final class TestAttackResolutionProcessingImpl
 		// We make 5 hit rolls with 40% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr (); 
+		
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
@@ -443,12 +446,15 @@ public final class TestAttackResolutionProcessingImpl
 		// Attacker make 5 hit rolls with 40% chance of each one striking; defender makes 6 hit rolls with 30% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr ();
+		final DamageTypeSvr damageTypeToAttacker = new DamageTypeSvr ();
+		
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 
-		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, damageTypeToAttacker, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
+		when (damageCalc.attackFromUnitSkill (defenderWrapper, attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
 			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
@@ -536,12 +542,15 @@ public final class TestAttackResolutionProcessingImpl
 		// Two of the skills we have and so generate some damage, the other two we don't
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US002",
+		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr ();
+		final DamageTypeSvr damageTypeToAttacker = new DamageTypeSvr ();
+		
+		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US002",
 			players, fow, db)).thenReturn (potentialDamageToDefender1);
 		
-		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, DamageResolutionTypeID.DOOM, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, attackingPlayer, defendingPlayer, "US004",
+		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, damageTypeToAttacker, DamageResolutionTypeID.DOOM, null, null, null, 1);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US004",
 			players, fow, db)).thenReturn (potentialDamageToDefender2);
 
 		// 3+4 of them actually hit
@@ -617,7 +626,10 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Spell does preset damage
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
+
+		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr ();
+
+		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		
 		// 3 of them actually hit
 		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,

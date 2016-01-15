@@ -81,6 +81,21 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 	@Override
 	public final String getText () throws IOException
 	{
+		// First check whether defence was reduced or increased
+		String defenceStrength = "";
+		if (getUnmodifiedDefenceStrength () != null)
+		{
+			if ((getModifiedDefenceStrength () == null) || (getUnmodifiedDefenceStrength ().equals (getModifiedDefenceStrength ())))
+				defenceStrength = getUnmodifiedDefenceStrength ().toString ();
+			
+			else
+				defenceStrength = getLanguage ().findCategoryEntry ("CombatDamage", "DefenceStrength" + 
+					(getModifiedDefenceStrength () > getUnmodifiedDefenceStrength () ? "Increased" : "Reduced")).replaceAll
+						("UNMODIFIED_DEFENCE_STRENGTH", getUnmodifiedDefenceStrength ().toString ()).replaceAll
+						("MODIFIED_DEFENCE_STRENGTH", getModifiedDefenceStrength ().toString ());
+		}
+		
+		// Now work out main text
 		final String languageEntryID;
 		switch (getDamageResolutionTypeID ())
 		{
@@ -93,32 +108,30 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 				break;
 
 			case DISINTEGRATE:
-				languageEntryID = "DefenceDisintegrate" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified") +
-					((getFinalHits () == 0) ? "Survives" : "Dies");
+				languageEntryID = "DefenceDisintegrate" + ((getFinalHits () == 0) ? "Survives" : "Dies");
 				break;
 				
 			case EACH_FIGURE_RESIST_OR_DIE:
-				languageEntryID = "DefenceEachFigureResistOrDie" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
+				languageEntryID = "DefenceEachFigureResistOrDie";
 				break;
 
 			case SINGLE_FIGURE_RESIST_OR_DIE:
-				languageEntryID = "DefenceSingleFigureResistOrDie" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified") +
-					((getFinalHits () == 0) ? "Survives" : "Dies");
+				languageEntryID = "DefenceSingleFigureResistOrDie" + ((getFinalHits () == 0) ? "Survives" : "Dies");
 				break;
 
 			case RESIST_OR_TAKE_DAMAGE:
-				languageEntryID = "DefenceResistOrTakeDamage" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
+				languageEntryID = "DefenceResistOrTakeDamage";
 				break;
 
 			case FEAR:
-				languageEntryID = "DefenceFear" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
+				languageEntryID = "DefenceFear";
 				break;
 				
 			default:
 				if (getModifiedDefenceStrength () == null)
 					languageEntryID = "DefenceStatisticsAutomatic";		// hits strike automatically, i.e. doom damage
 				else
-					languageEntryID = "DefenceStatistics" + ((getModifiedDefenceStrength ().equals (getUnmodifiedDefenceStrength ())) ? "Base" : "Modified");
+					languageEntryID = "DefenceStatistics";
 		}
 		
 		String text = "          " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
@@ -149,7 +162,7 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		if (getTenTimesAverageBlock () != null)
 			text = text.replaceAll ("AVERAGE_BLOCK", getTextUtils ().insertDecimalPoint (getTenTimesAverageBlock (), 1));
 		
-		return text;
+		return text.replaceAll ("DEFENCE_STRENGTH", defenceStrength);
 	}
 
 	/**

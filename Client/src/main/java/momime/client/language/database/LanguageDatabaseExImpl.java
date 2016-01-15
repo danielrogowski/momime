@@ -11,6 +11,7 @@ import momime.client.language.database.v0_9_7.Building;
 import momime.client.language.database.v0_9_7.CitySize;
 import momime.client.language.database.v0_9_7.CitySpellEffect;
 import momime.client.language.database.v0_9_7.CombatAreaEffect;
+import momime.client.language.database.v0_9_7.DamageType;
 import momime.client.language.database.v0_9_7.DifficultyLevel;
 import momime.client.language.database.v0_9_7.FogOfWarSetting;
 import momime.client.language.database.v0_9_7.Hero;
@@ -88,9 +89,12 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	/** Map of unit skill IDs to unit skill objects */
 	private Map<String, UnitSkillLang> unitSkillsMap;
 	
-	/** Map of ranged attack type IDs to unit skill objects */
+	/** Map of ranged attack type IDs to ranged attack type objects */
 	private Map<String, RangedAttackTypeLang> rangedAttackTypesMap;
 	
+	/** Map of damage type IDs to damage type objects */
+	private Map<String, DamageTypeLang> damageTypesMap;
+
 	/** Map of unit IDs to unit objects */
 	private Map<String, UnitLang> unitsMap;
 
@@ -226,6 +230,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeLang> ();
 		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
 			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), (RangedAttackTypeLang) thisRangedAttackType);
+		
+		// Create damage types map
+		damageTypesMap = new HashMap<String, DamageTypeLang> ();
+		for (final DamageType thisDamageType : getDamageType ())
+			damageTypesMap.put (thisDamageType.getDamageTypeID (), (DamageTypeLang) thisDamageType);
 		
 		// Create units map
 		unitsMap = new HashMap<String, UnitLang> ();
@@ -466,6 +475,18 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		final RangedAttackTypeLang rat = rangedAttackTypesMap.get (rangedAttackTypeID);
 		final String desc = (rat != null) ? rat.getRangedAttackTypeDescription () : null; 
 		return (desc != null) ? desc : rangedAttackTypeID;
+	}
+	
+	/**
+	 * @param damageTypeID Damage type ID to search for
+	 * @return Damage type name; or replays back the ID if no name exists
+	 */
+	@Override
+	public final String findDamageTypeName (final String damageTypeID)
+	{
+		final DamageTypeLang thisDamageType = damageTypesMap.get (damageTypeID);
+		final String name = (thisDamageType != null) ? thisDamageType.getDamageTypeName () : null; 
+		return (name != null) ? name : damageTypeID;
 	}
 	
 	/**

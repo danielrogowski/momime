@@ -221,7 +221,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							potentialDamage = null;
 						else
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill
-								(unitMakingAttack, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, mem, db);
+								(unitMakingAttack, unitBeingAttacked, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, mem, db);
 					}
 					
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have

@@ -70,7 +70,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	private Map<String, WizardSvr> wizardsMap;
 
 	/** Map of unit type IDs to unit type XML objects */
-	private Map<String, UnitType> unitTypesMap;
+	private Map<String, UnitTypeSvr> unitTypesMap;
 
 	/** Map of unit IDs to unit XML objects */
 	private Map<String, UnitSvr> unitsMap;
@@ -79,10 +79,10 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	private Map<String, UnitSkillSvr> unitSkillsMap;
 
 	/** Map of weapon grade numbers to weapon grade XML objects */
-	private Map<Integer, WeaponGrade> weaponGradesMap;
+	private Map<Integer, WeaponGradeSvr> weaponGradesMap;
 
 	/** Map of ranged attack type IDs to ranged attack type XML objects */
-	private Map<String, RangedAttackType> rangedAttackTypesMap;
+	private Map<String, RangedAttackTypeSvr> rangedAttackTypesMap;
 	
 	/** Map of race IDs to race XML objects */
 	private Map<String, RaceSvr> racesMap;
@@ -163,9 +163,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			wizardsMap.put (thisWizard.getWizardID (), (WizardSvr) thisWizard);
 
 		// Create unit types map
-		unitTypesMap = new HashMap<String, UnitType> ();
+		unitTypesMap = new HashMap<String, UnitTypeSvr> ();
 		for (final UnitType thisUnitType : getUnitType ())
-			unitTypesMap.put (thisUnitType.getUnitTypeID (), thisUnitType);
+			unitTypesMap.put (thisUnitType.getUnitTypeID (), (UnitTypeSvr) thisUnitType);
 
 		// Create units map
 		unitsMap = new HashMap<String, UnitSvr> ();
@@ -178,14 +178,14 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), (UnitSkillSvr) thisUnitSkill);
 
 		// Create weaponGrades map
-		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
+		weaponGradesMap = new HashMap<Integer, WeaponGradeSvr> ();
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
-			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), thisWeaponGrade);
+			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), (WeaponGradeSvr) thisWeaponGrade);
 
 		// Create rangedAttackTypes map
-		rangedAttackTypesMap = new HashMap<String, RangedAttackType> ();
+		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeSvr> ();
 		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
-			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), thisRangedAttackType);
+			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), (RangedAttackTypeSvr) thisRangedAttackType);
 		
 		// Create races map
 		racesMap = new HashMap<String, RaceSvr> ();
@@ -483,9 +483,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
 	 */
 	@Override
-	public final UnitType findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
+	public final UnitTypeSvr findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
 	{
-		final UnitType found = unitTypesMap.get (unitTypeID);
+		final UnitTypeSvr found = unitTypesMap.get (unitTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
 
@@ -561,9 +561,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	 * @throws RecordNotFoundException If the weapon grade number doesn't exist
 	 */
 	@Override
-	public final WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException
+	public final WeaponGradeSvr findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException
 	{
-		final WeaponGrade found = weaponGradesMap.get (weaponGradeNumber);
+		final WeaponGradeSvr found = weaponGradesMap.get (weaponGradeNumber);
 		if (found == null)
 			throw new RecordNotFoundException (WeaponGrade.class, weaponGradeNumber, caller);
 
@@ -587,9 +587,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	 * @throws RecordNotFoundException If the RAT ID doesn't exist
 	 */
 	@Override
-	public final RangedAttackType findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException
+	public final RangedAttackTypeSvr findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException
 	{
-		final RangedAttackType found = rangedAttackTypesMap.get (rangedAttackTypeID);
+		final RangedAttackTypeSvr found = rangedAttackTypesMap.get (rangedAttackTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (RangedAttackType.class, rangedAttackTypeID, caller);
 

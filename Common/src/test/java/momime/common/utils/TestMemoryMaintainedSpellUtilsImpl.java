@@ -18,6 +18,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.DamageType;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -610,12 +611,16 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final DamageType damageType = new DamageType ();
+		when (db.findDamageType ("DT01", "isUnitValidTargetForSpell")).thenReturn (damageType);
+		
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Spell
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
+		spell.setAttackSpellDamageTypeID ("DT01");
 
 		// Players
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -632,6 +637,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (12);
 		
+		// Immunity
+		final DamageTypeUtils damageTypeUtils = mock (DamageTypeUtils.class);
+		
 		// Set up object to test
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -640,6 +648,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setDamageTypeUtils (damageTypeUtils);
 		
 		// Dead unit
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell
@@ -703,12 +712,18 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
 			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
-		
+
 		// Combat attack spell that rolls against something other than resistance
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
 			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
+
+		// Immune to the type of damage
+		when (damageTypeUtils.isUnitImmuneToDamageType (unit, damageType, null, spell.getSpellRealm (), players, fow, db)).thenReturn (true);
+		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
+		when (damageTypeUtils.isUnitImmuneToDamageType (unit, damageType, null, spell.getSpellRealm (), players, fow, db)).thenReturn (false);
 		
 		// Combat attack spell that rolls against resistance, but its resistance is really high
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);

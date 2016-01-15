@@ -33,7 +33,6 @@ import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.MovementRateRule;
-import momime.common.database.RangedAttackType;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -54,6 +53,7 @@ import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.PlaneSvr;
+import momime.server.database.RangedAttackTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
@@ -878,7 +878,7 @@ public final class TestServerUnitCalculationsImpl
 		attackerDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
 		
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 		rat.setMagicRealmID ("A");
 		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
@@ -916,7 +916,7 @@ public final class TestServerUnitCalculationsImpl
 		attackerDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
 		
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
@@ -956,7 +956,7 @@ public final class TestServerUnitCalculationsImpl
 		attackerDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
 		
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
@@ -996,7 +996,7 @@ public final class TestServerUnitCalculationsImpl
 		attackerDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
 		
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
@@ -1042,7 +1042,7 @@ public final class TestServerUnitCalculationsImpl
 		attackerDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
 		
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system

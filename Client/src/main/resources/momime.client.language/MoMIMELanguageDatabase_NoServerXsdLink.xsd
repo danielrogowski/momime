@@ -40,6 +40,7 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimelang:unitSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimelang:rangedAttackType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="damageType" type="momimelang:damageType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimelang:unit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="hero" type="momimelang:hero" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimelang:combatAreaEffect" />
@@ -212,6 +213,12 @@
 		<xsd:key name="heroItemBonusPK">
 			<xsd:selector xpath="heroItemBonus" />
 			<xsd:field xpath="@heroItemBonusID" />
+		</xsd:key>
+		
+		<!-- Damage types and immunities, new for 0.9.7.2 -->
+		<xsd:key name="damageTypePK">
+			<xsd:selector xpath="damageType" />
+			<xsd:field xpath="@damageTypeID" />
 		</xsd:key>
 		
 	</xsd:element>
@@ -656,6 +663,21 @@
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>heroItemBonusDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+<!-- Damage types and immunities, new for 0.9.7.2 -->
+
+	<xsd:complexType name="damageType" nxe:singular="Damage Type" nxe:plural="Damage Types" nxe:submenu="Units">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="250" />
+		</xsd:sequence>
+		<xsd:attribute name="damageTypeID" type="momimecommon:damageTypeID" use="required" nxe:label="Damage Type ID" nxe:gridwidth="120">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>damageTypeName</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

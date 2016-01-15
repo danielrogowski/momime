@@ -1445,6 +1445,45 @@ A darkened icon represents a minus, for example from a curse type spell.</unitSk
 	<rangedAttackType rangedAttackTypeID="RAT1F">
 		<rangedAttackTypeDescription>Magic blasts</rangedAttackTypeDescription>
 	</rangedAttackType>
+	<damageType damageTypeID="DT01">
+		<damageTypeName>Unmagical melee damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT02">
+		<damageTypeName>Unblockable damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT03">
+		<damageTypeName>Unmagical ranged damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT04">
+		<damageTypeName>Enchanted ranged damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT05">
+		<damageTypeName>Magical damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT06">
+		<damageTypeName>Fire damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT07">
+		<damageTypeName>Cold damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT08">
+		<damageTypeName>Death damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT09">
+		<damageTypeName>Poison damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT10">
+		<damageTypeName>Stoning damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT11">
+		<damageTypeName>Disintegration damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT12">
+		<damageTypeName>Unblockable permanent damage</damageTypeName>
+	</damageType>
+	<damageType damageTypeID="DT13">
+		<damageTypeName>Life stealing damage</damageTypeName>
+	</damageType>
 	<unit unitID="UN001">
 		<unitName>Dwarf</unitName>
 	</unit>
@@ -6227,10 +6266,10 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackWithUnit">
-			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to POTENTIAL_HITS damage:</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to POTENTIAL_HITS of DAMAGE_TYPE:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackWithoutUnit">
-			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE hits for up to POTENTIAL_HITS damage:</languageEntryText>
+			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE hits for up to POTENTIAL_HITS of DAMAGE_TYPE:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AttackChanceOfDeath">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE has POTENTIAL_HITS% chance of killing defender:</languageEntryText>
@@ -6256,11 +6295,14 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="AttackFear">
 			<languageEntryText>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to avoid being frozen in fear:</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceStatisticsBase">
-			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence UNMODIFIED_DEFENCE_STRENGTH, FINAL_HITS hit(s) damage HP.</languageEntryText>
+		<languageEntry languageEntryID="DefenceStrengthReduced">
+			<languageEntryText>MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH)</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceStatisticsModified">
-			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) FINAL_HITS hit(s) damage HP.</languageEntryText>
+		<languageEntry languageEntryID="DefenceStrengthIncreased">
+			<languageEntryText>MODIFIED_DEFENCE_STRENGTH (increased from UNMODIFIED_DEFENCE_STRENGTH)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefenceStatistics">
+			<languageEntryText>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence DEFENCE_STRENGTH, FINAL_HITS hit(s) damage HP.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceStatisticsAutomatic">
 			<languageEntryText>ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS hit(s) damage HP.</languageEntryText>
@@ -6271,50 +6313,29 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="DefenceChanceOfDeathSurvives">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME survives.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceEachFigureResistOrDieBase">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and die, unit loses FINAL_HITS HP.</languageEntryText>
+		<languageEntry languageEntryID="DefenceEachFigureResistOrDie">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and die, unit loses FINAL_HITS HP.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceEachFigureResistOrDieModified">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), ACTUAL_HITS figures fail resistance roll and die, unit loses FINAL_HITS HP.</languageEntryText>
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieDies">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and dies.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieBaseDies">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH and dies.</languageEntryText>
+		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieSurvives">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and survives.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieModifiedDies">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) and dies.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieBaseSurvives">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH and survives.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceSingleFigureResistOrDieModifiedSurvives">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) and survives.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceResistOrTakeDamageBase">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH, dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceResistOrTakeDamageModified">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</languageEntryText>
+		<languageEntry languageEntryID="DefenceResistOrTakeDamage">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceResistanceRolls">
 			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH, fails ACTUAL_HITS resistance rolls, unit loses FINAL_HITS HP.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceDisintegrateBaseDies">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH so dies.</languageEntryText>
+		<languageEntry languageEntryID="DefenceDisintegrateDies">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH so dies.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceDisintegrateBaseSurvives">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH so survives dies.</languageEntryText>
+		<languageEntry languageEntryID="DefenceDisintegrateSurvives">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH so survives dies.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="DefenceDisintegrateModifiedDies">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) so dies.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceDisintegrateModifiedSurvives">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH) so survives dies.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceFearBase">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance UNMODIFIED_DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and become frozen in fear.</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="DefenceFearModified">
-			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance MODIFIED_DEFENCE_STRENGTH (reduced from UNMODIFIED_DEFENCE_STRENGTH), ACTUAL_HITS figures fail resistance roll and become frozen in fear.</languageEntryText>
+		<languageEntry languageEntryID="DefenceFear">
+			<languageEntryText>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and become frozen in fear.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">

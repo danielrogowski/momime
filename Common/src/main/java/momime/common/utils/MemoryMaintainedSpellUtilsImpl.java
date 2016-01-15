@@ -16,7 +16,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.DamageType;
-import momime.common.database.DamageTypeImmunity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -51,6 +50,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Damage type utils */
+	private DamageTypeUtils damageTypeUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -331,22 +333,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else
     		{
     			// Combat attack spell - immunity skill?
-    			boolean immunity = false;
     			final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "isUnitValidTargetForSpell");
-    			final Iterator<DamageTypeImmunity> iter = damageType.getDamageTypeImmunity ().iterator ();
-    			while ((!immunity) && (iter.hasNext ()))
-    			{
-    				final DamageTypeImmunity imm = iter.next ();
-    				
-    				// We only want complete immunities - even if it boots defence to 50, its still a valid target
-    				if (imm.getBoostsDefenceTo () == null)
-    					if (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), imm.getUnitSkillID (),
-           					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db) >= 0)
-    						
-    						immunity = true;
-    			}
-    			
-    			if (immunity)
+    			if (getDamageTypeUtils ().isUnitImmuneToDamageType (unit, damageType, null, spell.getSpellRealm (), players, mem, db))
     				result = TargetSpellResult.IMMUNE;
     			else
 	    			// Immune due to resistance?
@@ -510,5 +498,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Damage type utils
+	 */
+	public final DamageTypeUtils getDamageTypeUtils ()
+	{
+		return damageTypeUtils;
+	}
+
+	/**
+	 * @param utils Damage type utils
+	 */
+	public final void setDamageTypeUtils (final DamageTypeUtils utils)
+	{
+		damageTypeUtils = utils;
 	}
 }

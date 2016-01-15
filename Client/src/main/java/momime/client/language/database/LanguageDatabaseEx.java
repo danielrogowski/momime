@@ -87,6 +87,12 @@ public interface LanguageDatabaseEx
 	 * @return Ranged attack type description; or replays back the ID if no description exists
 	 */
 	public String findRangedAttackTypeDescription (final String rangedAttackTypeID);
+
+	/**
+	 * @param damageTypeID Damage type ID to search for
+	 * @return Damage type name; or replays back the ID if no name exists
+	 */
+	public String findDamageTypeName (final String damageTypeID);
 	
 	/**
 	 * @param unitID Unit ID to search for

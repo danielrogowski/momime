@@ -154,7 +154,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			}
 
 			// Figure out the type of damage, and check whether the defender is immune to it
-			final DamageTypeSvr damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker.getUnit (), attackSkillID, db);
+			final DamageTypeSvr damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker.getUnit (), attackSkillID, mem.getMaintainedSpell (), db);
 			if (getDamageTypeUtils ().isUnitImmuneToDamageType (defender.getUnit (), damageType, attackSkillID, attackFromMagicRealmID, players, mem, db))
 				attackDamage = null;
 			else

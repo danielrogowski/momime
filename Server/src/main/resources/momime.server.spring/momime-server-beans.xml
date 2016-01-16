@@ -458,6 +458,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="damageTypeCalculations" class="momime.server.calculations.DamageTypeCalculationsImpl">
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitSkillUtils" ref="unitSkillUtils" />
 	</bean>
 

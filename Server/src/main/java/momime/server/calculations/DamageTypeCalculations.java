@@ -8,6 +8,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.server.database.DamageTypeSvr;
 import momime.server.database.ServerDatabaseEx;
@@ -20,11 +21,12 @@ public interface DamageTypeCalculations
 	/**
 	 * @param attacker Unit making the attack
 	 * @param attackSkillID The skill being used to attack
+	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Damage type dealt by this kind of unit skill
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 */
-	public DamageTypeSvr determineSkillDamageType (final MemoryUnit attacker, final String attackSkillID, final ServerDatabaseEx db)
+	public DamageTypeSvr determineSkillDamageType (final MemoryUnit attacker, final String attackSkillID, final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
 	
 	/**

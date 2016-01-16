@@ -1007,6 +1007,11 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="pickDescription" type="momimecommon:description" nxe:label="Pick Description" nxe:gridwidth="300" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="pickInitialSkill" type="momimesvr:pickInitialSkill" nxe:label="Initial Skill" nxe:gridwidth="70" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="enhancesDamageType" type="xsd:boolean" nxe:label="Enhances Damage Type?" nxe:gridwidth="200"> 
+						<xsd:annotation>
+							<xsd:documentation>Basically this indicates whether this lifeform type ignores Weapon Immunity.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickFreeSpell" type="momimesvr:pickFreeSpell" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -1179,11 +1184,6 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 			<xsd:extension base="momimecommon:unitType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="enhancesDamageType" type="xsd:boolean" nxe:label="Enhances Damage Type?" nxe:gridwidth="200"> 
-						<xsd:annotation>
-							<xsd:documentation>Basically this indicates whether this unit type ignores Weapon Immunity.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

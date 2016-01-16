@@ -189,7 +189,7 @@ public final class TestDamageCalculatorImpl
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
-		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", db)).thenReturn (damageType);
+		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", fow.getMaintainedSpell (), db)).thenReturn (damageType);
 		
 		final DamageTypeUtils damageTypeUtils = mock (DamageTypeUtils.class);
 		
@@ -293,7 +293,7 @@ public final class TestDamageCalculatorImpl
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
-		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", db)).thenReturn (damageType);
+		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", fow.getMaintainedSpell (), db)).thenReturn (damageType);
 		
 		final DamageTypeUtils damageTypeUtils = mock (DamageTypeUtils.class);
 		

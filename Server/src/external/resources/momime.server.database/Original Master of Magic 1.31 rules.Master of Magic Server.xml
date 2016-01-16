@@ -985,6 +985,7 @@
 		<pickExclusiveFrom pickExclusiveFromID="MB02" />
 		<pickDescription>Life Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="MB02">
 		<pickType>B</pickType>
@@ -993,6 +994,7 @@
 		<pickExclusiveFrom pickExclusiveFromID="MB01" />
 		<pickDescription>Death Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="MB03">
 		<pickType>B</pickType>
@@ -1000,6 +1002,7 @@
 		<unitTypeID>S</unitTypeID>
 		<pickDescription>Chaos Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="MB04">
 		<pickType>B</pickType>
@@ -1007,6 +1010,7 @@
 		<unitTypeID>S</unitTypeID>
 		<pickDescription>Nature Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="MB05">
 		<pickType>B</pickType>
@@ -1014,6 +1018,7 @@
 		<unitTypeID>S</unitTypeID>
 		<pickDescription>Sorcery Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="RT01">
 		<pickType>R</pickType>
@@ -1237,20 +1242,24 @@
 		<pickType>L</pickType>
 		<unitTypeID>H</unitTypeID>
 		<pickDescription>Hero</pickDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="LTA">
 		<pickType>L</pickType>
 		<unitTypeID>S</unitTypeID>
 		<pickDescription>Arcane summoned creature</pickDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="LTC">
 		<pickType>L</pickType>
 		<pickDescription>Chaos channeled unit</pickDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<pick pickID="LTU">
 		<pickType>L</pickType>
 		<castSpellsFromPickID>MB02</castSpellsFromPickID>
 		<pickDescription>Undead (killed by Ghouls/Life Steal or Black Channeled units)</pickDescription>
+		<enhancesDamageType>true</enhancesDamageType>
 	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders (Neutral cities)</wizardName>
@@ -5662,7 +5671,6 @@
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Normal</unitTypeDescription>
-		<enhancesDamageType>false</enhancesDamageType>
 	</unitType>
 	<unitType unitTypeID="H">
 		<experienceLevel levelNumber="0">
@@ -5969,11 +5977,9 @@
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Hero</unitTypeDescription>
-		<enhancesDamageType>true</enhancesDamageType>
 	</unitType>
 	<unitType unitTypeID="S">
 		<unitTypeDescription>Summoned</unitTypeDescription>
-		<enhancesDamageType>true</enhancesDamageType>
 	</unitType>
 	<heroItemType heroItemTypeID="IT01">
 		<baseCraftingCost>100</baseCraftingCost>

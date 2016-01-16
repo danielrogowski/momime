@@ -15,13 +15,14 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.database.DamageTypeSvr;
 import momime.server.database.PickSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSvr;
-import momime.server.database.UnitTypeSvr;
 
 /**
  * Methods dealing with deciding the damage type of attacks, and dealing with immunities to damage types
@@ -30,6 +31,9 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (DamageTypeCalculationsImpl.class);
+
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** Unit skill utils */
 	private UnitSkillUtils unitSkillUtils;
@@ -37,22 +41,24 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	/**
 	 * @param attacker Unit making the attack
 	 * @param attackSkillID The skill being used to attack
+	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Damage type dealt by this kind of unit skill
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 */
 	@Override
-	public final DamageTypeSvr determineSkillDamageType (final MemoryUnit attacker, final String attackSkillID, final ServerDatabaseEx db)
+	public final DamageTypeSvr determineSkillDamageType (final MemoryUnit attacker, final String attackSkillID, final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering determineSkillDamageType: Unit URN " + attacker.getUnitURN () + " skill " + attackSkillID);
 
-		final UnitSvr unitDef = db.findUnit (attacker.getUnitID (), "determineSkillDamageType");
-		
 		// Look up basic damage type of skill - if it is the ranged attack skill, then the base damage type comes from the RAT instead
 		final String damageTypeID;
 		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackSkillID))
+		{
+			final UnitSvr unitDef = db.findUnit (attacker.getUnitID (), "determineSkillDamageType");
 			damageTypeID = db.findRangedAttackType (unitDef.getRangedAttackType (), "determineSkillDamageType").getDamageTypeID ();
+		}
 		else
 			damageTypeID = db.findUnitSkill (attackSkillID, "determineSkillDamageType").getDamageTypeID ();
 		
@@ -62,9 +68,10 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 		if (damageType.getEnhancedVersion () != null)
 		{
 			// Do we have a unit type or weapon grade that grants the enhanced version?
-			final PickSvr magicRealm = db.findPick (unitDef.getUnitMagicRealm (), "determineSkillDamageType");
-			final UnitTypeSvr unitType = db.findUnitType (magicRealm.getUnitTypeID (), "determineSkillDamageType");
-			boolean enhanced = unitType.isEnhancesDamageType ();
+			final String magicRealmLifeformTypeID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db);
+			
+			final PickSvr magicRealm = db.findPick (magicRealmLifeformTypeID, "determineSkillDamageType");
+			boolean enhanced = (magicRealm.isEnhancesDamageType () != null) && (magicRealm.isEnhancesDamageType ());
 			
 			if ((!enhanced) && (attacker.getWeaponGrade () != null))
 				enhanced = db.findWeaponGrade (attacker.getWeaponGrade (), "determineSkillDamageType").isEnhancesDamageType ();
@@ -115,6 +122,22 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 		return defenderDefenceStrength;
 	}
 
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
 	/**
 	 * @return Unit skill utils
 	 */

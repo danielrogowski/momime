@@ -12,11 +12,13 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.UnitDamage;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -107,7 +109,8 @@ public interface UnitServerUtils
 	public List<MemoryUnit> listUnitsWithSpecialOrder (final List<MemoryUnit> units, final UnitSpecialOrder order);
 
 	/**
-	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck
+	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck.
+	 * NB. This doesn't actually record the damage against the unit, just calculates how many points of damage it will take.
 	 * 
 	 * @param defender Unit being hit
 	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
@@ -124,4 +127,30 @@ public interface UnitServerUtils
 	public int applyDamage (final MemoryUnit defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+
+	/**
+	 * Adds damage to a unit; so will find and add to an existing damage type entry if one exists, or add one if it doesn't.
+	 * 
+	 * @param damages List of damages to add to
+	 * @param damageType Type of damage to add
+	 * @param damageTaken Amount of damage to add
+	 */
+	public void addDamage (final List<UnitDamage> damages, final StoredDamageTypeID damageType, final int damageTaken);
+	
+	/**
+	 * @param damages List of damages to search
+	 * @param damageType Type of damage to search for
+	 * @return Amount of damage of this type in the list; if the requested type of damage isn't present in the list at all, will return 0
+	 */
+	public int findDamageTakenOfType (final List<UnitDamage> damages, final StoredDamageTypeID damageType);
+
+	/**
+	 * Heals a specified number of HP from the damage list.  If more HP is specified than exists in the list, the list will simply be emptied.
+	 * Healable damage is always healed first, followed by permanent damage, and lastly life stealing damage.
+	 * See comments on StoredDamageTypeID in MoMIMECommonDatabase.xsd. 
+	 * 
+	 * @param damages List of damages to heal
+	 * @param amountToHeal Number of HP to heal
+	 */
+	public void healDamage (final List<UnitDamage> damages, final int amountToHeal);
 }

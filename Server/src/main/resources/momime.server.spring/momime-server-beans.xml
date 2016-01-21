@@ -588,8 +588,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="damageCalculator" ref="damageCalculator" />
 	</bean>
@@ -678,6 +680,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="fogOfWarDuplication" class="momime.server.fogofwar.FogOfWarDuplicationImpl">
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
@@ -709,6 +712,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />

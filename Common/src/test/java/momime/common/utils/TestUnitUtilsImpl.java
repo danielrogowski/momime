@@ -41,6 +41,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 
 /**
@@ -1512,5 +1513,29 @@ public final class TestUnitUtilsImpl
 		
 		// Show that we find it
 		assertSame (u4, utils.findAliveUnitInCombatAt (units, loc, pos));
+	}
+	
+	/**
+	 * Tests the getTotalDamageTaken method
+	 */
+	@Test
+	public final void testGetTotalDamageTaken ()
+	{
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+
+		// Try empty list
+		final List<UnitDamage> damages = new ArrayList<UnitDamage> ();
+		assertEquals (0, utils.getTotalDamageTaken (damages));
+		
+		// Try real example
+		for (final int dmg : new int [] {1, 2, 6})
+		{
+			final UnitDamage unitDamage = new UnitDamage ();
+			unitDamage.setDamageTaken (dmg);
+			damages.add (unitDamage);
+		}
+
+		assertEquals (9, utils.getTotalDamageTaken (damages));
 	}
 }

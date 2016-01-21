@@ -151,8 +151,9 @@ public final class SelectUnitButton extends JToggleButton
 				}
 				
 				// Health bar
+				final int damageTaken = getUnitUtils ().getTotalDamageTaken (getUnit ().getUnitDamage ());
 				final double healthProportion;
-				if (getUnit ().getDamageTaken () <= 0)
+				if (damageTaken <= 0)
 					healthProportion = 1;
 				else
 				{
@@ -161,7 +162,7 @@ public final class SelectUnitButton extends JToggleButton
 							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
-					healthProportion = 1 - (getUnit ().getDamageTaken () / totalHits);
+					healthProportion = 1 - (damageTaken / totalHits);
 				}
 				
 				if (healthProportion <= 0.25)

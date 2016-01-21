@@ -56,6 +56,7 @@ import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
 import momime.server.utils.TreasureUtils;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * This contains methods for updating multiple mid turn changes at once, e.g. remove all spells in a location.
@@ -78,6 +79,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
 	
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
@@ -311,9 +315,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				boolean sendMsg = false;
 
 				// Heal?
-				if (thisUnit.getDamageTaken () > 0)
+				if (thisUnit.getUnitDamage ().size () > 0)
 				{
-					thisUnit.setDamageTaken (thisUnit.getDamageTaken () - 1);
+					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), 1);
 					sendMsg = true;
 				}
 
@@ -994,6 +998,22 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 	
 	/**

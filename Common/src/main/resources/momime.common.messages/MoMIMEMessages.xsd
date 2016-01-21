@@ -688,12 +688,7 @@ e.g. Giant Spiders 'casting' Web, or Magicians casting Fireball.  Set to full at
 					    	<xsd:documentation>For heroes, set to full at start of combat and expended each time a spell imbued in a hero item is cast.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="1" maxOccurs="1" name="damageTaken" type="momimecommon:unitSkillValue">
-					    <xsd:annotation>
-    						<xsd:documentation>Number of hits damage this unit has taken (all hits are removed from the first figure
-until it is dead and disappears, then from the second, and so on).</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitDamage" type="momimemsgs:unitDamage" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="doubleOverlandMovesLeft" type="momimecommon:doubleMovement" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="specialOrder" type="momimecommon:unitSpecialOrder" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="status" type="momimemsgs:unitStatusID" />
@@ -724,6 +719,17 @@ of these containers is created when the unit is created and then the items just 
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroItem" type="momimemsgs:numberedHeroItem" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="unitDamage">
+	    <xsd:annotation>
+    		<xsd:documentation>Stores different damage types and amounts that a unit has taken.
+All hits are removed from the first figure until it is dead and disappears, then from the second, and so on.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="damageType" type="momimecommon:storedDamageTypeID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="damageTaken" type="momimecommon:unitSkillValue" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

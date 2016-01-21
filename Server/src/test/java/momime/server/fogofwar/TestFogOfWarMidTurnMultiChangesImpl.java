@@ -22,6 +22,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.StoredDamageTypeID;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -31,9 +33,12 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.messages.UnitDamage;
+import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
@@ -42,6 +47,7 @@ import momime.server.database.MapFeatureSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
+import momime.server.utils.UnitServerUtilsImpl;
 
 /**
  * Tests the FogOfWarMidTurnMultiChangesImpl class
@@ -91,7 +97,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
 		multi.setFogOfWarMidTurnChanges (single);
 		
-		// Run test
+		// Run method
 		multi.switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), db, sd);
 		
 		// Check results
@@ -169,7 +175,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		multi.setFogOfWarMidTurnChanges (single);
 		multi.setUnitUtils (unitUtils);
 		
-		// Run test
+		// Run method
 		multi.switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), db, sd);
 		
 		// Check results
@@ -222,7 +228,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
 		multi.setFogOfWarMidTurnChanges (single);
 		
-		// Run test
+		// Run method
 		multi.switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), 3, db, sd);
 
 		// Check results
@@ -274,7 +280,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
 		multi.setFogOfWarMidTurnChanges (single);
 		
-		// Run test
+		// Run method
 		multi.switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), 0, db, sd);
 
 		// Check results
@@ -318,12 +324,124 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
 		multi.setFogOfWarMidTurnChanges (single);
 		
-		// Run test
+		// Run method
 		multi.destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), sd, db);
 		
 		// Check results
 		verify (single, times (0)).destroyBuildingOnServerAndClients (trueMap, players, 1, false, sd, db);
 		verify (single, times (1)).destroyBuildingOnServerAndClients (trueMap, players, 2, false, sd, db);
+	}
+	
+	/**
+	 * Tests the healUnitsAndGainExperience method for all players
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHealUnitsAndGainExperience_AllPlayers () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		// Other lists and objects just needed for mocks
+		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		
+		// Normal unit that has taken 2 kinds of damage
+		final UnitDamage unit1dmg1 = new UnitDamage ();
+		unit1dmg1.setDamageType (StoredDamageTypeID.PERMANENT);
+		unit1dmg1.setDamageTaken (3);
+
+		final UnitDamage unit1dmg2 = new UnitDamage ();
+		unit1dmg2.setDamageType (StoredDamageTypeID.HEALABLE);
+		unit1dmg2.setDamageTaken (2);
+		
+		final UnitSkillAndValue unit1exp = new UnitSkillAndValue ();
+		unit1exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		unit1exp.setUnitSkillValue (10);
+		
+		final MemoryUnit unit1 = new MemoryUnit ();
+		unit1.setStatus (UnitStatusID.ALIVE);
+		unit1.setOwningPlayerID (1);
+		unit1.getUnitDamage ().add (unit1dmg1);
+		unit1.getUnitDamage ().add (unit1dmg2);
+		unit1.getUnitHasSkill ().add (unit1exp);
+
+		// Summoned unit that has taken 1 kind of damage
+		final UnitDamage unit2dmg1 = new UnitDamage ();
+		unit2dmg1.setDamageType (StoredDamageTypeID.PERMANENT);
+		unit2dmg1.setDamageTaken (3);
+
+		final MemoryUnit unit2 = new MemoryUnit ();
+		unit2.setStatus (UnitStatusID.ALIVE);
+		unit2.setOwningPlayerID (1);
+		unit2.getUnitDamage ().add (unit2dmg1);
+		
+		// Hero that has taken no damage
+		final UnitSkillAndValue unit3exp = new UnitSkillAndValue ();
+		unit3exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		unit3exp.setUnitSkillValue (10);
+		
+		final MemoryUnit unit3 = new MemoryUnit ();
+		unit3.setStatus (UnitStatusID.ALIVE);
+		unit3.setOwningPlayerID (1);
+		unit3.getUnitHasSkill ().add (unit3exp);
+		
+		// Summoned unit that has taken no damage
+		final MemoryUnit unit4 = new MemoryUnit ();
+		unit4.setStatus (UnitStatusID.ALIVE);
+		unit4.setOwningPlayerID (1);
+		
+		// Dead hero
+		final UnitDamage unit5dmg1 = new UnitDamage ();
+		unit5dmg1.setDamageType (StoredDamageTypeID.HEALABLE);
+		unit5dmg1.setDamageTaken (2);
+		
+		final UnitSkillAndValue unit5exp = new UnitSkillAndValue ();
+		unit5exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		unit5exp.setUnitSkillValue (10);
+		
+		final MemoryUnit unit5 = new MemoryUnit ();
+		unit5.setStatus (UnitStatusID.DEAD);
+		unit5.setOwningPlayerID (1);
+		unit5.getUnitDamage ().add (unit5dmg1);
+		unit5.getUnitHasSkill ().add (unit5exp);
+		
+		// Units list
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		units.add (unit1);
+		units.add (unit2);
+		units.add (unit3);
+		units.add (unit4);
+		units.add (unit5);
+		
+		// Set up object to test
+		// The damage list and exp lookups are more awkward to mock than if we just let it use the real methods
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
+		multi.setUnitServerUtils (new UnitServerUtilsImpl ());
+		multi.setUnitUtils (new UnitUtilsImpl ());
+		multi.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		multi.healUnitsAndGainExperience (units, 0, trueTerrain, players, db, fogOfWarSettings);
+		
+		// Check results
+		assertEquals (1, unit1dmg2.getDamageTaken ());
+		assertEquals (11, unit1exp.getUnitSkillValue ().intValue ());
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit1, trueTerrain, players, db, fogOfWarSettings);
+
+		assertEquals (2, unit2dmg1.getDamageTaken ());
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit2, trueTerrain, players, db, fogOfWarSettings);
+
+		assertEquals (11, unit3exp.getUnitSkillValue ().intValue ());
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit3, trueTerrain, players, db, fogOfWarSettings);
+
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit4, trueTerrain, players, db, fogOfWarSettings);
+		
+		assertEquals (10, unit5exp.getUnitSkillValue ().intValue ());
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit5, trueTerrain, players, db, fogOfWarSettings);
 	}
 	
 	/**

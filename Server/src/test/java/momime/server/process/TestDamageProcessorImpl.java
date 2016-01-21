@@ -26,6 +26,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.CombatMapSize;
@@ -33,6 +34,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
@@ -81,15 +83,23 @@ public final class TestDamageProcessorImpl
 		players.add (defendingPlayer);
 		
 		// Units
+		final UnitDamage attackerDamageTaken = new UnitDamage ();
+		attackerDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		attackerDamageTaken.setDamageTaken (2);
+		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (101);
 		attacker.setOwningPlayerID (defendingPd.getPlayerID ());
-		attacker.setDamageTaken (2);
+		attacker.getUnitDamage ().add (attackerDamageTaken);
+
+		final UnitDamage defenderDamageTaken = new UnitDamage ();
+		defenderDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		defenderDamageTaken.setDamageTaken (3);
 		
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
-		defender.setDamageTaken (3);
+		defender.getUnitDamage ().add (defenderDamageTaken);
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
@@ -244,15 +254,23 @@ public final class TestDamageProcessorImpl
 		players.add (defendingPlayer);
 		
 		// Units
+		final UnitDamage attackerDamageTaken = new UnitDamage ();
+		attackerDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		attackerDamageTaken.setDamageTaken (2);
+		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (101);
 		attacker.setOwningPlayerID (defendingPd.getPlayerID ());
-		attacker.setDamageTaken (2);
+		attacker.getUnitDamage ().add (attackerDamageTaken);
+
+		final UnitDamage defenderDamageTaken = new UnitDamage ();
+		defenderDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		defenderDamageTaken.setDamageTaken (3);
 		
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
-		defender.setDamageTaken (3);
+		defender.getUnitDamage ().add (defenderDamageTaken);
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();

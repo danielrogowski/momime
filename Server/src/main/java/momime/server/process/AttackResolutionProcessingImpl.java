@@ -24,7 +24,9 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitDamage;
 import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
@@ -33,6 +35,7 @@ import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Methods for processing attack resolutions.  This would all just be part of DamageProcessor, these methods
@@ -42,6 +45,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AttackResolutionProcessingImpl.class);
+
+	/** Unit utils */
+	private UnitUtils unitUtils;	
 	
 	/** Unit skill utils */
 	private UnitSkillUtils unitSkillUtils;
@@ -49,6 +55,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
+	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
 	
@@ -184,8 +193,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			", Defending unit URN " + defender.getUnit ().getUnitURN () + ", " + steps.size () + " steps");
 
 		// Zero out damage taken
-		int damageToDefender = 0;
-		int damageToAttacker = 0;
+		final List<UnitDamage> damageToDefender = new ArrayList<UnitDamage> ();
+		final List<UnitDamage> damageToAttacker = new ArrayList<UnitDamage> ();
 		
 		// Calculate and total up all the damage before we apply any of it
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
@@ -200,8 +209,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			for (int stepRepetitionNo = 0; stepRepetitionNo < stepRepetitions; stepRepetitionNo++)
 			{
 				// If the unit being attacked is already dead, then don't bother proceeding
-				final int damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
-				if (damageTaken < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked.getUnit (), players, mem, db))					
+				final List<UnitDamage> damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
+				if (getUnitUtils ().getTotalDamageTaken (damageTaken) < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked.getUnit (), players, mem, db))					
 				{
 					// Work out potential damage from the attack
 					final AttackDamage potentialDamage;
@@ -331,10 +340,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							}
 							
 							// Add damage to running total
-							if (unitBeingAttacked == defender)
-								damageToDefender = damageToDefender + thisDamage;
-							else
-								damageToAttacker = damageToAttacker + thisDamage;
+							if (thisDamage != 0)
+								getUnitServerUtils ().addDamage ((unitBeingAttacked == defender) ? damageToDefender : damageToAttacker,
+									potentialDamage.getDamageType ().getStoredDamageTypeID (), thisDamage);
 						}
 					
 						// Apply any special effect
@@ -356,23 +364,47 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			}
 		}
 
+		// Add each type of damage to the units' totals
+		damageToDefender.forEach (d -> getUnitServerUtils ().addDamage (defender.getUnit ().getUnitDamage (), d.getDamageType (), d.getDamageTaken ()));
+		if (attacker != null)
+			damageToAttacker.forEach (d -> getUnitServerUtils ().addDamage (attacker.getUnit ().getUnitDamage (), d.getDamageType (), d.getDamageTaken ()));
+
 		// Each individual step will never allow a unit to be over-killed, i.e. take more damage than it has remaining HP.
 		// But potentially we might have dealt multiple types of damage simultaneously which now added together total more than the unit's remaining HP,
-		// so we have to check for that here.
+		// so we might have over-killed the unit.  In that situation, keep healing 1 HP of damage until it no longer has negative health.
 		// e.g. unit has 4 HP remaining and we simultaneously hit it with a thrown attack that does 3 damage and a breath attack that does 2 damage.
-		damageToDefender = Math.min (damageToDefender, getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, mem, db));
-		if (attacker != null)
-			damageToAttacker = Math.min (damageToAttacker, getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, mem, db));
 		
-		// Apply the damage
-		defender.getUnit ().setDamageTaken (defender.getUnit ().getDamageTaken () + damageToDefender);
+		// Note interesting implication of the way I've implemented this by healing negative health after it is applied - this means we might heal damage types
+		// other than what was just applied - we heal the unit by killing it!  e.g. unit has 6 HP in total, but has already taken 4 hits of healable damage and only has 2 HP left.
+		// It gets attacked by a life stealing attack, which does 4 hits of damage.  If we pre-shrunk the damage down to 2 hits of life steal damage, the unit
+		// would fail to become undead and it would generally be very difficult to get special damages to take effect.
+		// Instead we apply both, then the unit has -2 HP, and the heal routine will always heal healable damage first.
+		// So we convert 2 HP of the healable damage already taken into life stealing damage, ending up with the unit dying from
+		// taking 2 HP healable damage and 4 HP life stealing damage, and so it becomes undead.
+		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, mem, db));
 		if (attacker != null)
-			attacker.getUnit ().setDamageTaken (attacker.getUnit ().getDamageTaken () + damageToAttacker);
-
+			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, mem, db));
+		
 		log.trace ("Exiting processAttackResolutionStep = " + specialDamageResolutionsApplied.size ());
 		return specialDamageResolutionsApplied;
 	}
 
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
 	/**
 	 * @return Unit skill utils
 	 */
@@ -395,6 +427,22 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public final UnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
+	}
+
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 
 	/**

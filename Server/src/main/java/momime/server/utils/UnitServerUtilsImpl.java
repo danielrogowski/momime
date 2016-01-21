@@ -21,6 +21,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
@@ -36,6 +37,7 @@ import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitAddBumpTypeID;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
@@ -54,7 +56,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitServerUtilsImpl.class);
-
+	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
@@ -406,7 +408,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	}
 
 	/**
-	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck
+	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck.
+	 * NB. This doesn't actually record the damage against the unit, just calculates how many points of damage it will take.
 	 * 
 	 * @param defender Unit being hit
 	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
@@ -466,6 +469,110 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		
 		log.trace ("Exiting applyDamage = " + totalHits);
 		return totalHits;
+	}
+
+	/**
+	 * Adds damage to a unit; so will find and add to an existing damage type entry if one exists, or add one if it doesn't.
+	 * 
+	 * @param damages List of damages to add to
+	 * @param damageType Type of damage to add
+	 * @param damageTaken Amount of damage to add
+	 */
+	@Override
+	public final void addDamage (final List<UnitDamage> damages, final StoredDamageTypeID damageType, final int damageTaken)
+	{
+		log.trace ("Entering addDamage: adding " + damageTaken + " hit points of damage type " + damageType);
+		
+		if (damageTaken != 0)
+		{
+			UnitDamage entry = null;
+			final Iterator<UnitDamage> iter = damages.iterator ();
+			while ((entry == null) && (iter.hasNext ()))
+			{
+				final UnitDamage thisDamage = iter.next ();
+				if (thisDamage.getDamageType () == damageType)
+					entry = thisDamage;
+			}
+			
+			if (entry != null)
+			{
+				// Add to existing entry
+				entry.setDamageTaken (entry.getDamageTaken () + damageTaken);
+				
+				// Remove it, if it is now zero
+				if (entry.getDamageTaken () == 0)
+					damages.remove (entry);
+			}
+			else
+			{
+				// Add new entry
+				entry = new UnitDamage ();
+				entry.setDamageType (damageType);
+				entry.setDamageTaken (damageTaken);
+				damages.add (entry);
+			}
+		}
+		
+		log.trace ("Exiting addDamage"); 
+	}
+	
+	/**
+	 * @param damages List of damages to search
+	 * @param damageType Type of damage to search for
+	 * @return Amount of damage of this type in the list; if the requested type of damage isn't present in the list at all, will return 0
+	 */
+	@Override
+	public final int findDamageTakenOfType (final List<UnitDamage> damages, final StoredDamageTypeID damageType)
+	{
+		log.trace ("Entering findDamageTakenOfType: " + damageType);
+		
+		int value = 0;
+		boolean found = false;
+		final Iterator<UnitDamage> iter = damages.iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final UnitDamage thisDamage = iter.next ();
+			if (thisDamage.getDamageType () == damageType)
+			{
+				found = true;
+				value = thisDamage.getDamageTaken ();
+			}
+		}
+		
+		log.trace ("Exiting findDamageTakenOfType = " + value);
+		return value;
+	}
+	
+	/**
+	 * Heals a specified number of HP from the damage list.  If more HP is specified than exists in the list, the list will simply be emptied.
+	 * Healable damage is always healed first, followed by permanent damage, and lastly life stealing damage.
+	 * See comments on StoredDamageTypeID in MoMIMECommonDatabase.xsd. 
+	 * 
+	 * @param damages List of damages to heal
+	 * @param amountToHeal Number of HP to heal
+	 */
+	@Override
+	public final void healDamage (final List<UnitDamage> damages, final int amountToHeal)
+	{
+		log.trace ("Entering healDamage: " + amountToHeal);
+		
+		if ((amountToHeal > 0) && (damages.size () > 0))
+		{
+			// We always heal in a specific order of damage types, which is the order they're defined on the enum, not the order they are in the list passed into this method
+			int amountLeftToHeal = amountToHeal;
+			for (final StoredDamageTypeID damageType : StoredDamageTypeID.values ())
+				if (amountLeftToHeal > 0)
+				{
+					final int healThisDamageType = Math.min (amountLeftToHeal, findDamageTakenOfType (damages, damageType));
+					if (healThisDamageType > 0)
+					{
+						amountLeftToHeal = amountLeftToHeal - healThisDamageType;
+						addDamage (damages, damageType, -healThisDamageType);
+					}
+				}
+		}
+		
+		log.trace ("Exiting healDamage");
 	}
 	
 	/**

@@ -31,6 +31,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.HeroItemSlot;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -45,6 +46,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitAddBumpTypeID;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitSkillUtils;
@@ -1376,5 +1378,137 @@ public final class TestUnitServerUtilsImpl
 		
 		// Run method
 		assertEquals (3, utils.applyDamage (defender, 6, 4, 5, players, fow, db));	// Take 6 hits, each figure has defence 4, with 50% block chance
+	}
+	
+	/**
+	 * Tests the addDamage method
+	 */
+	@Test
+	public final void testAddDamage ()
+	{
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+
+		// Add nothing to nothing
+		final List<UnitDamage> damages = new ArrayList<UnitDamage> ();
+		utils.addDamage (damages, StoredDamageTypeID.HEALABLE, 0);
+		assertEquals (0, damages.size ());
+		
+		// Add new value
+		utils.addDamage (damages, StoredDamageTypeID.HEALABLE, 3);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.HEALABLE, damages.get (0).getDamageType ());
+		assertEquals (3, damages.get (0).getDamageTaken ());
+		
+		// Add to existing value
+		utils.addDamage (damages, StoredDamageTypeID.HEALABLE, 2);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.HEALABLE, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
+		
+		// Add secondary value
+		utils.addDamage (damages, StoredDamageTypeID.PERMANENT, 1);
+		assertEquals (2, damages.size ());
+		assertEquals (StoredDamageTypeID.HEALABLE, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (1).getDamageType ());
+		assertEquals (1, damages.get (1).getDamageTaken ());
+		
+		// Add to both existing values
+		utils.addDamage (damages, StoredDamageTypeID.HEALABLE, 2);
+		utils.addDamage (damages, StoredDamageTypeID.PERMANENT, 5);
+		assertEquals (2, damages.size ());
+		assertEquals (StoredDamageTypeID.HEALABLE, damages.get (0).getDamageType ());
+		assertEquals (7, damages.get (0).getDamageTaken ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (1).getDamageType ());
+		assertEquals (6, damages.get (1).getDamageTaken ());
+		
+		// Eliminate a value
+		utils.addDamage (damages, StoredDamageTypeID.HEALABLE, -7);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (6, damages.get (0).getDamageTaken ());
+	}
+	
+	/**
+	 * Tests the findDamageTakenOfType method
+	 */
+	@Test
+	public final void testFindDamageTakenOfType ()
+	{
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+
+		// Search for nothing
+		final List<UnitDamage> damages = new ArrayList<UnitDamage> ();
+		assertEquals (0, utils.findDamageTakenOfType (damages, StoredDamageTypeID.PERMANENT));
+		
+		// Add some values
+		final UnitDamage dmg1 = new UnitDamage ();
+		dmg1.setDamageType (StoredDamageTypeID.HEALABLE);
+		dmg1.setDamageTaken (3);
+		damages.add (dmg1);
+
+		final UnitDamage dmg2 = new UnitDamage ();
+		dmg2.setDamageType (StoredDamageTypeID.PERMANENT);
+		dmg2.setDamageTaken (4);
+		damages.add (dmg2);
+
+		assertEquals (0, utils.findDamageTakenOfType (damages, StoredDamageTypeID.LIFE_STEALING));
+		assertEquals (4, utils.findDamageTakenOfType (damages, StoredDamageTypeID.PERMANENT));
+		assertEquals (3, utils.findDamageTakenOfType (damages, StoredDamageTypeID.HEALABLE));
+	}
+	
+	/**
+	 * Tests the healDamage method
+	 */
+	@Test
+	public final void testHealDamage ()
+	{
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+
+		// Heal nothing
+		final List<UnitDamage> damages = new ArrayList<UnitDamage> ();
+
+		final UnitDamage dmg1 = new UnitDamage ();
+		dmg1.setDamageType (StoredDamageTypeID.PERMANENT);
+		dmg1.setDamageTaken (5);
+		damages.add (dmg1);
+		
+		utils.healDamage (damages, 0);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
+		
+		// Healing negative damage is dumb and will be ignored
+		utils.healDamage (damages, -2);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
+				
+		// Heal when only one damage type in the list
+		utils.healDamage (damages, 2);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (3, damages.get (0).getDamageTaken ());
+		
+		// 3 types of damage in list - heal enough to completely cure one of them and move on to the next
+		final UnitDamage dmg2 = new UnitDamage ();
+		dmg2.setDamageType (StoredDamageTypeID.HEALABLE);
+		dmg2.setDamageTaken (5);
+		damages.add (dmg2);
+
+		final UnitDamage dmg3 = new UnitDamage ();
+		dmg3.setDamageType (StoredDamageTypeID.LIFE_STEALING);
+		dmg3.setDamageTaken (5);
+		damages.add (dmg3);
+
+		utils.healDamage (damages, 7);
+		assertEquals (2, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (1, damages.get (0).getDamageTaken ());
+		assertEquals (StoredDamageTypeID.LIFE_STEALING, damages.get (1).getDamageType ());
+		assertEquals (5, damages.get (1).getDamageTaken ());
 	}
 }

@@ -1910,7 +1910,9 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 
 	<xsd:simpleType name="storedDamageTypeID">
 		<xsd:annotation>
-			<xsd:documentation>Damage is stored against units under the following categories.</xsd:documentation>
+			<xsd:documentation>Damage is stored against units under the following categories.
+Note the order of these is important - damage will always be healed in the order listed here - so we heal healable damage first, then
+permanent damage, then life stealing damage.  These are ordered to maximize the chances of special effects occurring, like units becoming undead.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="H"><xsd:annotation>

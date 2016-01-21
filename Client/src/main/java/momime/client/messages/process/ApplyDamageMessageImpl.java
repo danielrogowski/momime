@@ -41,8 +41,10 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RangedAttackTypeActionID;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
 import momime.common.messages.servertoclient.KillUnitActionID;
@@ -125,6 +127,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** How much damage the unit had taken before this attack; we use this to animate the damage slowly being applied */
 	private Integer attackerDamageTakenStart;
+
+	/** How much damage the unit had taken at the end of this attack; we use this to animate the damage slowly being applied */
+	private Integer attackerDamageTakenEnd;
 	
 	/** Work the duration out once only */
 	private double duration;
@@ -182,7 +187,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		if (getAttackerUnitURN () != null)
 		{
 			attackerUnit = getUnitUtils ().findUnitURN (getAttackerUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-a");
-			attackerDamageTakenStart = attackerUnit.getDamageTaken ();
+			attackerDamageTakenStart = getUnitUtils ().getTotalDamageTaken (attackerUnit.getUnitDamage ());
+			attackerDamageTakenEnd = getUnitUtils ().getTotalDamageTaken (getAttackerUnitDamage ());
 			attackerUnit.setCombatHeading (getAttackerDirection ());
 		}
 
@@ -195,7 +201,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		{
 			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitDetails.getDefenderUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-d");
 			thisUnit.setCombatHeading (thisUnitDetails.getDefenderDirection ());
-			defenderUnits.add (new ApplyDamageMessageDefenderDetails (thisUnit, thisUnitDetails.getDefenderDamageTaken ()));
+			defenderUnits.add (new ApplyDamageMessageDefenderDetails (thisUnit, thisUnitDetails.getDefenderUnitDamage ()));
 
 			if (thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())
 				animated = true;			
@@ -388,8 +394,16 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			final double ratio = (double) tickNumber / tickCount;
 			try
 			{
-				// Attacker
-				attackerUnit.setDamageTaken (attackerDamageTakenStart + (int) ((getAttackerDamageTaken () - attackerDamageTakenStart) * ratio));
+				// Attacker - just draw it as one kind of damage during the animation
+				attackerUnit.getUnitDamage ().clear ();
+				final int attackerDamageAnim = attackerDamageTakenStart + (int) ((attackerDamageTakenEnd - attackerDamageTakenStart) * ratio);
+				if (attackerDamageAnim > 0)
+				{
+					final UnitDamage dmg = new UnitDamage ();
+					dmg.setDamageType (StoredDamageTypeID.HEALABLE);
+					dmg.setDamageTaken (attackerDamageAnim);
+					attackerUnit.getUnitDamage ().add (dmg);
+				}
 
 				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
 				if (attackerUI != null)
@@ -398,8 +412,15 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				// Defenders
 				for (final ApplyDamageMessageDefenderDetails thisUnit : getDefenderUnits ())
 				{
-					thisUnit.getDefUnit ().setDamageTaken
-						(thisUnit.getDefenderDamageTakenStart () + (int) ((thisUnit.getDefenderDamageTakenEnd () - thisUnit.getDefenderDamageTakenStart ()) * ratio));
+					thisUnit.getDefUnit ().getUnitDamage ().clear ();
+					final int defenderDamageAnim = thisUnit.getDefenderDamageTakenStart () + (int) ((thisUnit.getDefenderDamageTakenEnd () - thisUnit.getDefenderDamageTakenStart ()) * ratio);
+					if (defenderDamageAnim > 0)
+					{
+						final UnitDamage dmg = new UnitDamage ();
+						dmg.setDamageType (StoredDamageTypeID.HEALABLE);
+						dmg.setDamageTaken (defenderDamageAnim);
+						thisUnit.getDefUnit ().getUnitDamage ().add (dmg);
+					}
 					
 					final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
 					if (defenderUI != null)
@@ -482,7 +503,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		// Damage to attacker
 		if (attackerUnit != null)
 		{
-			attackerUnit.setDamageTaken (getAttackerDamageTaken ());
+			attackerUnit.getUnitDamage ().clear ();
+			attackerUnit.getUnitDamage ().addAll (getAttackerUnitDamage ());
+			
 			if (getUnitCalculations ().calculateAliveFigureCount (attackerUnit, getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
 			{
@@ -522,7 +545,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		for (final ApplyDamageMessageDefenderDetails thisUnit : getDefenderUnits ())
 		{
 			// Apply regular damage
-			thisUnit.getDefUnit ().setDamageTaken (thisUnit.getDefenderDamageTakenEnd ());
+			thisUnit.getDefUnit ().getUnitDamage ().clear ();
+			thisUnit.getDefUnit ().getUnitDamage ().addAll (thisUnit.getDefenderDamageTakenEndDetails ());
 			
 			// Apply special effects
 			for (final DamageResolutionTypeID damageResolutionType : getSpecialDamageResolutionTypeID ())
@@ -861,15 +885,19 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		/** How much damage the unit is taking in total from the attack */
 		private final int defenderDamageTakenEnd;
 		
+		/** Specific amounts and damage types that the unit is will have taken at the end of the attack */
+		private final List<UnitDamage> defenderDamageTakenEndDetails;
+		
 		/**
 		 * @param aDefenderUnit Which unit this is
-		 * @param aDefenderDamageTakenEnd How much damage the unit is taking in total from the attack
+		 * @param aDefenderDamageTakenEndDetails Specific amounts and damage types that the unit is will have taken at the end of the attack
 		 */
-		private ApplyDamageMessageDefenderDetails (final MemoryUnit aDefenderUnit, final int aDefenderDamageTakenEnd)
+		private ApplyDamageMessageDefenderDetails (final MemoryUnit aDefenderUnit, final List<UnitDamage> aDefenderDamageTakenEndDetails)
 		{
 			defUnit = aDefenderUnit;
-			defenderDamageTakenStart = defUnit.getDamageTaken ();
-			defenderDamageTakenEnd = aDefenderDamageTakenEnd;
+			defenderDamageTakenStart = getUnitUtils ().getTotalDamageTaken (defUnit.getUnitDamage ());
+			defenderDamageTakenEnd = getUnitUtils ().getTotalDamageTaken (aDefenderDamageTakenEndDetails);
+			defenderDamageTakenEndDetails = aDefenderDamageTakenEndDetails;
 		}
 
 		/**
@@ -894,6 +922,14 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		public final int getDefenderDamageTakenEnd ()
 		{
 			return defenderDamageTakenEnd;
+		}
+
+		/**
+		 * @return Specific amounts and damage types that the unit is will have taken at the end of the attack
+		 */
+		public final List<UnitDamage> getDefenderDamageTakenEndDetails ()
+		{
+			return defenderDamageTakenEndDetails;
 		}
 	}
 }

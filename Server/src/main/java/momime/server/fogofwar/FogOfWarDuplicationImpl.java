@@ -16,11 +16,13 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.messages.UnitDamage;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -33,6 +35,9 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 {
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
 	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -265,7 +270,6 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(source.getManaRemaining () != dest.getManaRemaining ()) ||
 				(source.getFixedSpellsRemaining ().size () != dest.getFixedSpellsRemaining ().size ()) ||
 				(source.getHeroItemSpellChargesRemaining ().size () != dest.getHeroItemSpellChargesRemaining ().size ()) ||
-				(source.getDamageTaken () != dest.getDamageTaken ()) ||
 				(source.getStatus () != dest.getStatus ()) ||
 				(source.isWasSummonedInCombat () != dest.isWasSummonedInCombat ()) ||
 				(!CompareUtils.safeOverlandMapCoordinatesCompare ((MapCoordinates3DEx) source.getCombatLocation (), (MapCoordinates3DEx) dest.getCombatLocation ())) ||
@@ -273,6 +277,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(!CompareUtils.safeIntegerCompare (source.getCombatHeading (), dest.getCombatHeading ())) ||
 				(source.getCombatSide () != dest.getCombatSide ()) ||
 				(source.getHeroItemSlot ().size () != dest.getHeroItemSlot ().size ()) ||
+				(source.getUnitDamage ().size () != dest.getUnitDamage ().size ()) ||
 
 				// These work same as city currentlyConstructing? where only the owner can 'see' the values.
 				// Similarly only the two sides involved in a combat should be able to 'see' the combat related values, but don't worry about that for now.
@@ -293,6 +298,15 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			while ((!needToUpdate) && (sourceSpellCharges.hasNext ()) && (destSpellCharges.hasNext ()))
 				if (!CompareUtils.safeIntegerCompare (sourceSpellCharges.next (), destSpellCharges.next ()))
 					needToUpdate = true;
+			
+			// Memory unit - damage taken - already know the number of damage entries matches; order here isn't important.
+			final Iterator<UnitDamage> sourceDamageIter = source.getUnitDamage ().iterator ();
+			while ((!needToUpdate) && (sourceDamageIter.hasNext ()))
+			{
+				final UnitDamage srcDamage = sourceDamageIter.next ();
+				if (getUnitServerUtils ().findDamageTakenOfType (dest.getUnitDamage (), srcDamage.getDamageType ()) != srcDamage.getDamageTaken ())
+					needToUpdate = true;
+			}
 
 			// AvailableUnit - compare skills in detail - already know the number of skills matches, so just need to verify their existance and values.
 			// NB. The order here isn't really important, A=1, B=2 is the same as B=2, A=1. 
@@ -406,6 +420,22 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 	
 	/**

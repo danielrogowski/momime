@@ -11,24 +11,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.WeaponGradeGfx;
-import momime.client.ui.PlayerColourImageGeneratorImpl;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ExperienceLevel;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.utils.UnitSkillUtils;
-import momime.common.utils.UnitUtils;
-
 import org.junit.Test;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -37,6 +19,26 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+
+import momime.client.MomClient;
+import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.WeaponGradeGfx;
+import momime.client.ui.PlayerColourImageGeneratorImpl;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
+import momime.common.database.StoredDamageTypeID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.UnitDamage;
+import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 
 /**
  * Tests the SelectUnitButton class
@@ -232,11 +234,15 @@ public final class TestSelectUnitButton
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Set up unit
+		final UnitDamage dmg = new UnitDamage ();
+		dmg.setDamageType (StoredDamageTypeID.HEALABLE);
+		dmg.setDamageTaken (6);
+		
 		final MemoryUnit u = new MemoryUnit ();
 		u.setOwningPlayerID (pd1.getPlayerID ());
 		u.setUnitID ("UN102");
 		u.setWeaponGrade (2);
-		u.setDamageTaken (6);
+		u.getUnitDamage ().add (dmg);
 		
 		// Experience level
 		final ExperienceLevel expLevel = new ExperienceLevel ();

@@ -342,7 +342,7 @@ public final class TestFogOfWarDuplicationImpl
 		assertFalse (dup.copyUnit (unitOne, destination, true));
 
 		// Change a value
-		unitOne.setDamageTaken (1);
+		unitOne.setManaRemaining (1);
 		assertTrue (dup.copyUnit (unitOne, destination, true));
 		assertFalse (dup.copyUnit (unitOne, destination, true));
 

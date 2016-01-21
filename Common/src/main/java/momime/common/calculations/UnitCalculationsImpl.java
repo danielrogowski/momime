@@ -386,7 +386,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final int hitPointsPerFigure = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
 		
-		final int result = (figures * hitPointsPerFigure) - unit.getDamageTaken ();
+		final int result = (figures * hitPointsPerFigure) - getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ());
 		
 		log.trace ("Exiting calculateHitPointsRemaining = " + result);
 		return result;
@@ -413,7 +413,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		int figures = getUnitUtils ().getFullFigureCount (db.findUnit (unit.getUnitID (), "calculateAliveFigureCount")) -
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
-			(unit.getDamageTaken () / Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
+			(getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ()) / Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
 				CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db)));
 		
 		// Protect against weird results
@@ -449,7 +449,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		// Work out how much damage the first figure has taken
 		final int damageTaken;
 		if (unit instanceof MemoryUnit)
-			damageTaken = ((MemoryUnit) unit).getDamageTaken ();
+			damageTaken = getUnitUtils ().getTotalDamageTaken (((MemoryUnit) unit).getUnitDamage ());
 		else
 			damageTaken = 0;
 			

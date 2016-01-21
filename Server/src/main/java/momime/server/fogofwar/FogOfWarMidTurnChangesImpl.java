@@ -37,6 +37,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddBuildingMessage;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
@@ -1054,17 +1055,24 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			{
 				// Update player's memory of attacker on server
 				final MemoryUnit muAttacker = getUnitUtils ().findUnitURN (tuAttacker.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-a");
-				muAttacker.setDamageTaken (tuAttacker.getDamageTaken ());
 				muAttacker.setCombatHeading (tuAttacker.getCombatHeading ());
 				muAttacker.setDoubleCombatMovesLeft (tuAttacker.getDoubleCombatMovesLeft ());
 
+				tuAttacker.getUnitDamage ().forEach (tuDamage ->
+				{
+					final UnitDamage muDamage = new UnitDamage ();
+					muDamage.setDamageType (tuDamage.getDamageType ());
+					muDamage.setDamageTaken (tuDamage.getDamageTaken ());
+					muAttacker.getUnitDamage ().add (muDamage);
+				});
+				
 				// Update player's memory of attacker on client
 				if (msg != null)
 				{
 					msg.setAttackerUnitURN (tuAttacker.getUnitURN ());
-					msg.setAttackerDamageTaken (tuAttacker.getDamageTaken ());
 					msg.setAttackerDirection (tuAttacker.getCombatHeading ());
 					msg.setAttackerDoubleCombatMovesLeft (tuAttacker.getDoubleCombatMovesLeft ());
+					msg.getAttackerUnitDamage ().addAll (tuAttacker.getUnitDamage ());
 				}
 			}
 			
@@ -1074,16 +1082,23 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				{
 					// Update player's memory of defender on server
 					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-d");
-					muDefender.setDamageTaken (tuDefender.getDamageTaken ());
 					muDefender.setCombatHeading (tuDefender.getCombatHeading ());
-	
+
+					tuDefender.getUnitDamage ().forEach (tuDamage ->
+					{
+						final UnitDamage muDamage = new UnitDamage ();
+						muDamage.setDamageType (tuDamage.getDamageType ());
+						muDamage.setDamageTaken (tuDamage.getDamageTaken ());
+						muDefender.getUnitDamage ().add (muDamage);
+					});
+					
 					// Update player's memory of defender on client
 					if (msg != null)
 					{
 						final ApplyDamageMessageUnit msgUnit = new ApplyDamageMessageUnit ();
 						msgUnit.setDefenderUnitURN (tuDefender.getUnitURN ());
-						msgUnit.setDefenderDamageTaken (tuDefender.getDamageTaken ());
 						msgUnit.setDefenderDirection (tuDefender.getCombatHeading ());
+						msgUnit.getDefenderUnitDamage ().addAll (tuDefender.getUnitDamage ());
 						msg.getDefenderUnit ().add (msgUnit);
 					}
 				}

@@ -36,6 +36,7 @@ import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 
 /**
@@ -733,7 +734,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		dest.setAmmoRemaining (source.getAmmoRemaining ());
 		
 		dest.setManaRemaining (source.getManaRemaining ());
-		dest.setDamageTaken (source.getDamageTaken ());
 		dest.setDoubleOverlandMovesLeft (newDoubleOverlandMovesLeft);
 		dest.setSpecialOrder (newSpecialOrder);
 		dest.setStatus (source.getStatus ());
@@ -760,7 +760,8 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// MemoryUnit - hero item slots list
 		dest.getHeroItemSlot ().clear ();
-		for (final MemoryUnitHeroItemSlot srcItemSlot : source.getHeroItemSlot ())
+		
+		source.getHeroItemSlot ().forEach (srcItemSlot ->
 		{
 			final MemoryUnitHeroItemSlot destItemSlot = new MemoryUnitHeroItemSlot ();
 			if (srcItemSlot.getHeroItem () != null)
@@ -775,19 +776,44 @@ public final class UnitUtilsImpl implements UnitUtils
 				destItem.setSpellID (srcItem.getSpellID ());
 				destItem.setSpellChargeCount (srcItem.getSpellChargeCount ());
 				
-				for (final HeroItemTypeAllowedBonus srcBonus : srcItem.getHeroItemChosenBonus ())
+				srcItem.getHeroItemChosenBonus ().forEach (srcBonus ->
 				{
 					final HeroItemTypeAllowedBonus destBonus = new HeroItemTypeAllowedBonus ();
 					destBonus.setHeroItemBonusID (srcBonus.getHeroItemBonusID ());
 					destItem.getHeroItemChosenBonus ().add (destBonus);
-				}
+				});
 				
 				destItemSlot.setHeroItem (destItem);
 			}
 			dest.getHeroItemSlot ().add (destItemSlot);
-		}
+		});
+		
+		// Memory unit - damage
+		dest.getUnitDamage ().clear ();
+		source.getUnitDamage ().forEach (srcDamage ->
+		{
+			final UnitDamage destDamage = new UnitDamage ();
+			destDamage.setDamageType (srcDamage.getDamageType ());
+			destDamage.setDamageTaken (srcDamage.getDamageTaken ());
+			dest.getUnitDamage ().add (destDamage);
+		});
 		
 		log.trace ("Exiting copyUnitValues");
+	}
+	
+	/**
+	 * @param damages List of types of unit damage
+	 * @return Total damage taken across all types
+	 */
+	@Override
+	public final int getTotalDamageTaken (final List<UnitDamage> damages)
+	{
+		log.trace ("Entering getTotalDamageTaken");
+		
+		final int total = damages.stream ().mapToInt (d -> d.getDamageTaken ()).sum ();
+		
+		log.trace ("Exiting getTotalDamageTaken = " + total);
+		return total;
 	}
 	
 	/**

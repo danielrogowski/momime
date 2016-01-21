@@ -19,6 +19,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitDamage;
 
 /**
  * Simple unit lookups of basic skill and upkeep values
@@ -207,4 +208,10 @@ public interface UnitUtils
 	 * @param includeMovementFields Only the player who owns a unit can see its movement remaining and special orders
 	 */
 	public void copyUnitValues (final MemoryUnit source, final MemoryUnit dest, final boolean includeMovementFields);
+
+	/**
+	 * @param damages List of types of unit damage
+	 * @return Total damage taken across all types
+	 */
+	public int getTotalDamageTaken (final List<UnitDamage> damages);
 }

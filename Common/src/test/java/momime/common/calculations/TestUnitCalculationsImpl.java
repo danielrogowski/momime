@@ -695,7 +695,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (6, calc.calculateHitPointsRemaining (unit, players, fow, db));
 	
 		// Take 1 hit
-		unit.setDamageTaken (1);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (1);
 		assertEquals (5, calc.calculateHitPointsRemaining (unit, players, fow, db));
 
 		// Now it has 4 HP per figure
@@ -704,7 +704,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (23, calc.calculateHitPointsRemaining (unit, players, fow, db));
 		
 		// Take 2 more hits
-		unit.setDamageTaken (3);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (3);
 		assertEquals (21, calc.calculateHitPointsRemaining (unit, players, fow, db));
 	}
 	
@@ -745,15 +745,15 @@ public final class TestUnitCalculationsImpl
 		assertEquals (6, calc.calculateAliveFigureCount (unit, players, fow, db));
 		
 		// Now it takes 2 hits
-		unit.setDamageTaken (2);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (2);
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, fow, db));
 
 		// Now its dead
-		unit.setDamageTaken (6);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (6);
 		assertEquals (0, calc.calculateAliveFigureCount (unit, players, fow, db));
 
 		// Now its more than dead
-		unit.setDamageTaken (9);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (9);
 		assertEquals (0, calc.calculateAliveFigureCount (unit, players, fow, db));
 		
 		// Now it has 4 HP per figure, so 6x4=24 total damage
@@ -762,15 +762,15 @@ public final class TestUnitCalculationsImpl
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, fow, db));
 		
 		// With 11 dmg taken, there's still only 2 figures dead, since it rounds down
-		unit.setDamageTaken (11);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (11);
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, fow, db));
 		
 		// With 12 dmg taken, there's 3 figures dead
-		unit.setDamageTaken (12);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (12);
 		assertEquals (3, calc.calculateAliveFigureCount (unit, players, fow, db));
 
 		// Nearly dead
-		unit.setDamageTaken (23);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (23);
 		assertEquals (1, calc.calculateAliveFigureCount (unit, players, fow, db));
 	}
 	
@@ -790,9 +790,11 @@ public final class TestUnitCalculationsImpl
 
 		// Set up object to test
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitSkillUtils (unitSkillUtils);
+		calc.setUnitUtils (unitUtils);
 		
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
 		final MemoryUnit unit = new MemoryUnit ();
@@ -802,7 +804,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 	
 		// Taking a hit makes no difference, now we're just on the same figure, with same HP
-		unit.setDamageTaken (1);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (1);
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 
 		// Now it has 4 HP per figure
@@ -811,19 +813,19 @@ public final class TestUnitCalculationsImpl
 		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 		
 		// Take 2 more hits
-		unit.setDamageTaken (3);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (3);
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 		
 		// 1 more hit and first figure is dead, so second on full HP
-		unit.setDamageTaken (4);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (4);
 		assertEquals (4, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 
 		// 2 and a quarter figures dead
-		unit.setDamageTaken (9);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (9);
 		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 
 		// 2 and three-quarter figures dead
-		unit.setDamageTaken (11);
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (11);
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 	}
 	

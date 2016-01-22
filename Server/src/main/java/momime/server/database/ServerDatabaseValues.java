@@ -50,9 +50,15 @@ public final class ServerDatabaseValues
 
 	// skills
 
+	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
+	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";
+	
 	/** Scouting range */
 	public final static String UNIT_SKILL_ID_SCOUTING = "US037";
 
+	/** Units converted to undead */
+	public final static String UNIT_SKILL_ID_UNDEAD = "US122";
+	
 	/** Limit ranged attack distance penalty to -10% */ 
 	public final static String UNIT_SKILL_ID_LONG_RANGE = "US125";
 	
@@ -60,6 +66,11 @@ public final class ServerDatabaseValues
 
 	/** Hero item skill that penalises target's resistance attribute by the specified amount */
 	public static final String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
+	
+	// damage types
+	
+	/** Life stealing / create undead damage */
+	public static final String DAMAGE_TYPE_ID_LIFE_STEALING = "DT13";
 	
 	// spells
 

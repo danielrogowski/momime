@@ -32,6 +32,7 @@ import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.DamageTypeSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
@@ -153,8 +154,22 @@ public final class DamageCalculatorImpl implements DamageCalculator
 				attackFromMagicRealmID = unitSkillDef.getMagicRealmID ();
 			}
 
-			// Figure out the type of damage, and check whether the defender is immune to it
-			final DamageTypeSvr damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker.getUnit (), attackSkillID, mem.getMaintainedSpell (), db);
+			// Figure out the type of damage, and check whether the defender is immune to it.
+			// Firstly if the unit has the "create undead" skill, then force all damage to "life stealing" as long as the defender isn't immune to it -
+			// if they are immune to it, leave it as regular melee damage (tested in the original MoM that Ghouls can hurt Zombies).
+			DamageTypeSvr damageType = null;
+			if (getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_CREATE_UNDEAD,
+				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0)
+			{
+				damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_LIFE_STEALING, "attackFromUnitSkill");
+				if (getDamageTypeUtils ().isUnitImmuneToDamageType (defender.getUnit (), damageType, attackSkillID, attackFromMagicRealmID, players, mem, db))
+					damageType = null;
+			}
+			
+			// If life stealing damage didn't apply, just use whatever is defined against the unit skill like normal
+			if (damageType == null)
+				damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker.getUnit (), attackSkillID, mem.getMaintainedSpell (), db);
+			
 			if (getDamageTypeUtils ().isUnitImmuneToDamageType (defender.getUnit (), damageType, attackSkillID, attackFromMagicRealmID, players, mem, db))
 				attackDamage = null;
 			else

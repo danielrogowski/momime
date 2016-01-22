@@ -1016,7 +1016,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// We don't have the Long Range skill
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		
 		// Set up object to test
@@ -1062,7 +1062,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// We don't have the Long Range skill
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
 		
 		// Set up object to test

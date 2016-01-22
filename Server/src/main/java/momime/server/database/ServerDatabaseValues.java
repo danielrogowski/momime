@@ -53,6 +53,14 @@ public final class ServerDatabaseValues
 	/** Scouting range */
 	public final static String UNIT_SKILL_ID_SCOUTING = "US037";
 
+	/** Limit ranged attack distance penalty to -10% */ 
+	public final static String UNIT_SKILL_ID_LONG_RANGE = "US125";
+	
+	// hero skills
+
+	/** Hero item skill that penalises target's resistance attribute by the specified amount */
+	public static final String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
+	
 	// spells
 
 	/** Nature awareness - see whole map */

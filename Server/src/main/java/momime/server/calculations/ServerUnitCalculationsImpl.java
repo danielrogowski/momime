@@ -655,7 +655,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			penalty = (int) (distance / 3);
 			
 			// Long range skill?
-			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE,
+			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0))
 				
 				penalty = 1;

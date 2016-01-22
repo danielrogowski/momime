@@ -211,17 +211,11 @@ public final class CommonDatabaseConstants
 	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
 	public static final String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
 
-	/** Limit ranged attack distance penalty to -10% */ 
-	public static final String UNIT_SKILL_ID_LONG_RANGE = "US125";
-	
 	// hero skills
 	
 	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
 	public static final String UNIT_SKILL_ID_CASTER_HERO = "HS05";
 
-	/** Hero item skill that penalises target's resistance attribute by the specified amount */
-	public static final String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
-	
 	/**
 	 * Special code used for hero item bonuses, meaning "type(s) of attack appropriate for the type of weapon", so is used to differentiate
 	 * that for example an Sword of Illuisonary Attack being wielded by a hero with a Thrown Attack affects his regular melee hits only, and not

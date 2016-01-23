@@ -864,7 +864,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
 		
 		// Make resistance roll
-		damageCalculationMsg.setActualHits (getRandomUtils ().nextInt (10));
+		damageCalculationMsg.setActualHits (getRandomUtils ().nextInt (10) + 1);
 		int totalHits = damageCalculationMsg.getActualHits () - damageCalculationMsg.getModifiedDefenceStrength ();
 				
 		// Can't do negative damage and can't overkill the unit

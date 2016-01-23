@@ -6012,6 +6012,12 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="HeroItems">
 			<languageEntryText>ITEM_COUNT hero item(s) from heroes that died in battle were added to your fortress vault.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="UndeadCreatedSingular">
+			<languageEntryText>1 unit rises from the dead.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="UndeadCreatedPlural">
+			<languageEntryText>UNDEAD_COUNT units rise from the dead.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMagicSliders">
 		<languageEntry languageEntryID="Title">

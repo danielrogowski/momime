@@ -211,6 +211,17 @@ public final class CombatEndedUI extends MomClientDialogUI
 				("ITEM_COUNT", new Integer (getMessage ().getHeroItemCount ()).toString ()));
 		}
 		
+		// Undead created?
+		if (getMessage ().getUndeadCreated () > 0)
+		{
+			if (bottomText.length () > 0)
+				bottomText.append (System.lineSeparator ());
+			
+			bottomText.append (getLanguage ().findCategoryEntry ("frmCombatEnded", "UndeadCreated" +
+				((getMessage ().getUndeadCreated () == 1) ? "Singular" : "Plural")).replaceAll
+				("UNDEAD_COUNT", new Integer (getMessage ().getHeroItemCount ()).toString ()));
+		}
+		
 		headingText.setText (getLanguage ().findCategoryEntry ("frmCombatEnded", languageEntryID).replaceAll ("CITY_NAME", cityName));
 		mainText.setText (bottomText.toString ());
 		

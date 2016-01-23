@@ -24375,6 +24375,8 @@
 		<languageEntry languageEntryID="EnemyRazed" />
 		<languageEntry languageEntryID="EnemyGotGoldFromYourCity" />
 		<languageEntry languageEntryID="HeroItems" />
+		<languageEntry languageEntryID="UndeadCreatedSingular" />
+		<languageEntry languageEntryID="UndeadCreatedPlural" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMagicSliders">
 		<languageEntry languageEntryID="Title" />

@@ -579,6 +579,11 @@ e.g. as a result of casting Wall of Fire/Darkness in combat.</xsd:documentation>
     							<xsd:documentation>Number of items held by heroes who died in the combat, regardless of which side they were on.  The winner gets all such items.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
+						<xsd:element minOccurs="1" maxOccurs="1" name="undeadCreated" type="xsd:unsignedShort">
+						    <xsd:annotation>
+    							<xsd:documentation>Number of undead created because the winning player killed some of the losing player's units mainly with ghouls / life drain.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="captureCityDecisionID" type="momimemsgs:captureCityDecisionID">
 						    <xsd:annotation>
     							<xsd:documentation>It the combat was at a city and the attacker won, specifies whether the attacker chose to capture or raze the city.

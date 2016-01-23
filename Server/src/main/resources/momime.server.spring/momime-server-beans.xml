@@ -619,6 +619,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitSkillUtils" ref="unitSkillUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />

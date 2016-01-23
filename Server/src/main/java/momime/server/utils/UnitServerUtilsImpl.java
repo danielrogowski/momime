@@ -576,6 +576,30 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	}
 	
 	/**
+	 * @param damages List of damages a unit had taken
+	 * @return A special damage type, if the unit was at least half killed by a special damage type; otherwise will just return HEALABLE
+	 */
+	@Override
+	public final StoredDamageTypeID whatKilledUnit (final List<UnitDamage> damages)
+	{
+		log.trace ("Entering whatKilledUnit");
+		
+		// First work out how many HP we have to have taken of one damage type in order for it to count
+		final int halfDamage = (getUnitUtils ().getTotalDamageTaken (damages) + 1) / 2;
+		
+		// Default to Healable, then check each damage type in turn
+		// Important to note that we check Life Stealing last, so in the case that a unit has an even number of HP and
+		// takes exactly half Life Stealing and half Permanent damage, the Life Stealing "wins".
+		StoredDamageTypeID result = StoredDamageTypeID.HEALABLE;
+		for (final StoredDamageTypeID damageType : StoredDamageTypeID.values ())
+			if (findDamageTakenOfType (damages, damageType) >= halfDamage)
+				result = damageType;
+		
+		log.trace ("Exiting whatKilledUnit = " + result);
+		return result;
+	}
+	
+	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()

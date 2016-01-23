@@ -26,7 +26,9 @@ import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
@@ -51,10 +53,12 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CombatAI;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.ServerMemoryGridCellUtils;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Routines dealing with initiating and progressing combats, as well as moving and attacking
@@ -72,6 +76,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Unit skill utils */
 	private UnitSkillUtils unitSkillUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -673,6 +680,61 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		log.trace ("Exiting progressCombat");
 	}
+
+	/**
+	 * Searches for units that died in the specified combat mainly to Life Stealing damage owned by the losing player,
+	 * and converts them into undead owned by the winning player.
+	 * 
+	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param winningPlayer The player who won the combat
+	 * @param losingPlayer The player who lost the combat
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Number of units that were converted into undead
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final int createUndead (final MapCoordinates3DEx combatLocation,
+		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering createUndead: " + combatLocation);
+		
+		int undeadCount = 0;
+		if ((losingPlayer != null) && (winningPlayer != null))
+			for (final MemoryUnit trueUnit : trueMap.getUnit ())
+	
+				// Don't check combatPosition here - DEAD units should have no position
+				if ((combatLocation.equals (trueUnit.getCombatLocation ())) && (trueUnit.getStatus () == UnitStatusID.DEAD) && (!trueUnit.isWasSummonedInCombat ()) &&
+					(trueUnit.getOwningPlayerID () == losingPlayer.getPlayerDescription ().getPlayerID ()) &&
+					(!db.findUnit (trueUnit.getUnitID (), "createUndead").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)) &&
+					(getUnitServerUtils ().whatKilledUnit (trueUnit.getUnitDamage ()) == StoredDamageTypeID.LIFE_STEALING))
+				{
+					undeadCount++;
+					
+					trueUnit.setOwningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
+					trueUnit.setStatus (UnitStatusID.ALIVE);
+					trueUnit.getUnitDamage ().clear ();
+					
+					// Note this is an actual skill, not a spell effect, hence can never be turned off
+					final UnitSkillAndValue undeadSkill = new UnitSkillAndValue ();
+					undeadSkill.setUnitSkillID (ServerDatabaseValues.UNIT_SKILL_ID_UNDEAD);
+					trueUnit.getUnitHasSkill ().add (undeadSkill);
+					
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);
+				}
+		
+		log.debug ("createUndead created undead from " + undeadCount + " losing units");
+		log.trace ("Exiting createUndead = " + undeadCount);
+		return undeadCount;
+	}	
 	
 	/**
 	 * Regular units who die in combat are only set to status=DEAD - they are not actually freed immediately in case someone wants to cast Animate Dead on them.
@@ -1095,6 +1157,22 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setUnitSkillUtils (final UnitSkillUtils utils)
 	{
 		unitSkillUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 	
 	/**

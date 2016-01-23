@@ -337,6 +337,18 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, (int) goldSwiped + goldFromRazing);
 			}
 			
+			// Cancel any spells that were cast in combat
+			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients
+				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
+			
+			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients
+				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
+			
+			// Undead created from ghouls / life stealing?
+			final PlayerServerDetails losingPlayer = (winningPlayer == attackingPlayer) ? defendingPlayer : attackingPlayer;
+			msg.setUndeadCreated (getCombatProcessing ().createUndead (combatLocation, winningPlayer, losingPlayer,
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ()));
+
 			// Send the CombatEnded message
 			// Remember defending player may still be nil if we attacked an empty lair
 			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
@@ -344,13 +356,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
-			
-			// Cancel any spells that were cast in combat
-			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients
-				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
-			
-			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients
-				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
 			// This also removes ('kills') on the client monsters in a lair/node/tower who won

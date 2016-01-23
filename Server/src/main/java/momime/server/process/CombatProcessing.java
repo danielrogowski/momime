@@ -79,6 +79,29 @@ public interface CombatProcessing
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**
+	 * Searches for units that died in the specified combat mainly to Life Stealing damage owned by the losing player,
+	 * and converts them into undead owned by the winning player.
+	 * 
+	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param winningPlayer The player who won the combat
+	 * @param losingPlayer The player who lost the combat
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Number of units that were converted into undead
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public int createUndead (final MapCoordinates3DEx combatLocation,
+		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
 	 * Regular units who die in combat are only set to status=DEAD - they are not actually freed immediately in case someone wants to cast Animate Dead on them.
 	 * After a combat ends, this routine properly frees them both on the server and all clients.
 	 * 

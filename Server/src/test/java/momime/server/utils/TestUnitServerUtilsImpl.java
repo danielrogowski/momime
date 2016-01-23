@@ -51,6 +51,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.HeroNameSvr;
 import momime.server.database.ServerDatabaseEx;
@@ -1510,5 +1511,63 @@ public final class TestUnitServerUtilsImpl
 		assertEquals (1, damages.get (0).getDamageTaken ());
 		assertEquals (StoredDamageTypeID.LIFE_STEALING, damages.get (1).getDamageType ());
 		assertEquals (5, damages.get (1).getDamageTaken ());
+	}
+	
+	/**
+	 * Tests the whatKilledUnit method
+	 */
+	@Test
+	public final void testWhatKilledUnit ()
+	{
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (new UnitUtilsImpl ());
+
+		// Taken only regular damage
+		final List<UnitDamage> damages = new ArrayList<UnitDamage> ();
+
+		final UnitDamage dmg1 = new UnitDamage ();
+		dmg1.setDamageType (StoredDamageTypeID.HEALABLE);
+		dmg1.setDamageTaken (2);
+		damages.add (dmg1);
+		
+		assertEquals (StoredDamageTypeID.HEALABLE, utils.whatKilledUnit (damages));
+		
+		// Taken only special damage
+		dmg1.setDamageType (StoredDamageTypeID.PERMANENT);
+		assertEquals (StoredDamageTypeID.PERMANENT, utils.whatKilledUnit (damages));
+		
+		// Taken half of each
+		final UnitDamage dmg2 = new UnitDamage ();
+		dmg2.setDamageType (StoredDamageTypeID.HEALABLE);
+		dmg2.setDamageTaken (2);
+		damages.add (dmg2);
+
+		assertEquals (StoredDamageTypeID.PERMANENT, utils.whatKilledUnit (damages));
+		
+		// Now special damage isn't quite half
+		dmg2.setDamageTaken (3);
+		assertEquals (StoredDamageTypeID.HEALABLE, utils.whatKilledUnit (damages));
+		
+		// 3 kinds of damage, but none are quite half
+		final UnitDamage dmg3 = new UnitDamage ();
+		dmg3.setDamageType (StoredDamageTypeID.LIFE_STEALING);
+		dmg3.setDamageTaken (4);
+		damages.add (dmg3);
+
+		assertEquals (StoredDamageTypeID.HEALABLE, utils.whatKilledUnit (damages));
+		
+		// Now life stealing is half
+		dmg3.setDamageTaken (5);
+		assertEquals (StoredDamageTypeID.LIFE_STEALING, utils.whatKilledUnit (damages));
+		
+		// If half damaged with permanent damage, and half by life stealing, then life stealing wins
+		damages.remove (dmg2);
+		dmg1.setDamageTaken (5);
+		assertEquals (StoredDamageTypeID.LIFE_STEALING, utils.whatKilledUnit (damages));
+		
+		// Now permanent is a little bit higher
+		dmg1.setDamageTaken (6);
+		assertEquals (StoredDamageTypeID.PERMANENT, utils.whatKilledUnit (damages));
 	}
 }

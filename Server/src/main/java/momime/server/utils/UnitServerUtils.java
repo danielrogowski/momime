@@ -153,4 +153,10 @@ public interface UnitServerUtils
 	 * @param amountToHeal Number of HP to heal
 	 */
 	public void healDamage (final List<UnitDamage> damages, final int amountToHeal);
+	
+	/**
+	 * @param damages List of damages a unit had taken
+	 * @return A special damage type, if the unit was at least half killed by a special damage type; otherwise will just return HEALABLE
+	 */
+	public StoredDamageTypeID whatKilledUnit (final List<UnitDamage> damages);
 }

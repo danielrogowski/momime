@@ -130,7 +130,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			{
 				final UnitSvr unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
 				for (final ProductionTypeAndUndoubledValue upkeep : unitDetails.getUnitUpkeep ())
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), players, db));
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitSkillUtils ().getModifiedUpkeepValue
+						(thisUnit, upkeep.getProductionTypeID (), players, trueMap, db));
 			}
 
 		// Subtract the mana maintenance of all spells from the economy
@@ -244,7 +245,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
-				final int consumptionAmount = getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, db);
+				final int consumptionAmount = getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, trueMap, db);
 				if (consumptionAmount > 0)
 				{
 					final MomResourceConsumerUnit consumer = getMomResourceConsumerFactory ().createUnitConsumer ();

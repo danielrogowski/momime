@@ -777,6 +777,7 @@ In that case, the restriction is put here, with multiple addsToSkill records if 
         	<xsd:documentation>Defines the types of units in the game, i.e. Normal, Summoned and Heroes.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="undeadUpkeepPercentage" type="xsd:unsignedShort" nxe:label="Undead upkeep %" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceLevel" type="momimecommon:experienceLevel" />
 		</xsd:sequence>
 		<xsd:attribute name="unitTypeID" type="momimecommon:unitTypeID" use="required" nxe:label="Unit Type ID" nxe:gridwidth="100" />

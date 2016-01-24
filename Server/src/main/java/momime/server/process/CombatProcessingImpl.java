@@ -53,7 +53,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CombatAI;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.ServerGridCellEx;
@@ -725,7 +724,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					
 					// Note this is an actual skill, not a spell effect, hence can never be turned off
 					final UnitSkillAndValue undeadSkill = new UnitSkillAndValue ();
-					undeadSkill.setUnitSkillID (ServerDatabaseValues.UNIT_SKILL_ID_UNDEAD);
+					undeadSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD);
 					trueUnit.getUnitHasSkill ().add (undeadSkill);
 					
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);

@@ -207,6 +207,9 @@ public final class CommonDatabaseConstants
 
 	/** Allows unit to cast spells, value of the skill specifies how MP worth of spells they can cast, e.g. Archangels able to cast 40 MP worth of life magic */
 	public static final String UNIT_SKILL_ID_CASTER_UNIT = "US051";
+
+	/** Units converted to undead */
+	public final static String UNIT_SKILL_ID_UNDEAD = "US122";
 	
 	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
 	public static final String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";

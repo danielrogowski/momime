@@ -360,8 +360,8 @@ public final class TestUnitInfoPanel
 		}
 		
 		// Upkeep
-		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE01", players, db)).thenReturn (2);
-		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE01", players, fow, db)).thenReturn (2);
+		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, fow, db)).thenReturn (1);
 		
 		// Unit name
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");

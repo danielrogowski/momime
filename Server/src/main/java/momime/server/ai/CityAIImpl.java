@@ -252,7 +252,7 @@ public final class CityAIImpl implements CityAI
 		int rationsNeeded = 0;
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-				rationsNeeded = rationsNeeded + getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db);
+				rationsNeeded = rationsNeeded + getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, trueMap, db);
 
 		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations");
 

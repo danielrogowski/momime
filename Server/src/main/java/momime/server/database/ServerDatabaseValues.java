@@ -56,9 +56,6 @@ public final class ServerDatabaseValues
 	/** Scouting range */
 	public final static String UNIT_SKILL_ID_SCOUTING = "US037";
 
-	/** Units converted to undead */
-	public final static String UNIT_SKILL_ID_UNDEAD = "US122";
-	
 	/** Limit ranged attack distance penalty to -10% */ 
 	public final static String UNIT_SKILL_ID_LONG_RANGE = "US125";
 	

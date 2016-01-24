@@ -169,7 +169,7 @@ public final class TestServerResourceCalculationsImpl
 		shadowDemons.setOwningPlayerID (2);
 		trueMap.getUnit ().add (shadowDemons);
 
-		when (unitSkillUtils.getModifiedUpkeepValue (shadowDemons, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (7);
+		when (unitSkillUtils.getModifiedUpkeepValue (shadowDemons, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, trueMap, db)).thenReturn (7);
 		
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
@@ -205,8 +205,8 @@ public final class TestServerResourceCalculationsImpl
 		warlocks.setOwningPlayerID (2);
 		trueMap.getUnit ().add (warlocks);
 		
-		when (unitSkillUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, db)).thenReturn (5);
+		when (unitSkillUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, trueMap, db)).thenReturn (1);
+		when (unitSkillUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, players, trueMap, db)).thenReturn (5);
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (3, priv.getResourceValue ().size ());
@@ -505,9 +505,9 @@ public final class TestServerResourceCalculationsImpl
 
 		// Unit upkeep
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedUpkeepValue (gargoyles, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
-		when (unitSkillUtils.getModifiedUpkeepValue (gargoylesOtherStatus, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
-		when (unitSkillUtils.getModifiedUpkeepValue (gargoylesOtherPlayer, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitSkillUtils.getModifiedUpkeepValue (gargoyles, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, trueMap, db)).thenReturn (5);
+		when (unitSkillUtils.getModifiedUpkeepValue (gargoylesOtherStatus, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, trueMap, db)).thenReturn (5);
+		when (unitSkillUtils.getModifiedUpkeepValue (gargoylesOtherPlayer, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, players, trueMap, db)).thenReturn (5);
 		
 		// Create dummy implementation for the factory that is usually provided by spring
 		final MomResourceConsumerFactory factory = new MomResourceConsumerFactory ()

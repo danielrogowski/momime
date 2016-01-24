@@ -5492,6 +5492,7 @@
 		<heroSkillTypeDescription>Mage Pick</heroSkillTypeDescription>
 	</heroSkillType>
 	<unitType unitTypeID="N">
+		<undeadUpkeepPercentage>0</undeadUpkeepPercentage>
 		<experienceLevel levelNumber="0">
 			<experienceRequired>0</experienceRequired>
 			<ringColour>0033B3</ringColour>
@@ -5979,6 +5980,7 @@
 		<unitTypeDescription>Hero</unitTypeDescription>
 	</unitType>
 	<unitType unitTypeID="S">
+		<undeadUpkeepPercentage>150</undeadUpkeepPercentage>
 		<unitTypeDescription>Summoned</unitTypeDescription>
 	</unitType>
 	<heroItemType heroItemTypeID="IT01">

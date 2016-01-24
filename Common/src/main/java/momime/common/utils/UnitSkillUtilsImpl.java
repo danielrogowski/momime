@@ -26,6 +26,7 @@ import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -364,20 +365,34 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @param unit Unit to look up the base upkeep for
 	 * @param productionTypeID Production type we want to look up the modified upkeep for
 	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Upkeep value, modified by reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws RecordNotFoundException If the unitID doesn't exist
+	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
 	 */
 	@Override
 	public final int getModifiedUpkeepValue (final AvailableUnit unit, final String productionTypeID, final List<? extends PlayerPublicDetails> players,
-		final CommonDatabase db)
-		throws PlayerNotFoundException, RecordNotFoundException
+		final FogOfWarMemory mem, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering getModifiedUpkeepValue: " + unit.getUnitID () + ", " + productionTypeID);
 
 		// Get base value
-		final int baseUpkeepValue = getUnitUtils ().getBasicUpkeepValue (unit, productionTypeID, db);
+		int baseUpkeepValue = getUnitUtils ().getBasicUpkeepValue (unit, productionTypeID, db);
+		
+		// Upkeep for undead is zeroed for normal units and adds +50% for summoned creatures
+		if ((baseUpkeepValue > 0) && (getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0))
+		{
+			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getModifiedUpkeepValue").getUnitMagicRealm ();
+			final String unitTypeID = db.findPick (unitMagicRealmID, "getModifiedUpkeepValue").getUnitTypeID ();
+			final UnitType unitType = db.findUnitType (unitTypeID, "getModifiedUpkeepValue");
+			
+			if (unitType.getUndeadUpkeepPercentage () != null)
+				baseUpkeepValue = (baseUpkeepValue * unitType.getUndeadUpkeepPercentage ()) / 100; 
+		}
 
 		// Reduce upkeep for Summoner retort?
 		final int upkeepValue;

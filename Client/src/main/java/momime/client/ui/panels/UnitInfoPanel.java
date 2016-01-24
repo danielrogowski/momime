@@ -647,7 +647,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final Map<String, Integer> upkeepsMap = new HashMap<String, Integer> ();
 		for (final ProductionTypeAndUndoubledValue upkeepValue : unitInfo.getUnitUpkeep ())
 			upkeepsMap.put (upkeepValue.getProductionTypeID (),
-				getUnitSkillUtils ().getModifiedUpkeepValue (getUnit (), upkeepValue.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ()));
+				getUnitSkillUtils ().getModifiedUpkeepValue (getUnit (), upkeepValue.getProductionTypeID (), getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()));
 		
 		// Search for upkeeps from spells cast on the unit
 		if (getUnit () instanceof MemoryUnit)

@@ -25,6 +25,7 @@ import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -205,8 +206,13 @@ public final class TestUnitSkillUtilsImpl
 		magicRealm.setUnitTypeID ("T");
 		when (db.findPick ("A", "getModifiedUpkeepValue")).thenReturn (magicRealm);
 		
+		final UnitType unitType = new UnitType ();
+		unitType.setUndeadUpkeepPercentage (0);
+		when (db.findUnitType ("T", "getModifiedUpkeepValue")).thenReturn (unitType);
+		
 		// Lists
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Player
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
@@ -226,6 +232,8 @@ public final class TestUnitSkillUtilsImpl
 		when (unitUtils.getBasicUpkeepValue (unit, "RE01", db)).thenReturn (0);
 		when (unitUtils.getBasicUpkeepValue (unit, "RE02", db)).thenReturn (5);
 		
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD)).thenReturn (-1);
+		
 		// Set up object to test
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		
@@ -235,13 +243,21 @@ public final class TestUnitSkillUtilsImpl
 		utils.setPlayerPickUtils (playerPickUtils);
 		
 		// Upkeep that we pay none of
-		assertEquals (0, utils.getModifiedUpkeepValue (unit, "RE01", players, db));
+		assertEquals (0, utils.getModifiedUpkeepValue (unit, "RE01", players, fow, db));
 		
 		// Upkeep with no reduction
-		assertEquals (5, utils.getModifiedUpkeepValue (unit, "RE02", players, db));
+		assertEquals (5, utils.getModifiedUpkeepValue (unit, "RE02", players, fow, db));
 		
 		// Apply reduction
 		when (playerPickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "T", pub.getPick (), db)).thenReturn (50);
-		assertEquals (3, utils.getModifiedUpkeepValue (unit, "RE02", players, db));
+		assertEquals (3, utils.getModifiedUpkeepValue (unit, "RE02", players, fow, db));
+		
+		// Undead normal units pay no upkeep
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD)).thenReturn (0);
+		assertEquals (0, utils.getModifiedUpkeepValue (unit, "RE02", players, fow, db));
+		
+		// Undead summoned units cost +50% extra
+		unitType.setUndeadUpkeepPercentage (150);
+		assertEquals (4, utils.getModifiedUpkeepValue (unit, "RE02", players, fow, db));
 	}
 }

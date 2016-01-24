@@ -363,7 +363,8 @@ public final class ArmyListUI extends MomClientFrameUI
 						if (value == null)
 							value = 0;
 						
-						value = value + getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), getClient ().getPlayers (), getClient ().getClientDB ());
+						value = value + getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), getClient ().getPlayers (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						upkeepsMap.put (upkeep.getProductionTypeID (), value);
 					}

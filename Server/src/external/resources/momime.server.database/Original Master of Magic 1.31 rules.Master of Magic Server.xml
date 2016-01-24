@@ -5674,6 +5674,7 @@
 		<unitTypeDescription>Normal</unitTypeDescription>
 	</unitType>
 	<unitType unitTypeID="H">
+		<undeadUpkeepPercentage>0</undeadUpkeepPercentage>
 		<experienceLevel levelNumber="0">
 			<experienceRequired>0</experienceRequired>
 			<ringColour>0033B3</ringColour>

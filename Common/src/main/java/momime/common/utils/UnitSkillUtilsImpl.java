@@ -390,8 +390,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 			final String unitTypeID = db.findPick (unitMagicRealmID, "getModifiedUpkeepValue").getUnitTypeID ();
 			final UnitType unitType = db.findUnitType (unitTypeID, "getModifiedUpkeepValue");
 			
-			if (unitType.getUndeadUpkeepPercentage () != null)
-				baseUpkeepValue = (baseUpkeepValue * unitType.getUndeadUpkeepPercentage ()) / 100; 
+			baseUpkeepValue = (baseUpkeepValue * unitType.getUndeadUpkeepPercentage ()) / 100; 
 		}
 
 		// Reduce upkeep for Summoner retort?

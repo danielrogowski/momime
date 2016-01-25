@@ -43,7 +43,7 @@ import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
-import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerPickUtils;
 
@@ -780,7 +780,7 @@ public final class TestSpellClientUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
-		final UnitSkillAndValue effect = new UnitSkillAndValue ();
+		final UnitSpellEffect effect = new UnitSpellEffect ();
 		effect.setUnitSkillID ("US050");
 		spell.getUnitSpellEffect ().add (effect);
 		
@@ -838,7 +838,7 @@ public final class TestSpellClientUtilsImpl
 		
 		for (int n = 50; n <= 51; n++)
 		{
-			final UnitSkillAndValue effect = new UnitSkillAndValue ();
+			final UnitSpellEffect effect = new UnitSpellEffect ();
 			effect.setUnitSkillID ("US0" + n);
 			spell.getUnitSpellEffect ().add (effect);
 		}

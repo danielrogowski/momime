@@ -26,6 +26,7 @@ import momime.common.database.Spell;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -304,10 +305,10 @@ public final class UnitUtilsImpl implements UnitUtils
 				// Get the strength of this skill from the spell definition
 				final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "mergeSpellEffectsIntoSkillList");
 				boolean found = false;
-				final Iterator<UnitSkillAndValue> iter = spellDef.getUnitSpellEffect ().iterator ();
+				final Iterator<UnitSpellEffect> iter = spellDef.getUnitSpellEffect ().iterator ();
 				while ((!found) && (iter.hasNext ()))
 				{
-					final UnitSkillAndValue effect = iter.next ();
+					final UnitSpellEffect effect = iter.next ();
 					if (effect.getUnitSkillID ().equals (thisSpell.getUnitSkillID ()))
 					{
 						found = true;

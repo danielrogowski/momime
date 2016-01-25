@@ -21502,6 +21502,9 @@
 		<overlandCastingCost>100</overlandCastingCost>
 		<spellBookSectionID>SC04</spellBookSectionID>
 		<unitSpellEffect unitSkillID="SS175" />
+		<unitSpellEffect unitSkillID="US122">
+			<permanent>true</permanent>
+		</unitSpellEffect>
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellValidUnitTarget targetMagicRealmID="LTU" />

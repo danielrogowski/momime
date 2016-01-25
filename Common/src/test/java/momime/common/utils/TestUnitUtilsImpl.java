@@ -34,6 +34,7 @@ import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -457,7 +458,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSkillAndValue unitSpellEffect = new UnitSkillAndValue ();
+		final UnitSpellEffect unitSpellEffect = new UnitSpellEffect ();
 		unitSpellEffect.setUnitSkillID ("US003");
 		unitSpellEffect.setUnitSkillValue (7);
 		
@@ -1211,7 +1212,7 @@ public final class TestUnitUtilsImpl
 		skillDef.setChangesUnitToMagicRealm ("B");
 		when (db.findUnitSkill ("US001", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (skillDef);
 		
-		final UnitSkillAndValue unitSpellEffect = new UnitSkillAndValue ();
+		final UnitSpellEffect unitSpellEffect = new UnitSpellEffect ();
 		unitSpellEffect.setUnitSkillID ("US001");
 		
 		final Spell spellDef = new Spell ();

@@ -6,8 +6,19 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.random.RandomUtils;
+
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -26,15 +37,6 @@ import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.random.RandomUtils;
 
 /**
  * Client sends this to specify where they want to cast a spell they've completed casting overland.
@@ -94,6 +96,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		final String error;
 		String citySpellEffectID = null;
 		String unitSkillID = null;
+		MemoryUnit unit = null;
 		if (maintainedSpell == null)
 			error = "Can't find an instance of this spell awaiting targetting";
 		
@@ -150,7 +153,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 			{
 				// Find the unit we're aiming at
-				final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				unit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 				if (unit == null)
 					error = "Could not find the unit you're trying to target the spell on";
 				else
@@ -209,6 +212,20 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				// Add spell on clients (they don't have a blank version of it before now)
 				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell,
 					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				
+				// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+					for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
+						if ((effect.isPermanent () != null) && (effect.isPermanent ()) &&
+							(getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), effect.getUnitSkillID ()) < 0))
+						{
+							final UnitSkillAndValue permanentEffect = new UnitSkillAndValue ();
+							permanentEffect.setUnitSkillID (effect.getUnitSkillID ());
+							unit.getUnitHasSkill ().add (permanentEffect);
+							
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (unit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+						}
 			}
 			else
 			{

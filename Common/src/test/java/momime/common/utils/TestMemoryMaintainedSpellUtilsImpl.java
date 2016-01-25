@@ -25,9 +25,9 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -465,7 +465,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertNull (utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10));
 		
 		// Spell with exactly one unitSpellEffectID, that isn't cast yet
-		final UnitSkillAndValue effectA = new UnitSkillAndValue ();
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
 		effectA.setUnitSkillID ("A");
 		spell.getUnitSpellEffect ().add (effectA);
 		
@@ -487,7 +487,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Add three more effects
 		for (final String effectID : new String [] {"B", "C", "D"})
 		{
-			final UnitSkillAndValue effectB = new UnitSkillAndValue ();
+			final UnitSpellEffect effectB = new UnitSpellEffect ();
 			effectB.setUnitSkillID (effectID);
 			spell.getUnitSpellEffect ().add (effectB);
 		}
@@ -673,7 +673,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			(spell, null, 1, null, unit, players, fow, db));
 		
 		// All effects already cast on this unit
-		final UnitSkillAndValue effectA = new UnitSkillAndValue ();
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
 		effectA.setUnitSkillID ("A");
 		spell.getUnitSpellEffect ().add (effectA);
 
@@ -688,7 +688,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			(spell, null, 1, null, unit, players, fow, db));
 		
 		// Invalid magic realm/lifeform type
-		final UnitSkillAndValue effectB = new UnitSkillAndValue ();
+		final UnitSpellEffect effectB = new UnitSpellEffect ();
 		effectA.setUnitSkillID ("B");
 		spell.getUnitSpellEffect ().add (effectB);
 

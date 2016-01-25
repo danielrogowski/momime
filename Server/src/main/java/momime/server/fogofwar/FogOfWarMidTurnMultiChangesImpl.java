@@ -49,6 +49,7 @@ import momime.server.calculations.FogOfWarCalculations;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.CitySpellEffectSvr;
+import momime.server.database.PickSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.ServerGridCellEx;
@@ -292,7 +293,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	/**
 	 * @param trueUnits True list of units to heal/gain experience
 	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
-	 * @param trueTerrain True terrain map
+	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param fogOfWarSettings Fog of War settings from session description
@@ -303,7 +304,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final MapVolumeOfMemoryGridCells trueTerrain,
+	public final void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
@@ -312,10 +313,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
+				final String magicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (thisUnit, thisUnit.getUnitHasSkill (), trueMap.getMaintainedSpell (), db);
+				final PickSvr magicRealm = db.findPick (magicRealmID, "healUnitsAndGainExperience");
+				
 				boolean sendMsg = false;
 
 				// Heal?
-				if (thisUnit.getUnitDamage ().size () > 0)
+				if ((magicRealm.isHealEachTurn ()) && (thisUnit.getUnitDamage ().size () > 0))
 				{
 					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), 1);
 					sendMsg = true;
@@ -323,7 +327,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				// Experience?
 				final int exp = getUnitUtils ().getBasicSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-				if (exp >= 0)
+				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))
 				{
 					getUnitUtils ().setBasicSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp + 1);
 					sendMsg = true;
@@ -331,7 +335,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				// Inform any clients who know about this unit
 				if (sendMsg)
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueTerrain, players, db, fogOfWarSettings);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings);
 			}
 
 		log.trace ("Exiting healUnitsAndGainExperience");

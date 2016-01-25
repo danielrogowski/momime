@@ -1012,6 +1012,16 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 							<xsd:documentation>Basically this indicates whether this lifeform type ignores Weapon Immunity.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="healEachTurn" type="xsd:boolean" nxe:label="Heal each turn?" nxe:gridwidth="200"> 
+						<xsd:annotation>
+							<xsd:documentation>Most units heal 1 HP at the start of each turn; Undead do not.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="gainExperienceEachTurn" type="xsd:boolean" nxe:label="Exp each turn?" nxe:gridwidth="200"> 
+						<xsd:annotation>
+							<xsd:documentation>Most units heal 1 exp at the start of each turn; Undead do not.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickFreeSpell" type="momimesvr:pickFreeSpell" />
 				</xsd:sequence>
 			</xsd:extension>

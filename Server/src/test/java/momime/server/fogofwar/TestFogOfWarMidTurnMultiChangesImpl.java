@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,8 +46,11 @@ import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.database.MapFeatureMagicRealmSvr;
 import momime.server.database.MapFeatureSvr;
+import momime.server.database.PickSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.UnitSkillSvr;
+import momime.server.database.UnitSvr;
 import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
 import momime.server.utils.UnitServerUtilsImpl;
 
@@ -341,9 +346,26 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 	{
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
+		
+		final UnitSkillSvr expSkillDef = new UnitSkillSvr ();
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE), anyString ())).thenReturn (expSkillDef);
+		
+		final PickSvr magicRealm = new PickSvr ();
+		magicRealm.setHealEachTurn (true);
+		magicRealm.setGainExperienceEachTurn (true);
+		when (db.findPick ("LTN", "healUnitsAndGainExperience")).thenReturn (magicRealm);
 
-		// Other lists and objects just needed for mocks
+		// Server memory
 		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		// Other lists and objects just needed for mocks
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		
@@ -361,6 +383,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit1exp.setUnitSkillValue (10);
 		
 		final MemoryUnit unit1 = new MemoryUnit ();
+		unit1.setUnitID ("UN001");
 		unit1.setStatus (UnitStatusID.ALIVE);
 		unit1.setOwningPlayerID (1);
 		unit1.getUnitDamage ().add (unit1dmg1);
@@ -373,6 +396,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit2dmg1.setDamageTaken (3);
 
 		final MemoryUnit unit2 = new MemoryUnit ();
+		unit2.setUnitID ("UN001");
 		unit2.setStatus (UnitStatusID.ALIVE);
 		unit2.setOwningPlayerID (1);
 		unit2.getUnitDamage ().add (unit2dmg1);
@@ -383,12 +407,14 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit3exp.setUnitSkillValue (10);
 		
 		final MemoryUnit unit3 = new MemoryUnit ();
+		unit3.setUnitID ("UN001");
 		unit3.setStatus (UnitStatusID.ALIVE);
 		unit3.setOwningPlayerID (1);
 		unit3.getUnitHasSkill ().add (unit3exp);
 		
 		// Summoned unit that has taken no damage
 		final MemoryUnit unit4 = new MemoryUnit ();
+		unit4.setUnitID ("UN001");
 		unit4.setStatus (UnitStatusID.ALIVE);
 		unit4.setOwningPlayerID (1);
 		
@@ -402,6 +428,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit5exp.setUnitSkillValue (10);
 		
 		final MemoryUnit unit5 = new MemoryUnit ();
+		unit5.setUnitID ("UN001");
 		unit5.setStatus (UnitStatusID.DEAD);
 		unit5.setOwningPlayerID (1);
 		unit5.getUnitDamage ().add (unit5dmg1);
@@ -425,7 +452,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		multi.setFogOfWarMidTurnChanges (midTurn);
 		
 		// Run method
-		multi.healUnitsAndGainExperience (units, 0, trueTerrain, players, db, fogOfWarSettings);
+		multi.healUnitsAndGainExperience (units, 0, trueMap, players, db, fogOfWarSettings);
 		
 		// Check results
 		assertEquals (1, unit1dmg2.getDamageTaken ());

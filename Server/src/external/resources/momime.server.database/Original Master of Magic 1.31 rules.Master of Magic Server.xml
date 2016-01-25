@@ -986,6 +986,8 @@
 		<pickDescription>Life Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="MB02">
 		<pickType>B</pickType>
@@ -995,6 +997,8 @@
 		<pickDescription>Death Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>false</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="MB03">
 		<pickType>B</pickType>
@@ -1003,6 +1007,8 @@
 		<pickDescription>Chaos Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="MB04">
 		<pickType>B</pickType>
@@ -1011,6 +1017,8 @@
 		<pickDescription>Nature Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="MB05">
 		<pickType>B</pickType>
@@ -1019,6 +1027,8 @@
 		<pickDescription>Sorcery Book</pickDescription>
 		<pickInitialSkill>2</pickInitialSkill>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="RT01">
 		<pickType>R</pickType>
@@ -1237,29 +1247,40 @@
 		<pickType>L</pickType>
 		<unitTypeID>N</unitTypeID>
 		<pickDescription>Normal unit</pickDescription>
+		<enhancesDamageType>false</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>true</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="LTH">
 		<pickType>L</pickType>
 		<unitTypeID>H</unitTypeID>
 		<pickDescription>Hero</pickDescription>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>true</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="LTA">
 		<pickType>L</pickType>
 		<unitTypeID>S</unitTypeID>
 		<pickDescription>Arcane summoned creature</pickDescription>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="LTC">
 		<pickType>L</pickType>
 		<pickDescription>Chaos channeled unit</pickDescription>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>true</healEachTurn>
+		<gainExperienceEachTurn>true</gainExperienceEachTurn>
 	</pick>
 	<pick pickID="LTU">
 		<pickType>L</pickType>
 		<castSpellsFromPickID>MB02</castSpellsFromPickID>
 		<pickDescription>Undead (killed by Ghouls/Life Steal or Black Channeled units)</pickDescription>
 		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>false</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders (Neutral cities)</wizardName>
@@ -24732,3 +24753,4 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
+

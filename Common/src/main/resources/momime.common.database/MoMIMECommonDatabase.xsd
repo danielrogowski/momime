@@ -369,7 +369,13 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines different picks that can be chosen at the start of the game, i.e. the 5x types of Spell Books &amp; different Retorts.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="pickType" type="momimecommon:pickTypeID" nxe:label="Pick Type" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="pickType" type="momimecommon:pickTypeID" nxe:label="Pick Type" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickTypeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickCost" type="momimecommon:pickCost" nxe:label="Cost" nxe:gridwidth="60" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickReligiousBuildingBonus" type="momimecommon:percentage" nxe:label="Religious Building Bonus %" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">

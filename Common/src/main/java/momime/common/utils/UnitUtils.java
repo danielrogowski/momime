@@ -143,10 +143,11 @@ public interface UnitUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws MomException If no matching merger record exists when multiple lifeform type modifications apply
 	 */
 	public String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitSkillAndValue> skills,
 		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
-		throws RecordNotFoundException;
+		throws RecordNotFoundException, MomException;
 
 	/**
 	 * @param unit Unit to look up the base upkeep for

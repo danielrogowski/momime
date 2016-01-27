@@ -1787,7 +1787,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
-		when (random.nextInt (10)).thenReturn (6);		// So takes 6 - 4 + 3 = 5 damage
+		when (random.nextInt (10)).thenReturn (5);		// So takes 6 - 4 + 3 = 5 damage
 		
 		// Mock the damage being applied
 		final DamageTypeSvr damageType = new DamageTypeSvr ();

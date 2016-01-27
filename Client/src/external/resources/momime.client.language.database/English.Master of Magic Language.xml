@@ -373,6 +373,9 @@ In addition the wizard is able to freely cast spells inside nodes which would no
 	<pick pickID="LTU">
 		<unitMagicRealmPlural>Undead</unitMagicRealmPlural>
 	</pick>
+	<pick pickID="LTUC">
+		<unitMagicRealmPlural>Undead Chaos Channeled units</unitMagicRealmPlural>
+	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders</wizardName>
 	</wizard>

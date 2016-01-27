@@ -402,6 +402,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickPrerequisite" type="momimecommon:pickPrerequisite" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickExclusiveFrom" type="momimecommon:pickExclusiveFrom" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickProductionBonus" type="momimecommon:pickProductionBonus" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mergedFromPick" type="momimecommon:mergedFromPick" />
 		</xsd:sequence>
 		<xsd:attribute name="pickID" type="momimecommon:pickID" use="required" nxe:label="Pick ID" nxe:gridwidth="100" />
 	</xsd:complexType>
@@ -465,6 +466,21 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="mergedFromPick" nxe:singular="Merged from pick" nxe:plural="Merged from picks">
+        <xsd:annotation>
+        	<xsd:documentation>This is for modelling units that are both Undead and Chaos Channeled.  So LTUC = LTU + LTC.
+When the code is checking for skills that modify a unit's magic realm/lifeform type, if it finds only one then that one becomes its modified magic realm/lifeform type.
+If it finds multiple, it will look for a pick with mergedFromPick entries that match the list.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="mergedFromPickID" type="momimecommon:pickID" use="required" nxe:label="Merged from pick" nxe:gridwidth="150">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -1098,7 +1114,13 @@ This is used for the fact that Black Channels turns units Undead, and while the 
 Can have different saving throw depending on the type of unit.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowSkillID" type="momimecommon:unitSkillID" nxe:label="Saving Throw rolls against Target Skill" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowSkillID" type="momimecommon:unitSkillID" nxe:label="Saving Throw rolls against Target Skill" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowModifier" type="momimecommon:savingThrowModifier" nxe:label="Saving Throw Modifier" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="targetMagicRealmID" type="momimecommon:pickID" use="optional" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">

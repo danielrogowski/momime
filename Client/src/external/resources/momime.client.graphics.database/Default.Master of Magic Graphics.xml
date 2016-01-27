@@ -370,6 +370,7 @@
 	<pick pickID="LTA" />
 	<pick pickID="LTC" />
 	<pick pickID="LTU" />
+	<pick pickID="LTUC" />
 	<unitSkillComponentImage unitSkillComponentID="B">
 		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/basic.png</unitSkillComponentImageFile>
 	</unitSkillComponentImage>

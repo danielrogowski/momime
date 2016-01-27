@@ -45,10 +45,11 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @return Damage type dealt by this kind of unit skill
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If there is an error in the game logic
 	 */
 	@Override
 	public final DamageTypeSvr determineSkillDamageType (final MemoryUnit attacker, final String attackSkillID, final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
-		throws RecordNotFoundException
+		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering determineSkillDamageType: Unit URN " + attacker.getUnitURN () + " skill " + attackSkillID);
 

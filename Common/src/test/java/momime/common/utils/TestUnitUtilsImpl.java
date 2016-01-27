@@ -7,6 +7,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.MergedFromPick;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
@@ -1125,10 +1127,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the getModifiedUnitMagicRealmLifeformTypeID method on a unit with skills that don't modify its magic realm
-	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetModifiedUnitMagicRealmLifeformTypeID_NoModification () throws RecordNotFoundException
+	public final void testGetModifiedUnitMagicRealmLifeformTypeID_NoModification () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1160,10 +1162,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the getModifiedUnitMagicRealmLifeformTypeID method on a unit with a skill that modifies its magic realm
-	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetModifiedUnitMagicRealmLifeformTypeID_ModifiedBySkill () throws RecordNotFoundException
+	public final void testGetModifiedUnitMagicRealmLifeformTypeID_ModifiedBySkill () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1196,10 +1198,10 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the getModifiedUnitMagicRealmLifeformTypeID method on a unit with a spell cast on it that gives a skill that modifies its magic realm
-	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetModifiedUnitMagicRealmLifeformTypeID_ModifiedBySpell () throws RecordNotFoundException
+	public final void testGetModifiedUnitMagicRealmLifeformTypeID_ModifiedBySpell () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1240,6 +1242,144 @@ public final class TestUnitUtilsImpl
 		assertEquals ("B", utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db));
 	}
 
+	/**
+	 * Tests the getModifiedUnitMagicRealmLifeformTypeID method on lifeform types that require two modifications to reach (i.e. Undead Chaos Channeled units)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetModifiedUnitMagicRealmLifeformTypeID_ModifiedByTwoSkills () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("A");
+		when (db.findUnit ("UN001", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (unitDef);
+		
+		final UnitSkill skillDef1 = new UnitSkill ();
+		skillDef1.setChangesUnitToMagicRealm ("B");
+		when (db.findUnitSkill ("US001", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (skillDef1);
+
+		final UnitSkill skillDef2 = new UnitSkill ();
+		skillDef2.setChangesUnitToMagicRealm ("C");
+		when (db.findUnitSkill ("US002", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (skillDef2);
+
+		final List<Pick> picks = new ArrayList<Pick> ();
+		for (final String pickID : new String [] {"A", "B", "C"})
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID (pickID);
+			picks.add (pick);
+		}
+
+		final Pick pick = new Pick ();
+		pick.setPickID ("D");
+		for (final String pickID : new String [] {"B", "C"})
+		{
+			final MergedFromPick merged = new MergedFromPick ();
+			merged.setMergedFromPickID (pickID);
+			pick.getMergedFromPick ().add (merged);
+		}
+		picks.add (pick);
+		
+		doReturn (picks).when (db).getPicks ();
+		
+		// Set up sample unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// No skills
+		assertEquals ("A", utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db));
+		
+		// First skill
+		final UnitSkillAndValue unitSkill1 = new UnitSkillAndValue ();
+		unitSkill1.setUnitSkillID ("US001");
+		unit.getUnitHasSkill ().add (unitSkill1);
+
+		assertEquals ("B", utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db));
+		
+		// Second skill
+		unitSkill1.setUnitSkillID ("US002");
+		assertEquals ("C", utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db));
+		
+		// Both skills
+		final UnitSkillAndValue unitSkill2 = new UnitSkillAndValue ();
+		unitSkill2.setUnitSkillID ("US001");
+		unit.getUnitHasSkill ().add (unitSkill2);
+
+		assertEquals ("D", utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db));
+	}
+	
+	/**
+	 * Tests the getModifiedUnitMagicRealmLifeformTypeID method on lifeform types that require two modifications to reach, but no such merged lifeform type is defined
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testGetModifiedUnitMagicRealmLifeformTypeID_ModifiedByTwoSkills_Undefined () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("A");
+		when (db.findUnit ("UN001", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (unitDef);
+		
+		final UnitSkill skillDef1 = new UnitSkill ();
+		skillDef1.setChangesUnitToMagicRealm ("B");
+		when (db.findUnitSkill ("US001", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (skillDef1);
+
+		final UnitSkill skillDef2 = new UnitSkill ();
+		skillDef2.setChangesUnitToMagicRealm ("D");
+		when (db.findUnitSkill ("US002", "getModifiedUnitMagicRealmLifeformTypeID")).thenReturn (skillDef2);
+
+		final List<Pick> picks = new ArrayList<Pick> ();
+		for (final String pickID : new String [] {"A", "B", "C", "D"})
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID (pickID);
+			picks.add (pick);
+		}
+
+		final Pick pick = new Pick ();
+		pick.setPickID ("E");
+		for (final String pickID : new String [] {"B", "C"})
+		{
+			final MergedFromPick merged = new MergedFromPick ();
+			merged.setMergedFromPickID (pickID);
+			pick.getMergedFromPick ().add (merged);
+		}
+		picks.add (pick);
+		
+		doReturn (picks).when (db).getPicks ();
+		
+		// Set up sample unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+
+		final UnitSkillAndValue unitSkill1 = new UnitSkillAndValue ();
+		unitSkill1.setUnitSkillID ("US001");
+		unit.getUnitHasSkill ().add (unitSkill1);
+
+		final UnitSkillAndValue unitSkill2 = new UnitSkillAndValue ();
+		unitSkill2.setUnitSkillID ("US002");
+		unit.getUnitHasSkill ().add (unitSkill2);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db);
+	}
+	
 	/**
 	 * Tests the getBasicUpkeepValue method
 	 * @throws RecordNotFoundException If the unitID doesn't exist

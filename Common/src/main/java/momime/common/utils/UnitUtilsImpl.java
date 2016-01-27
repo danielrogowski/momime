@@ -1,5 +1,6 @@
 package momime.common.utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,6 +21,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.HeroItemTypeAllowedBonus;
+import momime.common.database.MergedFromPick;
+import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -507,16 +510,14 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws MomException If no matching merger record exists when multiple lifeform type modifications apply
 	 */
 	@Override
 	public final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitSkillAndValue> skills,
 		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
-		throws RecordNotFoundException
+		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering getModifiedUnitMagicRealmLifeformTypeID: " + unit.getUnitID ());
-
-		// Get basic value
-		String magicRealmLifeformTypeID = db.findUnit (unit.getUnitID (), "getModifiedUnitMagicRealmLifeformTypeID").getUnitMagicRealm ();
 
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
 		final List<UnitSkillAndValue> mergedSkills;
@@ -526,13 +527,63 @@ public final class UnitUtilsImpl implements UnitUtils
 			mergedSkills = skills;
 
 		// Check if any skills or spells override this
+		final List<String> changedMagicRealmLifeformTypeIDs = new ArrayList<String> ();
 		for (final UnitSkillAndValue thisSkill : mergedSkills)
 		{
 			final String changedMagicRealmLifeformTypeID = db.findUnitSkill (thisSkill.getUnitSkillID (), "getModifiedUnitMagicRealmLifeformTypeID").getChangesUnitToMagicRealm ();
 			if (changedMagicRealmLifeformTypeID != null)
-				magicRealmLifeformTypeID = changedMagicRealmLifeformTypeID;
+				changedMagicRealmLifeformTypeIDs.add (changedMagicRealmLifeformTypeID);
 		}
 
+		// Now what we do depends on how many modifications we found
+		final String magicRealmLifeformTypeID;
+		
+		// No modifications - use value from unit definition, unaltered
+		if (changedMagicRealmLifeformTypeIDs.size () == 0)
+			magicRealmLifeformTypeID = db.findUnit (unit.getUnitID (), "getModifiedUnitMagicRealmLifeformTypeID").getUnitMagicRealm ();
+
+		// Exactly one modification - use the value set by that skill (i.e. unit is Undead or Chaos Channeled)
+		else if (changedMagicRealmLifeformTypeIDs.size () == 1)
+			magicRealmLifeformTypeID = changedMagicRealmLifeformTypeIDs.get (0);
+		
+		// Multiple - look for a magic realm whose merge list matches our list (i.e. unit is Undead AND Chaos Channeled)
+		else
+		{
+			final Iterator<? extends Pick> iter = db.getPicks ().iterator ();
+			String match = null;
+			while ((match == null) && (iter.hasNext ()))
+			{
+				final Pick pick = iter.next ();
+				
+				if (pick.getMergedFromPick ().size () == changedMagicRealmLifeformTypeIDs.size ())
+				{
+					boolean ok = true;
+					for (final MergedFromPick mergedFromPick : pick.getMergedFromPick ())
+						if (!changedMagicRealmLifeformTypeIDs.contains (mergedFromPick.getMergedFromPickID ()))
+							ok = false;
+				
+					if (ok)
+						match = pick.getPickID ();
+				}
+			}
+			
+			if (match != null)
+				magicRealmLifeformTypeID = match;
+			else
+			{
+				final StringBuilder msg = new StringBuilder ();
+				changedMagicRealmLifeformTypeIDs.forEach (s ->
+				{
+					if (msg.length () > 0)
+						msg.append (", ");
+					
+					msg.append (s);
+				});
+				
+				throw new MomException ("No magic realm/lifeform type (Pick) found that merges lifeform types: " + msg);
+			}
+		}
+		
 		log.trace ("Exiting getModifiedUnitMagicRealmLifeformTypeID = " + magicRealmLifeformTypeID);
 		return magicRealmLifeformTypeID;
 	}

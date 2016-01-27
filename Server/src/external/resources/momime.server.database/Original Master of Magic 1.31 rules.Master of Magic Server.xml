@@ -1282,6 +1282,16 @@
 		<healEachTurn>false</healEachTurn>
 		<gainExperienceEachTurn>false</gainExperienceEachTurn>
 	</pick>
+	<pick pickID="LTUC">
+		<pickType>L</pickType>
+		<castSpellsFromPickID>MB02</castSpellsFromPickID>
+		<mergedFromPick mergedFromPickID="LTU" />
+		<mergedFromPick mergedFromPickID="LTC" />
+		<pickDescription>Undead AND Chaos channeled unit</pickDescription>
+		<enhancesDamageType>true</enhancesDamageType>
+		<healEachTurn>false</healEachTurn>
+		<gainExperienceEachTurn>false</gainExperienceEachTurn>
+	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders (Neutral cities)</wizardName>
 	</wizard>
@@ -18866,6 +18876,22 @@
 			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>MB03</effectMagicRealm>
@@ -18905,6 +18931,26 @@
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Node Aura (+2 to various stats for Chaos creatures)</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -19036,6 +19082,14 @@
 			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Metal Fires</combatAreaEffectDescription>
 	</combatAreaEffect>
 	<combatAreaEffect combatAreaEffectID="CSE108">
@@ -19092,6 +19146,14 @@
 			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>MB03</effectMagicRealm>
@@ -19131,6 +19193,26 @@
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>
 			<effectMagicRealm>LTC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>2</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>Chaos Surge</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -19168,6 +19250,38 @@
 			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>MB01</effectMagicRealm>
@@ -19207,6 +19321,46 @@
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>MB02</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>-1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectDescription>True Light</combatAreaEffectDescription>
 	</combatAreaEffect>
@@ -19313,6 +19467,38 @@
 			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
@@ -19347,6 +19533,46 @@
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>MB02</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>-1</unitSkillValue>
@@ -19429,6 +19655,38 @@
 			<effectMagicRealm>MB02</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA02">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA04">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA05">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="UA01">
 			<unitSkillValue>-1</unitSkillValue>
 			<effectMagicRealm>MB01</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
@@ -19463,6 +19721,46 @@
 		<combatAreaEffectSkillBonus unitSkillID="SS093B">
 			<unitSkillValue>1</unitSkillValue>
 			<effectMagicRealm>MB02</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTU</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US134">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US133">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US130">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="US126">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
+		</combatAreaEffectSkillBonus>
+		<combatAreaEffectSkillBonus unitSkillID="SS093B">
+			<unitSkillValue>1</unitSkillValue>
+			<effectMagicRealm>LTUC</effectMagicRealm>
 		</combatAreaEffectSkillBonus>
 		<combatAreaEffectSkillBonus unitSkillID="US134">
 			<unitSkillValue>-1</unitSkillValue>
@@ -20548,6 +20846,7 @@
 		<unitSpellEffect unitSkillID="SS093C" />
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
+		<spellValidUnitTarget targetMagicRealmID="LTU" />
 		<spellName>Chaos Channels</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
 	</spell>
@@ -20880,6 +21179,7 @@
 		<spellValidUnitTarget targetMagicRealmID="MB03" />
 		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellValidUnitTarget targetMagicRealmID="LTU" />
+		<spellValidUnitTarget targetMagicRealmID="LTUC" />
 		<spellName>Star Fires</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>
@@ -21031,6 +21331,10 @@
 		<spellValidUnitTarget targetMagicRealmID="MB03" />
 		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellValidUnitTarget targetMagicRealmID="LTU">
+			<savingThrowSkillID>UA05</savingThrowSkillID>
+			<savingThrowModifier>5</savingThrowModifier>
+		</spellValidUnitTarget>
+		<spellValidUnitTarget targetMagicRealmID="LTUC">
 			<savingThrowSkillID>UA05</savingThrowSkillID>
 			<savingThrowModifier>5</savingThrowModifier>
 		</spellValidUnitTarget>
@@ -21230,6 +21534,10 @@
 		<spellValidUnitTarget targetMagicRealmID="LTA" />
 		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellValidUnitTarget targetMagicRealmID="LTU">
+			<savingThrowSkillID>UA05</savingThrowSkillID>
+			<savingThrowModifier>5</savingThrowModifier>
+		</spellValidUnitTarget>
+		<spellValidUnitTarget targetMagicRealmID="LTUC">
 			<savingThrowSkillID>UA05</savingThrowSkillID>
 			<savingThrowModifier>5</savingThrowModifier>
 		</spellValidUnitTarget>
@@ -21528,7 +21836,9 @@
 		</unitSpellEffect>
 		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellValidUnitTarget targetMagicRealmID="LTH" />
+		<spellValidUnitTarget targetMagicRealmID="LTC" />
 		<spellValidUnitTarget targetMagicRealmID="LTU" />
+		<spellValidUnitTarget targetMagicRealmID="LTUC" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
@@ -24753,4 +25063,3 @@
 		<languageEntry languageEntryID="ExperienceForNextLevelWithBoost" />
 	</languageCategory>
 </momimesvr:serverDatabase>
-

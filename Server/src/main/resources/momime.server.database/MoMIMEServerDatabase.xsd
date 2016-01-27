@@ -426,6 +426,10 @@
 			<xsd:selector xpath="pick/pickPrerequisite" />
 			<xsd:field xpath="prerequisiteID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:pickPK" name="mergedFromPickFKpick">
+			<xsd:selector xpath="pick/mergedFromPick" />
+			<xsd:field xpath="@mergedFromPickID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:pickTypePK" name="pickPrerequisiteFKpickType">
 			<xsd:selector xpath="pick/pickPrerequisite" />
 			<xsd:field xpath="prerequisiteTypeID" />

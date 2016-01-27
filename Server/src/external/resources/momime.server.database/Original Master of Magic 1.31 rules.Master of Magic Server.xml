@@ -20839,6 +20839,7 @@
 		<researchCost>400</researchCost>
 		<overlandCastingCost>50</overlandCastingCost>
 		<spellBookSectionID>SC04</spellBookSectionID>
+		<permanent>true</permanent>
 		<unitSpellEffect unitSkillID="SS093A" />
 		<unitSpellEffect unitSkillID="SS093B">
 			<unitSkillValue>2</unitSkillValue>

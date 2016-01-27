@@ -1017,6 +1017,13 @@ but kept these separate to make it totally clear when production values are reco
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastingCost" type="momimecommon:spellCastingCost" nxe:label="Overland Cost" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingCost" type="momimecommon:spellCastingCost" nxe:label="Combat Cost" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellBookSectionID" type="momimecommon:spellBookSectionID" nxe:label="Spell Book Section" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="permanent" type="xsd:boolean" nxe:label="Permanent?">
+		        <xsd:annotation>
+		        	<xsd:documentation>Permanent spells can never be switched off by any means, either voluntarily by the caster or via dispel-type spells.  Used for Chaos Channels.
+(This implies that the spell should have 0 upkeep cost, or the client could get into a deadlock where it won't let you end turn because you don't have enough mana to pay for
+spell upkeep, but cannot switch off the spell that's costing the upkeep)</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" nxe:label="Building Created" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>

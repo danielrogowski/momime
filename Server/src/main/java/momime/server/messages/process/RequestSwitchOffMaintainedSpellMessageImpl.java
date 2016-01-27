@@ -3,6 +3,14 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -11,15 +19,8 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.SpellSvr;
 import momime.server.process.SpellProcessing;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Client sends this when they want to switch off a maintained spell (overland, unit or city).
@@ -59,6 +60,8 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		// Look for the spell
 		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (getSpellURN (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+
+		final SpellSvr spellDef = (trueSpell == null) ? null : mom.getServerDB ().findSpell (trueSpell.getSpellID (), "RequestSwitchOffMaintainedSpellMessageImpl");
 		
 		// Do some checks
 		final String error;
@@ -66,6 +69,8 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 			error = "Couldn't find the spell you wanted to switch off";
 		else if (!sender.getPlayerDescription ().getPlayerID ().equals (trueSpell.getCastingPlayerID ()))
 			error = "You cannot switch off another wizard's spells!";
+		else if ((spellDef.isPermanent () != null) && (spellDef.isPermanent ()))
+			error = "You cannot switch off permanent spells";
 		else
 			error = null;
 		

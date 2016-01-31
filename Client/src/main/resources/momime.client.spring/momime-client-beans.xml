@@ -481,7 +481,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
-	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
 	
 	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
@@ -819,6 +818,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="soundPlayer" ref="soundPlayer" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">
@@ -1927,6 +1927,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="heroItemInfoLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

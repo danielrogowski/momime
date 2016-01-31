@@ -18,6 +18,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
@@ -25,8 +26,10 @@ import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
@@ -44,6 +47,7 @@ import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
@@ -97,6 +101,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
+
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -444,6 +451,53 @@ public final class SpellProcessingImpl implements SpellProcessing
 				defendingPlayer.getConnection ().sendMessageToClient (msg);
 		}
 		
+		// Raise dead
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (targetUnit != null))
+		{
+			// Even though we're summoning the unit into a combat, the location of the unit might not be
+			// the same location as the combat - if its the attacker summoning a unit, it needs to go in the
+			// cell they're attacking from, not the actual defending/combat cell
+			final MapCoordinates3DEx summonLocation = getOverlandMapServerUtils ().findMapLocationOfUnitsInCombat
+				(combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+			
+			// Heal it
+			targetUnit.getUnitDamage ().clear ();
+			targetUnit.setOwningPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+			
+			if (spell.getResurrectedHealthPercentage () < 100)
+			{
+				final int totalHP = getUnitCalculations ().calculateHitPointsRemaining (targetUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				final int hp = (totalHP * spell.getResurrectedHealthPercentage ()) / 100;
+				final int dmg = totalHP - hp;
+				if (dmg > 0)
+				{
+					final UnitDamage dmgTaken = new UnitDamage ();
+					dmgTaken.setDamageTaken (dmg);
+					dmgTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+					targetUnit.getUnitDamage ().add (dmgTaken);
+				}
+			}
+			
+			// Does it become undead?
+			if (spell.getResurrectingAddsSkillID () != null)
+			{
+				final UnitSkillAndValue undead = new UnitSkillAndValue ();
+				undead.setUnitSkillID (spell.getResurrectingAddsSkillID ());
+				targetUnit.getUnitHasSkill ().add (undead);
+			}
+			
+			// Set it back to alive; this also sends the updates from above
+			getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+
+			// Show the "summoning" animation for it
+			final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
+
+			getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
+				combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+		}
+		
 		// Combat summons
 		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 		{
@@ -736,6 +790,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
+	}
+	
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 	
 	/**

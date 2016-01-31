@@ -156,7 +156,6 @@
     			<value>momime.common.messages.servertoclient.AddCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.CancelCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage</value>
-    			<value>momime.common.messages.servertoclient.UpdateUnitToAliveMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>

@@ -6105,6 +6105,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="AlreadyHasAllPossibleCombatSpellEffects">
 			<languageEntryText>You already have an active SPELL_NAME spell in this combat.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="NoDeadUnitsToBeRaised">
+			<languageEntryText>No suitable units have died yet this combat that could be brought back with a SPELL_NAME spell.</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title">
@@ -6707,6 +6710,12 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 	<languageCategory languageCategoryID="frmUnitRowDisplay">
 		<languageEntry languageEntryID="Cancel">
 			<languageEntryText>Cancel</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TitleRaiseOwn">
+			<languageEntryText>Select a deceased friendly unit to bring back from the dead.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TitleRaiseEither">
+			<languageEntryText>Select a deceased friendly or enemy unit to bring back from the dead.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSpellQueue">

@@ -26,11 +26,11 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.SpellBookSectionLang;
 import momime.client.language.database.SpellLang;
-import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.components.UnitRowDisplayButton;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.UnitClientUtils;
@@ -96,12 +96,15 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
+
+	/** Combat UI */
+	private CombatUI combatUI;
 	
 	/** Units to display in the list */
 	private List<MemoryUnit> units;
 
-	/** NTM about the spell being targetted */
-	private NewTurnMessageSpellEx targetSpell;
+	/** The spell being targetted */
+	private String targetSpellID;
 	
 	/** Label showing prompt text */
 	private JLabel title;
@@ -177,7 +180,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			buttonNormal, buttonPressed, buttonNormal), "frmUnitRowDisplayCancel");
 		
 		// Create controls for each unit
-		final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpell ().getSpellID (), "UnitRowDisplayUI");
+		final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpellID (), "UnitRowDisplayUI");
 		
 		int row = 0;
 		for (final MemoryUnit unit : getUnits ())
@@ -187,39 +190,50 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			// Unit image/button
 			final Action selectAction = new LoggingAction ((ev) ->
 			{
-				// Use common routine to do all the validation
-				final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-					(spell, null, getClient ().getOurPlayerID (), null, unit,
-					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-				
-				if (validTarget == TargetSpellResult.VALID_TARGET)
+				if (spell.getResurrectedHealthPercentage () != null)
 				{
-					final TargetSpellMessage msg = new TargetSpellMessage ();
-					msg.setSpellID (getTargetSpell ().getSpellID ());
-					msg.setUnitURN (unit.getUnitURN ());
-					getClient ().getServerConnection ().sendMessageToServer (msg);
-					
-					// Close out this window and the "Target Spell" right hand panel
-					getOverlandMapProcessing ().updateMovementRemaining ();
+					// Its a raise dead-type spell being cast in combat - so we've picked the unit, now pick where to bring it back
+					getCombatUI ().setSpellBeingTargetted (spell);
+					getCombatUI ().setUnitBeingRaised (unit);
 					getDialog ().dispose ();
 				}
-				else if (validTarget.getUnitLanguageEntryID () != null)
+				else
 				{
-					final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
-					final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+					// Its a normal unit enchantment being cast on the overland map
+					// Use common routine to do all the validation
+					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						(spell, null, getClient ().getOurPlayerID (), null, unit,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
-					String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
-						("SPELL_NAME", (spellName != null) ? spellName : getTargetSpell ().getSpellID ());
-					
-					// If spell can only be targetted on specific magic realm/lifeform types, the list them
-					if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
-						text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
-					
-					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("SpellTargetting");
-					msg.setTitleLanguageEntryID ("Title");
-					msg.setText (text);
-					msg.setVisible (true);												
+					if (validTarget == TargetSpellResult.VALID_TARGET)
+					{
+						final TargetSpellMessage msg = new TargetSpellMessage ();
+						msg.setSpellID (getTargetSpellID ());
+						msg.setUnitURN (unit.getUnitURN ());
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+						
+						// Close out this window and the "Target Spell" right hand panel
+						getOverlandMapProcessing ().updateMovementRemaining ();
+						getDialog ().dispose ();
+					}
+					else if (validTarget.getUnitLanguageEntryID () != null)
+					{
+						final SpellLang spellLang = getLanguage ().findSpell (getTargetSpellID ());
+						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						
+						String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+							("SPELL_NAME", (spellName != null) ? spellName : getTargetSpellID ());
+						
+						// If spell can only be targetted on specific magic realm/lifeform types, the list them
+						if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
+							text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
+						
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("SpellTargetting");
+						msg.setTitleLanguageEntryID ("Title");
+						msg.setText (text);
+						msg.setVisible (true);												
+					}
 				}
 			});
 
@@ -297,15 +311,25 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 		try
 		{
 			// Work out the title prompt to use
-			final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
-			final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-			
-			final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpell ().getSpellID (), "UnitRowDisplayUI");
-			final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
-			final String target = (section != null) ? section.getSpellTargetPrompt () : null;
-			
-			title.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
-				(target.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getTargetSpell ().getSpellID ())));
+			final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpellID (), "UnitRowDisplayUI");
+			if (spell.getResurrectedHealthPercentage () != null)
+			{
+				// Its a raise dead-type spell being cast in combat
+				final String languageEntryID = "TitleRaise" + (((spell.isResurrectEnemyUnits () != null) && (spell.isResurrectEnemyUnits ())) ? "Either" : "Own");
+				title.setText (getLanguage ().findCategoryEntry ("frmUnitRowDisplay", languageEntryID));
+			}
+			else
+			{
+				// Its a normal unit enchantment being cast on the overland map
+				final SpellLang spellLang = getLanguage ().findSpell (getTargetSpellID ());
+				final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+				
+				final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
+				final String target = (section != null) ? section.getSpellTargetPrompt () : null;
+				
+				title.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
+					(target.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getTargetSpellID ())));
+			}
 		
 			// Unit names
 			for (int unitNo = 0; unitNo < getUnits ().size (); unitNo++)
@@ -533,19 +557,19 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return NTM about the spell being targetted
+	 * @return The spell being targetted
 	 */
-	public final NewTurnMessageSpellEx getTargetSpell ()
+	public final String getTargetSpellID ()
 	{
-		return targetSpell;
+		return targetSpellID;
 	}
 	
 	/**
-	 * @param msg NTM about the spell being targetted
+	 * @param spellID The spell being targetted
 	 */
-	public final void setTargetSpell (final NewTurnMessageSpellEx msg)
+	public final void setTargetSpellID (final String spellID)
 	{
-		targetSpell = msg;
+		targetSpellID = spellID;
 	}
 
 	/**
@@ -562,5 +586,21 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	public final void setSpellClientUtils (final SpellClientUtils utils)
 	{
 		spellClientUtils = utils;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

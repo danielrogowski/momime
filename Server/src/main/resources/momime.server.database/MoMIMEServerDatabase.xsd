@@ -626,6 +626,10 @@
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="buildingID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="spellFKunitSkill">
+			<xsd:selector xpath="spell" />
+			<xsd:field xpath="resurrectingAddsSkillID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitPK" name="summonedUnitFKunit">
 			<xsd:selector xpath="spell/summonedUnit" />
 			<xsd:field xpath="@summonedUnitID" />

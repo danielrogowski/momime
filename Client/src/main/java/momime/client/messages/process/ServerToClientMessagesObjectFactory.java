@@ -59,7 +59,6 @@ import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpel
 import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
-import momime.common.messages.servertoclient.UpdateUnitToAliveMessage;
 import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.YourRaceIsOkMessage;
 
@@ -540,15 +539,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final AskForCaptureCityDecisionMessage createAskForCaptureCityDecisionMessage ()
 	{
 		return getFactory ().createAskForCaptureCityDecisionMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final UpdateUnitToAliveMessage createUpdateUnitToAliveMessage ()
-	{
-		return getFactory ().createUpdateUnitToAliveMessage ();
 	}
 
 	/**

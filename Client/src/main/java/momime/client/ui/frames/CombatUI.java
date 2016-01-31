@@ -393,6 +393,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Spell chosen from spell book that we want to cast into this combat, and need to select a target for */
 	private Spell spellBeingTargetted;
 	
+	/** Unit being raised from the dead */
+	private MemoryUnit unitBeingRaised;
+	
 	/** Colour to flash the combat screen when a CAE is being cast */
 	private Color flashColour = NO_FLASH_COLOUR;
 	
@@ -963,6 +966,10 @@ public final class CombatUI extends MomClientFrameUI
 							{
 								isValidTarget = true;
 								msg.setCombatTargetLocation (combatCoords);
+								
+								// Resurrecting an existing unit?
+								if (getSpellBeingTargetted ().getResurrectedHealthPercentage () != null)
+									msg.setCombatTargetUnitURN (getUnitBeingRaised ().getUnitURN ());
 							}
 						}
 						else
@@ -1743,6 +1750,22 @@ public final class CombatUI extends MomClientFrameUI
 		log.trace ("Exiting setSpellBeingTargetted");
 	}
 	
+	/**
+	 * @return Unit being raised from the dead
+	 */
+	public final MemoryUnit getUnitBeingRaised ()
+	{
+		return unitBeingRaised;
+	}
+
+	/**
+	 * @param unit Unit being raised from the dead
+	 */
+	public final void setUnitBeingRaised (final MemoryUnit unit)
+	{
+		unitBeingRaised = unit;
+	}
+
 	/**
 	 * Careful with making updates to this since all the drawing is based on it.  Updates must be consistent with the current location of units, i.e. unit.setCombatPosition () 
 	 * @return Units occupying each cell of the combat map

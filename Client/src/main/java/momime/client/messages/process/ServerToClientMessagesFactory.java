@@ -268,11 +268,6 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public AskForCaptureCityDecisionMessageImpl createAskForCaptureCityDecisionMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public UpdateUnitToAliveMessageImpl createUpdateUnitToAliveMessage ();
 	
 	/**
 	 * @return Newly created message

@@ -30,7 +30,6 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.SpellBookSectionLang;
 import momime.client.language.database.SpellLang;
-import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.components.UnitRowDisplayButton;
@@ -99,9 +98,6 @@ public final class TestUnitRowDisplayUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Spell being targetted
-		final NewTurnMessageSpellEx ntm = new NewTurnMessageSpellEx ();
-		ntm.setSpellID ("SP001");
-		
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
@@ -226,7 +222,7 @@ public final class TestUnitRowDisplayUI
 		display.setLanguageChangeMaster (langMaster);
 		display.setGraphicsDB (gfx);
 		display.setUnits (units);
-		display.setTargetSpell (ntm);
+		display.setTargetSpellID ("SP001");
 		display.setClient (client);
 		display.setUiComponentFactory (uiComponentFactory);
 		display.setUnitClientUtils (unitClientUtils);

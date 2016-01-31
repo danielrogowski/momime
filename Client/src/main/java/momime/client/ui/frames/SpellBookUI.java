@@ -50,6 +50,7 @@ import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.SpellSorter;
 import momime.client.utils.TextUtils;
@@ -67,6 +68,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -635,6 +637,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		
 		// Ignore trying to cast spells in combat when it isn't our turn
 		final boolean proceed;
+		final List<MemoryUnit> deadUnits = new ArrayList<MemoryUnit> ();
 		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
 			proceed = false;
 		else
@@ -721,6 +724,36 @@ public final class SpellBookUI extends MomClientFrameUI
 					msg.setVisible (true);
 				}
 			}
+			
+			// For raise dead spells, check that at least one suitable unit has died
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SUMMONING) &&
+				(spell.getResurrectedHealthPercentage () != null))
+			{
+				// This is a bit of a special case so we don't use isUnitValidTargetForSpell 
+				for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+					if ((thisUnit.getStatus () == UnitStatusID.DEAD) && (getCombatUI ().getCombatLocation ().equals (thisUnit.getCombatLocation ())) &&
+						((thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ()) || ((spell.isResurrectEnemyUnits () != null) && (spell.isResurrectEnemyUnits ()))))
+					{
+						// Make sure this type of unit can be resurrected by this spell
+						final String magicRealmLifeformTypeID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (thisUnit, thisUnit.getUnitHasSkill (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ());
+						
+						if (spell.getSpellValidUnitTarget ().stream ().anyMatch (t -> magicRealmLifeformTypeID.equals (t.getTargetMagicRealmID ())))
+							deadUnits.add (thisUnit);
+					};						
+						
+				proceed = (deadUnits.size () > 0);
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("frmSpellBook");
+					msg.setTitleLanguageEntryID ("CastSpellTitle");
+					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoDeadUnitsToBeRaised").replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}			
 			else
 				proceed = true;
 		}
@@ -750,6 +783,16 @@ public final class SpellBookUI extends MomClientFrameUI
 					getVariableManaUI ().setVisible (true);
 				else
 					getVariableManaUI ().variableDamageChosen ();
+			}
+			
+			// For raise dead spells, first select the unit to raise
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SUMMONING) &&
+				(spell.getResurrectedHealthPercentage () != null))
+			{
+				final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
+				unitRowDisplay.setUnits (deadUnits);
+				unitRowDisplay.setTargetSpellID (spell.getSpellID ());
+				unitRowDisplay.setVisible (true);
 			}
 			
 			// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it

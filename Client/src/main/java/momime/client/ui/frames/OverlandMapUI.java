@@ -898,7 +898,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 								{
 									final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
 									unitRowDisplay.setUnits (units);
-									unitRowDisplay.setTargetSpell (getOverlandMapRightHandPanel ().getTargetSpell ());
+									unitRowDisplay.setTargetSpellID (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
 									unitRowDisplay.setVisible (true);
 								}
 							}

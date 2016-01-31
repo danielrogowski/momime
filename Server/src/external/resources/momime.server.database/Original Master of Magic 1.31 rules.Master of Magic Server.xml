@@ -21369,6 +21369,10 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>620</researchCost>
 		<combatCastingCost>35</combatCastingCost>
+		<spellBookSectionID>SC01</spellBookSectionID>
+		<resurrectedHealthPercentage>50</resurrectedHealthPercentage>
+		<spellValidUnitTarget targetMagicRealmID="LTN" />
+		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellName>Raise Dead</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
 	</spell>
@@ -22062,6 +22066,11 @@
 		<spellRank>SR04</spellRank>
 		<researchCost>3000</researchCost>
 		<combatCastingCost>50</combatCastingCost>
+		<spellBookSectionID>SC01</spellBookSectionID>
+		<resurrectedHealthPercentage>100</resurrectedHealthPercentage>
+		<resurrectEnemyUnits>true</resurrectEnemyUnits>
+		<resurrectingAddsSkillID>US122</resurrectingAddsSkillID>
+		<spellValidUnitTarget targetMagicRealmID="LTN" />
 		<spellName>Animate Dead</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>
@@ -24747,6 +24756,7 @@
 		<languageEntry languageEntryID="NoValidTargets" />
 		<languageEntry languageEntryID="NoCombatSpellEffectIDsDefined" />
 		<languageEntry languageEntryID="AlreadyHasAllPossibleCombatSpellEffects" />
+		<languageEntry languageEntryID="NoDeadUnitsToBeRaised" />
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title" />
@@ -24968,6 +24978,8 @@
 	</languageCategory>
 	<languageCategory languageCategoryID="frmUnitRowDisplay">
 		<languageEntry languageEntryID="Cancel" />
+		<languageEntry languageEntryID="TitleRaiseOwn" />
+		<languageEntry languageEntryID="TitleRaiseEither" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSpellQueue">
 		<languageEntry languageEntryID="Title" />

@@ -54,7 +54,6 @@ import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
-import momime.common.messages.servertoclient.UpdateUnitToAliveMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -347,37 +346,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Tell clients?
 		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
 		if (players != null)
-		{
-			final AddOrUpdateUnitMessage addMsg = new AddOrUpdateUnitMessage ();
-			addMsg.setMemoryUnit (trueUnit);
-
-			final UpdateUnitToAliveMessage updateMsg = new UpdateUnitToAliveMessage ();
-			updateMsg.setUnitLocation (unitLocation);
-			updateMsg.setUnitURN (trueUnit.getUnitURN ());
-
-			for (final PlayerServerDetails player : players)
-			{
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (trueUnit, trueMap.getMap (), player, db, sd.getFogOfWarSetting ()))
-				{
-					// Does the player already have the unit in their memory?
-					if (getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ()) == null)
-					{
-						// Player doesn't know about unit, so add it
-						if (getFogOfWarDuplication ().copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit (), trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
-							if (player.getPlayerDescription ().isHuman ())
-								player.getConnection ().sendMessageToClient (addMsg);
-					}
-					else
-					{
-						// Player already knows about unit, so just update it to alive
-						if (getFogOfWarDuplication ().copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit (), trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
-							if (player.getPlayerDescription ().isHuman ())
-								player.getConnection ().sendMessageToClient (updateMsg);
-					}
-				}
-			}
-		}
+			this.updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, sd.getFogOfWarSetting ());
 
 		log.trace ("Exiting updateUnitStatusToAliveOnServerAndClients");
 	}

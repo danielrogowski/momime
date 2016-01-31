@@ -1499,7 +1499,10 @@
 	<spell spellID="SP136">
 		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell-PlanarSeal.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP137" />
+	<spell spellID="SP137">
+		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP138">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
@@ -1689,7 +1692,10 @@
 	<spell spellID="SP194">
 		<combatCastAnimation>DEATH_SKULL</combatCastAnimation>
 	</spell>
-	<spell spellID="SP195" />
+	<spell spellID="SP195">
+		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP196">
 		<spellMusicFile>/momime.client.music/MUSIC_008 - EvilPresence-Famine-CursedLands-Pestilence.mp3</spellMusicFile>
 		<soundAndImageDelay>2</soundAndImageDelay>

@@ -38,6 +38,7 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
@@ -122,6 +123,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Sound effects player */
 	private AudioPlayer soundPlayer;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
 	
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified
@@ -319,6 +323,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), unit.getUnitURN ());
 		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unit.getUnitURN ());	// Removes spells cast on unit
+		
+		if ((unit.getCombatLocation () != null) && (unit.getCombatLocation ().equals (getCombatUI ().getCombatLocation ())))
+			getCombatUI ().getUnitToDrawAtEachLocation () [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = null;
 		
 		// Is there a unit info screen open for it?
 		final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());
@@ -1114,5 +1121,21 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setSoundPlayer (final AudioPlayer player)
 	{
 		soundPlayer = player;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

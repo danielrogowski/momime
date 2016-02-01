@@ -24,7 +24,6 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
@@ -346,8 +345,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * 
 	 * @param combatLocation The location where the combat is taking place
 	 * @param combatSide Which side is to gain 1 exp
-	 * @param trueTerrain True terrain map
-	 * @param trueUnits True units list
+	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param fogOfWarSettings Fog of War settings from session description
@@ -359,23 +357,26 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 */
 	@Override
 	public final void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering grantExperienceToUnitsInCombat: " + combatLocation + ", " + combatSide);
 		
-		for (final MemoryUnit trueUnit : trueUnits)
+		for (final MemoryUnit trueUnit : trueMap.getUnit ())
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
 			{
+				final String magicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (trueUnit, trueUnit.getUnitHasSkill (), trueMap.getMaintainedSpell (), db);
+				final PickSvr magicRealm = db.findPick (magicRealmID, "grantExperienceToUnitsInCombat");
+
 				final int exp = getUnitUtils ().getBasicSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-				if (exp >= 0)
+				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))
 				{
 					getUnitUtils ().setBasicSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp+1);
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);
 				}				
 			}
 

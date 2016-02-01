@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -25,6 +26,7 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.StoredDamageTypeID;
+import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
@@ -469,6 +471,131 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		
 		assertEquals (10, unit5exp.getUnitSkillValue ().intValue ());
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit5, trueTerrain, players, db, fogOfWarSettings);
+	}
+	
+	/**
+	 * Tests the grantExperienceToUnitsInCombat method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGrantExperienceToUnitsInCombat () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		final PickSvr normalUnit = new PickSvr ();
+		normalUnit.setGainExperienceEachTurn (true);
+		when (db.findPick ("N", "grantExperienceToUnitsInCombat")).thenReturn (normalUnit);
+		
+		final PickSvr summonedUnit = new PickSvr ();
+		summonedUnit.setGainExperienceEachTurn (false);
+		when (db.findPick ("S", "grantExperienceToUnitsInCombat")).thenReturn (summonedUnit);
+		
+		// Other lists and objects needed for mocks
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		
+		// Server memory
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		
+		// Normal unit, in combat, on the correct side
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MemoryUnit unit1 = new MemoryUnit ();
+		unit1.setStatus (UnitStatusID.ALIVE);
+		unit1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit1.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit1.setCombatHeading (1);
+		trueMap.getUnit ().add (unit1);
+		
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit1, unit1.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
+		when (unitUtils.getBasicSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+
+		// Normal unit, in combat, on the wrong side
+		final MemoryUnit unit2 = new MemoryUnit ();
+		unit2.setStatus (UnitStatusID.ALIVE);
+		unit2.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit2.setCombatSide (UnitCombatSideID.DEFENDER);
+		unit2.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit2.setCombatHeading (1);
+		trueMap.getUnit ().add (unit2);
+		
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit2, unit2.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
+		when (unitUtils.getBasicSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		
+		// Normal unit, not in combat, on the correct side
+		final MemoryUnit unit3 = new MemoryUnit ();
+		unit3.setStatus (UnitStatusID.ALIVE);
+		trueMap.getUnit ().add (unit3);
+		
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit3, unit3.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
+		when (unitUtils.getBasicSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		
+		// Summoned unit, in combat, on the correct side
+		final MemoryUnit unit4 = new MemoryUnit ();
+		unit4.setStatus (UnitStatusID.ALIVE);
+		unit4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit4.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit4.setCombatHeading (1);
+		trueMap.getUnit ().add (unit4);
+		
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit4, unit4.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("S");
+		when (unitUtils.getBasicSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		
+		// Dead unit, in combat, on the correct side
+		final MemoryUnit unit5 = new MemoryUnit ();
+		unit5.setStatus (UnitStatusID.DEAD);
+		unit5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit5.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit5.setCombatPosition (new MapCoordinates2DEx (5, 6));
+		unit5.setCombatHeading (1);
+		trueMap.getUnit ().add (unit5);
+		
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit5, unit5.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
+		when (unitUtils.getBasicSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+
+		// Normal unit, in combat, on the correct side
+		final MemoryUnit unit6 = new MemoryUnit ();
+		unit6.setStatus (UnitStatusID.ALIVE);
+		unit6.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
+		unit6.setCombatPosition (new MapCoordinates2DEx (5, 7));
+		unit6.setCombatHeading (1);
+		trueMap.getUnit ().add (unit6);
+		
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit6, unit6.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
+		when (unitUtils.getBasicSkillValue (unit6.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+
+		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
+		multi.setUnitUtils (unitUtils);
+		multi.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		multi.grantExperienceToUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
+		
+		// Check results
+		verify (unitUtils, times (1)).setBasicSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit1, trueMap.getMap (), players, db, fogOfWarSettings);
+
+		verify (unitUtils, times (0)).setBasicSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit2, trueMap.getMap (), players, db, fogOfWarSettings);
+
+		verify (unitUtils, times (0)).setBasicSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit3, trueMap.getMap (), players, db, fogOfWarSettings);
+
+		verify (unitUtils, times (0)).setBasicSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit4, trueMap.getMap (), players, db, fogOfWarSettings);
+
+		verify (unitUtils, times (0)).setBasicSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit5, trueMap.getMap (), players, db, fogOfWarSettings);
+
+		verify (unitUtils, times (1)).setBasicSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit6, trueMap.getMap (), players, db, fogOfWarSettings);
 	}
 	
 	/**

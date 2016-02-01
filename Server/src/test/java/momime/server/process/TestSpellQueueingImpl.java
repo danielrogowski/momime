@@ -1407,7 +1407,7 @@ public final class TestSpellQueueingImpl
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
 		final TextPopupMessage msg = (TextPopupMessage) attackingMsgs.getMessages ().get (0);
-		assertEquals ("Cannot find the unit you are trying to target the spell on", msg.getText ());
+		assertEquals ("Cannot find the unit you are trying to target the spell on.", msg.getText ());
 	}
 
 	/**

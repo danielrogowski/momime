@@ -14,7 +14,6 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PendingMovement;
@@ -135,8 +134,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * 
 	 * @param combatLocation The location where the combat is taking place
 	 * @param combatSide Which side is to gain 1 exp
-	 * @param trueTerrain True terrain map
-	 * @param trueUnits True units list
+	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param fogOfWarSettings Fog of War settings from session description
@@ -147,7 +145,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	public void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	

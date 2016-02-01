@@ -496,6 +496,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
 				combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+
+			// Allow it to be moved this combat turn
+			targetUnit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (targetUnit, targetUnit.getUnitHasSkill (),
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 		}
 		
 		// Combat summons

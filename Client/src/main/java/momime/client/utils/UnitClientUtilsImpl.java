@@ -42,7 +42,6 @@ import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -54,7 +53,6 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -308,17 +306,15 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later
 	 * 
 	 * @param unit Unit to kill
-	 * @param transmittedAction Method by which the unit is being killed, out of possible values that are sent from the server; null if untransmittedAction is filled in
-	 * @param untransmittedAction Method by which the unit is being killed, out of possible values that are inferred from other messages; null if transmittedAction is filled in
+	 * @param newStatus The new status to set the unit to, e.g. DEAD or KILLED_BY_LACK_OF_PRODUCTION; a null here means remove the unit entirely
 	 * @throws IOException If there is a problem
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void killUnit (final MemoryUnit unit, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction)
-		throws IOException, JAXBException, XMLStreamException
+	public final void killUnit (final MemoryUnit unit, final UnitStatusID newStatus) throws IOException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering killUnit: Unit URN " + unit.getUnitURN () + ", " + transmittedAction + ", " + untransmittedAction);
+		log.trace ("Entering killUnit: Unit URN " + unit.getUnitURN () + ", " + newStatus);
 
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), unit.getUnitURN ());
@@ -355,46 +351,10 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}
 		
 		// The server works out what action we need to take
-		if (transmittedAction != null)
-			switch (transmittedAction)
-			{
-				// Phyically free the unit
-				case FREE:
-				case VISIBLE_AREA_CHANGED:
-					getUnitUtils ().removeUnitURN (unit.getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
-					break;
-	
-				// Units dying from lack of production are a problem, because we always get the kill message first before the NTM arrives, so if we just
-				// immediately kill the unit off, the NTM then doesn't know what it was - just its UnitURN, so it can't output any meaningful description.
-				// So don't remove these just yet - just mark them with a special status.  The NTM itself permanently removes these after.
-				case UNIT_LACK_OF_PRODUCTION:
-				case HERO_LACK_OF_PRODUCTION:
-					unit.setStatus (UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION);
-					break;
-					
-				default:
-					throw new MomException ("killUnit got a transmittedAction that it doesn't know how to handle: " + transmittedAction);
-			}
+		if (newStatus == null)
+			getUnitUtils ().removeUnitURN (unit.getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		else
-			switch (untransmittedAction)
-			{
-				/**
-				 * If a unit is killed in a combat we're involved in, we still need a record of it, so we can cast Raise Dead on it (no matter if its ours or theirs).
-				 * Our killed heroes are also just marked as Dead but not freed, so after combat we can cast Resurrection on them.
-				 * Only exception is killed enemy heroes, who we can't Raise or Resurrect, so we just free them.
-				 */
-				case COMBAT_DAMAGE:
-					if ((unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
-						(unit.getUnitID (), "killUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
-						
-						getUnitUtils ().removeUnitURN (unit.getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
-					else
-						unit.setStatus (UnitStatusID.DEAD);
-					break;
-
-				default:
-					throw new MomException ("killUnit got an untransmittedAction that it doesn't know how to handle: " + untransmittedAction);
-			}
+			unit.setStatus (newStatus);
 
 		// Select unit buttons on the City screen
 		if (unit.getUnitLocation () != null)

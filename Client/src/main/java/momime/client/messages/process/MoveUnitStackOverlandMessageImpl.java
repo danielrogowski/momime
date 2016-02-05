@@ -5,6 +5,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -15,17 +22,9 @@ import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.UnitClientUtils;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 /**
  * Server breaks down client move requests into a series of directions and sends them back to the client
@@ -228,7 +227,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 
 			// Free after moving is used when an enemy unit is walking out of the area we can see, so we see them move and then they disappear
 			if (isFreeAfterMoving ())
-				getUnitClientUtils ().killUnit (u, KillUnitActionID.FREE, null);
+				getUnitClientUtils ().killUnit (u, null);
 			else
 			{
 				u.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getMoveTo ()));

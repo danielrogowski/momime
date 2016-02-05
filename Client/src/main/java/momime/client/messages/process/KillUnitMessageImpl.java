@@ -51,12 +51,12 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Unit URN " + getUnitURN () + ", " + getKillUnitActionID ());
+		log.trace ("Entering start: Unit URN " + getUnitURN () + ", " + getNewStatus ());
 
 		final MemoryUnit unit = getUnitUtils ().findUnitURN (unitURN,
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "KillUnitMessageImpl");
 		
-		getUnitClientUtils ().killUnit (unit, getKillUnitActionID (), null);
+		getUnitClientUtils ().killUnit (unit, getNewStatus ());
 		
 		if (unit.getOwningPlayerID () == getClient ().getOurPlayerID ())
 		{

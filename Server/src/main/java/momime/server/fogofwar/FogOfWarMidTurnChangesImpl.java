@@ -421,10 +421,28 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					// For other players and statuses, they are just killed outright
 					if ((trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ().intValue ()) &&
 						((transmittedAction == KillUnitActionID.HERO_LACK_OF_PRODUCTION) || (transmittedAction == KillUnitActionID.UNIT_LACK_OF_PRODUCTION)))
+					{
+						// Map the transmittedAction to a unit status (this used to be done on the client end)
+						switch (transmittedAction)
+						{
+							// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server
+							case FREE:
+						    case VISIBLE_AREA_CHANGED:
+							case HERO_DIMISSED_VOLUNTARILY:
+								msg.setNewStatus (null);
+								break;
+						    	
+						    case UNIT_LACK_OF_PRODUCTION:
+						    case HERO_LACK_OF_PRODUCTION:
+								msg.setNewStatus (UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION);
+								break;
 
-						msg.setKillUnitActionID (transmittedAction);
+						    default:
+						    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + transmittedAction + " into");
+						}
+					}
 					else
-						msg.setKillUnitActionID (KillUnitActionID.FREE);
+						msg.setNewStatus (null);
 				
 					player.getConnection ().sendMessageToClient (msg);
 				}

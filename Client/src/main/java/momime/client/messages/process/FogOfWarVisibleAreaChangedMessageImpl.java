@@ -5,6 +5,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CitiesListUI;
@@ -16,16 +23,8 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.FogOfWarStateMessageData;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.areas.storage.MapArea3D;
-import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this main message to update the client on changes in their fog of war area and what units, buildings, spells, CAEs, etc. they can see.
@@ -131,7 +130,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getKillUnit ().size () > 0)
 		{
 			final KillUnitMessageImpl proc = getFactory ().createKillUnitMessage ();
-			proc.setKillUnitActionID (KillUnitActionID.VISIBLE_AREA_CHANGED);
+			// Leave newStatus as null so units are completed removed - obviously we're never going to lose sight of our own units
 			
 			for (final Integer thisUnitURN : getKillUnit ())
 			{

@@ -815,7 +815,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				{
 					final KillUnitMessage manualKillMessage = new KillUnitMessage ();
 					manualKillMessage.setUnitURN (trueUnit.getUnitURN ());
-					manualKillMessage.setKillUnitActionID (KillUnitActionID.FREE);
+					// Leave status null so unit is completely removed
 
 					// Defender
 					if (manuallyTellDefenderClientToKill)

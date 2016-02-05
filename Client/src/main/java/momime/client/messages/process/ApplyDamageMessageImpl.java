@@ -36,7 +36,6 @@ import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -45,9 +44,9 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
+import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -496,10 +495,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	{
 		log.trace ("Entering finish");
 		
-		// Work out kill actions - different depending on whether its a combat we're involved in or not
-		final KillUnitActionID transmittedAction = animated ? null : KillUnitActionID.FREE;
-		final UntransmittedKillUnitActionID untransmittedAction = animated ? UntransmittedKillUnitActionID.COMBAT_DAMAGE : null;
-		
 		// Damage to attacker
 		if (attackerUnit != null)
 		{
@@ -511,8 +506,21 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			{
 				// Attacker is dead
 				log.debug ("ApplyDamage is killing off dead attacker Unit URN " + getAttackerUnitURN ());
-				getUnitClientUtils ().killUnit (attackerUnit, transmittedAction, untransmittedAction);
+				final UnitStatusID killStatus;
+				if (!animated)
+					killStatus = null;		// Combat we are not involved in (and so not our units), so completely remove them
 				
+				else if ((attackerUnit.getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
+					(attackerUnit.getUnitID (), "ApplyDamageMessageImpl-a").getUnitMagicRealm ().equals
+						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
+						
+					killStatus = null;		// We're in combat with it, but its someone else's hero dying - we can't raise/dead other player's heroes, so just immediately remove it
+				else
+					killStatus = UnitStatusID.DEAD;		// Our unit/hero, or someone else's regular unit - can be targets for raise/animate dead, so keep them in our list for now
+				
+				getUnitClientUtils ().killUnit (attackerUnit, killStatus);
+
+				// Update various UI screens if our units get killed
 				if (attackerUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())
 				{
 					getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) attackerUnit.getUnitLocation ());
@@ -521,7 +529,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 							
 						getHeroItemsUI ().refreshHeroes ();
-					
 				}
 			}
 			else
@@ -565,7 +572,19 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			{
 				// Defender is dead
 				log.debug ("ApplyDamage is killing off dead defender Unit URN " + thisUnit.getDefUnit ().getUnitURN ());
-				getUnitClientUtils ().killUnit (thisUnit.getDefUnit (), transmittedAction, untransmittedAction);
+				final UnitStatusID killStatus;
+				if (!animated)
+					killStatus = null;		// Combat we are not involved in (and so not our units), so completely remove them
+				
+				else if ((thisUnit.getDefUnit ().getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
+					(thisUnit.getDefUnit ().getUnitID (), "ApplyDamageMessageImpl-d").getUnitMagicRealm ().equals
+						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
+						
+					killStatus = null;		// We're in combat with it, but its someone else's hero dying - we can't raise/dead other player's heroes, so just immediately remove it
+				else
+					killStatus = UnitStatusID.DEAD;		// Our unit/hero, or someone else's regular unit - can be targets for raise/animate dead, so keep them in our list for now
+
+				getUnitClientUtils ().killUnit (thisUnit.getDefUnit (), killStatus);
 				
 				if (thisUnit.getDefUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
 				{

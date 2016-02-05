@@ -925,15 +925,18 @@ Can add them in bulk as part of fogOfWarVisibleAreaChanged for when units come i
 	
 	<xsd:element name="killUnitMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to everyone to notify of dead units, except where it is already obvious from an
-Apply Damage message that a unit is dead.</xsd:documentation>
+    		<xsd:documentation>Server sends this to notify of units dying, being dismissed, or going out of our visible range.  The status indicates the
+new status for the unit; a status of null means the client should remove it completely.  NB. There is a lot of logic behind working out the correct
+statuses to send, and different clients may be sent different statuses for the same kill.
+
+e.g. a hero dying must be updated to status DEAD on the client of its owner since it may be later resurrected; but everyone else can remove it completely.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="killUnitActionID" type="momimestoc:killUnitActionID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="newStatus" type="momimemsgs:unitStatusID" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

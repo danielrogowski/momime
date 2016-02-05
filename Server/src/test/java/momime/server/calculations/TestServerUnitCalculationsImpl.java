@@ -26,6 +26,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
 
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitCalculationsImpl;
 import momime.common.calculations.UnitHasSkillMergedList;
@@ -45,7 +46,6 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.UnitSkillUtils;
@@ -861,7 +861,7 @@ public final class TestServerUnitCalculationsImpl
 		calc.recheckTransportCapacity (new MapCoordinates3DEx (20, 10, 1), trueMap, players, fogOfWarSettings, db);
 		
 		// Check 1 unit of spearmen was killed
-		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn).killUnitOnServerAndClients (killedUnit, UntransmittedKillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
 	}
 	
 	/**

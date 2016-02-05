@@ -5,7 +5,17 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -13,7 +23,6 @@ import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
@@ -24,15 +33,6 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
 
 /**
  * Processing methods specifically for dealing with simultaneous turns games
@@ -90,13 +90,13 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		final List<MemoryUnit> dismisses = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.DISMISS);
 		for (final MemoryUnit trueUnit : dismisses)
 		{
-			final KillUnitActionID action;
+			final UntransmittedKillUnitActionID action;
 			if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "processSpecialOrders-d").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-				action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
+				action = UntransmittedKillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
 			else
-				action = KillUnitActionID.FREE;
+				action = UntransmittedKillUnitActionID.FREE;
 			
-			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, null,
+			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 		}
 		

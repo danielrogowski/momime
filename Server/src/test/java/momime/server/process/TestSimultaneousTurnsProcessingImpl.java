@@ -9,6 +9,17 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -22,7 +33,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.DummyServerToClientConnection;
@@ -37,16 +47,6 @@ import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.areas.storage.MapArea2D;
-import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the SimultaneousTurnsProcessingImpl class
@@ -243,8 +243,8 @@ public final class TestSimultaneousTurnsProcessingImpl
 		proc.processSpecialOrders (mom);
 		
 		// Check units were dismissed
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissNormalUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, KillUnitActionID.HERO_DIMISSED_VOLUNTARILY, null, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissNormalUnit, UntransmittedKillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, UntransmittedKillUnitActionID.HERO_DIMISSED_VOLUNTARILY, trueMap, players, fogOfWarSettings, db);
 		
 		// Check buildings were sold
 		verify (cityProc, times (1)).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);

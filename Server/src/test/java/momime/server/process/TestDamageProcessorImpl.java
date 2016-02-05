@@ -216,8 +216,8 @@ public final class TestDamageProcessorImpl
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 		
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 		
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
@@ -383,8 +383,8 @@ public final class TestDamageProcessorImpl
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 		
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);

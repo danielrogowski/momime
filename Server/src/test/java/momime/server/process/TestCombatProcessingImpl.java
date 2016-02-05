@@ -24,6 +24,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
@@ -43,7 +44,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
@@ -1102,14 +1102,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1301,14 +1301,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1495,14 +1495,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1653,12 +1653,12 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1804,12 +1804,12 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, UntransmittedKillUnitActionID.FREE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here

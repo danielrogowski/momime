@@ -1,19 +1,26 @@
 package momime.common;
 
 /**
- * KillUnitActionID is defined in the XSD, as all the possible ways a unit can be killed that the client needs to be informed of.
- * However there are a couple of additional ways units can die that are internally processed on the server only and
- * never transmitted in a message to the client, so I really didn't want to clutter the XSD with values never sent over messages.
- * So these additional untransmitted values are declared here instead.
- * 
- * The client also needs the same values since it knows that units need to get killed by virtue of how much dmg gets
- * sent in ApplyDamage messages.
+ * KillUnitActionID has now been phased out of the XSDs and network messages, so all possible values are defined here.
  */
 public enum UntransmittedKillUnitActionID
 {
-	/**
-	 * Unit killed by combat damage - we don't need to send the clients a separate 'kill' message, because they already
-	 * know the unit died because of the previously sent ApplyDamageMessage.
-	 */
+	/** Remove unit entirely; there is no possible means to bring it back in future */
+	FREE,
+	
+	/** Unit routed and abanoned our cause because we failed to pay/feed them - effectivley the same as FREE since there is no way it can come back */
+	UNIT_LACK_OF_PRODUCTION,
+	
+	/** Hero dismissed from service; they return to the pool of available heroes (at status GENERATED) and available to be resummoned later */
+	HERO_DIMISSED_VOLUNTARILY,
+
+	/** Hero abanoned our cause because we failed to pay/feed them - effectively the same as HERO_DIMISSED_VOLUNTARILY - they are available to summon again */
+	HERO_LACK_OF_PRODUCTION,
+	
+	/** We lost sight of an enemy unit on the overland map - again effectively the same as FREE */
+	VISIBLE_AREA_CHANGED,
+
+	/**Unit killed by combat damage; this may set the unit to DEAD if it can be later raised/animated during combat, or heroes resurrected after combat, or
+	 * may be removed entirely like FREE, depending on the type of unit, whether the player is involved in the combat and whether it is our unit or somebody else's */
 	COMBAT_DAMAGE;
 }

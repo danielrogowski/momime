@@ -22,6 +22,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.calculations.UnitStack;
@@ -41,7 +42,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -590,7 +590,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 						if (impassable)
 						{
 							log.debug ("Killing Unit URN " + tu.getUnitURN () + " (transport on impassable terrain)");
-							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
+							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu, UntransmittedKillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
 						}
 						else
 							spaceRequired = spaceRequired - unitTransportCapacity;
@@ -608,7 +608,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					final MemoryUnit killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
 					log.debug ("Killing Unit URN " + killUnit.getUnitURN () + " (unit on impassable terrain)");
 					
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit, UntransmittedKillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
 					
 					spaceRequired--;
 					impassableUnits.remove (killUnit);

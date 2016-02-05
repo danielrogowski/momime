@@ -15,7 +15,23 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.areas.operations.MapAreaOperations3DImpl;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -38,7 +54,6 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
@@ -50,21 +65,6 @@ import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.operations.MapAreaOperations3DImpl;
-import com.ndg.map.areas.storage.MapArea3D;
-import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the OverlandMapServerUtilsImpl class
@@ -355,7 +355,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
 
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, UntransmittedKillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -450,7 +450,7 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, UntransmittedKillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -587,7 +587,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals ("GS", defenderMsg.getOtherUnitID ());
 		assertEquals (2, defenderMsg.getOtherPlayerID ().intValue ());
 		
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, UntransmittedKillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -705,7 +705,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 		assertEquals (0, defenderTrans.getNewTurnMessage ().size ());
 		
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, UntransmittedKillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);

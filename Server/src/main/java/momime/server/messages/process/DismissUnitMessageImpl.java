@@ -3,21 +3,6 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSpecialOrder;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.TurnSystem;
-import momime.common.messages.clienttoserver.DismissUnitMessage;
-import momime.common.messages.servertoclient.KillUnitActionID;
-import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.utils.UnitUtils;
-import momime.server.MomSessionVariables;
-import momime.server.calculations.ServerResourceCalculations;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.utils.UnitServerUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,6 +10,21 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSpecialOrder;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.TurnSystem;
+import momime.common.messages.clienttoserver.DismissUnitMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerResourceCalculations;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Client can send this to request that a unit of theirs be killed off
@@ -95,13 +95,13 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 			else
 			{
 				// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server
-				final KillUnitActionID action;
+				final UntransmittedKillUnitActionID action;
 				if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "DismissUnitMessageImpl").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-					action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
+					action = UntransmittedKillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
 				else
-					action = KillUnitActionID.FREE;
+					action = UntransmittedKillUnitActionID.FREE;
 				
-				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, null, mom.getGeneralServerKnowledge ().getTrueMap (),
+				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			}
 			

@@ -233,7 +233,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyAttackingPlayerUnitsSurvived = true;
 				else
 				{
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
@@ -257,7 +257,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,

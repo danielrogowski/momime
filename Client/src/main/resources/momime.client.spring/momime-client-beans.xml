@@ -442,8 +442,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="anim" ref="anim" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
-		<property name="armyListUI" ref="armyListUI" />
-		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype">
@@ -819,6 +817,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="armyListUI" ref="armyListUI" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 
 	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">

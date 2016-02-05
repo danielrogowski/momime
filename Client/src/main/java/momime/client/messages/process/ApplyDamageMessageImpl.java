@@ -11,7 +11,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
@@ -28,10 +27,8 @@ import momime.client.graphics.database.TileSetGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
-import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
@@ -111,12 +108,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
-	
-	/** Army list */
-	private ArmyListUI armyListUI;
-
-	/** Hero items UI */
-	private HeroItemsUI heroItemsUI;
 	
 	/** The attacking unit; null if we can't see it */
 	private MemoryUnit attackerUnit;
@@ -519,17 +510,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					killStatus = UnitStatusID.DEAD;		// Our unit/hero, or someone else's regular unit - can be targets for raise/animate dead, so keep them in our list for now
 				
 				getUnitClientUtils ().killUnit (attackerUnit, killStatus);
-
-				// Update various UI screens if our units get killed
-				if (attackerUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())
-				{
-					getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) attackerUnit.getUnitLocation ());
-
-					if (getClient ().getClientDB ().findUnit (attackerUnit.getUnitID (), "ApplyDamageMessageImpl").getUnitMagicRealm ().equals
-						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-							
-						getHeroItemsUI ().refreshHeroes ();
-				}
 			}
 			else
 			{
@@ -585,16 +565,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					killStatus = UnitStatusID.DEAD;		// Our unit/hero, or someone else's regular unit - can be targets for raise/animate dead, so keep them in our list for now
 
 				getUnitClientUtils ().killUnit (thisUnit.getDefUnit (), killStatus);
-				
-				if (thisUnit.getDefUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
-				{
-					getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) thisUnit.getDefUnit ().getUnitLocation ());
-
-					if (getClient ().getClientDB ().findUnit (thisUnit.getDefUnit ().getUnitID (), "ApplyDamageMessageImpl").getUnitMagicRealm ().equals
-						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-								
-						getHeroItemsUI ().refreshHeroes ();
-				}
 			}
 			else
 			{
@@ -824,38 +794,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
-	}
-	
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
-	}
-	
-	/**
-	 * @return Hero items UI
-	 */
-	public final HeroItemsUI getHeroItemsUI ()
-	{
-		return heroItemsUI;
-	}
-
-	/**
-	 * @param ui Hero items UI
-	 */
-	public final void setHeroItemsUI (final HeroItemsUI ui)
-	{
-		heroItemsUI = ui;
 	}
 	
 	/**
